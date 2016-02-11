@@ -1,9 +1,0 @@
-c:\Users\stdaca1\Desktop\RTS\Programmering\Tools\ToolBuilder\Workbed\Debug\ToolBuilder.exe.config
-c:\Users\stdaca1\Desktop\RTS\Programmering\Tools\ToolBuilder\Workbed\Debug\ToolBuilder.exe
-c:\Users\stdaca1\Desktop\RTS\Programmering\Tools\ToolBuilder\Workbed\Debug\ToolBuilder.pdb
-c:\Users\stdaca1\Desktop\RTS\Programmering\Tools\ToolBuilder\ToolBuilder\obj\Debug\ToolBuilder.csprojResolveAssemblyReference.cache
-c:\Users\stdaca1\Desktop\RTS\Programmering\Tools\ToolBuilder\ToolBuilder\obj\Debug\ToolBuilder.Tool_Window.resources
-c:\Users\stdaca1\Desktop\RTS\Programmering\Tools\ToolBuilder\ToolBuilder\obj\Debug\ToolBuilder.Properties.Resources.resources
-c:\Users\stdaca1\Desktop\RTS\Programmering\Tools\ToolBuilder\ToolBuilder\obj\Debug\ToolBuilder.csproj.GenerateResource.Cache
-c:\Users\stdaca1\Desktop\RTS\Programmering\Tools\ToolBuilder\ToolBuilder\obj\Debug\ToolBuilder.exe
-c:\Users\stdaca1\Desktop\RTS\Programmering\Tools\ToolBuilder\ToolBuilder\obj\Debug\ToolBuilder.pdb
