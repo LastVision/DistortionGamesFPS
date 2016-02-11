@@ -1,0 +1,41 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="LuaFiles">
+      <UniqueIdentifier>{9fae9bdd-d989-42ae-8c11-4f2aae0c3d72}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="PreCompile">
+      <UniqueIdentifier>{a78de44f-1c88-42e7-8897-2a058ddd9136}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="ScriptSystem.cpp" />
+    <ClCompile Include="FileWatcher.cpp" />
+    <ClCompile Include="stdafx.cpp">
+      <Filter>PreCompile</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="ScriptSystem.h" />
+    <ClInclude Include="LuaFiles\lauxlib.h">
+      <Filter>LuaFiles</Filter>
+    </ClInclude>
+    <ClInclude Include="LuaFiles\lua.h">
+      <Filter>LuaFiles</Filter>
+    </ClInclude>
+    <ClInclude Include="LuaFiles\lua.hpp">
+      <Filter>LuaFiles</Filter>
+    </ClInclude>
+    <ClInclude Include="LuaFiles\luaconf.h">
+      <Filter>LuaFiles</Filter>
+    </ClInclude>
+    <ClInclude Include="LuaFiles\lualib.h">
+      <Filter>LuaFiles</Filter>
+    </ClInclude>
+    <ClInclude Include="LuaArgs.h" />
+    <ClInclude Include="FileWatcher.h" />
+    <ClInclude Include="stdafx.h">
+      <Filter>PreCompile</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>

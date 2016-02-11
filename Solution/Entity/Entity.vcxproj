@@ -1,0 +1,263 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="DataExporter|Win32">
+      <Configuration>DataExporter</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Internal|Win32">
+      <Configuration>Internal</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{9DD8D699-EDB7-44B3-A0DC-1FA57B81FA7A}</ProjectGuid>
+    <RootNamespace>Entity</RootNamespace>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v120</PlatformToolset>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v120</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Internal|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v120</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DataExporter|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v120</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Internal|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='DataExporter|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <OutDir>$(SolutionDir)..\Libs\</OutDir>
+    <IntDir>$(SolutionDir)..\temp\$(ProjectName)\</IntDir>
+    <TargetName>$(ProjectName)_$(Configuration)</TargetName>
+    <IncludePath>$(IncludePath)</IncludePath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <OutDir>$(SolutionDir)..\Libs\</OutDir>
+    <IntDir>$(SolutionDir)..\temp\$(ProjectName)\</IntDir>
+    <TargetName>$(ProjectName)_$(Configuration)</TargetName>
+    <IncludePath>$(IncludePath)</IncludePath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Internal|Win32'">
+    <OutDir>$(SolutionDir)..\Libs\</OutDir>
+    <IntDir>$(SolutionDir)..\temp\$(ProjectName)\</IntDir>
+    <TargetName>$(ProjectName)_$(Configuration)</TargetName>
+    <IncludePath>$(IncludePath)</IncludePath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DataExporter|Win32'">
+    <OutDir>$(SolutionDir)..\Libs\</OutDir>
+    <IntDir>$(SolutionDir)..\temp\$(ProjectName)\</IntDir>
+    <TargetName>$(ProjectName)_$(Configuration)</TargetName>
+    <IncludePath>$(IncludePath)</IncludePath>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <WarningLevel>Level4</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <SDLCheck>true</SDLCheck>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <AdditionalIncludeDirectories>$(SolutionDir)Memory;$(SolutionDir)CommonUtilities;$(SolutionDir)DL_Debug;$(SolutionDir)Engine;$(SolutionDir)Audio;$(SolutionDir)PostMaster;$(SolutionDir)InputWrapper;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <MinimalRebuild>false</MinimalRebuild>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level4</WarningLevel>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <AdditionalIncludeDirectories>$(SolutionDir)Memory;$(SolutionDir)CommonUtilities;$(SolutionDir)DL_Debug;$(SolutionDir)Engine;$(SolutionDir)Audio;$(SolutionDir)PostMaster;$(SolutionDir)InputWrapper;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <PreprocessorDefinitions>RELEASE_BUILD;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Internal|Win32'">
+    <ClCompile>
+      <WarningLevel>Level4</WarningLevel>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <AdditionalIncludeDirectories>$(SolutionDir)Memory;$(SolutionDir)CommonUtilities;$(SolutionDir)DL_Debug;$(SolutionDir)Engine;$(SolutionDir)Audio;$(SolutionDir)PostMaster;$(SolutionDir)InputWrapper;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='DataExporter|Win32'">
+    <ClCompile>
+      <WarningLevel>Level4</WarningLevel>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <AdditionalIncludeDirectories>$(SolutionDir)Memory;$(SolutionDir)CommonUtilities;$(SolutionDir)DL_Debug;$(SolutionDir)Engine;$(SolutionDir)Audio;$(SolutionDir)PostMaster;$(SolutionDir)InputWrapper;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClInclude Include="ActorComponent.h" />
+    <ClInclude Include="ActorComponentData.h" />
+    <ClInclude Include="AnimationComponent.h" />
+    <ClInclude Include="AnimationComponentData.h" />
+    <ClInclude Include="ArriveBehavior.h" />
+    <ClInclude Include="Behavior.h" />
+    <ClInclude Include="BehaviorNote.h" />
+    <ClInclude Include="BlendedBehavior.h" />
+    <ClInclude Include="BuildingComponent.h" />
+    <ClInclude Include="BuildingComponentData.h" />
+    <ClInclude Include="CollisionComponent.h" />
+    <ClInclude Include="CollisionComponentData.h" />
+    <ClInclude Include="EnrageComponent.h" />
+    <ClInclude Include="EnrageComponentData.h" />
+    <ClInclude Include="EntityCommandData.h" />
+    <ClInclude Include="EntityEnumConverter.h" />
+    <ClInclude Include="EntityId.h" />
+    <ClInclude Include="EvadeBehavior.h" />
+    <ClInclude Include="Formation.h" />
+    <ClInclude Include="GrenadeComponent.h" />
+    <ClInclude Include="GrenadeComponentData.h" />
+    <ClInclude Include="PromotionComponent.h" />
+    <ClInclude Include="PromotionComponentData.h" />
+    <ClInclude Include="SelectionComponent.h" />
+    <ClInclude Include="SelectionComponentData.h" />
+    <ClInclude Include="ShadowBlobComponent.h" />
+    <ClInclude Include="ShadowBlobComponentData.h" />
+    <ClInclude Include="SoundComponent.h" />
+    <ClInclude Include="SoundComponentData.h" />
+    <ClInclude Include="TotemComponent.h" />
+    <ClInclude Include="TotemComponentData.h" />
+    <ClInclude Include="TriggerComponent.h" />
+    <ClInclude Include="TriggerComponentData.h" />
+    <ClInclude Include="Component.h" />
+    <ClInclude Include="ComponentLoader.h" />
+    <ClInclude Include="ControllerComponent.h" />
+    <ClInclude Include="ControllerComponentData.h" />
+    <ClInclude Include="DamageNote.h" />
+    <ClInclude Include="Entity.h" />
+    <ClInclude Include="EntityData.h" />
+    <ClInclude Include="EntityFactory.h" />
+    <ClInclude Include="GraphicsComponent.h" />
+    <ClInclude Include="GraphicsComponentData.h" />
+    <ClInclude Include="HealthComponent.h" />
+    <ClInclude Include="HealthComponentData.h" />
+    <ClInclude Include="PollingStation.h" />
+    <ClInclude Include="stdafx.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="ActorComponent.cpp" />
+    <ClCompile Include="AnimationComponent.cpp" />
+    <ClCompile Include="ArriveBehavior.cpp" />
+    <ClCompile Include="Behavior.cpp" />
+    <ClCompile Include="BlendedBehavior.cpp" />
+    <ClCompile Include="BuildingComponent.cpp" />
+    <ClCompile Include="CollisionComponent.cpp" />
+    <ClCompile Include="EnrageComponent.cpp" />
+    <ClCompile Include="EntityCommandData.cpp" />
+    <ClCompile Include="EntityEnumConverter.cpp" />
+    <ClCompile Include="EntityId.cpp" />
+    <ClCompile Include="EvadeBehavior.cpp" />
+    <ClCompile Include="Formation.cpp" />
+    <ClCompile Include="GrenadeComponent.cpp" />
+    <ClCompile Include="PromotionComponent.cpp" />
+    <ClCompile Include="SelectionComponent.cpp" />
+    <ClCompile Include="ShadowBlobComponent.cpp" />
+    <ClCompile Include="SoundComponent.cpp" />
+    <ClCompile Include="TotemComponent.cpp" />
+    <ClCompile Include="TriggerComponent.cpp" />
+    <ClCompile Include="Component.cpp" />
+    <ClCompile Include="ComponentLoader.cpp" />
+    <ClCompile Include="ControllerComponent.cpp" />
+    <ClCompile Include="Entity.cpp" />
+    <ClCompile Include="EntityFactory.cpp" />
+    <ClCompile Include="GraphicsComponent.cpp" />
+    <ClCompile Include="HealthComponent.cpp" />
+    <ClCompile Include="PollingStation.cpp" />
+    <ClCompile Include="stdafx.cpp">
+      <MultiProcessorCompilation Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</MultiProcessorCompilation>
+      <MultiProcessorCompilation Condition="'$(Configuration)|$(Platform)'=='DataExporter|Win32'">false</MultiProcessorCompilation>
+      <MultiProcessorCompilation Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</MultiProcessorCompilation>
+      <MultiProcessorCompilation Condition="'$(Configuration)|$(Platform)'=='Internal|Win32'">false</MultiProcessorCompilation>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='DataExporter|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Internal|Win32'">Create</PrecompiledHeader>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Audio\Audio.vcxproj">
+      <Project>{b5915c8f-2aef-4137-bcbe-152f819860cd}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\CommonUtilities\CommonUtilities.vcxproj">
+      <Project>{cf69d483-5bf1-4673-99e2-c04b953ca73c}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\Memory\Memory.vcxproj">
+      <Project>{25945336-03d1-42a6-8764-7ef11dbc42e6}</Project>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

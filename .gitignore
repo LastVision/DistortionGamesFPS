@@ -1,0 +1,105 @@
+# Compiled Object files
+*.slo
+*.lo
+*.o
+*.obj
+
+# Precompiled Headers
+*.gch
+*.pch
+
+# Compiled Dynamic libraries
+*.so
+*.dylib
+*.dll
+
+# Fortran module files
+*.mod
+
+# Compiled Static libraries
+*.lai
+*.la
+*.a
+*.lib
+
+# Executables
+*.exe
+*.out
+*.app
+
+
+
+Libs/CommonUtilities_Debug.lib
+Libs/CommonUtilities_Release.lib
+Libs/DL_Debug_Debug.lib
+Libs/DL_Debug_Release.lib
+Libs/Engine_Debug.lib
+Libs/Engine_Release.lib
+Libs/Game_Debug.lib
+Libs/Game_Release.lib
+Libs/InputWrapper_Debug.lib
+Libs/InputWrapper_Release.lib
+Libs/Timer_Debug.lib
+Libs/Timer_Release.lib
+Libs/Effects11_Debug.lib
+Libs/Effects11_Release.lib
+Libs/libfbxsdk-md_Debug.lib
+Libs/libfbxsdk-md_Release.lib
+
+*.ipch
+*.cache
+
+*.sdf
+Solution/ProjectName.opensdf
+temp/
+Workbed/log/
+*.psess
+*.suo
+*.pdb
+Workbed/Application_Debug.ilk
+Workbed/bin/*
+!Workbed/bin/DataExporter.exe
+Solution/Launcher/obj/
+
+Tools/LogReader/LogReader/LogReader/obj/
+Tools/LogReader/LogReader_temp/obj/
+Tools/ModelViewer/ModelViewer/obj/
+Tools/ParticleEditor/ParticleEditor/obj/
+Tools/CSharpUtilities/CSharpUtilities/obj/
+Tools/ToolBuilder/Workbed/
+Tools/ParticleEditor/Workbed/
+Tools/CSharpUtilities/Workbed/
+/NiklasOctree
+/octreeResearchNumbers.txt
+/NiklasQuadTree
+/Solution/Launcher/bin/Internal/Launcher.exe.config
+/Solution/DL_Debug/DL_Debug.vcxproj.user
+*.opensdf
+/fromLD
+
+*.vcxproj.user
+/Tools/EntityEditor/EntityEditor/obj/Debug
+/Tools/EntityEditor/EntityEditor/obj/Release
+/Instancing_old_stuff
+/Solution/Launcher/bin/Internal/Launcher.vshost.exe.config
+/Solution/Launcher/bin/Internal/Launcher.vshost.exe.manifest
+/Solution/Launcher/bin/Internal/Raven.exe.config
+/Solution/GUI/Debug/GUI.tlog
+/Solution/GUI/Debug
+/Solution/Application/log
+*.lastbuildstate
+*.log
+/From LD to PROG/funktioner i LUA.txt
+/From LD to PROG/Level_01_Heightmap.tga
+*.cso
+*.fx
+/Documentation/CreateProject.txt
+*.config
+/Solution/DataExporter/log
+/Workbed
+/From LD to PROG/sounds
+/From LD to PROG/soundlist.jpg
+/AnimationsystemsTemplate/Octopus Rift
+/AnimationsystemsTemplate/Riskabelt animation/animations
+/AnimationsystemsTemplate/Riskabelt animation
+*.cfg

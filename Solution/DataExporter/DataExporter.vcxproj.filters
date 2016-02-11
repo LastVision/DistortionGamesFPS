@@ -1,0 +1,44 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="Main.cpp" />
+    <ClCompile Include="CalcRadiusReader.cpp">
+      <Filter>Reader</Filter>
+    </ClCompile>
+    <ClCompile Include="DGFXReader.cpp">
+      <Filter>Reader</Filter>
+    </ClCompile>
+    <ClCompile Include="IReader.cpp">
+      <Filter>Reader</Filter>
+    </ClCompile>
+    <ClCompile Include="TerrainReader.cpp">
+      <Filter>Reader</Filter>
+    </ClCompile>
+    <ClCompile Include="LevelReader.cpp">
+      <Filter>Reader</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="dirent.h" />
+    <ClInclude Include="CalcRadiusReader.h">
+      <Filter>Reader</Filter>
+    </ClInclude>
+    <ClInclude Include="DGFXReader.h">
+      <Filter>Reader</Filter>
+    </ClInclude>
+    <ClInclude Include="IReader.h">
+      <Filter>Reader</Filter>
+    </ClInclude>
+    <ClInclude Include="TerrainReader.h">
+      <Filter>Reader</Filter>
+    </ClInclude>
+    <ClInclude Include="LevelReader.h">
+      <Filter>Reader</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Reader">
+      <UniqueIdentifier>{40c0e556-7707-45ef-b189-96c2750bca5c}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

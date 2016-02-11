@@ -1,0 +1,56 @@
+Ej const på vanliga datatyper (float, int osv) i funktionsanrop
+
+enum class eTypeEnum
+{
+	TYPE_A,
+	TYPE_B,
+};
+
+Allt som går i initieringslista
+
+Class::Class(int aWidth, int aHeight, float anApa
+		, CU::GrowingArray<Monkey> someMonkeys)
+	: myWidth(aWidth)
+	, myHeight(aHeight)
+{
+}
+
+if (myWidth == 1280 && myHeight == 720 && myResolutionIsValid == false
+	|| myResizeWindow == true)
+{
+
+}
+
+int GetHeight() const
+void SetHeight(int aHeight)
+int GetWidth() const
+void SetWidth(int aWidth)
+const CU::Vector2f& GetSize() const
+
+inga onödiga konstruktorer / destruktorer
+
+maximal radlängd, mjukt max: 80. Absolut max: 120 (samma som King)
+
+alla includes i bokstavsordning (förutom stdafx såklart)
+alla forward declares i bokstavsordning, alla includes som går i cpp
+alla konstruktorer / destruktorer / create / destroy högst upp
+alla funktioner i samma ordning i cpp som i h-filer
+alla privata funktioner först och variabler sen. Ordning på funktioner / variabler. Gruppera sånt som hör ihop.
+"inline" endast nere vid definitionen, inte vid deklarationen.
+I praktiken inga kommentarer, självdokumenterande kod.
+Skriv ut Rotation / Position osv, inga "rot/pos"
+Ifall det är includes som dyker upp minst 3-4 ggr på olika ställen, så bör den läggas i pre-compile headern - ta bort från alla cpp i projektet
+ha så få includes i .h filen som möjligt.
+
+for (int i = 0; i < mySize; ++i)
+{
+	//stuff
+}
+
+typedef Matrix44<float> Matrix44f;
+
+CU::Vector3f myPosition;
+
+Prism-namespace för Engine
+
+Use radians instead of degrees

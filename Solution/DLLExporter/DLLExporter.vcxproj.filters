@@ -1,0 +1,17 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClInclude Include="DLLExport.h" />
+    <ClInclude Include="DLLApp.h" />
+    <ClInclude Include="DLLCamera.h" />
+    <ClInclude Include="DLLModel.h" />
+    <ClInclude Include="DLLParticle.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="DLLExport.cpp" />
+    <ClCompile Include="DLLApp.cpp" />
+    <ClCompile Include="DLLCamera.cpp" />
+    <ClCompile Include="DLLModel.cpp" />
+    <ClCompile Include="DLLParticle.cpp" />
+  </ItemGroup>
+</Project>

@@ -1,0 +1,19 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClInclude Include="stdafx.h">
+      <Filter>Precomplie</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Main.cpp" />
+    <ClCompile Include="stdafx.cpp">
+      <Filter>Precomplie</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Precomplie">
+      <UniqueIdentifier>{a8579c75-8a2e-4de2-9c3a-ef1105e7aaeb}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

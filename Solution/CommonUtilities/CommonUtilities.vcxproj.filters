@@ -1,0 +1,168 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClInclude Include="Macros.h" />
+    <ClInclude Include="VectorOnStack.h">
+      <Filter>Array</Filter>
+    </ClInclude>
+    <ClInclude Include="StaticArray.h">
+      <Filter>Array</Filter>
+    </ClInclude>
+    <ClInclude Include="Vector.h">
+      <Filter>Math\Vector</Filter>
+    </ClInclude>
+    <ClInclude Include="Vector2.h">
+      <Filter>Math\Vector</Filter>
+    </ClInclude>
+    <ClInclude Include="Vector2decl.h">
+      <Filter>Math\Vector</Filter>
+    </ClInclude>
+    <ClInclude Include="Vector3.h">
+      <Filter>Math\Vector</Filter>
+    </ClInclude>
+    <ClInclude Include="Vector3decl.h">
+      <Filter>Math\Vector</Filter>
+    </ClInclude>
+    <ClInclude Include="Vector4.h">
+      <Filter>Math\Vector</Filter>
+    </ClInclude>
+    <ClInclude Include="Vector4decl.h">
+      <Filter>Math\Vector</Filter>
+    </ClInclude>
+    <ClInclude Include="Line.h">
+      <Filter>Math</Filter>
+    </ClInclude>
+    <ClInclude Include="Plane.h">
+      <Filter>Math</Filter>
+    </ClInclude>
+    <ClInclude Include="LineVolume.h">
+      <Filter>Math</Filter>
+    </ClInclude>
+    <ClInclude Include="PlaneVolume.h">
+      <Filter>Math</Filter>
+    </ClInclude>
+    <ClInclude Include="Matrix.h">
+      <Filter>Math\Matrix</Filter>
+    </ClInclude>
+    <ClInclude Include="Matrix33.h">
+      <Filter>Math\Matrix</Filter>
+    </ClInclude>
+    <ClInclude Include="Matrix33decl.h">
+      <Filter>Math\Matrix</Filter>
+    </ClInclude>
+    <ClInclude Include="Matrix44.h">
+      <Filter>Math\Matrix</Filter>
+    </ClInclude>
+    <ClInclude Include="Matrix44decl.h">
+      <Filter>Math\Matrix</Filter>
+    </ClInclude>
+    <ClInclude Include="AABB.h">
+      <Filter>Math</Filter>
+    </ClInclude>
+    <ClInclude Include="Fov90Frustum.h">
+      <Filter>Math</Filter>
+    </ClInclude>
+    <ClInclude Include="LineSegment2D.h">
+      <Filter>Math</Filter>
+    </ClInclude>
+    <ClInclude Include="LineSegment3D.h">
+      <Filter>Math</Filter>
+    </ClInclude>
+    <ClInclude Include="Sphere.h">
+      <Filter>Math</Filter>
+    </ClInclude>
+    <ClInclude Include="Camera2D.h">
+      <Filter>Camera</Filter>
+    </ClInclude>
+    <ClInclude Include="resource.h" />
+    <ClInclude Include="Intersection.h">
+      <Filter>Math</Filter>
+    </ClInclude>
+    <ClInclude Include="MathHelper.h">
+      <Filter>Math</Filter>
+    </ClInclude>
+    <ClInclude Include="XMLFunctions.h">
+      <Filter>XMLWrapper</Filter>
+    </ClInclude>
+    <ClInclude Include="XMLReader.h">
+      <Filter>TinyXML2</Filter>
+    </ClInclude>
+    <ClInclude Include="GrowingArray.h">
+      <Filter>Array</Filter>
+    </ClInclude>
+    <ClInclude Include="Greater.h">
+      <Filter>Heap</Filter>
+    </ClInclude>
+    <ClInclude Include="Heap.h">
+      <Filter>Heap</Filter>
+    </ClInclude>
+    <ClInclude Include="Lesser.h">
+      <Filter>Heap</Filter>
+    </ClInclude>
+    <ClInclude Include="CommonHelper.h" />
+    <ClInclude Include="stdafx.h">
+      <Filter>Precompile</Filter>
+    </ClInclude>
+    <ClInclude Include="tinyxml2.h">
+      <Filter>TinyXML2</Filter>
+    </ClInclude>
+    <ClInclude Include="GameConstants.h" />
+    <ClInclude Include="GameEnum.h" />
+    <ClInclude Include="GameStructs.h" />
+    <ClInclude Include="FuzzySet.h" />
+    <ClInclude Include="Tweener.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Math">
+      <UniqueIdentifier>{a638612a-2ee1-416c-b895-013f27614a53}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Array">
+      <UniqueIdentifier>{c342ac44-2b57-4171-823f-a8c73b209ba9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Math\Vector">
+      <UniqueIdentifier>{5173b128-a62a-4d58-b4dc-1ae718b5dd44}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Math\Matrix">
+      <UniqueIdentifier>{0c368e0d-bf53-452d-a62f-8459eb2da009}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="TinyXML2">
+      <UniqueIdentifier>{8f90be26-9594-4f14-a37d-2f9ed38341a0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="XMLWrapper">
+      <UniqueIdentifier>{bfdd49b0-f0b1-44fd-80d9-7059b2491928}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Camera">
+      <UniqueIdentifier>{167dff31-b4c3-477e-aa6d-37035e24c03d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Heap">
+      <UniqueIdentifier>{c9ed97bf-c812-4aa5-8e66-c6e1c1d24690}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Precompile">
+      <UniqueIdentifier>{5cd0f21b-eebe-4a7f-a40e-24766a0f7791}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Camera2D.cpp">
+      <Filter>Camera</Filter>
+    </ClCompile>
+    <ClCompile Include="MathHelper.cpp">
+      <Filter>Math</Filter>
+    </ClCompile>
+    <ClCompile Include="XMLFunctions.cpp">
+      <Filter>XMLWrapper</Filter>
+    </ClCompile>
+    <ClCompile Include="XMLReader.cpp">
+      <Filter>TinyXML2</Filter>
+    </ClCompile>
+    <ClCompile Include="stdafx.cpp">
+      <Filter>Precompile</Filter>
+    </ClCompile>
+    <ClCompile Include="tinyxml2.cpp">
+      <Filter>TinyXML2</Filter>
+    </ClCompile>
+    <ClCompile Include="FuzzySet.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="CommonUtilities.rc" />
+  </ItemGroup>
+</Project>

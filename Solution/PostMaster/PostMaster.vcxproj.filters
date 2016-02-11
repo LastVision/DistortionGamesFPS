@@ -1,0 +1,140 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="PreCompile">
+      <UniqueIdentifier>{7b98f407-3f83-4f2a-9f98-b3733ef579ce}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Message">
+      <UniqueIdentifier>{6db52398-7562-488d-8200-ded659236634}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="MessageEnum">
+      <UniqueIdentifier>{1ea61717-2475-4611-b768-283394c81acc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Message\StateMessage">
+      <UniqueIdentifier>{d387a4d5-0a6e-4895-8fa3-78744878958f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Message\EntityMessage">
+      <UniqueIdentifier>{eacc85d7-2561-408f-bede-6bd45eda86f2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Message\ScriptMessage">
+      <UniqueIdentifier>{4737b0c2-cf0b-401a-bc99-dd36b0c3a89e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Message\CheatMessages">
+      <UniqueIdentifier>{95e4a8e8-7d53-4eab-9bf2-789a40687581}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Message\GUIMessage">
+      <UniqueIdentifier>{45c561c0-ce7e-491f-b3f3-aec238150e0c}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="stdafx.cpp">
+      <Filter>PreCompile</Filter>
+    </ClCompile>
+    <ClCompile Include="GameStateMessage.cpp">
+      <Filter>Message\StateMessage</Filter>
+    </ClCompile>
+    <ClCompile Include="PostMaster.cpp" />
+    <ClCompile Include="Subscriber.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="stdafx.h">
+      <Filter>PreCompile</Filter>
+    </ClInclude>
+    <ClInclude Include="PostMaster.h" />
+    <ClInclude Include="Subscriber.h" />
+    <ClInclude Include="Message.h">
+      <Filter>Message</Filter>
+    </ClInclude>
+    <ClInclude Include="MessageEnum.h">
+      <Filter>MessageEnum</Filter>
+    </ClInclude>
+    <ClInclude Include="ResizeMessage.h">
+      <Filter>Message</Filter>
+    </ClInclude>
+    <ClInclude Include="GameStateMessage.h">
+      <Filter>Message\StateMessage</Filter>
+    </ClInclude>
+    <ClInclude Include="OnClickMessage.h">
+      <Filter>Message</Filter>
+    </ClInclude>
+    <ClInclude Include="MoveCameraMessage.h">
+      <Filter>Message</Filter>
+    </ClInclude>
+    <ClInclude Include="SpawnUnitMessage.h">
+      <Filter>Message\EntityMessage</Filter>
+    </ClInclude>
+    <ClInclude Include="FadeMessage.h">
+      <Filter>Message</Filter>
+    </ClInclude>
+    <ClInclude Include="TriggerMessage.h">
+      <Filter>Message</Filter>
+    </ClInclude>
+    <ClInclude Include="ResourceMessage.h">
+      <Filter>Message</Filter>
+    </ClInclude>
+    <ClInclude Include="TimeMultiplierMessage.h">
+      <Filter>Message</Filter>
+    </ClInclude>
+    <ClInclude Include="VictoryMessage.h">
+      <Filter>Message</Filter>
+    </ClInclude>
+    <ClInclude Include="EmitterMessage.h">
+      <Filter>Message</Filter>
+    </ClInclude>
+    <ClInclude Include="MinimapMoveMessage.h">
+      <Filter>Message</Filter>
+    </ClInclude>
+    <ClInclude Include="ToggleBuildTimeMessage.h">
+      <Filter>Message\CheatMessages</Filter>
+    </ClInclude>
+    <ClInclude Include="UpgradeUnitMessage.h">
+      <Filter>Message</Filter>
+    </ClInclude>
+    <ClInclude Include="TextMessage.h">
+      <Filter>Message\GUIMessage</Filter>
+    </ClInclude>
+    <ClInclude Include="ToggleGUIMessage.h">
+      <Filter>Message\GUIMessage</Filter>
+    </ClInclude>
+    <ClInclude Include="CinematicMessage.h">
+      <Filter>Message\ScriptMessage</Filter>
+    </ClInclude>
+    <ClInclude Include="RunScriptMessage.h">
+      <Filter>Message\ScriptMessage</Filter>
+    </ClInclude>
+    <ClInclude Include="ToggleRenderLinesMessage.h">
+      <Filter>Message\ScriptMessage</Filter>
+    </ClInclude>
+    <ClInclude Include="MinimapEventMessage.h">
+      <Filter>Message</Filter>
+    </ClInclude>
+    <ClInclude Include="EventPositionMessage.h">
+      <Filter>Message</Filter>
+    </ClInclude>
+    <ClInclude Include="ArtifactMessage.h">
+      <Filter>Message</Filter>
+    </ClInclude>
+    <ClInclude Include="KillUnitMessage.h" />
+    <ClInclude Include="TutorialMessage.h">
+      <Filter>Message</Filter>
+    </ClInclude>
+    <ClInclude Include="BlockMapMessage.h">
+      <Filter>Message</Filter>
+    </ClInclude>
+    <ClInclude Include="SelectUnitMessage.h">
+      <Filter>Message</Filter>
+    </ClInclude>
+    <ClInclude Include="ToggleFogOfWarMessage.h">
+      <Filter>Message\ScriptMessage</Filter>
+    </ClInclude>
+    <ClInclude Include="InWorldTextMessage.h">
+      <Filter>Message</Filter>
+    </ClInclude>
+    <ClInclude Include="NotificationMessage.h">
+      <Filter>Message</Filter>
+    </ClInclude>
+    <ClInclude Include="KilledPromotedMessage.h">
+      <Filter>Message</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>
