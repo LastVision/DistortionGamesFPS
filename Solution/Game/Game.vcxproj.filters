@@ -14,27 +14,6 @@
     <ClCompile Include="StateStackProxy.cpp">
       <Filter>StateStack</Filter>
     </ClCompile>
-    <ClCompile Include="Level.cpp">
-      <Filter>Level</Filter>
-    </ClCompile>
-    <ClCompile Include="MainMenuState.cpp">
-      <Filter>StateStack</Filter>
-    </ClCompile>
-    <ClCompile Include="MessageState.cpp">
-      <Filter>StateStack</Filter>
-    </ClCompile>
-    <ClCompile Include="LevelFactory.cpp">
-      <Filter>Level\Factory</Filter>
-    </ClCompile>
-    <ClCompile Include="Director.cpp">
-      <Filter>Director</Filter>
-    </ClCompile>
-    <ClCompile Include="AIDirector.cpp">
-      <Filter>Director</Filter>
-    </ClCompile>
-    <ClCompile Include="PlayerDirector.cpp">
-      <Filter>Director</Filter>
-    </ClCompile>
     <ClCompile Include="ScriptInterface.cpp" />
     <ClCompile Include="ConsoleState.cpp">
       <Filter>StateStack</Filter>
@@ -54,73 +33,6 @@
     <ClCompile Include="EmitterManager.cpp">
       <Filter>Managers</Filter>
     </ClCompile>
-    <ClCompile Include="NeutralDirector.cpp">
-      <Filter>Director</Filter>
-    </ClCompile>
-    <ClCompile Include="Tutorial.cpp">
-      <Filter>Level</Filter>
-    </ClCompile>
-    <ClCompile Include="LevelSelectState.cpp">
-      <Filter>StateStack</Filter>
-    </ClCompile>
-    <ClCompile Include="ClickableState.cpp">
-      <Filter>StateStack</Filter>
-    </ClCompile>
-    <ClCompile Include="SplashState.cpp">
-      <Filter>StateStack</Filter>
-    </ClCompile>
-    <ClCompile Include="AIMap.cpp">
-      <Filter>Director\InfluenceMap</Filter>
-    </ClCompile>
-    <ClCompile Include="DifferenceMap.cpp">
-      <Filter>Director\InfluenceMap</Filter>
-    </ClCompile>
-    <ClCompile Include="GoalMap.cpp">
-      <Filter>Director\InfluenceMap</Filter>
-    </ClCompile>
-    <ClCompile Include="InfluenceMap.cpp">
-      <Filter>Director\InfluenceMap</Filter>
-    </ClCompile>
-    <ClCompile Include="TensionMap.cpp">
-      <Filter>Director\InfluenceMap</Filter>
-    </ClCompile>
-    <ClCompile Include="VulnerabilityMap.cpp">
-      <Filter>Director\InfluenceMap</Filter>
-    </ClCompile>
-    <ClCompile Include="DecisionMap.cpp">
-      <Filter>Director\InfluenceMap</Filter>
-    </ClCompile>
-    <ClCompile Include="CreditMenuState.cpp">
-      <Filter>StateStack</Filter>
-    </ClCompile>
-    <ClCompile Include="BlockMap.cpp">
-      <Filter>Director\InfluenceMap</Filter>
-    </ClCompile>
-    <ClCompile Include="FogOfWarMap.cpp">
-      <Filter>Director\InfluenceMap</Filter>
-    </ClCompile>
-    <ClCompile Include="LoadingState.cpp">
-      <Filter>StateStack</Filter>
-    </ClCompile>
-    <ClCompile Include="CinematicState.cpp">
-      <Filter>StateStack</Filter>
-    </ClCompile>
-    <ClCompile Include="TextEventManager.cpp">
-      <Filter>Managers</Filter>
-    </ClCompile>
-    <ClCompile Include="InGameMenuState.cpp">
-      <Filter>StateStack</Filter>
-    </ClCompile>
-    <ClCompile Include="HelpState.cpp">
-      <Filter>StateStack</Filter>
-    </ClCompile>
-    <ClCompile Include="DifficultySelectState.cpp">
-      <Filter>StateStack</Filter>
-    </ClCompile>
-    <ClCompile Include="OptionsState.cpp">
-      <Filter>StateStack</Filter>
-    </ClCompile>
-    <ClCompile Include="GameSettingsSingleton.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Game.h" />
@@ -142,30 +54,6 @@
     <ClInclude Include="StateStackProxy.h">
       <Filter>StateStack</Filter>
     </ClInclude>
-    <ClInclude Include="Level.h">
-      <Filter>Level</Filter>
-    </ClInclude>
-    <ClInclude Include="MainMenuState.h">
-      <Filter>StateStack</Filter>
-    </ClInclude>
-    <ClInclude Include="MessageState.h">
-      <Filter>StateStack</Filter>
-    </ClInclude>
-    <ClInclude Include="LevelFactory.h">
-      <Filter>Level\Factory</Filter>
-    </ClInclude>
-    <ClInclude Include="Director.h">
-      <Filter>Director</Filter>
-    </ClInclude>
-    <ClInclude Include="AIDirector.h">
-      <Filter>Director</Filter>
-    </ClInclude>
-    <ClInclude Include="PlayerDirector.h">
-      <Filter>Director</Filter>
-    </ClInclude>
-    <ClInclude Include="dirent.h">
-      <Filter>Level\Factory</Filter>
-    </ClInclude>
     <ClInclude Include="ScriptInterface.h" />
     <ClInclude Include="ConsoleState.h">
       <Filter>StateStack</Filter>
@@ -185,74 +73,7 @@
     <ClInclude Include="EmitterManager.h">
       <Filter>Managers</Filter>
     </ClInclude>
-    <ClInclude Include="NeutralDirector.h">
-      <Filter>Director</Filter>
-    </ClInclude>
     <ClInclude Include="GameDefines.h" />
-    <ClInclude Include="Tutorial.h">
-      <Filter>Level</Filter>
-    </ClInclude>
-    <ClInclude Include="LevelSelectState.h">
-      <Filter>StateStack</Filter>
-    </ClInclude>
-    <ClInclude Include="ClickableState.h">
-      <Filter>StateStack</Filter>
-    </ClInclude>
-    <ClInclude Include="SplashState.h">
-      <Filter>StateStack</Filter>
-    </ClInclude>
-    <ClInclude Include="AIMap.h">
-      <Filter>Director\InfluenceMap</Filter>
-    </ClInclude>
-    <ClInclude Include="DifferenceMap.h">
-      <Filter>Director\InfluenceMap</Filter>
-    </ClInclude>
-    <ClInclude Include="GoalMap.h">
-      <Filter>Director\InfluenceMap</Filter>
-    </ClInclude>
-    <ClInclude Include="InfluenceMap.h">
-      <Filter>Director\InfluenceMap</Filter>
-    </ClInclude>
-    <ClInclude Include="TensionMap.h">
-      <Filter>Director\InfluenceMap</Filter>
-    </ClInclude>
-    <ClInclude Include="VulnerabilityMap.h">
-      <Filter>Director\InfluenceMap</Filter>
-    </ClInclude>
-    <ClInclude Include="DecisionMap.h">
-      <Filter>Director\InfluenceMap</Filter>
-    </ClInclude>
-    <ClInclude Include="CreditMenuState.h">
-      <Filter>StateStack</Filter>
-    </ClInclude>
-    <ClInclude Include="BlockMap.h">
-      <Filter>Director\InfluenceMap</Filter>
-    </ClInclude>
-    <ClInclude Include="FogOfWarMap.h">
-      <Filter>Director\InfluenceMap</Filter>
-    </ClInclude>
-    <ClInclude Include="LoadingState.h">
-      <Filter>StateStack</Filter>
-    </ClInclude>
-    <ClInclude Include="CinematicState.h">
-      <Filter>StateStack</Filter>
-    </ClInclude>
-    <ClInclude Include="TextEventManager.h">
-      <Filter>Managers</Filter>
-    </ClInclude>
-    <ClInclude Include="InGameMenuState.h">
-      <Filter>StateStack</Filter>
-    </ClInclude>
-    <ClInclude Include="HelpState.h">
-      <Filter>StateStack</Filter>
-    </ClInclude>
-    <ClInclude Include="DifficultySelectState.h">
-      <Filter>StateStack</Filter>
-    </ClInclude>
-    <ClInclude Include="OptionsState.h">
-      <Filter>StateStack</Filter>
-    </ClInclude>
-    <ClInclude Include="GameSettingsSingleton.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="PreCompile">
@@ -261,23 +82,11 @@
     <Filter Include="StateStack">
       <UniqueIdentifier>{39b4d83c-1076-4592-8091-99e0c0c7d080}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Level">
-      <UniqueIdentifier>{f9276240-a779-416b-9c05-b682b500c868}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Level\Factory">
-      <UniqueIdentifier>{3c9c6bc0-db40-40b5-9f1a-ab2f76588575}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Director">
-      <UniqueIdentifier>{813e0f36-1b0e-449d-950d-3c113f49a12c}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Console">
       <UniqueIdentifier>{583059cc-5171-43b9-b156-bd8a25cdcc30}</UniqueIdentifier>
     </Filter>
     <Filter Include="Managers">
       <UniqueIdentifier>{f085dd4d-badd-48c6-b55c-c3ab8aeb1674}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Director\InfluenceMap">
-      <UniqueIdentifier>{6482da2b-0bde-4dd8-9977-8cc0b0040ad8}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

@@ -195,89 +195,32 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="AIMap.h" />
-    <ClInclude Include="BlockMap.h" />
-    <ClInclude Include="CinematicState.h" />
-    <ClInclude Include="ClickableState.h" />
     <ClInclude Include="ConsoleBackspace.h" />
     <ClInclude Include="ConsoleHelp.h" />
     <ClInclude Include="ConsoleHistoryManager.h" />
     <ClInclude Include="ConsoleState.h" />
-    <ClInclude Include="CreditMenuState.h" />
-    <ClInclude Include="DecisionMap.h" />
-    <ClInclude Include="DifferenceMap.h" />
-    <ClInclude Include="DifficultySelectState.h" />
-    <ClInclude Include="Director.h" />
-    <ClInclude Include="AIDirector.h" />
     <ClInclude Include="Console.h" />
-    <ClInclude Include="dirent.h" />
     <ClInclude Include="EmitterManager.h" />
-    <ClInclude Include="FogOfWarMap.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="GameDefines.h" />
-    <ClInclude Include="GameSettingsSingleton.h" />
     <ClInclude Include="GameState.h" />
-    <ClInclude Include="GoalMap.h" />
-    <ClInclude Include="HelpState.h" />
-    <ClInclude Include="InfluenceMap.h" />
-    <ClInclude Include="InGameMenuState.h" />
     <ClInclude Include="InGameState.h" />
-    <ClInclude Include="Level.h" />
-    <ClInclude Include="LevelFactory.h" />
-    <ClInclude Include="LevelSelectState.h" />
-    <ClInclude Include="LoadingState.h" />
-    <ClInclude Include="MainMenuState.h" />
-    <ClInclude Include="MessageState.h" />
-    <ClInclude Include="NeutralDirector.h" />
-    <ClInclude Include="OptionsState.h" />
-    <ClInclude Include="PlayerDirector.h" />
     <ClInclude Include="ScriptInterface.h" />
-    <ClInclude Include="SplashState.h" />
     <ClInclude Include="StateEnums.h" />
     <ClInclude Include="StateStack.h" />
     <ClInclude Include="StateStackProxy.h" />
     <ClInclude Include="stdafx.h" />
-    <ClInclude Include="TensionMap.h" />
-    <ClInclude Include="TextEventManager.h" />
-    <ClInclude Include="Tutorial.h" />
-    <ClInclude Include="VulnerabilityMap.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="AIMap.cpp" />
-    <ClCompile Include="BlockMap.cpp" />
-    <ClCompile Include="CinematicState.cpp" />
-    <ClCompile Include="ClickableState.cpp" />
     <ClCompile Include="ConsoleBackspace.cpp" />
     <ClCompile Include="ConsoleHelp.cpp" />
     <ClCompile Include="ConsoleHistoryManager.cpp" />
     <ClCompile Include="ConsoleState.cpp" />
-    <ClCompile Include="CreditMenuState.cpp" />
-    <ClCompile Include="DecisionMap.cpp" />
-    <ClCompile Include="DifferenceMap.cpp" />
-    <ClCompile Include="DifficultySelectState.cpp" />
-    <ClCompile Include="Director.cpp" />
-    <ClCompile Include="AIDirector.cpp" />
     <ClCompile Include="Console.cpp" />
     <ClCompile Include="EmitterManager.cpp" />
-    <ClCompile Include="FogOfWarMap.cpp" />
     <ClCompile Include="Game.cpp" />
-    <ClCompile Include="GameSettingsSingleton.cpp" />
-    <ClCompile Include="GoalMap.cpp" />
-    <ClCompile Include="HelpState.cpp" />
-    <ClCompile Include="InfluenceMap.cpp" />
-    <ClCompile Include="InGameMenuState.cpp" />
     <ClCompile Include="InGameState.cpp" />
-    <ClCompile Include="Level.cpp" />
-    <ClCompile Include="LevelFactory.cpp" />
-    <ClCompile Include="LevelSelectState.cpp" />
-    <ClCompile Include="LoadingState.cpp" />
-    <ClCompile Include="MainMenuState.cpp" />
-    <ClCompile Include="MessageState.cpp" />
-    <ClCompile Include="NeutralDirector.cpp" />
-    <ClCompile Include="OptionsState.cpp" />
-    <ClCompile Include="PlayerDirector.cpp" />
     <ClCompile Include="ScriptInterface.cpp" />
-    <ClCompile Include="SplashState.cpp" />
     <ClCompile Include="StateStack.cpp" />
     <ClCompile Include="StateStackProxy.cpp" />
     <ClCompile Include="stdafx.cpp">
@@ -292,10 +235,6 @@
       <MultiProcessorCompilation Condition="'$(Configuration)|$(Platform)'=='DataExporter|Win32'">false</MultiProcessorCompilation>
       <MultiProcessorCompilation Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</MultiProcessorCompilation>
     </ClCompile>
-    <ClCompile Include="TensionMap.cpp" />
-    <ClCompile Include="TextEventManager.cpp" />
-    <ClCompile Include="Tutorial.cpp" />
-    <ClCompile Include="VulnerabilityMap.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Audio\Audio.vcxproj">

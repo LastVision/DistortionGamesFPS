@@ -28,44 +28,11 @@
     <Filter Include="EntityFactory\Component">
       <UniqueIdentifier>{d78471a9-14e8-41c7-8352-3d64f1f6778b}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Component\Building">
-      <UniqueIdentifier>{029c1f50-c829-40ab-88d6-fc86aa0ace72}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Component\Actor">
-      <UniqueIdentifier>{84b1355d-8e9f-4dfc-bff6-e6ea7f00f79f}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Component\Controller">
-      <UniqueIdentifier>{3a34d965-3c8f-4563-a400-c60dadb6c8d9}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Component\Health">
-      <UniqueIdentifier>{ec00f5e1-2690-4bff-aa23-bf4e0a557617}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Component\Trigger">
-      <UniqueIdentifier>{0b7d127b-f675-44ec-b8de-ffae0d2c1818}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Component\Collision">
-      <UniqueIdentifier>{5043742a-adfa-47f4-82c5-69554f24e8cf}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Component\Totem">
-      <UniqueIdentifier>{3d3c71e4-7e08-4c84-9cb7-78834e005011}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Component\Grenade">
-      <UniqueIdentifier>{5995aa2a-d3be-4926-9551-12f6e142106c}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Movement">
       <UniqueIdentifier>{12f0ed25-8fb9-4979-ab74-c9476b9724b6}</UniqueIdentifier>
     </Filter>
     <Filter Include="Movement\Behavior">
       <UniqueIdentifier>{f24e054a-7e2d-4fa0-a384-74200c617424}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Component\Enrage">
-      <UniqueIdentifier>{a067185f-42df-4953-8b23-249edf71486c}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Component\Sound">
-      <UniqueIdentifier>{b6d0dbce-fc33-490f-b89d-b9fed0911932}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Component\Promotion">
-      <UniqueIdentifier>{38163df0-452c-438d-8f7c-74a71ccd4a0a}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -88,32 +55,11 @@
     <ClCompile Include="ComponentLoader.cpp">
       <Filter>EntityFactory\Component</Filter>
     </ClCompile>
-    <ClCompile Include="BuildingComponent.cpp">
-      <Filter>Component\Building</Filter>
-    </ClCompile>
-    <ClCompile Include="ActorComponent.cpp">
-      <Filter>Component\Actor</Filter>
-    </ClCompile>
-    <ClCompile Include="ControllerComponent.cpp">
-      <Filter>Component\Controller</Filter>
-    </ClCompile>
-    <ClCompile Include="HealthComponent.cpp">
-      <Filter>Component\Health</Filter>
-    </ClCompile>
     <ClCompile Include="PollingStation.cpp" />
-    <ClCompile Include="TriggerComponent.cpp">
-      <Filter>Component\Trigger</Filter>
-    </ClCompile>
-    <ClCompile Include="CollisionComponent.cpp">
-      <Filter>Component\Collision</Filter>
-    </ClCompile>
     <ClCompile Include="EntityEnumConverter.cpp">
       <Filter>EntityEnum</Filter>
     </ClCompile>
     <ClCompile Include="EntityId.cpp" />
-    <ClCompile Include="TotemComponent.cpp">
-      <Filter>Component\Totem</Filter>
-    </ClCompile>
     <ClCompile Include="EvadeBehavior.cpp">
       <Filter>Movement\Behavior</Filter>
     </ClCompile>
@@ -126,27 +72,8 @@
     <ClCompile Include="ArriveBehavior.cpp">
       <Filter>Movement\Behavior</Filter>
     </ClCompile>
-    <ClCompile Include="GrenadeComponent.cpp">
-      <Filter>Component\Grenade</Filter>
-    </ClCompile>
     <ClCompile Include="Formation.cpp">
       <Filter>Movement</Filter>
-    </ClCompile>
-    <ClCompile Include="EnrageComponent.cpp">
-      <Filter>Component\Enrage</Filter>
-    </ClCompile>
-    <ClCompile Include="SelectionComponent.cpp">
-      <Filter>Component\Graphic</Filter>
-    </ClCompile>
-    <ClCompile Include="SoundComponent.cpp">
-      <Filter>Component\Sound</Filter>
-    </ClCompile>
-    <ClCompile Include="PromotionComponent.cpp">
-      <Filter>Component\Promotion</Filter>
-    </ClCompile>
-    <ClCompile Include="EntityCommandData.cpp" />
-    <ClCompile Include="ShadowBlobComponent.cpp">
-      <Filter>Component\Graphic</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -178,53 +105,14 @@
     <ClInclude Include="ComponentLoader.h">
       <Filter>EntityFactory\Component</Filter>
     </ClInclude>
-    <ClInclude Include="ActorComponentData.h">
-      <Filter>EntityFactory\EntityData\ComponentData</Filter>
-    </ClInclude>
-    <ClInclude Include="ControllerComponentData.h">
-      <Filter>EntityFactory\EntityData\ComponentData</Filter>
-    </ClInclude>
     <ClInclude Include="DamageNote.h">
       <Filter>Notes</Filter>
     </ClInclude>
-    <ClInclude Include="HealthComponentData.h">
-      <Filter>EntityFactory\EntityData\ComponentData</Filter>
-    </ClInclude>
-    <ClInclude Include="BuildingComponent.h">
-      <Filter>Component\Building</Filter>
-    </ClInclude>
-    <ClInclude Include="ActorComponent.h">
-      <Filter>Component\Actor</Filter>
-    </ClInclude>
-    <ClInclude Include="ControllerComponent.h">
-      <Filter>Component\Controller</Filter>
-    </ClInclude>
-    <ClInclude Include="HealthComponent.h">
-      <Filter>Component\Health</Filter>
-    </ClInclude>
     <ClInclude Include="PollingStation.h" />
-    <ClInclude Include="BuildingComponentData.h">
-      <Filter>EntityFactory\EntityData\ComponentData</Filter>
-    </ClInclude>
-    <ClInclude Include="TriggerComponent.h">
-      <Filter>Component\Trigger</Filter>
-    </ClInclude>
-    <ClInclude Include="TriggerComponentData.h">
-      <Filter>EntityFactory\EntityData\ComponentData</Filter>
-    </ClInclude>
-    <ClInclude Include="CollisionComponent.h">
-      <Filter>Component\Collision</Filter>
-    </ClInclude>
-    <ClInclude Include="CollisionComponentData.h">
-      <Filter>EntityFactory\EntityData\ComponentData</Filter>
-    </ClInclude>
     <ClInclude Include="EntityEnumConverter.h">
       <Filter>EntityEnum</Filter>
     </ClInclude>
     <ClInclude Include="EntityId.h" />
-    <ClInclude Include="TotemComponent.h">
-      <Filter>Component\Totem</Filter>
-    </ClInclude>
     <ClInclude Include="EvadeBehavior.h">
       <Filter>Movement\Behavior</Filter>
     </ClInclude>
@@ -237,51 +125,11 @@
     <ClInclude Include="ArriveBehavior.h">
       <Filter>Movement\Behavior</Filter>
     </ClInclude>
-    <ClInclude Include="TotemComponentData.h">
-      <Filter>EntityFactory\EntityData\ComponentData</Filter>
-    </ClInclude>
-    <ClInclude Include="EnrageComponentData.h">
-      <Filter>EntityFactory\EntityData\ComponentData</Filter>
-    </ClInclude>
-    <ClInclude Include="GrenadeComponent.h">
-      <Filter>Component\Grenade</Filter>
-    </ClInclude>
-    <ClInclude Include="GrenadeComponentData.h">
-      <Filter>EntityFactory\EntityData\ComponentData</Filter>
-    </ClInclude>
     <ClInclude Include="Formation.h">
       <Filter>Movement</Filter>
     </ClInclude>
-    <ClInclude Include="EnrageComponent.h">
-      <Filter>Component\Enrage</Filter>
-    </ClInclude>
-    <ClInclude Include="SelectionComponent.h">
-      <Filter>Component\Graphic</Filter>
-    </ClInclude>
-    <ClInclude Include="SelectionComponentData.h">
-      <Filter>EntityFactory\EntityData\ComponentData</Filter>
-    </ClInclude>
-    <ClInclude Include="SoundComponent.h">
-      <Filter>Component\Sound</Filter>
-    </ClInclude>
-    <ClInclude Include="SoundComponentData.h">
-      <Filter>EntityFactory\EntityData\ComponentData</Filter>
-    </ClInclude>
-    <ClInclude Include="PromotionComponent.h">
-      <Filter>Component\Promotion</Filter>
-    </ClInclude>
-    <ClInclude Include="PromotionComponentData.h">
-      <Filter>EntityFactory\EntityData\ComponentData</Filter>
-    </ClInclude>
     <ClInclude Include="BehaviorNote.h">
       <Filter>Notes</Filter>
-    </ClInclude>
-    <ClInclude Include="EntityCommandData.h" />
-    <ClInclude Include="ShadowBlobComponent.h">
-      <Filter>Component\Graphic</Filter>
-    </ClInclude>
-    <ClInclude Include="ShadowBlobComponentData.h">
-      <Filter>EntityFactory\EntityData\ComponentData</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
