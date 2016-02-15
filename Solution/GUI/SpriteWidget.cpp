@@ -51,7 +51,7 @@ namespace GUI
 		}
 	}
 
-	Widget* SpriteWidget::MouseIsOver(const CU::Vector2<float>& aPosition)
+	Widget* SpriteWidget::MouseIsOver(const CU::Vector2<float>&)
 	{
 		return nullptr;
 	}

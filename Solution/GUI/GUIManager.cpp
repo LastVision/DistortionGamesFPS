@@ -1,21 +1,11 @@
 #include "stdafx.h"
-#include "AbilityButton.h"
 #include "ButtonWidget.h"
-#include "ControlGroupWidget.h"
 #include "Cursor.h"
 #include <Engine.h>
 #include "../Game/PlayerDirector.h"
 #include "GUIManager.h"
 #include "../InputWrapper/InputWrapper.h"
-#include "MiniMapWidget.h"
-#include "ResourceBarWidget.h"
 #include "SpriteWidget.h"
-#include "TextWidget.h"
-#include "TooltipWidget.h"
-#include "UnitActionWidget.h"
-#include "UnitCapWidget.h"
-#include "UnitInfoWidget.h"
-#include "UpgradeButtonWidget.h"
 #include "WidgetContainer.h"
 
 namespace GUI
@@ -211,57 +201,6 @@ namespace GUI
 				{
 					ButtonWidget* button = new ButtonWidget(&aReader, widgetElement, myPlayer);
 					container->AddWidget(button);
-				}
-				else if (type == "unit_info")
-				{
-					UnitInfoWidget* unitInfo = new UnitInfoWidget(&aReader, widgetElement, myPlayer, myAI);
-					container->AddWidget(unitInfo);
-				}
-				else if (type == "unit_action")
-				{
-					UnitActionWidget* unitActions = new UnitActionWidget(&aReader, widgetElement, myPlayer->GetSelectedUnits(), myPlayer);
-					container->AddWidget(unitActions);
-				}
-				else if (type == "minimap")
-				{
-					MiniMapWidget* minimap = new MiniMapWidget(&aReader, widgetElement, myCamera, myPlayer->GetRenderDragSelection(), myLevelID);
-					container->AddWidget(minimap);
-				}
-				else if (type == "resourcebar")
-				{
-					ResourceBarWidget* resourceBar = new ResourceBarWidget(&aReader, widgetElement, myPlayer, myAI);
-					container->AddWidget(resourceBar);
-				}
-				else if (type == "control_groups")
-				{
-					ControlGroupWidget* controlGroup = new ControlGroupWidget(&aReader, widgetElement, myPlayer, size);
-					container->AddWidget(controlGroup);
-				}
-				else if (type == "text")
-				{
-					TextWidget* textWidget = new TextWidget(&aReader, widgetElement);
-					container->AddWidget(textWidget);
-				}
-				else if (type == "unit_cap")
-				{
-					UnitCapWidget* unitCapWidget = new UnitCapWidget(&aReader, widgetElement, size, myPlayer->GetUnitCap()
-						, myPlayer->GetUnitCount());
-					container->AddWidget(unitCapWidget);
-				}
-				else if (type == "upgrade_button")
-				{
-					UpgradeButtonWidget* upgradeButtonWidget = new UpgradeButtonWidget(&aReader, widgetElement, myPlayer);
-					container->AddWidget(upgradeButtonWidget);
-				}
-				else if (type == "ability_button")
-				{
-					AbilityButton* upgradeButtonWidget = new AbilityButton(&aReader, widgetElement, myPlayer);
-					container->AddWidget(upgradeButtonWidget);
-				}
-				else if (type == "tool_tip")
-				{
-					TooltipWidget* tooltipWidget = new TooltipWidget(&aReader, widgetElement, this, myPlayer);
-					container->AddWidget(tooltipWidget);
 				}
 				else if (type == "sprite")
 				{

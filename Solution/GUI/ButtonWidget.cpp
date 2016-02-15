@@ -36,7 +36,6 @@ namespace GUI
 			aReader->ForceReadAttribute(hoverElement, "text", myHoverText);
 		}
 
-		ReadTooltip(aReader, anXMLElement, aPlayer);
 		ReadEvent(aReader, anXMLElement);
 
 		myImageNormal = Prism::ModelLoader::GetInstance()->LoadSprite(spritePathNormal, mySize, mySize / 2.f);
@@ -51,7 +50,6 @@ namespace GUI
 		SAFE_DELETE(myImagePressed);
 		SAFE_DELETE(myImageHover);
 		SAFE_DELETE(myClickEvent);
-		SAFE_DELETE(myTooltipInfo);
 		myImageCurrent = nullptr;
 	}
 
@@ -115,71 +113,6 @@ namespace GUI
 		else
 		{
 			myPosition = aPosition;
-		}
-	}
-
-	void ButtonWidget::ReadTooltip(XMLReader* aReader, tinyxml2::XMLElement* anXMLElement, const PlayerDirector* aPlayer)
-	{
-		if (aReader->FindFirstChild(anXMLElement, "tooltip") != nullptr)
-		{
-			std::string headline = "";
-			std::string text = "";
-			std::string action = "";
-			int upgradeLevel = -1;
-			bool isLargeTooltip = true;
-
-			aReader->ReadAttribute(aReader->FindFirstChild(anXMLElement, "tooltip"), "headline", headline);
-			aReader->ReadAttribute(aReader->FindFirstChild(anXMLElement, "tooltip"), "text", text);
-			aReader->ReadAttribute(aReader->FindFirstChild(anXMLElement, "tooltip"), "islargetooltip", isLargeTooltip);
-			aReader->ReadAttribute(aReader->FindFirstChild(anXMLElement, "tooltip"), "action", action);
-			aReader->ReadAttribute(aReader->FindFirstChild(anXMLElement, "tooltip"), "upgradelevel", upgradeLevel);
-
-			myTooltipInfo = new TooltipInfo(headline, text, isLargeTooltip);
-
-			if (action == "totem")
-			{
-				//myTooltipInfo->myCooldown = &aPlayer->GetTotemMaxCooldown();
-				//myTooltipInfo->myCooldownType = eCooldownType::TOTEM;
-			}
-			else if (action == "spawn_grunt")
-			{
-				myTooltipInfo->myGunpowderCost = &aPlayer->GetUnitCost(0);
-				myTooltipInfo->mySupplyCost = &aPlayer->GetUnitSupplyCost(0);
-			}
-			else if (action == "spawn_ranger")
-			{
-				myTooltipInfo->myGunpowderCost = &aPlayer->GetUnitCost(1);
-				myTooltipInfo->mySupplyCost = &aPlayer->GetUnitSupplyCost(1);
-			}
-			else if (action == "spawn_tank")
-			{
-				myTooltipInfo->myGunpowderCost = &aPlayer->GetUnitCost(2);
-				myTooltipInfo->mySupplyCost = &aPlayer->GetUnitSupplyCost(2);
-			}
-			else if (action == "upgrade_grunt")
-			{
-				DL_ASSERT_EXP(upgradeLevel != -1, "[ButtonWidget] action 'upgrade_grunt' needs an 'upgradelevel'");
-				//myTooltipInfo->myCooldown = &aPlayer->GetUpgradeMaxCooldown(0);
-				//myTooltipInfo->myCooldownType = eCooldownType::UPGRADE;
-				myTooltipInfo->myUpgradeLevel = 0;
-				myTooltipInfo->myArftifactCost = &aPlayer->GetUpgradeCost(0, upgradeLevel);
-			}
-			else if (action == "upgrade_ranger")
-			{
-				DL_ASSERT_EXP(upgradeLevel != -1, "[ButtonWidget] action 'upgrade_ranger' needs an 'upgradelevel'");
-				//myTooltipInfo->myCooldown = &aPlayer->GetUpgradeMaxCooldown(1);
-				//myTooltipInfo->myCooldownType = eCooldownType::UPGRADE;
-				myTooltipInfo->myUpgradeLevel = 1;
-				myTooltipInfo->myArftifactCost = &aPlayer->GetUpgradeCost(1, upgradeLevel);
-			}
-			else if (action == "upgrade_tank")
-			{
-				DL_ASSERT_EXP(upgradeLevel != -1, "[ButtonWidget] action 'upgrade_tank' needs an 'upgradelevel'");
-				//myTooltipInfo->myCooldown = &aPlayer->GetUpgradeMaxCooldown(2);
-				//myTooltipInfo->myCooldownType = eCooldownType::UPGRADE;
-				myTooltipInfo->myUpgradeLevel = 2;
-				myTooltipInfo->myArftifactCost = &aPlayer->GetUpgradeCost(2, upgradeLevel);
-			}
 		}
 	}
 

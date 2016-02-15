@@ -7,9 +7,6 @@
     <Filter Include="Widget">
       <UniqueIdentifier>{d386e0b7-f906-4230-a432-1d9a22834a60}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Widget\Button">
-      <UniqueIdentifier>{73a12381-0e16-454d-a3cb-d19156aa387b}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
@@ -23,45 +20,14 @@
       <Filter>Widget</Filter>
     </ClInclude>
     <ClInclude Include="Cursor.h" />
-    <ClInclude Include="UnitInfoWidget.h">
-      <Filter>Widget</Filter>
-    </ClInclude>
-    <ClInclude Include="UnitActionWidget.h">
-      <Filter>Widget</Filter>
-    </ClInclude>
-    <ClInclude Include="MiniMapWidget.h">
-      <Filter>Widget</Filter>
-    </ClInclude>
-    <ClInclude Include="ResourceBarWidget.h">
-      <Filter>Widget</Filter>
-    </ClInclude>
     <ClInclude Include="BarWidget.h">
-      <Filter>Widget</Filter>
-    </ClInclude>
-    <ClInclude Include="TextWidget.h">
-      <Filter>Widget</Filter>
-    </ClInclude>
-    <ClInclude Include="ControlGroupWidget.h">
-      <Filter>Widget</Filter>
-    </ClInclude>
-    <ClInclude Include="UnitCapWidget.h">
-      <Filter>Widget</Filter>
-    </ClInclude>
-    <ClInclude Include="TooltipWidget.h">
       <Filter>Widget</Filter>
     </ClInclude>
     <ClInclude Include="SpriteWidget.h">
       <Filter>Widget</Filter>
     </ClInclude>
-    <ClInclude Include="TooltipInfo.h" />
-    <ClInclude Include="AbilityButton.h">
-      <Filter>Widget\Button</Filter>
-    </ClInclude>
     <ClInclude Include="ButtonWidget.h">
-      <Filter>Widget\Button</Filter>
-    </ClInclude>
-    <ClInclude Include="UpgradeButtonWidget.h">
-      <Filter>Widget\Button</Filter>
+      <Filter>Widget</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -76,44 +42,14 @@
       <Filter>Widget</Filter>
     </ClCompile>
     <ClCompile Include="Cursor.cpp" />
-    <ClCompile Include="UnitInfoWidget.cpp">
-      <Filter>Widget</Filter>
-    </ClCompile>
-    <ClCompile Include="UnitActionWidget.cpp">
-      <Filter>Widget</Filter>
-    </ClCompile>
-    <ClCompile Include="MiniMapWidget.cpp">
-      <Filter>Widget</Filter>
-    </ClCompile>
-    <ClCompile Include="ResourceBarWidget.cpp">
-      <Filter>Widget</Filter>
-    </ClCompile>
     <ClCompile Include="BarWidget.cpp">
-      <Filter>Widget</Filter>
-    </ClCompile>
-    <ClCompile Include="TextWidget.cpp">
-      <Filter>Widget</Filter>
-    </ClCompile>
-    <ClCompile Include="ControlGroupWidget.cpp">
-      <Filter>Widget</Filter>
-    </ClCompile>
-    <ClCompile Include="UnitCapWidget.cpp">
-      <Filter>Widget</Filter>
-    </ClCompile>
-    <ClCompile Include="TooltipWidget.cpp">
       <Filter>Widget</Filter>
     </ClCompile>
     <ClCompile Include="SpriteWidget.cpp">
       <Filter>Widget</Filter>
     </ClCompile>
-    <ClCompile Include="AbilityButton.cpp">
-      <Filter>Widget\Button</Filter>
-    </ClCompile>
     <ClCompile Include="ButtonWidget.cpp">
-      <Filter>Widget\Button</Filter>
-    </ClCompile>
-    <ClCompile Include="UpgradeButtonWidget.cpp">
-      <Filter>Widget\Button</Filter>
+      <Filter>Widget</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

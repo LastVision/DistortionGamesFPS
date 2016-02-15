@@ -34,7 +34,6 @@ namespace GUI
 		bool IsInside(const CU::Vector2<float>& aPosition) const override;
 		void SetPosition(const CU::Vector2<float>& aPosition, bool aIsHotspot = true) override;
 
-		void ReadTooltip(XMLReader* aReader, tinyxml2::XMLElement* anXMLElement, const PlayerDirector* aPlayer);
 		void ReadEvent(XMLReader* aReader, tinyxml2::XMLElement* anXMLElement);
 		
 		void SetEvent(OnClickMessage* anEvent);
