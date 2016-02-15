@@ -29,6 +29,9 @@
 #include <RunScriptMessage.h>
 #include <FadeMessage.h>
 
+#include <Scene.h>
+#include <Instance.h>s
+
 InGameState::InGameState()
 	: myGUIManager(nullptr)
 {
@@ -37,11 +40,6 @@ InGameState::InGameState()
 
 InGameState::~InGameState()
 {
-	PostMaster::GetInstance()->UnSubscribe(eMessageType::GAME_STATE, this);
-	PostMaster::GetInstance()->UnSubscribe(eMessageType::ON_CLICK, this);
-	PostMaster::GetInstance()->UnSubscribe(eMessageType::MOVE_CAMERA, this);
-	PostMaster::GetInstance()->UnSubscribe(eMessageType::TRIGGER, this);
-
 	Console::Destroy();
 }
 
@@ -54,6 +52,11 @@ void InGameState::InitState(StateStackProxy* aStateStackProxy, GUI::Cursor* aCur
 
 	//PostMaster::GetInstance()->SendMessage(RunScriptMessage("Data/Script/Autorun.script"));
 
+	myCamera = new Prism::Camera(myPlayerOrientation);
+	myScene = new Prism::Scene(*myCamera);
+	myInstance = new Prism::Instance(*Prism::ModelLoader::GetInstance()->LoadModel("Data/Resource/Model/SM_muzzleflash.fbx", "Data/Resource/Shader/S_effect_pbl.fx"), myInstanceOrientation, Prism::eOctreeType::DYNAMIC
+		, myCullingRadius);
+	myScene->AddInstance(myInstance);
 	myIsActiveState = true;
 }
 
@@ -64,6 +67,11 @@ void InGameState::EndState()
 const eStateStatus InGameState::Update(const float& aDeltaTime)
 {
 	Prism::EffectContainer::GetInstance()->Update(aDeltaTime);
+
+	if (CU::InputWrapper::GetInstance()->KeyDown(DIK_ESCAPE))
+	{
+		return eStateStatus::ePopMainState;
+	}
 
 	//LUA::ScriptSystem::GetInstance()->CallFunction("Update", { aDeltaTime });
 	//LUA::ScriptSystem::GetInstance()->Update();
@@ -76,7 +84,8 @@ void InGameState::Render()
 {
 	VTUNE_EVENT_BEGIN(VTUNE::GAME_RENDER);
 
-	
+	myScene->Render(false);
+
 	VTUNE_EVENT_END();
 }
 

@@ -11,7 +11,6 @@
 #include <ModelLoader.h>
 #include <ModelProxy.h>
 #include <Scene.h>
-#include <Terrain.h>
 #include <Texture.h>
 
 //#define BOX_MODE

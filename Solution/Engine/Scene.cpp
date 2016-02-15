@@ -6,12 +6,10 @@
 #include "DirectionalLight.h"
 #include "EngineEnums.h"
 #include "Frustum.h"
-#include "Ice.h"
 #include "Instance.h"
 #include "PointLight.h"
 #include "Scene.h"
 #include "SpotLight.h"
-#include "Terrain.h"
 #include <XMLReader.h>
 #include "InstancingHelper.h"
 
@@ -21,10 +19,9 @@
 #include "Octree.h"
 #endif
 
-Prism::Scene::Scene(const Camera& aCamera, Terrain& aTerrain)
+Prism::Scene::Scene(const Camera& aCamera)
 	: myCamera(&aCamera)
 	, myViewCamera(nullptr)
-	, myTerrain(aTerrain)
 	, myRenderRadius(-10.f)
 #ifdef SCENE_USE_OCTREE
 	, myOctree(new Octree(6))
@@ -164,19 +161,6 @@ void Prism::Scene::Render(bool aRenderNavMeshLines, Texture* aFogOfWarTexture, S
 		mySpotLightData[i].myRange = mySpotLights[i]->GetRange();
 		mySpotLightData[i].myCone = mySpotLights[i]->GetCone();
 	}
-
-	myTerrain.GetEffect()->UpdateDirectionalLights(myDirectionalLightData);
-	myTerrain.GetIce()->GetEffect()->UpdateDirectionalLights(myDirectionalLightData);
-
-	myTerrain.GetEffect()->SetFogOfWarTexture(aFogOfWarTexture);
-	myTerrain.GetIce()->GetEffect()->SetFogOfWarTexture(aFogOfWarTexture);
-	//myTerrain.UpdatePointLights(myPointLightData);
-	myTerrain.GetEffect()->UpdateSpotLights(mySpotLightData);
-	myTerrain.GetIce()->GetEffect()->UpdateSpotLights(mySpotLightData);
-	myTerrain.Render(*myCamera, aRenderNavMeshLines, false);
-
-	myTerrain.GetEffect()->SetFogOfWarTexture(nullptr);
-	myTerrain.GetIce()->GetEffect()->SetFogOfWarTexture(nullptr);
 
 #ifdef SCENE_USE_OCTREE
 	myOctree->Update();

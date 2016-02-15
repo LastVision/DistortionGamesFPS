@@ -3,7 +3,6 @@
 #include "AnimationComponent.h"
 #include "GraphicsComponent.h"
 #include <Scene.h>
-#include <Terrain.h>
 #include <Instance.h>
 #include <EmitterMessage.h>
 #include <PostMaster.h>

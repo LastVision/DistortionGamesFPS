@@ -16,7 +16,9 @@ namespace CU
 namespace Prism
 {
 	class Camera;
+	class Instance;
 	class Sprite;
+	class Scene;
 }
 
 namespace GUI
@@ -28,7 +30,6 @@ namespace GUI
 class InGameState : public GameState, public Subscriber
 {
 public:
-
 	InGameState();
 	~InGameState();
 
@@ -43,5 +44,10 @@ public:
 
 private:
 	Prism::Camera* myCamera;
+	Prism::Scene* myScene;
+	Prism::Instance* myInstance;
+	CU::Matrix44<float> myInstanceOrientation;
+	CU::Matrix44<float> myPlayerOrientation;
+	float myCullingRadius;
 	GUI::GUIManager* myGUIManager;
 };

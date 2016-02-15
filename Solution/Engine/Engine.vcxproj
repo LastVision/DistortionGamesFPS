@@ -267,11 +267,9 @@
     <ClCompile Include="DebugDrawer.cpp" />
     <ClCompile Include="DGFXLoader.cpp" />
     <ClCompile Include="DirectX.cpp" />
-    <ClCompile Include="Edge.cpp" />
     <ClCompile Include="Effect.cpp" />
     <ClCompile Include="EffectContainer.cpp" />
     <ClCompile Include="FogOfWarHelper.cpp" />
-    <ClCompile Include="HeightMapFactory.cpp" />
     <ClCompile Include="Engine.cpp" />
     <ClCompile Include="FBXFactory.cpp" />
     <ClCompile Include="FBX\FbxLoader.cpp">
@@ -289,20 +287,15 @@
     <ClCompile Include="Frustum.cpp" />
     <ClCompile Include="FullScreenHelper.cpp" />
     <ClCompile Include="HierarchyBone.cpp" />
-    <ClCompile Include="Ice.cpp" />
     <ClCompile Include="Instance.cpp" />
     <ClCompile Include="InstancingHelper.cpp" />
     <ClCompile Include="Line3D.cpp" />
     <ClCompile Include="Line3DRenderer.cpp" />
     <ClCompile Include="Model.cpp" />
     <ClCompile Include="ModelAnimated.cpp" />
-    <ClCompile Include="NavMesh.cpp" />
-    <ClCompile Include="PathFinderAStar.cpp" />
-    <ClCompile Include="PathFinderFunnel.cpp" />
     <ClCompile Include="RenderPlane.cpp" />
     <ClCompile Include="Renderer.cpp" />
     <ClCompile Include="SelectionCircle.cpp" />
-    <ClCompile Include="SplatMapContainer.cpp" />
     <ClCompile Include="SpotLightShadow.cpp" />
     <ClCompile Include="Sprite.cpp" />
     <ClCompile Include="ModelLoader.cpp" />
@@ -329,7 +322,6 @@
     <ClCompile Include="Surface.cpp" />
     <ClCompile Include="SystemMonitor.cpp" />
     <ClCompile Include="DebugText.cpp" />
-    <ClCompile Include="Terrain.cpp" />
     <ClCompile Include="Text.cpp" />
     <ClCompile Include="TextFile.cpp" />
     <ClCompile Include="TextParser.cpp" />
@@ -342,7 +334,6 @@
     <ClCompile Include="TransformationNodeHierarchy.cpp" />
     <ClCompile Include="TransformationNodeInstance.cpp" />
     <ClCompile Include="TreeNode.cpp" />
-    <ClCompile Include="Triangle.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Animation.h" />
@@ -358,13 +349,10 @@
     <ClInclude Include="Defines.h" />
     <ClInclude Include="DGFXLoader.h" />
     <ClInclude Include="DirectX.h" />
-    <ClInclude Include="Edge.h" />
     <ClInclude Include="Effect.h" />
     <ClInclude Include="EffectContainer.h" />
     <ClInclude Include="EffectListener.h" />
     <ClInclude Include="FogOfWarHelper.h" />
-    <ClInclude Include="HeightMap.h" />
-    <ClInclude Include="HeightMapFactory.h" />
     <ClInclude Include="Engine.h" />
     <ClInclude Include="EngineEnums.h" />
     <ClInclude Include="FBXFactory.h" />
@@ -377,25 +365,19 @@
     <ClInclude Include="Frustum.h" />
     <ClInclude Include="FullScreenHelper.h" />
     <ClInclude Include="HierarchyBone.h" />
-    <ClInclude Include="Ice.h" />
     <ClInclude Include="IndexBufferWrapper.h" />
     <ClInclude Include="Instance.h" />
     <ClInclude Include="DirectionalLight.h" />
     <ClInclude Include="InstancingHelper.h" />
-    <ClInclude Include="LesserTriangle.h" />
     <ClInclude Include="LightStructs.h" />
     <ClInclude Include="Line3D.h" />
     <ClInclude Include="Line3DRenderer.h" />
     <ClInclude Include="LodStructs.h" />
     <ClInclude Include="Model.h" />
     <ClInclude Include="ModelAnimated.h" />
-    <ClInclude Include="NavMesh.h" />
-    <ClInclude Include="PathFinderAStar.h" />
-    <ClInclude Include="PathFinderFunnel.h" />
     <ClInclude Include="RenderPlane.h" />
     <ClInclude Include="Renderer.h" />
     <ClInclude Include="SelectionCircle.h" />
-    <ClInclude Include="SplatMapContainer.h" />
     <ClInclude Include="SpotLightShadow.h" />
     <ClInclude Include="Sprite.h" />
     <ClInclude Include="ModelLoader.h" />
@@ -412,7 +394,6 @@
     <ClInclude Include="Surface.h" />
     <ClInclude Include="SystemMonitor.h" />
     <ClInclude Include="DebugText.h" />
-    <ClInclude Include="Terrain.h" />
     <ClInclude Include="Text.h" />
     <ClInclude Include="TextFile.h" />
     <ClInclude Include="TextParser.h" />
@@ -426,8 +407,6 @@
     <ClInclude Include="TransformationNodeHierarchy.h" />
     <ClInclude Include="TransformationNodeInstance.h" />
     <ClInclude Include="TreeNode.h" />
-    <ClInclude Include="Triangle.h" />
-    <ClInclude Include="Vertex.h" />
     <ClInclude Include="VertexBufferWrapper.h" />
     <ClInclude Include="VertexDataWrapper.h" />
     <ClInclude Include="VertexIndexWrapper.h" />

@@ -12,8 +12,8 @@ namespace Prism
 	class PointLight;
 	class SpotLight;
 	class SpotLightShadow;
-	class Terrain;
 	class InstancingHelper;
+	class Texture;
 #ifdef SCENE_USE_OCTREE
 	class Octree;
 #endif
@@ -21,7 +21,7 @@ namespace Prism
 	class Scene
 	{
 	public:
-		Scene(const Camera& aCamera, Terrain& aTerrain);
+		Scene(const Camera& aCamera);
 		~Scene();
 
 		void Render(bool aRenderNavMeshLines);
@@ -56,7 +56,6 @@ namespace Prism
 
 		const Camera* myCamera;
 		const Camera* myViewCamera;
-		Terrain& myTerrain;
 
 		CU::StaticArray<DirectionalLightData, NUMBER_OF_DIRECTIONAL_LIGHTS> myDirectionalLightData;
 		CU::StaticArray<PointLightData, NUMBER_OF_POINT_LIGHTS> myPointLightData;

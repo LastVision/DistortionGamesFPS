@@ -7,7 +7,6 @@
 #include "TextureHelper.h"
 #include "VertexIndexWrapper.h"
 #include "VertexDataWrapper.h"
-#include "Terrain.h"
 
 namespace Prism
 {
@@ -64,13 +63,6 @@ namespace Prism
 		if (mappedResource.pData != nullptr)
 		{
 			IceVertex* data = (IceVertex*)mappedResource.pData;
-
-			for (int i = 0; i < myVertices.Size(); ++i)
-			{
-				myVertices[i].myPosition.y = myHeight + myTerrain.GetHeight(CU::Vector2<float>(aOrientation.GetPos().x, aOrientation.GetPos().z)).y;
-			}
-
-
 
 			memcpy(data, &myVertexBuffer[0], sizeof(IceVertex) * 4);
 

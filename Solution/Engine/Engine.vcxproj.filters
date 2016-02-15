@@ -99,9 +99,6 @@
     <ClCompile Include="Tga32.cpp">
       <Filter>Tga32</Filter>
     </ClCompile>
-    <ClCompile Include="Terrain.cpp">
-      <Filter>Terrain</Filter>
-    </ClCompile>
     <ClCompile Include="Animation.cpp">
       <Filter>Rendering\Animation</Filter>
     </ClCompile>
@@ -150,32 +147,8 @@
     <ClCompile Include="AnimationProxy.cpp">
       <Filter>Rendering\Animation</Filter>
     </ClCompile>
-    <ClCompile Include="NavMesh.cpp">
-      <Filter>Terrain\NavMesh</Filter>
-    </ClCompile>
-    <ClCompile Include="Triangle.cpp">
-      <Filter>Terrain\NavMesh</Filter>
-    </ClCompile>
-    <ClCompile Include="Edge.cpp">
-      <Filter>Terrain\NavMesh</Filter>
-    </ClCompile>
-    <ClCompile Include="HeightMapFactory.cpp">
-      <Filter>Terrain\HeightMap</Filter>
-    </ClCompile>
-    <ClCompile Include="SplatMapContainer.cpp">
-      <Filter>Terrain</Filter>
-    </ClCompile>
     <ClCompile Include="DGFXLoader.cpp">
       <Filter>FBX</Filter>
-    </ClCompile>
-    <ClCompile Include="Ice.cpp">
-      <Filter>Terrain</Filter>
-    </ClCompile>
-    <ClCompile Include="PathFinderFunnel.cpp">
-      <Filter>Terrain\PathFinder</Filter>
-    </ClCompile>
-    <ClCompile Include="PathFinderAStar.cpp">
-      <Filter>Terrain\PathFinder</Filter>
     </ClCompile>
     <ClCompile Include="Sprite.cpp">
       <Filter>Rendering\Sprite</Filter>
@@ -333,9 +306,6 @@
     <ClInclude Include="Tga32.h">
       <Filter>Tga32</Filter>
     </ClInclude>
-    <ClInclude Include="Terrain.h">
-      <Filter>Terrain</Filter>
-    </ClInclude>
     <ClInclude Include="Animation.h">
       <Filter>Rendering\Animation</Filter>
     </ClInclude>
@@ -384,44 +354,11 @@
     <ClInclude Include="AnimationProxy.h">
       <Filter>Rendering\Animation</Filter>
     </ClInclude>
-    <ClInclude Include="NavMesh.h">
-      <Filter>Terrain\NavMesh</Filter>
-    </ClInclude>
-    <ClInclude Include="Vertex.h">
-      <Filter>Terrain\NavMesh</Filter>
-    </ClInclude>
-    <ClInclude Include="Triangle.h">
-      <Filter>Terrain\NavMesh</Filter>
-    </ClInclude>
-    <ClInclude Include="LesserTriangle.h">
-      <Filter>Terrain\NavMesh</Filter>
-    </ClInclude>
-    <ClInclude Include="Edge.h">
-      <Filter>Terrain\NavMesh</Filter>
-    </ClInclude>
-    <ClInclude Include="HeightMap.h">
-      <Filter>Terrain\HeightMap</Filter>
-    </ClInclude>
-    <ClInclude Include="HeightMapFactory.h">
-      <Filter>Terrain\HeightMap</Filter>
-    </ClInclude>
-    <ClInclude Include="SplatMapContainer.h">
-      <Filter>Terrain</Filter>
-    </ClInclude>
     <ClInclude Include="DGFXLoader.h">
       <Filter>FBX</Filter>
     </ClInclude>
     <ClInclude Include="TextureHelper.h">
       <Filter>Rendering\Texture</Filter>
-    </ClInclude>
-    <ClInclude Include="Ice.h">
-      <Filter>Terrain</Filter>
-    </ClInclude>
-    <ClInclude Include="PathFinderFunnel.h">
-      <Filter>Terrain\PathFinder</Filter>
-    </ClInclude>
-    <ClInclude Include="PathFinderAStar.h">
-      <Filter>Terrain\PathFinder</Filter>
     </ClInclude>
     <ClInclude Include="Sprite.h">
       <Filter>Rendering\Sprite</Filter>
@@ -490,23 +427,11 @@
     <Filter Include="Tga32">
       <UniqueIdentifier>{18b9410f-d7c0-46f2-af85-b20098396534}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Terrain">
-      <UniqueIdentifier>{59d37244-123a-4cb5-bb00-433a66692270}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Rendering\Animation">
       <UniqueIdentifier>{818116f3-0b61-43a9-aa31-5eb1ab31adf6}</UniqueIdentifier>
     </Filter>
     <Filter Include="DebugDrawer">
       <UniqueIdentifier>{0a5d9478-d6ff-4442-b478-3cdd050b3b17}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Terrain\NavMesh">
-      <UniqueIdentifier>{da07f65d-ff39-43a5-9c69-5b9cfabc302f}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Terrain\HeightMap">
-      <UniqueIdentifier>{3e004790-9556-49a3-a41f-68c87da4990a}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Terrain\PathFinder">
-      <UniqueIdentifier>{8a51d311-16cf-41d4-bb2f-4c3e6d08dd77}</UniqueIdentifier>
     </Filter>
     <Filter Include="Rendering\Sprite">
       <UniqueIdentifier>{60336301-3065-4576-a4c9-e0a77c04a688}</UniqueIdentifier>
