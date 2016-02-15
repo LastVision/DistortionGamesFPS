@@ -27,19 +27,12 @@ namespace GUI
 		void AddWidget(Widget* aWidget);
 		void Update(float aDelta) override;
 		void Render(const CU::Vector2<float>& aParentPosition) override;
-		void Render(const CU::Vector2<float>& aParentPosition, int anIndex);
 
 		Widget* MouseIsOver(const CU::Vector2<float>& aPosition) override;
-		Widget* MouseIsOver(const CU::Vector2<float>& aPosition, int anIndex);
 
-		void OnResize(const CU::Vector2<float>& aNewSize, const CU::Vector2<float>& anOldSize, bool aIsFullScreen) override;
+		void OnResize(const CU::Vector2<float>& aNewSize, const CU::Vector2<float>& anOldSize) override;
 
 		int GetSize() const;
-
-		Widget* GetFirstWidget();
-
-		Widget* At(const int& aIndex);
-		const Widget* At(const int& aIndex) const;
 
 	private:
 		CU::GrowingArray<Widget*> myWidgets;
@@ -53,21 +46,5 @@ namespace GUI
 	inline int WidgetContainer::GetSize() const
 	{
 		return myWidgets.Size();
-	}
-
-	inline Widget* WidgetContainer::GetFirstWidget()
-	{
-		DL_ASSERT_EXP(myWidgets.Size() > 0, "Trying to get first widget from an empty container");
-		return myWidgets[0];
-	}
-	
-	inline Widget* WidgetContainer::At(const int& aIndex)
-	{
-		return myWidgets[aIndex];
-	}
-
-	inline const Widget* WidgetContainer::At(const int& aIndex) const
-	{
-		return myWidgets[aIndex];
 	}
 }

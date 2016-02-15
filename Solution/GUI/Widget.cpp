@@ -4,7 +4,6 @@
 namespace GUI
 {
 	Widget::Widget()
-		: myParent(nullptr)
 	{
 		myIsVisible = true;
 		myIsFullscreen = false;
@@ -27,7 +26,7 @@ namespace GUI
 	{
 	}
 
-	void Widget::OnMouseDown(const CU::Vector2<float>&)
+	void Widget::OnLeftMouseDown(const CU::Vector2<float>&)
 	{
 	}
 
@@ -35,7 +34,7 @@ namespace GUI
 	{
 	}
 
-	void Widget::OnMousePressed(const CU::Vector2<float>&)
+	void Widget::OnLeftMousePressed(const CU::Vector2<float>&)
 	{
 	}
 
@@ -43,7 +42,11 @@ namespace GUI
 	{
 	}
 
-	void Widget::OnMouseUp()
+	void Widget::OnLeftMouseUp()
+	{
+	}
+
+	void Widget::OnRightMouseUp()
 	{
 	}
 
@@ -79,7 +82,7 @@ namespace GUI
 			aPosition.y <= myPosition.y + mySize.y;
 	}
 
-	void Widget::OnResize(const CU::Vector2<float>& aNewWindowSize, const CU::Vector2<float>& anOldWindowSize, bool aIsFullScreen)
+	void Widget::OnResize(const CU::Vector2<float>& aNewWindowSize, const CU::Vector2<float>& anOldWindowSize)
 	{
 		aIsFullScreen;
 		if (myIsFullscreen == false)

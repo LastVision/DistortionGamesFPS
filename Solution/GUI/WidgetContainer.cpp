@@ -27,7 +27,6 @@ namespace GUI
 	void WidgetContainer::AddWidget(Widget* aWidget)
 	{
 		myWidgets.Add(aWidget);
-		aWidget->SetParent(this);
 	}
 
 	static float totalTime = 0;
@@ -68,22 +67,6 @@ namespace GUI
 		}
 	}
 
-	void WidgetContainer::Render(const CU::Vector2<float>& aParentPosition, int anIndex)
-	{
-		DL_ASSERT_EXP(myWidgets.Size() >= anIndex, "[WidgetContainer] Trying to render nonexisting index.");
-
-		if (myBackground != nullptr)
-		{
-			myBackground->Render(myPosition);
-		}
-		if (myVignette != nullptr)
-		{
-			myVignette->Render(myPosition);
-		}
-
-		myWidgets[anIndex]->Render(myPosition + aParentPosition);
-	}
-
 	Widget* WidgetContainer::MouseIsOver(const CU::Vector2<float>& aPosition)
 	{
 		if (IsInside(aPosition) == true)
@@ -105,30 +88,15 @@ namespace GUI
 		return nullptr;
 	}
 
-	Widget* WidgetContainer::MouseIsOver(const CU::Vector2<float>& aPosition, int anIndex)
+	void WidgetContainer::OnResize(const CU::Vector2<float>& aNewSize, const CU::Vector2<float>& anOldSize)
 	{
-		if (IsInside(aPosition) == true)
-		{
-			if (myWidgets[anIndex]->IsVisible() == true && myWidgets[anIndex]->IsInside(aPosition - myPosition) == true)
-			{
-				Widget* childWidget = myWidgets[anIndex]->MouseIsOver(aPosition - myPosition);
-				if (childWidget != nullptr)
-				{
-					return childWidget;
-				}
-			}
-		}
-		return nullptr;
-	}
-
-	void WidgetContainer::OnResize(const CU::Vector2<float>& aNewSize, const CU::Vector2<float>& anOldSize, bool aIsFullScreen)
-	{
-		Widget::OnResize(aNewSize, anOldSize, aIsFullScreen);
+		Widget::OnResize(aNewSize, anOldSize);
 
 		for (int i = 0; i < myWidgets.Size(); i++)
 		{
-			myWidgets[i]->OnResize(aNewSize, anOldSize, false);
+			myWidgets[i]->OnResize(aNewSize, anOldSize);
 		}
+
 		if (myBackground != nullptr)
 		{
 			if (myIsScrolling == true)

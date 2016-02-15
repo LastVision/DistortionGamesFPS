@@ -4,11 +4,10 @@
 #include <Engine.h>
 #include <OnClickMessage.h>
 #include <PostMaster.h>
-#include "../Game/PlayerDirector.h"
 
 namespace GUI
 {
-	ButtonWidget::ButtonWidget(XMLReader* aReader, tinyxml2::XMLElement* anXMLElement, const PlayerDirector* aPlayer)
+	ButtonWidget::ButtonWidget(XMLReader* aReader, tinyxml2::XMLElement* anXMLElement)
 		: Widget()
 		, myImageNormal(nullptr)
 		, myImagePressed(nullptr)
@@ -66,12 +65,12 @@ namespace GUI
 		}
 	}
 
-	void ButtonWidget::OnMousePressed(const CU::Vector2<float>&)
+	void ButtonWidget::OnLeftMousePressed(const CU::Vector2<float>&)
 	{
 		myImageCurrent = myImagePressed;
 	}
 
-	void ButtonWidget::OnMouseUp()
+	void ButtonWidget::OnLeftMouseUp()
 	{
 		Click();
 		myImageCurrent = myImageNormal;
@@ -88,9 +87,9 @@ namespace GUI
 		myImageCurrent = myImageNormal;
 	}
 
-	void ButtonWidget::OnResize(const CU::Vector2<float>& aNewSize, const CU::Vector2<float>& anOldSize, bool aIsFullScreen)
+	void ButtonWidget::OnResize(const CU::Vector2<float>& aNewSize, const CU::Vector2<float>& anOldSize)
 	{
-		Widget::OnResize(aNewSize, anOldSize, aIsFullScreen);
+		Widget::OnResize(aNewSize, anOldSize);
 		myImageNormal->SetSize(mySize, mySize / 2.f);
 		myImagePressed->SetSize(mySize, mySize / 2.f);
 		myImageHover->SetSize(mySize, mySize / 2.f);

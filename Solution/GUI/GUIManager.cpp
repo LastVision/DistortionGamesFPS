@@ -2,7 +2,6 @@
 #include "ButtonWidget.h"
 #include "Cursor.h"
 #include <Engine.h>
-#include "../Game/PlayerDirector.h"
 #include "GUIManager.h"
 #include "../InputWrapper/InputWrapper.h"
 #include "SpriteWidget.h"
@@ -10,12 +9,9 @@
 
 namespace GUI
 {
-	GUIManager::GUIManager(Cursor* aCursor, const std::string& aXMLPath, const PlayerDirector* aPlayer
-		, const AIDirector* anAI, const Prism::Camera* aCamera, int aLeveID)
+	GUIManager::GUIManager(Cursor* aCursor, const std::string& aXMLPath, const Prism::Camera* aCamera, int aLeveID)
 		: myActiveWidget(nullptr)
 		, myCursor(aCursor)
-		, myPlayer(aPlayer)
-		, myAI(anAI)
 		, myMousePosition({ 0.f, 0.f })
 		, myCamera(aCamera)
 		, myLevelID(aLeveID)
@@ -64,7 +60,7 @@ namespace GUI
 	void GUIManager::OnResize(int aWidth, int aHeight)
 	{
 		CU::Vector2<float> newSize = { float(aWidth), float(aHeight) };
-		myWidgets->OnResize(newSize, myWindowSize, true);
+		myWidgets->OnResize(newSize, myWindowSize);
 		myWindowSize = newSize;
 	}
 
@@ -199,7 +195,7 @@ namespace GUI
 
 				if (type == "button")
 				{
-					ButtonWidget* button = new ButtonWidget(&aReader, widgetElement, myPlayer);
+					ButtonWidget* button = new ButtonWidget(&aReader, widgetElement);
 					container->AddWidget(button);
 				}
 				else if (type == "sprite")
@@ -209,7 +205,8 @@ namespace GUI
 				}
 				else
 				{
-					// should assert when all widgets are in
+					std::string message = "[GUI manager] no widget type named " + type;
+					DL_ASSERT(message);
 				}
 			}
 			container->SetIsClickable(isClickable);
@@ -235,7 +232,7 @@ namespace GUI
 		{
 			if (CU::InputWrapper::GetInstance()->MouseIsPressed(0) == true)
 			{
-				myActiveWidget->OnMousePressed(myMousePosition);
+				myActiveWidget->OnLeftMousePressed(myMousePosition);
 			}
 			if (CU::InputWrapper::GetInstance()->MouseIsPressed(1) == true)
 			{
@@ -250,7 +247,7 @@ namespace GUI
 		{
 			if (CU::InputWrapper::GetInstance()->MouseDown(0) == true)
 			{
-				myActiveWidget->OnMouseDown(myMousePosition);
+				myActiveWidget->OnLeftMouseDown(myMousePosition);
 			}
 			if (CU::InputWrapper::GetInstance()->MouseDown(1) == true)
 			{
@@ -265,7 +262,12 @@ namespace GUI
 		{
 			if (CU::InputWrapper::GetInstance()->MouseUp(0) == true)
 			{
-				myActiveWidget->OnMouseUp();
+				myActiveWidget->OnLeftMouseUp();
+				myActiveWidget->OnMouseEnter(); // hover button again after pressing it
+			}
+			if (CU::InputWrapper::GetInstance()->MouseUp(1) == true)
+			{
+				myActiveWidget->OnRightMouseUp();
 				myActiveWidget->OnMouseEnter(); // hover button again after pressing it
 			}
 		}

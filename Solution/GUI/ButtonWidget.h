@@ -12,7 +12,6 @@ namespace tinyxml2
 }
 
 class XMLReader;
-class PlayerDirector;
 struct OnClickMessage;
 
 namespace GUI
@@ -20,16 +19,17 @@ namespace GUI
 	class ButtonWidget : public Widget
 	{
 	public:
-		ButtonWidget(XMLReader* aReader, tinyxml2::XMLElement* anXMLElement, const PlayerDirector* aPlayer);
+		ButtonWidget(XMLReader* aReader, tinyxml2::XMLElement* anXMLElement);
 		~ButtonWidget();
 
 		virtual void Render(const CU::Vector2<float>& aParentPosition) override;
-		void OnMousePressed(const CU::Vector2<float>& aPosition) override;
-		void OnMouseUp() override;
+
+		void OnLeftMousePressed(const CU::Vector2<float>& aPosition) override;
+		void OnLeftMouseUp() override;
 		void OnMouseEnter() override;
 		void OnMouseExit() override;
 
-		void OnResize(const CU::Vector2<float>& aNewSize, const CU::Vector2<float>& anOldSize, bool aIsFullScreen) override;
+		void OnResize(const CU::Vector2<float>& aNewSize, const CU::Vector2<float>& anOldSize) override;
 
 		bool IsInside(const CU::Vector2<float>& aPosition) const override;
 		void SetPosition(const CU::Vector2<float>& aPosition, bool aIsHotspot = true) override;
