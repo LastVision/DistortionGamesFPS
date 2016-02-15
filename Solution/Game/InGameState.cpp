@@ -52,7 +52,7 @@ void InGameState::InitState(StateStackProxy* aStateStackProxy, GUI::Cursor* aCur
 	myStateStatus = eStateStatus::eKeepState;
 	myCursor = aCursor;
 
-	PostMaster::GetInstance()->SendMessage(RunScriptMessage("Data/Script/Autorun.script"));
+	//PostMaster::GetInstance()->SendMessage(RunScriptMessage("Data/Script/Autorun.script"));
 
 	myIsActiveState = true;
 }
@@ -65,8 +65,8 @@ const eStateStatus InGameState::Update(const float& aDeltaTime)
 {
 	Prism::EffectContainer::GetInstance()->Update(aDeltaTime);
 
-	LUA::ScriptSystem::GetInstance()->CallFunction("Update", { aDeltaTime });
-	LUA::ScriptSystem::GetInstance()->Update();
+	//LUA::ScriptSystem::GetInstance()->CallFunction("Update", { aDeltaTime });
+	//LUA::ScriptSystem::GetInstance()->Update();
 
 	
 	return myStateStatus;
