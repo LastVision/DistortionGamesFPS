@@ -4,7 +4,6 @@
 #include <CinematicMessage.h>
 #include "Console.h"
 #include <Entity.h>
-#include <EntityId.h>
 #include <GameStateMessage.h>
 #include <KillUnitMessage.h>
 #include <MoveCameraMessage.h>
@@ -137,36 +136,6 @@ namespace Script_Interface
 		return 0;
 	}
 
-	int GetOwner(lua_State* aState)//void
-	{
-		int id = int(lua_tonumber(aState, 1));
-		Entity* entity = EntityId::GetInstance()->GetEntity(id);
-
-		lua_pushinteger(aState, static_cast<int>(entity->GetOwner()));
-		return 1;
-	}
-
-	int GetTrigger(lua_State* aState)//void
-	{
-		eEntityType type = static_cast<eEntityType>(int(lua_tonumber(aState, 1)));
-		int id = int(lua_tonumber(aState, 2));
-		Entity* entity = EntityId::GetInstance()->GetTrigger(type, id);
-		if (entity == nullptr)
-		{
-			std::stringstream ss;
-			ss << "Trigger " << id << " not found. Check ID.";
-
-			DL_MESSAGE_BOX(ss.str().c_str(), "Trigger not Found!", MB_ICONWARNING);
-			lua_pushinteger(aState, -1);
-		}
-		else
-		{
-			int entityId = entity->GetId();
-			lua_pushinteger(aState, static_cast<int>(entityId));
-		}
-		return 1;
-	}
-
 	int ReloadLevel(lua_State*)//void
 	{
 		PostMaster::GetInstance()->SendMessage(GameStateMessage(eGameState::RELOAD_LEVEL));
@@ -227,49 +196,6 @@ namespace Script_Interface
 		return 0;
 	}
 
-	int ModifyOwnership(lua_State* aState)//void
-	{
-		int resourcePointID = int(lua_tonumber(aState, 1));
-		int directorId = int(lua_tonumber(aState, 2));
-		float ownershipModifier = float(lua_tonumber(aState, 3));
-
-		eOwnerType owner = eOwnerType::NOT_USED;
-		if (directorId == eOwnerType::PLAYER)
-		{
-			owner = eOwnerType::PLAYER;
-		}
-		else if (directorId == eOwnerType::ENEMY)
-		{
-			owner = eOwnerType::ENEMY;
-		}
-		else if (directorId == eOwnerType::NEUTRAL)
-		{
-			owner = eOwnerType::NEUTRAL;
-		}
-
-		if (owner == eOwnerType::NOT_USED)
-		{
-			return 0;
-		}
-
-		Entity* controlPoint = EntityId::GetInstance()->GetEntity(resourcePointID);
-
-		if (controlPoint == nullptr || controlPoint->GetComponent<TriggerComponent>() == nullptr)
-		{
-			std::stringstream ss;
-			ss << "Entity " << resourcePointID << " not found. Check ID.";
-
-			DL_MESSAGE_BOX(ss.str().c_str(), "Entity not Found!", MB_ICONWARNING);
-			lua_pushinteger(aState, -1);
-		}
-		else
-		{
-			owner = controlPoint->GetComponent<TriggerComponent>()->ModifyOwnership(owner, ownershipModifier);
-		}
-
-		lua_pushinteger(aState, static_cast<int>(owner));
-		return 1;
-	}
 
 	int DisableAI(lua_State*)//void
 	{
@@ -378,12 +304,9 @@ void ScriptInterface::RegisterFunctions()
 	system->RegisterFunction("ScriptRun", Script_Interface::ScriptRun, "aScriptFile", "Run the script file.");
 	system->RegisterFunction("ShowNavMesh", Script_Interface::ShowNavMesh, "", "Shows the lines for the navigation mesh.");
 	system->RegisterFunction("HideNavMesh", Script_Interface::HideNavMesh, "", "Hides the lines for the navigation mesh.");
-	system->RegisterFunction("GetOwner", Script_Interface::GetOwner, "aUnit", "Returns ownerID of unit, ex: owner = GetOwner(aUnit)");
-	system->RegisterFunction("GetTrigger", Script_Interface::GetTrigger, "aTrigger", "Returns the Entity id for trigger of the supplied input, ex: trigger0 = GetTrigger(0)");
 	system->RegisterFunction("ReloadLevel", Script_Interface::ReloadLevel, "", "Reloads the current level.");
 	system->RegisterFunction("ModifyResource", Script_Interface::ModifyResource, "aOwnerEnum, aResourceModifier", "Modifies resource of owner, ex: ModifyResource(eOwnerType.PLAYER, resourceGain)");
 	system->RegisterFunction("ModifyVictory", Script_Interface::ModifyVictory, "aOwnerEnum, aVictoryModifier", "Modifies victory points of owner, ex: ModifyVictory(eOwnerType.PLAYER, victoryPointGain)");
-	system->RegisterFunction("ModifyOwnership", Script_Interface::ModifyOwnership, "aTriggerId, aOwnerEnum, aResourceModifier", "Modifies ownership of trigger, ex:\n\t myResourcePoint0.myOwner = ModifyOwnership(myResourcePoint0.myId, eOwnerType.PLAYER, ownershipGain * aDelta)");
 	system->RegisterFunction("DisableAI", Script_Interface::DisableAI, "", "Disables AI");
 	system->RegisterFunction("EnableAI", Script_Interface::EnableAI, "", "Enables AI");
 	system->RegisterFunction("TimeMultiplier", Script_Interface::TimeMultiplier, "aMultiplier", "Modifies the game time. ex: TimeMultiplier(0.1) //this is slow  ");

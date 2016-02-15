@@ -1,7 +1,6 @@
 #pragma once
 #include <Matrix.h>
 #include <StaticArray.h>
-#include "EntityCommandData.h"
 
 namespace Prism
 {

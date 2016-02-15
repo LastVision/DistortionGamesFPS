@@ -1,23 +1,9 @@
 #include "stdafx.h"
 
-#include "ActorComponent.h"
 #include "AnimationComponent.h"
-#include "BuildingComponent.h"
-#include "CollisionComponent.h"
-#include "ControllerComponent.h"
-#include "EnrageComponent.h"
 #include "GraphicsComponent.h"
-#include "GrenadeComponent.h"
-#include "HealthComponent.h"
-#include "EntityId.h"
-#include "PromotionComponent.h"
 #include <Scene.h>
-#include "SelectionComponent.h"
-#include "ShadowBlobComponent.h"
-#include "SoundComponent.h"
 #include <Terrain.h>
-#include "TotemComponent.h"
-#include "TriggerComponent.h"
 #include <Instance.h>
 #include <EmitterMessage.h>
 #include <PostMaster.h>
@@ -35,7 +21,6 @@ Entity::Entity(eOwnerType aOwner, Prism::eOctreeType anOctreeType, EntityData& a
 	, myEmitterConnection(nullptr)
 	, myArtifactTotalTime((static_cast<float>(rand() % 100) * 0.01f))
 {
-	myId = EntityId::GetInstance()->GetId(this);
 	for (int i = 0; i < static_cast<int>(eComponentType::_COUNT); ++i)
 	{
 		myComponents[i] = nullptr;
@@ -43,20 +28,6 @@ Entity::Entity(eOwnerType aOwner, Prism::eOctreeType anOctreeType, EntityData& a
 
 	myOrientation.SetPos(aStartPosition);
 	myOriginalY = aStartPosition.y;
-	//aTerrain.CalcEntityHeight(myOrientation);
-
-	//if (aEntityData.myActorData.myExistsInEntity == true)
-	//{
-	//	aEntityData.myShadowBlobData.myExistsInEntity = true;
-	//	aEntityData.myShadowBlobData.myEffectPath = "Data/Resource/Shader/S_effect_selection.fx";
-	//	aEntityData.myShadowBlobData.myScale = 1.f;
-	//	aEntityData.myShadowBlobData.myShadowBlobPath = "Data/Resource/Model/SM_shadowBlob.fbx";
-	//}
-
-	if (aEntityData.myShadowBlobData.myExistsInEntity == true)
-	{
-		myComponents[static_cast<int>(eComponentType::SHADOWBLOB)] = new ShadowBlobComponent(*this, aEntityData.myShadowBlobData);
-	}
 
 	if (aEntityData.myAnimationData.myExistsInEntity == true)
 	{
@@ -70,79 +41,6 @@ Entity::Entity(eOwnerType aOwner, Prism::eOctreeType anOctreeType, EntityData& a
 		GetComponent<GraphicsComponent>()->SetRotation(aRotation);
 		GetComponent<GraphicsComponent>()->SetScale(aScale);
 	}
-	//AddToScene();
-
-	if (aEntityData.mySoundData.myExistsInEntity == true)
-	{
-		myComponents[static_cast<int>(eComponentType::SOUND)] = new SoundComponent(*this);
-	}
-
-	if (aEntityData.myBuildingData.myExistsInEntity == true)
-	{
-		myComponents[static_cast<int>(eComponentType::BUILDING)] = new BuildingComponent(*this, aEntityData.myBuildingData);
-	}
-
-	if (aEntityData.myCollisionData.myExistsInEntity == true)
-	{
-		myComponents[static_cast<int>(eComponentType::COLLISION)] = new CollisionComponent(*this, aEntityData.myCollisionData);
-	}
-
-	if (aEntityData.myTriggerData.myExistsInEntity == true)
-	{
-		myComponents[static_cast<int>(eComponentType::TRIGGER)] = new TriggerComponent(*this, aEntityData.myTriggerData);
-	}
-
-	ControllerComponent* controller = nullptr;
-	if (aEntityData.myControllerData.myExistsInEntity == true)
-	{
-		controller = new ControllerComponent(*this, aEntityData.myControllerData, aTerrain);
-		myComponents[static_cast<int>(eComponentType::CONTROLLER)] = controller;
-	}
-
-	if (aEntityData.myActorData.myExistsInEntity == true)
-	{
-		DL_ASSERT_EXP(controller != nullptr
-			, "ActorComponent wont work witout a ControllerComponent");
-
-		myComponents[static_cast<int>(eComponentType::ACTOR)] = new ActorComponent(*this, aEntityData.myActorData, aTerrain
-			, controller->GetCurrentCommand());
-	}
-
-	if (aEntityData.myHealthData.myExistsInEntity == true)
-	{
-		myComponents[static_cast<int>(eComponentType::HEALTH)] = new HealthComponent(*this, aEntityData.myHealthData);
-	}
-
-	if (aEntityData.myTotemData.myExistsInEntity == true)
-	{
-		myOrientation.SetPos(aStartPosition);
-		myComponents[static_cast<int>(eComponentType::TOTEM)] = new TotemComponent(*this, aEntityData.myTotemData);
-	}
-
-	if (aEntityData.myEnrageData.myExistsInEntity == true)
-	{
-		myComponents[static_cast<int>(eComponentType::ENRAGE)] = new EnrageComponent(*this, aEntityData.myEnrageData);
-	}
-
-	if (aEntityData.myGrenadeData.myExistsInEntity == true)
-	{
-		myComponents[static_cast<int>(eComponentType::GRENADE)] = new GrenadeComponent(*this, aEntityData.myGrenadeData);
-	}
-
-	if (aEntityData.myPromotionData.myExistsInEntity == true)
-	{
-		myComponents[static_cast<int>(eComponentType::PROMOTION)] = new PromotionComponent(*this, aEntityData.myPromotionData);
-	}
-
-	if (myOwner == eOwnerType::PLAYER)
-	{
-		if (aEntityData.mySelectionData.myExistsInEntity == true)
-		{
-			myComponents[static_cast<int>(eComponentType::SELECTION)] = new SelectionComponent(*this, aEntityData.mySelectionData);
-		}
-	}
-
-
 	
 	Reset();
 }
@@ -260,25 +158,7 @@ void Entity::AddToScene()
 	{
 		myScene.AddInstance(GetComponent<AnimationComponent>()->GetInstance());
 	}
-	if (GetComponent<ShadowBlobComponent>() != nullptr && GetComponent<ShadowBlobComponent>()->GetShadowBlob() != nullptr)
-	{
-		myScene.AddInstance(GetComponent<ShadowBlobComponent>()->GetShadowBlob());
-	}
-	if (GetComponent<SelectionComponent>() != nullptr && GetComponent<SelectionComponent>()->GetSelectedInstance() != nullptr
-		&& GetComponent<SelectionComponent>()->GetHoveredInstance() != nullptr)
-	{
-		myScene.AddInstance(GetComponent<SelectionComponent>()->GetSelectedInstance(), true);
-		myScene.AddInstance(GetComponent<SelectionComponent>()->GetHoveredInstance(), true);
-	}
-
-	if (GetComponent<ActorComponent>() != nullptr)
-	{
-		const CU::GrowingArray<Prism::Instance*>& muzzleFlashes = GetComponent<ActorComponent>()->GetMuzzleFlashes();
-		for (int i = 0; i < muzzleFlashes.Size(); ++i)
-		{
-			myScene.AddInstance(muzzleFlashes[i]);
-		}
-	}
+	
 	myIsInScene = true;
 }
 
@@ -291,24 +171,6 @@ void Entity::RemoveFromScene()
 	else if (GetComponent<AnimationComponent>() != nullptr)
 	{
 		myScene.RemoveInstance(GetComponent<AnimationComponent>()->GetInstance());
-	}
-	if (GetComponent<ShadowBlobComponent>() != nullptr && GetComponent<ShadowBlobComponent>()->GetShadowBlob() != nullptr)
-	{
-		myScene.RemoveInstance(GetComponent<ShadowBlobComponent>()->GetShadowBlob());
-	}
-	if (GetComponent<SelectionComponent>() != nullptr)
-	{
-		myScene.RemoveInstance(GetComponent<SelectionComponent>()->GetSelectedInstance(), true);
-		myScene.RemoveInstance(GetComponent<SelectionComponent>()->GetHoveredInstance(), true);
-	}
-
-	if (GetComponent<ActorComponent>() != nullptr)
-	{
-		const CU::GrowingArray<Prism::Instance*>& muzzleFlashes = GetComponent<ActorComponent>()->GetMuzzleFlashes();
-		for (int i = 0; i < muzzleFlashes.Size(); ++i)
-		{
-			myScene.RemoveInstance(muzzleFlashes[i]);
-		}
 	}
 
 	myIsInScene = false;
@@ -328,10 +190,6 @@ void Entity::Kill()
 {
 	DL_ASSERT_EXP(myAlive == true, "Tried to kill an Entity multiple times");
 	myAlive = false;
-	if (GetComponent<ActorComponent>() != nullptr)
-	{
-		GetComponent<ActorComponent>()->Kill();
-	}
 	//RemoveFromScene();
 }
 
@@ -342,10 +200,6 @@ void Entity::Spawn(const CU::Vector2<float>& aSpawnPoint, const CU::Vector2<floa
 	Reset();
 	myAlive = true;
 	AddToScene();
-
-	
-	//bool hasPlayedSound = false;
-	GetComponent<ControllerComponent>()->SetRallyPoint(aRallyPoint);
 }
 
 void Entity::SetSelect(bool aStatus)

@@ -8,12 +8,10 @@
 #include <Cursor.h>
 #include <DebugFont.h>
 #include <Engine.h>
-#include <EntityId.h>
 #include <FadeMessage.h>
 #include <FileWatcher.h>
 #include "Game.h"
 #include <InputWrapper.h>
-#include "MainMenuState.h"
 #include <ModelLoader.h>
 #include <StreakDataContainer.h>
 #include <ParticleDataContainer.h>
@@ -28,6 +26,7 @@
 
 #include "ScriptInterface.h"
 #include <ScriptSystem.h>
+#include "InGameState.h"
 
 
 
@@ -85,7 +84,7 @@ bool Game::Init(HWND& aHwnd)
 
 
 	//Console::GetInstance(); // needed to create console here
-	myStateStack.PushMainGameState(new MainMenuState());
+	myStateStack.PushMainGameState(new InGameState());
 
 	//PostMaster::GetInstance()->SendMessage(GameStateMessage(eGameState::LOAD_GAME, 1));
 	GAME_LOG("Init Successful");

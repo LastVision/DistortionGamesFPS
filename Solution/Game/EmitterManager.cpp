@@ -2,14 +2,12 @@
 
 #include "EmitterManager.h"
 #include <EmitterMessage.h>
-#include <EntityId.h>
 #include <ParticleDataContainer.h>
 #include <ParticleEmitterInstance.h>
 #include <PostMaster.h>
 #include <XMLReader.h>
 #include <TimerManager.h>
 #include "CommonHelper.h"
-#include "FogOfWarMap.h"
 #include <Camera.h>
 #include <Frustum.h>
 #define FINISHED 0
@@ -110,7 +108,7 @@ void EmitterManager::RenderEmitters()
 				}
 				else
 				{
-					if (FogOfWarMap::GetInstance()->IsVisible({ instance->GetPosition() }) == true || instance->GetShouldAlwaysShow() == true)
+					if (instance->GetShouldAlwaysShow() == true)
 					{
 						instance->Render();
 					}
@@ -143,13 +141,7 @@ void EmitterManager::ReceiveMessage(const EmitterMessage& aMessage)
 		}
 	}
 
-	if (aMessage.myEntityID != -1)
-	{
-		position = EntityId::GetInstance()->GetEntity(aMessage.myEntityID)->GetOrientation().GetPos();
-		position.y += 2;
-	}
-
-	if (FogOfWarMap::GetInstance()->IsVisible({ position.x, position.z }) == true || aMessage.myShouldAlwaysShow == true || aMessage.myIsArtifact == true)
+	if (aMessage.myShouldAlwaysShow == true || aMessage.myIsArtifact == true)
 	{
 		std::string particleType = CU::ToLower(aMessage.myParticleTypeString);
 		if (particleType == "")
@@ -177,15 +169,8 @@ void EmitterManager::ReceiveMessage(const EmitterMessage& aMessage)
 		{
 			Prism::ParticleEmitterInstance* instance = myEmitters[particleType]->myEmitters[index][i];
 
-			if (aMessage.myEntityID != -1 && aMessage.myIsArtifact)
-			{
-				instance->SetEntity(EntityId::GetInstance()->GetEntity(aMessage.myEntityID));
-				instance->GetEntity()->AddEmitter(instance);
-			}
-			else
-			{
-				instance->SetEntity(nullptr);
-			}
+
+			instance->SetEntity(nullptr);
 
 			if (aMessage.myShouldAlwaysShow == true)
 			{

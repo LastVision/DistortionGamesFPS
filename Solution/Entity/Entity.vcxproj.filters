@@ -28,12 +28,6 @@
     <Filter Include="EntityFactory\Component">
       <UniqueIdentifier>{d78471a9-14e8-41c7-8352-3d64f1f6778b}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Movement">
-      <UniqueIdentifier>{12f0ed25-8fb9-4979-ab74-c9476b9724b6}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Movement\Behavior">
-      <UniqueIdentifier>{f24e054a-7e2d-4fa0-a384-74200c617424}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -58,22 +52,6 @@
     <ClCompile Include="PollingStation.cpp" />
     <ClCompile Include="EntityEnumConverter.cpp">
       <Filter>EntityEnum</Filter>
-    </ClCompile>
-    <ClCompile Include="EntityId.cpp" />
-    <ClCompile Include="EvadeBehavior.cpp">
-      <Filter>Movement\Behavior</Filter>
-    </ClCompile>
-    <ClCompile Include="BlendedBehavior.cpp">
-      <Filter>Movement\Behavior</Filter>
-    </ClCompile>
-    <ClCompile Include="Behavior.cpp">
-      <Filter>Movement\Behavior</Filter>
-    </ClCompile>
-    <ClCompile Include="ArriveBehavior.cpp">
-      <Filter>Movement\Behavior</Filter>
-    </ClCompile>
-    <ClCompile Include="Formation.cpp">
-      <Filter>Movement</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -111,22 +89,6 @@
     <ClInclude Include="PollingStation.h" />
     <ClInclude Include="EntityEnumConverter.h">
       <Filter>EntityEnum</Filter>
-    </ClInclude>
-    <ClInclude Include="EntityId.h" />
-    <ClInclude Include="EvadeBehavior.h">
-      <Filter>Movement\Behavior</Filter>
-    </ClInclude>
-    <ClInclude Include="BlendedBehavior.h">
-      <Filter>Movement\Behavior</Filter>
-    </ClInclude>
-    <ClInclude Include="Behavior.h">
-      <Filter>Movement\Behavior</Filter>
-    </ClInclude>
-    <ClInclude Include="ArriveBehavior.h">
-      <Filter>Movement\Behavior</Filter>
-    </ClInclude>
-    <ClInclude Include="Formation.h">
-      <Filter>Movement</Filter>
     </ClInclude>
     <ClInclude Include="BehaviorNote.h">
       <Filter>Notes</Filter>

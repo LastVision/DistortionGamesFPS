@@ -160,14 +160,8 @@
   <ItemGroup>
     <ClInclude Include="AnimationComponent.h" />
     <ClInclude Include="AnimationComponentData.h" />
-    <ClInclude Include="ArriveBehavior.h" />
-    <ClInclude Include="Behavior.h" />
     <ClInclude Include="BehaviorNote.h" />
-    <ClInclude Include="BlendedBehavior.h" />
     <ClInclude Include="EntityEnumConverter.h" />
-    <ClInclude Include="EntityId.h" />
-    <ClInclude Include="EvadeBehavior.h" />
-    <ClInclude Include="Formation.h" />
     <ClInclude Include="Component.h" />
     <ClInclude Include="ComponentLoader.h" />
     <ClInclude Include="DamageNote.h" />
@@ -181,13 +175,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AnimationComponent.cpp" />
-    <ClCompile Include="ArriveBehavior.cpp" />
-    <ClCompile Include="Behavior.cpp" />
-    <ClCompile Include="BlendedBehavior.cpp" />
     <ClCompile Include="EntityEnumConverter.cpp" />
-    <ClCompile Include="EntityId.cpp" />
-    <ClCompile Include="EvadeBehavior.cpp" />
-    <ClCompile Include="Formation.cpp" />
     <ClCompile Include="Component.cpp" />
     <ClCompile Include="ComponentLoader.cpp" />
     <ClCompile Include="Entity.cpp" />
