@@ -17,7 +17,7 @@ namespace GUI
 
 		void Update(float aDelta) override;
 		void Render(const CU::Vector2<float>& aParentPosition) override;
-		void OnResize(const CU::Vector2<float>& aNewWindowSize, const CU::Vector2<float>& anOldWindowSize, bool aIsFullScreen) override;
+		void OnResize(const CU::Vector2<float>& aNewWindowSize, const CU::Vector2<float>& anOldWindowSize) override;
 
 	private:
 		void operator=(BarWidget&) = delete;

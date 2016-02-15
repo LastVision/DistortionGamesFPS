@@ -70,9 +70,9 @@ namespace GUI
 		myValueSprite->Render(myPosition + aParentPosition, { 1.f, 1.f }, myColor);
 	}
 
-	void BarWidget::OnResize(const CU::Vector2<float>& aNewWindowSize, const CU::Vector2<float>& anOldWindowSize, bool aIsFullScreen)
+	void BarWidget::OnResize(const CU::Vector2<float>& aNewWindowSize, const CU::Vector2<float>& anOldWindowSize)
 	{
-		Widget::OnResize(aNewWindowSize, anOldWindowSize, aIsFullScreen);
+		Widget::OnResize(aNewWindowSize, anOldWindowSize);
 		float newSize;
 
 		if (myIsFloat == false)

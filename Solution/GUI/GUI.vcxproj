@@ -19,35 +19,20 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="AbilityButton.h" />
     <ClInclude Include="BarWidget.h" />
     <ClInclude Include="ButtonWidget.h" />
-    <ClInclude Include="ControlGroupWidget.h" />
     <ClInclude Include="Cursor.h" />
     <ClInclude Include="GUIManager.h" />
-    <ClInclude Include="MiniMapWidget.h" />
-    <ClInclude Include="ResourceBarWidget.h" />
     <ClInclude Include="SpriteWidget.h" />
     <ClInclude Include="stdafx.h" />
-    <ClInclude Include="TextWidget.h" />
-    <ClInclude Include="TooltipInfo.h" />
-    <ClInclude Include="TooltipWidget.h" />
-    <ClInclude Include="UnitActionWidget.h" />
-    <ClInclude Include="UnitCapWidget.h" />
-    <ClInclude Include="UnitInfoWidget.h" />
-    <ClInclude Include="UpgradeButtonWidget.h" />
     <ClInclude Include="Widget.h" />
     <ClInclude Include="WidgetContainer.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="AbilityButton.cpp" />
     <ClCompile Include="BarWidget.cpp" />
     <ClCompile Include="ButtonWidget.cpp" />
-    <ClCompile Include="ControlGroupWidget.cpp" />
     <ClCompile Include="Cursor.cpp" />
     <ClCompile Include="GUIManager.cpp" />
-    <ClCompile Include="MiniMapWidget.cpp" />
-    <ClCompile Include="ResourceBarWidget.cpp" />
     <ClCompile Include="SpriteWidget.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
@@ -59,12 +44,6 @@
       <MultiProcessorCompilation Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</MultiProcessorCompilation>
       <MultiProcessorCompilation Condition="'$(Configuration)|$(Platform)'=='Internal|Win32'">false</MultiProcessorCompilation>
     </ClCompile>
-    <ClCompile Include="TextWidget.cpp" />
-    <ClCompile Include="TooltipWidget.cpp" />
-    <ClCompile Include="UnitActionWidget.cpp" />
-    <ClCompile Include="UnitCapWidget.cpp" />
-    <ClCompile Include="UnitInfoWidget.cpp" />
-    <ClCompile Include="UpgradeButtonWidget.cpp" />
     <ClCompile Include="Widget.cpp" />
     <ClCompile Include="WidgetContainer.cpp" />
   </ItemGroup>

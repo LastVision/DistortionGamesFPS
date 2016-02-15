@@ -35,9 +35,9 @@ namespace GUI
 		myBackground->Render(myPosition + aParentPosition);
 	}
 
-	void SpriteWidget::OnResize(const CU::Vector2<float>& aNewSize, const CU::Vector2<float>& anOldSize, bool aIsFullScreen)
+	void SpriteWidget::OnResize(const CU::Vector2<float>& aNewSize, const CU::Vector2<float>& anOldSize)
 	{
-		Widget::OnResize(aNewSize, anOldSize, aIsFullScreen);
+		Widget::OnResize(aNewSize, anOldSize);
 
 		if (myIsFullscreen == false)
 		{
@@ -51,7 +51,7 @@ namespace GUI
 		}
 	}
 
-	Widget* SpriteWidget::MouseIsOver(const CU::Vector2<float>& aPosition)
+	Widget* SpriteWidget::MouseIsOver(const CU::Vector2<float>&)
 	{
 		return nullptr;
 	}
