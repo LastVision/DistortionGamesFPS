@@ -27,7 +27,7 @@ class Entity
 
 public:
 	Entity(eOwnerType aOwner, Prism::eOctreeType anOctreeType, EntityData& aEntityData,
-		Prism::Scene& aScene, const CU::Vector3<float>& aStartPosition, const Prism::Terrain& aTerrain, 
+		Prism::Scene& aScene, const CU::Vector3<float>& aStartPosition, 
 		const CU::Vector3f& aRotation, const CU::Vector3f& aScale, eUnitType aUnitType);
 	~Entity();
 
@@ -52,6 +52,7 @@ public:
 	void RemoveSelectionRingFromScene();
 
 	const CU::Matrix44<float>& GetOrientation() const;
+	void SetOrientation(const CU::Matrix44<float>& aOrientation);
 	void SetPosition(const CU::Vector3f& aPosition);
 	const CU::Vector2<float>& GetPosition() const;
 	Prism::Scene& GetScene();
@@ -163,6 +164,11 @@ inline void Entity::SendNote(const T& aMessage)
 inline const CU::Matrix44<float>& Entity::GetOrientation() const
 {
 	return myOrientation;
+}
+
+inline void Entity::SetOrientation(const CU::Matrix44<float>& aOrientation)
+{
+	myOrientation = aOrientation;
 }
 
 inline const CU::Vector2<float>& Entity::GetPosition() const

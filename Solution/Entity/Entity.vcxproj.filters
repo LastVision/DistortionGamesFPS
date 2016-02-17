@@ -53,6 +53,9 @@
     <ClCompile Include="EntityEnumConverter.cpp">
       <Filter>EntityEnum</Filter>
     </ClCompile>
+    <ClCompile Include="PlayerComponent.cpp">
+      <Filter>Component</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
@@ -92,6 +95,9 @@
     </ClInclude>
     <ClInclude Include="BehaviorNote.h">
       <Filter>Notes</Filter>
+    </ClInclude>
+    <ClInclude Include="PlayerComponent.h">
+      <Filter>Component</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -15,11 +15,10 @@
 
 //#define BOX_MODE
 
-AnimationComponent::AnimationComponent(Entity& aEntity, AnimationComponentData& aComponentData, const Prism::Terrain& aTerrain)
+AnimationComponent::AnimationComponent(Entity& aEntity, AnimationComponentData& aComponentData)
 	: Component(aEntity)
 	, myInstance(nullptr)
 	, myCullingRadius(10.f)
-	, myTerrain(aTerrain)
 	, myPrevEntityState(myEntity.GetState())
 {
 #ifndef BOX_MODE

@@ -7,7 +7,7 @@
 #include <EmitterMessage.h>
 #include <PostMaster.h>
 Entity::Entity(eOwnerType aOwner, Prism::eOctreeType anOctreeType, EntityData& aEntityData
-		, Prism::Scene& aScene, const CU::Vector3<float>& aStartPosition, const Prism::Terrain& aTerrain
+		, Prism::Scene& aScene, const CU::Vector3<float>& aStartPosition
 		, const CU::Vector3f& aRotation, const CU::Vector3f& aScale, eUnitType aUnitType)
 	: myOwner(aOwner)
 	, myTemporaryOwner(aOwner)
@@ -30,7 +30,7 @@ Entity::Entity(eOwnerType aOwner, Prism::eOctreeType anOctreeType, EntityData& a
 
 	if (aEntityData.myAnimationData.myExistsInEntity == true)
 	{
-		myComponents[static_cast<int>(eComponentType::ANIMATION)] = new AnimationComponent(*this, aEntityData.myAnimationData, aTerrain);
+		myComponents[static_cast<int>(eComponentType::ANIMATION)] = new AnimationComponent(*this, aEntityData.myAnimationData);
 		GetComponent<AnimationComponent>()->SetRotation(aRotation);
 		GetComponent<AnimationComponent>()->SetScale(aScale);
 	}

@@ -103,22 +103,9 @@ enum class eEntityCommand
 enum class eComponentType
 {
 	NOT_USED = -1,
-	CONTROLLER, //Controller HAS to be above Actor in this list!!!
-	ACTOR,
 	ANIMATION,
-	TRIGGER,
-	COLLISION,
 	GRAPHICS,
-	MOVEMENT,
-	HEALTH,
-	BUILDING,
-	TOTEM,
-	ENRAGE,
-	GRENADE,
-	SELECTION,
-	SOUND,
-	PROMOTION,
-	SHADOWBLOB,
+	PLAYER,
 	_COUNT,
 };
 

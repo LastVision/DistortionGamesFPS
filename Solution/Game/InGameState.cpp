@@ -30,7 +30,8 @@
 #include <FadeMessage.h>
 
 #include <Scene.h>
-#include <Instance.h>s
+#include <Instance.h>
+#include <PlayerComponent.h>
 
 InGameState::InGameState()
 	: myGUIManager(nullptr)
@@ -52,11 +53,12 @@ void InGameState::InitState(StateStackProxy* aStateStackProxy, GUI::Cursor* aCur
 
 	//PostMaster::GetInstance()->SendMessage(RunScriptMessage("Data/Script/Autorun.script"));
 
-	myCamera = new Prism::Camera(myPlayerOrientation);
-	myScene = new Prism::Scene(*myCamera);
-	myInstance = new Prism::Instance(*Prism::ModelLoader::GetInstance()->LoadModel("Data/Resource/Model/SM_muzzleflash.fbx", "Data/Resource/Shader/S_effect_pbl.fx"), myInstanceOrientation, Prism::eOctreeType::DYNAMIC
-		, myCullingRadius);
+	myPlayer = new PlayerComponent();
+	myScene = new Prism::Scene(*myPlayer->myCamera);
+	myInstance = new Prism::Instance(*Prism::ModelLoader::GetInstance()->LoadModel("Data/Resource/Model/SM_muzzleflash.fbx", "Data/Resource/Shader/S_effect_pbl.fx")
+		, myInstanceOrientation, Prism::eOctreeType::DYNAMIC, myCullingRadius);
 	myScene->AddInstance(myInstance);
+
 	myIsActiveState = true;
 }
 
@@ -72,6 +74,8 @@ const eStateStatus InGameState::Update(const float& aDeltaTime)
 	{
 		return eStateStatus::ePopMainState;
 	}
+
+	myPlayer->Update(aDeltaTime);
 
 	//LUA::ScriptSystem::GetInstance()->CallFunction("Update", { aDeltaTime });
 	//LUA::ScriptSystem::GetInstance()->Update();

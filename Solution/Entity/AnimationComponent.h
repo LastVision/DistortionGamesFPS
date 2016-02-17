@@ -16,7 +16,7 @@ struct AnimationComponentData;
 class AnimationComponent : public Component
 {
 public:
-	AnimationComponent(Entity& aEntity, AnimationComponentData& aComponentData, const Prism::Terrain& aTerrain);
+	AnimationComponent(Entity& aEntity, AnimationComponentData& aComponentData);
 	~AnimationComponent();
 
 	void Reset() override;
@@ -56,8 +56,6 @@ private:
 	float myCullingRadius;
 	CU::StaticArray<AnimationData, int(eEntityState::_COUNT)> myAnimations;
 	eEntityState myPrevEntityState;
-
-	const Prism::Terrain& myTerrain;
 };
 
 inline Prism::Instance* AnimationComponent::GetInstance()

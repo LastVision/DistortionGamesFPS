@@ -15,7 +15,6 @@
 #include <SpawnUnitMessage.h>
 #include <TextMessage.h>
 #include <TimeMultiplierMessage.h>
-#include <TriggerComponent.h>
 #include <ToggleBuildTimeMessage.h>
 #include <ToggleGUIMessage.h>
 #include <ToggleFogOfWarMessage.h>

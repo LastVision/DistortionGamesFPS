@@ -7,6 +7,7 @@
 class Level;
 class LevelFactory;
 class MessageState;
+class PlayerComponent;
 
 namespace CU
 {
@@ -43,11 +44,12 @@ public:
 	void OnResize(int aWidth, int aHeight) override;
 
 private:
-	Prism::Camera* myCamera;
 	Prism::Scene* myScene;
 	Prism::Instance* myInstance;
 	CU::Matrix44<float> myInstanceOrientation;
 	CU::Matrix44<float> myPlayerOrientation;
 	float myCullingRadius;
 	GUI::GUIManager* myGUIManager;
+
+	PlayerComponent* myPlayer;
 };
