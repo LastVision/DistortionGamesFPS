@@ -36,6 +36,9 @@
     <ClCompile Include="Level.cpp">
       <Filter>Level</Filter>
     </ClCompile>
+    <ClCompile Include="LevelFactory.cpp">
+      <Filter>Level\Factory</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Game.h" />
@@ -80,6 +83,9 @@
     <ClInclude Include="Level.h">
       <Filter>Level</Filter>
     </ClInclude>
+    <ClInclude Include="LevelFactory.h">
+      <Filter>Level\Factory</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="PreCompile">
@@ -96,6 +102,9 @@
     </Filter>
     <Filter Include="Level">
       <UniqueIdentifier>{226b8cfe-ac14-4726-bc79-67f2a162501e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Level\Factory">
+      <UniqueIdentifier>{62d6a342-7532-4a12-8a2f-ac9ffe791a6e}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

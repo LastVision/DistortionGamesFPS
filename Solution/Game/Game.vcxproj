@@ -206,6 +206,7 @@
     <ClInclude Include="GameState.h" />
     <ClInclude Include="InGameState.h" />
     <ClInclude Include="Level.h" />
+    <ClInclude Include="LevelFactory.h" />
     <ClInclude Include="ScriptInterface.h" />
     <ClInclude Include="StateEnums.h" />
     <ClInclude Include="StateStack.h" />
@@ -222,6 +223,7 @@
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="InGameState.cpp" />
     <ClCompile Include="Level.cpp" />
+    <ClCompile Include="LevelFactory.cpp" />
     <ClCompile Include="ScriptInterface.cpp" />
     <ClCompile Include="StateStack.cpp" />
     <ClCompile Include="StateStackProxy.cpp" />
