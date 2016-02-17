@@ -56,6 +56,9 @@
     <ClCompile Include="PlayerComponent.cpp">
       <Filter>Component</Filter>
     </ClCompile>
+    <ClCompile Include="ShootingComponent.cpp">
+      <Filter>Component</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
@@ -97,6 +100,9 @@
       <Filter>Notes</Filter>
     </ClInclude>
     <ClInclude Include="PlayerComponent.h">
+      <Filter>Component</Filter>
+    </ClInclude>
+    <ClInclude Include="ShootingComponent.h">
       <Filter>Component</Filter>
     </ClInclude>
   </ItemGroup>

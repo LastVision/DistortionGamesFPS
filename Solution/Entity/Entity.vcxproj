@@ -172,6 +172,7 @@
     <ClInclude Include="GraphicsComponentData.h" />
     <ClInclude Include="PlayerComponent.h" />
     <ClInclude Include="PollingStation.h" />
+    <ClInclude Include="ShootingComponent.h" />
     <ClInclude Include="stdafx.h" />
   </ItemGroup>
   <ItemGroup>
@@ -184,6 +185,7 @@
     <ClCompile Include="GraphicsComponent.cpp" />
     <ClCompile Include="PlayerComponent.cpp" />
     <ClCompile Include="PollingStation.cpp" />
+    <ClCompile Include="ShootingComponent.cpp" />
     <ClCompile Include="stdafx.cpp">
       <MultiProcessorCompilation Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</MultiProcessorCompilation>
       <MultiProcessorCompilation Condition="'$(Configuration)|$(Platform)'=='DataExporter|Win32'">false</MultiProcessorCompilation>
