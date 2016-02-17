@@ -1,10 +1,7 @@
 #include <CommonHelper.h>
 #include <Defines.h>
-#include <HeightMap.h>
 #include <MathHelper.h>
-#include <NavMesh.h>
 #include "LevelReader.h"
-#include <Terrain.h>
 #include <XMLReader.h>
 #include <Vertices.h>
 #include <iostream>

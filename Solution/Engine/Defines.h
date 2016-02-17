@@ -17,7 +17,7 @@
 #endif
 
 //DO NOT CHANGE
-#define DGFX_VERSION 12
+#define DGFX_VERSION 13
 #define TERRAIN_VERSION 1
 
 //#define ENABLE_DEBUG_TEXT

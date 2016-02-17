@@ -105,7 +105,7 @@ int main(int argC,      // Number of strings in array argv
 		std::cout << "---| CollisionRadius Done |---\n" << std::endl;
 	}
 
-	if (createTerrainAndNavMesh)
+	/*if (createTerrainAndNavMesh)
 	{
 		std::cout << "---| Creating Terrain and NavMesh|---\n" << std::endl;
 
@@ -120,7 +120,7 @@ int main(int argC,      // Number of strings in array argv
 		delete reader;
 
 		std::cout << "\n---| Terrain and NavMesh Done |---\n" << std::endl;
-	}
+	}*/
 	
 
 	CU::TimerManager::Destroy();
