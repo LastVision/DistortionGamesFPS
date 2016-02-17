@@ -94,7 +94,7 @@ namespace Prism
 		aScene->SetViewCamera(*oldCamera);
 		aScene->SetCamera(*aShadowSpotLight->GetCamera());
 
-		aScene->Render(false);
+		aScene->Render();
 		//Prism::Engine::GetInstance()->DisableZBuffer();
 		//aScene->RenderEmitters();
 		//Prism::Engine::GetInstance()->EnableZBuffer();
