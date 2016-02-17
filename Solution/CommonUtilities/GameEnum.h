@@ -105,6 +105,7 @@ enum class eComponentType
 	NOT_USED = -1,
 	ANIMATION,
 	GRAPHICS,
+	SHOOTING,
 	PLAYER,
 	_COUNT,
 };
@@ -142,11 +143,7 @@ enum class eFuzzyAI
 
 enum class eCursorType
 {
-	NORMAL,
-	ATTACK,
-	ATTACK_MOVE,
-	TOTEM,
-	CANCEL,
+	NORMAL
 };
 
 enum class eDifficulty

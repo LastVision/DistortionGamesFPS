@@ -236,6 +236,7 @@
     <ClInclude Include="Matrix44decl.h" />
     <ClInclude Include="Plane.h" />
     <ClInclude Include="PlaneVolume.h" />
+    <ClInclude Include="Quaternion.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="Sphere.h" />
     <ClInclude Include="StaticArray.h" />
@@ -257,6 +258,7 @@
     <ClCompile Include="Camera2D.cpp" />
     <ClCompile Include="FuzzySet.cpp" />
     <ClCompile Include="MathHelper.cpp" />
+    <ClCompile Include="Quaternion.cpp" />
     <ClCompile Include="stdafx.cpp">
       <MultiProcessorCompilation Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</MultiProcessorCompilation>
       <MultiProcessorCompilation Condition="'$(Configuration)|$(Platform)'=='Internal|Win32'">false</MultiProcessorCompilation>

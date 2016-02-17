@@ -33,6 +33,9 @@
     <ClCompile Include="EmitterManager.cpp">
       <Filter>Managers</Filter>
     </ClCompile>
+    <ClCompile Include="Level.cpp">
+      <Filter>Level</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Game.h" />
@@ -74,6 +77,9 @@
       <Filter>Managers</Filter>
     </ClInclude>
     <ClInclude Include="GameDefines.h" />
+    <ClInclude Include="Level.h">
+      <Filter>Level</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="PreCompile">
@@ -87,6 +93,9 @@
     </Filter>
     <Filter Include="Managers">
       <UniqueIdentifier>{f085dd4d-badd-48c6-b55c-c3ab8aeb1674}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Level">
+      <UniqueIdentifier>{226b8cfe-ac14-4726-bc79-67f2a162501e}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

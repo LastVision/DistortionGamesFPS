@@ -4,6 +4,7 @@
 class Entity;
 
 struct BehaviorNote;
+struct ShootNote;
 
 class Component
 {
@@ -15,6 +16,7 @@ public:
 	virtual void Reset();
 
 	virtual void ReceiveNote(const BehaviorNote&) {}
+	virtual void ReceiveNote(const ShootNote&) {}
 
 	//TODO: remove?
 	virtual void Init();

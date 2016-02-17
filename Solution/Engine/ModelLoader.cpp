@@ -153,8 +153,8 @@ namespace Prism
 		std::string name = aModelPath.substr(0, aModelPath.rfind("."));
 		name = name.substr(aModelPath.rfind("/")+1, aModelPath.length());
 
-		DL_ASSERT_EXP(myInstancedCount.find(name) != myInstancedCount.end()
-			, CU::Concatenate("GetInstancedCount on %s failed", aModelPath.c_str()));
+		/*DL_ASSERT_EXP(myInstancedCount.find(name) != myInstancedCount.end()
+			, CU::Concatenate("GetInstancedCount on %s failed", aModelPath.c_str()));*/
 		if (myInstancedCount.find(name) == myInstancedCount.end())
 		{
 			return 256;

@@ -111,6 +111,9 @@
     <ClInclude Include="GameStructs.h" />
     <ClInclude Include="FuzzySet.h" />
     <ClInclude Include="Tweener.h" />
+    <ClInclude Include="Quaternion.h">
+      <Filter>Math\Quaternion</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Math">
@@ -140,6 +143,9 @@
     <Filter Include="Precompile">
       <UniqueIdentifier>{5cd0f21b-eebe-4a7f-a40e-24766a0f7791}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Math\Quaternion">
+      <UniqueIdentifier>{f41ade53-8367-4329-be78-8e627f3645d7}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Camera2D.cpp">
@@ -161,6 +167,9 @@
       <Filter>TinyXML2</Filter>
     </ClCompile>
     <ClCompile Include="FuzzySet.cpp" />
+    <ClCompile Include="Quaternion.cpp">
+      <Filter>Math\Quaternion</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="CommonUtilities.rc" />
