@@ -105,22 +105,22 @@ int main(int argC,      // Number of strings in array argv
 		std::cout << "---| CollisionRadius Done |---\n" << std::endl;
 	}
 
-	/*if (createTerrainAndNavMesh)
+	if (createTerrainAndNavMesh)
 	{
-		std::cout << "---| Creating Terrain and NavMesh|---\n" << std::endl;
+		/*std::cout << "---| Creating Terrain and NavMesh|---\n" << std::endl;
 
 		reader = new TerrainReader();
 
 		reader->ReadFile("Data/Level/LI_level.xml");
 
-		delete reader;
+		delete reader;*/
 
 		reader = new LevelReader();
 		reader->ReadFile("Data/Level/LI_level.xml");
 		delete reader;
 
 		std::cout << "\n---| Terrain and NavMesh Done |---\n" << std::endl;
-	}*/
+	}
 	
 
 	CU::TimerManager::Destroy();
