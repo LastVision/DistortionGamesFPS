@@ -120,14 +120,14 @@ void Prism::Scene::Render(bool)
 	for (int i = 0; i < myInstances.Size(); ++i)
 	{
 		Instance* current = myInstances[i];
-		if (current->GetCastShadow() == true
+		/*if (current->GetCastShadow() == true
 			&& (current->GetAlwaysRender() == true || (current->GetShouldRender() == true && current->GetRenderThroughCulling() == true)))
-		{
-			current->Render(*myCamera, *myInstancingHelper, true);
-		}
+		{*/
+		current->Render(*myCamera, *myInstancingHelper, false);
+		//}
 	}
 
-	myInstancingHelper->Render(myDirectionalLightData, true);
+	myInstancingHelper->Render(myDirectionalLightData, false);
 }
 
 void Prism::Scene::Render(bool aRenderNavMeshLines, Texture* aFogOfWarTexture, SpotLightShadow* aShadowSpotLight)
