@@ -1,37 +1,19 @@
 #include "stdafx.h"
 
-#include <AudioInterface.h>
 #include <Camera.h>
 #include "Console.h"
-#include <ColoursForBG.h>
-#include "ConsoleState.h"
-#include <Cursor.h>
 #include <EffectContainer.h>
-#include <Engine.h>
-#include <Entity.h>
-#include <GameStateMessage.h>
-#include <GUIManager.h>
+#include <FadeMessage.h>
 #include "InGameState.h"
 #include <InputWrapper.h>
+#include <Instance.h>
 #include <MemoryTracker.h>
 #include <ModelLoader.h>
-#include <MoveCameraMessage.h>
-#include <OnClickMessage.h>
-#include <PostMaster.h>
-#include <SpawnUnitMessage.h>
-#include <TimerManager.h>
-#include <TriggerMessage.h>
-#include <VTuneApi.h>
-#include <Vector.h>
-
-#include <ScriptSystem.h>
-#include <CinematicMessage.h>
-#include <RunScriptMessage.h>
-#include <FadeMessage.h>
-
-#include <Scene.h>
-#include <Instance.h>
 #include <PlayerComponent.h>
+#include <PostMaster.h>
+#include <Scene.h>
+#include <ScriptSystem.h>
+#include <VTuneApi.h>
 
 InGameState::InGameState()
 	: myGUIManager(nullptr)
