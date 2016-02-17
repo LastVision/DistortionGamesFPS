@@ -105,6 +105,7 @@ enum class eComponentType
 	NOT_USED = -1,
 	ANIMATION,
 	GRAPHICS,
+	SHOOTING,
 	PLAYER,
 	_COUNT,
 };
