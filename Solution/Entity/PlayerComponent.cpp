@@ -8,9 +8,11 @@
 PlayerComponent::PlayerComponent()
 	: myPitch(CU::Vector3<float>(0, 1.f, 0), 0)
 	, myYaw(CU::Vector3<float>(1.f, 0, 0), 0)
-	, mySpeed(1.f)
+	, mySpeed(100.f)
 {
 	myCamera = new Prism::Camera(myOrientation);
+
+	myOrientation.SetPos(CU::Vector3<float>(0.f, 182.5f, 0));
 }
 
 
@@ -47,6 +49,11 @@ void PlayerComponent::Movement(float aDelta)
 	}
 
 	CU::Normalize(movement);
+
+	if (CU::InputWrapper::GetInstance()->KeyIsPressed(DIK_LSHIFT))
+	{
+		movement *= 3.f;
+	}
 
 	CU::Vector3<float> forward = CU::Cross(myOrientation.GetRight(), CU::Vector3<float>(0.f, 1.f, 0.f));
 

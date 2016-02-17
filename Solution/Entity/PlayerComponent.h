@@ -31,7 +31,6 @@ private:
 	Prism::Camera* myCamera;
 	CU::Matrix44<float> myOrientation;
 
-	CU::Vector3<float> myPosition;
 
 	float mySpeed;
 };
