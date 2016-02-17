@@ -5,7 +5,6 @@
 #include "Engine.h"
 #include "Effect.h"
 #include "EffectContainer.h"
-#include "FileWatcher.h"
 #include "SpotLightShadow.h"
 #include "Texture.h"
 #include "TextureContainer.h"
@@ -81,27 +80,6 @@ namespace Prism
 
 		myEffects[aFilePath] = newEffect;
 		myEffectArrays.Add(newEffect);
-
-		WATCH_FILE(aFilePath, EffectContainer::ReloadEffect);
-	}
-
-	void EffectContainer::ReloadEffect(const std::string& aFilePath)
-	{
-		if (myEffects.find(aFilePath) == myEffects.end())
-		{
-			return;
-		}
-
-		myEffects[aFilePath]->Init(aFilePath);
-
-
-		Texture* tex = TextureContainer::GetInstance()->GetTexture(myCubeMap);
-		ID3DX11EffectShaderResourceVariable* shaderVar = myEffects[aFilePath]->GetEffect()->GetVariableByName("CubeMap")->AsShaderResource();
-
-		if (shaderVar->IsValid())
-		{
-			shaderVar->SetResource(tex->GetShaderView());
-		}
 	}
 
 	void EffectContainer::VerifyShader(const std::string& aFilePath)

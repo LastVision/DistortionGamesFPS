@@ -1,6 +1,5 @@
 #include "stdafx.h"
 #include "Camera.h"
-#include "FileWatcher.h"
 #include "Frustum.h"
 #include <xnamath.h>
 #include <XMLReader.h>
@@ -19,7 +18,6 @@ namespace Prism
 		, myCurrentShakeTime(0.f)
 	{
 		myFrustum = new Frustum(aPlayerMatrix, myNear, myFar);
-		WATCH_FILE("Data/Setting/SET_camera.xml", Camera::ReadXML);
 		ReadXML("Data/Setting/SET_camera.xml");
 	}
 
@@ -31,7 +29,6 @@ namespace Prism
 
 	void Camera::ReadXML(const std::string& aFileName)
 	{
-		Sleep(10);
 		XMLReader reader;
 		reader.OpenDocument(aFileName);
 		tinyxml2::XMLElement* levelElement = reader.ForceFindFirstChild("camera");
@@ -55,11 +52,7 @@ namespace Prism
 		aWidth;
 		aHeight;
 		myFar = 1000.f;
-		//float screenAspect = aWidth / aHeight;
-		//myFOV = 3.14f / 2.f;
 		myProjectionMatrix = CU::Matrix44<float>::CreateOrthogonalMatrixLH(90.f, 90.f, myNear, myFar);
-		//myProjectionMatrix = CU::Matrix44<float>::CreateOrthogonalMatrixLH(70.f, 90.f, myNear, myFar);
-		//myProjectionMatrix = CU::Matrix44<float>::CreateProjectionMatrixLH(myNear, myFar, static_cast<float>(aHeight) / static_cast<float>(aWidth), myFOV);
 		myProjectionMatrixNonInverted = CU::InverseSimple(myProjectionMatrix);
 		myFrustum->OnResize(myNear, myFar);
 	}

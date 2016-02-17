@@ -111,9 +111,8 @@ namespace Prism
 		}
 	}
 
-	void ModelAnimated::Render(const CU::Matrix44<float>& aOrientation, const CU::Vector3<float>& aCameraPosition, bool aIsDepthRender)
+	void ModelAnimated::Render(const CU::Matrix44<float>& aOrientation)
 	{
-		aCameraPosition;
 		if (myIsNULLObject == false)
 		{
 			float blendFactor[4];
@@ -125,7 +124,7 @@ namespace Prism
 			myEffect->SetBlendState(NULL, blendFactor);
 			myEffect->SetWorldMatrix(aOrientation);
 
-			BaseModel::Render(aIsDepthRender);
+			BaseModel::Render();
 		}
 	}
 

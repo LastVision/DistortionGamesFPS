@@ -12,7 +12,7 @@ namespace Prism
 	public:
 		ModelProxy();
 
-		void Render(const CU::Matrix44<float>& aOrientation, const CU::Vector3<float>& aCameraPosition, bool aIsDepthRender);
+		void Render(const CU::Matrix44<float>& aOrientation, const CU::Vector3<float>& aCameraPosition);
 
 		void SetModel(Model* aModel);
 		void SetModelAnimated(ModelAnimated* aModel);

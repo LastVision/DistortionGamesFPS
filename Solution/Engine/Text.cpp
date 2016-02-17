@@ -84,7 +84,7 @@ void Prism::Text::Render()
 	myEffect->SetPosAndScale(myPosition, myScale);
 	myEffect->SetColor(myColor);
 
-	BaseModel::Render(false);
+	BaseModel::Render();
 
 	Engine::GetInstance()->EnableZBuffer();
 

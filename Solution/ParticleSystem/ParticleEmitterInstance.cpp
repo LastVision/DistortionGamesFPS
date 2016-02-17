@@ -80,7 +80,7 @@ namespace Prism
 
 		for (UINT i = 0; i < myParticleEmitterData->myTechniqueDesc->Passes; ++i)
 		{
-			myParticleEmitterData->myEffect->GetTechnique(false)->GetPassByIndex(i)->Apply(0, context);
+			myParticleEmitterData->myEffect->GetTechnique()->GetPassByIndex(i)->Apply(0, context);
 			context->Draw(myGraphicalParticles.Size(), 0);
 		}
 

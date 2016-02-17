@@ -12,15 +12,15 @@ namespace Prism
 	{
 	}
 
-	void ModelProxy::Render(const CU::Matrix44<float>& aOrientation, const CU::Vector3<float>& aCameraPosition, bool aIsDepthRender)
+	void ModelProxy::Render(const CU::Matrix44<float>& aOrientation, const CU::Vector3<float>& aCameraPosition)
 	{
 		if (myModel != nullptr)
 		{
-			myModel->Render(aOrientation, aCameraPosition, aIsDepthRender);
+			myModel->Render(aOrientation, aCameraPosition);
 		}
 		else if (myModelAnimated != nullptr)
 		{
-			myModelAnimated->Render(aOrientation, aCameraPosition, aIsDepthRender);
+			myModelAnimated->Render(aOrientation);
 		}
 	}
 

@@ -117,7 +117,7 @@ void Prism::Sprite::Render(const CU::Vector2<float>& aPosition, const CU::Vector
 	myEffect->SetColor(aColor);
 	myEffect->SetSpriteOrientation(myOrientation);
 
-	BaseModel::Render(false);
+	BaseModel::Render();
 
 	Engine::GetInstance()->EnableZBuffer();
 }

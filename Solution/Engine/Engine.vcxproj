@@ -269,7 +269,6 @@
     <ClCompile Include="DirectX.cpp" />
     <ClCompile Include="Effect.cpp" />
     <ClCompile Include="EffectContainer.cpp" />
-    <ClCompile Include="FogOfWarHelper.cpp" />
     <ClCompile Include="Engine.cpp" />
     <ClCompile Include="FBXFactory.cpp" />
     <ClCompile Include="FBX\FbxLoader.cpp">
@@ -279,7 +278,6 @@
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Internal|Win32'">../stdafx.h</PrecompiledHeaderFile>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='DataExporter|Win32'">../stdafx.h</PrecompiledHeaderFile>
     </ClCompile>
-    <ClCompile Include="FileWatcher.cpp" />
     <ClCompile Include="DebugFont.cpp" />
     <ClCompile Include="DebugFontContainer.cpp" />
     <ClCompile Include="Font.cpp" />
@@ -293,14 +291,11 @@
     <ClCompile Include="Line3DRenderer.cpp" />
     <ClCompile Include="Model.cpp" />
     <ClCompile Include="ModelAnimated.cpp" />
-    <ClCompile Include="RenderPlane.cpp" />
     <ClCompile Include="Renderer.cpp" />
-    <ClCompile Include="SelectionCircle.cpp" />
     <ClCompile Include="SpotLightShadow.cpp" />
     <ClCompile Include="Sprite.cpp" />
     <ClCompile Include="ModelLoader.cpp" />
     <ClCompile Include="ModelProxy.cpp" />
-    <ClCompile Include="Octree.cpp" />
     <ClCompile Include="PointLight.cpp" />
     <ClCompile Include="Scene.cpp" />
     <ClCompile Include="SpotLight.cpp" />
@@ -333,7 +328,6 @@
     <ClCompile Include="TransformationNodeCurves.cpp" />
     <ClCompile Include="TransformationNodeHierarchy.cpp" />
     <ClCompile Include="TransformationNodeInstance.cpp" />
-    <ClCompile Include="TreeNode.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Animation.h" />
@@ -352,12 +346,10 @@
     <ClInclude Include="Effect.h" />
     <ClInclude Include="EffectContainer.h" />
     <ClInclude Include="EffectListener.h" />
-    <ClInclude Include="FogOfWarHelper.h" />
     <ClInclude Include="Engine.h" />
     <ClInclude Include="EngineEnums.h" />
     <ClInclude Include="FBXFactory.h" />
     <ClInclude Include="FBX\FbxLoader.h" />
-    <ClInclude Include="FileWatcher.h" />
     <ClInclude Include="DebugFont.h" />
     <ClInclude Include="DebugFontContainer.h" />
     <ClInclude Include="Font.h" />
@@ -375,14 +367,11 @@
     <ClInclude Include="LodStructs.h" />
     <ClInclude Include="Model.h" />
     <ClInclude Include="ModelAnimated.h" />
-    <ClInclude Include="RenderPlane.h" />
     <ClInclude Include="Renderer.h" />
-    <ClInclude Include="SelectionCircle.h" />
     <ClInclude Include="SpotLightShadow.h" />
     <ClInclude Include="Sprite.h" />
     <ClInclude Include="ModelLoader.h" />
     <ClInclude Include="ModelProxy.h" />
-    <ClInclude Include="Octree.h" />
     <ClInclude Include="PointLight.h" />
     <ClInclude Include="Scene.h" />
     <ClInclude Include="SetupInfo.h" />
@@ -406,7 +395,6 @@
     <ClInclude Include="TransformationNodeCurves.h" />
     <ClInclude Include="TransformationNodeHierarchy.h" />
     <ClInclude Include="TransformationNodeInstance.h" />
-    <ClInclude Include="TreeNode.h" />
     <ClInclude Include="VertexBufferWrapper.h" />
     <ClInclude Include="VertexDataWrapper.h" />
     <ClInclude Include="VertexIndexWrapper.h" />

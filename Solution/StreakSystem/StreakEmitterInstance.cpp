@@ -90,13 +90,13 @@ void Prism::StreakEmitterInstance::Render(Camera* aCamera)
 
 	D3DX11_TECHNIQUE_DESC td;
 
-	HRESULT hr = myEmitter.myEffect->GetTechnique(false)->GetDesc(&td);
+	HRESULT hr = myEmitter.myEffect->GetTechnique()->GetDesc(&td);
 	DL_ASSERT_EXP(SUCCEEDED(hr) == true, "Failed to get technique description.");
 
 	for (UINT i = 0; i < td.Passes; ++i)
 	{
 		myEmitter.myEffect->SetStreakTexture(myEmitter.myTexture);
-		hr = myEmitter.myEffect->GetTechnique(false)->GetPassByIndex(i)->Apply(0, Engine::GetInstance()->GetContex());
+		hr = myEmitter.myEffect->GetTechnique()->GetPassByIndex(i)->Apply(0, Engine::GetInstance()->GetContex());
 		DL_ASSERT_EXP(SUCCEEDED(hr) == true, "Failed to get pass by index.");
 		Engine::GetInstance()->GetContex()->Draw(myStreaks.Size(), 0);
 	}

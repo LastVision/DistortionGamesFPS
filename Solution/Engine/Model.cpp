@@ -297,7 +297,7 @@ namespace Prism
 		}
 	}
 
-	void Model::Render(const CU::Matrix44<float>& aOrientation, const CU::Vector3<float>& aCameraPosition, bool aIsDepthRender)
+	void Model::Render(const CU::Matrix44<float>& aOrientation, const CU::Vector3<float>& aCameraPosition)
 	{
 		if (myIsLodGroup == true)
 		{
@@ -320,7 +320,7 @@ namespace Prism
 
 			if (toRender)
 			{
-				toRender->Render(aOrientation, aCameraPosition, aIsDepthRender);
+				toRender->Render(aOrientation, aCameraPosition);
 			}
 		}
 		else
@@ -336,26 +336,13 @@ namespace Prism
 				myEffect->SetBlendState(NULL, blendFactor);
 				myEffect->SetWorldMatrix(aOrientation);
 
-				BaseModel::Render(aIsDepthRender);
+				BaseModel::Render();
 			}
 
 			for (int i = 0; i < myChildren.Size(); ++i)
 			{
-				myChildren[i]->Render(myChildTransforms[i] * aOrientation, aCameraPosition, aIsDepthRender);
+				myChildren[i]->Render(myChildTransforms[i] * aOrientation, aCameraPosition);
 			}
-		}
-	}
-
-	void Model::ActivateAlbedo(eOwnerType aOwner)
-	{
-		for (int i = 0; i < mySurfaces.Size(); ++i)
-		{
-			mySurfaces[i]->ActivateAlbedo(aOwner);
-		}
-
-		for (int i = 0; i < myChildren.Size(); ++i)
-		{
-			myChildren[i]->ActivateAlbedo(aOwner);
 		}
 	}
 
@@ -369,8 +356,7 @@ namespace Prism
 
 	bool Model::SetGPUState(const CU::GrowingArray<CU::Matrix44<float>>& someWorldMatrices
 		, const CU::GrowingArray<CU::Vector3<float>>& someScales
-		, const CU::GrowingArray<float>& someHeights
-		, eOwnerType aOwner)
+		, const CU::GrowingArray<float>& someHeights)
 	{
 		DL_ASSERT_EXP(mySurfaces.Size() < 2, "We do not support several surfaces yet");
 
@@ -380,7 +366,7 @@ namespace Prism
 			{
 				return false;
 			}
-			return myChildren[0]->SetGPUState(someWorldMatrices, someScales, someHeights, aOwner);
+			return myChildren[0]->SetGPUState(someWorldMatrices, someScales, someHeights);
 		}
 		else
 		{
@@ -397,10 +383,6 @@ namespace Prism
 				{
 					memcpy(data, &someWorldMatrices[0], sizeof(CU::Matrix44<float>) * someWorldMatrices.Size());
 				}
-				/*for (int i = 0; i < someWorldMatrices.Size(); ++i)
-				{
-					data[i] = someWorldMatrices[i];
-				}*/
 
 				context->Unmap(myInstancingMatrixBuffer->myVertexBuffer, 0);
 			}
@@ -418,11 +400,6 @@ namespace Prism
 				{
 					memcpy(data, &someScales[0], sizeof(CU::Vector3<float>) * someScales.Size());
 				}
-				
-				/*for (int i = 0; i < someScales.Size(); ++i)
-				{
-					data[i] = someScales[i];
-				}*/
 
 				context->Unmap(myInstancingScaleBuffer->myVertexBuffer, 0);
 			}
@@ -440,11 +417,6 @@ namespace Prism
 				{
 					memcpy(data, &someHeights[0], sizeof(float) * someHeights.Size());
 				}
-
-				/*for (int i = 0; i < someScales.Size(); ++i)
-				{
-				data[i] = someScales[i];
-				}*/
 
 				context->Unmap(myInstancingHeightBuffer->myVertexBuffer, 0);
 			}
@@ -467,7 +439,6 @@ namespace Prism
 				, myIndexBuffer->myIndexBufferFormat, myIndexBuffer->myByteOffset);
 			context->IASetInputLayout(myVertexLayout);
 
-			ActivateAlbedo(aOwner);
 			mySurfaces[0]->Activate();
 
 			return true;

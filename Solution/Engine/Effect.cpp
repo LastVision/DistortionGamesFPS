@@ -74,14 +74,8 @@ namespace Prism
 
 	}
 
-	ID3DX11EffectTechnique* Effect::GetTechnique(bool aIsDepthRender, const std::string& aName)
+	ID3DX11EffectTechnique* Effect::GetTechnique(const std::string& aName)
 	{
-		if (aIsDepthRender == true)
-		{
-			std::string name = aName;
-			name += "_DEPTHONLY";
-			return myEffect->GetTechniqueByName(name.c_str());
-		}
 		return myEffect->GetTechniqueByName(aName.c_str());
 	}
 

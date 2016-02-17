@@ -25,8 +25,7 @@ AnimationComponent::AnimationComponent(Entity& aEntity, AnimationComponentData& 
 	Prism::ModelProxy* model = Prism::ModelLoader::GetInstance()->LoadModelAnimated(aComponentData.myModelPath
 		, aComponentData.myEffectPath);
 
-	myInstance = new Prism::Instance(*model, myEntity.myOrientation, myEntity.GetOctreeType(), myCullingRadius);
-	myInstance->ActivateAlbedo(myEntity.GetOwner());
+	myInstance = new Prism::Instance(*model, myEntity.myOrientation);
 
 	int animations = static_cast<int>(eEntityState::_COUNT);
 
@@ -90,34 +89,13 @@ void AnimationComponent::Update(float aDeltaTime)
 		PlayAnimation(myEntity.GetState());
 		myPrevEntityState = myEntity.GetState();
 	}
-	//	myInstance->SetAnimation(Prism::AnimationSystem::GetInstance()->GetAnimation(data.myFile.c_str()));
-	//
-	//	if (data.myResetTimeOnRestart == true)
-	//	{
-	//		myInstance->ResetAnimationTime(0.f);
-	//	}
-	//	else
-	//	{
-	//		myInstance->ResetAnimationTime(data.myElapsedTime);
-	//	}
-	//}
-	
+
 	if (myInstance->IsAnimationDone() == false || data.myShouldLoop == true)
 	{
 		myInstance->Update(aDeltaTime);
 	}
-	
-
-	if (myEntity.GetTemporaryOwner() != eOwnerType::NOT_USED)
-	{
-		myInstance->ActivateAlbedo(myEntity.GetTemporaryOwner());
-	}
 
 	data.myElapsedTime += aDeltaTime;
-	//myPrevEntityState = myEntity.GetState();
-#else
-	CU::Vector3<float> pos = myTerrain.GetHeight(myEntity.GetOrientation().GetPos(), 2.f);
-	Prism::RenderBox(pos, eColorDebug::BLUE, 0.5f);
 #endif
 }
 

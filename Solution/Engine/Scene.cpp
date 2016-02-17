@@ -43,7 +43,7 @@ namespace Prism
 
 		for (int i = 0; i < myInstances.Size(); ++i)
 		{
-			myInstances[i]->Render(*myCamera, *myInstancingHelper, false);
+			myInstances[i]->Render(*myCamera, *myInstancingHelper);
 		}
 
 		myInstancingHelper->Render(myDirectionalLightData, false);

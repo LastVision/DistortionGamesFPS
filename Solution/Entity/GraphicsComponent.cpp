@@ -15,13 +15,11 @@
 GraphicsComponent::GraphicsComponent(Entity& aEntity, GraphicsComponentData& aComponentData)
 	: Component(aEntity)
 	, myInstance(nullptr)
-	, myCullingRadius(10.f)
 {
 	Prism::ModelProxy* model = Prism::ModelLoader::GetInstance()->LoadModel(aComponentData.myModelPath
 		, aComponentData.myEffectPath);
 
-	myInstance = new Prism::Instance(*model, myEntity.myOrientation, myEntity.GetOctreeType(), myCullingRadius, aComponentData.myAlwaysRender);
-	myInstance->ActivateAlbedo(myEntity.GetOwner());
+	myInstance = new Prism::Instance(*model, myEntity.myOrientation);
 }
 
 GraphicsComponent::~GraphicsComponent()
@@ -44,23 +42,19 @@ void GraphicsComponent::InitDLL(const char* aModelPath, const char* aEffectPath)
 	Prism::EffectContainer::GetInstance()->GetEffect(aEffectPath);
 	model->SetEffect(Prism::EffectContainer::GetInstance()->GetEffect(aEffectPath));
 
-	myInstance = new Prism::Instance(*model, myEntity.myOrientation, myEntity.GetOctreeType(), myCullingRadius);
+	myInstance = new Prism::Instance(*model, myEntity.myOrientation);
 }
 
 void GraphicsComponent::InitCube(float aWidth, float aHeight, float aDepth)
 {
 	Prism::ModelProxy* model = Prism::ModelLoader::GetInstance()->LoadCube(aWidth, aHeight, aDepth);
 
-	myInstance = new Prism::Instance(*model, myEntity.myOrientation, myEntity.GetOctreeType(), myCullingRadius);
+	myInstance = new Prism::Instance(*model, myEntity.myOrientation);
 }
 
 void GraphicsComponent::Update(float aDeltaTime)
 {
 	aDeltaTime;
-	if (myEntity.GetTemporaryOwner() != eOwnerType::NOT_USED)
-	{
-		myInstance->ActivateAlbedo(myEntity.GetTemporaryOwner());
-	}
 }
 
 void GraphicsComponent::SetPosition(const CU::Vector3<float>& aPosition)

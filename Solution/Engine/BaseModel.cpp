@@ -125,7 +125,7 @@ namespace Prism
 		}
 	}
 
-	void BaseModel::Render(bool aIsDepthRender)
+	void BaseModel::Render()
 	{
 		Engine::GetInstance()->GetContex()->IASetInputLayout(myVertexLayout);
 		Engine::GetInstance()->GetContex()->IASetVertexBuffers(myVertexBuffer->myStartSlot
@@ -141,25 +141,11 @@ namespace Prism
 			mySurfaces[s]->Activate();
 
 			ID3DX11EffectTechnique* tech = nullptr;
-			
-			//if (usePixelShader == false)
-			//{
-			//	tech = myEffect->GetEffect()->GetTechniqueByName("Render_No_Pixel_Shader");
-			//}
-			//else if (mySurfaces[s]->GetEmissive() == true)
-			//{
-			//	tech = myEffect->GetEffect()->GetTechniqueByName("Render_Emissive");
-			//}
-			//else
-			//{
-			//	tech = myEffect->GetTechnique();
-			//}
-
-			tech = myEffect->GetTechnique(aIsDepthRender, myTechniqueName);
+			tech = myEffect->GetTechnique(myTechniqueName);
 
 			if (tech->IsValid() == false)
 			{
-				tech = myEffect->GetTechnique(aIsDepthRender);
+				tech = myEffect->GetTechnique();
 				DL_ASSERT("INVALID TECHNIQUE IN BASEMODEL::RENDER: " + myTechniqueName);
 			}
 
@@ -182,7 +168,7 @@ namespace Prism
 	void BaseModel::InitInputLayout(D3D11_INPUT_ELEMENT_DESC* aVertexDescArray, int aArraySize, const std::string& aDebugName)
 	{
 		D3DX11_PASS_DESC passDesc;
-		myEffect->GetTechnique(false, myTechniqueName)->GetPassByIndex(0)->GetDesc(&passDesc);
+		myEffect->GetTechnique(myTechniqueName)->GetPassByIndex(0)->GetDesc(&passDesc);
 		HRESULT hr = Engine::GetInstance()->GetDevice()->CreateInputLayout(aVertexDescArray
 			, aArraySize, passDesc.pIAInputSignature, passDesc.IAInputSignatureSize, &myVertexLayout);
 		if (FAILED(hr) != S_OK)

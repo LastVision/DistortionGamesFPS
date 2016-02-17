@@ -223,15 +223,7 @@ bool Entity::IsHovered() const
 
 void Entity::SetShouldRender(bool aStatus)
 {
-	if (GetComponent<AnimationComponent>() != nullptr)
-	{
-		GetComponent<AnimationComponent>()->GetInstance()->SetShouldRender(aStatus);
-	}
 
-	if (GetComponent<GraphicsComponent>() != nullptr)
-	{
-		GetComponent<GraphicsComponent>()->GetInstance()->SetShouldRender(aStatus);
-	}
 }
 
 bool Entity::GetShouldBeRemoved() const

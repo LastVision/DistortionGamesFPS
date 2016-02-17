@@ -19,7 +19,6 @@
     <ClCompile Include="PointLight.cpp">
       <Filter>Lights</Filter>
     </ClCompile>
-    <ClCompile Include="FileWatcher.cpp" />
     <ClCompile Include="SpotLight.cpp">
       <Filter>Lights</Filter>
     </ClCompile>
@@ -31,12 +30,6 @@
     </ClCompile>
     <ClCompile Include="Surface.cpp">
       <Filter>Rendering</Filter>
-    </ClCompile>
-    <ClCompile Include="TreeNode.cpp">
-      <Filter>Octree</Filter>
-    </ClCompile>
-    <ClCompile Include="Octree.cpp">
-      <Filter>Octree</Filter>
     </ClCompile>
     <ClCompile Include="Frustum.cpp" />
     <ClCompile Include="Effect.cpp">
@@ -156,12 +149,7 @@
     <ClCompile Include="SpriteProxy.cpp">
       <Filter>Rendering\Sprite</Filter>
     </ClCompile>
-    <ClCompile Include="SelectionCircle.cpp" />
-    <ClCompile Include="RenderPlane.cpp" />
     <ClCompile Include="InstancingHelper.cpp">
-      <Filter>Rendering</Filter>
-    </ClCompile>
-    <ClCompile Include="FogOfWarHelper.cpp">
       <Filter>Rendering</Filter>
     </ClCompile>
     <ClCompile Include="SpriteAnimation.cpp">
@@ -214,7 +202,6 @@
     <ClInclude Include="DirectionalLight.h">
       <Filter>Lights</Filter>
     </ClInclude>
-    <ClInclude Include="FileWatcher.h" />
     <ClInclude Include="SpotLight.h">
       <Filter>Lights</Filter>
     </ClInclude>
@@ -234,12 +221,6 @@
     </ClInclude>
     <ClInclude Include="Surface.h">
       <Filter>Rendering</Filter>
-    </ClInclude>
-    <ClInclude Include="TreeNode.h">
-      <Filter>Octree</Filter>
-    </ClInclude>
-    <ClInclude Include="Octree.h">
-      <Filter>Octree</Filter>
     </ClInclude>
     <ClInclude Include="Frustum.h" />
     <ClInclude Include="EngineEnums.h" />
@@ -366,12 +347,7 @@
     <ClInclude Include="SpriteProxy.h">
       <Filter>Rendering\Sprite</Filter>
     </ClInclude>
-    <ClInclude Include="SelectionCircle.h" />
-    <ClInclude Include="RenderPlane.h" />
     <ClInclude Include="InstancingHelper.h">
-      <Filter>Rendering</Filter>
-    </ClInclude>
-    <ClInclude Include="FogOfWarHelper.h">
       <Filter>Rendering</Filter>
     </ClInclude>
     <ClInclude Include="SpriteAnimation.h">
@@ -402,9 +378,6 @@
     </Filter>
     <Filter Include="Rendering">
       <UniqueIdentifier>{bf7322d7-2e84-4f42-a427-99331b06f309}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Octree">
-      <UniqueIdentifier>{0468ca14-fae5-470f-a05b-94c6c2fd9450}</UniqueIdentifier>
     </Filter>
     <Filter Include="Rendering\Effect">
       <UniqueIdentifier>{1117f290-3613-4c3a-8597-128b3d9aa91d}</UniqueIdentifier>

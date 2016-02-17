@@ -25,13 +25,14 @@ namespace Prism
 		InstancingHelper();
 
 		void SetCamera(const Camera* aCamera);
-		void AddModel(eOwnerType aOwner, Model* aModel, const CU::Matrix44<float>& aWorldMatrix
+		void AddModel(Model* aModel, const CU::Matrix44<float>& aWorldMatrix
 			, const CU::Vector3<float>& aScale, float aHeight);
 
 		void Render(CU::StaticArray<DirectionalLightData, NUMBER_OF_DIRECTIONAL_LIGHTS>& someLights, bool aIsDepthRender);
 
 	private:
 		const Camera* myCamera;
-		std::unordered_map<eOwnerType, ModelMap> myRenderInfo;
+
+		ModelMap myRenderInfo;
 	};
 }

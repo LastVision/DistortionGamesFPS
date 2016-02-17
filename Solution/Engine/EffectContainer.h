@@ -24,7 +24,6 @@ namespace Prism
 		~EffectContainer();
 
 		void LoadEffect(const std::string& aFilePath);
-		void ReloadEffect(const std::string& aFilePath);
 		void VerifyShader(const std::string& aFilePath);
 
 		std::string GetCSOPath(const std::string& aFXPath);

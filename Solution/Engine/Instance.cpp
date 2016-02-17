@@ -10,22 +10,13 @@
 #include "ModelProxy.h"
 #include "InstancingHelper.h"
 
-Prism::Instance::Instance(ModelProxy& aModel, const CU::Matrix44<float>& anOrientation, eOctreeType anOctreeType
-		, const float& aObjectCullingRadius, bool aAlwaysRender, bool aCastShadow)
+Prism::Instance::Instance(ModelProxy& aModel, const CU::Matrix44<float>& anOrientation)
 	: myProxy(aModel)
-	, myOctreeType(anOctreeType)
 	, myOrientation(anOrientation)
 	, myScale({1,1,1})
-	, myObjectCullingRadius(aObjectCullingRadius)
 	, myHierarchyIsBuilt(false)
-	, myShouldRender(true)
-	, mySelectionColor(0.f, 0.f, 1.f, 0.1f)
 	, myAnimation(nullptr)
 	, myTotalTime(0.f)
-	, myOwnerType(eOwnerType::NOT_USED)
-	, myRenderThroughCulling(true)
-	, myAlwaysRender(aAlwaysRender)
-	, myCastShadow(aCastShadow)
 {
 }
 
@@ -37,66 +28,49 @@ void Prism::Instance::Update(float aDelta)
 {
 	if (myProxy.IsLoaded() == true && myProxy.IsAnimated())
 	{
-		//if (myShouldRender == true) // creates bug where enemy units are not animated when arriving from Fog of war
-		//{
-			if (myHierarchyIsBuilt == false)
+		if (myHierarchyIsBuilt == false)
+		{
+			if (myProxy.myModelAnimated->myAnimation != nullptr)
 			{
-				if (myProxy.myModelAnimated->myAnimation != nullptr)
-				{
-					myAnimation = myProxy.myModelAnimated->myAnimation;
-				}
-				//MemoryTracker::GetInstance()->SetRunTime(false);
-				BuildHierarchy(myHierarchy, myProxy.myModelAnimated);
-				//MemoryTracker::GetInstance()->SetRunTime(true);
-				myHierarchyIsBuilt = true;
-
+				myAnimation = myProxy.myModelAnimated->myAnimation;
 			}
+			BuildHierarchy(myHierarchy, myProxy.myModelAnimated);
+			myHierarchyIsBuilt = true;
 
-			myHierarchy.Update(aDelta, myAnimation->GetAnimationLenght());
-			if (myAnimation != nullptr)
-			{
-				myAnimation->Update(myTotalTime, myBones);
-			}
-		//}
+		}
+
+		myHierarchy.Update(aDelta, myAnimation->GetAnimationLenght());
+		if (myAnimation != nullptr)
+		{
+			myAnimation->Update(myTotalTime, myBones);
+		}
 
 		myTotalTime += aDelta;
 	}
 }
 
-void Prism::Instance::Render(const Camera& aCamera, bool aIsDepthRender)
+void Prism::Instance::Render(const Camera& aCamera)
 {
-	if (myShouldRender == false)
-	{
-		return;
-	}
-
 	if (myProxy.IsLoaded())
 	{
-
 		myProxy.GetEffect()->SetViewProjectionMatrix(aCamera.GetViewProjection());
 		myProxy.GetEffect()->SetScaleVector(myScale);
 		myProxy.GetEffect()->SetCameraPosition(aCamera.GetOrientation().GetPos());
 
 		if (myProxy.IsAnimated() == true)
 		{
-			myProxy.myModelAnimated->ActivateAlbedo(myOwnerType);
 			myProxy.GetEffect()->SetBones(myBones);
-			RenderModelAnimated(myProxy.myModelAnimated, myOrientation, aCamera, myHierarchy, aIsDepthRender);
+			RenderModelAnimated(myProxy.myModelAnimated, myOrientation, aCamera, myHierarchy);
 		}
 		else
 		{
-			myProxy.myModel->ActivateAlbedo(myOwnerType);
-			myProxy.Render(myOrientation, aCamera.GetOrientation().GetPos(), aIsDepthRender);
+			myProxy.Render(myOrientation, aCamera.GetOrientation().GetPos());
 		}
 	}
 }
 
-void Prism::Instance::Render(const Camera& aCamera, InstancingHelper& aInstancingHelper, bool aIsDepthRender)
+void Prism::Instance::Render(const Camera& aCamera, InstancingHelper& aInstancingHelper)
 {
-	if (myShouldRender == false)
-	{
-		return;
-	}
 
 	if (myProxy.IsLoaded())
 	{
@@ -106,32 +80,31 @@ void Prism::Instance::Render(const Camera& aCamera, InstancingHelper& aInstancin
 			myProxy.GetEffect()->SetScaleVector(myScale);
 			myProxy.GetEffect()->SetCameraPosition(aCamera.GetOrientation().GetPos());
 
-			myProxy.myModelAnimated->ActivateAlbedo(myOwnerType);
 			myProxy.GetEffect()->SetBones(myBones);
-			RenderModelAnimated(myProxy.myModelAnimated, myOrientation, aCamera, myHierarchy, aIsDepthRender);
+			RenderModelAnimated(myProxy.myModelAnimated, myOrientation, aCamera, myHierarchy);
 		}
 		else
 		{
 			Model* toRender = myProxy.myModel->GetRealModel(myOrientation.GetPos(), aCamera.GetOrientation().GetPos());
-			aInstancingHelper.AddModel(myOwnerType, toRender, myOrientation, myScale, myOrientation.GetPos().y);
+			aInstancingHelper.AddModel(toRender, myOrientation, myScale, myOrientation.GetPos().y);
 		}
 	}
 }
 
 
 void Prism::Instance::RenderModelAnimated(ModelAnimated* aModel, const CU::Matrix44<float>& aParent
-	, const Camera& aCamera, TransformationNodeInstance& aHierarchy, bool aIsDepthRender)
+	, const Camera& aCamera, TransformationNodeInstance& aHierarchy)
 {
 	if (aModel->myIsNULLObject == false)
 	{
-		aModel->Render(aHierarchy.GetTransformation() * aParent, aCamera.GetOrientation().GetPos(), aIsDepthRender);
+		aModel->Render(aHierarchy.GetTransformation() * aParent);
 	}
 
 	for (int i = 0; i < aHierarchy.GetChildren().Size(); ++i)
 	{
 		DL_ASSERT_EXP(aModel->myChildren[i] != nullptr, "Missmatch number of TransformationNodes and number of Models");
 
-		RenderModelAnimated(aModel->myChildren[i], aHierarchy.GetTransformation() * aParent, aCamera, *aHierarchy.GetChildren()[i], aIsDepthRender);
+		RenderModelAnimated(aModel->myChildren[i], aHierarchy.GetTransformation() * aParent, aCamera, *aHierarchy.GetChildren()[i]);
 	}
 }
 
@@ -203,41 +176,6 @@ bool Prism::Instance::IsAnimationDone()
 void Prism::Instance::ResetAnimationTime(float aTime)
 {
 	myTotalTime = aTime;
-}
-
-void Prism::Instance::ActivateAlbedo(eOwnerType aOwner)
-{
-	myOwnerType = aOwner;
-}
-
-void Prism::Instance::SetShouldRender(bool aStatus)
-{
-	myShouldRender = aStatus;
-}
-
-bool Prism::Instance::GetShouldRender() const
-{
-	return myShouldRender;
-}
-
-void Prism::Instance::SetRenderThroughCulling(bool aStatus)
-{
-	myRenderThroughCulling = aStatus;
-}
-
-bool Prism::Instance::GetRenderThroughCulling() const
-{
-	return myRenderThroughCulling;
-}
-
-bool Prism::Instance::GetAlwaysRender() const
-{
-	return myAlwaysRender;
-}
-
-bool Prism::Instance::GetCastShadow() const
-{
-	return myCastShadow;
 }
 
 Prism::ModelProxy& Prism::Instance::GetModel()

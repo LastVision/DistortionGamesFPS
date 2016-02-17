@@ -1,7 +1,6 @@
 #include "stdafx.h"
 
 #include "CommonHelper.h"
-#include "FileWatcher.h"
 #include "Texture.h"
 #include "TextureContainer.h"
 

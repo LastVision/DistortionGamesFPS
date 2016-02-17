@@ -31,7 +31,7 @@ namespace Prism
 
 	protected:
 		void EvaluateEffectTechnique(bool aInstanced);
-		void Render(bool aIsDepthRender);
+		void Render();
 
 		void InitInputLayout(D3D11_INPUT_ELEMENT_DESC* aVertexDescArray, int aArraySize, const std::string& aDebugName);
 		void InitVertexBuffer(int aVertexSize, int aBufferUsage, int aCPUUsage);

@@ -77,24 +77,12 @@ namespace Prism
 			}
 		}
 
-
-		//ID3DX11EffectShaderResourceVariable* shaderVar = myEffect->GetEffect()->GetVariableByName(aResourceName.c_str())->AsShaderResource();
-
-		//if (shaderVar->IsValid() == false)
-		//{
-		//	std::string errorMsg = "Failed to get ShaderResource: " + aResourceName;
-		//	//DL_MESSAGE_BOX(errorMsg.c_str(), "Surface Error", MB_ICONWARNING);
-		//	RESOURCE_LOG(errorMsg.c_str());
-		//	return false;
-		//}
-
 		if (aResourceName == "EmissiveTexture")
 		{
 			myEmissive = true;
 		}
 
 		myResourceViews.Add(tex->GetShaderView());
-		//myShaderVariables.Add(shaderVar);
 		myFilePaths.Add(aFileName);
 		myShaderResourceNames.Add(aResourceName);
 
@@ -106,7 +94,6 @@ namespace Prism
 		ID3DX11EffectShaderResourceVariable* shaderVar = myEffect->GetEffect()->GetVariableByName(aResourceName.c_str())->AsShaderResource();
 		if (shaderVar->IsValid() == false)
 		{
-			//DL_MESSAGE_BOX("Failed to get ShaderResource", "Surface Error", MB_ICONWARNING);
 			RESOURCE_LOG("Failed to get ShaderResource");
 			return false;
 		}
@@ -119,9 +106,6 @@ namespace Prism
 
 	void Surface::ActivateAlbedo(eOwnerType aOwner)
 	{
-		//return;
-
-
 		if (myOwnerAlbedoTextures[0] == nullptr || myOwnerAlbedoTextures[1] == nullptr
 			|| myOwnerAlbedoTextures[2] == nullptr)
 		{
@@ -166,7 +150,6 @@ namespace Prism
 			if (shaderVar->IsValid() == false)
 			{
 				std::string errorMsg = "Failed to get ShaderResource: " + myShaderResourceNames[i];
-				//DL_MESSAGE_BOX(errorMsg.c_str(), "Surface Error", MB_ICONWARNING);
 				RESOURCE_LOG(errorMsg.c_str());
 			}
 

@@ -28,7 +28,7 @@ namespace Prism
 		~Effect();
 
 		ID3DX11Effect* GetEffect();
-		ID3DX11EffectTechnique* GetTechnique(bool aIsDepthRender, const std::string& aName = "Render");
+		ID3DX11EffectTechnique* GetTechnique(const std::string& aName = "Render");
 		const std::string& GetFileName() const;
 		bool Init(const std::string& aEffectFile);
 		void SetScaleVector(const CU::Vector3<float>& aScaleVector);

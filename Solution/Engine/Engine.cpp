@@ -5,7 +5,6 @@
 #include "EffectContainer.h"
 #include "Engine.h"
 #include "FBXFactory.h"
-#include "FileWatcher.h"
 #include "Font.h"
 #include "Model.h"
 #include "ModelLoader.h"
@@ -53,7 +52,6 @@ namespace Prism
 
 		TextureContainer::Destroy();
 		EffectContainer::Destroy();
-		FileWatcher::Destroy();
 		AnimationSystem::Destroy();
 
 		ModelLoader::GetInstance()->ClearLoadJobs();
@@ -293,8 +291,6 @@ namespace Prism
 			return false;
 		}
 
-		
-
 		myFadeData.mySprite = new Sprite(myDirectX->GetBackbufferTexture(), { float(myWindowSize.x), float(myWindowSize.y) }, { 0.f, 0.f });
 
 		ShowWindow(aHwnd, 10);
@@ -303,11 +299,9 @@ namespace Prism
 		myOrthogonalMatrix = CU::Matrix44<float>::CreateOrthogonalMatrixLH(static_cast<float>(myWindowSize.x)
 			, static_cast<float>(myWindowSize.y), 0.1f, 1000.f);
 
-		//myFont = new Font("Data/Resource/Font/arial.ttf_sdf_512.txt", { 512, 512 });
+
 		myDialogueFont = new Font("Data/Resource/Font/debugText.txt", { 256, 256 });
 		myConsoleFont = new Font("Data/Resource/Font/consolab.ttf_sdf.txt", { 256, 256 });
-		//myFont = new Font("Data/Resource/Font/consolab.ttf_sdf_512.txt", { 512, 512 });
-		//myFont = new Font("Data/Resource/Font/consola.ttf_sdf_512.txt", { 512, 512 });
 		myText = new Text(*myDialogueFont);
 		myText->SetPosition({ 800.f, -300.f });
 		myText->SetText("едц");
@@ -323,9 +317,7 @@ namespace Prism
 		myIsLoading = false;
 
 		myMainThreadID = std::this_thread::get_id();
-
 		myModelLoaderThread = new std::thread(&ModelLoader::Run, ModelLoader::GetInstance());
-
 		myModelLoaderThreadID = myModelLoaderThread->get_id();
 
 		ENGINE_LOG("Engine Init Successful");

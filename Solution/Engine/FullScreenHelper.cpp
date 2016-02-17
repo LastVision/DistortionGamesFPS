@@ -30,7 +30,7 @@ namespace Prism
 		};
 
 		D3DX11_PASS_DESC passDesc;
-		myRenderToTextureData.myEffect->GetTechnique(false)->GetPassByIndex(0)->GetDesc(&passDesc);
+		myRenderToTextureData.myEffect->GetTechnique()->GetPassByIndex(0)->GetDesc(&passDesc);
 		HRESULT hr = Engine::GetInstance()->GetDevice()->CreateInputLayout(vertexDesc
 			, ARRAYSIZE(vertexDesc), passDesc.pIAInputSignature, passDesc.IAInputSignatureSize, &myVertexLayout);
 		if (FAILED(hr) != S_OK)

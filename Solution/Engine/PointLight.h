@@ -36,7 +36,6 @@ namespace Prism
 		float myRange;
 
 		Instance* myInstance; 
-		float myObjectCullingRadius;
 	};
 }
 

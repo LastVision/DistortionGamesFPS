@@ -36,18 +36,15 @@ namespace Prism
 		void AddChild(Model* aChild);
 		void SetLodGroup(LodGroup* aLodGroup);
 
-		
 		void SetEffect(Effect* aEffect);
 
-		void Render(const CU::Matrix44<float>& aOrientation, const CU::Vector3<float>& aCameraPosition, bool aIsDepthRender);
+		void Render(const CU::Matrix44<float>& aOrientation, const CU::Vector3<float>& aCameraPosition);
 
 		void DeActivateSurfaces();
-		void ActivateAlbedo(eOwnerType aOwner);
 		
 		bool SetGPUState(const CU::GrowingArray<CU::Matrix44<float>>& someWorldMatrices
 			, const CU::GrowingArray<CU::Vector3<float>>& someScales
-			, const CU::GrowingArray<float>& someHeights
-			, eOwnerType aOwner);
+			, const CU::GrowingArray<float>& someHeights);
 		int GetIndexCount();
 		int GetVertexStart();
 
