@@ -105,5 +105,8 @@
     <ClInclude Include="ShootingComponent.h">
       <Filter>Component</Filter>
     </ClInclude>
+    <ClInclude Include="ShootNote.h">
+      <Filter>Notes</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

@@ -173,6 +173,7 @@
     <ClInclude Include="PlayerComponent.h" />
     <ClInclude Include="PollingStation.h" />
     <ClInclude Include="ShootingComponent.h" />
+    <ClInclude Include="ShootNote.h" />
     <ClInclude Include="stdafx.h" />
   </ItemGroup>
   <ItemGroup>

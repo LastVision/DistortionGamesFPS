@@ -1,8 +1,13 @@
 #pragma once
-class ShootingComponent
+#include "Component.h"
+
+class ShootingComponent : public Component
 {
 public:
-	ShootingComponent();
+	ShootingComponent(Entity& aEntity);
 	~ShootingComponent();
+
+private:
+	
 };
 

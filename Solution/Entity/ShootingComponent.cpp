@@ -2,10 +2,10 @@
 #include "ShootingComponent.h"
 
 
-ShootingComponent::ShootingComponent()
+ShootingComponent::ShootingComponent(Entity& aEntity)
+	: Component(aEntity)
 {
 }
-
 
 ShootingComponent::~ShootingComponent()
 {
