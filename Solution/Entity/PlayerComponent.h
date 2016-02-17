@@ -1,6 +1,5 @@
 #pragma once
-#include "Component.h"
-#include <Matrix.h>
+#include <Quaternion.h>
 
 namespace Prism
 {
@@ -15,10 +14,29 @@ public:
 
 	void Update(float aDelta);
 
-	Prism::Camera* myCamera;
+	Prism::Camera* GetCamera() const;
+
 private:
+	void Movement(float aDelta);
+	void Rotation(float aDelta);
+	CU::Vector2<float> myCursorPosition;
+	float mySteeringModifier;
+	float myRotationSpeed;
+	float myMovementSpeed;
+	float myMaxSteeringSpeed;
+
+	CU::Quaternion myPitch;
+	CU::Quaternion myYaw;
+
+	Prism::Camera* myCamera;
 	CU::Matrix44<float> myOrientation;
-	CU::Matrix44<float> myPitch;
-	CU::Matrix44<float> myYaw;
-	CU::Vector2<float> myMousePosition;
+
+	CU::Vector3<float> myPosition;
+
+	float mySpeed;
 };
+
+inline Prism::Camera* PlayerComponent::GetCamera() const
+{
+	return myCamera;
+}
