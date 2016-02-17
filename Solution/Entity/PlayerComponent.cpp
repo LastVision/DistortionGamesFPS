@@ -6,6 +6,9 @@
 
 
 PlayerComponent::PlayerComponent()
+	: myPitch(CU::Vector3<float>(0, 1.f, 0), 0)
+	, myYaw(CU::Vector3<float>(1.f, 0, 0), 0)
+	, mySpeed(1.f)
 {
 	myCamera = new Prism::Camera(myOrientation);
 }
@@ -17,29 +20,63 @@ PlayerComponent::~PlayerComponent()
 
 void PlayerComponent::Update(float aDelta)
 {
-	myMousePosition.x += CU::InputWrapper::GetInstance()->GetMouseDX();
-	myMousePosition.y += CU::InputWrapper::GetInstance()->GetMouseDY();
-
-	//myMousePosition.y = fminf(fmaxf(myMousePosition.y, -M_PI_2), M_PI_2);
-
-
-	if (CU::InputWrapper::GetInstance()->KeyIsPressed(DIK_S))
-	{
-		CU::Vector3<float> position = myOrientation.GetPos();
-		position.z -= 50*aDelta;
-		myOrientation.SetPos(position);
-
-		//myOrientation.SetPos(myOrientation.GetPos() + CU::Vector3<float>(-100.f, 0.f, 0.f) * aDelta);
-	}
-
-	DEBUG_PRINT(myMousePosition);
-
-	myYaw = CU::Matrix44<float>::CreateRotateAroundY(myMousePosition.x*aDelta);
-	myPitch = CU::Matrix44<float>::CreateRotateAroundX(myMousePosition.y*aDelta);
-
-	CU::Vector3<float> position = myOrientation.GetPos();
-	myOrientation = myYaw * myPitch;
-	myOrientation.SetPos(position);
+	Rotation(aDelta);
+	Movement(aDelta);
 
 	myCamera->Update(aDelta);
+}
+
+void PlayerComponent::Movement(float aDelta)
+{
+	CU::Vector3<float> movement;
+	if (CU::InputWrapper::GetInstance()->KeyIsPressed(DIK_S))
+	{
+		movement.z -= 1.f;
+	}
+	if (CU::InputWrapper::GetInstance()->KeyIsPressed(DIK_W))
+	{
+		movement.z += 1.f;
+	}
+	if (CU::InputWrapper::GetInstance()->KeyIsPressed(DIK_A))
+	{
+		movement.x -= 1.f;
+	}
+	if (CU::InputWrapper::GetInstance()->KeyIsPressed(DIK_D))
+	{
+		movement.x += 1.f;
+	}
+
+	CU::Normalize(movement);
+
+	myOrientation.SetPos(myOrientation.GetPos() + myOrientation.GetForward() * movement.z * mySpeed * aDelta);
+	myOrientation.SetPos(myOrientation.GetPos() + myOrientation.GetRight() * movement.x * mySpeed * aDelta);
+}
+
+void PlayerComponent::Rotation(float aDelta)
+{
+	myCursorPosition.x += static_cast<float>(CU::InputWrapper::GetInstance()->GetMouseDX()) * 0.002f;
+	myCursorPosition.y += static_cast<float>(CU::InputWrapper::GetInstance()->GetMouseDY()) * 0.002f;
+
+	myCursorPosition.y = fmaxf(fminf(3.1415f / 2.f, myCursorPosition.y), -3.1415f / 2.f);
+
+	myPitch = CU::Quaternion(CU::Vector3<float>(1.f, 0, 0), myCursorPosition.y);
+	myYaw = CU::Quaternion(CU::Vector3<float>(0, 1.f, 0), myCursorPosition.x);
+
+	CU::Vector3<float> axisX(1.f, 0, 0);
+	CU::Vector3<float> axisY(0, 1.f, 0);
+	CU::Vector3<float> axisZ(0, 0, 1.f);
+
+	axisX = myYaw * myPitch * axisX;
+	axisY = myYaw * myPitch * axisY;
+	axisZ = myYaw * myPitch * axisZ;
+
+	myOrientation.myMatrix[0] = axisX.x;
+	myOrientation.myMatrix[1] = axisX.y;
+	myOrientation.myMatrix[2] = axisX.z;
+	myOrientation.myMatrix[4] = axisY.x;
+	myOrientation.myMatrix[5] = axisY.y;
+	myOrientation.myMatrix[6] = axisY.z;
+	myOrientation.myMatrix[8] = axisZ.x;
+	myOrientation.myMatrix[9] = axisZ.y;
+	myOrientation.myMatrix[10] = axisZ.z;
 }

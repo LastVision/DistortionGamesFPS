@@ -36,7 +36,7 @@ void InGameState::InitState(StateStackProxy* aStateStackProxy, GUI::Cursor* aCur
 	//PostMaster::GetInstance()->SendMessage(RunScriptMessage("Data/Script/Autorun.script"));
 
 	myPlayer = new PlayerComponent();
-	myScene = new Prism::Scene(*myPlayer->myCamera);
+	myScene = new Prism::Scene(*myPlayer->GetCamera());
 	myInstance = new Prism::Instance(*Prism::ModelLoader::GetInstance()->LoadModel("Data/Resource/Model/SM_muzzleflash.fbx", "Data/Resource/Shader/S_effect_pbl.fx")
 		, myInstanceOrientation, Prism::eOctreeType::DYNAMIC, myCullingRadius);
 	myScene->AddInstance(myInstance);
