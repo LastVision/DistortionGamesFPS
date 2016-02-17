@@ -54,12 +54,6 @@ namespace Prism
 
 	bool Effect::Init(const std::string& aEffectFile)
 	{
-		//if (myEffect != nullptr)
-		//{
-		//	myEffect->Release();
-		//	myEffect = nullptr;
-		//}
-
 		if (ReloadShader(aEffectFile) == false)
 		{
 			return false;
@@ -287,14 +281,6 @@ namespace Prism
 		{
 			compiledShader->Release();
 		}
-
-
-		//myTechnique = myEffect->GetTechniqueByName("Render");
-		//if (myTechnique->IsValid() == false)
-		//{
-		//	DL_MESSAGE_BOX("Failed to get Technique", "Effect Error", MB_ICONWARNING);
-		//	return false;
-		//}
 
 		myScaleVector = myEffect->GetVariableByName("Scale")->AsVector();
 		if (myScaleVector->IsValid() == false)

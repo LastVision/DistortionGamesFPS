@@ -1,6 +1,5 @@
 #include "stdafx.h"
 
-//#include <CommonHelper.h>
 #include <D3DX11tex.h>
 #include <DL_Debug.h>
 #include "Texture.h"
@@ -85,11 +84,9 @@ void Prism::Texture::Init(float aWidth, float aHeight, unsigned int aBindFlag
 void Prism::Texture::InitAsDepthBuffer()
 {
 	myIsDepthTexture = true;
-	int width = Prism::Engine::GetInstance()->GetWindowSizeInt().x;
-	int height = Prism::Engine::GetInstance()->GetWindowSizeInt().y;
+	int width = 1024 * 2;
+	int height = 1024 * 2;
 
-	width = 1024 * 2;
-	height = 1024 * 2;
 	myFileName = "Initied as DSV";
 	myShaderView = nullptr;
 	myRenderTargetView = nullptr;
@@ -122,7 +119,9 @@ void Prism::Texture::InitAsDepthBuffer()
 	if (FAILED(hr))
 		assert(0);
 
-	D3D11_TEXTURE2D_DESC tempBufferInfo;
+	CreateDepthStencilView(static_cast<float>(width), static_cast<float>(height));
+
+	/*D3D11_TEXTURE2D_DESC tempBufferInfo;
 	tempBufferInfo.Width = width;
 	tempBufferInfo.Height = height;
 	tempBufferInfo.MipLevels = 1;
@@ -148,7 +147,6 @@ void Prism::Texture::InitAsDepthBuffer()
 	depthDesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
 	depthDesc.Texture2D.MipSlice = 0;
 
-	//tempBufferInfo.Format = DXGI_FORMAT_D32_FLOAT;
 	hr = Engine::GetInstance()->GetDevice()->CreateDepthStencilView(myDepthTexture, &depthDesc, &myDepthStencilView);
 	if (FAILED(hr))
 		assert(0);
@@ -161,12 +159,11 @@ void Prism::Texture::InitAsDepthBuffer()
 	viewDesc.Texture2D.MipLevels = 1;
 	viewDesc.Texture2D.MostDetailedMip = 0;
 
-	//tempBufferInfo.Format = static_cast<DXGI_FORMAT>(aFormat);
 	hr = Engine::GetInstance()->GetDevice()->CreateShaderResourceView(myDepthTexture, &viewDesc, &myDepthStencilShaderView);
 	if (FAILED(hr))
 		assert(0);
 
-	Engine::GetInstance()->SetDebugName(myDepthStencilShaderView, "Texture::myDepthStencilShaderView");
+	Engine::GetInstance()->SetDebugName(myDepthStencilShaderView, "Texture::myDepthStencilShaderView");*/
 }
 
 void Prism::Texture::CopyDepthBuffer(ID3D11Texture2D* aSource)
@@ -176,27 +173,7 @@ void Prism::Texture::CopyDepthBuffer(ID3D11Texture2D* aSource)
 
 bool Prism::Texture::LoadTexture(const std::string& aFilePath)
 {
-	//HRESULT hr = D3DX11CreateShaderResourceViewFromFile(Engine::GetInstance()->GetDevice(), aFilePath.c_str()
-	//	, NULL, NULL, &myShaderView, NULL);
-	//
-	//if (FAILED(hr) == S_OK)
-	//{
-	//	ID3D11Resource* resource = nullptr;
-	//	myShaderView->GetResource(&resource);
-	//	ID3D11Texture2D* texture2D = reinterpret_cast<ID3D11Texture2D*>(resource);
-	//	D3D11_TEXTURE2D_DESC* texture2DDEsc = new D3D11_TEXTURE2D_DESC;
-	//	texture2D->GetDesc(texture2DDEsc);
-	//	UINT width = texture2DDEsc->Width;
-	//	UINT height = texture2DDEsc->Height;
-	//	texture2D->Release();
-	//	delete texture2DDEsc;
-	//
-	//	std::string errorMessage = "Texturesize not power of 2: [" + aFilePath + "].";
-	//	DL_ASSERT_EXP(CU::IsValidTextureSize(height) && CU::IsValidTextureSize(width), errorMessage.c_str());
-	//}
-
 	HRESULT hr = TextureHelper::CreateShaderResourceViewFromFile(aFilePath, &myShaderView);
-
 
 	myFileName = aFilePath;
 	if (FAILED(hr) != S_OK)
@@ -365,7 +342,6 @@ void Prism::Texture::CreateDepthStencilView(float aWidth, float aHeight)
 	depthDesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
 	depthDesc.Texture2D.MipSlice = 0;
 
-	//tempBufferInfo.Format = DXGI_FORMAT_D32_FLOAT;
 	hr = Engine::GetInstance()->GetDevice()->CreateDepthStencilView(myDepthTexture, &depthDesc, &myDepthStencilView);
 	if (FAILED(hr))
 		assert(0);
@@ -378,7 +354,6 @@ void Prism::Texture::CreateDepthStencilView(float aWidth, float aHeight)
 	viewDesc.Texture2D.MipLevels = 1;
 	viewDesc.Texture2D.MostDetailedMip = 0;
 
-	//tempBufferInfo.Format = static_cast<DXGI_FORMAT>(aFormat);
 	hr = Engine::GetInstance()->GetDevice()->CreateShaderResourceView(myDepthTexture, &viewDesc, &myDepthStencilShaderView);
 	if (FAILED(hr))
 		assert(0);

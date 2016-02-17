@@ -39,9 +39,8 @@ namespace Prism
 		void SetEffect(Effect* aEffect);
 
 		void Render(const CU::Matrix44<float>& aOrientation);
-
-		void ActivateAlbedo(eOwnerType aOwner);
 		void SetFileName(const std::string& aFileName) override;
+
 	private:
 		bool myIsNULLObject;
 

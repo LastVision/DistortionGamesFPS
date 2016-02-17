@@ -10,11 +10,7 @@ Prism::Text::Text(const Font& aFont)
 	: myFont(aFont)
 	, myColor(1.f, 1.f, 1.f, 1.f)
 {
-	//from debugText
 	myEffect = EffectContainer::GetInstance()->GetEffect("Data/Resource/Shader/S_effect_font.fx");
-	//myFont = aFont;
-	//myCharSize = myFont->GetCharSize();
-	//myCharSpacing = 17.f;
 	myScale = { 1.f, 1.f };
 
 	D3D11_INPUT_ELEMENT_DESC vertexDesc[] =
@@ -35,7 +31,6 @@ Prism::Text::Text(const Font& aFont)
 	myIndices.Init(1024);
 
 	SetText(" ");
-	//ConstructBuffers();
 }
 
 
@@ -107,11 +102,6 @@ float Prism::Text::GetWidth() const
 
 void Prism::Text::ConstructBuffers()
 {
-	//debug:
-	//CU::Vector2<float> myCharSize(16.f, 16.f);
-	//float myCharSpacing(0);
-	//debug end
-
 	int numOfLetters = myText.length();
 	float drawX = 0;
 	float drawY = 0;
@@ -187,6 +177,4 @@ void Prism::Text::ConstructBuffers()
 
 	mySurfaces[0]->SetVertexCount(myVertices.Size());
 	mySurfaces[0]->SetIndexCount(myIndices.Size());
-
-	//myTextWidth = drawX - myTextWidth;
 }

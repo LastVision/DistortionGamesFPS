@@ -28,11 +28,6 @@ namespace Prism
 
 	const CU::Vector2<float>& SpriteProxy::GetSize() const
 	{
-		/*if (mySprite != nullptr)
-		{
-			return mySprite->GetSize();
-		}*/
-
 		return mySize;
 	}
 
@@ -74,11 +69,6 @@ namespace Prism
 
 	const CU::Vector2<float>& SpriteProxy::GetHotspot() const
 	{
-		/*if (mySprite != nullptr)
-		{
-			return mySprite->GetHotspot();
-		}*/
-
 		return myHotspot;
 	}
 }
