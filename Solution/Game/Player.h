@@ -6,11 +6,11 @@ namespace Prism
 	class Camera;
 }
 
-class PlayerComponent
+class Player
 {
 public:
-	PlayerComponent();
-	~PlayerComponent();
+	Player();
+	~Player();
 
 	void Update(float aDelta);
 
@@ -35,7 +35,7 @@ private:
 	float mySpeed;
 };
 
-inline Prism::Camera* PlayerComponent::GetCamera() const
+inline Prism::Camera* Player::GetCamera() const
 {
 	return myCamera;
 }
