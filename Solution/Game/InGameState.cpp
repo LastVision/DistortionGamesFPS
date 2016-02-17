@@ -37,8 +37,9 @@ void InGameState::InitState(StateStackProxy* aStateStackProxy, GUI::Cursor* aCur
 
 	myPlayer = new PlayerComponent();
 	myScene = new Prism::Scene(*myPlayer->myCamera);
-	myInstance = new Prism::Instance(*Prism::ModelLoader::GetInstance()->LoadModel("Data/Resource/Model/SM_muzzleflash.fbx", "Data/Resource/Shader/S_effect_pbl.fx")
+	myInstance = new Prism::Instance(*Prism::ModelLoader::GetInstance()->LoadModel("Data/Resource/Model/Modular_set/Dev_set/SM_dev_wall_corner_out_200_x_300.fbx", "Data/Resource/Shader/S_effect_pbl.fx")
 		, myInstanceOrientation, Prism::eOctreeType::DYNAMIC, myCullingRadius);
+	myInstanceOrientation = CU::Matrix44<float>::CreateRotateAroundY(M_PI);
 	myScene->AddInstance(myInstance);
 
 	myIsActiveState = true;
