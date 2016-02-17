@@ -48,7 +48,11 @@ void PlayerComponent::Movement(float aDelta)
 
 	CU::Normalize(movement);
 
-	myOrientation.SetPos(myOrientation.GetPos() + myOrientation.GetForward() * movement.z * mySpeed * aDelta);
+	CU::Vector3<float> forward = CU::Cross(myOrientation.GetRight(), CU::Vector3<float>(0.f, 1.f, 0.f));
+
+	CU::Normalize(forward);
+
+	myOrientation.SetPos(myOrientation.GetPos() + forward * movement.z * mySpeed * aDelta);
 	myOrientation.SetPos(myOrientation.GetPos() + myOrientation.GetRight() * movement.x * mySpeed * aDelta);
 }
 
