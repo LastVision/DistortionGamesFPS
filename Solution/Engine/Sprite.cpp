@@ -102,7 +102,6 @@ void Prism::Sprite::Render(const CU::Vector2<float>& aPosition, const CU::Vector
 	Engine::GetInstance()->DisableZBuffer();
 
 	myPosition = aPosition;
-	//myOrientation.SetPos(aPosition);
 	myScale = aScale;
 
 	float blendFactor[4];
@@ -111,7 +110,6 @@ void Prism::Sprite::Render(const CU::Vector2<float>& aPosition, const CU::Vector
 	blendFactor[2] = 0.f;
 	blendFactor[3] = 0.f;
 
-	//myEffect->SetBlendState(myBlendState, blendFactor);
 	myEffect->SetProjectionMatrix(Engine::GetInstance()->GetOrthogonalMatrix());
 	myEffect->SetPosAndScale(aPosition, aScale);
 	myEffect->SetColor(aColor);
