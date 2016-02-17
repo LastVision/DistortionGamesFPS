@@ -143,11 +143,7 @@ enum class eFuzzyAI
 
 enum class eCursorType
 {
-	NORMAL,
-	ATTACK,
-	ATTACK_MOVE,
-	TOTEM,
-	CANCEL,
+	NORMAL
 };
 
 enum class eDifficulty
