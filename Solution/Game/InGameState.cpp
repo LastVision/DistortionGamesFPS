@@ -70,7 +70,7 @@ void InGameState::Render()
 {
 	VTUNE_EVENT_BEGIN(VTUNE::GAME_RENDER);
 
-	myScene->Render(false);
+	myScene->Render();
 
 	VTUNE_EVENT_END();
 }
