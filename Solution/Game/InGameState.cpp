@@ -1,17 +1,13 @@
 #include "stdafx.h"
 
-#include <Camera.h>
 #include "Console.h"
 #include <EffectContainer.h>
 #include <FadeMessage.h>
 #include "InGameState.h"
 #include <InputWrapper.h>
-#include <Instance.h>
+#include "Level.h"
 #include <MemoryTracker.h>
-#include <ModelLoader.h>
-#include <PlayerComponent.h>
 #include <PostMaster.h>
-#include <Scene.h>
 #include <ScriptSystem.h>
 #include <VTuneApi.h>
 
@@ -34,13 +30,7 @@ void InGameState::InitState(StateStackProxy* aStateStackProxy, GUI::Cursor* aCur
 	myCursor = aCursor;
 
 	//PostMaster::GetInstance()->SendMessage(RunScriptMessage("Data/Script/Autorun.script"));
-
-	myPlayer = new PlayerComponent();
-	myScene = new Prism::Scene(*myPlayer->myCamera);
-	myInstance = new Prism::Instance(*Prism::ModelLoader::GetInstance()->LoadModel("Data/Resource/Model/Modular_set/Dev_set/SM_dev_wall_corner_out_200_x_300.fbx", "Data/Resource/Shader/S_effect_pbl.fx")
-		, myInstanceOrientation, Prism::eOctreeType::DYNAMIC, myCullingRadius);
-	myInstanceOrientation = CU::Matrix44<float>::CreateRotateAroundY(M_PI);
-	myScene->AddInstance(myInstance);
+	myLevel = new Level();
 
 	myIsActiveState = true;
 }
@@ -58,7 +48,7 @@ const eStateStatus InGameState::Update(const float& aDeltaTime)
 		return eStateStatus::ePopMainState;
 	}
 
-	myPlayer->Update(aDeltaTime);
+	myLevel->Update(aDeltaTime);
 
 	//LUA::ScriptSystem::GetInstance()->CallFunction("Update", { aDeltaTime });
 	//LUA::ScriptSystem::GetInstance()->Update();
@@ -71,7 +61,7 @@ void InGameState::Render()
 {
 	VTUNE_EVENT_BEGIN(VTUNE::GAME_RENDER);
 
-	myScene->Render();
+	myLevel->Render();
 
 	VTUNE_EVENT_END();
 }
