@@ -17,22 +17,6 @@ namespace GUI
 			"Data/Resource/Texture/UI/Crosshair/T_crosshair_default.dds", { 70.f, 70.f }, { 35.f, 35.f });
 		mySprites.Add(normalSprite);
 
-		Prism::SpriteProxy* attackSprite = Prism::ModelLoader::GetInstance()->LoadSprite(
-			"Data/Resource/Texture/UI/Crosshair/T_crosshair_attack.dds", { 70.f, 70.f }, { 35.f, 35.f });
-		mySprites.Add(attackSprite);
-
-		Prism::SpriteProxy* attackMoveSprite = Prism::ModelLoader::GetInstance()->LoadSprite(
-			"Data/Resource/Texture/UI/Crosshair/T_crosshair_attack_move.dds", { 70.f, 70.f }, { 35.f, 35.f });
-		mySprites.Add(attackMoveSprite);
-
-		Prism::SpriteProxy* totemSprite = Prism::ModelLoader::GetInstance()->LoadSprite(
-			"Data/Resource/Texture/UI/Crosshair/T_crosshair_totem.dds", { 70.f, 70.f }, { 35.f, 35.f });
-		mySprites.Add(totemSprite);
-
-		Prism::SpriteProxy* cancelSprite = Prism::ModelLoader::GetInstance()->LoadSprite(
-			"Data/Resource/Texture/UI/Crosshair/T_crosshair_cancel.dds", { 70.f, 70.f }, { 35.f, 35.f });
-		mySprites.Add(cancelSprite);
-
 		myPosition = myWindowSize / 2.f;
 
 		myPositionZeroToOne = myPosition / myWindowSize;
