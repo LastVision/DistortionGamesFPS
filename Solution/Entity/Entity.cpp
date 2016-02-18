@@ -7,7 +7,7 @@
 #include <EmitterMessage.h>
 #include <PostMaster.h>
 
-Entity::Entity(EntityData& aEntityData, Prism::Scene& aScene, const CU::Vector3<float>& aStartPosition,
+Entity::Entity(const EntityData& aEntityData, Prism::Scene& aScene, const CU::Vector3<float>& aStartPosition,
 		const CU::Vector3f& aRotation, const CU::Vector3f& aScale, eUnitType aUnitType)
 	: myScene(aScene)
 	, myType(aEntityData.myType)

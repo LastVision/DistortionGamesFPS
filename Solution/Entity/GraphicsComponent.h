@@ -14,7 +14,7 @@ struct GraphicsComponentData;
 class GraphicsComponent : public Component
 {
 public:
-	GraphicsComponent(Entity& aEntity, GraphicsComponentData& aComponentData);
+	GraphicsComponent(Entity& aEntity, const GraphicsComponentData& aComponentData);
 	~GraphicsComponent();
 
 	void InitDLL(const char* aModelPath, const char* aEffectPath);
@@ -30,6 +30,7 @@ public:
 
 private:
 	Prism::Instance* myInstance;
+	const GraphicsComponentData& myComponentData;
 };
 
 inline Prism::Instance* GraphicsComponent::GetInstance()

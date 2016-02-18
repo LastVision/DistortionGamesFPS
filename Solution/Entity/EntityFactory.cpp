@@ -46,8 +46,7 @@ Entity* EntityFactory::CreateEntity(eEntityType aType, Prism::Scene& aScene, CU:
 {
 	if (myInstance->myLoadedEntityData.find(aType) != myInstance->myLoadedEntityData.end())
 	{
-		EntityData loadedEntityData = myInstance->myLoadedEntityData.find(aType)->second;
-		Entity* newEntity = new Entity(loadedEntityData, aScene, aPostion, aRotation
+		Entity* newEntity = new Entity(myInstance->myLoadedEntityData.find(aType)->second, aScene, aPostion, aRotation
 			, aScale, eUnitType::NOT_A_UNIT);
 		return newEntity;
 	}
@@ -62,9 +61,8 @@ Entity* EntityFactory::CreateEntity(eEntityType aType, std::string aSubType, Pri
 	{
 		if (myInstance->myLoadedSubEntityData.find(aSubType) != myInstance->myLoadedSubEntityData.end())
 		{
-			EntityData loadedEntityData = myInstance->myLoadedSubEntityData.find(aSubType)->second;
-			Entity* newEntity = new Entity(loadedEntityData, aScene, aPostion, aRotation
-				, aScale, loadedEntityData.myUnitType);
+			Entity* newEntity = new Entity(myInstance->myLoadedSubEntityData.find(aSubType)->second, aScene, aPostion, aRotation
+				, aScale, myInstance->myLoadedSubEntityData.find(aSubType)->second.myUnitType);
 			newEntity->mySubType = aSubType;
 			return newEntity;
 		}
