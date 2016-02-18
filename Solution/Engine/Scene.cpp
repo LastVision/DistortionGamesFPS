@@ -13,9 +13,8 @@
 
 namespace Prism
 {
-	Scene::Scene(const Camera& aCamera)
-		: myCamera(&aCamera)
-		, myViewCamera(nullptr)
+	Scene::Scene()
+		: myCamera(nullptr)
 		, myRenderRadius(-10.f)
 	{
 		myInstances.Init(4096);
@@ -90,11 +89,6 @@ namespace Prism
 	{
 		myCamera = &aCamera;
 		myInstancingHelper->SetCamera(myCamera);
-	}
-
-	void Scene::SetViewCamera(const Camera& aCamera)
-	{
-		myViewCamera = &aCamera;
 	}
 
 	void Scene::UpdateLights()
