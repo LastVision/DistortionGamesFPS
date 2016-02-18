@@ -6,20 +6,26 @@
 #include "InGameState.h"
 #include <InputWrapper.h>
 #include "Level.h"
+#include "LevelFactory.h"
 #include <MemoryTracker.h>
 #include <PostMaster.h>
 #include <ScriptSystem.h>
 #include <VTuneApi.h>
 
+#include <Cursor.h>
+
 InGameState::InGameState()
 	: myGUIManager(nullptr)
 {
 	myIsActiveState = false;
+	myLevelFactory = new LevelFactory("Data/Level/LI_level.xml");
 }
 
 InGameState::~InGameState()
 {
 	Console::Destroy();
+	SAFE_DELETE(myLevel);
+	SAFE_DELETE(myLevelFactory);
 }
 
 void InGameState::InitState(StateStackProxy* aStateStackProxy, GUI::Cursor* aCursor)
@@ -28,9 +34,10 @@ void InGameState::InitState(StateStackProxy* aStateStackProxy, GUI::Cursor* aCur
 	myStateStack = aStateStackProxy;
 	myStateStatus = eStateStatus::eKeepState;
 	myCursor = aCursor;
+	myCursor->SetShouldRender(false);
 
 	//PostMaster::GetInstance()->SendMessage(RunScriptMessage("Data/Script/Autorun.script"));
-	myLevel = new Level();
+	myLevel = myLevelFactory->LoadCurrentLevel();
 
 	myIsActiveState = true;
 }

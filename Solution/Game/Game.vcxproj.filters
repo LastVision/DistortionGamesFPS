@@ -39,6 +39,15 @@
     <ClCompile Include="LevelFactory.cpp">
       <Filter>Level\Factory</Filter>
     </ClCompile>
+    <ClCompile Include="Movement.cpp">
+      <Filter>Player</Filter>
+    </ClCompile>
+    <ClCompile Include="Player.cpp">
+      <Filter>Player</Filter>
+    </ClCompile>
+    <ClCompile Include="Shooting.cpp">
+      <Filter>Player</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Game.h" />
@@ -86,6 +95,15 @@
     <ClInclude Include="LevelFactory.h">
       <Filter>Level\Factory</Filter>
     </ClInclude>
+    <ClInclude Include="Movement.h">
+      <Filter>Player</Filter>
+    </ClInclude>
+    <ClInclude Include="Player.h">
+      <Filter>Player</Filter>
+    </ClInclude>
+    <ClInclude Include="Shooting.h">
+      <Filter>Player</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="PreCompile">
@@ -105,6 +123,9 @@
     </Filter>
     <Filter Include="Level\Factory">
       <UniqueIdentifier>{62d6a342-7532-4a12-8a2f-ac9ffe791a6e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Player">
+      <UniqueIdentifier>{0a33fc89-a207-4aff-8e4c-9033f0803efc}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

@@ -43,4 +43,5 @@ public:
 private:
 	GUI::GUIManager* myGUIManager;
 	Level* myLevel;
+	LevelFactory* myLevelFactory;
 };

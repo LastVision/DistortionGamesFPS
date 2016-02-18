@@ -1,34 +1,31 @@
 #include "stdafx.h"
-
-#include <Camera.h>
 #include <InputWrapper.h>
-#include "PlayerComponent.h"
+#include "Movement.h"
+#include <XMLReader.h>
 
-
-PlayerComponent::PlayerComponent()
+Movement::Movement(CU::Matrix44<float>& anOrientation, XMLReader& aReader, tinyxml2::XMLElement* anElement)
 	: myPitch(CU::Vector3<float>(0, 1.f, 0), 0)
 	, myYaw(CU::Vector3<float>(1.f, 0, 0), 0)
-	, mySpeed(100.f)
+	, myOrientation(anOrientation)
 {
-	myCamera = new Prism::Camera(myOrientation);
-
-	myOrientation.SetPos(CU::Vector3<float>(0.f, 182.5f, 0));
+	aReader.ForceReadAttribute(aReader.ForceFindFirstChild(anElement, "speed"), "value", mySpeed);
+	aReader.ForceReadAttribute(aReader.ForceFindFirstChild(anElement, "rotationSpeed"), "value", myRotationSpeed);
+	aReader.ForceReadAttribute(aReader.ForceFindFirstChild(anElement, "sprintMultiplier"), "value", mySprintMultiplier);
 }
 
 
-PlayerComponent::~PlayerComponent()
+Movement::~Movement()
 {
 }
 
-void PlayerComponent::Update(float aDelta)
-{
-	Rotation(aDelta);
-	Movement(aDelta);
 
-	myCamera->Update(aDelta);
+void Movement::Update(float aDelta)
+{
+	Rotate();
+	Move(aDelta);
 }
 
-void PlayerComponent::Movement(float aDelta)
+void Movement::Move(float aDelta)
 {
 	CU::Vector3<float> movement;
 	if (CU::InputWrapper::GetInstance()->KeyIsPressed(DIK_S))
@@ -52,7 +49,7 @@ void PlayerComponent::Movement(float aDelta)
 
 	if (CU::InputWrapper::GetInstance()->KeyIsPressed(DIK_LSHIFT))
 	{
-		movement *= 3.f;
+		movement *= mySprintMultiplier;
 	}
 
 	CU::Vector3<float> forward = CU::Cross(myOrientation.GetRight(), CU::Vector3<float>(0.f, 1.f, 0.f));
@@ -63,10 +60,10 @@ void PlayerComponent::Movement(float aDelta)
 	myOrientation.SetPos(myOrientation.GetPos() + myOrientation.GetRight() * movement.x * mySpeed * aDelta);
 }
 
-void PlayerComponent::Rotation(float aDelta)
+void Movement::Rotate()
 {
-	myCursorPosition.x += static_cast<float>(CU::InputWrapper::GetInstance()->GetMouseDX()) * 0.002f;
-	myCursorPosition.y += static_cast<float>(CU::InputWrapper::GetInstance()->GetMouseDY()) * 0.002f;
+	myCursorPosition.x += static_cast<float>(CU::InputWrapper::GetInstance()->GetMouseDX()) * myRotationSpeed;
+	myCursorPosition.y += static_cast<float>(CU::InputWrapper::GetInstance()->GetMouseDY()) * myRotationSpeed;
 
 	myCursorPosition.y = fmaxf(fminf(3.1415f / 2.f, myCursorPosition.y), -3.1415f / 2.f);
 

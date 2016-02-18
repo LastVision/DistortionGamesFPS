@@ -106,6 +106,14 @@ public:
 	bool ForceReadAttribute(const tinyxml2::XMLElement* aElementToReadFrom, const std::string& aAttributeToRead, double& aTargetVariable);
 	bool ForceReadAttribute(const tinyxml2::XMLElement* aElementToReadFrom, const std::string& aAttributeToRead, bool& aTargetVariable);
 
+	template<typename T>
+	bool ForceReadAttribute(const tinyxml2::XMLElement* aElementToReadFrom, const std::string& aAttributeToRead
+		, const std::string& aOtherAttributeToRead, CU::Vector2<T>& aTargetVariable);
+
+	template<typename T>
+	bool ForceReadAttribute(const tinyxml2::XMLElement* aElementToReadFrom, const std::string& aFirst
+		, const std::string& aSecond, const std::string& aThird, CU::Vector3<T>& aTargetVariable);
+
 private:
 
 	/*
@@ -175,5 +183,53 @@ bool XMLReader::ReadAttribute(const tinyxml2::XMLElement* aElementToReadFrom, co
 			}
 		}
 	}
+	return false;
+}
+
+template<typename T>
+bool XMLReader::ForceReadAttribute(const tinyxml2::XMLElement* aElementToReadFrom, const std::string& aAttributeToRead
+	, const std::string& aOtherAttributeToRead, CU::Vector2<T>& aTargetVariable)
+{
+	if (myHasOpenedDoc == false)
+		DL_ASSERT("[XMLReader]: Tried to [ReadAttribute(Vector2<T>)] before Opening the document");
+
+	DL_ASSERT_EXP(aElementToReadFrom != nullptr, "[XMLReader]: Tried to Read from nullptr");
+
+	if (aElementToReadFrom == nullptr)
+		return false;
+
+	if (aElementToReadFrom->QueryFloatAttribute(aAttributeToRead.c_str(), &aTargetVariable.x) == tinyxml2::XML_NO_ERROR)
+	{
+		if (aElementToReadFrom->QueryFloatAttribute(aAttributeToRead.c_str(), &aTargetVariable.y) == tinyxml2::XML_NO_ERROR)
+		{
+			return true;
+		}
+	}
+	DL_ASSERT(CU::Concatenate("Failed to read Attribute: [ %s ] and [ %s ] from Element: [ %s ], in Document: [ %s ]", 
+		aAttributeToRead.c_str(), aOtherAttributeToRead.c_str(), aElementToReadFrom->Name(), myFilePath.c_str()));
+	return false;
+}
+
+template<typename T>
+bool XMLReader::ForceReadAttribute(const tinyxml2::XMLElement* aElementToReadFrom, const std::string& aFirst
+	, const std::string& aSecond, const std::string& aThird, CU::Vector3<T>& aTargetVariable)
+{
+	if (myHasOpenedDoc == false)
+		DL_ASSERT("[XMLReader]: Tried to [ReadAttribute(Vector3<T>)] before Opening the document");
+
+	DL_ASSERT_EXP(aElementToReadFrom != nullptr, "[XMLReader]: Tried to Read from nullptr");
+
+	if (aElementToReadFrom->QueryFloatAttribute(aFirst.c_str(), &aTargetVariable.x) == tinyxml2::XML_NO_ERROR)
+	{
+		if (aElementToReadFrom->QueryFloatAttribute(aSecond.c_str(), &aTargetVariable.y) == tinyxml2::XML_NO_ERROR)
+		{
+			if (aElementToReadFrom->QueryFloatAttribute(aThird.c_str(), &aTargetVariable.z) == tinyxml2::XML_NO_ERROR)
+			{
+				return true;
+			}
+		}
+	}
+	DL_ASSERT(CU::Concatenate("Failed to read Attribute: [ %s ], [ %s ] and [ %s ] from Element: [ %s ], in Document: [ %s ]", 
+		aFirst.c_str(), aSecond.c_str(), aThird.c_str(), aElementToReadFrom->Name(), myFilePath.c_str()));
 	return false;
 }

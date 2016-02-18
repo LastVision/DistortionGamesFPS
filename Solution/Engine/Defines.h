@@ -7,7 +7,7 @@
 #define OCTREE_WIDTH 10000.f
 
 //If we get random crashes in .exes undefine USE_DGFX
-#define USE_DGFX
+//#define USE_DGFX
 
 //Need to rebuild DataExporter for changes to this to take effect
 #define DGFX_REMOVE_EXTRA_VERTICES
