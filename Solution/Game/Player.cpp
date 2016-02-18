@@ -26,7 +26,7 @@ Player::Player(Prism::Scene* aScene)
 	myOrientation.SetPos(eyePosition);
 	myCamera = new Prism::Camera(myOrientation);
 	myMovement = new Movement(myOrientation, reader, movementElement);
-	myShooting = new Shooting();
+	myShooting = new Shooting(aScene);
 
 	reader.CloseDocument();
 	CU::Vector2<float> size(128.f, 128.f);
@@ -51,8 +51,6 @@ void Player::Update(float aDelta)
 	DEBUG_PRINT(playerPos);
 
 	myCamera->Update(aDelta);
-
-	myShooting->Render(*myCamera);
 }
 
 void Player::Render()

@@ -4,16 +4,16 @@ namespace Prism
 {
 	class Camera;
 	class Instance;
+	class Scene;
 }
 
 class Shooting
 {
 public:
-	Shooting();
+	Shooting(Prism::Scene* aScene);
 	~Shooting();
 
 	void Update(float aDelta, const CU::Matrix44<float>& aOrientation);
-	void Render(const Prism::Camera& aCamera);
 private:
 	void ShootAtDirection(const CU::Matrix44<float>& aOrientation);
 	
