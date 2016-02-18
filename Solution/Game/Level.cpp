@@ -6,7 +6,6 @@
 #include "Player.h"
 #include <Scene.h>
 
-
 Level::Level()
 	: myEntities(512)
 {
@@ -14,7 +13,6 @@ Level::Level()
 	myPlayer = new Player(myScene);
 	myScene->SetCamera(*myPlayer->GetCamera());
 }
-
 
 Level::~Level()
 {

@@ -5,6 +5,7 @@
 #include <ModelLoader.h>
 #include "Movement.h"
 #include "Player.h"
+#include "Shooting.h"
 #include <Scene.h>
 #include <SpriteProxy.h>
 #include <XMLReader.h>
@@ -25,6 +26,7 @@ Player::Player(Prism::Scene* aScene)
 	myOrientation.SetPos(eyePosition);
 	myCamera = new Prism::Camera(myOrientation);
 	myMovement = new Movement(myOrientation, reader, movementElement);
+	myShooting = new Shooting();
 
 	reader.CloseDocument();
 	CU::Vector2<float> size(128.f, 128.f);
@@ -43,11 +45,14 @@ Player::~Player()
 void Player::Update(float aDelta)
 {
 	myMovement->Update(aDelta);
+	myShooting->Update(aDelta, myOrientation);
 
 	CU::Vector3<float> playerPos(myOrientation.GetPos());
 	DEBUG_PRINT(playerPos);
 
 	myCamera->Update(aDelta);
+
+	myShooting->Render(*myCamera);
 }
 
 void Player::Render()

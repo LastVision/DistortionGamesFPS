@@ -210,7 +210,7 @@
     <ClInclude Include="Movement.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="ScriptInterface.h" />
-    <ClInclude Include="Shoot.h" />
+    <ClInclude Include="Shooting.h" />
     <ClInclude Include="StateEnums.h" />
     <ClInclude Include="StateStack.h" />
     <ClInclude Include="StateStackProxy.h" />
@@ -230,7 +230,7 @@
     <ClCompile Include="Movement.cpp" />
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="ScriptInterface.cpp" />
-    <ClCompile Include="Shoot.cpp" />
+    <ClCompile Include="Shooting.cpp" />
     <ClCompile Include="StateStack.cpp" />
     <ClCompile Include="StateStackProxy.cpp" />
     <ClCompile Include="stdafx.cpp">

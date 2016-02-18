@@ -31,6 +31,8 @@ namespace Prism
 		void Render(CU::StaticArray<DirectionalLightData, NUMBER_OF_DIRECTIONAL_LIGHTS>& someLights, bool aIsDepthRender);
 
 	private:
+		void RenderModel(Model* aModel, ModelData& aModelData, Effect* aEffect);
+
 		const Camera* myCamera;
 
 		ModelMap myRenderInfo;

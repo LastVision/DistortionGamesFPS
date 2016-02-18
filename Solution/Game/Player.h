@@ -1,6 +1,7 @@
 #pragma once
 
 class Movement;
+class Shooting;
 
 namespace Prism
 {
@@ -22,6 +23,7 @@ public:
 
 private:
 	Movement* myMovement;
+	Shooting* myShooting;
 	Prism::Camera* myCamera;
 	CU::Matrix44<float> myOrientation;
 	CU::Matrix44<float> myArmOrientation;

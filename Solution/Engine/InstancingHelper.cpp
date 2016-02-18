@@ -60,31 +60,45 @@ namespace Prism
 				currEffect->UpdateDirectionalLights(someLights);
 			}
 
-			if (currModel->SetGPUState(matrices, scales, heights))
-			{
-				tech = currEffect->GetTechnique(currModel->GetTechniqueName());
-				tech->GetDesc(&techDesc);
-
-				if (tech->IsValid() == false)
-				{
-					tech = currEffect->GetTechnique();
-					DL_ASSERT("INVALID TECHNIQUE IN INSTANCEHELPER::RENDER:");
-				}
-
-				for (UINT j = 0; j < techDesc.Passes; ++j)
-				{
-					ID3D11DeviceContext* context = Engine::GetInstance()->GetContex();
-					tech->GetPassByIndex(j)->Apply(0, context);
-					context->DrawIndexedInstanced(currModel->GetIndexCount(), matrices.Size()
-						, 0, currModel->GetVertexStart(), 0);
-
-				}
-				currModel->DeActivateSurfaces();
-			}
+			RenderModel(currModel, it->second, currEffect);
+			
 				
 			matrices.RemoveAll();
 			scales.RemoveAll();
 			heights.RemoveAll();
 		}
 	}
+
+	void InstancingHelper::RenderModel(Model* aModel, ModelData& aModelData, Effect* aEffect)
+	{
+		if (aModel->SetGPUState(aModelData.myMatrices, aModelData.myScales, aModelData.myHeights))
+		{
+			D3DX11_TECHNIQUE_DESC techDesc;
+			ID3DX11EffectTechnique* tech;
+			tech = aEffect->GetTechnique(aModel->GetTechniqueName());
+			tech->GetDesc(&techDesc);
+
+			if (tech->IsValid() == false)
+			{
+				tech = aEffect->GetTechnique();
+				DL_ASSERT("INVALID TECHNIQUE IN INSTANCEHELPER::RENDER:");
+			}
+
+			for (UINT j = 0; j < techDesc.Passes; ++j)
+			{
+				ID3D11DeviceContext* context = Engine::GetInstance()->GetContex();
+				tech->GetPassByIndex(j)->Apply(0, context);
+				context->DrawIndexedInstanced(aModel->GetIndexCount(), aModelData.myMatrices.Size()
+					, 0, aModel->GetVertexStart(), 0);
+
+			}
+			aModel->DeActivateSurfaces();
+		}
+
+		for (int i = 0; i < aModel->GetChildren().Size(); ++i)
+		{
+			RenderModel(aModel->GetChildren()[i], aModelData, aEffect);
+		}
+	}
 }
+
