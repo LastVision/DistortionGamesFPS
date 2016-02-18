@@ -12,6 +12,8 @@
 #include <ScriptSystem.h>
 #include <VTuneApi.h>
 
+#include <Cursor.h>
+
 InGameState::InGameState()
 	: myGUIManager(nullptr)
 {
@@ -32,6 +34,7 @@ void InGameState::InitState(StateStackProxy* aStateStackProxy, GUI::Cursor* aCur
 	myStateStack = aStateStackProxy;
 	myStateStatus = eStateStatus::eKeepState;
 	myCursor = aCursor;
+	myCursor->SetShouldRender(false);
 
 	//PostMaster::GetInstance()->SendMessage(RunScriptMessage("Data/Script/Autorun.script"));
 	myLevel = myLevelFactory->LoadCurrentLevel();
