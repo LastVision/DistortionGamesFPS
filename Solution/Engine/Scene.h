@@ -21,7 +21,7 @@ namespace Prism
 	class Scene
 	{
 	public:
-		Scene(const Camera& aCamera);
+		Scene();
 		~Scene();
 
 		void Render();
@@ -36,7 +36,6 @@ namespace Prism
 		void RemoveInstance(Instance* aInstance);
 
 		void SetCamera(const Camera& aCamera);
-		void SetViewCamera(const Camera& aCamera);
 		const Camera* GetCamera() const;
 
 	private:
@@ -50,7 +49,6 @@ namespace Prism
 		InstancingHelper* myInstancingHelper;
 
 		const Camera* myCamera;
-		const Camera* myViewCamera;
 
 		CU::StaticArray<DirectionalLightData, NUMBER_OF_DIRECTIONAL_LIGHTS> myDirectionalLightData;
 		CU::StaticArray<PointLightData, NUMBER_OF_POINT_LIGHTS> myPointLightData;

@@ -10,8 +10,9 @@
 Level::Level()
 	: myEntities(512)
 {
-	myPlayer = new Player();
-	myScene = new Prism::Scene(*myPlayer->GetCamera());
+	myScene = new Prism::Scene();
+	myPlayer = new Player(myScene);
+	myScene->SetCamera(*myPlayer->GetCamera());
 }
 
 
@@ -35,4 +36,5 @@ void Level::Update(const float aDeltaTime)
 void Level::Render()
 {
 	myScene->Render();
+	myPlayer->Render();
 }
