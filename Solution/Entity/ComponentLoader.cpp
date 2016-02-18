@@ -3,6 +3,7 @@
 #include <CommonHelper.h>
 #include "ComponentLoader.h"
 #include "EntityEnumConverter.h"
+#include "XMLReader.h"
 
 void ComponentLoader::LoadAnimationComponent(XMLReader& aDocument, tinyxml2::XMLElement* aSourceElement, AnimationComponentData& aOutputData)
 {
@@ -58,4 +59,9 @@ void ComponentLoader::LoadGraphicsComponent(XMLReader& aDocument, tinyxml2::XMLE
 			FailedToReadChildElementMessage(e->Name(), aSourceElement->Name());
 		}
 	}
+}
+
+void ComponentLoader::FailedToReadChildElementMessage(const std::string& aElement, const std::string& aParent)
+{
+
 }

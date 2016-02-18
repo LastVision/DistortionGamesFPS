@@ -42,7 +42,7 @@ void EntityFactory::LoadEntities(const char* aEntityListXML)
 }
 
 Entity* EntityFactory::CreateEntity(eOwnerType aOwner, eEntityType aType, Prism::eOctreeType aOctreeType,
-	Prism::Scene& aScene, CU::Vector3f aPostion, const Prism::Terrain& aTerrian, const CU::Vector3f& aRotation,
+	Prism::Scene& aScene, CU::Vector3f aPostion, const CU::Vector3f& aRotation,
 	const CU::Vector3f& aScale)
 {
 	if (myInstance->myLoadedEntityData.find(aType) != myInstance->myLoadedEntityData.end())
@@ -57,7 +57,7 @@ Entity* EntityFactory::CreateEntity(eOwnerType aOwner, eEntityType aType, Prism:
 }
 
 Entity* EntityFactory::CreateEntity(eOwnerType aOwner, eEntityType aType, std::string aSubType, Prism::eOctreeType aOctreeType,
-	Prism::Scene& aScene, CU::Vector3f aPostion, const Prism::Terrain& aTerrian,
+	Prism::Scene& aScene, CU::Vector3f aPostion,
 	const CU::Vector3f& aRotation, const CU::Vector3f& aScale)
 {
 	if (aType == eEntityType::PROP || aType == eEntityType::UNIT || aType == eEntityType::ARTIFACT)
