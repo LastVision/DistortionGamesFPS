@@ -16,7 +16,7 @@ InGameState::InGameState()
 	: myGUIManager(nullptr)
 {
 	myIsActiveState = false;
-	myLevelFactory = new LevelFactory();
+	myLevelFactory = new LevelFactory("Data/Level/LI_level.xml");
 }
 
 InGameState::~InGameState()
