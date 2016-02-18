@@ -2,10 +2,10 @@
 
 #include <Camera.h>
 #include <InputWrapper.h>
-#include "PlayerComponent.h"
+#include "Player.h"
 
 
-PlayerComponent::PlayerComponent()
+Player::Player()
 	: myPitch(CU::Vector3<float>(0, 1.f, 0), 0)
 	, myYaw(CU::Vector3<float>(1.f, 0, 0), 0)
 	, mySpeed(100.f)
@@ -16,19 +16,22 @@ PlayerComponent::PlayerComponent()
 }
 
 
-PlayerComponent::~PlayerComponent()
+Player::~Player()
 {
 }
 
-void PlayerComponent::Update(float aDelta)
+void Player::Update(float aDelta)
 {
 	Rotation(aDelta);
 	Movement(aDelta);
 
+	CU::Vector3<float> playerPos(myOrientation.GetPos());
+	DEBUG_PRINT(playerPos);
+
 	myCamera->Update(aDelta);
 }
 
-void PlayerComponent::Movement(float aDelta)
+void Player::Movement(float aDelta)
 {
 	CU::Vector3<float> movement;
 	if (CU::InputWrapper::GetInstance()->KeyIsPressed(DIK_S))
@@ -63,7 +66,7 @@ void PlayerComponent::Movement(float aDelta)
 	myOrientation.SetPos(myOrientation.GetPos() + myOrientation.GetRight() * movement.x * mySpeed * aDelta);
 }
 
-void PlayerComponent::Rotation(float aDelta)
+void Player::Rotation(float aDelta)
 {
 	myCursorPosition.x += static_cast<float>(CU::InputWrapper::GetInstance()->GetMouseDX()) * 0.002f;
 	myCursorPosition.y += static_cast<float>(CU::InputWrapper::GetInstance()->GetMouseDY()) * 0.002f;

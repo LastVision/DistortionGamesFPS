@@ -2,7 +2,7 @@
 #include <GrowingArray.h>
 #include <Matrix.h>
 
-class PlayerComponent;
+class Player;
 
 namespace Prism
 {
@@ -28,7 +28,7 @@ private:
 	Prism::Scene* myScene;
 
 	Prism::Instance* myInstance;
-	PlayerComponent* myPlayer;
+	Player* myPlayer;
 
 	CU::Matrix44f myInstanceOrientation;
 	CU::Matrix44f myPlayerOrientation;

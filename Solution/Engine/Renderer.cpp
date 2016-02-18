@@ -74,34 +74,29 @@ namespace Prism
 	void Renderer::ProcessShadow(SpotLightShadow* aShadowSpotLight, Scene* aScene)
 	{
 		aShadowSpotLight->ClearTexture();
+		ID3D11DeviceContext* context = Engine::GetInstance()->GetContex();
 
 		UINT nbrOfVp = 1;
 		D3D11_VIEWPORT oldVp;
-		Engine::GetInstance()->GetContex()->RSGetViewports(&nbrOfVp, &oldVp);
-
-
-		Engine::GetInstance()->GetContex()->RSSetViewports(1, myShadowViewport);
+		context->RSGetViewports(&nbrOfVp, &oldVp);
+		context->RSSetViewports(1, myShadowViewport);
 		
 
 		ID3D11RenderTargetView* originalRenderTargetView;
 		ID3D11DepthStencilView* originalDepthStencilView;
-		Engine::GetInstance()->GetContex()->OMGetRenderTargets(1, &originalRenderTargetView, &originalDepthStencilView);
+		context->OMGetRenderTargets(1, &originalRenderTargetView, &originalDepthStencilView);
 
 		ID3D11RenderTargetView* view = aShadowSpotLight->GetTexture()->GetRenderTargetView();
 
-		Engine::GetInstance()->GetContex()->OMSetRenderTargets(1, &view, aShadowSpotLight->GetTexture()->GetDepthStencilView());
+		context->OMSetRenderTargets(1, &view, aShadowSpotLight->GetTexture()->GetDepthStencilView());
 		const Camera* oldCamera = aScene->GetCamera();
 		aScene->SetViewCamera(*oldCamera);
 		aScene->SetCamera(*aShadowSpotLight->GetCamera());
 
 		aScene->Render();
-		//Prism::Engine::GetInstance()->DisableZBuffer();
-		//aScene->RenderEmitters();
-		//Prism::Engine::GetInstance()->EnableZBuffer();
 
-		Engine::GetInstance()->GetContex()->OMSetRenderTargets(1, &originalRenderTargetView, originalDepthStencilView);
-
-		Engine::GetInstance()->GetContex()->RSSetViewports(1, &oldVp);
+		context->OMSetRenderTargets(1, &originalRenderTargetView, originalDepthStencilView);
+		context->RSSetViewports(1, &oldVp);
 		aScene->SetCamera(*oldCamera);
 	}
 
