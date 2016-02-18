@@ -1,4 +1,5 @@
 #pragma once
+#include <GrowingArray.h>
 #include <Matrix.h>
 
 class PlayerComponent;
@@ -16,8 +17,12 @@ public:
 	Level();
 	~Level();
 
+	void AddEntity(Entity* aEntity);
+
 	void Update(const float aDeltaTime);
 	void Render();
+
+	Prism::Scene* GetScene();
 
 private:
 	Prism::Scene* myScene;
@@ -27,5 +32,11 @@ private:
 
 	CU::Matrix44f myInstanceOrientation;
 	CU::Matrix44f myPlayerOrientation;
+
+	CU::GrowingArray<Entity*> myEntities;
 };
 
+inline Prism::Scene* Level::GetScene()
+{
+	return myScene;
+}

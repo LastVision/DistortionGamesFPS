@@ -8,6 +8,7 @@
 
 
 Level::Level()
+	: myEntities(512)
 {
 	myPlayer = new PlayerComponent();
 	myScene = new Prism::Scene(*myPlayer->GetCamera());
@@ -20,6 +21,15 @@ Level::Level()
 
 Level::~Level()
 {
+	myEntities.DeleteAll();
+	SAFE_DELETE(myPlayer);
+	SAFE_DELETE(myInstance);
+	SAFE_DELETE(myScene);
+}
+
+void Level::AddEntity(Entity* aEntity)
+{
+	myEntities.Add(aEntity);
 }
 
 void Level::Update(const float aDeltaTime)
