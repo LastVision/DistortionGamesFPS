@@ -45,7 +45,7 @@
     <ClCompile Include="Player.cpp">
       <Filter>Player</Filter>
     </ClCompile>
-    <ClCompile Include="Shoot.cpp">
+    <ClCompile Include="Shooting.cpp">
       <Filter>Player</Filter>
     </ClCompile>
   </ItemGroup>
@@ -101,7 +101,7 @@
     <ClInclude Include="Player.h">
       <Filter>Player</Filter>
     </ClInclude>
-    <ClInclude Include="Shoot.h">
+    <ClInclude Include="Shooting.h">
       <Filter>Player</Filter>
     </ClInclude>
   </ItemGroup>
