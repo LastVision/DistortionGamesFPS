@@ -102,8 +102,8 @@ void LevelFactory::LoadProps(XMLReader& aReader, tinyxml2::XMLElement* aElement)
 		propRotation.y = CU::Math::DegreeToRad(propRotation.y);
 		propRotation.z = CU::Math::DegreeToRad(propRotation.z);
 		
-		Entity* newEntity = EntityFactory::CreateEntity(eOwnerType::NEUTRAL, eEntityType::PROP, propType, Prism::eOctreeType::STATIC, 
-			*myCurrentLevel->GetScene(), propPosition, propRotation, propScale);
+		Entity* newEntity = EntityFactory::CreateEntity(eEntityType::PROP, propType, *myCurrentLevel->GetScene()
+			, propPosition, propRotation, propScale);
 		newEntity->AddToScene();
 		newEntity->Reset();
 

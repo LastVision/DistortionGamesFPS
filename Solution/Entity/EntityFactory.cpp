@@ -41,14 +41,13 @@ void EntityFactory::LoadEntities(const char* aEntityListXML)
 	entityListDocument.CloseDocument();
 }
 
-Entity* EntityFactory::CreateEntity(eOwnerType aOwner, eEntityType aType, Prism::eOctreeType aOctreeType,
-	Prism::Scene& aScene, CU::Vector3f aPostion, const CU::Vector3f& aRotation,
-	const CU::Vector3f& aScale)
+Entity* EntityFactory::CreateEntity(eEntityType aType, Prism::Scene& aScene, CU::Vector3f aPostion
+	, const CU::Vector3f& aRotation, const CU::Vector3f& aScale)
 {
 	if (myInstance->myLoadedEntityData.find(aType) != myInstance->myLoadedEntityData.end())
 	{
 		EntityData loadedEntityData = myInstance->myLoadedEntityData.find(aType)->second;
-		Entity* newEntity = new Entity(aOwner, aOctreeType, loadedEntityData, aScene, aPostion, aRotation
+		Entity* newEntity = new Entity(loadedEntityData, aScene, aPostion, aRotation
 			, aScale, eUnitType::NOT_A_UNIT);
 		return newEntity;
 	}
@@ -56,8 +55,7 @@ Entity* EntityFactory::CreateEntity(eOwnerType aOwner, eEntityType aType, Prism:
 	return nullptr;
 }
 
-Entity* EntityFactory::CreateEntity(eOwnerType aOwner, eEntityType aType, std::string aSubType, Prism::eOctreeType aOctreeType,
-	Prism::Scene& aScene, CU::Vector3f aPostion,
+Entity* EntityFactory::CreateEntity(eEntityType aType, std::string aSubType, Prism::Scene& aScene, CU::Vector3f aPostion,
 	const CU::Vector3f& aRotation, const CU::Vector3f& aScale)
 {
 	if (aType == eEntityType::PROP || aType == eEntityType::UNIT || aType == eEntityType::ARTIFACT)
@@ -65,7 +63,7 @@ Entity* EntityFactory::CreateEntity(eOwnerType aOwner, eEntityType aType, std::s
 		if (myInstance->myLoadedSubEntityData.find(aSubType) != myInstance->myLoadedSubEntityData.end())
 		{
 			EntityData loadedEntityData = myInstance->myLoadedSubEntityData.find(aSubType)->second;
-			Entity* newEntity = new Entity(aOwner, aOctreeType, loadedEntityData, aScene, aPostion, aRotation
+			Entity* newEntity = new Entity(loadedEntityData, aScene, aPostion, aRotation
 				, aScale, loadedEntityData.myUnitType);
 			newEntity->mySubType = aSubType;
 			return newEntity;

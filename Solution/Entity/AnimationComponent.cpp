@@ -19,7 +19,6 @@ AnimationComponent::AnimationComponent(Entity& aEntity, AnimationComponentData& 
 	: Component(aEntity)
 	, myInstance(nullptr)
 	, myCullingRadius(10.f)
-	, myPrevEntityState(myEntity.GetState())
 {
 #ifndef BOX_MODE
 	Prism::ModelProxy* model = Prism::ModelLoader::GetInstance()->LoadModelAnimated(aComponentData.myModelPath
@@ -50,11 +49,8 @@ AnimationComponent::AnimationComponent(Entity& aEntity, AnimationComponentData& 
 AnimationComponent::~AnimationComponent()
 {
 #ifndef BOX_MODE
-	if (myEntity.myIsInScene == true && myEntity.GetOctreeType() != Prism::eOctreeType::NOT_IN_OCTREE
-		&& myEntity.GetOwner() != eOwnerType::PLAYER)
-	{
-		myEntity.GetScene().RemoveInstance(myInstance);
-	}
+
+	myEntity.GetScene().RemoveInstance(myInstance);
 	delete myInstance;
 	myInstance = nullptr;
 #endif
