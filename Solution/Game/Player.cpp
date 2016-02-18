@@ -59,7 +59,7 @@ void Player::Update(float aDelta)
 
 	myJumpOffset = fmaxf(0, myJumpOffset);
 
-	if (CU::InputWrapper::GetInstance()->KeyIsPressed(DIK_SPACE) == true)
+	if (myJumpOffset < 0.001f && CU::InputWrapper::GetInstance()->KeyIsPressed(DIK_SPACE) == true)
 	{
 		myJumpAcceleration = 4.f;
 	}
