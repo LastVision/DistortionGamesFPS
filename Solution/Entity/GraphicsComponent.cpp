@@ -12,12 +12,13 @@
 #include <Scene.h>
 #include <Texture.h>
 
-GraphicsComponent::GraphicsComponent(Entity& aEntity, GraphicsComponentData& aComponentData)
+GraphicsComponent::GraphicsComponent(Entity& aEntity, const GraphicsComponentData& aComponentData)
 	: Component(aEntity)
+	, myComponentData(aComponentData)
 	, myInstance(nullptr)
 {
-	Prism::ModelProxy* model = Prism::ModelLoader::GetInstance()->LoadModel(aComponentData.myModelPath
-		, aComponentData.myEffectPath);
+	Prism::ModelProxy* model = Prism::ModelLoader::GetInstance()->LoadModel(myComponentData.myModelPath
+		, myComponentData.myEffectPath);
 
 	myInstance = new Prism::Instance(*model, myEntity.myOrientation);
 }

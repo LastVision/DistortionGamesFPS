@@ -15,14 +15,15 @@
 
 //#define BOX_MODE
 
-AnimationComponent::AnimationComponent(Entity& aEntity, AnimationComponentData& aComponentData)
+AnimationComponent::AnimationComponent(Entity& aEntity, const AnimationComponentData& aComponentData)
 	: Component(aEntity)
+	, myComponentData(aComponentData)
 	, myInstance(nullptr)
 	, myCullingRadius(10.f)
 {
 #ifndef BOX_MODE
-	Prism::ModelProxy* model = Prism::ModelLoader::GetInstance()->LoadModelAnimated(aComponentData.myModelPath
-		, aComponentData.myEffectPath);
+	Prism::ModelProxy* model = Prism::ModelLoader::GetInstance()->LoadModelAnimated(myComponentData.myModelPath
+		, myComponentData.myEffectPath);
 
 	myInstance = new Prism::Instance(*model, myEntity.myOrientation);
 
@@ -40,7 +41,7 @@ AnimationComponent::AnimationComponent(Entity& aEntity, AnimationComponentData& 
 
 	for (int i = 0; i < animations; ++i)
 	{
-		AnimationLoadData loadAnimation = aComponentData.myAnimations[i];
+		AnimationLoadData loadAnimation = myComponentData.myAnimations[i];
 		AddAnimation(loadAnimation.myEntityState, loadAnimation.myAnimationPath, loadAnimation.myLoopFlag, loadAnimation.myResetTimeOnRestart);
 	}
 #endif

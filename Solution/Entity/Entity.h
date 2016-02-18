@@ -23,7 +23,7 @@ class Entity
 	friend class EntityFactory;
 
 public:
-	Entity(EntityData& aEntityData, Prism::Scene& aScene, const CU::Vector3<float>& aStartPosition, 
+	Entity(const EntityData& aEntityData, Prism::Scene& aScene, const CU::Vector3<float>& aStartPosition, 
 		const CU::Vector3f& aRotation, const CU::Vector3f& aScale, eUnitType aUnitType);
 	~Entity();
 

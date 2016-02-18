@@ -30,10 +30,6 @@ void ComponentLoader::LoadAnimationComponent(XMLReader& aDocument, tinyxml2::XML
 
 			aOutputData.myAnimations.Insert(static_cast<int>(newAnimation.myEntityState), newAnimation);
 		}
-		else
-		{
-			FailedToReadChildElementMessage(e->Name(), aSourceElement->Name());
-		}
 	}
 }
 
@@ -54,14 +50,5 @@ void ComponentLoader::LoadGraphicsComponent(XMLReader& aDocument, tinyxml2::XMLE
 		{
 			aOutputData.myAlwaysRender = true;
 		}
-		else
-		{
-			FailedToReadChildElementMessage(e->Name(), aSourceElement->Name());
-		}
 	}
-}
-
-void ComponentLoader::FailedToReadChildElementMessage(const std::string& aElement, const std::string& aParent)
-{
-
 }
