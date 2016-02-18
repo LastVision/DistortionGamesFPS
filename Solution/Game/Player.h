@@ -26,7 +26,6 @@ private:
 	Shooting* myShooting;
 	Prism::Camera* myCamera;
 	CU::Matrix44<float> myOrientation;
-	CU::Matrix44<float> myArmOrientation;
 	Prism::SpriteProxy* myCrosshair;
 	Prism::Instance* myModel;
 };
