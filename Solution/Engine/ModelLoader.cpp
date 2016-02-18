@@ -53,7 +53,7 @@ namespace Prism
 		myActiveBuffer = 0;
 		myInactiveBuffer = 1;
 
-		StartPrefetching();
+		//StartPrefetching();
 		LoadInstancedCount();
 	}
 

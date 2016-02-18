@@ -158,7 +158,7 @@ namespace Prism
 			{
 				tech->GetPassByIndex(i)->Apply(0, Engine::GetInstance()->GetContex());
 				Engine::GetInstance()->GetContex()->DrawIndexed(mySurfaces[s]->GetIndexCount()
-					, mySurfaces[s]->GetVertexStart(), 0);
+					, mySurfaces[s]->GetIndexStart(), 0);
 			}
 
 			mySurfaces[s]->DeActivate();

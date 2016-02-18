@@ -469,6 +469,11 @@ namespace Prism
 		}
 	}
 
+	CU::GrowingArray<Model*>& Model::GetChildren()
+	{
+		return myChildren;
+	}
+
 	const std::string& Model::GetTechniqueName() const
 	{
 		if (myIsNULLObject == true)
