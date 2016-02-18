@@ -1,6 +1,7 @@
 #include "stdafx.h"
 
 #include <Camera.h>
+#include <InputWrapper.h>
 #include <Instance.h>
 #include <ModelLoader.h>
 #include "Movement.h"
@@ -18,8 +19,9 @@ Player::Player(Prism::Scene* aScene)
 
 	tinyxml2::XMLElement* element = reader.ForceFindFirstChild("root");
 
-	CU::Vector3<float> eyePosition;
-	reader.ForceReadAttribute(reader.ForceFindFirstChild(element, "eyeHeight"), "value", eyePosition.y);
+	reader.ForceReadAttribute(reader.ForceFindFirstChild(element, "eyeHeight"), "value", myHeight);
+	reader.ForceReadAttribute(reader.ForceFindFirstChild(element, "crouchHeight"), "value", myCrouchHeight);
+	CU::Vector3<float> eyePosition(0, myHeight, 0);
 
 	tinyxml2::XMLElement* movementElement = reader.ForceFindFirstChild(element, "movement");
 
@@ -35,6 +37,9 @@ Player::Player(Prism::Scene* aScene)
 	myModel = new Prism::Instance(*Prism::ModelLoader::GetInstance()->LoadModelAnimated("Data/Resource/Model/First_person/SK_arm.fbx", "Data/Resource/Shader/S_effect_pbl_animated.fx"), myOrientation);
 
 	aScene->AddInstance(myModel);
+
+	myJumpAcceleration = 0;
+	myJumpOffset = 0;
 }
 
 
@@ -45,6 +50,33 @@ Player::~Player()
 void Player::Update(float aDelta)
 {
 	myMovement->Update(aDelta);
+
+	CU::Vector3<float> position(myOrientation.GetPos());
+
+	myJumpAcceleration -= aDelta * 9.82f;
+
+	myJumpOffset += myJumpAcceleration;
+
+	myJumpOffset = fmaxf(0, myJumpOffset);
+
+	if (CU::InputWrapper::GetInstance()->KeyIsPressed(DIK_SPACE) == true)
+	{
+		myJumpAcceleration = 4.f;
+	}
+
+	if (CU::InputWrapper::GetInstance()->KeyIsPressed(DIK_LCONTROL) == true)
+	{
+		position.y = myCrouchHeight;
+	}
+	else
+	{
+		position.y = myHeight;
+	}
+
+	position.y += myJumpOffset;
+
+	myOrientation.SetPos(position);
+
 	myShooting->Update(aDelta, myOrientation);
 
 	myModel->Update(aDelta);

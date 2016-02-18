@@ -28,6 +28,10 @@ private:
 	CU::Matrix44<float> myOrientation;
 	Prism::SpriteProxy* myCrosshair;
 	Prism::Instance* myModel;
+	float myHeight;
+	float myCrouchHeight;
+	float myJumpAcceleration;
+	float myJumpOffset;
 };
 
 inline Prism::Camera* Player::GetCamera() const
