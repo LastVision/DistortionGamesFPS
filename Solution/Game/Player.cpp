@@ -3,6 +3,7 @@
 #include <Camera.h>
 #include "Movement.h"
 #include "Player.h"
+#include "Shooting.h"
 #include <XMLReader.h>
 
 
@@ -21,6 +22,7 @@ Player::Player()
 	myOrientation.SetPos(eyePosition);
 	myCamera = new Prism::Camera(myOrientation);
 	myMovement = new Movement(myOrientation, reader, movementElement);
+	myShooting = new Shooting();
 
 	reader.CloseDocument();
 }
@@ -33,10 +35,13 @@ Player::~Player()
 void Player::Update(float aDelta)
 {
 	myMovement->Update(aDelta);
+	myShooting->Update(aDelta, myOrientation);
 
 	CU::Vector3<float> playerPos(myOrientation.GetPos());
 	DEBUG_PRINT(playerPos);
 
 	myCamera->Update(aDelta);
+
+	myShooting->Render(*myCamera);
 }
 
