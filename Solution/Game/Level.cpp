@@ -6,14 +6,12 @@
 #include "Player.h"
 #include <Scene.h>
 
-
 Level::Level()
 	: myEntities(512)
 {
 	myPlayer = new Player();
 	myScene = new Prism::Scene(*myPlayer->GetCamera());
 }
-
 
 Level::~Level()
 {

@@ -47,6 +47,8 @@ namespace Prism
 			, const CU::GrowingArray<float>& someHeights);
 		int GetIndexCount();
 		int GetVertexStart();
+		CU::GrowingArray<Model*>& GetChildren();
+
 
 		const std::string& GetTechniqueName() const override;
 		Model* GetRealModel(const CU::Vector3<float>& aModelPosition, const CU::Vector3<float>& aCameraPosition);
