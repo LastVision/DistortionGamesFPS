@@ -1,5 +1,6 @@
 #pragma once
-#include <Quaternion.h>
+
+class Movement;
 
 namespace Prism
 {
@@ -17,22 +18,9 @@ public:
 	Prism::Camera* GetCamera() const;
 
 private:
-	void Movement(float aDelta);
-	void Rotation(float aDelta);
-	CU::Vector2<float> myCursorPosition;
-	float mySteeringModifier;
-	float myRotationSpeed;
-	float myMovementSpeed;
-	float myMaxSteeringSpeed;
-
-	CU::Quaternion myPitch;
-	CU::Quaternion myYaw;
-
+	Movement* myMovement;
 	Prism::Camera* myCamera;
 	CU::Matrix44<float> myOrientation;
-
-
-	float mySpeed;
 };
 
 inline Prism::Camera* Player::GetCamera() const
