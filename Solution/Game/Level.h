@@ -27,11 +27,7 @@ public:
 private:
 	Prism::Scene* myScene;
 
-	Prism::Instance* myInstance;
 	Player* myPlayer;
-
-	CU::Matrix44f myInstanceOrientation;
-	CU::Matrix44f myPlayerOrientation;
 
 	CU::GrowingArray<Entity*> myEntities;
 };
