@@ -50,6 +50,7 @@ void Level::Update(const float aDeltaTime)
 		if (type == eNetMessageType::ON_JOIN)
 		{
 			myOtherPlayer = EntityFactory::CreateEntity(eEntityType::PROP, "bullet", *myScene, CU::Vector3f(0.f, 0.f, 0.f));
+			myOtherPlayer->AddToScene();
 			messages.RemoveAll();
 		}
 	}
