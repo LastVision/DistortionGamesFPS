@@ -1,4 +1,7 @@
 #pragma once
+
+#include "IModelFactory.h"
+#include <string>
 #include <vector>
 #include <unordered_map>
 #include <GrowingArray.h>
@@ -25,15 +28,15 @@ namespace Prism
 	struct VertexIndexWrapper;
 	struct VertexDataWrapper;
 
-	class FBXFactory
+	class FBXFactory : public IModelFactory
 	{
 	public:
 		FBXFactory();
 		~FBXFactory();
 
-		Model* LoadModel(const char* aFilePath);
-		ModelAnimated* LoadModelAnimated(const char* aFilePath);
-		Animation* LoadAnimation(const char* aFilePath);
+		Model* LoadModel(const std::string& aFilePath) override;
+		ModelAnimated* LoadAnimatedModel(const std::string& aFilePath) override;
+		Animation* LoadAnimation(const std::string& aFilePath) override;
 		void LoadModelForRadiusCalc(const char* aFilePath, CU::GrowingArray<CU::Vector3<float>>& someVerticesOut);
 
 		void ConvertToDGFX(const char* aInputPath, const char* aOutputPath);

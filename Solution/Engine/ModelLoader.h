@@ -15,6 +15,8 @@ namespace Prism
 	class SpriteProxy;
 	class Sprite;
 
+	class IModelFactory;
+
 	class ModelLoader
 	{
 	public:
@@ -72,7 +74,6 @@ namespace Prism
 		ModelLoader();
 		~ModelLoader();
 
-		void StartPrefetching();
 		void LoadInstancedCount();
 		int GetInstancedCount(const std::string& aModelPath);
 
@@ -98,8 +99,9 @@ namespace Prism
 		volatile bool myClearLoadJobs;
 		volatile bool myIsPaused;
 
-		FBXFactory* myModelFactory;
-		DGFXLoader* myDGFXLoader;
+		//FBXFactory* myModelFactory;
+		//DGFXLoader* myDGFXLoader;
+		IModelFactory* myModelFactory;
 		CU::GrowingArray<Model*> myNonFXBModels;
 		std::unordered_map<std::string, ModelProxy*> myModelProxies;
 		std::unordered_map<std::string, Sprite*> mySprites;

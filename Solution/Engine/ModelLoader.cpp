@@ -41,8 +41,7 @@ namespace Prism
 		, myIsRunning(true)
 		, myCanAddToLoadArray(true)
 		, myCanCopyArray(true)
-		, myModelFactory(new FBXFactory())
-		, myDGFXLoader(new DGFXLoader())
+		, myModelFactory(nullptr)
 		, myIsLoading(false)
 		, myClearLoadJobs(true)
 		, myIsPaused(false)
@@ -53,14 +52,17 @@ namespace Prism
 		myActiveBuffer = 0;
 		myInactiveBuffer = 1;
 
-		//StartPrefetching();
+#ifdef USE_DGFX
+		myModelFactory = new DGFXLoader();
+#else
+		myModelFactory = new FBXFactory();
+#endif
+
 		LoadInstancedCount();
 	}
 
 	ModelLoader::~ModelLoader()
 	{
-		delete myDGFXLoader;
-
 		delete myModelFactory;
 		myModelFactory = nullptr;
 		myNonFXBModels.DeleteAll();
@@ -76,58 +78,6 @@ namespace Prism
 			SAFE_DELETE(it->second);
 		}
 		mySprites.clear();
-	}
-
-	void ModelLoader::StartPrefetching()
-	{
-#ifdef USE_DGFX
-		std::ifstream file;
-		file.open("GeneratedData/modellist.bin");
-		DL_ASSERT_EXP(file.is_open(), "Failed to open modellist.bin, did you run DGFX-Tool?");
-		if (file.is_open())
-		{
-			std::string animated;
-			std::string filePath;
-
-			while (file >> animated)
-			{
-				file >> filePath;
-				std::string dgfxPath = CU::GetGeneratedDataFolderFilePath(filePath, "dgfx");
-#ifndef RELEASE_BUILD
-				if (myDGFXLoader->CheckIfFbxIsNewer(dgfxPath) == true)
-				{
-					DL_MESSAGE_BOX("Found a FBX-File thats newer than the DGFX-File, did you forget to run the tool?", "Old DGFX", MB_ICONQUESTION);
-				}
-#endif
-				if (CU::FileExists(dgfxPath) == false)
-				{
-					assert(false && "FAILED TO OPEN DGFX-FILE");
-				}
-
-
-			}
-
-			while (std::getline(file, filePath))
-			{
-				std::string dgfxPath = CU::GetGeneratedDataFolderFilePath(filePath, "dgfx");
-#ifndef RELEASE_BUILD
-				if (myDGFXLoader->CheckIfFbxIsNewer(dgfxPath) == true)
-				{
-					DL_MESSAGE_BOX("Found a FBX-File thats newer than the DGFX-File, did you forget to run the tool?", "Old DGFX", MB_ICONQUESTION);
-				}
-#endif
-				std::fstream file2;
-				file2.open(dgfxPath.c_str(), std::ios::in | std::ios::binary);
-				DL_ASSERT_EXP(file2.fail() == false, CU::Concatenate("Failed to open %s, did you forget to run the tool?", dgfxPath.c_str()));
-				if (file2.fail() == true)
-				{
-					assert(false && "FAILED TO OPEN DGFX-FILE");
-				}
-				file2.close();
-			}
-			file.close();
-		}
-#endif
 	}
 
 	void ModelLoader::LoadInstancedCount()
@@ -313,22 +263,10 @@ namespace Prism
 		myCanCopyArray = true;
 #else
 		Model* model = nullptr;
-
-	#ifdef USE_DGFX
-		#ifdef CONVERT_TO_DGFX_IN_RUNTIME
-			std::string animOutput = CU::GetGeneratedDataFolderFilePath(aModelPath.c_str(), "dgfx");
-			myModelFactory->ConvertToDGFX(aModelPath.c_str(), animOutput.c_str());
-		#endif
-
-		model = myDGFXLoader->LoadModel(aModelPath.c_str());
+		model = myModelFactory->LoadModel(aModelPath);
 		model->SetEffect(EffectContainer::GetInstance()->GetEffect(aEffectPath));
 		model->myFileName = aModelPath;
-		model->Init();
-
-	#else
-		model = myModelFactory->LoadModel(aModelPath.c_str(),
-			EffectContainer::GetInstance()->GetEffect(aEffectPath));
-	#endif
+		model->Init(GetInstancedCount(aModelPath));
 
 		proxy->SetModel(model);
 #endif
@@ -363,21 +301,10 @@ namespace Prism
 		myCanCopyArray = true;
 #else
 		ModelAnimated* model = nullptr;
-
-		#ifdef USE_DGFX
-			#ifdef CONVERT_TO_DGFX_IN_RUNTIME
-				std::string animOutput = CU::GetGeneratedDataFolderFilePath(aModelPath.c_str(), "dgfx");
-				myModelFactory->ConvertToDGFX(aModelPath.c_str(), animOutput.c_str());
-			#endif
-
-			model = myDGFXLoader->LoadAnimatedModel(aModelPath.c_str());
-			model->SetEffect(EffectContainer::GetInstance()->GetEffect(aEffectPath));
-			model->myFileName = aModelPath;
-			model->Init();
-		#else
-			model = myModelFactory->LoadModelAnimated(aModelPath.c_str(),
-				EffectContainer::GetInstance()->GetEffect(aEffectPath));
-		#endif
+		model = myModelFactory->LoadAnimatedModel(aModelPath.c_str());
+		model->SetEffect(EffectContainer::GetInstance()->GetEffect(aEffectPath));
+		model->myFileName = aModelPath;
+		model->Init();
 
 		proxy->SetModelAnimated(model);
 #endif
@@ -435,16 +362,7 @@ namespace Prism
 		myBuffers[myInactiveBuffer].Add(animData);
 		myCanCopyArray = true;
 #else
-		#ifdef USE_DGFX
-			#ifdef CONVERT_TO_DGFX_IN_RUNTIME
-				std::string animOutput = CU::GetGeneratedDataFolderFilePath(aPath, "dgfx");
-				myModelFactory->ConvertToDGFX(aPath, animOutput.c_str());
-			#endif
-			anim->myAnimation = myDGFXLoader->LoadAnimation(aPath);
-
-		#else
-			anim->myAnimation = myModelFactory->LoadAnimation(aPath);
-		#endif
+		anim->myAnimation = myModelFactory->LoadAnimation(aPath);
 #endif
 
 		return anim;
@@ -559,61 +477,27 @@ namespace Prism
 
 	void ModelLoader::CreateModel(LoadData& someData)
 	{
-#ifdef USE_DGFX
-#ifdef CONVERT_TO_DGFX_IN_RUNTIME
-		std::string animOutput = CU::GetGeneratedDataFolderFilePath(someData.myModelPath.c_str(), "dgfx");
-		myModelFactory->ConvertToDGFX(someData.myModelPath.c_str(), animOutput.c_str());
-#endif
-
-		Model* model = myDGFXLoader->LoadModel(someData.myModelPath);
-		model->SetEffect(EffectContainer::GetInstance()->GetEffect(someData.myEffectPath));
-		model->myFileName = someData.myModelPath;
-
-		model->Init(GetInstancedCount(someData.myModelPath));
-#else
-		Model* model = myModelFactory->LoadModel(someData.myModelPath.c_str());
+		Model* model = myModelFactory->LoadModel(someData.myModelPath);
 		model->SetEffect(EffectContainer::GetInstance()->GetEffect(someData.myEffectPath));
 		model->myFileName = someData.myModelPath;
 		model->Init(GetInstancedCount(someData.myModelPath));
-#endif
 
 		someData.myModelProxy->SetModel(model);
 	}
 
 	void ModelLoader::CreateModelAnimated(LoadData& someData)
 	{
-#ifdef USE_DGFX
-#ifdef CONVERT_TO_DGFX_IN_RUNTIME
-		std::string animOutput = CU::GetGeneratedDataFolderFilePath(someData.myModelPath.c_str(), "dgfx");
-		myModelFactory->ConvertToDGFX(someData.myModelPath.c_str(), animOutput.c_str());
-#endif
+		ModelAnimated* model = myModelFactory->LoadAnimatedModel(someData.myModelPath);
+		model->SetEffect(EffectContainer::GetInstance()->GetEffect(someData.myEffectPath));
+		model->myFileName = someData.myModelPath;
+		model->Init();
 
-		ModelAnimated* model = myDGFXLoader->LoadAnimatedModel(someData.myModelPath);
-		model->SetEffect(EffectContainer::GetInstance()->GetEffect(someData.myEffectPath));
-		model->myFileName = someData.myModelPath;
-		model->Init();
-#else
-		ModelAnimated* model = myModelFactory->LoadModelAnimated(someData.myModelPath.c_str());
-		model->SetEffect(EffectContainer::GetInstance()->GetEffect(someData.myEffectPath));
-		model->myFileName = someData.myModelPath;
-		model->Init();
-#endif
 		someData.myModelProxy->SetModelAnimated(model);
 	}
 
 	void ModelLoader::CreateAnimation(LoadData& someData)
 	{
-#ifdef USE_DGFX
-#ifdef CONVERT_TO_DGFX_IN_RUNTIME
-		std::string animOutput = CU::GetGeneratedDataFolderFilePath(someData.myModelPath.c_str(), "dgfx");
-		myModelFactory->ConvertToDGFX(someData.myModelPath.c_str(), animOutput.c_str());
-#endif
-
-		someData.myAnimationProxy->myAnimation = myDGFXLoader->LoadAnimation(someData.myModelPath);
-#else
-		someData.myAnimationProxy->myAnimation
-			= myModelFactory->LoadAnimation(someData.myModelPath.c_str());
-#endif
+		someData.myAnimationProxy->myAnimation = myModelFactory->LoadAnimation(someData.myModelPath);
 	}
 
 	void ModelLoader::CreateCube(LoadData& someData)

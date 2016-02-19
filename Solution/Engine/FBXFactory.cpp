@@ -380,7 +380,7 @@ namespace Prism
 		return tempModel;
 	}
 
-	Model* FBXFactory::LoadModel(const char* aFilePath)
+	Model* FBXFactory::LoadModel(const std::string& aFilePath)
 	{
 #ifndef DLL_EXPORT
 		if (myModels.find(aFilePath) != myModels.end())
@@ -409,7 +409,7 @@ namespace Prism
 		{
 			CU::GrowingArray<std::string> errors(16);
 			FBXData* data = new FBXData();
-			FbxModelData* fbxModelData = myLoader->loadModel(aFilePath, errors);
+			FbxModelData* fbxModelData = myLoader->loadModel(aFilePath.c_str(), errors);
 			data->myData = fbxModelData;
 			data->myPath = aFilePath;
 			myFBXData.push_back(data);
@@ -444,7 +444,7 @@ namespace Prism
 		return returnModel;
 	}
 
-	ModelAnimated* FBXFactory::LoadModelAnimated(const char* aFilePath)
+	ModelAnimated* FBXFactory::LoadAnimatedModel(const std::string& aFilePath)
 	{
 #ifndef DLL_EXPORT
 		if (myModelsAnimated.find(aFilePath) != myModelsAnimated.end())
@@ -475,7 +475,7 @@ namespace Prism
 		{
 			CU::GrowingArray<std::string> errors(16);
 			FBXData* data = new FBXData();
-			FbxModelData* fbxModelData = myLoader->loadModel(aFilePath, errors);
+			FbxModelData* fbxModelData = myLoader->loadModel(aFilePath.c_str(), errors);
 			data->myData = fbxModelData;
 			data->myPath = aFilePath;
 			myFBXData.push_back(data);
@@ -509,7 +509,7 @@ namespace Prism
 		return returnModel;
 	}
 
-	Animation* FBXFactory::LoadAnimation(const char* aFilePath)
+	Animation* FBXFactory::LoadAnimation(const std::string& aFilePath)
 	{
 		if (myAnimations.find(aFilePath) != myAnimations.end())
 		{
@@ -537,7 +537,7 @@ namespace Prism
 		{
 			CU::GrowingArray<std::string> errors(16);
 			FBXData* data = new FBXData();
-			FbxModelData* fbxModelData = myLoader->loadModel(aFilePath, errors);
+			FbxModelData* fbxModelData = myLoader->loadModel(aFilePath.c_str(), errors);
 			data->myData = fbxModelData;
 			data->myPath = aFilePath;
 			myFBXData.push_back(data);

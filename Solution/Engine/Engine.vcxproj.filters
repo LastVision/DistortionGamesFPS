@@ -359,6 +359,12 @@
     <ClInclude Include="SpotLightShadow.h">
       <Filter>Lights</Filter>
     </ClInclude>
+    <ClInclude Include="IModelFactory.h">
+      <Filter>FBX</Filter>
+    </ClInclude>
+    <ClInclude Include="DGFXFileFormat.h">
+      <Filter>FBX</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Precompile">

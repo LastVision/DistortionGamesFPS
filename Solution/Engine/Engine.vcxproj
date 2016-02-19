@@ -341,6 +341,7 @@
     <ClInclude Include="Cube3DRenderer.h" />
     <ClInclude Include="DebugDrawer.h" />
     <ClInclude Include="Defines.h" />
+    <ClInclude Include="DGFXFileFormat.h" />
     <ClInclude Include="DGFXLoader.h" />
     <ClInclude Include="DirectX.h" />
     <ClInclude Include="Effect.h" />
@@ -357,6 +358,7 @@
     <ClInclude Include="Frustum.h" />
     <ClInclude Include="FullScreenHelper.h" />
     <ClInclude Include="HierarchyBone.h" />
+    <ClInclude Include="IModelFactory.h" />
     <ClInclude Include="IndexBufferWrapper.h" />
     <ClInclude Include="Instance.h" />
     <ClInclude Include="DirectionalLight.h" />
