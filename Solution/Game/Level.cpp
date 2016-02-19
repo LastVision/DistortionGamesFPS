@@ -9,6 +9,8 @@
 #include "NetworkManager.h"
 #include "NetworkMessageTypes.h"
 
+#include "DebugDrawer.h"
+
 #include "EntityFactory.h"
 #include "Entity.h"
 #include "GameEnum.h"
@@ -45,11 +47,12 @@ void Level::Update(const float aDeltaTime)
 
 	for (int i = 0; i < messages.Size(); ++i)
 	{
-		
+
 		if (messages[i].myID == '\x2')
 		{
-			myOtherPlayer = EntityFactory::CreateEntity(eEntityType::PROP, "bullet", *myScene, CU::Vector3f(0.f, 0.f, 0.f));
-			myOtherPlayer->AddToScene();
+
+			Prism::DebugDrawer::GetInstance()->RenderBox(CU::Vector3<float>(0.f, 0.f, 0.f), eColorDebug::BLUE);
+
 			messages.RemoveAll();
 		}
 	}
