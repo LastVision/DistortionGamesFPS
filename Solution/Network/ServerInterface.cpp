@@ -98,6 +98,25 @@ void ServerInterface::Send(const std::vector<char>& anArray, const sockaddr_in& 
 	}
 }
 
+void ServerInterface::Send(NetMessageOnJoin join)
+{
+	join.Init();
+	join.mySenderID = 0;
+
+	for (int i = 0; i < myClients.Size(); ++i)
+	{
+		join.myTargetID = myClients[i].myID;
+		join.PackMessage();
+		if (sendto(myListenSocket, &join.myStream[0], join.myStream.size(), 0, (struct sockaddr *)&myClients[i].myAdress
+			, sizeof(sockaddr_in)) == SOCKET_ERROR)
+		{
+			int errorCode = WSAGetLastError();
+			std::string toPrint = "sendto() failed with error code : " + errorCode;
+			Utility::PrintEndl(toPrint, Utility::eCOLOR::WHITE_BACK_RED);
+		}
+	}
+}
+
 int ServerInterface::Receieve(char* aBuffer)
 {
 	int toReturn = 0;
@@ -126,8 +145,7 @@ void ServerInterface::CreateConnection(const std::string& aName)
 	Send(toSend.myStream, newConnection.myAdress);
 
 	NetMessageOnJoin onJoin;
-	onJoin.Init();
-	onJoin.PackMessage();
-	Send(onJoin.myStream);
+	
+	Send(onJoin);
 
 }

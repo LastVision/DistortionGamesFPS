@@ -7,8 +7,9 @@ public:
 	~NetMessageOnJoin();
 	void Init();
 
-protected:
 
+protected:
+	
 	void DoSerialize(StreamType& aStream) override;
 	void DoDeSerialize(StreamType& aStream) override;
 };

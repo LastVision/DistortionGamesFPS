@@ -45,9 +45,8 @@ void Level::Update(const float aDeltaTime)
 
 	for (int i = 0; i < messages.Size(); ++i)
 	{
-		eNetMessageType type;
-		memcpy(&type, &messages[i].myID, sizeof(char));
-		if (type == eNetMessageType::ON_JOIN)
+		
+		if (messages[i].myID == '\x2')
 		{
 			myOtherPlayer = EntityFactory::CreateEntity(eEntityType::PROP, "bullet", *myScene, CU::Vector3f(0.f, 0.f, 0.f));
 			myOtherPlayer->AddToScene();

@@ -1,6 +1,7 @@
 #pragma once
 #include "BaseNetwork.h"
 #include <GrowingArray.h>
+#include "NetMessageOnJoin.h"
 class ServerInterface : public BaseNetwork
 {
 public:
@@ -9,6 +10,7 @@ public:
 
 	void StartNetwork() override;
 	void Send(const std::vector<char>& anArray) override;
+
 	int Receieve(char* aBuffer) override;
 
 	void CreateConnection(const std::string& aName);
@@ -16,6 +18,7 @@ public:
 
 private:
 
+	void Send(NetMessageOnJoin join);
 	void Send(const std::vector<char>& anArray, const sockaddr_in& anAddress);
 
 
