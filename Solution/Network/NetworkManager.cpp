@@ -152,7 +152,6 @@ void NetworkManager::ReceieveThread()
 			break;
 		}
 		}
-
 	}
 }
 
