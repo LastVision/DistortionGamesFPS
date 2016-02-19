@@ -5,7 +5,8 @@
 #include <ModelLoader.h>
 #include "Player.h"
 #include <Scene.h>
-
+#include <InputWrapper.h>
+#include "NetworkManager.h"
 Level::Level()
 	: myEntities(512)
 {
@@ -29,6 +30,11 @@ void Level::AddEntity(Entity* aEntity)
 void Level::Update(const float aDeltaTime)
 {
 	myPlayer->Update(aDeltaTime);
+	if (CU::InputWrapper::GetInstance()->KeyDown(DIK_C) == true)
+	{
+		NetworkManager::GetInstance()->ConnectToServer();
+	}
+	
 }
 
 void Level::Render()
