@@ -1,11 +1,12 @@
 #pragma once
 #include "NetMessage.h"
-class NetMessagePingReply : public NetMessage
+class NetMessageOnJoin : public NetMessage
 {
 public:
-	NetMessagePingReply();
-	~NetMessagePingReply();
+	NetMessageOnJoin();
+	~NetMessageOnJoin();
 	void Init();
+
 protected:
 
 	void DoSerialize(StreamType& aStream) override;

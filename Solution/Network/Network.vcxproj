@@ -85,6 +85,7 @@
     <ClInclude Include="ClientInterface.h" />
     <ClInclude Include="NetMessage.h" />
     <ClInclude Include="NetMessageConnectMessage.h" />
+    <ClInclude Include="NetMessageOnJoin.h" />
     <ClInclude Include="NetMessagePingReply.h" />
     <ClInclude Include="NetMessagePingRequest.h" />
     <ClInclude Include="NetworkMessageTypes.h" />
@@ -99,6 +100,7 @@
     <ClCompile Include="ClientInterface.cpp" />
     <ClCompile Include="NetMessage.cpp" />
     <ClCompile Include="NetMessageConnectMessage.cpp" />
+    <ClCompile Include="NetMessageOnJoin.cpp" />
     <ClCompile Include="NetMessagePingReply.cpp" />
     <ClCompile Include="NetMessagePingRequest.cpp" />
     <ClCompile Include="NetworkManager.cpp" />

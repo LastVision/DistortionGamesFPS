@@ -14,7 +14,6 @@ public:
 
 private:
 
-	bool myIsConnected;
 	int myPingCount;
 	WSADATA myWSAData;
 	sockaddr_in myServerAddress;

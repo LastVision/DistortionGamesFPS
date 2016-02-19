@@ -1,10 +1,10 @@
 #pragma once
 #include "NetMessage.h"
-class CNetMessageConnectMessage : public CNetMessage
+class NetMessageConnectMessage : public NetMessage
 {
 public:
-	CNetMessageConnectMessage();
-	~CNetMessageConnectMessage() override;
+	NetMessageConnectMessage();
+	~NetMessageConnectMessage() override;
 
 	void Init(const std::string& aName, short aServerID);
 

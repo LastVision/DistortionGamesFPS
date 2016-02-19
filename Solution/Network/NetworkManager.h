@@ -23,18 +23,21 @@ public:
 	void StartNetwork();
 	void ConnectToServer();
 	
+	CU::GrowingArray<NetMessage>& GetBuffer();
 
-
+	eNetMessageType ReadType(const char* aBuffer);
 private:
 	NetworkManager();
 	~NetworkManager();
 
 	void SendThread();
 	void ReceieveThread();
-	eNetMessageType ReadType(const char* aBuffer);
 
-	CU::StaticArray<CU::GrowingArray<CNetMessage>, 2> myReceieveBuffer;
-	CU::StaticArray<CU::GrowingArray<CNetMessage>, 2> mySendBUffer;
+	//CU::StaticArray<CU::GrowingArray<NetMessage>, 2> myReceieveBuffer;
+	//CU::StaticArray<CU::GrowingArray<NetMessage>, 2> mySendBUffer;
+
+	CU::GrowingArray<NetMessage> myBuffer;
+
 
 	std::thread* myReceieveThread;
 	std::thread* mySendThread;
@@ -44,6 +47,8 @@ private:
 
 	static NetworkManager* myInstance;
 	bool myIsServer;
+	bool myIsRunning;
+	short myNetworkID;
 
 };
 

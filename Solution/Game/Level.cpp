@@ -7,6 +7,11 @@
 #include <Scene.h>
 #include <InputWrapper.h>
 #include "NetworkManager.h"
+#include "NetworkMessageTypes.h"
+
+#include "EntityFactory.h"
+#include "Entity.h"
+#include "GameEnum.h"
 Level::Level()
 	: myEntities(512)
 {
@@ -34,7 +39,21 @@ void Level::Update(const float aDeltaTime)
 	{
 		NetworkManager::GetInstance()->ConnectToServer();
 	}
-	
+
+	CU::GrowingArray<NetMessage> messages = NetworkManager::GetInstance()->GetBuffer();
+
+
+	for (int i = 0; i < messages.Size(); ++i)
+	{
+		eNetMessageType type;
+		memcpy(&type, &messages[i].myID, sizeof(char));
+		if (type == eNetMessageType::ON_JOIN)
+		{
+			myOtherPlayer = EntityFactory::CreateEntity(eEntityType::PROP, "bullet", *myScene, CU::Vector3f(0.f, 0.f, 0.f));
+			messages.RemoveAll();
+		}
+	}
+
 }
 
 void Level::Render()

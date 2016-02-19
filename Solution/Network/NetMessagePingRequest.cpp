@@ -2,26 +2,26 @@
 #include "NetMessagePingRequest.h"
 #include "NetworkMessageTypes.h"
 
-CNetMessagePingRequest::CNetMessagePingRequest()
+NetMessagePingRequest::NetMessagePingRequest()
 {
 }
 
 
-CNetMessagePingRequest::~CNetMessagePingRequest()
+NetMessagePingRequest::~NetMessagePingRequest()
 {
 }
 
-void CNetMessagePingRequest::Init()
+void NetMessagePingRequest::Init()
 {
 	myID = int(eNetMessageType::PING_REQUEST);
 }
 
-void CNetMessagePingRequest::DoSerialize(StreamType& aStream)
+void NetMessagePingRequest::DoSerialize(StreamType& aStream)
 {
 	__super::DoSerialize(aStream);
 }
 
-void CNetMessagePingRequest::DoDeSerialize(StreamType& aStream)
+void NetMessagePingRequest::DoDeSerialize(StreamType& aStream)
 {
 	__super::DoDeSerialize(aStream);
 }

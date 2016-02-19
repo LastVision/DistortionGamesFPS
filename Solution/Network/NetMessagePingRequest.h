@@ -1,10 +1,10 @@
 #pragma once
 #include "NetMessage.h"
-class CNetMessagePingRequest : public CNetMessage
+class NetMessagePingRequest : public NetMessage
 {
 public:
-	CNetMessagePingRequest();
-	~CNetMessagePingRequest();
+	NetMessagePingRequest();
+	~NetMessagePingRequest();
 	void Init();
 protected:
 

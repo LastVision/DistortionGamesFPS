@@ -2,31 +2,31 @@
 #include "NetMessageConnectMessage.h"
 #include "NetworkMessageTypes.h"
 
-CNetMessageConnectMessage::CNetMessageConnectMessage()
+NetMessageConnectMessage::NetMessageConnectMessage()
 {
 }
 
 
-CNetMessageConnectMessage::~CNetMessageConnectMessage()
+NetMessageConnectMessage::~NetMessageConnectMessage()
 {
 }
 
 
-void CNetMessageConnectMessage::Init(const std::string& aName, short aServerID)
+void NetMessageConnectMessage::Init(const std::string& aName, short aServerID)
 {
 	myID = int(eNetMessageType::ON_CONNECT);
 	myName = aName;
 	myServerID = aServerID;
 }
 
-void CNetMessageConnectMessage::DoSerialize(StreamType& aStream)
+void NetMessageConnectMessage::DoSerialize(StreamType& aStream)
 {
 	__super::DoSerialize(aStream);
 	SERIALIZE(aStream, myName);
 	SERIALIZE(aStream, myServerID);
 }
 
-void CNetMessageConnectMessage::DoDeSerialize(StreamType& aStream)
+void NetMessageConnectMessage::DoDeSerialize(StreamType& aStream)
 {
 	__super::DoDeSerialize(aStream);
 	DESERIALIZE(aStream, myName);

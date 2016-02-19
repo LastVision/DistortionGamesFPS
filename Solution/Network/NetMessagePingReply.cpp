@@ -3,26 +3,26 @@
 #include "NetworkMessageTypes.h"
 
 
-CNetMessagePingReply::CNetMessagePingReply()
+NetMessagePingReply::NetMessagePingReply()
 {
 }
 
 
-CNetMessagePingReply::~CNetMessagePingReply()
+NetMessagePingReply::~NetMessagePingReply()
 {
 }
 
-void CNetMessagePingReply::Init()
+void NetMessagePingReply::Init()
 {
 	myID = int(eNetMessageType::PING_REPLY);
 }
 
-void CNetMessagePingReply::DoSerialize(StreamType& aStream)
+void NetMessagePingReply::DoSerialize(StreamType& aStream)
 {
 	__super::DoSerialize(aStream);
 }
 
-void CNetMessagePingReply::DoDeSerialize(StreamType& aStream)
+void NetMessagePingReply::DoDeSerialize(StreamType& aStream)
 {
 	__super::DoDeSerialize(aStream);
 }

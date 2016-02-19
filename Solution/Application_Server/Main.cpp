@@ -7,6 +7,10 @@ void main()
 	while (true)
 	{
 
+
+
+
+
 	}
 	NetworkManager::Destroy();
 }

@@ -3,21 +3,21 @@
 
 
 
-CNetMessage::CNetMessage()
+NetMessage::NetMessage()
 {
 }
 
 
-CNetMessage::~CNetMessage()
+NetMessage::~NetMessage()
 {
 }
 
-void CNetMessage::PackMessage()
+void NetMessage::PackMessage()
 {
 	DoSerialize(myStream);
 }
 
-void CNetMessage::UnPackMessage(char* aMessage, int aSize)
+void NetMessage::UnPackMessage(char* aMessage, int aSize)
 {
 	if (aSize > 0)
 	{
@@ -29,7 +29,7 @@ void CNetMessage::UnPackMessage(char* aMessage, int aSize)
 	}
 }
 
-void CNetMessage::DoSerialize(StreamType& aStream)
+void NetMessage::DoSerialize(StreamType& aStream)
 {
 	SERIALIZE(aStream, myID);
 	SERIALIZE(aStream, myTimeStamp);
@@ -38,7 +38,7 @@ void CNetMessage::DoSerialize(StreamType& aStream)
 
 }
 
-void CNetMessage::DoDeSerialize(StreamType& aStream)
+void NetMessage::DoDeSerialize(StreamType& aStream)
 {
 	DESERIALIZE(aStream, myID);
 	DESERIALIZE(aStream, myTimeStamp);

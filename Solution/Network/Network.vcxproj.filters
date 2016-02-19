@@ -40,6 +40,9 @@
     <ClCompile Include="BaseNetwork.cpp">
       <Filter>Interfaces</Filter>
     </ClCompile>
+    <ClCompile Include="NetMessageOnJoin.cpp">
+      <Filter>Messages</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
@@ -75,6 +78,9 @@
     </ClInclude>
     <ClInclude Include="Utility.h">
       <Filter>Utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="NetMessageOnJoin.h">
+      <Filter>Messages</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

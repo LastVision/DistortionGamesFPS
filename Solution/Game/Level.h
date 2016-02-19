@@ -28,7 +28,7 @@ private:
 	Prism::Scene* myScene;
 
 	Player* myPlayer;
-
+	Entity* myOtherPlayer;
 	CU::GrowingArray<Entity*> myEntities;
 };
 

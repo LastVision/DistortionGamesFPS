@@ -63,7 +63,7 @@ void ClientInterface::ConnectToServer(const char* anIP)
 	GetUserNameA(username, &username_len);
 	myName = username;
 
-	CNetMessageConnectMessage toSend;
+	NetMessageConnectMessage toSend;
 	toSend.Init(myName, -1);
 	toSend.PackMessage();
 	Send(toSend.myStream);

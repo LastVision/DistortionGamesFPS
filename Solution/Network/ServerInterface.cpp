@@ -1,7 +1,11 @@
 #include "stdafx.h"
 #include "ServerInterface.h"
 #include "Utility.h"
+#include "NetMessageConnectMessage.h"
+#include "NetMessageOnJoin.h"
 #define BUFFERSIZE 512
+
+short ServerInterface::myIDCount = 0;
 
 ServerInterface::ServerInterface()
 {
@@ -64,7 +68,9 @@ void ServerInterface::StartNetwork()
 
 	freeaddrinfo(addrResult);
 
+	myIsOnline = true;
 	Utility::PrintEndl("Server successfully started!", Utility::eCOLOR::LIGHT_GREEN);
+	
 }
 
 void ServerInterface::Send(const std::vector<char>& anArray)
@@ -76,8 +82,19 @@ void ServerInterface::Send(const std::vector<char>& anArray)
 		{
 			int errorCode = WSAGetLastError();
 			std::string toPrint = "sendto() failed with error code : " + errorCode;
-			Utility::PrintEndl(toPrint,Utility::eCOLOR::WHITE_BACK_RED);
+			Utility::PrintEndl(toPrint, Utility::eCOLOR::WHITE_BACK_RED);
 		}
+	}
+}
+
+void ServerInterface::Send(const std::vector<char>& anArray, const sockaddr_in& anAddress)
+{
+	if (sendto(myListenSocket, &anArray[0], anArray.size(), 0, (struct sockaddr *)&anAddress
+		, sizeof(sockaddr_in)) == SOCKET_ERROR)
+	{
+		int errorCode = WSAGetLastError();
+		std::string toPrint = "sendto() failed with error code : " + errorCode;
+		Utility::PrintEndl(toPrint, Utility::eCOLOR::WHITE_BACK_RED);
 	}
 }
 
@@ -85,9 +102,32 @@ int ServerInterface::Receieve(char* aBuffer)
 {
 	int toReturn = 0;
 	int size = sizeof(myOther);
-	if ((toReturn = recvfrom(myListenSocket, aBuffer, BUFFERSIZE, 0, (struct sockaddr *)&myOther,&size)) == SOCKET_ERROR)
+	if ((toReturn = recvfrom(myListenSocket, aBuffer, BUFFERSIZE, 0, (struct sockaddr *)&myOther, &size)) == SOCKET_ERROR)
 	{
 		//Error
 	}
 	return toReturn;
+}
+
+void ServerInterface::CreateConnection(const std::string& aName)
+{
+	myIDCount++;
+	Connection newConnection;
+	newConnection.myAdress = myOther;
+	newConnection.myID = myIDCount;
+	newConnection.myName = aName;
+	newConnection.myPingCount = 0;
+	newConnection.myIsConnected = true;
+	myClients.Add(newConnection);
+
+	NetMessageConnectMessage toSend;
+	toSend.Init(aName, myIDCount);
+	toSend.PackMessage();
+	Send(toSend.myStream, newConnection.myAdress);
+
+	NetMessageOnJoin onJoin;
+	onJoin.Init();
+	onJoin.PackMessage();
+	Send(onJoin.myStream);
+
 }

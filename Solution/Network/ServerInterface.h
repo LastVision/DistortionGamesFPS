@@ -11,7 +11,13 @@ public:
 	void Send(const std::vector<char>& anArray) override;
 	int Receieve(char* aBuffer) override;
 
+	void CreateConnection(const std::string& aName);
+
+
 private:
+
+	void Send(const std::vector<char>& anArray, const sockaddr_in& anAddress);
+
 
 	sockaddr_in myServer;
 	sockaddr_in myOther;
