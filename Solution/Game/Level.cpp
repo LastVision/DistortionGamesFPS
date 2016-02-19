@@ -17,6 +17,7 @@
 Level::Level()
 	: myEntities(512)
 {
+	connected = false;
 	myScene = new Prism::Scene();
 	myPlayer = new Player(myScene);
 	myScene->SetCamera(*myPlayer->GetCamera());
@@ -43,16 +44,21 @@ void Level::Update(const float aDeltaTime)
 	}
 
 	CU::GrowingArray<NetMessage> messages = NetworkManager::GetInstance()->GetBuffer();
-
+	if (connected == true)
+	{
+		DEBUG_PRINT("Player 2 has joined!");
+	}
+	else
+	{
+		DEBUG_PRINT("Nobody is here!");
+	}
 
 	for (int i = 0; i < messages.Size(); ++i)
 	{
 
 		if (messages[i].myID == '\x2')
 		{
-
-			Prism::DebugDrawer::GetInstance()->RenderBox(CU::Vector3<float>(0.f, 0.f, 0.f), eColorDebug::BLUE);
-
+			connected = true;
 			messages.RemoveAll();
 		}
 	}

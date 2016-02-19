@@ -21,7 +21,7 @@ public:
 
 	void Update(const float aDeltaTime);
 	void Render();
-
+	bool connected;
 	Prism::Scene* GetScene();
 
 private:
