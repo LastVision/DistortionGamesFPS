@@ -116,14 +116,17 @@ void ServerInterface::Send(NetMessageOnJoin join)
 
 	for (int i = 0; i < myClients.Size(); ++i)
 	{
-		join.myTargetID = myClients[i].myID;
-		join.PackMessage();
-		if (sendto(myListenSocket, &join.myStream[0], join.myStream.size(), 0, (struct sockaddr *)&myClients[i].myAdress
-			, sizeof(sockaddr_in)) == SOCKET_ERROR)
+		if (myClients[i].myID != myIDCount)
 		{
-			int errorCode = WSAGetLastError();
-			std::string toPrint = "sendto() failed with error code : " + errorCode;
-			Utility::PrintEndl(toPrint, Utility::eCOLOR::WHITE_BACK_RED);
+			join.myTargetID = myClients[i].myID;
+			join.PackMessage();
+			if (sendto(myListenSocket, &join.myStream[0], join.myStream.size(), 0, (struct sockaddr *)&myClients[i].myAdress
+				, sizeof(sockaddr_in)) == SOCKET_ERROR)
+			{
+				int errorCode = WSAGetLastError();
+				std::string toPrint = "sendto() failed with error code : " + errorCode;
+				Utility::PrintEndl(toPrint, Utility::eCOLOR::WHITE_BACK_RED);
+			}
 		}
 	}
 }

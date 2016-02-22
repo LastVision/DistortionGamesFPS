@@ -145,10 +145,9 @@ void NetworkManager::ReceieveThread()
 		{
 			NetMessageOnJoin toUnpack;
 			toUnpack.UnPackMessage(buffer, receievedLength);
-			if (toUnpack.myTargetID != myNetworkID)
-			{
-				myBuffer.Add(toUnpack);
-			}
+
+			myBuffer.Add(toUnpack);
+
 			break;
 		}
 		}
