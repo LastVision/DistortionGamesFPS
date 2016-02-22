@@ -47,7 +47,7 @@ private:
 
 	static NetworkManager* myInstance;
 	bool myIsServer;
-	bool myIsRunning;
+	volatile bool myIsRunning;
 	short myNetworkID;
 
 };

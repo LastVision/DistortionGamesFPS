@@ -68,6 +68,17 @@ void ServerInterface::StartNetwork()
 
 	freeaddrinfo(addrResult);
 
+	DWORD nonBlocking = 1;
+	if (ioctlsocket(myListenSocket, FIONBIO, &nonBlocking) != 0)
+	{
+		Utility::PrintEndl("Failed to set non-blocking socket!", Utility::eCOLOR::WHITE_BACK_RED);
+	}
+	else
+	{
+		Utility::PrintEndl("Successfully set up non-blocking socket!", Utility::eCOLOR::LIGHT_GREEN);
+	}
+
+
 	myIsOnline = true;
 	Utility::PrintEndl("Server successfully started!", Utility::eCOLOR::LIGHT_GREEN);
 	

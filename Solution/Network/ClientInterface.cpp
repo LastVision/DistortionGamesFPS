@@ -68,4 +68,11 @@ void ClientInterface::ConnectToServer(const char* anIP)
 	toSend.PackMessage();
 	Send(toSend.myStream);
 
+	DWORD nonBlocking = 1;
+	if (ioctlsocket(mySocket, FIONBIO, &nonBlocking) != 0)
+	{
+		//Error
+	}
+
+
 }
