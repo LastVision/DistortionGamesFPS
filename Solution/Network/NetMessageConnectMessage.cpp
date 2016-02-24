@@ -25,6 +25,7 @@ void NetMessageConnectMessage::DoSerialize(StreamType& aStream)
 	__super::DoSerialize(aStream);
 	SERIALIZE(aStream, myName);
 	SERIALIZE(aStream, myServerID);
+	SERIALIZE(aStream, myClientsOnServer.Size());
 	for (unsigned short i : myClientsOnServer)
 	{
 		SERIALIZE(aStream, i);
@@ -33,11 +34,16 @@ void NetMessageConnectMessage::DoSerialize(StreamType& aStream)
 
 void NetMessageConnectMessage::DoDeSerialize(StreamType& aStream)
 {
+	myClientsOnServer.Init(8);
 	__super::DoDeSerialize(aStream);
 	DESERIALIZE(aStream, myName);
 	DESERIALIZE(aStream, myServerID);
-	for (unsigned short i : myClientsOnServer)
+	int size = 0;
+	DESERIALIZE(aStream, size);
+	for (int i = 0; i < size; ++i)
 	{
-		DESERIALIZE(aStream, i);
+		unsigned short object;
+		DESERIALIZE(aStream, object);
+		myClientsOnServer.Add(object);
 	}
 }

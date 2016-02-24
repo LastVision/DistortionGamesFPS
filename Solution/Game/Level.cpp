@@ -72,10 +72,12 @@ void Level::Update(const float aDeltaTime)
 			NetMessageConnectMessage connect;
 			connect.UnPackMessage(buf.myData, buf.myLength);
 			NetworkManager::GetInstance()->SetNetworkID(connect.myServerID);
-			const CU::GrowingArray<OtherClients>& clients = static_cast<ClientInterface*>(NetworkManager::GetInstance()->GetNetworkHandle())->GetClientList();
-			for (OtherClients c : clients)
+
+			for (unsigned short c : connect.myClientsOnServer)
 			{
-				myClients.Add(c);
+				OtherClients other;
+				other.myID = c;
+				myClients.Add(other);
 			}
 			break;
 		}

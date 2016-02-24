@@ -147,8 +147,8 @@ void ServerInterface::Receieve(std::vector<Buffer>& someBuffers)
 
 void ServerInterface::CreateConnection(const std::string& aName)
 {
-	if (myNames.find(aName) == myNames.end())
-	{
+	/*if (myNames.find(aName) == myNames.end())
+	{*/
 		myIDCount++;
 		Connection newConnection;
 		newConnection.myAdress = myOther;
@@ -171,11 +171,11 @@ void ServerInterface::CreateConnection(const std::string& aName)
 
 		NetMessageOnJoin onJoin;
 		Send(onJoin);
-	}
-	else
-	{
+		/*}
+		else
+		{
 		Utility::PrintEndl("User is already on server!", Utility::eCOLOR::RED_BACK_BLACK);
-	}
+		}*/
 }
 
 void ServerInterface::DontSendToID(const std::vector<char>& anArray, short anIDToNotSendToffsDanne)
