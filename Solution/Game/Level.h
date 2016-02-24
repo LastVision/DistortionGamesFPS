@@ -30,6 +30,9 @@ private:
 	Player* myPlayer;
 	Entity* myOtherPlayer;
 	CU::GrowingArray<Entity*> myEntities;
+
+	CU::Vector3<float> myTempPosition;
+
 };
 
 inline Prism::Scene* Level::GetScene()

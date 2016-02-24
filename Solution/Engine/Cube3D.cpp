@@ -317,14 +317,14 @@ namespace Prism
 
 
 		D3DX11_TECHNIQUE_DESC techDesc;
-		myEffect->GetTechnique(false)->GetDesc(&techDesc);
+		myEffect->GetTechnique("Render")->GetDesc(&techDesc);
 
 		Engine::GetInstance()->GetContex()->IASetPrimitiveTopology(myPrimitiveTopology);
 		if (myWireFrame == true)
 		{
 			for (UINT p = 0; p < techDesc.Passes; ++p)
 			{
-				myEffect->GetTechnique(false)->GetPassByIndex(p)->Apply(0, Engine::GetInstance()->GetContex());
+				myEffect->GetTechnique("Render")->GetPassByIndex(p)->Apply(0, Engine::GetInstance()->GetContex());
 				Engine::GetInstance()->EnableWireframe();
 				Engine::GetInstance()->GetContex()->DrawIndexed(myIndexBaseData->myNumberOfIndices, 0, 0);
 				Engine::GetInstance()->DisableWireframe();
@@ -334,7 +334,7 @@ namespace Prism
 		{
 			for (UINT p = 0; p < techDesc.Passes; ++p)
 			{
-				myEffect->GetTechnique(false)->GetPassByIndex(p)->Apply(0, Engine::GetInstance()->GetContex());
+				myEffect->GetTechnique("Render")->GetPassByIndex(p)->Apply(0, Engine::GetInstance()->GetContex());
 				Engine::GetInstance()->GetContex()->DrawIndexed(myIndexBaseData->myNumberOfIndices, 0, 0);
 			}
 		}
