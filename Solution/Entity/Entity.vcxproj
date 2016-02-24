@@ -171,6 +171,7 @@
     <ClInclude Include="GraphicsComponent.h" />
     <ClInclude Include="GraphicsComponentData.h" />
     <ClInclude Include="HealthComponent.h" />
+    <ClInclude Include="HealthComponentData.h" />
     <ClInclude Include="PollingStation.h" />
     <ClInclude Include="ProjectileComponent.h" />
     <ClInclude Include="ProjectileComponentData.h" />

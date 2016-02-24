@@ -111,5 +111,8 @@
     <ClInclude Include="ProjectileComponentData.h">
       <Filter>EntityFactory\EntityData\ComponentData</Filter>
     </ClInclude>
+    <ClInclude Include="HealthComponentData.h">
+      <Filter>EntityFactory\EntityData\ComponentData</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

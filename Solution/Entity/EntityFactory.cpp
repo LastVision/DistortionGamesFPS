@@ -57,7 +57,7 @@ Entity* EntityFactory::CreateEntity(eEntityType aType, Prism::Scene& aScene, con
 Entity* EntityFactory::CreateEntity(eEntityType aType, std::string aSubType, Prism::Scene& aScene, const CU::Vector3f& aPosition,
 	const CU::Vector3f& aRotation, const CU::Vector3f& aScale)
 {
-	if (aType == eEntityType::PROP)
+	if (aType == eEntityType::PROP || aType == eEntityType::UNIT)
 	{
 		if (myInstance->myLoadedSubEntityData.find(aSubType) != myInstance->myLoadedSubEntityData.end())
 		{
@@ -85,7 +85,7 @@ void EntityFactory::LoadEntity(const char* aEntityPath)
 	std::string entitySubType;
 	entityDocument.ForceReadAttribute(entityElement, "type", entityType);
 	newData.myType = EntityEnumConverter::ConvertStringToEntityType(CU::ToLower(entityType));
-	if (newData.myType == eEntityType::PROP)
+	if (newData.myType == eEntityType::PROP || newData.myType == eEntityType::UNIT)
 	{
 		entityDocument.ForceReadAttribute(entityElement, "subType", entitySubType);
 		newData.mySubType = CU::ToLower(entitySubType);
@@ -102,19 +102,20 @@ void EntityFactory::LoadEntity(const char* aEntityPath)
 	else if (CU::ToLower(physicsType) == "dynamic")
 	{
 		newData.myPhysData.myPhysics = ePhysics::DYNAMIC;
+
+		entityDocument.ForceReadAttribute(entityDocument.ForceFindFirstChild(entityPhysics, "min"), "x", newData.myPhysData.myPhysicsMin.x);
+		entityDocument.ForceReadAttribute(entityDocument.ForceFindFirstChild(entityPhysics, "min"), "y", newData.myPhysData.myPhysicsMin.y);
+		entityDocument.ForceReadAttribute(entityDocument.ForceFindFirstChild(entityPhysics, "min"), "z", newData.myPhysData.myPhysicsMin.z);
+
+		entityDocument.ForceReadAttribute(entityDocument.ForceFindFirstChild(entityPhysics, "max"), "x", newData.myPhysData.myPhysicsMax.x);
+		entityDocument.ForceReadAttribute(entityDocument.ForceFindFirstChild(entityPhysics, "max"), "y", newData.myPhysData.myPhysicsMax.y);
+		entityDocument.ForceReadAttribute(entityDocument.ForceFindFirstChild(entityPhysics, "max"), "z", newData.myPhysData.myPhysicsMax.z);
 	}
 	else
 	{
 		DL_ASSERT(CU::Concatenate("Invalid phyics-type on %s %s", entityType.c_str(), entitySubType.c_str()));
 	}
 
-	entityDocument.ForceReadAttribute(entityDocument.ForceFindFirstChild(entityPhysics, "min"), "x", newData.myPhysData.myPhysicsMin.x);
-	entityDocument.ForceReadAttribute(entityDocument.ForceFindFirstChild(entityPhysics, "min"), "y", newData.myPhysData.myPhysicsMin.y);
-	entityDocument.ForceReadAttribute(entityDocument.ForceFindFirstChild(entityPhysics, "min"), "z", newData.myPhysData.myPhysicsMin.z);
-
-	entityDocument.ForceReadAttribute(entityDocument.ForceFindFirstChild(entityPhysics, "max"), "x", newData.myPhysData.myPhysicsMax.x);
-	entityDocument.ForceReadAttribute(entityDocument.ForceFindFirstChild(entityPhysics, "max"), "y", newData.myPhysData.myPhysicsMax.y);
-	entityDocument.ForceReadAttribute(entityDocument.ForceFindFirstChild(entityPhysics, "max"), "z", newData.myPhysData.myPhysicsMax.z);
 
 	for (tinyxml2::XMLElement* e = entityDocument.FindFirstChild(entityElement); e != nullptr;
 		e = entityDocument.FindNextElement(e))
@@ -145,7 +146,7 @@ void EntityFactory::LoadEntity(const char* aEntityPath)
 			DL_ASSERT(errorMessage.c_str());
 		}
 	}
-	if (newData.myType == eEntityType::PROP)
+	if (newData.myType == eEntityType::PROP || newData.myType == eEntityType::UNIT)
 	{
 		myLoadedSubEntityData[newData.mySubType] = newData;
 	}

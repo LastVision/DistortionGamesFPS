@@ -14,6 +14,10 @@ namespace EntityEnumConverter
 		{
 			return eEntityType::PROJECTILE;
 		}
+		else if (aType == "unit")
+		{
+			return eEntityType::UNIT;
+		}
 
 		DL_ASSERT("The " + aType + " entity type is not supported, please tell Daniel about it.");
 		return eEntityType::_COUNT;

@@ -46,8 +46,14 @@ void Level::AddEntity(Entity* aEntity)
 
 void Level::Update(const float aDeltaTime)
 {
-	NetworkManager::GetInstance()->Swap(true);
+	NetworkManager::GetInstance()->Swap(true); 
 	myPlayer->Update(aDeltaTime);
+
+	for (int i = 0; i < myEntities.Size(); i++)
+	{
+		myEntities[i]->Update(aDeltaTime);
+	}
+
 	if (CU::InputWrapper::GetInstance()->KeyDown(DIK_C) == true)
 	{
 		NetworkManager::GetInstance()->ConnectToServer();
@@ -73,7 +79,7 @@ void Level::Update(const float aDeltaTime)
 			}
 			break;
 		}
-
+		
 		case eNetMessageType::ON_JOIN:
 		{
 			NetMessageOnJoin onJoin;
@@ -81,7 +87,7 @@ void Level::Update(const float aDeltaTime)
 			OtherClients c;
 			c.myID = onJoin.mySenderID;
 			myClients.Add(c);
-				break;
+			break;
 		}
 		case eNetMessageType::POSITION:
 		{
@@ -94,13 +100,13 @@ void Level::Update(const float aDeltaTime)
 					if (pos.mySenderID == c.myID)
 					{
 						c.myPosition = pos.myPosition;
-					}
+		}
 				}
 
 			}
 			break;
-		}
-		}
+	}
+	}
 	}
 
 
