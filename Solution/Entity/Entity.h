@@ -51,6 +51,7 @@ public:
 	Prism::ParticleEmitterInstance* GetEmitter();
 
 	Prism::PhysEntity* GetPhysEntity() const;
+	void Kill();
 
 private:
 	void operator=(Entity&) = delete;
