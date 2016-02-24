@@ -34,6 +34,7 @@ private:
 	void ReadLevel(const std::string& aLevelPath);
 
 	void LoadProps(XMLReader& aReader, tinyxml2::XMLElement* aElement);
+	void LoadUnits(XMLReader& aReader, tinyxml2::XMLElement* aElement);
 
 	void ReadOrientation(XMLReader& aReader, tinyxml2::XMLElement* aElement, 
 		CU::Vector3f& aOutPosition, CU::Vector3f& aOutRotation, CU::Vector3f& aOutScale);

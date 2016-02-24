@@ -1,6 +1,8 @@
 #include "stdafx.h"
 
+
 #include <Camera.h>
+#include <GUIManager3D.h>
 #include <InputWrapper.h>
 #include <Instance.h>
 #include <ModelLoader.h>
@@ -34,21 +36,31 @@ Player::Player(Prism::Scene* aScene)
 	CU::Vector2<float> size(128.f, 128.f);
 	myCrosshair = Prism::ModelLoader::GetInstance()->LoadSprite("Data/Resource/Texture/UI/T_crosshair.dds", size, size * 0.5f);
 
-	myModel = new Prism::Instance(*Prism::ModelLoader::GetInstance()->LoadModelAnimated("Data/Resource/Model/First_person/SK_arm.fbx", "Data/Resource/Shader/S_effect_pbl_animated.fx"), myOrientation);
+	myModel = new Prism::Instance(*Prism::ModelLoader::GetInstance()->LoadModelAnimated("Data/Resource/Model/First_person/SK_arm_idle_cm.fbx", "Data/Resource/Shader/S_effect_pbl_animated.fx"), myOrientation);
 
 	aScene->AddInstance(myModel);
 
 	myJumpAcceleration = 0;
 	myJumpOffset = 0;
+
+	myModel->Update(1.f / 30.f);
+
+
+	
+	//myWristOrientation = myOrientation * myModel->GetCurrentAnimation()->GetHiearchyToBone("r_wrist_jnt1");
+
+	my3DGUIManager = new GUI::GUIManager3D(myModel, aScene);
 }
 
 
 Player::~Player()
 {
+	SAFE_DELETE(my3DGUIManager);
 }
 
 void Player::Update(float aDelta)
 {
+
 	myMovement->Update(aDelta);
 
 	CU::Vector3<float> position(myOrientation.GetPos());
@@ -80,6 +92,7 @@ void Player::Update(float aDelta)
 	myShooting->Update(aDelta, myOrientation);
 
 	myModel->Update(aDelta);
+	my3DGUIManager->Update(myOrientation, aDelta);
 
 	CU::Vector3<float> playerPos(myOrientation.GetPos());
 	DEBUG_PRINT(playerPos);

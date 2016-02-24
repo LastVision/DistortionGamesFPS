@@ -21,16 +21,14 @@ public:
 
 	void Update(const float aDeltaTime);
 	void Render();
-
+	bool connected;
 	Prism::Scene* GetScene();
 
 private:
-	void Spawn();
-
 	Prism::Scene* myScene;
 
 	Player* myPlayer;
-
+	Entity* myOtherPlayer;
 	CU::GrowingArray<Entity*> myEntities;
 };
 

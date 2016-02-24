@@ -136,6 +136,16 @@ namespace Prism
 		myShadowMVP->SetMatrix(&aMatrix.myMatrix[0]);
 	}
 
+	void Effect::SetGradiantValue(float aValue)
+	{
+		myGradiantValue->SetFloat(aValue);
+	}
+
+	void Effect::SetGradiantDirection(const CU::Vector2<float>& aDirection)
+	{
+		myGradiantDirection->SetFloatVector(&aDirection.x);
+	}
+
 	void Effect::SetPosAndScale(const CU::Vector2<float>& aPos
 		, const CU::Vector2<float>& aScale)
 	{
@@ -429,6 +439,18 @@ namespace Prism
 		if (myBonesArray->IsValid() == false)
 		{
 			myBonesArray = nullptr;
+		}
+
+		myGradiantValue = myEffect->GetVariableByName("GradiantValue")->AsScalar();
+		if (myGradiantValue->IsValid() == false)
+		{
+			myGradiantValue = nullptr;
+		}
+
+		myGradiantDirection = myEffect->GetVariableByName("GradiantDirection")->AsVector();
+		if (myGradiantDirection->IsValid() == false)
+		{
+			myGradiantDirection = nullptr;
 		}
 
 		return true;

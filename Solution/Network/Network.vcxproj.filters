@@ -4,15 +4,83 @@
     <Filter Include="Precompile">
       <UniqueIdentifier>{df40e3c9-e0d6-4b4f-8f78-f6ef7f9ad510}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Messages">
+      <UniqueIdentifier>{36c50b2b-5728-4690-9a83-df81959203b3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Interfaces">
+      <UniqueIdentifier>{dbd0988d-a167-48d1-a26a-e9287d812667}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Utilities">
+      <UniqueIdentifier>{c566cd27-29ca-46f4-8817-ce048edcfd8e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
       <Filter>Precompile</Filter>
     </ClCompile>
+    <ClCompile Include="NetworkManager.cpp" />
+    <ClCompile Include="NetMessage.cpp">
+      <Filter>Messages</Filter>
+    </ClCompile>
+    <ClCompile Include="NetMessageConnectMessage.cpp">
+      <Filter>Messages</Filter>
+    </ClCompile>
+    <ClCompile Include="NetMessagePingReply.cpp">
+      <Filter>Messages</Filter>
+    </ClCompile>
+    <ClCompile Include="NetMessagePingRequest.cpp">
+      <Filter>Messages</Filter>
+    </ClCompile>
+    <ClCompile Include="ServerInterface.cpp">
+      <Filter>Interfaces</Filter>
+    </ClCompile>
+    <ClCompile Include="ClientInterface.cpp">
+      <Filter>Interfaces</Filter>
+    </ClCompile>
+    <ClCompile Include="BaseNetwork.cpp">
+      <Filter>Interfaces</Filter>
+    </ClCompile>
+    <ClCompile Include="NetMessageOnJoin.cpp">
+      <Filter>Messages</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
       <Filter>Precompile</Filter>
+    </ClInclude>
+    <ClInclude Include="NetworkManager.h" />
+    <ClInclude Include="NetMessage.h">
+      <Filter>Messages</Filter>
+    </ClInclude>
+    <ClInclude Include="NetMessageConnectMessage.h">
+      <Filter>Messages</Filter>
+    </ClInclude>
+    <ClInclude Include="NetMessagePingReply.h">
+      <Filter>Messages</Filter>
+    </ClInclude>
+    <ClInclude Include="NetMessagePingRequest.h">
+      <Filter>Messages</Filter>
+    </ClInclude>
+    <ClInclude Include="NetworkMessageTypes.h">
+      <Filter>Messages</Filter>
+    </ClInclude>
+    <ClInclude Include="ServerInterface.h">
+      <Filter>Interfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="ClientInterface.h">
+      <Filter>Interfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="BaseNetwork.h">
+      <Filter>Interfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="SerializeHelper.h">
+      <Filter>Utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="Utility.h">
+      <Filter>Utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="NetMessageOnJoin.h">
+      <Filter>Messages</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

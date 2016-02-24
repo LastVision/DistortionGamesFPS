@@ -3,6 +3,11 @@
 class Movement;
 class Shooting;
 
+namespace GUI
+{
+	class GUIManager3D;
+}
+
 namespace Prism
 {
 	class Camera;
@@ -24,6 +29,7 @@ public:
 private:
 	Movement* myMovement;
 	Shooting* myShooting;
+	GUI::GUIManager3D* my3DGUIManager;
 	Prism::Camera* myCamera;
 	CU::Matrix44<float> myOrientation;
 	Prism::SpriteProxy* myCrosshair;

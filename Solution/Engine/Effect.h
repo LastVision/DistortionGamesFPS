@@ -68,6 +68,9 @@ namespace Prism
 		void SetShadowDepthTexture(Texture* aShadowDepthTexture);
 		void SetShadowMVP(const CU::Matrix44<float>& aMatrix);
 
+		void SetGradiantValue(float aValue);
+		void SetGradiantDirection(const CU::Vector2<float>& aDirection);
+
 	private:
 		ID3DX11Effect* myEffect;
 		ID3DX11EffectTechnique* myTechnique;
@@ -111,6 +114,9 @@ namespace Prism
 		std::string myFileName;
 
 		CU::GrowingArray<EffectListener*> myEffectListeners;
+
+		ID3DX11EffectScalarVariable* myGradiantValue;
+		ID3DX11EffectVectorVariable* myGradiantDirection;
 	};
 
 
