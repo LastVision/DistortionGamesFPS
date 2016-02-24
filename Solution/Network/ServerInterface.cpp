@@ -88,13 +88,7 @@ void ServerInterface::Send(const std::vector<char>& anArray)
 {
 	for (int i = 0; i < myClients.Size(); ++i)
 	{
-		if (sendto(myListenSocket, &anArray[0], anArray.size(), 0, (struct sockaddr *)&myClients[i].myAdress
-			, sizeof(sockaddr_in)) == SOCKET_ERROR)
-		{
-			int errorCode = WSAGetLastError();
-			std::string toPrint = "sendto() failed with error code : " + errorCode;
-			Utility::PrintEndl(toPrint, Utility::eCOLOR::WHITE_BACK_RED);
-		}
+		Send(anArray, myClients[i].myAdress);
 	}
 }
 
@@ -112,7 +106,7 @@ void ServerInterface::Send(const std::vector<char>& anArray, const sockaddr_in& 
 void ServerInterface::Send(NetMessageOnJoin join)
 {
 	join.Init();
-	join.mySenderID = 0;
+	join.mySenderID = myIDCount;
 
 	for (int i = 0; i < myClients.Size(); ++i)
 	{
@@ -168,6 +162,10 @@ void ServerInterface::CreateConnection(const std::string& aName)
 
 		NetMessageConnectMessage toSend;
 		toSend.Init(aName, myIDCount);
+		for (Connection c : myClients)
+		{
+			toSend.myClientsOnServer.Add(c.myID);
+		}
 		toSend.PackMessage();
 		Send(toSend.myStream, newConnection.myAdress);
 
@@ -178,4 +176,22 @@ void ServerInterface::CreateConnection(const std::string& aName)
 	{
 		Utility::PrintEndl("User is already on server!", Utility::eCOLOR::RED_BACK_BLACK);
 	}
+}
+
+void ServerInterface::DontSendToID(const std::vector<char>& anArray, short anIDToNotSendToffsDanne)
+{
+	for (Connection connection : myClients)
+	{
+		if (connection.myID != anIDToNotSendToffsDanne)
+		{
+			if (sendto(myListenSocket, &anArray[0], anArray.size(), 0, (struct sockaddr *)&connection.myAdress
+				, sizeof(sockaddr_in)) == SOCKET_ERROR)
+			{
+				int errorCode = WSAGetLastError();
+				std::string toPrint = "sendto() failed with error code : " + errorCode;
+				Utility::PrintEndl(toPrint, Utility::eCOLOR::WHITE_BACK_RED);
+			}
+		}
+	}
+
 }

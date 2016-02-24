@@ -62,15 +62,15 @@ void NetworkManager::Activate(bool aIsServer)
 	myCurrentBuffer = 0;
 	myCurrentSendBuffer = 0;
 
-	myReceieveBuffer[0].Init(8);
-	myReceieveBuffer[1].Init(8);
-	mySendBuffer[0].Init(8);
-	mySendBuffer[1].Init(8);
+	myReceieveBuffer[0].Init(16384);
+	myReceieveBuffer[1].Init(16384);
+	mySendBuffer[0].Init(16384);
+	mySendBuffer[1].Init(16384);
 
 	myIsServer = aIsServer;
 
 	myNetwork = new ClientInterface();
-	myNetworkID = -1;
+	myNetworkID = 0;
 	if (myIsServer == true)
 	{
 		delete myNetwork;
@@ -147,11 +147,14 @@ NetworkManager* NetworkManager::GetInstance()
 
 void NetworkManager::AddMessage(std::vector<char> aBuffer)
 {
-	if (myIsServer == true)
+	if (myNetwork->GetIsOnline() == true)
 	{
-		std::cout << "Added message to Send Buffer!\n";
+		if (myIsServer == true)
+		{
+			std::cout << "Added message to Send Buffer!\n";
+		}
+		mySendBuffer[myCurrentBuffer ^ 1].Add(aBuffer);
 	}
-	mySendBuffer[myCurrentBuffer ^ 1].Add(aBuffer);
 }
 
 void NetworkManager::Swap(bool aShouldSwap)
@@ -193,13 +196,13 @@ void NetworkManager::SendThread()
 	while (myIsRunning == true)
 	{
 		std::this_thread::sleep_for(std::chrono::nanoseconds(1));
-			for (std::vector<char> arr : mySendBuffer[myCurrentSendBuffer])
-			{
-				myNetwork->Send(arr);
-			}
+		for (std::vector<char> arr : mySendBuffer[myCurrentSendBuffer])
+		{
+			myNetwork->Send(arr);
+		}
 
-			mySendBuffer[myCurrentSendBuffer].RemoveAll();
-			myCurrentSendBuffer ^= 1;
+		mySendBuffer[myCurrentSendBuffer].RemoveAll();
+		myCurrentSendBuffer ^= 1;
 	}
 }
 
@@ -220,11 +223,15 @@ void NetworkManager::ReceieveThread()
 			continue;
 		}
 
+
+
 		for (Buffer message : someBuffers)
 		{
+
 			myReceieveBuffer[myCurrentBuffer ^ 1].Add(message);
+
 		}
-		
+
 		if (myIsServer == true)
 		{
 			Utility::PrintEndl("Server Receieved a message", Utility::eCOLOR::LIGHT_GREEN);
@@ -244,6 +251,16 @@ eNetMessageType NetworkManager::ReadType(const char* aBuffer)
 BaseNetwork* NetworkManager::GetNetworkHandle()
 {
 	return myNetwork;
+}
+
+void NetworkManager::SetNetworkID(unsigned short anID)
+{
+	myNetworkID = anID;
+}
+
+unsigned short NetworkManager::GetNetworkID()
+{
+	return myNetworkID;
 }
 
 void NetworkManager::SwapReceieveBuffer()

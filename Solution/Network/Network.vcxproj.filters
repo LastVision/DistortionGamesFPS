@@ -43,6 +43,9 @@
     <ClCompile Include="NetMessageOnJoin.cpp">
       <Filter>Messages</Filter>
     </ClCompile>
+    <ClCompile Include="NetMessagePosition.cpp">
+      <Filter>Messages</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
@@ -80,6 +83,9 @@
       <Filter>Utilities</Filter>
     </ClInclude>
     <ClInclude Include="NetMessageOnJoin.h">
+      <Filter>Messages</Filter>
+    </ClInclude>
+    <ClInclude Include="NetMessagePosition.h">
       <Filter>Messages</Filter>
     </ClInclude>
   </ItemGroup>

@@ -6,12 +6,15 @@
 #include <Scene.h>
 #include "Shooting.h"
 
+#include <EntityFactory.h>
+#include <PhysEntity.h>
+
 Shooting::Shooting(Prism::Scene* aScene)
 	: myBulletSpeed(0.f)
 {
-	myBullet = new Prism::Instance(*Prism::ModelLoader::GetInstance()->LoadModel("Data/Resource/Model/Test_temp/Test_arrow_01.fbx",
-		"Data/Resource/Shader/S_effect_pbldebug.fx"),myBulletOrientation);
-	aScene->AddInstance(myBullet);
+	myBullet = EntityFactory::CreateEntity(eEntityType::PROJECTILE, *aScene, myBulletOrientation.GetPos());
+	myBullet->Reset();
+	myBullet->AddToScene();
 }
 
 Shooting::~Shooting()
@@ -22,10 +25,13 @@ void Shooting::Update(float aDelta, const CU::Matrix44<float>& aOrientation)
 {
 	if (CU::InputWrapper::GetInstance()->MouseDown(0) == true)
 	{
+		//myBullet->GetPhysEntity()->AddForce({ 0.f, 1.f, 0.f }, 100000.f);
 		ShootAtDirection(aOrientation);
 	}
 
 	myBullet->Update(aDelta);
+	DEBUG_PRINT(myBullet->GetOrientation().GetPos());
+	//myBullet->SetOrientation(myBulletOrientation);
 
 	myBulletOrientation.SetPos(myBulletOrientation.GetPos() + myBulletOrientation.GetForward() * myBulletSpeed);
 }
@@ -34,5 +40,7 @@ void Shooting::ShootAtDirection(const CU::Matrix44<float>& aOrientation)
 {
 	myBulletOrientation = aOrientation;
 	myBulletSpeed = 100.f;
-	
+
+	myBullet->GetPhysEntity()->SetPosition(aOrientation.GetPos());
+	myBullet->GetPhysEntity()->AddForce(aOrientation.GetForward(), 10.f);
 }

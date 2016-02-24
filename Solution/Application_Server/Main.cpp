@@ -4,6 +4,7 @@
 #include <NetworkMessageTypes.h>
 #include <NetMessageConnectMessage.h>
 #include <NetMessageOnJoin.h>
+#include <NetMessagePosition.h>
 #include <Utility.h>
 void main()
 {
@@ -20,24 +21,25 @@ void main()
 			switch (type)
 			{
 			case eNetMessageType::ON_CONNECT:
+			{
 				NetMessageConnectMessage onConnect;
 				onConnect.UnPackMessage(buf.myData, buf.myLength);
 				Utility::PrintEndl(onConnect.myName, Utility::eCOLOR::LIGHT_GREEN);
 
 				NetworkManager::GetInstance()->GetNetworkHandle()->CreateConnection(onConnect.myName);
-
-				//NetMessageOnJoin toPack; //he's back
-				//toPack.Init();
-				//toPack.PackMessage();
-				//NetworkManager::GetInstance()->AddMessage(toPack.myStream);
-
-
 				break;
 			}
-
-
+			case eNetMessageType::POSITION:
+			{
+				NetMessagePosition pos;
+				pos.UnPackMessage(buf.myData, buf.myLength);
+				pos.PackMessage();
+				NetworkManager::GetInstance()->AddMessage(pos.myStream);
+				break;
+			}
+			
+			}
 		}
-
 	}
 	NetworkManager::Destroy();
 	DL_Debug::Debug::Destroy();

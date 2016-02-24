@@ -2,6 +2,7 @@
 #include "BaseNetwork.h"
 #include <GrowingArray.h>
 #include "NetMessageOnJoin.h"
+#include "NetworkMessageTypes.h"
 class ServerInterface : public BaseNetwork
 {
 public:
@@ -15,6 +16,7 @@ public:
 
 	void CreateConnection(const std::string& aName);
 
+	void DontSendToID(const std::vector<char>& anArray, short anIDToNotSendToffsDanne);
 
 private:
 
@@ -29,15 +31,6 @@ private:
 	WSADATA myWSAData;
 
 	const char* myPort;
-
-	struct Connection
-	{
-		sockaddr_in myAdress;
-		std::string myName;
-		int myPingCount;
-		short myID;
-		bool myIsConnected;
-	};
 
 	static short myIDCount;
 

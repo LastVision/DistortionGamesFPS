@@ -6,15 +6,13 @@ namespace Prism
 {
 	class Camera;
 	class Scene;
-	class Terrain;
-	enum class eOctreeType;
 	class ParticleEmitterInstance;
+	class PhysEntity;
 }
 
 class Component;
 
 struct EntityData;
-
 
 class Entity
 {
@@ -24,7 +22,7 @@ class Entity
 
 public:
 	Entity(const EntityData& aEntityData, Prism::Scene& aScene, const CU::Vector3<float>& aStartPosition, 
-		const CU::Vector3f& aRotation, const CU::Vector3f& aScale, eUnitType aUnitType);
+		const CU::Vector3f& aRotation, const CU::Vector3f& aScale);
 	~Entity();
 
 	void Reset();
@@ -45,7 +43,6 @@ public:
 
 	Prism::Scene& GetScene();
 	eEntityType GetType() const;
-	eUnitType GetUnitType() const;
 
 	eEntityState GetState() const;
 	void SetState(eEntityState aState);
@@ -53,22 +50,26 @@ public:
 	void AddEmitter(Prism::ParticleEmitterInstance* anEmitterConnection);
 	Prism::ParticleEmitterInstance* GetEmitter();
 
+	Prism::PhysEntity* GetPhysEntity() const;
+	void Kill();
+
 private:
 	void operator=(Entity&) = delete;
+
+	const EntityData& myEntityData;
 	CU::StaticArray<Component*, static_cast<int>(eComponentType::_COUNT)> myComponents;
 
 	Prism::ParticleEmitterInstance* myEmitterConnection;
 
 	bool myAlive;
 	bool myIsInScene;
-	const eEntityType myType;
 	std::string mySubType;
-	eUnitType myUnitType;
 	eEntityState myState;
-	
+
 	Prism::Scene& myScene;
 
 	CU::Matrix44<float> myOrientation;
+	Prism::PhysEntity* myPhysEntity;
 };
 
 template <typename T>
@@ -108,16 +109,6 @@ inline void Entity::SetOrientation(const CU::Matrix44<float>& aOrientation)
 inline Prism::Scene& Entity::GetScene()
 {
 	return myScene;
-}
-
-inline eEntityType Entity::GetType() const
-{
-	return myType;
-}
-
-inline eUnitType Entity::GetUnitType() const
-{
-	return myUnitType;
 }
 
 inline eEntityState Entity::GetState() const

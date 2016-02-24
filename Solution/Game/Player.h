@@ -38,6 +38,7 @@ private:
 	float myCrouchHeight;
 	float myJumpAcceleration;
 	float myJumpOffset;
+	float mySendTime;
 };
 
 inline Prism::Camera* Player::GetCamera() const

@@ -77,6 +77,11 @@ void ClientInterface::ConnectToServer(const char* anIP)
 	{
 		DL_ASSERT("Failed to set non-blocking socket!");
 	}
+	myIsOnline = true;
 
+}
 
+const CU::GrowingArray<OtherClients>& ClientInterface::GetClientList()
+{
+	return myClients;
 }

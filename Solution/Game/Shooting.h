@@ -1,9 +1,10 @@
 #pragma once
 
+class Entity;
+
 namespace Prism
 {
 	class Camera;
-	class Instance;
 	class Scene;
 }
 
@@ -17,7 +18,7 @@ public:
 private:
 	void ShootAtDirection(const CU::Matrix44<float>& aOrientation);
 	
-	Prism::Instance* myBullet;
+	Entity* myBullet;
 	CU::Matrix44<float> myBulletOrientation;
 	float myBulletSpeed;
 };

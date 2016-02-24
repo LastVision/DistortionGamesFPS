@@ -29,16 +29,6 @@ AnimationComponent::AnimationComponent(Entity& aEntity, const AnimationComponent
 
 	int animations = static_cast<int>(eEntityState::_COUNT);
 
-	if (aEntity.myUnitType != eUnitType::GRUNT)
-	{
-		--animations;
-	}
-
-	if (aEntity.GetUnitType() == eUnitType::NOT_A_UNIT)
-	{
-		animations = 1;
-	}
-
 	for (int i = 0; i < animations; ++i)
 	{
 		AnimationLoadData loadAnimation = myComponentData.myAnimations[i];
