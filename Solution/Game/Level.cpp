@@ -38,6 +38,7 @@ void Level::AddEntity(Entity* aEntity)
 
 void Level::Update(const float aDeltaTime)
 {
+	NetworkManager::GetInstance()->Swap(true); 
 	myPlayer->Update(aDeltaTime);
 	if (CU::InputWrapper::GetInstance()->KeyDown(DIK_C) == true)
 	{
@@ -46,10 +47,19 @@ void Level::Update(const float aDeltaTime)
 	}
 
 	const CU::GrowingArray<Buffer>& messages = NetworkManager::GetInstance()->GetReceieveBuffer();
-	for (unsigned int i = 0; i < messages.Size(); ++i)
+	for (Buffer buf : messages)
 	{
-		eNetMessageType type = NetworkManager::GetInstance()->ReadType(&messages[i].myData[0]);
-		int pa = 5;
+		eNetMessageType type = NetworkManager::GetInstance()->ReadType(&buf.myData[0]);
+
+		switch (type)
+		{
+		case eNetMessageType::ON_JOIN:
+			connected = true;
+			break;
+		}
+
+
+
 	}
 
 	if (connected == true)

@@ -3,12 +3,9 @@
 #include <GrowingArray.h>
 #include "BaseNetwork.h"
 #include "NetMessage.h"
+
 enum class eNetMessageType;
-struct Buffer
-{
-	char* myData;
-	int myLength;
-};
+
 
 
 namespace std
@@ -24,6 +21,11 @@ public:
 	static void Create(bool aIsServer);
 	static void Destroy();
 	static NetworkManager* GetInstance();
+
+	void AddMessage(std::vector<char> aBuffer);
+
+
+
 	void Swap(bool aShouldSwap);
 	void SendMessage();
 
@@ -34,9 +36,12 @@ public:
 
 	eNetMessageType ReadType(const char* aBuffer);
 
+	BaseNetwork* GetNetworkHandle();
+
 private:
 	NetworkManager();
 	~NetworkManager();
+	static NetworkManager* myInstance;
 
 	void SendThread();
 	void ReceieveThread();
@@ -44,10 +49,7 @@ private:
 	void SwapReceieveBuffer();
 	
 	CU::StaticArray<CU::GrowingArray<Buffer>, 2> myReceieveBuffer;
-	//CU::StaticArray<CU::GrowingArray<NetMessage>, 2> mySendBUffer;
-
-	//CU::GrowingArray<NetMessage> myBuffer;
-
+	CU::StaticArray<CU::GrowingArray<std::vector<char>>, 2> mySendBuffer;
 
 	std::thread* myReceieveThread;
 	std::thread* mySendThread;
@@ -55,10 +57,14 @@ private:
 	BaseNetwork* myNetwork;
 
 	unsigned short myCurrentBuffer;
+	unsigned short myCurrentSendBuffer;
+
 	int myWarningCount;
-	static NetworkManager* myInstance;
-	bool myIsServer;
+
+	volatile bool myReceieveIsDone;
 	volatile bool myIsRunning;
+
+	bool myIsServer;
 	short myNetworkID;
 
 };

@@ -41,14 +41,14 @@ void ClientInterface::Send(const std::vector<char>& anArray)
 	}
 }
 
-int ClientInterface::Receieve(char* aBuffer)
+void ClientInterface::Receieve(std::vector<Buffer>& someBuffers)
 {
-	int toReturn;
-	if ((toReturn = recv(mySocket, aBuffer, BUFFERSIZE, 0)) == SOCKET_ERROR)
-	{
-		//Error
-	}
-	return toReturn;
+	//int toReturn;
+	//if ((toReturn = recv(mySocket, aBuffer, BUFFERSIZE, 0)) == SOCKET_ERROR)
+	//{
+	//	//Error
+	//}
+	//return toReturn;
 }
 
 void ClientInterface::ConnectToServer(const char* anIP)

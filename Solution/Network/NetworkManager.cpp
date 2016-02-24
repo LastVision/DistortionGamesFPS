@@ -57,9 +57,15 @@ NetworkManager* NetworkManager::myInstance = nullptr;
 void NetworkManager::Activate(bool aIsServer)
 {
 	myIsRunning = false;
+	myReceieveIsDone = false;
+
 	myCurrentBuffer = 0;
+	myCurrentSendBuffer = 0;
+
 	myReceieveBuffer[0].Init(8);
 	myReceieveBuffer[1].Init(8);
+	mySendBuffer[0].Init(8);
+	mySendBuffer[1].Init(8);
 
 	myIsServer = aIsServer;
 
@@ -95,18 +101,20 @@ void NetworkManager::StartNetwork()
 	myNetwork->StartNetwork();
 	myIsRunning = true;
 	myReceieveThread = new std::thread([&]{ReceieveThread(); });
+	mySendThread = new std::thread([&]{SendThread(); });
 
 #ifdef _DEBUG
 	if (myIsServer == true)
 	{
 		_SetThreadName(myReceieveThread->get_id(), "Receieve Thread - Server");
+		_SetThreadName(mySendThread->get_id(), "Send Thread - Server");
 	}
 	else
 	{
 		_SetThreadName(myReceieveThread->get_id(), "Receieve Thread - Client");
+		_SetThreadName(mySendThread->get_id(), "Send Thread - Client");
 	}
 #endif
-	//mySendThread = new std::thread([&]{SendThread(); });
 }
 
 void NetworkManager::ConnectToServer(const char* aServerIP)
@@ -117,6 +125,13 @@ void NetworkManager::ConnectToServer(const char* aServerIP)
 
 CU::GrowingArray<Buffer>& NetworkManager::GetReceieveBuffer()
 {
+	if (myIsServer == false)
+	{
+		if (myReceieveBuffer[myCurrentBuffer].Size() > 0)
+		{
+			int apa = 0;
+		}
+	}
 	return myReceieveBuffer[myCurrentBuffer];
 }
 
@@ -128,6 +143,15 @@ NetworkManager* NetworkManager::GetInstance()
 	}
 	DL_ASSERT("Instance were null, did you forget to create the network manager?");
 	return nullptr;
+}
+
+void NetworkManager::AddMessage(std::vector<char> aBuffer)
+{
+	if (myIsServer == true)
+	{
+		std::cout << "Added message to Send Buffer!\n";
+	}
+	mySendBuffer[myCurrentBuffer ^ 1].Add(aBuffer);
 }
 
 void NetworkManager::Swap(bool aShouldSwap)
@@ -166,7 +190,17 @@ NetworkManager::~NetworkManager()
 
 void NetworkManager::SendThread()
 {
+	while (myIsRunning == true)
+	{
+		std::this_thread::sleep_for(std::chrono::nanoseconds(1));
+			for (std::vector<char> arr : mySendBuffer[myCurrentSendBuffer])
+			{
+				myNetwork->Send(arr);
+			}
 
+			mySendBuffer[myCurrentSendBuffer].RemoveAll();
+			myCurrentSendBuffer ^= 1;
+	}
 }
 
 void NetworkManager::ReceieveThread()
@@ -174,68 +208,29 @@ void NetworkManager::ReceieveThread()
 	char buffer[BUFFERSIZE];
 	while (myIsRunning == true)
 	{
-		//Sleep(1);
 		std::this_thread::sleep_for(std::chrono::nanoseconds(1));
 		ZeroMemory(&buffer, BUFFERSIZE);
-		int receievedLength = myNetwork->Receieve(buffer);
 
-		if (receievedLength < 0)
+		std::vector<Buffer> someBuffers;
+		myNetwork->Receieve(someBuffers);
+
+		if (someBuffers.size() == 0)
 		{
 			int error = WSAGetLastError();
 			continue;
 		}
 
-		Buffer toInsert;
-		toInsert.myData = buffer;
-		toInsert.myLength = receievedLength;
-		myReceieveBuffer[myCurrentBuffer ^ 1].Add(toInsert);
+		for (Buffer message : someBuffers)
+		{
+			myReceieveBuffer[myCurrentBuffer ^ 1].Add(message);
+		}
+		
 		if (myIsServer == true)
 		{
 			Utility::PrintEndl("Server Receieved a message", Utility::eCOLOR::LIGHT_GREEN);
 		}
 
 
-
-#pragma region Comment
-		//eNetMessageType messageType = ReadType(buffer);
-
-		//if (messageType == eNetMessageType::NONE)
-		//{
-		//	continue;
-		//}
-
-		//switch (messageType)
-		//{
-		//case eNetMessageType::ON_CONNECT:
-		//{
-		//	NetMessageConnectMessage toUnpack;
-		//	toUnpack.UnPackMessage(buffer, receievedLength);
-		//	std::string connected = toUnpack.myName + " has connected!";
-
-		//	if (myIsServer == true)
-		//	{
-		//		myNetwork->CreateConnection(toUnpack.myName);
-		//		Utility::PrintEndl(connected, Utility::eCOLOR::LIGHT_GREEN_BACK_BLACK);
-		//	}
-		//	else
-		//	{
-		//		myNetworkID = toUnpack.myServerID;
-		//		myNetwork->SetIsOnline(true);
-		//	}
-
-		//	break;
-		//}
-		//case eNetMessageType::ON_JOIN:
-		//{
-		//	//NetMessageOnJoin toUnpack;
-		//	//toUnpack.UnPackMessage(buffer, receievedLength);
-		//	//toUnpack.myID = buffer[0];
-		//	//myBuffer.Add(toUnpack);
-
-		//	break;
-		//}
-		//}
-#pragma endregion
 
 	}
 }
@@ -245,6 +240,11 @@ eNetMessageType NetworkManager::ReadType(const char* aBuffer)
 	return static_cast<eNetMessageType>(aBuffer[0]);
 }
 
+
+BaseNetwork* NetworkManager::GetNetworkHandle()
+{
+	return myNetwork;
+}
 
 void NetworkManager::SwapReceieveBuffer()
 {
