@@ -161,6 +161,7 @@
     <ClCompile Include="SpotLightShadow.cpp">
       <Filter>Lights</Filter>
     </ClCompile>
+    <ClCompile Include="Bar3D.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Engine.h" />
@@ -368,6 +369,7 @@
     <ClInclude Include="BoneName.h">
       <Filter>Rendering\Animation</Filter>
     </ClInclude>
+    <ClInclude Include="Bar3D.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Precompile">
