@@ -1,8 +1,15 @@
 #pragma once
-class HealthComponent
+#include "Component.h"
+
+class Entity;
+
+class HealthComponent : public Component
 {
 public:
-	HealthComponent();
+	HealthComponent(Entity& anEntity);
 	~HealthComponent();
+
+private:
+
 };
 
