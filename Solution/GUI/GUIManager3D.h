@@ -3,6 +3,7 @@
 #include <BoneName.h>
 namespace Prism
 {
+	class Bar3D;
 	class Instance;
 	class Scene;
 	class Effect;
@@ -17,6 +18,7 @@ namespace GUI
 		~GUIManager3D();
 
 		void Update(const CU::Matrix44<float>& aOrientation, float aDeltaTime);
+		void Render();
 
 	private:
 		float myTestValue;
@@ -25,6 +27,7 @@ namespace GUI
 		Prism::Scene* myScene;
 		GUIBone myGUIBone;
 		Prism::Effect* myEffect;
+		Prism::Bar3D* myLeftBar;
 	};
 
 }

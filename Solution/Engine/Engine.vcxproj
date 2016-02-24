@@ -260,6 +260,7 @@
     <ClCompile Include="AnimationNode.cpp" />
     <ClCompile Include="AnimationProxy.cpp" />
     <ClCompile Include="AnimationSystem.cpp" />
+    <ClCompile Include="Bar3D.cpp" />
     <ClCompile Include="BaseModel.cpp" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="Cube3D.cpp" />
@@ -335,6 +336,7 @@
     <ClInclude Include="AnimationNode.h" />
     <ClInclude Include="AnimationProxy.h" />
     <ClInclude Include="AnimationSystem.h" />
+    <ClInclude Include="Bar3D.h" />
     <ClInclude Include="BaseModel.h" />
     <ClInclude Include="BoneName.h" />
     <ClInclude Include="Camera.h" />
