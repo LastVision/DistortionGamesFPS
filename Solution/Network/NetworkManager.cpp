@@ -147,11 +147,14 @@ NetworkManager* NetworkManager::GetInstance()
 
 void NetworkManager::AddMessage(std::vector<char> aBuffer)
 {
-	if (myIsServer == true)
+	if (myNetwork->GetIsOnline() == true)
 	{
-		std::cout << "Added message to Send Buffer!\n";
+		if (myIsServer == true)
+		{
+			std::cout << "Added message to Send Buffer!\n";
+		}
+		mySendBuffer[myCurrentBuffer ^ 1].Add(aBuffer);
 	}
-	mySendBuffer[myCurrentBuffer ^ 1].Add(aBuffer);
 }
 
 void NetworkManager::Swap(bool aShouldSwap)
