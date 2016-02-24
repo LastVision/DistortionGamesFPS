@@ -105,7 +105,7 @@ namespace Prism
 
 		/*DL_ASSERT_EXP(myInstancedCount.find(name) != myInstancedCount.end()
 			, CU::Concatenate("GetInstancedCount on %s failed", aModelPath.c_str()));*/
-		if (myInstancedCount.find(name) == myInstancedCount.end())
+		//if (myInstancedCount.find(name) == myInstancedCount.end())
 		{
 			return 256;
 		}
