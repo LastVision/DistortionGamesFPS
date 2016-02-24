@@ -102,19 +102,20 @@ void EntityFactory::LoadEntity(const char* aEntityPath)
 	else if (CU::ToLower(physicsType) == "dynamic")
 	{
 		newData.myPhysData.myPhysics = ePhysics::DYNAMIC;
+
+		entityDocument.ForceReadAttribute(entityDocument.ForceFindFirstChild(entityPhysics, "min"), "x", newData.myPhysData.myPhysicsMin.x);
+		entityDocument.ForceReadAttribute(entityDocument.ForceFindFirstChild(entityPhysics, "min"), "y", newData.myPhysData.myPhysicsMin.y);
+		entityDocument.ForceReadAttribute(entityDocument.ForceFindFirstChild(entityPhysics, "min"), "z", newData.myPhysData.myPhysicsMin.z);
+
+		entityDocument.ForceReadAttribute(entityDocument.ForceFindFirstChild(entityPhysics, "max"), "x", newData.myPhysData.myPhysicsMax.x);
+		entityDocument.ForceReadAttribute(entityDocument.ForceFindFirstChild(entityPhysics, "max"), "y", newData.myPhysData.myPhysicsMax.y);
+		entityDocument.ForceReadAttribute(entityDocument.ForceFindFirstChild(entityPhysics, "max"), "z", newData.myPhysData.myPhysicsMax.z);
 	}
 	else
 	{
 		DL_ASSERT(CU::Concatenate("Invalid phyics-type on %s %s", entityType.c_str(), entitySubType.c_str()));
 	}
 
-	entityDocument.ForceReadAttribute(entityDocument.ForceFindFirstChild(entityPhysics, "min"), "x", newData.myPhysData.myPhysicsMin.x);
-	entityDocument.ForceReadAttribute(entityDocument.ForceFindFirstChild(entityPhysics, "min"), "y", newData.myPhysData.myPhysicsMin.y);
-	entityDocument.ForceReadAttribute(entityDocument.ForceFindFirstChild(entityPhysics, "min"), "z", newData.myPhysData.myPhysicsMin.z);
-
-	entityDocument.ForceReadAttribute(entityDocument.ForceFindFirstChild(entityPhysics, "max"), "x", newData.myPhysData.myPhysicsMax.x);
-	entityDocument.ForceReadAttribute(entityDocument.ForceFindFirstChild(entityPhysics, "max"), "y", newData.myPhysData.myPhysicsMax.y);
-	entityDocument.ForceReadAttribute(entityDocument.ForceFindFirstChild(entityPhysics, "max"), "z", newData.myPhysData.myPhysicsMax.z);
 
 	for (tinyxml2::XMLElement* e = entityDocument.FindFirstChild(entityElement); e != nullptr;
 		e = entityDocument.FindNextElement(e))

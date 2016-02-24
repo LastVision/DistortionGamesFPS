@@ -42,5 +42,5 @@ void Shooting::ShootAtDirection(const CU::Matrix44<float>& aOrientation)
 	myBulletSpeed = 100.f;
 
 	myBullet->GetPhysEntity()->SetPosition(aOrientation.GetPos());
-	myBullet->GetPhysEntity()->AddForce(aOrientation.GetForward(), 10000.f);
+	myBullet->GetPhysEntity()->AddForce(aOrientation.GetForward(), 10.f);
 }
