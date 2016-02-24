@@ -1,7 +1,7 @@
 #pragma once
 #include <GrowingArray.h>
 #include <Matrix.h>
-
+#include <NetworkMessageTypes.h>
 class Player;
 
 namespace Prism
@@ -28,10 +28,9 @@ private:
 	Prism::Scene* myScene;
 
 	Player* myPlayer;
-	Entity* myOtherPlayer;
 	CU::GrowingArray<Entity*> myEntities;
+	CU::GrowingArray<OtherClients> myClients;
 
-	CU::Vector3<float> myTempPosition;
 
 };
 

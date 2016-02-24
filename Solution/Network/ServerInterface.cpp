@@ -106,7 +106,7 @@ void ServerInterface::Send(const std::vector<char>& anArray, const sockaddr_in& 
 void ServerInterface::Send(NetMessageOnJoin join)
 {
 	join.Init();
-	join.mySenderID = 0;
+	join.mySenderID = myIDCount;
 
 	for (int i = 0; i < myClients.Size(); ++i)
 	{
@@ -162,6 +162,10 @@ void ServerInterface::CreateConnection(const std::string& aName)
 
 		NetMessageConnectMessage toSend;
 		toSend.Init(aName, myIDCount);
+		for (Connection c : myClients)
+		{
+			toSend.myClientsOnServer.Add(c.myID);
+		}
 		toSend.PackMessage();
 		Send(toSend.myStream, newConnection.myAdress);
 

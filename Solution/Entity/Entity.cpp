@@ -155,3 +155,10 @@ Prism::PhysEntity* Entity::GetPhysEntity() const
 {
 	return myPhysEntity;
 }
+
+void Entity::Kill()
+{
+	myAlive = false;
+
+
+}
