@@ -365,6 +365,9 @@
     <ClInclude Include="DGFXFileFormat.h">
       <Filter>FBX</Filter>
     </ClInclude>
+    <ClInclude Include="BoneName.h">
+      <Filter>Rendering\Animation</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Precompile">

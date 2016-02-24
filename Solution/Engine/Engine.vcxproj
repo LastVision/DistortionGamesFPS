@@ -336,6 +336,7 @@
     <ClInclude Include="AnimationProxy.h" />
     <ClInclude Include="AnimationSystem.h" />
     <ClInclude Include="BaseModel.h" />
+    <ClInclude Include="BoneName.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="Cube3D.h" />
     <ClInclude Include="Cube3DRenderer.h" />

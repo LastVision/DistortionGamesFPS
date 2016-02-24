@@ -557,6 +557,7 @@ namespace Prism
 			{
 				HierarchyBone child;
 				LoadBoneHierarchy(child, aStream);
+				child.myParent = &aOutBone;
 				aOutBone.myChildren.Add(child);
 			}
 		}
