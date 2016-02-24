@@ -1,5 +1,7 @@
 #pragma once
 #include "NetMessage.h"
+#include <GrowingArray.h>
+
 class NetMessageConnectMessage : public NetMessage
 {
 public:
@@ -10,8 +12,8 @@ public:
 
 	std::string myName;
 	short myServerID;
+	CU::GrowingArray<unsigned short> myClientsOnServer;
 protected:
-
 
 	void DoSerialize(StreamType& aStream) override;
 	void DoDeSerialize(StreamType& aStream) override;

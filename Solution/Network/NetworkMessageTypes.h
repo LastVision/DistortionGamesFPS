@@ -30,3 +30,9 @@ struct Connection
 	bool myIsConnected;
 	CU::Vector3<float> myPosition;
 };
+
+struct OtherClients
+{
+	unsigned short myID;
+	CU::Vector3<float> myPosition;
+};

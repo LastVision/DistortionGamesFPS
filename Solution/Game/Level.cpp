@@ -17,16 +17,18 @@
 #include "GameEnum.h"
 #include <NetMessageConnectMessage.h>
 #include <PhysicsInterface.h>
+#include <ClientInterface.h>
+#include "NetMessageOnJoin.h"
 
 Level::Level()
 	: myEntities(512)
+	, myClients(16)
 {
-	connected = false;
 	Prism::PhysicsInterface::Create();
 	myScene = new Prism::Scene();
 	myPlayer = new Player(myScene);
 	myScene->SetCamera(*myPlayer->GetCamera());
-	myTempPosition = { 835.f, 0.f, -1000.f };
+	//myTempPosition = { 835.f, 0.f, -1000.f };
 }
 
 Level::~Level()
@@ -44,7 +46,7 @@ void Level::AddEntity(Entity* aEntity)
 
 void Level::Update(const float aDeltaTime)
 {
-	NetworkManager::GetInstance()->Swap(true);
+	NetworkManager::GetInstance()->Swap(true); 
 	myPlayer->Update(aDeltaTime);
 
 	for (int i = 0; i < myEntities.Size(); i++)
@@ -70,26 +72,43 @@ void Level::Update(const float aDeltaTime)
 			NetMessageConnectMessage connect;
 			connect.UnPackMessage(buf.myData, buf.myLength);
 			NetworkManager::GetInstance()->SetNetworkID(connect.myServerID);
+			const CU::GrowingArray<OtherClients>& clients = static_cast<ClientInterface*>(NetworkManager::GetInstance()->GetNetworkHandle())->GetClientList();
+			for (OtherClients c : clients)
+			{
+				myClients.Add(c);
+			}
 			break;
 		}
-
+		
 		case eNetMessageType::ON_JOIN:
-			connected = true;
+		{
+			NetMessageOnJoin onJoin;
+			onJoin.UnPackMessage(buf.myData, buf.myLength);
+			OtherClients c;
+			c.myID = onJoin.mySenderID;
+			myClients.Add(c);
 			break;
+		}
 		case eNetMessageType::POSITION:
 		{
 			NetMessagePosition pos;
 			pos.UnPackMessage(buf.myData, buf.myLength);
 			if (pos.mySenderID != NetworkManager::GetInstance()->GetNetworkID())
 			{
-				myTempPosition = pos.myPosition;
+				for (OtherClients c : myClients)
+				{
+					if (pos.mySenderID == c.myID)
+					{
+						c.myPosition = pos.myPosition;
+		}
+				}
+
 			}
 			break;
-		}
-		}
+	}
+	}
 	}
 
-	Prism::DebugDrawer::GetInstance()->RenderLinesToScreen(*myPlayer->GetCamera());
 
 	Prism::PhysicsInterface::GetInstance()->Update();
 }
@@ -99,14 +118,11 @@ void Level::Render()
 	myScene->Render();
 	myPlayer->Render();
 
+	for (OtherClients c : myClients)
+	{
+		Prism::DebugDrawer::GetInstance()->RenderBox(c.myPosition, eColorDebug::BLUE, 300.f);
+	}
 
-	if (connected == true)
-	{
-		DEBUG_PRINT("Player 2 has joined!");
-		Prism::DebugDrawer::GetInstance()->RenderBox(myTempPosition, eColorDebug::BLUE, 300.f);
-	}
-	else
-	{
-		DEBUG_PRINT("Nobody is here!");
-	}
+	Prism::DebugDrawer::GetInstance()->RenderLinesToScreen(*myPlayer->GetCamera());
+
 }
