@@ -6,34 +6,15 @@ namespace EntityEnumConverter
 {
 	const eEntityType ConvertStringToEntityType(const std::string& aType)
 	{
-		if (aType == "basebuilding")
-		{
-			return eEntityType::BASE_BUILING;
-		}
-		else if (aType == "unit")
-		{
-			return eEntityType::UNIT;
-		}
-		else if (aType == "prop")
+		if (aType == "prop")
 		{
 			return eEntityType::PROP;
 		}
-		else if (aType == "victorypoint")
+		else if (aType == "projectile")
 		{
-			return eEntityType::VICTORY_POINT;
+			return eEntityType::PROJECTILE;
 		}
-		else if (aType == "resourcepoint")
-		{
-			return eEntityType::RESOURCE_POINT;
-		}
-		else if (aType == "artifact")
-		{
-			return eEntityType::ARTIFACT;
-		}
-		else if (aType == "rallypoint")
-		{
-			return eEntityType::RALLY_POINT;
-		}
+
 		DL_ASSERT("The " + aType + " entity type is not supported, please tell Daniel about it.");
 		return eEntityType::_COUNT;
 	}
@@ -237,27 +218,6 @@ namespace EntityEnumConverter
 		}
 		DL_ASSERT("The " + aType + " prop type is not supported, please tell Daniel about it.");
 		return ePropType::NOT_A_PROP;
-	}
-	const eUnitType ConvertStringToUnitType(const std::string& aType)
-	{
-		if (aType == "grunt")
-		{
-			return eUnitType::GRUNT;
-		}
-		else if (aType == "ranger")
-		{
-			return eUnitType::RANGER;
-		}
-		else if (aType == "tank")
-		{
-			return eUnitType::TANK;
-		}
-		else if (aType == "non_attack_tutorial")
-		{
-			return eUnitType::NON_ATTACK_TUTORIAL;
-		}
-		DL_ASSERT("The " + aType + " unit type is not supported, please tell Daniel about it.");
-		return eUnitType::NOT_A_UNIT;
 	}
 
 	const eOwnerType ConvertStringToOwnerType(const std::string& aType)

@@ -16,10 +16,13 @@
 #include "Entity.h"
 #include "GameEnum.h"
 #include <NetMessageConnectMessage.h>
+#include <PhysicsInterface.h>
+
 Level::Level()
 	: myEntities(512)
 {
 	connected = false;
+	Prism::PhysicsInterface::Create();
 	myScene = new Prism::Scene();
 	myPlayer = new Player(myScene);
 	myScene->SetCamera(*myPlayer->GetCamera());
@@ -31,6 +34,7 @@ Level::~Level()
 	myEntities.DeleteAll();
 	SAFE_DELETE(myPlayer);
 	SAFE_DELETE(myScene);
+	Prism::PhysicsInterface::Destroy();
 }
 
 void Level::AddEntity(Entity* aEntity)
@@ -73,15 +77,15 @@ void Level::Update(const float aDeltaTime)
 			if (pos.mySenderID != NetworkManager::GetInstance()->GetNetworkID())
 			{
 				myTempPosition = pos.myPosition;
-			}
+		}
 			break;
-		}
-		}
+	}
+	}
 	}
 
 	Prism::DebugDrawer::GetInstance()->RenderLinesToScreen(*myPlayer->GetCamera());
 
-
+	Prism::PhysicsInterface::GetInstance()->Update();
 }
 
 void Level::Render()

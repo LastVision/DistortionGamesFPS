@@ -103,3 +103,16 @@ Tools/CSharpUtilities/Workbed/
 /AnimationsystemsTemplate/Riskabelt animation/animations
 /AnimationsystemsTemplate/Riskabelt animation
 *.cfg
+/Solution/Physics/Debug/Physics.tlog/cl.command.1.tlog
+/Solution/Physics/Debug/Physics.tlog/CL.read.1.tlog
+/Solution/Physics/Debug/Physics.tlog/CL.write.1.tlog
+/Solution/Physics/Debug/Physics.tlog/lib.command.1.tlog
+/Solution/Physics/Debug/Physics.tlog/Lib-link.read.1.tlog
+/Solution/Physics/Debug/Physics.tlog/Lib-link.write.1.tlog
+/Solution/Physics/Debug/vc120.idb
+/Solution/Physics/Release/Physics.tlog/cl.command.1.tlog
+/Solution/Physics/Release/Physics.tlog/CL.read.1.tlog
+/Solution/Physics/Release/Physics.tlog/CL.write.1.tlog
+/Solution/Physics/Release/Physics.tlog/lib.command.1.tlog
+/Solution/Physics/Release/Physics.tlog/Lib-link.read.1.tlog
+/Solution/Physics/Release/Physics.tlog/Lib-link.write.1.tlog
