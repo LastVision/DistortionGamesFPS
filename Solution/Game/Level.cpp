@@ -57,9 +57,6 @@ void Level::Update(const float aDeltaTime)
 			connected = true;
 			break;
 		}
-
-
-
 	}
 
 	if (connected == true)

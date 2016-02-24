@@ -43,12 +43,16 @@ void ClientInterface::Send(const std::vector<char>& anArray)
 
 void ClientInterface::Receieve(std::vector<Buffer>& someBuffers)
 {
-	//int toReturn;
-	//if ((toReturn = recv(mySocket, aBuffer, BUFFERSIZE, 0)) == SOCKET_ERROR)
-	//{
-	//	//Error
-	//}
-	//return toReturn;
+	int toReturn;
+	char buffer[BUFFERSIZE];
+	ZeroMemory(&buffer, BUFFERSIZE);
+	Buffer toPushback;
+	while ((toReturn = recv(mySocket, buffer, BUFFERSIZE, 0)) > 0)
+	{
+		memcpy(&toPushback.myData, &buffer[0], toReturn*sizeof(char));
+		toPushback.myLength = toReturn;
+		someBuffers.push_back(toPushback);
+	}
 }
 
 void ClientInterface::ConnectToServer(const char* anIP)
