@@ -36,7 +36,7 @@ Player::Player(Prism::Scene* aScene)
 	CU::Vector2<float> size(128.f, 128.f);
 	myCrosshair = Prism::ModelLoader::GetInstance()->LoadSprite("Data/Resource/Texture/UI/T_crosshair.dds", size, size * 0.5f);
 
-	myModel = new Prism::Instance(*Prism::ModelLoader::GetInstance()->LoadModelAnimated("Data/Resource/Model/First_person/SK_arm.fbx", "Data/Resource/Shader/S_effect_pbl_animated.fx"), myOrientation);
+	myModel = new Prism::Instance(*Prism::ModelLoader::GetInstance()->LoadModelAnimated("Data/Resource/Model/First_person/SK_arm_idle_cm.fbx", "Data/Resource/Shader/S_effect_pbl_animated.fx"), myOrientation);
 
 	aScene->AddInstance(myModel);
 

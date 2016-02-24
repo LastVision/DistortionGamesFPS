@@ -79,6 +79,7 @@ void LevelFactory::ReadLevel(const std::string& aLevelPath)
 	levelElement = reader.ForceFindFirstChild(levelElement, "scene");
 
 	LoadProps(reader, levelElement);
+	LoadUnits(reader, levelElement);
 
 	reader.CloseDocument();
 }
@@ -104,6 +105,34 @@ void LevelFactory::LoadProps(XMLReader& aReader, tinyxml2::XMLElement* aElement)
 		
 		Entity* newEntity = EntityFactory::CreateEntity(eEntityType::PROP, propType, *myCurrentLevel->GetScene()
 			, propPosition, propRotation, propScale);
+		newEntity->AddToScene();
+		newEntity->Reset();
+
+		myCurrentLevel->AddEntity(newEntity);
+	}
+}
+
+void LevelFactory::LoadUnits(XMLReader& aReader, tinyxml2::XMLElement* aElement)
+{
+	for (tinyxml2::XMLElement* entityElement = aReader.FindFirstChild(aElement, "unit"); entityElement != nullptr;
+		entityElement = aReader.FindNextElement(entityElement, "unit"))
+	{
+		std::string unitType;
+		aReader.ForceReadAttribute(entityElement, "unitType", unitType);
+		unitType = CU::ToLower(unitType);
+
+		CU::Vector3f unitPosition;
+		CU::Vector3f unitRotation;
+		CU::Vector3f unitScale;
+
+		ReadOrientation(aReader, entityElement, unitPosition, unitRotation, unitScale);
+
+		unitRotation.x = CU::Math::DegreeToRad(unitRotation.x);
+		unitRotation.y = CU::Math::DegreeToRad(unitRotation.y);
+		unitRotation.z = CU::Math::DegreeToRad(unitRotation.z);
+
+		Entity* newEntity = EntityFactory::CreateEntity(eEntityType::UNIT, unitType, *myCurrentLevel->GetScene()
+			, unitPosition, unitRotation, unitScale);
 		newEntity->AddToScene();
 		newEntity->Reset();
 
