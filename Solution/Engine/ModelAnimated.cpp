@@ -35,7 +35,7 @@ namespace Prism
 	{
 		myChildren.DeleteAll();
 		myChildTransforms.DeleteAll();
-		delete myAnimation;
+		//delete myAnimation;
 		delete myVertexBaseData;
 		delete myIndexBaseData;
 	}
