@@ -5,6 +5,7 @@ namespace Prism
 {
 	class Instance;
 	class Scene;
+	class Effect;
 }
 
 namespace GUI
@@ -18,10 +19,12 @@ namespace GUI
 		void Update(const CU::Matrix44<float>& aOrientation, float aDeltaTime);
 
 	private:
+		float myTestValue;
 		CU::Matrix44<float> myWristOrientation;
 		Prism::Instance* my3DPlane;
 		Prism::Scene* myScene;
 		GUIBone myGUIBone;
+		Prism::Effect* myEffect;
 	};
 
 }
