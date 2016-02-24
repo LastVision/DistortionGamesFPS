@@ -81,7 +81,7 @@ void ServerInterface::StartNetwork()
 
 	myIsOnline = true;
 	Utility::PrintEndl("Server successfully started!", Utility::eCOLOR::LIGHT_GREEN);
-	
+
 }
 
 void ServerInterface::Send(const std::vector<char>& anArray)
@@ -131,35 +131,51 @@ void ServerInterface::Send(NetMessageOnJoin join)
 	}
 }
 
-int ServerInterface::Receieve(char* aBuffer)
+void ServerInterface::Receieve(std::vector<Buffer>& someBuffers)
 {
 	int toReturn = 0;
 	int size = sizeof(myOther);
-	if ((toReturn = recvfrom(myListenSocket, aBuffer, BUFFERSIZE, 0, (struct sockaddr *)&myOther, &size)) == SOCKET_ERROR)
+	char* receieve = nullptr;
+
+	char buffer[BUFFERSIZE];
+	ZeroMemory(&buffer, BUFFERSIZE);
+	Buffer toPushback;
+
+	while ((toReturn = recvfrom(myListenSocket, buffer, BUFFERSIZE, 0, (struct sockaddr *)&myOther, &size)) > 0)
 	{
-		//Error
+		memcpy(&toPushback.myData, &buffer[0], toReturn*sizeof(char));
+		toPushback.myLength = toReturn;
+		someBuffers.push_back(toPushback);
 	}
-	return toReturn;
+
+	//return toReturn;
 }
 
 void ServerInterface::CreateConnection(const std::string& aName)
 {
-	myIDCount++;
-	Connection newConnection;
-	newConnection.myAdress = myOther;
-	newConnection.myID = myIDCount;
-	newConnection.myName = aName;
-	newConnection.myPingCount = 0;
-	newConnection.myIsConnected = true;
-	myClients.Add(newConnection);
+	if (myNames.find(aName) == myNames.end())
+	{
+		myIDCount++;
+		Connection newConnection;
+		newConnection.myAdress = myOther;
+		newConnection.myID = myIDCount;
+		newConnection.myName = aName;
+		newConnection.myPingCount = 0;
+		newConnection.myIsConnected = true;
+		myClients.Add(newConnection);
+		myNames[aName] = 1;
 
-	NetMessageConnectMessage toSend;
-	toSend.Init(aName, myIDCount);
-	toSend.PackMessage();
-	Send(toSend.myStream, newConnection.myAdress);
 
-	NetMessageOnJoin onJoin;
-	
-	Send(onJoin);
+		NetMessageConnectMessage toSend;
+		toSend.Init(aName, myIDCount);
+		toSend.PackMessage();
+		Send(toSend.myStream, newConnection.myAdress);
 
+		NetMessageOnJoin onJoin;
+		Send(onJoin);
+	}
+	else
+	{
+		Utility::PrintEndl("User is already on server!", Utility::eCOLOR::RED_BACK_BLACK);
+	}
 }

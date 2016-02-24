@@ -14,3 +14,9 @@ enum class eNetMessageType
 
 	
 };
+
+struct Buffer
+{
+	char myData[512];
+	int myLength;
+};

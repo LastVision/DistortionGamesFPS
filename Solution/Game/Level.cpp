@@ -8,6 +8,7 @@
 #include <InputWrapper.h>
 #include "NetworkManager.h"
 #include "NetworkMessageTypes.h"
+#include "NetworkMessageTypes.h"
 
 #include "DebugDrawer.h"
 
@@ -37,13 +38,27 @@ void Level::AddEntity(Entity* aEntity)
 
 void Level::Update(const float aDeltaTime)
 {
+	NetworkManager::GetInstance()->Swap(true); 
 	myPlayer->Update(aDeltaTime);
 	if (CU::InputWrapper::GetInstance()->KeyDown(DIK_C) == true)
 	{
 		NetworkManager::GetInstance()->ConnectToServer();
+		//NetworkManager::GetInstance()->ConnectToServer("172.22.53.245"); //LinusS IP
 	}
 
-	CU::GrowingArray<NetMessage> messages = NetworkManager::GetInstance()->GetBuffer();
+	const CU::GrowingArray<Buffer>& messages = NetworkManager::GetInstance()->GetReceieveBuffer();
+	for (Buffer buf : messages)
+	{
+		eNetMessageType type = NetworkManager::GetInstance()->ReadType(&buf.myData[0]);
+
+		switch (type)
+		{
+		case eNetMessageType::ON_JOIN:
+			connected = true;
+			break;
+		}
+	}
+
 	if (connected == true)
 	{
 		DEBUG_PRINT("Player 2 has joined!");
@@ -53,15 +68,15 @@ void Level::Update(const float aDeltaTime)
 		DEBUG_PRINT("Nobody is here!");
 	}
 
-	for (int i = 0; i < messages.Size(); ++i)
+	/*for (int i = 0; i < messages.Size(); ++i)
 	{
 
-		if (messages[i].myID == '\x2')
-		{
-			connected = true;
-			messages.RemoveAll();
-		}
+	if (messages[i].myID == '\x2')
+	{
+	connected = true;
+	messages.RemoveAll();
 	}
+	}*/
 
 }
 

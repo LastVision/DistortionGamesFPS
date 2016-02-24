@@ -11,7 +11,7 @@ public:
 	void StartNetwork() override;
 	void Send(const std::vector<char>& anArray) override;
 
-	int Receieve(char* aBuffer) override;
+	void Receieve(std::vector<Buffer>& someBuffers) override;
 
 	void CreateConnection(const std::string& aName);
 

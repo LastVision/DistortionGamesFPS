@@ -41,22 +41,26 @@ void ClientInterface::Send(const std::vector<char>& anArray)
 	}
 }
 
-int ClientInterface::Receieve(char* aBuffer)
+void ClientInterface::Receieve(std::vector<Buffer>& someBuffers)
 {
 	int toReturn;
-	if ((toReturn = recv(mySocket, aBuffer, BUFFERSIZE, 0)) == SOCKET_ERROR)
+	char buffer[BUFFERSIZE];
+	ZeroMemory(&buffer, BUFFERSIZE);
+	Buffer toPushback;
+	while ((toReturn = recv(mySocket, buffer, BUFFERSIZE, 0)) > 0)
 	{
-		//Error
+		memcpy(&toPushback.myData, &buffer[0], toReturn*sizeof(char));
+		toPushback.myLength = toReturn;
+		someBuffers.push_back(toPushback);
 	}
-	return toReturn;
 }
 
 void ClientInterface::ConnectToServer(const char* anIP)
 {
 	myIP = anIP;
 
-	std::string serverIP = "127.0.0.1";
-	myServerAddress.sin_addr.S_un.S_addr = inet_addr(serverIP.c_str());
+	
+	myServerAddress.sin_addr.S_un.S_addr = inet_addr(myIP);
 
 	char username[256 + 1];
 	DWORD username_len = 256 + 1;
@@ -71,7 +75,7 @@ void ClientInterface::ConnectToServer(const char* anIP)
 	DWORD nonBlocking = 1;
 	if (ioctlsocket(mySocket, FIONBIO, &nonBlocking) != 0)
 	{
-		//Error
+		DL_ASSERT("Failed to set non-blocking socket!");
 	}
 
 
