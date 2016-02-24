@@ -37,6 +37,6 @@ namespace GUI
 
 		myWristOrientation = CU::InverseSimple(*myGUIBone.myBind) * (*myGUIBone.myJoint) * aOrientation;
 		//myWristOrientation *= aOrientation;
-		my3DPlane->Update(aDeltaTime);
+		//my3DPlane->Update(aDeltaTime);
 	}
 }
