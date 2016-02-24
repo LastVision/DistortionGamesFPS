@@ -518,7 +518,6 @@ Global
 		{FE6819DB-1A2C-4356-9427-38D240981775}.Debug|Win32.Build.0 = Debug|Win32
 		{FE6819DB-1A2C-4356-9427-38D240981775}.DLL_Release|Any CPU.ActiveCfg = Release|Win32
 		{FE6819DB-1A2C-4356-9427-38D240981775}.DLL_Release|Mixed Platforms.ActiveCfg = Release|Win32
-		{FE6819DB-1A2C-4356-9427-38D240981775}.DLL_Release|Mixed Platforms.Build.0 = Release|Win32
 		{FE6819DB-1A2C-4356-9427-38D240981775}.DLL_Release|Win32.ActiveCfg = Release|Win32
 		{FE6819DB-1A2C-4356-9427-38D240981775}.DLL_Release|Win32.Build.0 = Release|Win32
 		{FE6819DB-1A2C-4356-9427-38D240981775}.Internal|Any CPU.ActiveCfg = Release|Win32
@@ -542,7 +541,6 @@ Global
 		{8F1EDD17-BC16-4B0E-9260-DC476AC33536}.Debug|Win32.Build.0 = Debug|Win32
 		{8F1EDD17-BC16-4B0E-9260-DC476AC33536}.DLL_Release|Any CPU.ActiveCfg = Release|Win32
 		{8F1EDD17-BC16-4B0E-9260-DC476AC33536}.DLL_Release|Mixed Platforms.ActiveCfg = Release|Win32
-		{8F1EDD17-BC16-4B0E-9260-DC476AC33536}.DLL_Release|Mixed Platforms.Build.0 = Release|Win32
 		{8F1EDD17-BC16-4B0E-9260-DC476AC33536}.DLL_Release|Win32.ActiveCfg = Release|Win32
 		{8F1EDD17-BC16-4B0E-9260-DC476AC33536}.DLL_Release|Win32.Build.0 = Release|Win32
 		{8F1EDD17-BC16-4B0E-9260-DC476AC33536}.Internal|Any CPU.ActiveCfg = Release|Win32
@@ -566,7 +564,6 @@ Global
 		{859757CC-39F4-405B-8E3F-8028DE4B1FD6}.Debug|Win32.Build.0 = Debug|Win32
 		{859757CC-39F4-405B-8E3F-8028DE4B1FD6}.DLL_Release|Any CPU.ActiveCfg = Release|Win32
 		{859757CC-39F4-405B-8E3F-8028DE4B1FD6}.DLL_Release|Mixed Platforms.ActiveCfg = Release|Win32
-		{859757CC-39F4-405B-8E3F-8028DE4B1FD6}.DLL_Release|Mixed Platforms.Build.0 = Release|Win32
 		{859757CC-39F4-405B-8E3F-8028DE4B1FD6}.DLL_Release|Win32.ActiveCfg = Release|Win32
 		{859757CC-39F4-405B-8E3F-8028DE4B1FD6}.DLL_Release|Win32.Build.0 = Release|Win32
 		{859757CC-39F4-405B-8E3F-8028DE4B1FD6}.Internal|Any CPU.ActiveCfg = Release|Win32
@@ -590,7 +587,6 @@ Global
 		{E907E38A-6EF7-4CB7-BEC4-7076444557BD}.Debug|Win32.Build.0 = Debug|Win32
 		{E907E38A-6EF7-4CB7-BEC4-7076444557BD}.DLL_Release|Any CPU.ActiveCfg = Release|Win32
 		{E907E38A-6EF7-4CB7-BEC4-7076444557BD}.DLL_Release|Mixed Platforms.ActiveCfg = Release|Win32
-		{E907E38A-6EF7-4CB7-BEC4-7076444557BD}.DLL_Release|Mixed Platforms.Build.0 = Release|Win32
 		{E907E38A-6EF7-4CB7-BEC4-7076444557BD}.DLL_Release|Win32.ActiveCfg = Release|Win32
 		{E907E38A-6EF7-4CB7-BEC4-7076444557BD}.DLL_Release|Win32.Build.0 = Release|Win32
 		{E907E38A-6EF7-4CB7-BEC4-7076444557BD}.Internal|Any CPU.ActiveCfg = Release|Win32
