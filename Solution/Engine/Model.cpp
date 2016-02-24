@@ -362,11 +362,11 @@ namespace Prism
 
 		if (myIsNULLObject == true)
 		{
-			if (myChildren.Size() == 0)
+			//if (myChildren.Size() == 0)
 			{
 				return false;
 			}
-			return myChildren[0]->SetGPUState(someWorldMatrices, someScales, someHeights);
+			//return myChildren[0]->SetGPUState(someWorldMatrices, someScales, someHeights);
 		}
 		else
 		{
