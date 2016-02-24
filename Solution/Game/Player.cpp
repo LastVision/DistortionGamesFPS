@@ -12,8 +12,8 @@
 #include <Scene.h>
 #include <SpriteProxy.h>
 #include <XMLReader.h>
-
-
+#include <NetMessagePosition.h>
+#include <NetworkManager.h>
 Player::Player(Prism::Scene* aScene)
 {
 	XMLReader reader;
@@ -44,9 +44,9 @@ Player::Player(Prism::Scene* aScene)
 	myJumpOffset = 0;
 
 	myModel->Update(1.f / 30.f);
+	mySendTime = 3;
 
 
-	
 	//myWristOrientation = myOrientation * myModel->GetCurrentAnimation()->GetHiearchyToBone("r_wrist_jnt1");
 
 	my3DGUIManager = new GUI::GUIManager3D(myModel, aScene);
@@ -60,9 +60,9 @@ Player::~Player()
 
 void Player::Update(float aDelta)
 {
+	CU::Vector3<float> prevPos(myOrientation.GetPos());
 
 	myMovement->Update(aDelta);
-
 	CU::Vector3<float> position(myOrientation.GetPos());
 
 	myJumpAcceleration -= aDelta * 9.82f;
@@ -96,6 +96,22 @@ void Player::Update(float aDelta)
 
 	CU::Vector3<float> playerPos(myOrientation.GetPos());
 	DEBUG_PRINT(playerPos);
+
+
+	mySendTime -= aDelta;
+	if (mySendTime < 0.f)
+	{
+		if (myOrientation.GetPos().x != prevPos.x || myOrientation.GetPos().y != prevPos.y || myOrientation.GetPos().z != prevPos.z)
+		{
+			NetMessagePosition pos;
+			pos.Init();
+			pos.mySenderID = NetworkManager::GetInstance()->GetNetworkID();
+			pos.myPosition = myOrientation.GetPos();
+			pos.PackMessage();
+			NetworkManager::GetInstance()->AddMessage(pos.myStream);
+			mySendTime = 3;
+		}
+	}
 
 	myCamera->Update(aDelta);
 }

@@ -37,6 +37,8 @@ public:
 	eNetMessageType ReadType(const char* aBuffer);
 
 	BaseNetwork* GetNetworkHandle();
+	void SetNetworkID(unsigned short anID);
+	unsigned short GetNetworkID();
 
 private:
 	NetworkManager();
@@ -65,7 +67,7 @@ private:
 	volatile bool myIsRunning;
 
 	bool myIsServer;
-	short myNetworkID;
+	unsigned short myNetworkID;
 
 };
 

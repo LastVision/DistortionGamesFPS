@@ -9,12 +9,13 @@
 #include "NetworkManager.h"
 #include "NetworkMessageTypes.h"
 #include "NetworkMessageTypes.h"
-
+#include "NetMessagePosition.h"
 #include "DebugDrawer.h"
 
 #include "EntityFactory.h"
 #include "Entity.h"
 #include "GameEnum.h"
+#include <NetMessageConnectMessage.h>
 #include <PhysicsInterface.h>
 
 Level::Level()
@@ -25,7 +26,7 @@ Level::Level()
 	myScene = new Prism::Scene();
 	myPlayer = new Player(myScene);
 	myScene->SetCamera(*myPlayer->GetCamera());
-
+	myTempPosition = { 835.f, 0.f, -1000.f };
 }
 
 Level::~Level()
@@ -58,30 +59,32 @@ void Level::Update(const float aDeltaTime)
 
 		switch (type)
 		{
+		case eNetMessageType::ON_CONNECT:
+		{
+			NetMessageConnectMessage connect;
+			connect.UnPackMessage(buf.myData, buf.myLength);
+			NetworkManager::GetInstance()->SetNetworkID(connect.myServerID);
+			break;
+		}
+		
 		case eNetMessageType::ON_JOIN:
 			connected = true;
 			break;
+		case eNetMessageType::POSITION:
+		{
+			NetMessagePosition pos;
+			pos.UnPackMessage(buf.myData, buf.myLength);
+			if (pos.mySenderID != NetworkManager::GetInstance()->GetNetworkID())
+			{
+				myTempPosition = pos.myPosition;
 		}
+			break;
+	}
+	}
 	}
 
-	if (connected == true)
-	{
-		DEBUG_PRINT("Player 2 has joined!");
-	}
-	else
-	{
-		DEBUG_PRINT("Nobody is here!");
-	}
+	Prism::DebugDrawer::GetInstance()->RenderLinesToScreen(*myPlayer->GetCamera());
 
-	/*for (int i = 0; i < messages.Size(); ++i)
-	{
-
-	if (messages[i].myID == '\x2')
-	{
-	connected = true;
-	messages.RemoveAll();
-	}
-	}*/
 	Prism::PhysicsInterface::GetInstance()->Update();
 }
 
@@ -89,4 +92,15 @@ void Level::Render()
 {
 	myScene->Render();
 	myPlayer->Render();
+
+
+	if (connected == true)
+	{
+		DEBUG_PRINT("Player 2 has joined!");
+		Prism::DebugDrawer::GetInstance()->RenderBox(myTempPosition, eColorDebug::BLUE, 300.f);
+	}
+	else
+	{
+		DEBUG_PRINT("Nobody is here!");
+	}
 }

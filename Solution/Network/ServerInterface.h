@@ -15,6 +15,7 @@ public:
 
 	void CreateConnection(const std::string& aName);
 
+	void DontSendToID(const std::vector<char>& anArray, short anIDToNotSendToffsDanne);
 
 private:
 
