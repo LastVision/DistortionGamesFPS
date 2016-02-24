@@ -1,2 +1,27 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" />
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClInclude Include="PhysicsInterface.h" />
+    <ClInclude Include="stdafx.h">
+      <Filter>Precompile</Filter>
+    </ClInclude>
+    <ClInclude Include="PhysicsManager.h" />
+    <ClInclude Include="PhysEntity.h" />
+    <ClInclude Include="PhysEntityData.h" />
+    <ClInclude Include="wavefront.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="PhysicsInterface.cpp" />
+    <ClCompile Include="stdafx.cpp">
+      <Filter>Precompile</Filter>
+    </ClCompile>
+    <ClCompile Include="PhysicsManager.cpp" />
+    <ClCompile Include="PhysEntity.cpp" />
+    <ClCompile Include="wavefront.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Precompile">
+      <UniqueIdentifier>{53bff996-db4f-4fb5-9227-742b93bf1c6d}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

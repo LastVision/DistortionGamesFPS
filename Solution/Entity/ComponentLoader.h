@@ -2,6 +2,7 @@
 
 struct AnimationComponentData;
 struct GraphicsComponentData;
+struct ProjectileComponentData;
 
 class XMLReader;
 
@@ -15,4 +16,5 @@ class ComponentLoader
 public:
 	void LoadAnimationComponent(XMLReader& aDocument, tinyxml2::XMLElement* aSourceElement, AnimationComponentData& aOutputData);
 	void LoadGraphicsComponent(XMLReader& aDocument, tinyxml2::XMLElement* aSourceElement, GraphicsComponentData& aOutputData);
+	void LoadProjectileComponent(XMLReader& aDocument, tinyxml2::XMLElement* aSourceElement, ProjectileComponentData& aOutputData);
 };

@@ -11,24 +11,15 @@ enum eOwnerType
 enum eEntityType
 {
 	EMPTY = -1,
-	UNIT = 1,
-	PROP = 2,
-	BASE_BUILING = 4,
-	RESOURCE_POINT = 8,
-	VICTORY_POINT = 16,
-	TOTEM = 32,
-	ARTIFACT = 64,
-	RALLY_POINT = 128,
+	PROP = 1,
+	PROJECTILE = 2,
 	_COUNT,
 };
 
-enum eUnitType
+enum class ePhysics
 {
-	NOT_A_UNIT = -1,
-	GRUNT,
-	RANGER,
-	TANK,
-	NON_ATTACK_TUTORIAL,
+	STATIC,
+	DYNAMIC,
 };
 
 enum class ePropType
@@ -91,30 +82,15 @@ enum class eEntityState : int
 	_COUNT,
 };
 
-enum class eEntityCommand
-{
-	STOP,
-	MOVE,
-	ATTACK_TARGET,
-	HOLD_POSITION,
-	ATTACK_MOVE,
-};
-
 enum class eComponentType
 {
 	NOT_USED = -1,
 	ANIMATION,
 	GRAPHICS,
-	SHOOTING,
-	PLAYER,
+	PROJECTILE,
 	_COUNT,
 };
 
-enum class eTriggerType
-{
-	RESOURCE,
-	VICTORY,
-};
 #undef ERROR
 enum class eHistoryType
 {

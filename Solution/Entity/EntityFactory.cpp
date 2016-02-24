@@ -41,28 +41,28 @@ void EntityFactory::LoadEntities(const char* aEntityListXML)
 	entityListDocument.CloseDocument();
 }
 
-Entity* EntityFactory::CreateEntity(eEntityType aType, Prism::Scene& aScene, CU::Vector3f aPostion
+Entity* EntityFactory::CreateEntity(eEntityType aType, Prism::Scene& aScene, const CU::Vector3f& aPosition
 	, const CU::Vector3f& aRotation, const CU::Vector3f& aScale)
 {
 	if (myInstance->myLoadedEntityData.find(aType) != myInstance->myLoadedEntityData.end())
 	{
-		Entity* newEntity = new Entity(myInstance->myLoadedEntityData.find(aType)->second, aScene, aPostion, aRotation
-			, aScale, eUnitType::NOT_A_UNIT);
+		Entity* newEntity = new Entity(myInstance->myLoadedEntityData.find(aType)->second, aScene, aPosition, aRotation
+			, aScale);
 		return newEntity;
 	}
 	DL_ASSERT("Entity not found.");
 	return nullptr;
 }
 
-Entity* EntityFactory::CreateEntity(eEntityType aType, std::string aSubType, Prism::Scene& aScene, CU::Vector3f aPostion,
+Entity* EntityFactory::CreateEntity(eEntityType aType, std::string aSubType, Prism::Scene& aScene, const CU::Vector3f& aPosition,
 	const CU::Vector3f& aRotation, const CU::Vector3f& aScale)
 {
-	if (aType == eEntityType::PROP || aType == eEntityType::UNIT || aType == eEntityType::ARTIFACT)
+	if (aType == eEntityType::PROP)
 	{
 		if (myInstance->myLoadedSubEntityData.find(aSubType) != myInstance->myLoadedSubEntityData.end())
 		{
-			Entity* newEntity = new Entity(myInstance->myLoadedSubEntityData.find(aSubType)->second, aScene, aPostion, aRotation
-				, aScale, myInstance->myLoadedSubEntityData.find(aSubType)->second.myUnitType);
+			Entity* newEntity = new Entity(myInstance->myLoadedSubEntityData.find(aSubType)->second, aScene, aPosition, aRotation
+				, aScale);
 			newEntity->mySubType = aSubType;
 			return newEntity;
 		}
@@ -85,17 +85,36 @@ void EntityFactory::LoadEntity(const char* aEntityPath)
 	std::string entitySubType;
 	entityDocument.ForceReadAttribute(entityElement, "type", entityType);
 	newData.myType = EntityEnumConverter::ConvertStringToEntityType(CU::ToLower(entityType));
-	if (newData.myType == eEntityType::PROP || newData.myType == eEntityType::UNIT || newData.myType == eEntityType::ARTIFACT)
+	if (newData.myType == eEntityType::PROP)
 	{
 		entityDocument.ForceReadAttribute(entityElement, "subType", entitySubType);
 		newData.mySubType = CU::ToLower(entitySubType);
-		newData.myUnitType = eUnitType::NOT_A_UNIT;
-		if (newData.myType == eEntityType::UNIT)
-		{
-			newData.myUnitType = EntityEnumConverter::ConvertStringToUnitType(newData.mySubType);
-		}
 	}
 
+	tinyxml2::XMLElement* entityPhysics = entityDocument.ForceFindFirstChild(rootElement, "Physics");
+	std::string physicsType;
+	entityDocument.ForceReadAttribute(entityDocument.ForceFindFirstChild(entityPhysics, "type"), "value", physicsType);
+
+	if (CU::ToLower(physicsType) == "static")
+	{
+		newData.myPhysData.myPhysics = ePhysics::STATIC;
+	}
+	else if (CU::ToLower(physicsType) == "dynamic")
+	{
+		newData.myPhysData.myPhysics = ePhysics::DYNAMIC;
+	}
+	else
+	{
+		DL_ASSERT(CU::Concatenate("Invalid phyics-type on %s %s", entityType.c_str(), entitySubType.c_str()));
+	}
+
+	entityDocument.ForceReadAttribute(entityDocument.ForceFindFirstChild(entityPhysics, "min"), "x", newData.myPhysData.myPhysicsMin.x);
+	entityDocument.ForceReadAttribute(entityDocument.ForceFindFirstChild(entityPhysics, "min"), "y", newData.myPhysData.myPhysicsMin.y);
+	entityDocument.ForceReadAttribute(entityDocument.ForceFindFirstChild(entityPhysics, "min"), "z", newData.myPhysData.myPhysicsMin.z);
+
+	entityDocument.ForceReadAttribute(entityDocument.ForceFindFirstChild(entityPhysics, "max"), "x", newData.myPhysData.myPhysicsMax.x);
+	entityDocument.ForceReadAttribute(entityDocument.ForceFindFirstChild(entityPhysics, "max"), "y", newData.myPhysData.myPhysicsMax.y);
+	entityDocument.ForceReadAttribute(entityDocument.ForceFindFirstChild(entityPhysics, "max"), "z", newData.myPhysData.myPhysicsMax.z);
 
 	for (tinyxml2::XMLElement* e = entityDocument.FindFirstChild(entityElement); e != nullptr;
 		e = entityDocument.FindNextElement(e))
@@ -115,14 +134,18 @@ void EntityFactory::LoadEntity(const char* aEntityPath)
 
 			myComponentLoader->LoadGraphicsComponent(entityDocument, e, newData.myGraphicsData);
 		}
+		else if (elementName == CU::ToLower("ProjectileComponent"))
+		{
+			myComponentLoader->LoadProjectileComponent(entityDocument, e, newData.myProjecileData);
+		}
 		else
 		{
 			std::string errorMessage = "The component " + elementName +
-				" is not Supported. Please check if you wrote right else tell a programmer.";
+				" is not Supported. Please check if you spelled correctly.";
 			DL_ASSERT(errorMessage.c_str());
 		}
 	}
-	if (newData.myType == eEntityType::PROP || newData.myType == eEntityType::UNIT || newData.myType == eEntityType::ARTIFACT)
+	if (newData.myType == eEntityType::PROP)
 	{
 		myLoadedSubEntityData[newData.mySubType] = newData;
 	}

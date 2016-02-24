@@ -25,6 +25,8 @@ public:
 	Prism::Scene* GetScene();
 
 private:
+	void Spawn();
+
 	Prism::Scene* myScene;
 
 	Player* myPlayer;
