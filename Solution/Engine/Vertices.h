@@ -46,13 +46,10 @@ namespace Prism
 		CU::Vector3<float> myTangent;
 	};
 
-	struct IceVertex
+	struct GUIVertex
 	{
 		CU::Vector4<float> myPosition;
-		CU::Vector4<float> myNormal;
 		CU::Vector2<float> myUV;
-		CU::Vector4<float> myBiNormal;
-		CU::Vector4<float> myTangent;
 	};
 
 	struct VertexPosNormColor
