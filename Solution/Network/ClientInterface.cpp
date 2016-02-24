@@ -80,3 +80,8 @@ void ClientInterface::ConnectToServer(const char* anIP)
 
 
 }
+
+const CU::GrowingArray<OtherClients>& ClientInterface::GetClientList()
+{
+	return myClients;
+}
