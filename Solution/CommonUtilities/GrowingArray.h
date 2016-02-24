@@ -53,6 +53,13 @@ namespace CU
 		__forceinline SizeType GetCapacity() const;
 
 		inline ObjectType* GetArrayAsPointer();
+
+		typedef ObjectType* iterator;
+		typedef const ObjectType* const_iterator;
+		iterator begin() { return &myData[0]; }
+		const_iterator begin() const { return &myData[0]; }
+		iterator end() { return &myData[myCurrentSize]; }
+		const_iterator end() const { return &myData[myCurrentSize]; }
 	private:
 		inline void Resize(int aNewSize);
 		ObjectType* myData;
