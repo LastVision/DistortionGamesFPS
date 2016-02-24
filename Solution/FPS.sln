@@ -509,7 +509,6 @@ Global
 		{70428136-2CBA-440D-BC14-1E5EFC7C52FE}.Release|Win32.Build.0 = Release|Win32
 		{FE6819DB-1A2C-4356-9427-38D240981775}.DataExporter|Any CPU.ActiveCfg = Debug|Win32
 		{FE6819DB-1A2C-4356-9427-38D240981775}.DataExporter|Mixed Platforms.ActiveCfg = Debug|Win32
-		{FE6819DB-1A2C-4356-9427-38D240981775}.DataExporter|Mixed Platforms.Build.0 = Debug|Win32
 		{FE6819DB-1A2C-4356-9427-38D240981775}.DataExporter|Win32.ActiveCfg = Debug|Win32
 		{FE6819DB-1A2C-4356-9427-38D240981775}.DataExporter|Win32.Build.0 = Debug|Win32
 		{FE6819DB-1A2C-4356-9427-38D240981775}.Debug|Any CPU.ActiveCfg = Debug|Win32
@@ -534,7 +533,6 @@ Global
 		{FE6819DB-1A2C-4356-9427-38D240981775}.Release|Win32.Build.0 = Release|Win32
 		{8F1EDD17-BC16-4B0E-9260-DC476AC33536}.DataExporter|Any CPU.ActiveCfg = Debug|Win32
 		{8F1EDD17-BC16-4B0E-9260-DC476AC33536}.DataExporter|Mixed Platforms.ActiveCfg = Debug|Win32
-		{8F1EDD17-BC16-4B0E-9260-DC476AC33536}.DataExporter|Mixed Platforms.Build.0 = Debug|Win32
 		{8F1EDD17-BC16-4B0E-9260-DC476AC33536}.DataExporter|Win32.ActiveCfg = Debug|Win32
 		{8F1EDD17-BC16-4B0E-9260-DC476AC33536}.DataExporter|Win32.Build.0 = Debug|Win32
 		{8F1EDD17-BC16-4B0E-9260-DC476AC33536}.Debug|Any CPU.ActiveCfg = Debug|Win32
@@ -559,7 +557,6 @@ Global
 		{8F1EDD17-BC16-4B0E-9260-DC476AC33536}.Release|Win32.Build.0 = Release|Win32
 		{859757CC-39F4-405B-8E3F-8028DE4B1FD6}.DataExporter|Any CPU.ActiveCfg = Debug|Win32
 		{859757CC-39F4-405B-8E3F-8028DE4B1FD6}.DataExporter|Mixed Platforms.ActiveCfg = Debug|Win32
-		{859757CC-39F4-405B-8E3F-8028DE4B1FD6}.DataExporter|Mixed Platforms.Build.0 = Debug|Win32
 		{859757CC-39F4-405B-8E3F-8028DE4B1FD6}.DataExporter|Win32.ActiveCfg = Debug|Win32
 		{859757CC-39F4-405B-8E3F-8028DE4B1FD6}.DataExporter|Win32.Build.0 = Debug|Win32
 		{859757CC-39F4-405B-8E3F-8028DE4B1FD6}.Debug|Any CPU.ActiveCfg = Debug|Win32
@@ -584,7 +581,6 @@ Global
 		{859757CC-39F4-405B-8E3F-8028DE4B1FD6}.Release|Win32.Build.0 = Release|Win32
 		{E907E38A-6EF7-4CB7-BEC4-7076444557BD}.DataExporter|Any CPU.ActiveCfg = Debug|Win32
 		{E907E38A-6EF7-4CB7-BEC4-7076444557BD}.DataExporter|Mixed Platforms.ActiveCfg = Debug|Win32
-		{E907E38A-6EF7-4CB7-BEC4-7076444557BD}.DataExporter|Mixed Platforms.Build.0 = Debug|Win32
 		{E907E38A-6EF7-4CB7-BEC4-7076444557BD}.DataExporter|Win32.ActiveCfg = Debug|Win32
 		{E907E38A-6EF7-4CB7-BEC4-7076444557BD}.DataExporter|Win32.Build.0 = Debug|Win32
 		{E907E38A-6EF7-4CB7-BEC4-7076444557BD}.Debug|Any CPU.ActiveCfg = Debug|Win32
