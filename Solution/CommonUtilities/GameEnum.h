@@ -89,6 +89,7 @@ enum class eComponentType
 	ANIMATION,
 	GRAPHICS,
 	PROJECTILE,
+	HEALTH,
 	_COUNT,
 };
 

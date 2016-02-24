@@ -3,6 +3,7 @@
 #include <CommonHelper.h>
 #include "ComponentLoader.h"
 #include "EntityEnumConverter.h"
+#include "HealthComponentData.h"
 #include "XMLReader.h"
 
 void ComponentLoader::LoadAnimationComponent(XMLReader& aDocument, tinyxml2::XMLElement* aSourceElement, AnimationComponentData& aOutputData)
@@ -56,4 +57,18 @@ void ComponentLoader::LoadGraphicsComponent(XMLReader& aDocument, tinyxml2::XMLE
 void ComponentLoader::LoadProjectileComponent(XMLReader& aDocument, tinyxml2::XMLElement* aSourceElement, ProjectileComponentData& aOutputData)
 {
 	aOutputData.myExistsInEntity = true;
+}
+
+void ComponentLoader::LoadHealthComponent(XMLReader& aDocument, tinyxml2::XMLElement* aSourceElement, HealthComponentData& aOutputData)
+{
+	aOutputData.myExistsInEntity = true;
+
+	for (tinyxml2::XMLElement* e = aDocument.FindFirstChild(aSourceElement); e != nullptr; e = aDocument.FindNextElement(e))
+	{
+		std::string elementName = CU::ToLower(e->Name());
+		if (elementName == CU::ToLower("MaxHealth"))
+		{
+			aDocument.ForceReadAttribute(e, "value", aOutputData.myMaxHealth);
+		}
+	}
 }

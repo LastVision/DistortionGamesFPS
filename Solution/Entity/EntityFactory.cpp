@@ -139,6 +139,10 @@ void EntityFactory::LoadEntity(const char* aEntityPath)
 		{
 			myComponentLoader->LoadProjectileComponent(entityDocument, e, newData.myProjecileData);
 		}
+		else if (elementName == CU::ToLower("HealthComponent"))
+		{
+			myComponentLoader->LoadHealthComponent(entityDocument, e, newData.myHealthData);
+		}
 		else
 		{
 			std::string errorMessage = "The component " + elementName +
