@@ -46,7 +46,7 @@ void Level::AddEntity(Entity* aEntity)
 
 void Level::Update(const float aDeltaTime)
 {
-	NetworkManager::GetInstance()->Swap(true); 
+	NetworkManager::GetInstance()->Swap(true);
 	myPlayer->Update(aDeltaTime);
 
 	for (int i = 0; i < myEntities.Size(); i++)
@@ -79,7 +79,7 @@ void Level::Update(const float aDeltaTime)
 			}
 			break;
 		}
-		
+
 		case eNetMessageType::ON_JOIN:
 		{
 			NetMessageOnJoin onJoin;
@@ -95,20 +95,21 @@ void Level::Update(const float aDeltaTime)
 			pos.UnPackMessage(buf.myData, buf.myLength);
 			if (pos.mySenderID != NetworkManager::GetInstance()->GetNetworkID())
 			{
-				for (OtherClients c : myClients)
+				for (OtherClients& c : myClients)
 				{
 					if (pos.mySenderID == c.myID)
 					{
 						c.myPosition = pos.myPosition;
-		}
+					}
 				}
 
 			}
 			break;
-	}
-	}
+		}
+		}
 	}
 
+	Prism::DebugDrawer::GetInstance()->RenderLinesToScreen(*myPlayer->GetCamera());
 
 	Prism::PhysicsInterface::GetInstance()->Update();
 }
@@ -118,11 +119,10 @@ void Level::Render()
 	myScene->Render();
 	myPlayer->Render();
 
-	for (OtherClients c : myClients)
+	for (int i = 0; i < myClients.Size(); i++)
 	{
-		Prism::DebugDrawer::GetInstance()->RenderBox(c.myPosition, eColorDebug::BLUE, 300.f);
+		Prism::DebugDrawer::GetInstance()->RenderBox(myClients[i].myPosition, eColorDebug::BLUE, 1.f);
 	}
 
-	Prism::DebugDrawer::GetInstance()->RenderLinesToScreen(*myPlayer->GetCamera());
 
 }
