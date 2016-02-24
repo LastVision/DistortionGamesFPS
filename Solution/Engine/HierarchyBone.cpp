@@ -11,6 +11,7 @@ namespace Prism
 		, myResultMatrix(nullptr)
 		, myBoneMatrix(nullptr)
 		, myBoneID(0)
+		, myParent(nullptr)
 	{
 		//We cannot init myChildren here, because stackoverflow
 		//will get inited by BuildBoneHierarchy in FBXFactory
@@ -58,5 +59,25 @@ namespace Prism
 		{
 			myChildren[i].GetBoneMatrix(aBoneName, aOutMatrix);
 		}
+	}
+
+	bool HierarchyBone::GetBoneHiearchyByName(const std::string& aName, GUIBone& aOutBone)
+	{
+		if (myBoneName.compare(aName) == 0)
+		{
+			//aOutMatrixes.Add(BoneName(myBoneMatrix, myBoneName, myBoneID));
+			aOutBone.myJoint = myBoneMatrix;
+			aOutBone.myJointID = myBoneID;
+			return true;
+		}
+		for (HierarchyBone &child : myChildren)
+		{
+			if (child.GetBoneHiearchyByName(aName, aOutBone))
+			{
+				//aOutMatrixes.Add(BoneName(myBoneMatrix, myBoneName, myBoneID));
+				return true;
+			}
+		}
+		return false;
 	}
 }

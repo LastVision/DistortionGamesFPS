@@ -304,6 +304,7 @@ namespace Prism
 			{
 				HierarchyBone child;
 				BuildBoneHierarchy(aAnimationData->myBones[aBone.myChilds[i]], aAnimationData, child);
+				child.myParent = &aOutBone;
 				aOutBone.myChildren.Add(child);
 			}
 		}
