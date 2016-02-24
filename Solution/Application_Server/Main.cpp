@@ -8,9 +8,7 @@ void main()
 	NetworkManager::GetInstance()->StartNetwork();
 	while (true)
 	{
-
-
-
+		const CU::GrowingArray<Buffer>& messages = NetworkManager::GetInstance()->GetReceieveBuffer();
 
 
 	}

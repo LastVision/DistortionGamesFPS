@@ -1,5 +1,6 @@
 #pragma once
 #include <cassert>
+#include <DL_Assert.h>
 #define SA_TEMPLATE template<typename Type, int Size>
 #define SA_TYPE StaticArray<Type, Size>
 

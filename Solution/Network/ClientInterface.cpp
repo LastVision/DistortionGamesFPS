@@ -55,8 +55,8 @@ void ClientInterface::ConnectToServer(const char* anIP)
 {
 	myIP = anIP;
 
-	std::string serverIP = "127.0.0.1";
-	myServerAddress.sin_addr.S_un.S_addr = inet_addr(serverIP.c_str());
+	
+	myServerAddress.sin_addr.S_un.S_addr = inet_addr(myIP);
 
 	char username[256 + 1];
 	DWORD username_len = 256 + 1;
@@ -71,7 +71,7 @@ void ClientInterface::ConnectToServer(const char* anIP)
 	DWORD nonBlocking = 1;
 	if (ioctlsocket(mySocket, FIONBIO, &nonBlocking) != 0)
 	{
-		//Error
+		DL_ASSERT("Failed to set non-blocking socket!");
 	}
 
 
