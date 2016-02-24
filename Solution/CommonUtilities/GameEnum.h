@@ -11,8 +11,9 @@ enum eOwnerType
 enum eEntityType
 {
 	EMPTY = -1,
-	PROP = 1,
-	PROJECTILE = 2,
+	UNIT = 1,
+	PROP = 2,
+	PROJECTILE = 4,
 	_COUNT,
 };
 

@@ -56,6 +56,9 @@
     <ClCompile Include="HealthComponent.cpp">
       <Filter>Component</Filter>
     </ClCompile>
+    <ClCompile Include="ProjectileComponent.cpp">
+      <Filter>Component</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
@@ -101,6 +104,12 @@
     </ClInclude>
     <ClInclude Include="HealthComponent.h">
       <Filter>Component</Filter>
+    </ClInclude>
+    <ClInclude Include="ProjectileComponent.h">
+      <Filter>Component</Filter>
+    </ClInclude>
+    <ClInclude Include="ProjectileComponentData.h">
+      <Filter>EntityFactory\EntityData\ComponentData</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
