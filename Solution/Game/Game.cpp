@@ -28,7 +28,6 @@
 #include <ScriptSystem.h>
 #include "InGameState.h"
 
-#include "NetworkManager.h"
 
 
 Game::Game()
@@ -41,8 +40,8 @@ Game::Game()
 	, myShowSystemInfo(true)
 #endif
 {
-	NetworkManager::Create(false);
-	NetworkManager::GetInstance()->StartNetwork();
+	//NetworkManager::Create(false);
+	//NetworkManager::GetInstance()->StartNetwork();
 	PostMaster::Create();
 	Prism::Audio::AudioInterface::CreateInstance();
 
@@ -70,7 +69,7 @@ Game::~Game()
 	PostMaster::Destroy();
 	myStateStack.Clear();
 	Prism::DebugDrawer::Destroy();
-	NetworkManager::Destroy();
+//	NetworkManager::Destroy();
 }
 
 bool Game::Init(HWND& aHwnd)

@@ -1,210 +1,14 @@
 #include "stdafx.h"
 
-#include "ClientInterface.h"
+#include "ClientNetwork.h"
 #include "ClientNetworkManager.h"
-#include "NetworkMessageTypes.h"
-#include "NetMessageConnectMessage.h"
-#include "NetMessageOnJoin.h"
-#include "ServerInterface.h"
-#include "Utility.h"
 #include <DL_Debug.h>
 #include <thread>
-#include <sstream>
 
 #define BUFFERSIZE 512
 
-#ifdef _DEBUG
-#pragma region ThreadNaming
-const DWORD MS_VC_EXCEPTION = 0x406D1388;
-#pragma pack(push,8)
-typedef struct tagTHREADNAME_INFO
-{
-	DWORD dwType; // Must be 0x1000.
-	LPCSTR szName; // Pointer to name (in user addr space).
-	DWORD dwThreadID; // Thread ID (-1=caller thread).
-	DWORD dwFlags; // Reserved for future use, must be zero.
-} THREADNAME_INFO;
-#pragma pack(pop)
-void SetThreadName(DWORD dwThreadID, const char* threadName)
-{
-	THREADNAME_INFO info;
-	info.dwType = 0x1000;
-	info.szName = threadName;
-	info.dwThreadID = dwThreadID;
-	info.dwFlags = 0;
-#pragma warning(push)
-#pragma warning(disable: 6320 6322)
-	__try {
-		RaiseException(MS_VC_EXCEPTION, 0, sizeof(info) / sizeof(ULONG_PTR), (ULONG_PTR*)&info);
-	}
-	__except (EXCEPTION_EXECUTE_HANDLER) {
-	}
-#pragma warning(pop)
-}
 
-void _SetThreadName(std::thread::id& anID, const char* aThreadName)
-{
-	std::stringstream ss;
-	ss << anID;
-	DWORD id;
-	ss >> id;
-	SetThreadName(id, aThreadName);
-}
-#pragma endregion
-#endif
 ClientNetworkManager* ClientNetworkManager::myInstance = nullptr;
-
-void ClientNetworkManager::Activate(bool aIsServer)
-{
-	myIsRunning = false;
-	myReceieveIsDone = false;
-
-	myCurrentBuffer = 0;
-	myCurrentSendBuffer = 0;
-
-	myReceieveBuffer[0].Init(16384);
-	myReceieveBuffer[1].Init(16384);
-	mySendBuffer[0].Init(16384);
-	mySendBuffer[1].Init(16384);
-
-	myIsServer = aIsServer;
-
-	myNetwork = new ClientInterface();
-	myNetworkID = 0;
-	if (myIsServer == true)
-	{
-		delete myNetwork;
-		myNetwork = nullptr;
-		myNetwork = new ServerInterface();
-		myNetworkID = 0;
-	}
-
-}
-
-void ClientNetworkManager::Create(bool aIsServer)
-{
-	if (myInstance == nullptr)
-	{
-		myInstance = new ClientNetworkManager();
-		myInstance->Activate(aIsServer);
-	}
-}
-
-void ClientNetworkManager::Destroy()
-{
-	delete myInstance;
-	myInstance = nullptr;
-}
-
-void ClientNetworkManager::StartNetwork()
-{
-	myNetwork->StartNetwork();
-	myIsRunning = true;
-	myReceieveThread = new std::thread([&]{ReceieveThread(); });
-	mySendThread = new std::thread([&]{SendThread(); });
-
-#ifdef _DEBUG
-	if (myIsServer == true)
-	{
-		_SetThreadName(myReceieveThread->get_id(), "Receieve Thread - Server");
-		_SetThreadName(mySendThread->get_id(), "Send Thread - Server");
-	}
-	else
-	{
-		_SetThreadName(myReceieveThread->get_id(), "Receieve Thread - Client");
-		_SetThreadName(mySendThread->get_id(), "Send Thread - Client");
-	}
-#endif
-}
-
-void ClientNetworkManager::ConnectToServer(const char* aServerIP)
-{
-	DL_ASSERT_EXP(myIsServer == false, "Tried to Connect to Server from Server... this doesn't seem right.");
-	myNetwork->ConnectToServer(aServerIP);
-}
-
-CU::GrowingArray<Buffer>& ClientNetworkManager::GetReceieveBuffer()
-{
-	if (myIsServer == false)
-	{
-		if (myReceieveBuffer[myCurrentBuffer].Size() > 0)
-		{
-			int apa = 0;
-		}
-	}
-	return myReceieveBuffer[myCurrentBuffer];
-}
-
-ClientNetworkManager* ClientNetworkManager::GetInstance()
-{
-	if (myInstance != nullptr)
-	{
-		return myInstance;
-	}
-	DL_ASSERT("Instance were null, did you forget to create the network manager?");
-	return nullptr;
-}
-
-void ClientNetworkManager::AddMessage(std::vector<char> aBuffer)
-{
-	if (myNetwork->GetIsOnline() == true)
-	{
-		if (myIsServer == true)
-		{
-			std::cout << "Added message to Send Buffer!\n";
-		}
-		mySendBuffer[myCurrentBuffer ^ 1].Add(aBuffer);
-	}
-}
-
-void ClientNetworkManager::Swap(bool aShouldSwap)
-{
-	if (aShouldSwap == true)
-	{
-		SwapReceieveBuffer();
-	}
-}
-
-ClientNetworkManager::ClientNetworkManager()
-	: myIsServer(false)
-{
-}
-
-ClientNetworkManager::~ClientNetworkManager()
-{
-	myIsRunning = false;
-	if (myReceieveThread != nullptr)
-	{
-		myReceieveThread->join();
-		delete myReceieveThread;
-		myReceieveThread = nullptr;
-	}
-
-	if (mySendThread != nullptr)
-	{
-		mySendThread->join();
-		delete mySendThread;
-		mySendThread = nullptr;
-	}
-
-	delete myNetwork;
-	myNetwork = nullptr;
-}
-
-void ClientNetworkManager::SendThread()
-{
-	while (myIsRunning == true)
-	{
-		std::this_thread::sleep_for(std::chrono::nanoseconds(1));
-		for (std::vector<char> arr : mySendBuffer[myCurrentSendBuffer])
-		{
-			myNetwork->Send(arr);
-		}
-
-		mySendBuffer[myCurrentSendBuffer].RemoveAll();
-		myCurrentSendBuffer ^= 1;
-	}
-}
 
 void ClientNetworkManager::ReceieveThread()
 {
@@ -222,49 +26,79 @@ void ClientNetworkManager::ReceieveThread()
 			int error = WSAGetLastError();
 			continue;
 		}
-
-
-
 		for (Buffer message : someBuffers)
 		{
-
 			myReceieveBuffer[myCurrentBuffer ^ 1].Add(message);
-
 		}
-
-		if (myIsServer == true)
-		{
-			Utility::PrintEndl("Server Receieved a message", Utility::eCOLOR::LIGHT_GREEN);
-		}
-
-
-
 	}
 }
 
-eNetMessageType ClientNetworkManager::ReadType(const char* aBuffer)
+void ClientNetworkManager::SendThread()
 {
-	return static_cast<eNetMessageType>(aBuffer[0]);
+	while (myIsRunning == true)
+	{
+		std::this_thread::sleep_for(std::chrono::nanoseconds(1));
+		for (std::vector<char> arr : mySendBuffer[myCurrentSendBuffer])
+		{
+			myNetwork->Send(arr);
+		}
+
+		mySendBuffer[myCurrentSendBuffer].RemoveAll();
+		myCurrentSendBuffer ^= 1;
+	}
 }
 
-
-BaseNetwork* ClientNetworkManager::GetNetworkHandle()
+void ClientNetworkManager::Initiate()
 {
-	return myNetwork;
+	myIsServer = false;
+	myNetwork = new ClientNetwork();
+	myNetworkID = 0;
+	__super::Initiate();
 }
 
-void ClientNetworkManager::SetNetworkID(unsigned short anID)
+void ClientNetworkManager::Create()
 {
-	myNetworkID = anID;
+	if (myInstance == nullptr)
+	{
+		myInstance = new ClientNetworkManager();
+		myInstance->Initiate();
+	}
 }
 
-unsigned short ClientNetworkManager::GetNetworkID()
+void ClientNetworkManager::Destroy()
 {
-	return myNetworkID;
+	delete myInstance;
+	myInstance = nullptr;
 }
 
-void ClientNetworkManager::SwapReceieveBuffer()
+void ClientNetworkManager::StartNetwork()
 {
-	myReceieveBuffer[myCurrentBuffer].RemoveAll();
-	myCurrentBuffer ^= 1;
+	myNetwork->StartNetwork();
+	__super::StartNetwork();
+}
+
+void ClientNetworkManager::ConnectToServer(const char* aServerIP)
+{
+	DL_ASSERT_EXP(myIsServer == false, "Tried to Connect to Server from Server... this doesn't seem right.");
+	myIsOnline = myNetwork->ConnectToServer(aServerIP);
+}
+
+ClientNetworkManager* ClientNetworkManager::GetInstance()
+{
+	if (myInstance != nullptr)
+	{
+		return myInstance;
+	}
+	DL_ASSERT("Instance were null, did you forget to create the ClientNetworkManager?");
+	return nullptr;
+}
+
+ClientNetworkManager::ClientNetworkManager()
+{
+}
+
+ClientNetworkManager::~ClientNetworkManager()
+{
+	delete myNetwork;
+	myNetwork = nullptr;
 }
