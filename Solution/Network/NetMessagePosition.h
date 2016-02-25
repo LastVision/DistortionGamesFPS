@@ -5,9 +5,9 @@ class NetMessagePosition : public NetMessage
 {
 public:
 	NetMessagePosition();
+	NetMessagePosition(const CU::Vector3<float>& aPos);
 	~NetMessagePosition();
 
-	void Init();
 
 	CU::Vector3<float> myPosition;
 protected:

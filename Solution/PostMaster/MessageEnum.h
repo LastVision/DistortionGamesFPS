@@ -1,5 +1,5 @@
 #pragma once
-
+//TODO: CLeanup here plzx
 enum class eMessageType
 {
 	GAME_STATE,
@@ -32,5 +32,8 @@ enum class eMessageType
 	IN_WORLD_TEXT,
 	NOTIFICATION,
 	KILLED_PROMOTION,
+
+	NETWORK_POSITION,
+	NETWORK_ON_CONNECT,
 	COUNT,
 };

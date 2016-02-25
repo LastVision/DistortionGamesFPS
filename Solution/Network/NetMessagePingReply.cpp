@@ -5,16 +5,12 @@
 
 NetMessagePingReply::NetMessagePingReply()
 {
+	myID = int(eNetMessageType::PING_REPLY);
 }
 
 
 NetMessagePingReply::~NetMessagePingReply()
 {
-}
-
-void NetMessagePingReply::Init()
-{
-	myID = int(eNetMessageType::PING_REPLY);
 }
 
 void NetMessagePingReply::DoSerialize(StreamType& aStream)

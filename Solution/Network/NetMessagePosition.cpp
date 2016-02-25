@@ -2,18 +2,19 @@
 #include "NetMessagePosition.h"
 #include "NetworkMessageTypes.h"
 
-NetMessagePosition::NetMessagePosition()
+NetMessagePosition::NetMessagePosition(const CU::Vector3<float>& aPos)
 {
+	myPosition = aPos;
+	myID = int(eNetMessageType::POSITION);
 }
 
+NetMessagePosition::NetMessagePosition()
+{
+	myID = int(eNetMessageType::POSITION);
+}
 
 NetMessagePosition::~NetMessagePosition()
 {
-}
-
-void NetMessagePosition::Init()
-{
-	myID = int(eNetMessageType::POSITION);
 }
 
 void NetMessagePosition::DoSerialize(StreamType& aStream)

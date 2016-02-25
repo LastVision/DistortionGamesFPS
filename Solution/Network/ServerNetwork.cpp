@@ -5,8 +5,6 @@
 #include "NetMessageOnJoin.h"
 #define BUFFERSIZE 512
 
-short ServerNetwork::myIDCount = 0;
-
 ServerNetwork::ServerNetwork()
 {
 }
@@ -19,7 +17,7 @@ ServerNetwork::~ServerNetwork()
 
 void ServerNetwork::StartServer()
 {
-	myClients.Init(8);
+	//myClients.Init(8);
 	myPort = "13397";
 	addrinfo* addrResult;
 	addrinfo  hints;
@@ -85,10 +83,10 @@ void ServerNetwork::StartServer()
 
 void ServerNetwork::Send(const std::vector<char>& anArray)
 {
-	for (int i = 0; i < myClients.Size(); ++i)
+	/*for (int i = 0; i < myClients.Size(); ++i)
 	{
-		Send(anArray, myClients[i].myAdress);
-	}
+	Send(anArray, myClients[i].myAdress);
+	}*/
 }
 
 void ServerNetwork::Send(const std::vector<char>& anArray, const sockaddr_in& anAddress)
@@ -104,76 +102,40 @@ void ServerNetwork::Send(const std::vector<char>& anArray, const sockaddr_in& an
 
 void ServerNetwork::Send(NetMessageOnJoin join)
 {
-	join.Init();
+	/*join.Init();
 	join.mySenderID = myIDCount;
 
 	for (int i = 0; i < myClients.Size(); ++i)
 	{
-		if (myClients[i].myID != myIDCount)
-		{
-			join.myTargetID = myClients[i].myID;
-			join.PackMessage();
-			if (sendto(myListenSocket, &join.myStream[0], join.myStream.size(), 0, (struct sockaddr *)&myClients[i].myAdress
-				, sizeof(sockaddr_in)) == SOCKET_ERROR)
-			{
-				int errorCode = WSAGetLastError();
-				std::string toPrint = "sendto() failed with error code : " + errorCode;
-				Utility::PrintEndl(toPrint, Utility::eCOLOR::WHITE_BACK_RED);
-			}
-		}
+	if (myClients[i].myID != myIDCount)
+	{
+	join.myTargetID = myClients[i].myID;
+	join.PackMessage();
+	if (sendto(myListenSocket, &join.myStream[0], join.myStream.size(), 0, (struct sockaddr *)&myClients[i].myAdress
+	, sizeof(sockaddr_in)) == SOCKET_ERROR)
+	{
+	int errorCode = WSAGetLastError();
+	std::string toPrint = "sendto() failed with error code : " + errorCode;
+	Utility::PrintEndl(toPrint, Utility::eCOLOR::WHITE_BACK_RED);
 	}
+	}
+	}*/
 }
 
 void ServerNetwork::Receieve(std::vector<Buffer>& someBuffers)
 {
 	int toReturn = 0;
-	int size = sizeof(myOther);
-	char* receieve = nullptr;
+	int size = sizeof(sockaddr_in);
 
 	char buffer[BUFFERSIZE];
 	ZeroMemory(&buffer, BUFFERSIZE);
-	Buffer toPushback;
 
-	while ((toReturn = recvfrom(myListenSocket, buffer, BUFFERSIZE, 0, (struct sockaddr *)&myOther, &size)) > 0)
+	Buffer toPushback;
+	while ((toReturn = recvfrom(myListenSocket, buffer, BUFFERSIZE, 0, (struct sockaddr *)&toPushback.mySenderAddress, &size)) > 0)
 	{
 		memcpy(&toPushback.myData, &buffer[0], toReturn*sizeof(char));
 		toPushback.myLength = toReturn;
 		someBuffers.push_back(toPushback);
 	}
-
-	//return toReturn;
-}
-
-void ServerNetwork::CreateConnection(const std::string& aName)
-{
-	/*if (myNames.find(aName) == myNames.end())
-	{*/
-		myIDCount++;
-		Connection newConnection;
-		newConnection.myAdress = myOther;
-		newConnection.myID = myIDCount;
-		newConnection.myName = aName;
-		newConnection.myPingCount = 0;
-		newConnection.myIsConnected = true;
-		myClients.Add(newConnection);
-		myNames[aName] = 1;
-
-
-		NetMessageConnectMessage toSend;
-		toSend.Init(aName, myIDCount);
-		for (Connection c : myClients)
-		{
-			toSend.myClientsOnServer.Add(c.myID);
-		}
-		toSend.PackMessage();
-		Send(toSend.myStream, newConnection.myAdress);
-
-		NetMessageOnJoin onJoin;
-		Send(onJoin);
-		/*}
-		else
-		{
-		Utility::PrintEndl("User is already on server!", Utility::eCOLOR::RED_BACK_BLACK);
-		}*/
 }
 

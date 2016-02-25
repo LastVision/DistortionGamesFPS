@@ -17,6 +17,8 @@
 #include <PhysicsInterface.h>
 #include "NetMessageOnJoin.h"
 
+#include "ClientNetworkManager.h"
+
 Level::Level()
 	: myEntities(512)
 	, myClients(16)
@@ -51,11 +53,13 @@ void Level::Update(const float aDeltaTime)
 		myEntities[i]->Update(aDeltaTime);
 	}
 
-	//if (CU::InputWrapper::GetInstance()->KeyDown(DIK_C) == true)
-	//{
-	//	NetworkManager::GetInstance()->ConnectToServer();
-	//	//NetworkManager::GetInstance()->ConnectToServer("172.22.53.245"); //LinusS IP
-	//}
+	if (CU::InputWrapper::GetInstance()->KeyDown(DIK_C) == true)
+	{
+		ClientNetworkManager::GetInstance()->ConnectToServer();
+		//ClientNetworkManager::GetInstance()->ConnectToServer("172.22.53.245"); //LinusS IP
+
+
+	}
 
 	//const CU::GrowingArray<Buffer>& messages = NetworkManager::GetInstance()->GetReceieveBuffer();
 	//for (Buffer buf : messages)

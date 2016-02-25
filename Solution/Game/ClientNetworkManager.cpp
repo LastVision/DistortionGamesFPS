@@ -2,6 +2,7 @@
 
 #include "ClientNetwork.h"
 #include "ClientNetworkManager.h"
+#include "NetMessageConnectMessage.h"
 #include <DL_Debug.h>
 #include <thread>
 
@@ -81,6 +82,10 @@ void ClientNetworkManager::ConnectToServer(const char* aServerIP)
 {
 	DL_ASSERT_EXP(myIsServer == false, "Tried to Connect to Server from Server... this doesn't seem right.");
 	myIsOnline = myNetwork->ConnectToServer(aServerIP);
+	char username[256 + 1];
+	DWORD username_len = 256 + 1;
+	GetUserNameA(username, &username_len);
+	AddMessage(NetMessageConnectMessage(username, -1));
 }
 
 ClientNetworkManager* ClientNetworkManager::GetInstance()

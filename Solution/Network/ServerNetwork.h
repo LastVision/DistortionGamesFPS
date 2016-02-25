@@ -13,8 +13,6 @@ public:
 
 	void Receieve(std::vector<Buffer>& someBuffers);
 
-	void CreateConnection(const std::string& aName);
-
 
 private:
 
@@ -23,17 +21,14 @@ private:
 
 
 	sockaddr_in myServer;
-	sockaddr_in myOther;
 
 	SOCKET myListenSocket;
 	WSADATA myWSAData;
 
 	const char* myPort;
 
-	static short myIDCount;
 
-	CU::GrowingArray<Connection> myClients;
-	std::unordered_map<std::string, int> myNames;
+	
 
 };
 

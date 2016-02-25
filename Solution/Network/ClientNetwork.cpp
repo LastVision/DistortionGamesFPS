@@ -58,20 +58,7 @@ void ClientNetwork::Receieve(std::vector<Buffer>& someBuffers)
 bool ClientNetwork::ConnectToServer(const char* anIP)
 {
 	myIP = anIP;
-
-	
 	myServerAddress.sin_addr.S_un.S_addr = inet_addr(myIP);
-
-	char username[256 + 1];
-	DWORD username_len = 256 + 1;
-	GetUserNameA(username, &username_len);
-	myName = username;
-
-	NetMessageConnectMessage toSend;
-	toSend.Init(myName, -1);
-	toSend.PackMessage();
-	Send(toSend.myStream);
-
 	DWORD nonBlocking = 1;
 	if (ioctlsocket(mySocket, FIONBIO, &nonBlocking) != 0)
 	{

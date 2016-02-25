@@ -25,6 +25,9 @@
     <Filter Include="Message\GUIMessage">
       <UniqueIdentifier>{45c561c0-ce7e-491f-b3f3-aec238150e0c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Message\NetworkMessages">
+      <UniqueIdentifier>{050a7b40-b418-4883-a98f-f9307ec8bddd}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -135,6 +138,12 @@
     </ClInclude>
     <ClInclude Include="KilledPromotedMessage.h">
       <Filter>Message</Filter>
+    </ClInclude>
+    <ClInclude Include="PostNetPositionMessage.h">
+      <Filter>Message\NetworkMessages</Filter>
+    </ClInclude>
+    <ClInclude Include="PostNetConnectMessage.h">
+      <Filter>Message\NetworkMessages</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -4,16 +4,12 @@
 
 NetMessagePingRequest::NetMessagePingRequest()
 {
+	myID = int(eNetMessageType::PING_REQUEST);
 }
 
 
 NetMessagePingRequest::~NetMessagePingRequest()
 {
-}
-
-void NetMessagePingRequest::Init()
-{
-	myID = int(eNetMessageType::PING_REQUEST);
 }
 
 void NetMessagePingRequest::DoSerialize(StreamType& aStream)

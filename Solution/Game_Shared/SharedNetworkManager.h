@@ -1,23 +1,31 @@
 #pragma once
 #include <vector>
-
+#include <GrowingArray.h>
+#include <StaticArray.h>
+#include <NetworkMessageTypes.h>
+#include <NetMessageConnectMessage.h>
 namespace std
 {
 	class thread;
 }
-
+class Message;
 class SharedNetworkManager
 {
 public:
 
 	virtual void Initiate();
 	virtual void StartNetwork();
+	void Update(float aDelta);
+
 	template<typename T>
 	void AddMessage(T& aMessage);
+	
 	eNetMessageType ReadType(const char* aBuffer);
+	unsigned short GetResponsTime() const;
 
 protected:
-	void AddMessage(std::vector<char> aBuffer);
+	void AddNetworkMessage(std::vector<char> aBuffer);
+
 
 	SharedNetworkManager();
 	virtual ~SharedNetworkManager();
@@ -26,6 +34,13 @@ protected:
 	virtual void ReceieveThread() = 0;
 
 	void SwapBuffers();
+
+	void HandleMessage();
+	virtual void HandleMessage(const NetMessageConnectMessage& aMessage, const sockaddr_in& aSenderAddress);
+
+
+
+
 
 
 	std::thread* myReceieveThread;
@@ -44,12 +59,17 @@ protected:
 
 	unsigned short myNetworkID;
 
+	
+	float myPingTime;
+	unsigned short myResponsTime;
+	float myMS;
+
 };
 
 template<typename T>
-void SharedNetworkManager::AddMessage(T& aMessage)
+inline void SharedNetworkManager::AddMessage(T& aMessage)
 {
 	aMessage.PackMessage();
-	AddMessage(aMessage.myStream);
+	AddNetworkMessage(aMessage.myStream);
 }
 
