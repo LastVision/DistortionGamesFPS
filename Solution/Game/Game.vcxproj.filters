@@ -51,6 +51,9 @@
     <ClCompile Include="ClientNetworkManager.cpp">
       <Filter>Network</Filter>
     </ClCompile>
+    <ClCompile Include="LobbyState.cpp">
+      <Filter>StateStack</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Game.h" />
@@ -109,6 +112,9 @@
     </ClInclude>
     <ClInclude Include="ClientNetworkManager.h">
       <Filter>Network</Filter>
+    </ClInclude>
+    <ClInclude Include="LobbyState.h">
+      <Filter>StateStack</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

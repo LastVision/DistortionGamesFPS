@@ -13,10 +13,16 @@ namespace Prism
 		~Bar3D();
 
 		void Render(const Camera& aCamera, const CU::Matrix44<float>& aWorld);
+		void Render() override;
+
+		void SetValue(float aValue);
 
 	private:
 		void CreateVertices(const CU::Vector2<float>& aPositionFromJoint, int aNumberOfQuads);
 		CU::Vector2<float> myQuadSize;
+
+		float myValue;
+		int myNbrOfQuads;
 	};
 
 }

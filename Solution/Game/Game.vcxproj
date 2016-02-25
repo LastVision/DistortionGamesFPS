@@ -214,6 +214,7 @@
     <ClInclude Include="InGameState.h" />
     <ClInclude Include="Level.h" />
     <ClInclude Include="LevelFactory.h" />
+    <ClInclude Include="LobbyState.h" />
     <ClInclude Include="Movement.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="ScriptInterface.h" />
@@ -235,6 +236,7 @@
     <ClCompile Include="InGameState.cpp" />
     <ClCompile Include="Level.cpp" />
     <ClCompile Include="LevelFactory.cpp" />
+    <ClCompile Include="LobbyState.cpp" />
     <ClCompile Include="Movement.cpp" />
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="ScriptInterface.cpp" />
