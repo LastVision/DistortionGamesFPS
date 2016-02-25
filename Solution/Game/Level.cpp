@@ -1,12 +1,10 @@
 #include "stdafx.h"
-
 #include <Instance.h>
 #include "Level.h"
 #include <ModelLoader.h>
 #include "Player.h"
 #include <Scene.h>
 #include <InputWrapper.h>
-#include "NetworkManager.h"
 #include "NetworkMessageTypes.h"
 #include "NetworkMessageTypes.h"
 #include "NetMessagePosition.h"
@@ -17,7 +15,6 @@
 #include "GameEnum.h"
 #include <NetMessageConnectMessage.h>
 #include <PhysicsInterface.h>
-#include <ClientInterface.h>
 #include "NetMessageOnJoin.h"
 
 Level::Level()
@@ -46,7 +43,7 @@ void Level::AddEntity(Entity* aEntity)
 
 void Level::Update(const float aDeltaTime)
 {
-	NetworkManager::GetInstance()->Swap(true);
+	//NetworkManager::GetInstance()->Swap(true);
 	myPlayer->Update(aDeltaTime);
 
 	for (int i = 0; i < myEntities.Size(); i++)
@@ -54,62 +51,62 @@ void Level::Update(const float aDeltaTime)
 		myEntities[i]->Update(aDeltaTime);
 	}
 
-	if (CU::InputWrapper::GetInstance()->KeyDown(DIK_C) == true)
-	{
-		NetworkManager::GetInstance()->ConnectToServer();
-		//NetworkManager::GetInstance()->ConnectToServer("172.22.53.245"); //LinusS IP
-	}
+	//if (CU::InputWrapper::GetInstance()->KeyDown(DIK_C) == true)
+	//{
+	//	NetworkManager::GetInstance()->ConnectToServer();
+	//	//NetworkManager::GetInstance()->ConnectToServer("172.22.53.245"); //LinusS IP
+	//}
 
-	const CU::GrowingArray<Buffer>& messages = NetworkManager::GetInstance()->GetReceieveBuffer();
-	for (Buffer buf : messages)
-	{
-		eNetMessageType type = NetworkManager::GetInstance()->ReadType(&buf.myData[0]);
+	//const CU::GrowingArray<Buffer>& messages = NetworkManager::GetInstance()->GetReceieveBuffer();
+	//for (Buffer buf : messages)
+	//{
+	//	eNetMessageType type = NetworkManager::GetInstance()->ReadType(&buf.myData[0]);
 
-		switch (type)
-		{
-		case eNetMessageType::ON_CONNECT:
-		{
-			NetMessageConnectMessage connect;
-			connect.UnPackMessage(buf.myData, buf.myLength);
-			NetworkManager::GetInstance()->SetNetworkID(connect.myServerID);
+	//	switch (type)
+	//	{
+	//	case eNetMessageType::ON_CONNECT:
+	//	{
+	//		NetMessageConnectMessage connect;
+	//		connect.UnPackMessage(buf.myData, buf.myLength);
+	//		NetworkManager::GetInstance()->SetNetworkID(connect.myServerID);
 
-			for (unsigned short c : connect.myClientsOnServer)
-			{
-				OtherClients other;
-				other.myID = c;
-				myClients.Add(other);
-			}
-			break;
-		}
+	//		for (unsigned short c : connect.myClientsOnServer)
+	//		{
+	//			OtherClients other;
+	//			other.myID = c;
+	//			myClients.Add(other);
+	//		}
+	//		break;
+	//	}
 
-		case eNetMessageType::ON_JOIN:
-		{
-			NetMessageOnJoin onJoin;
-			onJoin.UnPackMessage(buf.myData, buf.myLength);
-			OtherClients c;
-			c.myID = onJoin.mySenderID;
-			myClients.Add(c);
-			break;
-		}
-		case eNetMessageType::POSITION:
-		{
-			NetMessagePosition pos;
-			pos.UnPackMessage(buf.myData, buf.myLength);
-			if (pos.mySenderID != NetworkManager::GetInstance()->GetNetworkID())
-			{
-				for (OtherClients& c : myClients)
-				{
-					if (pos.mySenderID == c.myID)
-					{
-						c.myPosition = pos.myPosition;
-					}
-				}
+	//	case eNetMessageType::ON_JOIN:
+	//	{
+	//		NetMessageOnJoin onJoin;
+	//		onJoin.UnPackMessage(buf.myData, buf.myLength);
+	//		OtherClients c;
+	//		c.myID = onJoin.mySenderID;
+	//		myClients.Add(c);
+	//		break;
+	//	}
+	//	case eNetMessageType::POSITION:
+	//	{
+	//		NetMessagePosition pos;
+	//		pos.UnPackMessage(buf.myData, buf.myLength);
+	//		if (pos.mySenderID != NetworkManager::GetInstance()->GetNetworkID())
+	//		{
+	//			for (OtherClients& c : myClients)
+	//			{
+	//				if (pos.mySenderID == c.myID)
+	//				{
+	//					c.myPosition = pos.myPosition;
+	//				}
+	//			}
 
-			}
-			break;
-		}
-		}
-	}
+	//		}
+	//		break;
+	//	}
+	//	}
+	//}
 
 	Prism::DebugDrawer::GetInstance()->RenderLinesToScreen(*myPlayer->GetCamera());
 
@@ -121,10 +118,10 @@ void Level::Render()
 	myScene->Render();
 	myPlayer->Render();
 
-	for (int i = 0; i < myClients.Size(); i++)
+	/*for (int i = 0; i < myClients.Size(); i++)
 	{
 		Prism::DebugDrawer::GetInstance()->RenderBox(myClients[i].myPosition, eColorDebug::BLUE, 1.f);
-	}
+	}*/
 
 
 }

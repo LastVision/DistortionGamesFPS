@@ -1,23 +1,23 @@
 #include "stdafx.h"
-#include "ServerInterface.h"
+#include "ServerNetwork.h"
 #include "Utility.h"
 #include "NetMessageConnectMessage.h"
 #include "NetMessageOnJoin.h"
 #define BUFFERSIZE 512
 
-short ServerInterface::myIDCount = 0;
+short ServerNetwork::myIDCount = 0;
 
-ServerInterface::ServerInterface()
+ServerNetwork::ServerNetwork()
 {
 }
 
 
-ServerInterface::~ServerInterface()
+ServerNetwork::~ServerNetwork()
 {
 	WSACleanup();
 }
 
-void ServerInterface::StartNetwork()
+void ServerNetwork::StartServer()
 {
 	myClients.Init(8);
 	myPort = "13397";
@@ -79,12 +79,11 @@ void ServerInterface::StartNetwork()
 	}
 
 
-	myIsOnline = true;
 	Utility::PrintEndl("Server successfully started!", Utility::eCOLOR::LIGHT_GREEN);
 
 }
 
-void ServerInterface::Send(const std::vector<char>& anArray)
+void ServerNetwork::Send(const std::vector<char>& anArray)
 {
 	for (int i = 0; i < myClients.Size(); ++i)
 	{
@@ -92,7 +91,7 @@ void ServerInterface::Send(const std::vector<char>& anArray)
 	}
 }
 
-void ServerInterface::Send(const std::vector<char>& anArray, const sockaddr_in& anAddress)
+void ServerNetwork::Send(const std::vector<char>& anArray, const sockaddr_in& anAddress)
 {
 	if (sendto(myListenSocket, &anArray[0], anArray.size(), 0, (struct sockaddr *)&anAddress
 		, sizeof(sockaddr_in)) == SOCKET_ERROR)
@@ -103,7 +102,7 @@ void ServerInterface::Send(const std::vector<char>& anArray, const sockaddr_in& 
 	}
 }
 
-void ServerInterface::Send(NetMessageOnJoin join)
+void ServerNetwork::Send(NetMessageOnJoin join)
 {
 	join.Init();
 	join.mySenderID = myIDCount;
@@ -125,7 +124,7 @@ void ServerInterface::Send(NetMessageOnJoin join)
 	}
 }
 
-void ServerInterface::Receieve(std::vector<Buffer>& someBuffers)
+void ServerNetwork::Receieve(std::vector<Buffer>& someBuffers)
 {
 	int toReturn = 0;
 	int size = sizeof(myOther);
@@ -145,7 +144,7 @@ void ServerInterface::Receieve(std::vector<Buffer>& someBuffers)
 	//return toReturn;
 }
 
-void ServerInterface::CreateConnection(const std::string& aName)
+void ServerNetwork::CreateConnection(const std::string& aName)
 {
 	/*if (myNames.find(aName) == myNames.end())
 	{*/
@@ -178,20 +177,3 @@ void ServerInterface::CreateConnection(const std::string& aName)
 		}*/
 }
 
-void ServerInterface::DontSendToID(const std::vector<char>& anArray, short anIDToNotSendToffsDanne)
-{
-	for (Connection connection : myClients)
-	{
-		if (connection.myID != anIDToNotSendToffsDanne)
-		{
-			if (sendto(myListenSocket, &anArray[0], anArray.size(), 0, (struct sockaddr *)&connection.myAdress
-				, sizeof(sockaddr_in)) == SOCKET_ERROR)
-			{
-				int errorCode = WSAGetLastError();
-				std::string toPrint = "sendto() failed with error code : " + errorCode;
-				Utility::PrintEndl(toPrint, Utility::eCOLOR::WHITE_BACK_RED);
-			}
-		}
-	}
-
-}

@@ -1,21 +1,19 @@
 #pragma once
-#include "BaseNetwork.h"
 #include <GrowingArray.h>
+#include <stdint.h>
+#include "NetworkMessageTypes.h"
 
-
-
-class ClientInterface : public BaseNetwork
+class ClientNetwork
 {
 public:
-	ClientInterface();
-	~ClientInterface();
-	//void Init(BaseNetwork* ptr) { myInstance = ptr);
+	ClientNetwork();
+	~ClientNetwork();
 
-	void StartNetwork() override;
-	void Send(const std::vector<char>& anArray) override;
-	void Receieve(std::vector<Buffer>& someBuffers) override;
+	void StartNetwork();
+	void Send(const std::vector<char>& anArray);
+	void Receieve(std::vector<Buffer>& someBuffers);
 
-	void ConnectToServer(const char* anIP) override;
+	bool ConnectToServer(const char* anIP);
 	const CU::GrowingArray<OtherClients>& GetClientList();
 private:
 

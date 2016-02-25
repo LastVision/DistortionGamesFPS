@@ -1,22 +1,20 @@
 #pragma once
-#include "BaseNetwork.h"
 #include <GrowingArray.h>
 #include "NetMessageOnJoin.h"
 #include "NetworkMessageTypes.h"
-class ServerInterface : public BaseNetwork
+class ServerNetwork 
 {
 public:
-	ServerInterface();
-	~ServerInterface();
+	ServerNetwork();
+	~ServerNetwork();
 
-	void StartNetwork() override;
-	void Send(const std::vector<char>& anArray) override;
+	void StartServer();
+	void Send(const std::vector<char>& anArray);
 
-	void Receieve(std::vector<Buffer>& someBuffers) override;
+	void Receieve(std::vector<Buffer>& someBuffers);
 
 	void CreateConnection(const std::string& aName);
 
-	void DontSendToID(const std::vector<char>& anArray, short anIDToNotSendToffsDanne);
 
 private:
 

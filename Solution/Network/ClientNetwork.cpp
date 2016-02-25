@@ -1,21 +1,21 @@
 #include "stdafx.h"
-#include "ClientInterface.h"
+#include "ClientNetwork.h"
 #include "NetMessageConnectMessage.h"
 #include <DL_Debug.h>
 #define BUFFERSIZE 512
 
-ClientInterface::ClientInterface()
+ClientNetwork::ClientNetwork()
 {
 }
 
 
-ClientInterface::~ClientInterface()
+ClientNetwork::~ClientNetwork()
 {
 	closesocket(mySocket);
 	WSACleanup();
 }
 
-void ClientInterface::StartNetwork()
+void ClientNetwork::StartNetwork()
 {
 	myPort = 13397;
 	if (WSAStartup(MAKEWORD(2, 2), &myWSAData) != 0)
@@ -33,7 +33,7 @@ void ClientInterface::StartNetwork()
 	myServerAddress.sin_port = htons(myPort);
 }
 
-void ClientInterface::Send(const std::vector<char>& anArray)
+void ClientNetwork::Send(const std::vector<char>& anArray)
 {
 	if (sendto(mySocket, &anArray[0], anArray.size(), 0, (struct sockaddr *) &myServerAddress, sizeof(myServerAddress)) == SOCKET_ERROR)
 	{
@@ -41,7 +41,7 @@ void ClientInterface::Send(const std::vector<char>& anArray)
 	}
 }
 
-void ClientInterface::Receieve(std::vector<Buffer>& someBuffers)
+void ClientNetwork::Receieve(std::vector<Buffer>& someBuffers)
 {
 	int toReturn;
 	char buffer[BUFFERSIZE];
@@ -55,7 +55,7 @@ void ClientInterface::Receieve(std::vector<Buffer>& someBuffers)
 	}
 }
 
-void ClientInterface::ConnectToServer(const char* anIP)
+bool ClientNetwork::ConnectToServer(const char* anIP)
 {
 	myIP = anIP;
 
@@ -75,13 +75,12 @@ void ClientInterface::ConnectToServer(const char* anIP)
 	DWORD nonBlocking = 1;
 	if (ioctlsocket(mySocket, FIONBIO, &nonBlocking) != 0)
 	{
-		DL_ASSERT("Failed to set non-blocking socket!");
+		return false;
 	}
-	myIsOnline = true;
-
+	return true;
 }
 
-const CU::GrowingArray<OtherClients>& ClientInterface::GetClientList()
+const CU::GrowingArray<OtherClients>& ClientNetwork::GetClientList()
 {
 	return myClients;
 }

@@ -18,7 +18,6 @@
     <ClCompile Include="stdafx.cpp">
       <Filter>Precompile</Filter>
     </ClCompile>
-    <ClCompile Include="NetworkManager.cpp" />
     <ClCompile Include="NetMessage.cpp">
       <Filter>Messages</Filter>
     </ClCompile>
@@ -31,27 +30,23 @@
     <ClCompile Include="NetMessagePingRequest.cpp">
       <Filter>Messages</Filter>
     </ClCompile>
-    <ClCompile Include="ServerInterface.cpp">
-      <Filter>Interfaces</Filter>
-    </ClCompile>
-    <ClCompile Include="ClientInterface.cpp">
-      <Filter>Interfaces</Filter>
-    </ClCompile>
-    <ClCompile Include="BaseNetwork.cpp">
-      <Filter>Interfaces</Filter>
-    </ClCompile>
     <ClCompile Include="NetMessageOnJoin.cpp">
       <Filter>Messages</Filter>
     </ClCompile>
     <ClCompile Include="NetMessagePosition.cpp">
       <Filter>Messages</Filter>
     </ClCompile>
+    <ClCompile Include="ClientNetwork.cpp">
+      <Filter>Interfaces</Filter>
+    </ClCompile>
+    <ClCompile Include="ServerNetwork.cpp">
+      <Filter>Interfaces</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
       <Filter>Precompile</Filter>
     </ClInclude>
-    <ClInclude Include="NetworkManager.h" />
     <ClInclude Include="NetMessage.h">
       <Filter>Messages</Filter>
     </ClInclude>
@@ -67,15 +62,6 @@
     <ClInclude Include="NetworkMessageTypes.h">
       <Filter>Messages</Filter>
     </ClInclude>
-    <ClInclude Include="ServerInterface.h">
-      <Filter>Interfaces</Filter>
-    </ClInclude>
-    <ClInclude Include="ClientInterface.h">
-      <Filter>Interfaces</Filter>
-    </ClInclude>
-    <ClInclude Include="BaseNetwork.h">
-      <Filter>Interfaces</Filter>
-    </ClInclude>
     <ClInclude Include="SerializeHelper.h">
       <Filter>Utilities</Filter>
     </ClInclude>
@@ -87,6 +73,12 @@
     </ClInclude>
     <ClInclude Include="NetMessagePosition.h">
       <Filter>Messages</Filter>
+    </ClInclude>
+    <ClInclude Include="ClientNetwork.h">
+      <Filter>Interfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="ServerNetwork.h">
+      <Filter>Interfaces</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

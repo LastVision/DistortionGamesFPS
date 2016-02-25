@@ -264,6 +264,9 @@
     <ProjectReference Include="..\Entity\Entity.vcxproj">
       <Project>{9dd8d699-edb7-44b3-a0dc-1fa57b81fa7a}</Project>
     </ProjectReference>
+    <ProjectReference Include="..\Game_Shared\Game_Shared.vcxproj">
+      <Project>{859757cc-39f4-405b-8e3f-8028de4b1fd6}</Project>
+    </ProjectReference>
     <ProjectReference Include="..\GUI\GUI.vcxproj">
       <Project>{17cef55e-6aee-4487-ad02-5940167c2fd0}</Project>
     </ProjectReference>
