@@ -48,6 +48,9 @@
     <ClCompile Include="Shooting.cpp">
       <Filter>Player</Filter>
     </ClCompile>
+    <ClCompile Include="ClientNetworkManager.cpp">
+      <Filter>Network</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Game.h" />
@@ -104,6 +107,9 @@
     <ClInclude Include="Shooting.h">
       <Filter>Player</Filter>
     </ClInclude>
+    <ClInclude Include="ClientNetworkManager.h">
+      <Filter>Network</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="PreCompile">
@@ -126,6 +132,9 @@
     </Filter>
     <Filter Include="Player">
       <UniqueIdentifier>{0a33fc89-a207-4aff-8e4c-9033f0803efc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Network">
+      <UniqueIdentifier>{77469d31-ca40-4971-8815-63f0a0a2d348}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

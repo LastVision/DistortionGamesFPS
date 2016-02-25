@@ -109,7 +109,7 @@ void Player::Update(float aDelta)
 			pos.myPosition = myOrientation.GetPos();
 			pos.PackMessage();
 			NetworkManager::GetInstance()->AddMessage(pos.myStream);
-			mySendTime = 1;
+			mySendTime = 1/120.f;
 		}
 	}
 
