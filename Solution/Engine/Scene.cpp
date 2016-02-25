@@ -45,7 +45,7 @@ namespace Prism
 			myInstances[i]->Render(*myCamera, *myInstancingHelper);
 		}
 
-		myInstancingHelper->Render(myDirectionalLightData, false);
+		myInstancingHelper->Render(myDirectionalLightData);
 	}
 
 	void Scene::OnResize(int aWidth, int aHeigth)

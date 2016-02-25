@@ -84,6 +84,6 @@ void InGameState::ResumeState()
 	PostMaster::GetInstance()->SendMessage(FadeMessage(1.f / 3.f));
 }
 
-void InGameState::OnResize(int aWidth, int aHeight)
+void InGameState::OnResize(int, int)
 {
 }

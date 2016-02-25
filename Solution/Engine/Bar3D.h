@@ -2,6 +2,14 @@
 
 #include "BaseModel.h"
 #include <Matrix.h>
+
+enum class eBarPosition
+{
+	LEFT,
+	TOP,
+	RIGHT
+};
+
 namespace Prism
 {
 	class Effect;
@@ -9,7 +17,7 @@ namespace Prism
 	{
 	public:
 		Bar3D(const CU::Vector2<float>& aPositionFromJoint, const CU::Vector2<float>& aQuadSize
-			, int aNumberOfQuads, Effect* aEffect);
+			, int aNumberOfQuads, Effect* aEffect, eBarPosition aBarPosition);
 		~Bar3D();
 
 		void Render(const Camera& aCamera, const CU::Matrix44<float>& aWorld);
@@ -23,6 +31,8 @@ namespace Prism
 
 		float myValue;
 		int myNbrOfQuads;
+
+		eBarPosition myBarPosition;
 	};
 
 }

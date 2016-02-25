@@ -10,6 +10,9 @@ public:
 
 	static eComponentType GetTypeStatic();
 	eComponentType GetType() override;
+
+private:
+	const ProjectileComponentData& myData;
 };
 
 inline eComponentType ProjectileComponent::GetTypeStatic()

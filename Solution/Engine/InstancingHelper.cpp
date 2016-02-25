@@ -32,14 +32,11 @@ namespace Prism
 		myRenderInfo[aModel].myHeights.Add(aHeight);
 	}
 
-	void InstancingHelper::Render(CU::StaticArray<DirectionalLightData, NUMBER_OF_DIRECTIONAL_LIGHTS>& someLights
-		, bool aIsDepthRender)
+	void InstancingHelper::Render(CU::StaticArray<DirectionalLightData, NUMBER_OF_DIRECTIONAL_LIGHTS>& someLights)
 	{
 		DL_ASSERT_EXP(myCamera != nullptr, "Tried to render without a camera");
 
 		Effect* oldEffect = nullptr;
-		D3DX11_TECHNIQUE_DESC techDesc;
-		ID3DX11EffectTechnique* tech;
 
 		for (auto it = myRenderInfo.begin(); it != myRenderInfo.end(); ++it)
 		{
