@@ -7,6 +7,7 @@
 #include <InputWrapper.h>
 #include "Level.h"
 #include "LevelFactory.h"
+#include "LobbyState.h"
 #include <MemoryTracker.h>
 #include <PostMaster.h>
 #include <ScriptSystem.h>
@@ -53,6 +54,10 @@ const eStateStatus InGameState::Update(const float& aDeltaTime)
 	if (CU::InputWrapper::GetInstance()->KeyDown(DIK_ESCAPE))
 	{
 		return eStateStatus::ePopMainState;
+	}
+	else if (CU::InputWrapper::GetInstance()->KeyDown(DIK_N))
+	{
+		myStateStack->PushSubGameState(new LobbyState());
 	}
 
 	myLevel->Update(aDeltaTime);

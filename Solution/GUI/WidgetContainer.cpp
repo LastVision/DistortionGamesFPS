@@ -121,4 +121,12 @@ namespace GUI
 			myVignette->SetSize(aNewSize, { 0.f, 0.f });
 		}
 	}
+
+	void WidgetContainer::SetButtonText(int aButtonId, const std::string& aText, bool& aSuccessOut)
+	{
+		for (int i = 0; i < myWidgets.Size(); i++)
+		{
+			myWidgets[i]->SetButtonText(aButtonId, aText, aSuccessOut);
+		}
+	}
 }

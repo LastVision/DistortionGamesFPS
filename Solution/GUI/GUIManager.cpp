@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "ButtonWidget.h"
+#include <CommonHelper.h>
 #include "Cursor.h"
 #include <Engine.h>
 #include "GUIManager.h"
@@ -113,6 +114,13 @@ namespace GUI
 	void GUIManager::SetPosition(const CU::Vector2<float>& aPosition)
 	{
 		myWidgets->SetPosition(aPosition);
+	}
+
+	void GUIManager::SetButtonText(int aButtonId, const std::string& aText)
+	{
+		bool success(false);
+		myWidgets->SetButtonText(aButtonId, aText, success);
+		DL_ASSERT_EXP(success == true, CU::Concatenate("ID: %d, Text: %s, Failed to set button text.", aButtonId, aText.c_str()));
 	}
 
 	void GUIManager::ReadContainers(XMLReader& aReader, tinyxml2::XMLElement* aContainerElement)

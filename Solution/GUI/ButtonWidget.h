@@ -39,10 +39,16 @@ namespace GUI
 		void SetEvent(OnClickMessage* anEvent);
 		const OnClickMessage* GetEvent() const;
 
+		void SetButtonText(int aButtonId, const std::string& aText, bool& aSuccessOut) override;
+
 	protected:
 		void Click();
 
+		int myId;
+
 		std::string myHoverText;
+		std::string myButtonText;
+		bool myIsTextButton;
 		
 		Prism::SpriteProxy* myImageNormal;
 		Prism::SpriteProxy* myImagePressed;

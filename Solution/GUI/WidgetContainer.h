@@ -34,6 +34,8 @@ namespace GUI
 
 		int GetSize() const;
 
+		void SetButtonText(int aButtonId, const std::string& aText, bool& aSuccessOut) override;
+
 	private:
 		CU::GrowingArray<Widget*> myWidgets;
 		Prism::SpriteProxy* myBackground;

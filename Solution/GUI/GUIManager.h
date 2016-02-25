@@ -49,8 +49,9 @@ namespace GUI
 
 		WidgetContainer* GetWidgetContainer();
 
-	private:
+		void SetButtonText(int aButtonId, const std::string& aText);
 
+	private:
 		void ReadContainers(XMLReader& aReader, tinyxml2::XMLElement* aContainerElement);
 		void ReadFiles(XMLReader& aReader, tinyxml2::XMLElement* aFilePathElement);
 
