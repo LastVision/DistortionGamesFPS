@@ -89,7 +89,7 @@ namespace WAVEFRONT
 			for (int i=0; i<256; i++)
 			{
 				mHard[i] = ST_DATA;
-				mHardString[i*2] = i;
+				mHardString[i*2] = char(i);
 				mHardString[i*2+1] = 0;
 			}
 			mHard[0]  = ST_EOS;
@@ -509,7 +509,7 @@ namespace WAVEFRONT
 	{
 	public:
 
-		virtual void NodeTriangle(const GeometryVertex *v1,const GeometryVertex *v2,const GeometryVertex *v3, bool textured)
+		virtual void NodeTriangle(const GeometryVertex *,const GeometryVertex *,const GeometryVertex *, bool )
 		{
 		}
 
@@ -646,7 +646,7 @@ namespace WAVEFRONT
 			v.mPos[1] = p[1];
 			v.mPos[2] = p[2];
 		} else
-			assert(0 == "Negative face vertex indices are not supported in wavefront loader.");
+			DL_ASSERT("Negative face vertex indices are not supported in wavefront loader.");
 	}
 
 	template<typename T>
@@ -664,6 +664,7 @@ namespace WAVEFRONT
 
 	int OBJ::ParseLine(int lineno,int argc,const char **argv)  // return TRUE to continue parsing, return FALSE to abort parsing process
 	{
+		lineno;
 		int ret = 0;
 
 		if ( argc >= 1 )

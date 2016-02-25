@@ -15,7 +15,7 @@ namespace Prism
 	class PhysEntity
 	{
 	public:
-		PhysEntity(const float* aInitPosition, const PhysEntityData& aPhysData
+		PhysEntity(const PhysEntityData& aPhysData
 			, const CU::Matrix44<float>& aOrientation, const std::string& aFBXPath);
 		~PhysEntity();
 

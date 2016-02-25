@@ -28,7 +28,7 @@ namespace Prism
 		void AddModel(Model* aModel, const CU::Matrix44<float>& aWorldMatrix
 			, const CU::Vector3<float>& aScale, float aHeight);
 
-		void Render(CU::StaticArray<DirectionalLightData, NUMBER_OF_DIRECTIONAL_LIGHTS>& someLights, bool aIsDepthRender);
+		void Render(CU::StaticArray<DirectionalLightData, NUMBER_OF_DIRECTIONAL_LIGHTS>& someLights);
 
 	private:
 		void RenderModel(Model* aModel, ModelData& aModelData, Effect* aEffect);

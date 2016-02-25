@@ -14,7 +14,7 @@
 
 namespace Prism
 {
-	PhysEntity::PhysEntity(const float* aInitPosition, const PhysEntityData& aPhysData
+	PhysEntity::PhysEntity(const PhysEntityData& aPhysData
 		, const CU::Matrix44<float>& aOrientation, const std::string& aFBXPath)
 	{
 		for (int i = 0; i < 16; ++i)
@@ -81,7 +81,8 @@ namespace Prism
 			//physx::PxMeshScale meshScale = physx::PxMeshScale(scale, physx::PxQuat(physx::PxIdentity));
 
 			myStaticBody = core->createRigidStatic(transform);
-			physx::PxShape* shape = myStaticBody->createShape(physx::PxTriangleMeshGeometry(mesh), *material);
+			//physx::PxShape* shape = 
+			myStaticBody->createShape(physx::PxTriangleMeshGeometry(mesh), *material);
 			myStaticBody->setName("Tjohej");
 			PhysicsInterface::GetInstance()->GetManager()->GetScene()->addActor(*myStaticBody);
 		}

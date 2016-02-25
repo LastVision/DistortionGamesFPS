@@ -56,6 +56,8 @@ void ComponentLoader::LoadGraphicsComponent(XMLReader& aDocument, tinyxml2::XMLE
 
 void ComponentLoader::LoadProjectileComponent(XMLReader& aDocument, tinyxml2::XMLElement* aSourceElement, ProjectileComponentData& aOutputData)
 {
+	aDocument;
+	aSourceElement;
 	aOutputData.myExistsInEntity = true;
 }
 
