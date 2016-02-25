@@ -21,7 +21,7 @@ namespace GUI
 		//myScene->AddInstance(my3DPlane);
 
 		myGUIBone = aModel->GetCurrentAnimation()->GetHiearchyToBone("ui_jnt3");
-		myLeftBar = new Prism::Bar3D({ -0.15f, 0.f }, { 0.05f, 0.05f }, 5, myEffect);
+		myLeftBar = new Prism::Bar3D({ -0.15f, -0.01f }, { 0.02f, 0.005f }, 32, myEffect);
 	}
 
 
@@ -39,8 +39,7 @@ namespace GUI
 		myEffect->SetGradiantDirection({ 0.f, 1.f });
 
 		myWristOrientation = CU::InverseSimple(*myGUIBone.myBind) * (*myGUIBone.myJoint) * aOrientation;
-		//myWristOrientation *= aOrientation;
-		//my3DPlane->Update(aDeltaTime);
+		myLeftBar->SetValue(cos(myTestValue));
 	}
 
 	void GUIManager3D::Render()
