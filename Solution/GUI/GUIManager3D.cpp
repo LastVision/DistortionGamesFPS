@@ -21,7 +21,8 @@ namespace GUI
 		//myScene->AddInstance(my3DPlane);
 
 		myGUIBone = aModel->GetCurrentAnimation()->GetHiearchyToBone("ui_jnt3");
-		myLeftBar = new Prism::Bar3D({ -0.15f, -0.01f }, { 0.02f, 0.005f }, 32, myEffect);
+		myLeftBar = new Prism::Bar3D({ -0.1f, -0.01f }, { 0.02f, 0.005f }, 32, myEffect);
+		myRightBar = new Prism::Bar3D({ 0.1f, -0.01f }, { 0.02f, 0.005f }, 32, myEffect);
 	}
 
 
@@ -30,6 +31,7 @@ namespace GUI
 		myScene->RemoveInstance(my3DPlane);
 		SAFE_DELETE(my3DPlane);
 		SAFE_DELETE(myLeftBar);
+		SAFE_DELETE(myRightBar);
 	}
 
 	void GUIManager3D::Update(const CU::Matrix44<float>& aOrientation, float aDeltaTime)
@@ -40,10 +42,12 @@ namespace GUI
 
 		myWristOrientation = CU::InverseSimple(*myGUIBone.myBind) * (*myGUIBone.myJoint) * aOrientation;
 		myLeftBar->SetValue(cos(myTestValue));
+		myRightBar->SetValue(cos(myTestValue));
 	}
 
 	void GUIManager3D::Render()
 	{
 		myLeftBar->Render(*myScene->GetCamera(), myWristOrientation);
+		myRightBar->Render(*myScene->GetCamera(), myWristOrientation);
 	}
 }

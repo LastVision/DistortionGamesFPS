@@ -28,6 +28,7 @@ namespace GUI
 		GUIBone myGUIBone;
 		Prism::Effect* myEffect;
 		Prism::Bar3D* myLeftBar;
+		Prism::Bar3D* myRightBar;
 	};
 
 }
