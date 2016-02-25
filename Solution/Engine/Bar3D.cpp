@@ -8,10 +8,11 @@
 namespace Prism
 {
 	Bar3D::Bar3D(const CU::Vector2<float>& aPositionFromJoint, const CU::Vector2<float>& aQuadSize
-		, int aNumberOfQuads, Effect* aEffect)
+		, int aNumberOfQuads, Effect* aEffect, eBarPosition aBarPosition)
 		: myQuadSize(aQuadSize)
 		, myValue(0.f)
 		, myNbrOfQuads(aNumberOfQuads)
+		, myBarPosition(aBarPosition)
 	{
 		myEffect = aEffect;
 		D3D11_INPUT_ELEMENT_DESC vertexDesc[] =
@@ -40,13 +41,13 @@ namespace Prism
 
 	void Bar3D::Render(const Camera& aCamera, const CU::Matrix44<float>& aWorld)
 	{
-		//Prism::Engine::GetInstance()->DisableCulling();
+		Prism::Engine::GetInstance()->DisableCulling();
 		myEffect->SetWorldMatrix(aWorld);
 		myEffect->SetViewProjectionMatrix(aCamera.GetViewProjection());
 		myEffect->SetCameraPosition(aCamera.GetOrientation().GetPos());
 		//BaseModel::Render();
 		Render();
-		//Prism::Engine::GetInstance()->EnableCulling();
+		Prism::Engine::GetInstance()->EnableCulling();
 	}
 
 	void Bar3D::Render()
@@ -100,86 +101,126 @@ namespace Prism
 	void Bar3D::CreateVertices(const CU::Vector2<float>& aPositionFromJoint, int aNumberOfQuads)
 	{
 		CU::GrowingArray<GUIVertex> vertices(4 * aNumberOfQuads);
-		//CU::GrowingArray<int> indices(6 * aNumberOfQuads);
+		CU::GrowingArray<CU::Vector4<float>> torusPosition(4 * aNumberOfQuads);
 
-		//for (int i = 0; i < aNumberOfQuads; ++i)
-		//{
-		//	int indiceCount = indices.Size();
-		//	GUIVertex vertex;
-		//	vertex.myPosition = { aPositionFromJoint.x, aPositionFromJoint.y + myQuadSize.y, 0, 0 };
-		//	vertex.myPosition.y += myQuadSize.y * i;
-		//	vertex.myUV = { 0, 1 };
-		//	vertices.Add(vertex);
-
-		//	vertex.myPosition = { aPositionFromJoint.x + myQuadSize.x, aPositionFromJoint.y + myQuadSize.y, 0, 0 };
-		//	vertex.myPosition.y += myQuadSize.y * i;
-		//	vertex.myUV = { 1, 1 };
-		//	vertices.Add(vertex);
-
-		//	vertex.myPosition = { aPositionFromJoint.x + myQuadSize.x, aPositionFromJoint.y, 0, 0 };
-		//	vertex.myPosition.y += myQuadSize.y * i;
-		//	vertex.myUV = { 1, 0 };
-		//	vertices.Add(vertex);
-
-		//	vertex.myPosition = { aPositionFromJoint.x, aPositionFromJoint.y, 0, 0 };
-		//	vertex.myPosition.y += myQuadSize.y * i;
-		//	vertex.myUV = { 0, 0 };
-		//	vertices.Add(vertex);
-
-		//	indices.Add(indiceCount);
-		//	indices.Add(indiceCount + 1);
-		//	indices.Add(indiceCount + 3);
-		//				
-		//	indices.Add(indiceCount + 1);
-		//	indices.Add(indiceCount + 2);
-		//	indices.Add(indiceCount + 3);
-		//}
-
-		for (int i = 0; i < aNumberOfQuads; ++i)
+		float inner = 0.05f;
+		float outer = 0.1f;
+		if (myBarPosition == eBarPosition::LEFT || myBarPosition == eBarPosition::RIGHT || myBarPosition == eBarPosition::TOP)
 		{
-			GUIVertex vertex;
-			if (i == 0)
+			for (int i = 0; i < aNumberOfQuads; ++i)
 			{
-				vertex.myPosition = { aPositionFromJoint.x + myQuadSize.x, aPositionFromJoint.y, 0, 0 };
-				vertex.myPosition.y += myQuadSize.y * i;
-				vertex.myUV = { 1, 0 };
-				vertices.Add(vertex);
+				float angle = 0.f;
+				if (myBarPosition == eBarPosition::LEFT)
+				{
+					angle = (i / (float)aNumberOfQuads) * 2.093f;
+					angle += 1.64f;// *1.5f;
+					angle = -angle;
+				}
+				else if (myBarPosition == eBarPosition::RIGHT)
+				{
+					angle = (i / (float)aNumberOfQuads) * 2.093f;
+					angle -= 1.582f;// *1.5f;
+				}
+				else if (myBarPosition == eBarPosition::TOP)
+				{
+					angle = (i / (float)aNumberOfQuads) * 2.093f;
+					angle += 3.72f;// *1.5f;
+					angle = -angle;
+				}
+				CU::Vector4<float> vertexInner(inner * cos(angle), inner * sin(angle), 0.f, 0.f);
+				CU::Vector4<float> vertexOuter(outer * cos(angle), outer * sin(angle), 0.f, 0.f);
 
-				vertex.myPosition = { aPositionFromJoint.x, aPositionFromJoint.y, 0, 0 };
-				vertex.myPosition.y += myQuadSize.y * i;
-				vertex.myUV = { 0, 0 };
-				vertices.Add(vertex);
-
-				vertex.myPosition = { aPositionFromJoint.x + myQuadSize.x, aPositionFromJoint.y + myQuadSize.y, 0, 0 };
-				vertex.myPosition.y += myQuadSize.y * i;
-				vertex.myUV = { 1, 1 };
-				vertices.Add(vertex);
-
-				vertex.myPosition = { aPositionFromJoint.x, aPositionFromJoint.y + myQuadSize.y, 0, 0 };
-				vertex.myPosition.y += myQuadSize.y * i;
-				vertex.myUV = { 0, 1 };
-				vertices.Add(vertex);
-			}
-			else
-			{
-				vertex.myPosition = { aPositionFromJoint.x + myQuadSize.x, aPositionFromJoint.y, 0, 0 };
-				vertex.myPosition.y += myQuadSize.y * i;
-				vertex.myUV = { 1, 0 };
-				vertices.Add(vertex);
-
-				vertex.myPosition = { aPositionFromJoint.x, aPositionFromJoint.y, 0, 0 };
-				vertex.myPosition.y += myQuadSize.y * i;
-				vertex.myUV = { 0, 0 };
-				vertices.Add(vertex);
+				torusPosition.Add(vertexInner);
+				torusPosition.Add(vertexOuter);
 			}
 
+			for (int i = 0; i < torusPosition.Size(); ++i)
+			{
+				GUIVertex vertex;
+
+				if (i == 0)
+				{
+					vertex.myPosition = torusPosition[0];
+					vertex.myUV = { 1, 0 };
+				}
+				else if (i == 1)
+				{
+					vertex.myPosition = torusPosition[1];
+					vertex.myUV = { 0, 0 };
+				}
+				else if (i == 2)
+				{
+					vertex.myPosition = torusPosition[2];
+					vertex.myUV = { 1, 1 };
+				}
+				else if (i == 3)
+				{
+					vertex.myPosition = torusPosition[3];
+					vertex.myUV = { 0, 1 };
+				}
+				else
+				{
+					if (i % 2 == 0)
+					{
+						vertex.myPosition = torusPosition[i];
+						vertex.myUV = { 1, 1 };
+					}
+					else
+					{
+						vertex.myPosition = torusPosition[i];
+						vertex.myUV = { 0, 1 };
+					}
+				}
+
+				vertices.Add(vertex);
+			}
+		}
+		else
+		{
+			for (int i = 0; i < aNumberOfQuads; ++i)
+			{
+				GUIVertex vertex;
+				if (i == 0)
+				{
+					vertex.myPosition = { aPositionFromJoint.x + myQuadSize.x, aPositionFromJoint.y, 0, 0 };
+					vertex.myPosition.y += myQuadSize.y * i;
+					vertex.myUV = { 1, 0 };
+					vertices.Add(vertex);
+
+					vertex.myPosition = { aPositionFromJoint.x, aPositionFromJoint.y, 0, 0 };
+					vertex.myPosition.y += myQuadSize.y * i;
+					vertex.myUV = { 0, 0 };
+					vertices.Add(vertex);
+
+					vertex.myPosition = { aPositionFromJoint.x + myQuadSize.x, aPositionFromJoint.y + myQuadSize.y, 0, 0 };
+					vertex.myPosition.y += myQuadSize.y * i;
+					vertex.myUV = { 1, 1 };
+					vertices.Add(vertex);
+
+					vertex.myPosition = { aPositionFromJoint.x, aPositionFromJoint.y + myQuadSize.y, 0, 0 };
+					vertex.myPosition.y += myQuadSize.y * i;
+					vertex.myUV = { 0, 1 };
+					vertices.Add(vertex);
+				}
+				else
+				{
+					vertex.myPosition = { aPositionFromJoint.x + myQuadSize.x, aPositionFromJoint.y, 0, 0 };
+					vertex.myPosition.y += myQuadSize.y * i;
+					vertex.myUV = { 1, 0 };
+					vertices.Add(vertex);
+
+					vertex.myPosition = { aPositionFromJoint.x, aPositionFromJoint.y, 0, 0 };
+					vertex.myPosition.y += myQuadSize.y * i;
+					vertex.myUV = { 0, 0 };
+					vertices.Add(vertex);
+				}
+
+			}
 		}
 
 		SetupVertexBuffer(vertices.Size(), sizeof(GUIVertex), reinterpret_cast<char*>(&vertices[0])
 			, "GUI::VertexBuffer");
-		//SetupIndexBuffer(indices.Size(), reinterpret_cast<char*>(&indices[0]), "GUI::IndexBuffer");
 
 		mySurfaces[0]->SetVertexCount(vertices.Size());
-		//mySurfaces[0]->SetIndexCount(indices.Size());
 	}
 }
