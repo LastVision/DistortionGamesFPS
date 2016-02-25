@@ -1,5 +1,6 @@
 #pragma once
 #include <vector>
+#include <NetworkMessageTypes.h>
 
 namespace std
 {

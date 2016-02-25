@@ -4,7 +4,7 @@
 #include <fstream>
 #include <GUIManager.h>
 #include <InputWrapper.h>
-#include <NetworkManager.h>
+#include "ClientNetworkManager.h"
 #include <PostMaster.h>
 #include <OnClickMessage.h>
 
@@ -80,7 +80,7 @@ const eStateStatus LobbyState::Update(const float& aDeltaTime)
 
 	if (myServer != nullptr)
 	{
-		NetworkManager::GetInstance()->ConnectToServer(myServer->myIp.c_str());
+		ClientNetworkManager::GetInstance()->ConnectToServer(myServer->myIp.c_str());
 
 		return eStateStatus::ePopSubState;
 	}
