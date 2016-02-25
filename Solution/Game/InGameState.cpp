@@ -73,6 +73,7 @@ void InGameState::Render()
 {
 	VTUNE_EVENT_BEGIN(VTUNE::GAME_RENDER);
 
+	DEBUG_PRINT(Prism::MemoryTracker::GetInstance()->GetRunTime());
 	myLevel->Render();
 
 	VTUNE_EVENT_END();

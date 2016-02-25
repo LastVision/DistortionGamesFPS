@@ -22,6 +22,7 @@ Shooting::Shooting(Prism::Scene* aScene)
 
 Shooting::~Shooting()
 {
+	myBullets.DeleteAll();
 }
 
 void Shooting::Update(float aDelta, const CU::Matrix44<float>& aOrientation)

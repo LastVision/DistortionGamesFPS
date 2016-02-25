@@ -33,6 +33,12 @@ namespace Prism
 			SAFE_DELETE(it->second);
 		}
 		myModelsAnimated.clear();
+
+		for (auto it = myAnimations.begin(); it != myAnimations.end(); ++it)
+		{
+			SAFE_DELETE(it->second);
+		}
+		myAnimations.clear();
 	}
 
 	Model* DGFXLoader::LoadModel(const std::string& aFilePath)

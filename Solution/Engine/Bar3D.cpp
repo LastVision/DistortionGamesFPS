@@ -24,7 +24,7 @@ namespace Prism
 		InitInputLayout(vertexDesc, ARRAYSIZE(vertexDesc), "GUI::InputLayout");
 		InitVertexBuffer(sizeof(GUIVertex), D3D11_USAGE_IMMUTABLE, 0);
 
-		InitIndexBuffer();
+		//InitIndexBuffer();
 		InitSurface("AlbedoTexture", "Data/Resource/Texture/T_missing_texture.dds");
 		mySurfaces[0]->SetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
 
@@ -56,8 +56,8 @@ namespace Prism
 		Engine::GetInstance()->GetContex()->IASetVertexBuffers(myVertexBuffer->myStartSlot
 			, myVertexBuffer->myNumberOfBuffers, &myVertexBuffer->myVertexBuffer
 			, &myVertexBuffer->myStride, &myVertexBuffer->myByteOffset);
-		Engine::GetInstance()->GetContex()->IASetIndexBuffer(myIndexBuffer->myIndexBuffer
-			, myIndexBuffer->myIndexBufferFormat, myIndexBuffer->myByteOffset);
+		//Engine::GetInstance()->GetContex()->IASetIndexBuffer(myIndexBuffer->myIndexBuffer
+		//	, myIndexBuffer->myIndexBufferFormat, myIndexBuffer->myByteOffset);
 
 		for (int s = 0; s < mySurfaces.Size(); ++s)
 		{

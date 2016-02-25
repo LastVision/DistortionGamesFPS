@@ -15,6 +15,7 @@ Entity::Entity(const EntityData& aEntityData, Prism::Scene& aScene, const CU::Ve
 	: myScene(aScene)
 	, myEntityData(aEntityData)
 	, myEmitterConnection(nullptr)
+	, myPhysEntity(nullptr)
 {
 	for (int i = 0; i < static_cast<int>(eComponentType::_COUNT); ++i)
 	{
@@ -59,6 +60,7 @@ Entity::~Entity()
 		delete myComponents[i];
 		myComponents[i] = nullptr;
 	}
+	SAFE_DELETE(myPhysEntity);
 }
 
 void Entity::Reset()
