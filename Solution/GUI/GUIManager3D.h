@@ -29,6 +29,7 @@ namespace GUI
 		Prism::Effect* myEffect;
 		Prism::Bar3D* myLeftBar;
 		Prism::Bar3D* myRightBar;
+		Prism::Bar3D* myTopBar;
 	};
 
 }
