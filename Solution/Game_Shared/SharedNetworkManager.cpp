@@ -56,6 +56,8 @@ void SharedNetworkManager::Initiate()
 	mySendBuffer[0].Init(16384);
 	mySendBuffer[1].Init(16384);
 	myPingTime = 0.f;
+	myReceieveIsDone = true;
+	myMainIsDone = true;
 }
 
 void SharedNetworkManager::StartNetwork()
@@ -89,7 +91,7 @@ SharedNetworkManager::SharedNetworkManager()
 
 SharedNetworkManager::~SharedNetworkManager()
 {
-
+	
 }
 
 
@@ -101,21 +103,41 @@ void SharedNetworkManager::Update(float aDelta)
 	if (myPingTime <= 0.f)
 	{
 		myResponsTime = 0.f;
-		AddMessage(NetMessagePingRequest());
+		//AddMessage(NetMessagePingRequest());
 		myDataToPrint = myDataSent;
 		myDataSent = 0;
 		myPingTime = 1.f;
-
 	}
-	HandleMessage();
 }
 
 
 void SharedNetworkManager::SwapBuffers()
 {
-	//mySendBuffer[myCurrentSendBuffer].RemoveAll();
+	//wait 
 	myReceieveBuffer[myCurrentBuffer].RemoveAll();
 	myCurrentBuffer ^= 1;
+}
+
+void SharedNetworkManager::ReceieveIsDone()
+{
+	myReceieveIsDone = true;
+}
+
+void SharedNetworkManager::MainIsDone()
+{
+	myMainIsDone = true;
+}
+
+void SharedNetworkManager::WaitForMain()
+{
+	while (myMainIsDone == false);
+	myMainIsDone = false;
+}
+
+void SharedNetworkManager::WaitForReceieve()
+{
+	while (myReceieveIsDone == false);
+	myReceieveIsDone = false;
 }
 
 void SharedNetworkManager::HandleMessage()
@@ -156,7 +178,6 @@ void SharedNetworkManager::HandleMessage(const NetMessagePingReply& aMessage, co
 	myMS = myResponsTime * 1000.f;
 }
 
-
 eNetMessageType SharedNetworkManager::ReadType(const char* aBuffer)
 {
 	return static_cast<eNetMessageType>(aBuffer[0]);
@@ -181,10 +202,6 @@ void SharedNetworkManager::AddNetworkMessage(std::vector<char> aBuffer)
 {
 	if (myIsOnline == true)
 	{
-		/*if (myIsServer == true && ReadType(aBuffer) == eNetMessageType::PING_REPLY)
-		{
-			std::cout << "Message added to send buffer!\n";
-		}*/
 		mySendBuffer[myCurrentSendBuffer ^ 1].Add(aBuffer);
 	}
 }

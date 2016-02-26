@@ -13,6 +13,7 @@
 #include <VTuneApi.h>
 
 #include <Cursor.h>
+#include "ClientNetworkManager.h"
 
 InGameState::InGameState()
 	: myGUIManager(nullptr)
@@ -65,7 +66,8 @@ const eStateStatus InGameState::Update(const float& aDeltaTime)
 	//LUA::ScriptSystem::GetInstance()->CallFunction("Update", { aDeltaTime });
 	//LUA::ScriptSystem::GetInstance()->Update();
 
-	
+	ClientNetworkManager::GetInstance()->MainIsDone();
+	ClientNetworkManager::GetInstance()->WaitForReceieve();
 	return myStateStatus;
 }
 
