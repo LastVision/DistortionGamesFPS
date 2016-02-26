@@ -12,12 +12,12 @@ Health::~Health()
 {
 }
 
-void Health::TakeDamage(float aDamage)
+void Health::TakeDamage(int aDamage)
 {
 	myCurrentHealth -= aDamage;
-	if (myCurrentHealth <= 0.f)
+	if (myCurrentHealth <= 0)
 	{
-		myCurrentHealth = 0.f;
+		myCurrentHealth = 0;
 		//myEntity.Kill();
 	}
 }

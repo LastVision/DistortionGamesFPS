@@ -2,10 +2,6 @@
 #include "SharedNetworkManager.h"
 
 #include <iostream>
-#include <NetMessageConnectMessage.h>
-#include <NetMessagePosition.h>
-#include <NetMessagePingRequest.h>
-#include <NetMessagePingReply.h>
 #include <PostMaster.h>
 #include <PostNetPositionMessage.h>
 #include <sstream>
@@ -104,8 +100,12 @@ void SharedNetworkManager::Update(float aDelta)
 	myResponsTime += aDelta;
 	if (myPingTime <= 0.f)
 	{
+		myResponsTime = 0.f;
 		AddMessage(NetMessagePingRequest());
+		myDataToPrint = myDataSent;
+		myDataSent = 0;
 		myPingTime = 1.f;
+
 	}
 	HandleMessage();
 }
@@ -120,43 +120,26 @@ void SharedNetworkManager::SwapBuffers()
 
 void SharedNetworkManager::HandleMessage()
 {
-	for (Buffer& buf : myReceieveBuffer[myCurrentBuffer])
+	for (Buffer& buffer : myReceieveBuffer[myCurrentBuffer])
 	{
-		eNetMessageType type = ReadType(buf.myData);
+		eNetMessageType type = ReadType(buffer.myData);
 		switch (type)
 		{
-		case eNetMessageType::NONE:
-			break;
 		case eNetMessageType::ON_CONNECT:
-		{
-			NetMessageConnectMessage connect;
-			connect.UnPackMessage(buf.myData, buf.myLength);
-			HandleMessage(connect, buf.mySenderAddress);
+			UnpackAndHandle(NetMessageConnectMessage(), buffer);
 			break;
-		}
 		case eNetMessageType::ON_JOIN:
+			UnpackAndHandle(NetMessageOnJoin(), buffer);
 			break;
 		case eNetMessageType::PING_REQUEST:
-		{
-			NetMessagePingRequest request;
-			request.UnPackMessage(buf.myData, buf.myLength);
-			HandleMessage(request, buf.mySenderAddress);
+			UnpackAndHandle(NetMessagePingRequest(), buffer);
 			break;
-		}
 		case eNetMessageType::PING_REPLY:
-		{
-			NetMessagePingReply reply;
-			reply.UnPackMessage(buf.myData, buf.myLength);
-			HandleMessage(reply, buf.mySenderAddress);
+			UnpackAndHandle(NetMessagePingReply(), buffer); 
 			break;
-		}
 		case eNetMessageType::POSITION:
-		{
-			NetMessagePosition pos;
-			pos.UnPackMessage(buf.myData, buf.myLength);
-			PostMaster::GetInstance()->SendMessage(PostNetPositionMessage(pos.myPosition));
+			UnpackAndHandle(NetMessagePosition(), buffer);
 			break;
-		}
 		default:
 			break;
 		}
@@ -164,17 +147,15 @@ void SharedNetworkManager::HandleMessage()
 }
 
 void SharedNetworkManager::HandleMessage(const NetMessageConnectMessage&, const sockaddr_in&){}
-
-void SharedNetworkManager::HandleMessage(const NetMessagePingRequest& aMessage, const sockaddr_in& aSenderAddress)
-{
-	AddMessage(NetMessagePingReply());
-}
+void SharedNetworkManager::HandleMessage(const NetMessagePingRequest& aMessage, const sockaddr_in& aSenderAddress){}
+void SharedNetworkManager::HandleMessage(const NetMessageOnJoin& aMessage, const sockaddr_in& aSenderAddress){}
+void SharedNetworkManager::HandleMessage(const NetMessagePosition& aMessage, const sockaddr_in& aSenderAddress){}
 
 void SharedNetworkManager::HandleMessage(const NetMessagePingReply& aMessage, const sockaddr_in& aSenderAddress)
 {
 	myMS = myResponsTime * 1000.f;
-	myResponsTime = 0.f;
 }
+
 
 eNetMessageType SharedNetworkManager::ReadType(const char* aBuffer)
 {
@@ -186,9 +167,14 @@ eNetMessageType SharedNetworkManager::ReadType(const std::vector<char>& aBuffer)
 	return static_cast<eNetMessageType>(aBuffer[0]);
 }
 
-float SharedNetworkManager::GetResponsTime() const
+unsigned short SharedNetworkManager::GetResponsTime() const
 {
-	return myMS;
+	return static_cast<unsigned short>(myMS);
+}
+
+double SharedNetworkManager::GetDataSent() const
+{
+	return myDataToPrint / 1024;
 }
 
 void SharedNetworkManager::AddNetworkMessage(std::vector<char> aBuffer)

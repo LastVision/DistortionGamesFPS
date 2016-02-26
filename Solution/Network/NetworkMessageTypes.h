@@ -33,6 +33,17 @@ struct Connection
 
 struct OtherClients
 {
+	OtherClients();
+	OtherClients(unsigned short anID);
 	unsigned short myID;
 	CU::Vector3<float> myPosition;
 };
+
+inline OtherClients::OtherClients()
+{
+}
+
+inline OtherClients::OtherClients(unsigned short anID)
+{
+	myID = anID;
+}

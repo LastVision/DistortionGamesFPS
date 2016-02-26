@@ -82,6 +82,21 @@ void ServerNetworkManager::HandleMessage(const NetMessageConnectMessage& aMessag
 	CreateConnection(aMessage.myName, aSenderAddress);
 }
 
+void ServerNetworkManager::HandleMessage(const NetMessagePingRequest& aMessage, const sockaddr_in& aSenderAddress)
+{
+	NetMessagePingReply reply;
+	reply.PackMessage();
+
+	myNetwork->Send(reply.myStream, aSenderAddress);
+}
+
+void ServerNetworkManager::HandleMessage(const NetMessagePosition& aMessage, const sockaddr_in& aSenderAddress)
+{
+	NetMessagePosition position;
+	position = aMessage;
+	AddMessage(position);
+}
+
 void ServerNetworkManager::ReceieveThread()
 {
 	char buffer[BUFFERSIZE];
@@ -125,8 +140,6 @@ void ServerNetworkManager::SendThread()
 
 void ServerNetworkManager::CreateConnection(const std::string& aName, const sockaddr_in& aSender)
 {
-	/*if (myNames.find(aName) == myNames.end())
-	{*/
 	for (Connection& connection : myClients)
 	{
 		if (connection.myAddress.sin_addr.S_un.S_addr == aSender.sin_addr.S_un.S_addr) //._.
@@ -148,20 +161,16 @@ void ServerNetworkManager::CreateConnection(const std::string& aName, const sock
 	std::string conn(aName + " connected to the server!");
 	Utility::PrintEndl(conn, LIGHT_GREEN_TEXT);
 
-	//NetMessageConnectMessage toSend;
-	//toSend.Init(aName, myIDCount);
-	//for (Connection c : myClients)
-	//{
-	//	toSend.myClientsOnServer.Add(c.myID);
-	//}
-	//toSend.PackMessage();
-	//Send(toSend.myStream, newConnection.myAdress);
+	//	onConnect.myName = aName;
+	//	onConnect.myServerID = myIDCount;
 
-	//NetMessageOnJoin onJoin;
-	//Send(onJoin);
-	/*}
-	else
+	for (Connection& connection : myClients)
 	{
-	Utility::PrintEndl("User is already on server!", Utility::eCOLOR::RED_BACK_BLACK);
-	}*/
+		NetMessageConnectMessage onConnect(aName, myIDCount, connection.myID);
+		onConnect.PackMessage();
+		myNetwork->Send(onConnect.myStream, newConnection.myAddress);
+	}
+
+
+	AddMessage(NetMessageOnJoin(newConnection.myID));
 }

@@ -21,6 +21,8 @@ private:
 	ServerNetwork* myNetwork;
 
 	void HandleMessage(const NetMessageConnectMessage& aMessage, const sockaddr_in& aSender) override;
+	void HandleMessage(const NetMessagePingRequest& aMessage, const sockaddr_in& aSenderAddress) override;
+	void HandleMessage(const NetMessagePosition& aMessage, const sockaddr_in& aSenderAddress) override;
 
 	void ReceieveThread() override;
 	void SendThread() override;

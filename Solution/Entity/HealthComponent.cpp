@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include "DamageNote.h"
 #include "HealthComponent.h"
 #include "HealthComponentData.h"
 
@@ -13,17 +14,22 @@ HealthComponent::~HealthComponent()
 {
 }
 
-void HealthComponent::TakeDamage(float aDamage)
+void HealthComponent::ReceiveNote(const DamageNote& aNote)
+{
+	TakeDamage(aNote.myDamage);
+}
+
+void HealthComponent::TakeDamage(int aDamage)
 {
 	myCurrentHealth -= aDamage;
-	if (myCurrentHealth <= 0.f)
+	if (myCurrentHealth <= 0)
 	{
-		myCurrentHealth = 0.f;
+		myCurrentHealth = 0;
 		myEntity.Kill();
 	}
 }
 
-void HealthComponent::Heal(float anAmount)
+void HealthComponent::Heal(int anAmount)
 {
 	myCurrentHealth += anAmount;
 	if (myCurrentHealth > myData.myMaxHealth)

@@ -10,8 +10,10 @@ public:
 	HealthComponent(Entity& anEntity, const HealthComponentData& someData);
 	~HealthComponent();
 
-	void TakeDamage(float aDamage);
-	void Heal(float anAmount);
+	void ReceiveNote(const DamageNote& aNote) override;
+
+	void TakeDamage(int aDamage);
+	void Heal(int anAmount);
 
 	void Reset() override;
 
@@ -20,7 +22,7 @@ public:
 
 private:
 	const HealthComponentData& myData;
-	float myCurrentHealth;
+	int myCurrentHealth;
 };
 
 inline static eComponentType GetTypeStatic()

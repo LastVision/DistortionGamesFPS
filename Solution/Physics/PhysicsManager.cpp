@@ -140,6 +140,7 @@ namespace Prism
 
 	bool PhysicsManager::RayCast(const CU::Vector3<float>& aOrigin, const CU::Vector3<float>& aNormalizedDirection, float aMaxRayDistance)
 	{
+		bool returnValue = false;
 		physx::PxVec3 origin;
 		origin.x = aOrigin.x;
 		origin.y = aOrigin.y;
@@ -150,10 +151,15 @@ namespace Prism
 		unitDirection.z = aNormalizedDirection.z;
 		physx::PxReal maxDistance = aMaxRayDistance;
 
-		physx::PxRaycastBuffer buffer;
+		physx::PxRaycastHit touches[32];
+		physx::PxRaycastBuffer buffer(touches, 32);
+		buffer.maxNbTouches = 1;
 
-		return myScene->raycast(origin, unitDirection, maxDistance, buffer);
+		returnValue = myScene->raycast(origin, unitDirection, maxDistance, buffer);
 
+		//myScene->Ge = touches[0].actor->getOwnerClient();
+
+		return returnValue;
 	}
 
 	void PhysicsManager::onPvdConnected(physx::debugger::comm::PvdConnection&)

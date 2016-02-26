@@ -13,11 +13,11 @@ public:
 	Health(XMLReader& aReader, tinyxml2::XMLElement* anElement);
 	~Health();
 
-	void TakeDamage(float aDamage);
+	void TakeDamage(int aDamage);
 
 private:
 	
-	float myMaxHealth;
-	float myCurrentHealth;
+	int myMaxHealth;
+	int myCurrentHealth;
 };
 

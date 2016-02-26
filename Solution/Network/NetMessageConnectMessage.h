@@ -6,6 +6,7 @@ class NetMessageConnectMessage : public NetMessage
 {
 public:
 	NetMessageConnectMessage(const std::string& aName, short aServerID);
+	NetMessageConnectMessage(const std::string& aName, short aServerID, short aOtherClientID);
 	NetMessageConnectMessage();
 
 	NetMessageConnectMessage(sockaddr_in anAddress);
@@ -15,7 +16,8 @@ public:
 
 	std::string myName;
 	short myServerID;
-	//CU::GrowingArray<unsigned short> myClientsOnServer;
+	CU::GrowingArray<unsigned short> myClientsOnServer;
+	unsigned short myOtherClientID;
 protected:
 
 	void DoSerialize(StreamType& aStream) override;
