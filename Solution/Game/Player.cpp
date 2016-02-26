@@ -3,6 +3,7 @@
 
 #include <Camera.h>
 #include <GUIManager3D.h>
+#include "Health.h"
 #include <InputWrapper.h>
 #include <Instance.h>
 #include <ModelLoader.h>
@@ -25,10 +26,12 @@ Player::Player(Prism::Scene* aScene)
 	CU::Vector3<float> eyePosition(0, myHeight, 0);
 
 	tinyxml2::XMLElement* movementElement = reader.ForceFindFirstChild(element, "movement");
+	tinyxml2::XMLElement* healthElement = reader.ForceFindFirstChild(element, "health");
 
 	myOrientation.SetPos(eyePosition);
 	myCamera = new Prism::Camera(myOrientation);
 	myMovement = new Movement(myOrientation, reader, movementElement);
+	myHealth = new Health(reader, movementElement);
 	myShooting = new Shooting(aScene);
 
 	reader.CloseDocument();
@@ -59,6 +62,7 @@ Player::~Player()
 	SAFE_DELETE(myCamera);
 	SAFE_DELETE(myMovement);
 	SAFE_DELETE(myShooting);
+	SAFE_DELETE(myHealth);
 	SAFE_DELETE(myCrosshair);
 }
 

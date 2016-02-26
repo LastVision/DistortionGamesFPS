@@ -2,6 +2,7 @@
 
 class Movement;
 class Shooting;
+class Health;
 
 namespace GUI
 {
@@ -29,6 +30,7 @@ public:
 private:
 	Movement* myMovement;
 	Shooting* myShooting;
+	Health* myHealth;
 	GUI::GUIManager3D* my3DGUIManager;
 	Prism::Camera* myCamera;
 	CU::Matrix44<float> myOrientation;

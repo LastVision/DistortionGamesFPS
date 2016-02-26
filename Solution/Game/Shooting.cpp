@@ -8,6 +8,7 @@
 
 #include <EntityFactory.h>
 #include <PhysEntity.h>
+#include <PhysicsInterface.h>
 
 Shooting::Shooting(Prism::Scene* aScene)
 	: myBulletSpeed(0.f)
@@ -31,6 +32,10 @@ void Shooting::Update(float aDelta, const CU::Matrix44<float>& aOrientation)
 	{
 		//myBullet->GetPhysEntity()->AddForce({ 0.f, 1.f, 0.f }, 100000.f);
 		ShootAtDirection(aOrientation);
+		//bool test = Prism::PhysicsInterface::GetInstance()->RayCast(aOrientation.GetPos(), aOrientation.GetForward(), 1000.f);
+		//test;
+		//int apa;
+		//apa = 5;
 	}
 
 	/*myBullet->Update(aDelta);

@@ -1,5 +1,7 @@
 #pragma once
 
+#include <Vector.h>
+
 namespace Prism
 {
 	class PhysicsManager;
@@ -14,6 +16,8 @@ namespace Prism
 		PhysicsManager* GetManager() const;
 
 		void Update();
+
+		bool RayCast(const CU::Vector3<float>& aOrigin, const CU::Vector3<float>& aNormalizedDirection, float aMaxRayDistance);
 
 	private:
 		PhysicsInterface();

@@ -38,6 +38,15 @@ namespace Prism
 		}
 	}
 
+	bool PhysicsInterface::RayCast(const CU::Vector3<float>& aOrigin, const CU::Vector3<float>& aNormalizedDirection, float aMaxRayDistance)
+	{
+		if (myManager != nullptr)
+		{
+			return myManager->RayCast(aOrigin, aNormalizedDirection, aMaxRayDistance);
+		}
+		return false;
+	}
+
 	PhysicsInterface::PhysicsInterface()
 	{
 		myManager = new PhysicsManager();

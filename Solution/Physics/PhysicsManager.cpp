@@ -20,6 +20,7 @@
 #endif
 
 #include <pxphysicsapi.h>
+#include <PxQueryReport.h>
 
 namespace Prism
 {
@@ -126,6 +127,24 @@ namespace Prism
 		}
 
 		//Sleep(16);
+	}
+
+	bool PhysicsManager::RayCast(const CU::Vector3<float>& aOrigin, const CU::Vector3<float>& aNormalizedDirection, float aMaxRayDistance)
+	{
+		physx::PxVec3 origin;
+		origin.x = aOrigin.x;
+		origin.y = aOrigin.y;
+		origin.z = aOrigin.z;
+		physx::PxVec3 unitDirection;
+		unitDirection.x = aNormalizedDirection.x;
+		unitDirection.y = aNormalizedDirection.y;
+		unitDirection.z = aNormalizedDirection.z;
+		physx::PxReal maxDistance = aMaxRayDistance;
+
+		physx::PxRaycastBuffer buffer;
+
+		return myScene->raycast(origin, unitDirection, maxDistance, buffer);
+
 	}
 
 	void PhysicsManager::onPvdConnected(physx::debugger::comm::PvdConnection&)

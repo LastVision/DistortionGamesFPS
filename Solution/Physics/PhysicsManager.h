@@ -6,6 +6,7 @@
 #include <pvd/PxVisualDebugger.h>
 #include <physxvisualdebuggersdk/PvdConnection.h>
 #include <cooking\PxCooking.h>
+#include <Vector.h>
 
 
 namespace Prism
@@ -17,6 +18,8 @@ namespace Prism
 		~PhysicsManager();
 
 		void Update();
+
+		bool RayCast(const CU::Vector3<float>& aOrigin, const CU::Vector3<float>& aNormalizedDirection, float aMaxRayDistance);
 
 		physx::PxPhysics* GetCore(){ return myPhysicsSDK; }
 		physx::PxScene* GetScene(){ return myScene; }
