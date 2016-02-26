@@ -1,5 +1,6 @@
 #include "stdafx.h"
 
+#include <DamageNote.h>
 #include <InputWrapper.h>
 #include <Instance.h>
 #include <ModelLoader.h>
@@ -32,10 +33,12 @@ void Shooting::Update(float aDelta, const CU::Matrix44<float>& aOrientation)
 	{
 		//myBullet->GetPhysEntity()->AddForce({ 0.f, 1.f, 0.f }, 100000.f);
 		//ShootAtDirection(aOrientation);
-		bool test = Prism::PhysicsInterface::GetInstance()->RayCast(aOrientation.GetPos(), aOrientation.GetForward(), 5.f);
-		test;
-		int apa;
-		apa = 5;
+		Entity* entity = Prism::PhysicsInterface::GetInstance()->RayCast(aOrientation.GetPos(), aOrientation.GetForward(), 30.f);
+		//entity->SendNote<DamageNote>(DamageNote(100));
+		if (entity != nullptr && entity->GetPhysEntity()->GetPhysicsType() == ePhysics::DYNAMIC)
+		{
+			entity->GetPhysEntity()->AddForce(aOrientation.GetForward(), 25.f);
+		}
 	}
 
 	/*myBullet->Update(aDelta);

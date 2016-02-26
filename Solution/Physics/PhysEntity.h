@@ -2,6 +2,7 @@
 #include <GameEnum.h>
 #include <Vector.h>
 #include "PhysEntityData.h"
+#include <Matrix.h>
 
 namespace physx
 {
@@ -11,22 +12,29 @@ namespace physx
 	class PxShape;
 }
 
+class Entity;
+
 namespace Prism
 {
+
 	class PhysEntity
 	{
 	public:
 		PhysEntity(const PhysEntityData& aPhysData
-			, const CU::Matrix44<float>& aOrientation, const std::string& aFBXPath);
+			, const CU::Matrix44<float>& aOrientation, const std::string& aFBXPath,
+			Entity* aEntity);
 		~PhysEntity();
 
 		float* GetPosition();
 		float* GetOrientation();
+		Entity* GetEntity();
 
 		void UpdateOrientation();
 
 		void AddForce(const CU::Vector3<float>& aDirection, float aMagnitude);
 		void SetPosition(const CU::Vector3<float>& aPosition);
+
+		ePhysics GetPhysicsType() const;
 
 	private:
 		physx::PxTriangleMesh* GetPhysMesh(const std::string& aFBXPath);
@@ -39,5 +47,17 @@ namespace Prism
 		physx::PxRigidStatic* myStaticBody;
 		physx::PxShape** myShapes;
 		ePhysics myPhysicsType;
+
+		Entity* myEntity;
 	};
+
+	inline Entity* PhysEntity::GetEntity()
+	{
+		return myEntity;
+	}
+
+	inline ePhysics PhysEntity::GetPhysicsType() const
+	{
+		return myPhysicsType;
+	}
 }

@@ -29,14 +29,14 @@ Entity::Entity(const EntityData& aEntityData, Prism::Scene& aScene, const CU::Ve
 		myComponents[static_cast<int>(eComponentType::ANIMATION)] = new AnimationComponent(*this, aEntityData.myAnimationData);
 		GetComponent<AnimationComponent>()->SetRotation(aRotation);
 		GetComponent<AnimationComponent>()->SetScale(aScale);
-		myPhysEntity = new Prism::PhysEntity(aEntityData.myPhysData, myOrientation, aEntityData.myAnimationData.myModelPath);
+		myPhysEntity = new Prism::PhysEntity(aEntityData.myPhysData, myOrientation, aEntityData.myAnimationData.myModelPath, this);
 	}
 	else if (aEntityData.myGraphicsData.myExistsInEntity == true)
 	{
 		myComponents[static_cast<int>(eComponentType::GRAPHICS)] = new GraphicsComponent(*this, aEntityData.myGraphicsData);
 		GetComponent<GraphicsComponent>()->SetRotation(aRotation);
 		GetComponent<GraphicsComponent>()->SetScale(aScale);
-		myPhysEntity = new Prism::PhysEntity(aEntityData.myPhysData, myOrientation, aEntityData.myGraphicsData.myModelPath);
+		myPhysEntity = new Prism::PhysEntity(aEntityData.myPhysData, myOrientation, aEntityData.myGraphicsData.myModelPath, this);
 	}
 	
 	if (aEntityData.myProjecileData.myExistsInEntity == true)

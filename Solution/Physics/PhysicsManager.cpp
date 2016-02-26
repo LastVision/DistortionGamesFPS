@@ -19,6 +19,7 @@
 #pragma comment(lib, "PhysX\\vc12win32\\PhysXVisualDebuggerSDK.lib")
 #endif
 
+#include "PhysEntity.h"
 #include <pxphysicsapi.h>
 #include <PxQueryReport.h>
 
@@ -129,7 +130,7 @@ namespace Prism
 		//Sleep(16);
 	}
 
-	bool PhysicsManager::RayCast(const CU::Vector3<float>& aOrigin, const CU::Vector3<float>& aNormalizedDirection, float aMaxRayDistance)
+	Entity* PhysicsManager::RayCast(const CU::Vector3<float>& aOrigin, const CU::Vector3<float>& aNormalizedDirection, float aMaxRayDistance)
 	{
 		bool returnValue = false;
 		physx::PxVec3 origin;
@@ -144,13 +145,31 @@ namespace Prism
 
 		physx::PxRaycastHit touches[32];
 		physx::PxRaycastBuffer buffer(touches, 32);
-		buffer.maxNbTouches = 1;
 
 		returnValue = myScene->raycast(origin, unitDirection, maxDistance, buffer);
+		if (returnValue == true)
+		{
+			Prism::PhysEntity *ent = nullptr;//static_cast<PhysEntity*>(buffer.touches[0].actor->userData);
 
+			float closestDist = FLT_MAX;
+			for (int i = 0; i < buffer.nbTouches; ++i)
+			{
+				if (buffer.touches[i].distance < closestDist)
+				{
+					closestDist = buffer.touches[i].distance;
+					ent = static_cast<PhysEntity*>(buffer.touches[i].actor->userData);
+				}
+			}
+			if (ent == nullptr)
+			{
+				return nullptr;
+			}
+			return ent->GetEntity();
+		}
+		return nullptr;
 		//myScene->Ge = touches[0].actor->getOwnerClient();
 
-		return returnValue;
+		//return returnValue;
 	}
 
 	void PhysicsManager::onPvdConnected(physx::debugger::comm::PvdConnection&)
