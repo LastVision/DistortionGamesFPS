@@ -16,6 +16,7 @@ public:
 
 	void Update(float aDelta);
 private:
+	void operator=(Movement&) = delete;
 	void Move(float aDelta);
 	void Rotate();
 

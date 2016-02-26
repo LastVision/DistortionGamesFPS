@@ -8,6 +8,7 @@
 #include <Cursor.h>
 #include <DebugFont.h>
 #include <Engine.h>
+#include <EntityFactory.h>
 #include <FadeMessage.h>
 #include <FileWatcher.h>
 #include "Game.h"
@@ -70,6 +71,8 @@ Game::~Game()
 	myStateStack.Clear();
 	Prism::DebugDrawer::Destroy();
 	ClientNetworkManager::Destroy();
+	EntityFactory::Destroy();
+//	NetworkManager::Destroy();
 }
 
 bool Game::Init(HWND& aHwnd)

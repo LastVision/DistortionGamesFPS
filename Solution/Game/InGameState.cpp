@@ -7,6 +7,7 @@
 #include <InputWrapper.h>
 #include "Level.h"
 #include "LevelFactory.h"
+#include "LobbyState.h"
 #include <MemoryTracker.h>
 #include <PostMaster.h>
 #include <ScriptSystem.h>
@@ -54,6 +55,10 @@ const eStateStatus InGameState::Update(const float& aDeltaTime)
 	{
 		return eStateStatus::ePopMainState;
 	}
+	else if (CU::InputWrapper::GetInstance()->KeyDown(DIK_N))
+	{
+		myStateStack->PushSubGameState(new LobbyState());
+	}
 
 	myLevel->Update(aDeltaTime);
 
@@ -68,6 +73,7 @@ void InGameState::Render()
 {
 	VTUNE_EVENT_BEGIN(VTUNE::GAME_RENDER);
 
+	DEBUG_PRINT(Prism::MemoryTracker::GetInstance()->GetRunTime());
 	myLevel->Render();
 
 	VTUNE_EVENT_END();
@@ -79,6 +85,6 @@ void InGameState::ResumeState()
 	PostMaster::GetInstance()->SendMessage(FadeMessage(1.f / 3.f));
 }
 
-void InGameState::OnResize(int aWidth, int aHeight)
+void InGameState::OnResize(int, int)
 {
 }

@@ -89,7 +89,7 @@ namespace Prism
 #endif
 
 		physx::PxMaterial* material = myPhysicsSDK->createMaterial(0.5, 0.5, 0.5);
-		physx::PxReal d = 0.0f;
+		//physx::PxReal d = 0.0f;
 		physx::PxTransform pose = physx::PxTransform(physx::PxVec3(0.f, -10.f, 0.f), physx::PxQuat(physx::PxHalfPi, physx::PxVec3(0.f, 0.f, 1.f)));
 		physx::PxRigidStatic* plane = myPhysicsSDK->createRigidStatic(pose);
 		if (!plane)

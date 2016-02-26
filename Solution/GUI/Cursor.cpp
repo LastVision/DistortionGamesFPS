@@ -14,7 +14,7 @@ namespace GUI
 		myWindowSize.y = float(aWindowSize.y);
 
 		Prism::SpriteProxy* normalSprite = Prism::ModelLoader::GetInstance()->LoadSprite(
-			"Data/Resource/Texture/UI/Crosshair/T_crosshair_default.dds", { 70.f, 70.f }, { 35.f, 35.f });
+			"Data/Resource/Texture/UI/T_cursor.dds", { 70.f, 70.f }, { 35.f, 35.f });
 		mySprites.Add(normalSprite);
 
 		myPosition = myWindowSize / 2.f;

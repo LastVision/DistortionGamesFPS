@@ -26,8 +26,7 @@ GraphicsComponent::GraphicsComponent(Entity& aEntity, const GraphicsComponentDat
 GraphicsComponent::~GraphicsComponent()
 {
 	myEntity.GetScene().RemoveInstance(myInstance);
-	delete myInstance;
-	myInstance = nullptr;
+	SAFE_DELETE(myInstance);
 }
 
 void GraphicsComponent::InitDLL(const char* aModelPath, const char* aEffectPath)

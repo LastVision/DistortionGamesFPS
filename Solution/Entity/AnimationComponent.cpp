@@ -42,8 +42,7 @@ AnimationComponent::~AnimationComponent()
 #ifndef BOX_MODE
 
 	myEntity.GetScene().RemoveInstance(myInstance);
-	delete myInstance;
-	myInstance = nullptr;
+	SAFE_DELETE(myInstance);
 #endif
 }
 

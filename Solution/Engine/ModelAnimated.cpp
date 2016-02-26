@@ -35,7 +35,7 @@ namespace Prism
 	{
 		myChildren.DeleteAll();
 		myChildTransforms.DeleteAll();
-		//delete myAnimation;
+		myAnimation = nullptr; // do not delete, owned by DGFXLoader
 		delete myVertexBaseData;
 		delete myIndexBaseData;
 	}

@@ -41,6 +41,9 @@ namespace GUI
 
 		inline bool IsClickable() const;
 		inline void SetIsClickable(bool aIsClickable);
+
+		virtual inline void SetButtonText(int aButtonId, const std::string& aText, bool& aSuccessOut);
+
 	protected:
 		CU::Vector2<float> myPosition;
 		CU::Vector2<float> mySize;
@@ -93,5 +96,10 @@ namespace GUI
 	inline void Widget::SetIsClickable(bool aIsClickable)
 	{
 		myIsClickable = aIsClickable;
+	}
+
+	inline void Widget::SetButtonText(int, const std::string&, bool&)
+	{
+
 	}
 }

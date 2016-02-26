@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include <AudioInterface.h>
 #include "ButtonWidget.h"
+#include <CommonHelper.h>
 #include <Engine.h>
 #include <OnClickMessage.h>
 #include <PostMaster.h>
@@ -15,6 +16,8 @@ namespace GUI
 		, myImageCurrent(nullptr)
 		, myClickEvent(nullptr)
 		, myHoverText("")
+		, myIsTextButton(false)
+		, myId(-1)
 	{
 		std::string spritePathNormal = "";
 		std::string spritePathHover = "";
@@ -25,9 +28,22 @@ namespace GUI
 		aReader->ForceReadAttribute(aReader->ForceFindFirstChild(anXMLElement, "position"), "x", myPosition.x);
 		aReader->ForceReadAttribute(aReader->ForceFindFirstChild(anXMLElement, "position"), "y", myPosition.y);
 
+		tinyxml2::XMLElement* textElement = aReader->FindFirstChild(anXMLElement, "text");
+
+		if (textElement != nullptr)
+		{
+			myIsVisible = false;
+			myIsTextButton = true;
+			aReader->ForceReadAttribute(textElement, "value", myButtonText);
+		}
 		aReader->ForceReadAttribute(aReader->ForceFindFirstChild(anXMLElement, "spritenormal"), "path", spritePathNormal);
 		aReader->ForceReadAttribute(aReader->ForceFindFirstChild(anXMLElement, "spritehover"), "path", spritePathHover);
 		aReader->ForceReadAttribute(aReader->ForceFindFirstChild(anXMLElement, "spritepressed"), "path", spritePathPressed);
+
+		myImageNormal = Prism::ModelLoader::GetInstance()->LoadSprite(spritePathNormal, mySize, mySize / 2.f);
+		myImageHover = Prism::ModelLoader::GetInstance()->LoadSprite(spritePathHover, mySize, mySize / 2.f);
+		myImagePressed = Prism::ModelLoader::GetInstance()->LoadSprite(spritePathPressed, mySize, mySize / 2.f);
+		myImageCurrent = myImageNormal;
 
 		tinyxml2::XMLElement* hoverElement = aReader->FindFirstChild(anXMLElement, "hover");
 		if (hoverElement != nullptr)
@@ -36,11 +52,6 @@ namespace GUI
 		}
 
 		ReadEvent(aReader, anXMLElement);
-
-		myImageNormal = Prism::ModelLoader::GetInstance()->LoadSprite(spritePathNormal, mySize, mySize / 2.f);
-		myImageHover = Prism::ModelLoader::GetInstance()->LoadSprite(spritePathHover, mySize, mySize / 2.f);
-		myImagePressed = Prism::ModelLoader::GetInstance()->LoadSprite(spritePathPressed, mySize, mySize / 2.f);
-		myImageCurrent = myImageNormal;
 	}
 
 	ButtonWidget::~ButtonWidget()
@@ -54,14 +65,22 @@ namespace GUI
 
 	void ButtonWidget::Render(const CU::Vector2<float>& aParentPosition)
 	{
-		myImageCurrent->Render(myPosition + aParentPosition);
-
-		if (myImageCurrent == myImageHover && myHoverText != "")
+		if (myIsVisible == true)
 		{
-			CU::Vector2<float> hoverPosition = { myPosition.x + mySize.x / 2.f, myPosition.y };
-			hoverPosition += aParentPosition;
-		
-			Prism::Engine::GetInstance()->PrintText(myHoverText, hoverPosition, Prism::eTextType::RELEASE_TEXT);
+			myImageCurrent->Render(myPosition + aParentPosition);
+
+			if (myIsTextButton == true)
+			{
+				Prism::Engine::GetInstance()->PrintText(myButtonText, { myPosition.x - mySize.x * 0.5f + 10.f, myPosition.y - 10.f }, Prism::eTextType::RELEASE_TEXT);
+			}
+
+			if (myImageCurrent == myImageHover && myHoverText != "")
+			{
+				CU::Vector2<float> hoverPosition = { myPosition.x + mySize.x / 2.f, myPosition.y };
+				hoverPosition += aParentPosition;
+
+				Prism::Engine::GetInstance()->PrintText(myHoverText, hoverPosition, Prism::eTextType::RELEASE_TEXT);
+			}
 		}
 	}
 
@@ -122,137 +141,29 @@ namespace GUI
 
 		if (clickEvent == "none") // for passive ability buttons
 		{
+			DL_ASSERT("None not yet implemented, needed in FPS?");
 		}
-		else if (clickEvent == "game_start")
+		else if (clickEvent == "connect")
 		{
-			int id = 0;
-			aReader->ReadAttribute(aReader->ForceFindFirstChild(anXMLElement, "onclick"), "id", id);
-			myClickEvent = new OnClickMessage(eOnClickEvent::GAME_START, id);
-		}
-		else if (clickEvent == "game_start_easy")
-		{
-			myClickEvent = new OnClickMessage(eOnClickEvent::GAME_START_EASY);
-		}
-		else if (clickEvent == "game_start_normal")
-		{
-			myClickEvent = new OnClickMessage(eOnClickEvent::GAME_START_NORMAL);
-		}
-		else if (clickEvent == "game_start_hard")
-		{
-			myClickEvent = new OnClickMessage(eOnClickEvent::GAME_START_HARD);
-		}
-		else if (clickEvent == "game_level_select")
-		{
-			myClickEvent = new OnClickMessage(eOnClickEvent::GAME_LEVEL_SELECT);
-		}
-		else if (clickEvent == "game_restart")
-		{
-			myClickEvent = new OnClickMessage(eOnClickEvent::GAME_RESTART);
-		}
-		else if (clickEvent == "game_credit")
-		{
-			myClickEvent = new OnClickMessage(eOnClickEvent::GAME_CREDIT);
-		}
-		else if (clickEvent == "game_quit")
-		{
-			myClickEvent = new OnClickMessage(eOnClickEvent::GAME_QUIT);
-		}
-		else if (clickEvent == "game_help")
-		{
-			myClickEvent = new OnClickMessage(eOnClickEvent::GAME_HELP);
-		}
-		else if (clickEvent == "resume_game")
-		{
-			myClickEvent = new OnClickMessage(eOnClickEvent::RESUME_GAME);
-		}
-		else if (clickEvent == "action_move")
-		{
-			myClickEvent = new OnClickMessage(eOnClickEvent::UNIT_ACTION_MOVE);
-		}
-		else if (clickEvent == "action_attack")
-		{
-			myClickEvent = new OnClickMessage(eOnClickEvent::UNIT_ACTION_ATTACK);
-		}
-		else if (clickEvent == "action_stop")
-		{
-			myClickEvent = new OnClickMessage(eOnClickEvent::UNIT_ACTION_STOP);
-		}
-		else if (clickEvent == "action_place_totem")
-		{
-			myClickEvent = new OnClickMessage(eOnClickEvent::PLACE_TOTEM);
-		}
-		else if (clickEvent == "action_move_attack")
-		{
-			myClickEvent = new OnClickMessage(eOnClickEvent::UNIT_ACTION_ATTACK_MOVE);
-		}
-		else if (clickEvent == "action_stand_ground")
-		{
-			myClickEvent = new OnClickMessage(eOnClickEvent::UNIT_ACTION_STAND_GROUND);
-		}
-		else if (clickEvent == "action_enrage")
-		{
-			myClickEvent = new OnClickMessage(eOnClickEvent::ENRAGE);
-		}
-		else if (clickEvent == "spawn_unit")
-		{
-			int ID = -1;
-			aReader->ForceReadAttribute(aReader->ForceFindFirstChild(anXMLElement, "onclick"), "id", ID);
-			myClickEvent = new OnClickMessage(eOnClickEvent::SPAWN_UNIT, ID);
-		}
-		else if (clickEvent == "spawn_locked_unit")
-		{
-			int ID = -1;
-			aReader->ForceReadAttribute(aReader->ForceFindFirstChild(anXMLElement, "onclick"), "id", ID);
-			myClickEvent = new OnClickMessage(eOnClickEvent::SPAWN_LOCKED_UNIT, ID);
-		}
-		else if (clickEvent == "select_control_group")
-		{
-			int index = -1;
-			aReader->ForceReadAttribute(aReader->ForceFindFirstChild(anXMLElement, "onclick"), "id", index);
-			myClickEvent = new OnClickMessage(eOnClickEvent::SELECT_CONTROL_GROUP, index);
-		}
-		else if (clickEvent == "upgrade_unit")
-		{
-			int unitID = -1;
-			aReader->ForceReadAttribute(aReader->ForceFindFirstChild(anXMLElement, "onclick"), "id", unitID);
-			myClickEvent = new OnClickMessage(eOnClickEvent::UPGRADE_UNIT, unitID);
-		}
-		else if (clickEvent == "IncreaseVolume")
-		{
-			myClickEvent = new OnClickMessage(eOnClickEvent::INCREASEVOLUME);
-		}
-		else if (clickEvent == "LowerVolume")
-		{
-			myClickEvent = new OnClickMessage(eOnClickEvent::LOWERVOLUME);
-		}
-		else if (clickEvent == "IncreaseMusic")
-		{
-			myClickEvent = new OnClickMessage(eOnClickEvent::INCREASEMUSIC);
-		}
-		else if (clickEvent == "LowerMusic")
-		{
-			myClickEvent = new OnClickMessage(eOnClickEvent::LOWERMUSIC);
-		}
-		else if (clickEvent == "IncreaseVoice")
-		{
-			myClickEvent = new OnClickMessage(eOnClickEvent::INCREASEVOICE);
-		}
-		else if (clickEvent == "LowerVoice")
-		{
-			myClickEvent = new OnClickMessage(eOnClickEvent::LOWERVOICE);
-		}
-		else if (clickEvent == "options_menu")
-		{
-			myClickEvent = new OnClickMessage(eOnClickEvent::OPTIONS_MENU);
-		}
-		else if (clickEvent == "toggle_shadows")
-		{
-			myClickEvent = new OnClickMessage(eOnClickEvent::TOGGLE_SHADOWS);
+			aReader->ForceReadAttribute(aReader->ForceFindFirstChild(anXMLElement, "onclick"), "id", myId);
+			DL_ASSERT_EXP(myId != -1, "Incorrect connection id.");
+			myClickEvent = new OnClickMessage(eOnClickEvent::CONNECT, myId);
 		}
 		else
 		{
 			std::string message = "[ButtonWidget]: No onclick event named " + clickEvent;
 			DL_ASSERT(message);
+		}
+	}
+
+	void ButtonWidget::SetButtonText(int aButtonId, const std::string& aText, bool& aSuccessOut)
+	{
+		if (myId == aButtonId)
+		{
+			DL_ASSERT_EXP(aSuccessOut == false, CU::Concatenate("Button %d, %s duplicate.", aButtonId, aText.c_str()));
+			myButtonText = aText;
+			aSuccessOut = true;
+			myIsVisible = true;
 		}
 	}
 

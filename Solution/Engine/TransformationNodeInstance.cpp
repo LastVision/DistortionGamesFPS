@@ -16,11 +16,11 @@ namespace Prism
 
 	TransformationNodeInstance::~TransformationNodeInstance()
 	{
-		//SAFE_DELETE(myTransformationNode);
-		//if (myChildren.Size() > 0)
-		//{
-		//	myChildren.DeleteAll();
-		//}
+		SAFE_DELETE(myTransformationNode);
+		if (myChildren.Size() > 0)
+		{
+			myChildren.DeleteAll();
+		}
 	}
 
 	TransformationNodeInstance& TransformationNodeInstance::operator=(const TransformationNodeInstance& aTransformationNode)

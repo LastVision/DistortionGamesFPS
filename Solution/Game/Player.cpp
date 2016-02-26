@@ -55,6 +55,11 @@ Player::Player(Prism::Scene* aScene)
 Player::~Player()
 {
 	SAFE_DELETE(my3DGUIManager);
+	SAFE_DELETE(myModel);
+	SAFE_DELETE(myCamera);
+	SAFE_DELETE(myMovement);
+	SAFE_DELETE(myShooting);
+	SAFE_DELETE(myCrosshair);
 }
 
 void Player::Update(float aDelta)

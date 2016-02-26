@@ -107,7 +107,7 @@ namespace Prism
 			, CU::Concatenate("GetInstancedCount on %s failed", aModelPath.c_str()));*/
 		//if (myInstancedCount.find(name) == myInstancedCount.end())
 		{
-			return 256;
+			return 1024;
 		}
 
 		return myInstancedCount[name];
