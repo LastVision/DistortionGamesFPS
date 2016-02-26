@@ -23,9 +23,10 @@ namespace GUI
 	private:
 		float myTestValue;
 		CU::Matrix44<float> myWristOrientation;
-		Prism::Instance* my3DPlane;
-		Prism::Scene* myScene;
 		GUIBone myGUIBone;
+		CU::Matrix44<float> myHealthOrientation;
+		GUIBone myHealthBone;
+		Prism::Scene* myScene;
 		Prism::Effect* myEffect;
 		Prism::Bar3D* myLeftBar;
 		Prism::Bar3D* myRightBar;
