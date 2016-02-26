@@ -7,7 +7,7 @@
 
 namespace Prism
 {
-	Bar3D::Bar3D(const CU::Vector2<float>& aPositionFromJoint, const CU::Vector2<float>& aQuadSize
+	Bar3D::Bar3D(const CU::Vector2<float>& aQuadSize
 		, int aNumberOfQuads, Effect* aEffect, eBarPosition aBarPosition)
 		: myQuadSize(aQuadSize)
 		, myValue(0.f)
@@ -31,7 +31,7 @@ namespace Prism
 
 		InitBlendState("GUI::BlendState");
 
-		CreateVertices(aPositionFromJoint, aNumberOfQuads);
+		CreateVertices(aNumberOfQuads);
 	}
 
 
@@ -98,7 +98,7 @@ namespace Prism
 		myValue = aValue;
 	}
 
-	void Bar3D::CreateVertices(const CU::Vector2<float>& aPositionFromJoint, int aNumberOfQuads)
+	void Bar3D::CreateVertices(int aNumberOfQuads)
 	{
 		CU::GrowingArray<GUIVertex> vertices(4 * aNumberOfQuads);
 		CU::GrowingArray<CU::Vector4<float>> torusPosition(4 * aNumberOfQuads);
@@ -182,37 +182,39 @@ namespace Prism
 				GUIVertex vertex;
 				if (i == 0)
 				{
-					vertex.myPosition = { aPositionFromJoint.x + myQuadSize.x, aPositionFromJoint.y, 0, 0 };
-					vertex.myPosition.y += myQuadSize.y * i;
+					vertex.myPosition = { myQuadSize.x, 0, 0, 0 };
+					//vertex.myPosition.y += myQuadSize.y * i;
 					vertex.myUV = { 1, 0 };
 					vertices.Add(vertex);
 
-					vertex.myPosition = { aPositionFromJoint.x, aPositionFromJoint.y, 0, 0 };
-					vertex.myPosition.y += myQuadSize.y * i;
-					vertex.myUV = { 0, 0 };
-					vertices.Add(vertex);
-
-					vertex.myPosition = { aPositionFromJoint.x + myQuadSize.x, aPositionFromJoint.y + myQuadSize.y, 0, 0 };
-					vertex.myPosition.y += myQuadSize.y * i;
+					vertex.myPosition = { myQuadSize.x, myQuadSize.y, 0, 0 };
+					//vertex.myPosition.y += myQuadSize.y * i;
 					vertex.myUV = { 1, 1 };
 					vertices.Add(vertex);
 
-					vertex.myPosition = { aPositionFromJoint.x, aPositionFromJoint.y + myQuadSize.y, 0, 0 };
-					vertex.myPosition.y += myQuadSize.y * i;
+					vertex.myPosition = { 0, 0, 0, 0 };
+					//vertex.myPosition.y += myQuadSize.y * i;
+					vertex.myUV = { 0, 0 };
+					vertices.Add(vertex);
+					
+					vertex.myPosition = { 0, myQuadSize.y, 0, 0 };
+					//vertex.myPosition.y += myQuadSize.y * i;
 					vertex.myUV = { 0, 1 };
 					vertices.Add(vertex);
 				}
 				else
 				{
-					vertex.myPosition = { aPositionFromJoint.x + myQuadSize.x, aPositionFromJoint.y, 0, 0 };
-					vertex.myPosition.y += myQuadSize.y * i;
+					vertex.myPosition = { -myQuadSize.x * i, 0, 0, 0 };
+					//vertex.myPosition.x = myQuadSize.x * i;
+					vertex.myUV = { 0, 0 };
+					vertices.Add(vertex);
+					
+					vertex.myPosition = { -myQuadSize.x * i, myQuadSize.y, 0, 0 };
+					//vertex.myPosition.x -= myQuadSize.x * i;
 					vertex.myUV = { 1, 0 };
 					vertices.Add(vertex);
 
-					vertex.myPosition = { aPositionFromJoint.x, aPositionFromJoint.y, 0, 0 };
-					vertex.myPosition.y += myQuadSize.y * i;
-					vertex.myUV = { 0, 0 };
-					vertices.Add(vertex);
+
 				}
 
 			}

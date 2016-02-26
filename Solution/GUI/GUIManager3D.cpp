@@ -21,9 +21,10 @@ namespace GUI
 		//myScene->AddInstance(my3DPlane);
 
 		myGUIBone = aModel->GetCurrentAnimation()->GetHiearchyToBone("ui_jnt3");
-		myLeftBar = new Prism::Bar3D({ -0.1f, -0.01f }, { 0.02f, 0.005f }, 32, myEffect, eBarPosition::LEFT);
-		myRightBar = new Prism::Bar3D({ 0.1f, -0.01f }, { 0.02f, 0.005f }, 32, myEffect, eBarPosition::RIGHT);
-		myTopBar = new Prism::Bar3D({ 0.1f, -0.01f }, { 0.02f, 0.005f }, 32, myEffect, eBarPosition::TOP);
+		myLeftBar = new Prism::Bar3D({ 0.02f, 0.005f }, 32, myEffect, eBarPosition::LEFT);
+		myRightBar = new Prism::Bar3D({ 0.02f, 0.005f }, 32, myEffect, eBarPosition::RIGHT);
+		myTopBar = new Prism::Bar3D({ 0.02f, 0.005f }, 32, myEffect, eBarPosition::TOP);
+		myHealthBar = new Prism::Bar3D({ 0.01f, 0.025f }, 15, myEffect, eBarPosition::HEALTH);
 	}
 
 
@@ -34,6 +35,7 @@ namespace GUI
 		SAFE_DELETE(myLeftBar);
 		SAFE_DELETE(myTopBar);
 		SAFE_DELETE(myRightBar);
+		SAFE_DELETE(myHealthBar)
 	}
 
 	void GUIManager3D::Update(const CU::Matrix44<float>& aOrientation, float aDeltaTime)
@@ -46,6 +48,7 @@ namespace GUI
 		myLeftBar->SetValue(cos(myTestValue));
 		myRightBar->SetValue(sin(myTestValue));
 		myTopBar->SetValue(1.f - tan(myTestValue));
+		myHealthBar->SetValue(cos(myTestValue));
 	}
 
 	void GUIManager3D::Render()
@@ -53,5 +56,6 @@ namespace GUI
 		myLeftBar->Render(*myScene->GetCamera(), myWristOrientation);
 		myRightBar->Render(*myScene->GetCamera(), myWristOrientation);
 		myTopBar->Render(*myScene->GetCamera(), myWristOrientation);
+		myHealthBar->Render(*myScene->GetCamera(), myWristOrientation);
 	}
 }

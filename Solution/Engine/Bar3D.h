@@ -7,7 +7,8 @@ enum class eBarPosition
 {
 	LEFT,
 	TOP,
-	RIGHT
+	RIGHT,
+	HEALTH
 };
 
 namespace Prism
@@ -16,7 +17,7 @@ namespace Prism
 	class Bar3D : public BaseModel
 	{
 	public:
-		Bar3D(const CU::Vector2<float>& aPositionFromJoint, const CU::Vector2<float>& aQuadSize
+		Bar3D(const CU::Vector2<float>& aQuadSize
 			, int aNumberOfQuads, Effect* aEffect, eBarPosition aBarPosition);
 		~Bar3D();
 
@@ -26,7 +27,7 @@ namespace Prism
 		void SetValue(float aValue);
 
 	private:
-		void CreateVertices(const CU::Vector2<float>& aPositionFromJoint, int aNumberOfQuads);
+		void CreateVertices(int aNumberOfQuads);
 		CU::Vector2<float> myQuadSize;
 
 		float myValue;
