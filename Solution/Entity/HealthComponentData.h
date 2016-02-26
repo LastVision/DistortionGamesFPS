@@ -3,5 +3,5 @@
 struct HealthComponentData
 {
 	bool myExistsInEntity = false;
-	float myMaxHealth;
+	int myMaxHealth;
 };

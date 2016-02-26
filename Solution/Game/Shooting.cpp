@@ -28,14 +28,14 @@ Shooting::~Shooting()
 
 void Shooting::Update(float aDelta, const CU::Matrix44<float>& aOrientation)
 {
-	if (CU::InputWrapper::GetInstance()->MouseIsPressed(0) == true && myBullets.Size() < 256)
+	if (CU::InputWrapper::GetInstance()->MouseIsPressed(0) == true)// && myBullets.Size() < 256)
 	{
 		//myBullet->GetPhysEntity()->AddForce({ 0.f, 1.f, 0.f }, 100000.f);
-		ShootAtDirection(aOrientation);
-		//bool test = Prism::PhysicsInterface::GetInstance()->RayCast(aOrientation.GetPos(), aOrientation.GetForward(), 1000.f);
-		//test;
-		//int apa;
-		//apa = 5;
+		//ShootAtDirection(aOrientation);
+		bool test = Prism::PhysicsInterface::GetInstance()->RayCast(aOrientation.GetPos(), aOrientation.GetForward(), 5.f);
+		test;
+		int apa;
+		apa = 5;
 	}
 
 	/*myBullet->Update(aDelta);
