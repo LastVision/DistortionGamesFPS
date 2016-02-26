@@ -29,7 +29,11 @@ Shooting::~Shooting()
 
 void Shooting::Update(float aDelta, const CU::Matrix44<float>& aOrientation)
 {
-	if (CU::InputWrapper::GetInstance()->MouseIsPressed(0) == true)// && myBullets.Size() < 256)
+	if (CU::InputWrapper::GetInstance()->MouseIsPressed(0) == true && myBullets.Size() < 256)
+	{
+		ShootAtDirection(aOrientation);
+	}
+	if (CU::InputWrapper::GetInstance()->MouseIsPressed(1) == true)// && myBullets.Size() < 256)
 	{
 		//myBullet->GetPhysEntity()->AddForce({ 0.f, 1.f, 0.f }, 100000.f);
 		//ShootAtDirection(aOrientation);

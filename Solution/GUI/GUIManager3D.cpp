@@ -44,8 +44,8 @@ namespace GUI
 
 		myWristOrientation = CU::InverseSimple(*myGUIBone.myBind) * (*myGUIBone.myJoint) * aOrientation;
 		myLeftBar->SetValue(cos(myTestValue));
-		myRightBar->SetValue(cos(myTestValue));
-		myTopBar->SetValue(cos(myTestValue));
+		myRightBar->SetValue(sin(myTestValue));
+		myTopBar->SetValue(1.f - tan(myTestValue));
 	}
 
 	void GUIManager3D::Render()
