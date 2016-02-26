@@ -54,6 +54,9 @@
     <ClCompile Include="LobbyState.cpp">
       <Filter>StateStack</Filter>
     </ClCompile>
+    <ClCompile Include="Health.cpp">
+      <Filter>Player</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Game.h" />
@@ -115,6 +118,9 @@
     </ClInclude>
     <ClInclude Include="LobbyState.h">
       <Filter>StateStack</Filter>
+    </ClInclude>
+    <ClInclude Include="Health.h">
+      <Filter>Player</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
