@@ -5,6 +5,12 @@
 #include <thread>
 #include <Utility.h>
 
+#include <NetMessageConnectMessage.h>
+#include <NetMessageOnJoin.h>
+#include <NetMessagePingRequest.h>
+#include <NetMessagePingReply.h>
+#include <NetMessagePosition.h>
+
 #define BUFFERSIZE 512
 
 ServerNetworkManager* ServerNetworkManager::myInstance = nullptr;

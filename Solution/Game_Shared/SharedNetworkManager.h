@@ -3,16 +3,17 @@
 #include <GrowingArray.h>
 #include <StaticArray.h>
 #include <NetworkMessageTypes.h>
-#include <NetMessageConnectMessage.h>
-#include <NetMessageOnJoin.h>
-#include <NetMessagePingRequest.h>
-#include <NetMessagePingReply.h>
-#include <NetMessagePosition.h>
 
 namespace std
 {
 	class thread;
 }
+
+class NetMessageConnectMessage;
+class NetMessageOnJoin;
+class NetMessagePingRequest;
+class NetMessagePingReply;
+class NetMessagePosition;
 
 class SharedNetworkManager
 {

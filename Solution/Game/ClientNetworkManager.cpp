@@ -7,6 +7,12 @@
 #include "NetworkMessageTypes.h"
 #include <thread>
 
+#include <NetMessageConnectMessage.h>
+#include <NetMessageOnJoin.h>
+#include <NetMessagePingRequest.h>
+#include <NetMessagePingReply.h>
+#include <NetMessagePosition.h>
+
 #define BUFFERSIZE 512
 
 ClientNetworkManager* ClientNetworkManager::myInstance = nullptr;

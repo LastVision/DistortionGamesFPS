@@ -1,12 +1,13 @@
 #include "stdafx.h"
 #include "SharedNetworkManager.h"
-
-#include <iostream>
-#include <PostMaster.h>
-#include <PostNetPositionMessage.h>
 #include <sstream>
 #include <thread>
-#include <Windows.h>
+
+#include <NetMessageConnectMessage.h>
+#include <NetMessageOnJoin.h>
+#include <NetMessagePingRequest.h>
+#include <NetMessagePingReply.h>
+#include <NetMessagePosition.h>
 
 #define BUFFERSIZE 512
 #ifdef _DEBUG
