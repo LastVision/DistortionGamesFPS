@@ -43,14 +43,14 @@
     <IntDir>$(SolutionDir)..\temp\$(ProjectName)\</IntDir>
     <TargetName>$(ProjectName)_$(Configuration)</TargetName>
     <ExecutablePath>$(ExecutablePath)</ExecutablePath>
-    <IncludePath>$(SolutionDir)PostMaster\;$(SolutionDir)Network\;$(SolutionDir)CommonUtilities\;$(SolutionDir)DL_Debug\;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)\Memory;$(SolutionDir)PostMaster\;$(SolutionDir)Network\;$(SolutionDir)CommonUtilities\;$(SolutionDir)DL_Debug\;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <OutDir>$(SolutionDir)..\Libs\</OutDir>
     <IntDir>$(SolutionDir)..\temp\$(ProjectName)\</IntDir>
     <TargetName>$(ProjectName)_$(Configuration)</TargetName>
     <ExecutablePath>$(ExecutablePath)</ExecutablePath>
-    <IncludePath>$(SolutionDir)PostMaster\;$(SolutionDir)DL_Debug\;$(SolutionDir)Network\;$(SolutionDir)CommonUtilities\;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)\Memory;$(SolutionDir)PostMaster\;$(SolutionDir)Network\;$(SolutionDir)CommonUtilities\;$(SolutionDir)DL_Debug\;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -97,6 +97,9 @@
     </ProjectReference>
     <ProjectReference Include="..\DL_Debug\DL_Debug.vcxproj">
       <Project>{79d52050-1454-49c9-9186-ab74c959970e}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\Memory\Memory.vcxproj">
+      <Project>{25945336-03d1-42a6-8764-7ef11dbc42e6}</Project>
     </ProjectReference>
     <ProjectReference Include="..\Network\Network.vcxproj">
       <Project>{e907e38a-6ef7-4cb7-bec4-7076444557bd}</Project>

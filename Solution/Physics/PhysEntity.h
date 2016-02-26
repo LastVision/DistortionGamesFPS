@@ -8,6 +8,7 @@ namespace physx
 	class PxRigidDynamic;
 	class PxRigidStatic;
 	class PxTriangleMesh;
+	class PxShape;
 }
 
 namespace Prism
@@ -36,6 +37,7 @@ namespace Prism
 		float myPosition[3];
 		physx::PxRigidDynamic* myDynamicBody;
 		physx::PxRigidStatic* myStaticBody;
+		physx::PxShape** myShapes;
 		ePhysics myPhysicsType;
 	};
 }

@@ -10,3 +10,5 @@
 #include <stdint.h>
 
 #pragma comment(lib, "Ws2_32.lib")
+
+#include <MemoryMacros.h>

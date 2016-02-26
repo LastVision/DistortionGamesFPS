@@ -15,7 +15,8 @@
 namespace Prism
 {
 	PhysEntity::PhysEntity(const PhysEntityData& aPhysData
-		, const CU::Matrix44<float>& aOrientation, const std::string& aFBXPath)
+			, const CU::Matrix44<float>& aOrientation, const std::string& aFBXPath)
+		: myShapes(nullptr)
 	{
 		for (int i = 0; i < 16; ++i)
 		{
@@ -103,12 +104,17 @@ namespace Prism
 			myDynamicBody->setAngularDamping(0.75);
 			myDynamicBody->setLinearVelocity(physx::PxVec3(0, 0, 0));
 			PhysicsInterface::GetInstance()->GetManager()->GetScene()->addActor(*myDynamicBody);
+
+			physx::PxU32 nShapes = myDynamicBody->getNbShapes();
+			myShapes = new physx::PxShape*[nShapes];
 		}
 	}
 
 
 	PhysEntity::~PhysEntity()
 	{
+		delete[] myShapes;
+		myShapes = nullptr;
 	}
 
 	float* PhysEntity::GetPosition()
@@ -126,10 +132,9 @@ namespace Prism
 		DL_ASSERT_EXP(myPhysicsType == ePhysics::DYNAMIC, "Cant update Orientation on STATIC PhysEntities");
 
 		physx::PxU32 nShapes = myDynamicBody->getNbShapes();
-		physx::PxShape** shapes = new physx::PxShape*[nShapes];
-		myDynamicBody->getShapes(shapes, nShapes);
+		myDynamicBody->getShapes(myShapes, nShapes);
 
-		physx::PxTransform pT = physx::PxShapeExt::getGlobalPose(*shapes[0], *myDynamicBody);
+		physx::PxTransform pT = physx::PxShapeExt::getGlobalPose(*myShapes[0], *myDynamicBody);
 		physx::PxTransform graphicsTransform(pT.p, pT.q);
 		physx::PxMat33 m = physx::PxMat33(graphicsTransform.q);
 
@@ -157,8 +162,6 @@ namespace Prism
 		myPosition[0] = graphicsTransform.p.x;
 		myPosition[1] = graphicsTransform.p.y;
 		myPosition[2] = graphicsTransform.p.z;
-
-		delete[] shapes;
 	}
 
 	void PhysEntity::AddForce(const CU::Vector3<float>& aDirection, float aMagnitude)
