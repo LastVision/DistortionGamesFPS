@@ -10,6 +10,7 @@ public:
 
 	void StartServer();
 	void Send(const std::vector<char>& anArray);
+	void Send(const std::vector<char>& anArray, const sockaddr_in& anAddress);
 
 	void Receieve(std::vector<Buffer>& someBuffers);
 
@@ -17,7 +18,6 @@ public:
 private:
 
 	void Send(NetMessageOnJoin join);
-	void Send(const std::vector<char>& anArray, const sockaddr_in& anAddress);
 
 
 	sockaddr_in myServer;

@@ -17,7 +17,7 @@ void main()
 	ServerNetworkManager::Create();
 	ServerNetworkManager::GetInstance()->StartNetwork();
 	
-	float deltaTime;
+	float deltaTime = 0.f;
 	while (true)
 	{
 		CU::TimerManager::GetInstance()->Update();

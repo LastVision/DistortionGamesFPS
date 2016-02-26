@@ -1,5 +1,8 @@
 #pragma once
 #include "../Game_Shared/SharedNetworkManager.h"
+#include <NetMessagePingRequest.h>
+#include <NetMessagePingReply.h>
+
 class ServerNetwork;
 class ServerNetworkManager : public SharedNetworkManager
 {
@@ -16,7 +19,6 @@ private:
 	~ServerNetworkManager();
 	static ServerNetworkManager* myInstance;
 	ServerNetwork* myNetwork;
-
 
 	void HandleMessage(const NetMessageConnectMessage& aMessage, const sockaddr_in& aSender) override;
 

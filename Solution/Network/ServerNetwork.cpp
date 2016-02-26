@@ -69,15 +69,15 @@ void ServerNetwork::StartServer()
 	DWORD nonBlocking = 1;
 	if (ioctlsocket(myListenSocket, FIONBIO, &nonBlocking) != 0)
 	{
-		Utility::PrintEndl("Failed to set non-blocking socket!", Utility::eCOLOR::WHITE_BACK_RED);
+		Utility::PrintEndl("Failed to set non-blocking socket!", (WHITE_BACK | DARK_RED_TEXT));
 	}
 	else
 	{
-		Utility::PrintEndl("Successfully set up non-blocking socket!", Utility::eCOLOR::LIGHT_GREEN);
+		Utility::PrintEndl("Successfully set up non-blocking socket!", LIGHT_GREEN_TEXT);
 	}
 
 
-	Utility::PrintEndl("Server successfully started!", Utility::eCOLOR::LIGHT_GREEN);
+	Utility::PrintEndl("Server successfully started!", LIGHT_GREEN_TEXT);
 
 }
 
@@ -96,7 +96,7 @@ void ServerNetwork::Send(const std::vector<char>& anArray, const sockaddr_in& an
 	{
 		int errorCode = WSAGetLastError();
 		std::string toPrint = "sendto() failed with error code : " + errorCode;
-		Utility::PrintEndl(toPrint, Utility::eCOLOR::WHITE_BACK_RED);
+		Utility::PrintEndl(toPrint, (WHITE_BACK | DARK_RED_TEXT));
 	}
 }
 

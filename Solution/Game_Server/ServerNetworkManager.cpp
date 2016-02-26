@@ -11,6 +11,8 @@ ServerNetworkManager* ServerNetworkManager::myInstance = nullptr;
 
 void ServerNetworkManager::Initiate()
 {
+
+	myClients.Init(16);
 	myIsServer = true;
 	myNetwork = new ServerNetwork();
 	myNetworkID = 0;
@@ -47,7 +49,7 @@ void ServerNetworkManager::StartNetwork()
 {
 	myNetwork->StartServer();
 	__super::StartNetwork();
-
+	myIsOnline = true;
 }
 
 ServerNetworkManager::ServerNetworkManager()
@@ -57,6 +59,20 @@ ServerNetworkManager::ServerNetworkManager()
 
 ServerNetworkManager::~ServerNetworkManager()
 {
+	myIsRunning = false;
+	if (myReceieveThread != nullptr)
+	{
+		myReceieveThread->join();
+		delete myReceieveThread;
+		myReceieveThread = nullptr;
+	}
+
+	if (mySendThread != nullptr)
+	{
+		mySendThread->join();
+		delete mySendThread;
+		mySendThread = nullptr;
+	}
 	delete myNetwork;
 	myNetwork = nullptr;
 }
@@ -84,8 +100,8 @@ void ServerNetworkManager::ReceieveThread()
 		}
 		for (Buffer message : someBuffers)
 		{
+			//Utility::PrintEndl("Server receieved a message.", LIGHT_GREEN_TEXT);
 			myReceieveBuffer[myCurrentBuffer ^ 1].Add(message);
-			Utility::PrintEndl("Server receieved a message.",Utility::eCOLOR::LIGHT_GREEN);
 		}
 	}
 }
@@ -97,9 +113,11 @@ void ServerNetworkManager::SendThread()
 		std::this_thread::sleep_for(std::chrono::nanoseconds(1));
 		for (std::vector<char> arr : mySendBuffer[myCurrentSendBuffer])
 		{
-			myNetwork->Send(arr);
+			for (Connection& connection : myClients)
+			{
+				myNetwork->Send(arr, connection.myAddress);
+			}
 		}
-
 		mySendBuffer[myCurrentSendBuffer].RemoveAll();
 		myCurrentSendBuffer ^= 1;
 	}
@@ -109,6 +127,14 @@ void ServerNetworkManager::CreateConnection(const std::string& aName, const sock
 {
 	/*if (myNames.find(aName) == myNames.end())
 	{*/
+	for (Connection& connection : myClients)
+	{
+		if (connection.myAddress.sin_addr.S_un.S_addr == aSender.sin_addr.S_un.S_addr) //._.
+		{
+			Utility::PrintEndl("User already connected!", (DARK_RED_BACK | WHITE_TEXT));
+			return;
+		}
+	}
 	myIDCount++;
 	Connection newConnection;
 	newConnection.myAddress = aSender;
@@ -118,7 +144,9 @@ void ServerNetworkManager::CreateConnection(const std::string& aName, const sock
 	newConnection.myIsConnected = true;
 	myClients.Add(newConnection);
 	myNames[aName] = 1;
-	
+
+	std::string conn(aName + " connected to the server!");
+	Utility::PrintEndl(conn, LIGHT_GREEN_TEXT);
 
 	//NetMessageConnectMessage toSend;
 	//toSend.Init(aName, myIDCount);

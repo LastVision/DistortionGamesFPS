@@ -83,18 +83,6 @@ void SharedNetworkManager::StartNetwork()
 #endif
 }
 
-void SharedNetworkManager::Update(float aDelta)
-{
-	myPingTime -= aDelta;
-	myMS += aDelta;
-	if (myPingTime <= 0.f)
-	{
-		AddMessage(NetMessagePingRequest());
-		myPingTime = 1.f;
-	}
-	HandleMessage();
-}
-
 SharedNetworkManager::SharedNetworkManager()
 	: myIsOnline(false)
 	, myIsRunning(false)
@@ -105,21 +93,23 @@ SharedNetworkManager::SharedNetworkManager()
 
 SharedNetworkManager::~SharedNetworkManager()
 {
-	myIsRunning = false;
-	if (myReceieveThread != nullptr)
-	{
-		myReceieveThread->join();
-		delete myReceieveThread;
-		myReceieveThread = nullptr;
-	}
 
-	if (mySendThread != nullptr)
-	{
-		mySendThread->join();
-		delete mySendThread;
-		mySendThread = nullptr;
-	}
 }
+
+
+void SharedNetworkManager::Update(float aDelta)
+{
+	SwapBuffers();
+	myPingTime -= aDelta;
+	myResponsTime += aDelta;
+	if (myPingTime <= 0.f)
+	{
+		AddMessage(NetMessagePingRequest());
+		myPingTime = 1.f;
+	}
+	HandleMessage();
+}
+
 
 void SharedNetworkManager::SwapBuffers()
 {
@@ -147,13 +137,19 @@ void SharedNetworkManager::HandleMessage()
 		case eNetMessageType::ON_JOIN:
 			break;
 		case eNetMessageType::PING_REQUEST:
-			AddMessage(NetMessagePingReply());
+		{
+			NetMessagePingRequest request;
+			request.UnPackMessage(buf.myData, buf.myLength);
+			HandleMessage(request, buf.mySenderAddress);
 			break;
+		}
 		case eNetMessageType::PING_REPLY:
-			//DC if bläh
-			myResponsTime = myMS * 1000.f;
-			myMS = 0.f;
+		{
+			NetMessagePingReply reply;
+			reply.UnPackMessage(buf.myData, buf.myLength);
+			HandleMessage(reply, buf.mySenderAddress);
 			break;
+		}
 		case eNetMessageType::POSITION:
 		{
 			NetMessagePosition pos;
@@ -169,24 +165,40 @@ void SharedNetworkManager::HandleMessage()
 
 void SharedNetworkManager::HandleMessage(const NetMessageConnectMessage&, const sockaddr_in&){}
 
+void SharedNetworkManager::HandleMessage(const NetMessagePingRequest& aMessage, const sockaddr_in& aSenderAddress)
+{
+	AddMessage(NetMessagePingReply());
+}
+
+void SharedNetworkManager::HandleMessage(const NetMessagePingReply& aMessage, const sockaddr_in& aSenderAddress)
+{
+	myMS = myResponsTime * 1000.f;
+	myResponsTime = 0.f;
+}
+
 eNetMessageType SharedNetworkManager::ReadType(const char* aBuffer)
 {
 	return static_cast<eNetMessageType>(aBuffer[0]);
 }
 
-unsigned short SharedNetworkManager::GetResponsTime() const
+eNetMessageType SharedNetworkManager::ReadType(const std::vector<char>& aBuffer)
 {
-	return myResponsTime;
+	return static_cast<eNetMessageType>(aBuffer[0]);
+}
+
+float SharedNetworkManager::GetResponsTime() const
+{
+	return myMS;
 }
 
 void SharedNetworkManager::AddNetworkMessage(std::vector<char> aBuffer)
 {
 	if (myIsOnline == true)
 	{
-		if (myIsServer == true)
+		/*if (myIsServer == true && ReadType(aBuffer) == eNetMessageType::PING_REPLY)
 		{
 			std::cout << "Message added to send buffer!\n";
-		}
+		}*/
 		mySendBuffer[myCurrentSendBuffer ^ 1].Add(aBuffer);
 	}
 }

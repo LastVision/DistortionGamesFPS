@@ -104,6 +104,20 @@ ClientNetworkManager::ClientNetworkManager()
 
 ClientNetworkManager::~ClientNetworkManager()
 {
+	myIsRunning = false;
+	if (myReceieveThread != nullptr)
+	{
+		myReceieveThread->join();
+		delete myReceieveThread;
+		myReceieveThread = nullptr;
+	}
+
+	if (mySendThread != nullptr)
+	{
+		mySendThread->join();
+		delete mySendThread;
+		mySendThread = nullptr;
+	}
 	delete myNetwork;
 	myNetwork = nullptr;
 }

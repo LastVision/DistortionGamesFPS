@@ -4,6 +4,9 @@
 #include <StaticArray.h>
 #include <NetworkMessageTypes.h>
 #include <NetMessageConnectMessage.h>
+#include <NetMessagePingRequest.h>
+#include <NetMessagePingReply.h>
+
 namespace std
 {
 	class thread;
@@ -21,8 +24,10 @@ public:
 	void AddMessage(T& aMessage);
 	
 	eNetMessageType ReadType(const char* aBuffer);
-	unsigned short GetResponsTime() const;
+	eNetMessageType ReadType(const std::vector<char>& aBuffer);
+	float GetResponsTime() const;
 
+	void SwapBuffers();
 protected:
 	void AddNetworkMessage(std::vector<char> aBuffer);
 
@@ -33,15 +38,12 @@ protected:
 	virtual void SendThread() = 0;
 	virtual void ReceieveThread() = 0;
 
-	void SwapBuffers();
 
 	void HandleMessage();
+
 	virtual void HandleMessage(const NetMessageConnectMessage& aMessage, const sockaddr_in& aSenderAddress);
-
-
-
-
-
+	virtual void HandleMessage(const NetMessagePingRequest& aMessage, const sockaddr_in& aSenderAddress);
+	virtual void HandleMessage(const NetMessagePingReply& aMessage, const sockaddr_in& aSenderAddress);
 
 	std::thread* myReceieveThread;
 	std::thread* mySendThread;
@@ -61,7 +63,7 @@ protected:
 
 	
 	float myPingTime;
-	unsigned short myResponsTime;
+	float myResponsTime;
 	float myMS;
 
 };
