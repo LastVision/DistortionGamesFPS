@@ -4,7 +4,7 @@
 
 HealthComponent::HealthComponent(Entity& anEntity, const HealthComponentData& someData)
 	: Component(anEntity)
-	, myMaxHealth(someData.myMaxHealth)
+	, myData(someData)
 	, myCurrentHealth(someData.myMaxHealth)
 {
 }
@@ -26,13 +26,13 @@ void HealthComponent::TakeDamage(float aDamage)
 void HealthComponent::Heal(float anAmount)
 {
 	myCurrentHealth += anAmount;
-	if (myCurrentHealth > myMaxHealth)
+	if (myCurrentHealth > myData.myMaxHealth)
 	{
-		myCurrentHealth = myMaxHealth;
+		myCurrentHealth = myData.myMaxHealth;
 	}
 }
 
 void HealthComponent::Reset()
 {
-	myCurrentHealth = myMaxHealth;
+	myCurrentHealth = myData.myMaxHealth;
 }

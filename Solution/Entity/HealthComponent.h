@@ -19,8 +19,8 @@ public:
 	eComponentType GetType() override;
 
 private:
+	const HealthComponentData& myData;
 	float myCurrentHealth;
-	float myMaxHealth;
 };
 
 inline static eComponentType GetTypeStatic()

@@ -99,6 +99,9 @@
     <ProjectReference Include="..\Game_Shared\Game_Shared.vcxproj">
       <Project>{859757cc-39f4-405b-8e3f-8028de4b1fd6}</Project>
     </ProjectReference>
+    <ProjectReference Include="..\Network\Network.vcxproj">
+      <Project>{e907e38a-6ef7-4cb7-bec4-7076444557bd}</Project>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

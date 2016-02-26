@@ -29,7 +29,7 @@
 #include <ScriptSystem.h>
 #include "InGameState.h"
 
-
+#include "ClientNetworkManager.h"
 
 Game::Game()
 	: myLockMouse(true)
@@ -41,8 +41,8 @@ Game::Game()
 	, myShowSystemInfo(true)
 #endif
 {
-	//NetworkManager::Create(false);
-	//NetworkManager::GetInstance()->StartNetwork();
+	ClientNetworkManager::Create();
+	ClientNetworkManager::GetInstance()->StartNetwork();
 	PostMaster::Create();
 	Prism::Audio::AudioInterface::CreateInstance();
 
@@ -70,6 +70,7 @@ Game::~Game()
 	PostMaster::Destroy();
 	myStateStack.Clear();
 	Prism::DebugDrawer::Destroy();
+	ClientNetworkManager::Destroy();
 	EntityFactory::Destroy();
 //	NetworkManager::Destroy();
 }

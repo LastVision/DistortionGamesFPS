@@ -42,11 +42,13 @@
     <OutDir>$(SolutionDir)..\Workbed\bin\</OutDir>
     <IntDir>$(SolutionDir)..\temp\$(ProjectName)\</IntDir>
     <TargetName>$(ProjectName)_$(Configuration)</TargetName>
+    <IncludePath>$(SolutionDir)Timer\;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <IntDir>$(SolutionDir)..\temp\$(ProjectName)\</IntDir>
     <OutDir>$(SolutionDir)..\Workbed\bin\</OutDir>
     <TargetName>$(ProjectName)_$(Configuration)</TargetName>
+    <IncludePath>$(SolutionDir)Timer\;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -54,7 +56,7 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <PrecompiledHeader>Use</PrecompiledHeader>
-      <AdditionalIncludeDirectories>$(SolutionDir)DL_Debug\;$(SolutionDir)CommonUtilities\;$(SolutionDir)Network\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)DL_Debug\;$(SolutionDir)CommonUtilities\;$(SolutionDir)Network\;$(SolutionDir)Game_Shared\;$(SolutionDir)Game_Server\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalOptions>-D_SCL_SECURE_NO_WARNINGS %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
@@ -69,7 +71,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
       <PrecompiledHeader>Use</PrecompiledHeader>
-      <AdditionalIncludeDirectories>$(SolutionDir)DL_Debug\;$(SolutionDir)CommonUtilities\;$(SolutionDir)Network\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)DL_Debug\;$(SolutionDir)CommonUtilities\;$(SolutionDir)Network\;$(SolutionDir)Game_Shared\;$(SolutionDir)Game_Server\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalOptions>-D_SCL_SECURE_NO_WARNINGS %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
@@ -89,8 +91,17 @@
     <ClInclude Include="stdafx.h" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Game_Server\Game_Server.vcxproj">
+      <Project>{8f1edd17-bc16-4b0e-9260-dc476ac33536}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\Game_Shared\Game_Shared.vcxproj">
+      <Project>{859757cc-39f4-405b-8e3f-8028de4b1fd6}</Project>
+    </ProjectReference>
     <ProjectReference Include="..\Network\Network.vcxproj">
       <Project>{e907e38a-6ef7-4cb7-bec4-7076444557bd}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\Timer\Timer.vcxproj">
+      <Project>{62c9b6f1-e90e-49c7-b0c6-3809fca2065d}</Project>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

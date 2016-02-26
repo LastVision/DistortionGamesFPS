@@ -19,16 +19,16 @@ struct Buffer
 {
 	char myData[512];
 	int myLength;
+	sockaddr_in mySenderAddress;
 };
 
 struct Connection
 {
-	sockaddr_in myAdress;
+	sockaddr_in myAddress;
 	std::string myName;
 	int myPingCount;
 	short myID;
 	bool myIsConnected;
-	CU::Vector3<float> myPosition;
 };
 
 struct OtherClients
