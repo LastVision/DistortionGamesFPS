@@ -113,7 +113,7 @@ void Player::Update(float aDelta)
 		if (myOrientation.GetPos().x != prevPos.x || myOrientation.GetPos().y != prevPos.y || myOrientation.GetPos().z != prevPos.z)
 		{
 			ClientNetworkManager::GetInstance()->AddMessage(NetMessagePosition(myOrientation.GetPos()));
-			mySendTime = 1 / 120.f;
+			mySendTime = 1 / 30.f;
 		}
 	}
 

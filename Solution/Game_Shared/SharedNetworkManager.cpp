@@ -102,7 +102,10 @@ void SharedNetworkManager::Update(float aDelta)
 	{
 		myResponsTime = 0.f;
 		AddMessage(NetMessagePingRequest());
+		myDataToPrint = myDataSent;
+		myDataSent = 0;
 		myPingTime = 1.f;
+
 	}
 	HandleMessage();
 }
@@ -167,6 +170,11 @@ eNetMessageType SharedNetworkManager::ReadType(const std::vector<char>& aBuffer)
 unsigned short SharedNetworkManager::GetResponsTime() const
 {
 	return static_cast<unsigned short>(myMS);
+}
+
+double SharedNetworkManager::GetDataSent() const
+{
+	return myDataToPrint / 1024;
 }
 
 void SharedNetworkManager::AddNetworkMessage(std::vector<char> aBuffer)

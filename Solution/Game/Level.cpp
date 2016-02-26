@@ -58,8 +58,10 @@ void Level::Update(const float aDeltaTime)
 		ClientNetworkManager::GetInstance()->ConnectToServer("81.170.227.192");
 	}
 	unsigned short ms = ClientNetworkManager::GetInstance()->GetResponsTime();
+	float kbs = ClientNetworkManager::GetInstance()->GetDataSent();
 
 	DEBUG_PRINT(ms);
+	DEBUG_PRINT(kbs);
 	Prism::DebugDrawer::GetInstance()->RenderLinesToScreen(*myPlayer->GetCamera());
 
 	Prism::PhysicsInterface::GetInstance()->Update();

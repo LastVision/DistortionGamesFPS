@@ -30,8 +30,12 @@ public:
 	eNetMessageType ReadType(const char* aBuffer);
 	eNetMessageType ReadType(const std::vector<char>& aBuffer);
 	unsigned short GetResponsTime() const;
+	double GetDataSent() const;
 
 	void SwapBuffers();
+
+
+
 protected:
 	void AddNetworkMessage(std::vector<char> aBuffer);
 
@@ -73,6 +77,9 @@ protected:
 	float myResponsTime;
 	float myMS;
 
+	double myDataSent;
+	double myDataToPrint;
+
 };
 
 template<typename T>
@@ -83,6 +90,7 @@ inline void SharedNetworkManager::AddMessage(T& aMessage)
 		aMessage.mySenderID = myNetworkID;
 	}
 	aMessage.PackMessage();
+	myDataSent += aMessage.myStream.size() * sizeof(char);
 	AddNetworkMessage(aMessage.myStream);
 }
 

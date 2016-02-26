@@ -71,7 +71,7 @@ void ClientNetworkManager::HandleMessage(const NetMessagePingRequest& aMessage, 
 {
 	NetMessagePingReply reply;
 	reply.PackMessage();
-
+	myDataSent += reply.myStream.size() * sizeof(char);
 	myNetwork->Send(reply.myStream);
 }
 
