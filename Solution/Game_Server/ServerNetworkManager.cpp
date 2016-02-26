@@ -92,7 +92,6 @@ void ServerNetworkManager::ReceieveThread()
 		if (someBuffers.size() == 0)
 		{
 			int error = WSAGetLastError();
-			continue;
 		}
 		for (Buffer message : someBuffers)
 		{

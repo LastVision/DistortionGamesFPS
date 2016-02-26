@@ -30,14 +30,13 @@ public:
 	unsigned short GetResponsTime() const;
 	double GetDataSent() const;
 
-	void SwapBuffers();
+	void SwapBuffer();
 
 	void ReceieveIsDone();
 	void MainIsDone();
 
 	void WaitForMain();
 	void WaitForReceieve();
-
 
 protected:
 	void AddNetworkMessage(std::vector<char> aBuffer);

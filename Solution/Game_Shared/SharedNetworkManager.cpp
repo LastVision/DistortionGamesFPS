@@ -96,22 +96,22 @@ SharedNetworkManager::~SharedNetworkManager()
 
 void SharedNetworkManager::Update(float aDelta)
 {
-	SwapBuffers();
+	SwapBuffer();
 	myPingTime -= aDelta;
 	myResponsTime += aDelta;
 	if (myPingTime <= 0.f)
 	{
 		myResponsTime = 0.f;
-		//AddMessage(NetMessagePingRequest());
+		AddMessage(NetMessagePingRequest());
 		myDataToPrint = myDataSent;
 		myDataSent = 0;
 		myPingTime = 1.f;
 	}
+	HandleMessage();
 }
 
-void SharedNetworkManager::SwapBuffers()
+void SharedNetworkManager::SwapBuffer()
 {
-	//wait 
 	myReceieveBuffer[myCurrentBuffer].RemoveAll();
 	myCurrentBuffer ^= 1;
 }
