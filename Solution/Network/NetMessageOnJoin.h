@@ -4,9 +4,8 @@ class NetMessageOnJoin : public NetMessage
 {
 public:
 	NetMessageOnJoin();
+	NetMessageOnJoin(unsigned short aSenderID);
 	~NetMessageOnJoin();
-	void Init();
-
 
 protected:
 	

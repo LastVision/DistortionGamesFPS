@@ -4,8 +4,12 @@
 #include <StaticArray.h>
 #include <NetworkMessageTypes.h>
 #include <NetMessageConnectMessage.h>
+#include <NetMessageOnJoin.h>
 #include <NetMessagePingRequest.h>
 #include <NetMessagePingReply.h>
+#include <NetMessagePosition.h>
+
+
 
 namespace std
 {
@@ -25,7 +29,7 @@ public:
 	
 	eNetMessageType ReadType(const char* aBuffer);
 	eNetMessageType ReadType(const std::vector<char>& aBuffer);
-	float GetResponsTime() const;
+	unsigned short GetResponsTime() const;
 
 	void SwapBuffers();
 protected:
@@ -38,12 +42,15 @@ protected:
 	virtual void SendThread() = 0;
 	virtual void ReceieveThread() = 0;
 
-
+	template<typename T> 
+	void UnpackAndHandle(T& aMessage, Buffer& aBuffer);
 	void HandleMessage();
 
 	virtual void HandleMessage(const NetMessageConnectMessage& aMessage, const sockaddr_in& aSenderAddress);
+	virtual void HandleMessage(const NetMessageOnJoin& aMessage, const sockaddr_in& aSenderAddress);
 	virtual void HandleMessage(const NetMessagePingRequest& aMessage, const sockaddr_in& aSenderAddress);
 	virtual void HandleMessage(const NetMessagePingReply& aMessage, const sockaddr_in& aSenderAddress);
+	virtual void HandleMessage(const NetMessagePosition& aMessage, const sockaddr_in& aSenderAddress);
 
 	std::thread* myReceieveThread;
 	std::thread* mySendThread;
@@ -73,5 +80,12 @@ inline void SharedNetworkManager::AddMessage(T& aMessage)
 {
 	aMessage.PackMessage();
 	AddNetworkMessage(aMessage.myStream);
+}
+
+template<typename T>
+void SharedNetworkManager::UnpackAndHandle(T& aMessage, Buffer& aBuffer)
+{
+	aMessage.UnPackMessage(aBuffer.myData, aBuffer.myLength);
+	HandleMessage(aMessage, aBuffer.mySenderAddress);
 }
 

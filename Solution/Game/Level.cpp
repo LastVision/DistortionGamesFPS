@@ -55,9 +55,11 @@ void Level::Update(const float aDeltaTime)
 
 	if (CU::InputWrapper::GetInstance()->KeyDown(DIK_C) == true)
 	{
-		ClientNetworkManager::GetInstance()->ConnectToServer();
+		ClientNetworkManager::GetInstance()->ConnectToServer("81.170.227.192");
 	}
-	DEBUG_PRINT(ClientNetworkManager::GetInstance()->GetResponsTime());
+	unsigned short ms = ClientNetworkManager::GetInstance()->GetResponsTime();
+
+	DEBUG_PRINT(ms);
 	Prism::DebugDrawer::GetInstance()->RenderLinesToScreen(*myPlayer->GetCamera());
 
 	Prism::PhysicsInterface::GetInstance()->Update();
@@ -68,10 +70,10 @@ void Level::Render()
 	myScene->Render();
 	myPlayer->Render();
 
-	/*for (int i = 0; i < myClients.Size(); i++)
+	for (int i = 0; i < ClientNetworkManager::GetInstance()->GetClients().Size(); i++)
 	{
-		Prism::DebugDrawer::GetInstance()->RenderBox(myClients[i].myPosition, eColorDebug::BLUE, 1.f);
-	}*/
+		Prism::DebugDrawer::GetInstance()->RenderBox(ClientNetworkManager::GetInstance()->GetClients()[i].myPosition, eColorDebug::BLUE, 1.f);
+	}
 
 
 }

@@ -5,11 +5,97 @@
 #include "NetMessageConnectMessage.h"
 #include <DL_Debug.h>
 #include <thread>
-
+#include "NetworkMessageTypes.h"
 #define BUFFERSIZE 512
 
 
 ClientNetworkManager* ClientNetworkManager::myInstance = nullptr;
+
+ClientNetworkManager::ClientNetworkManager()
+{
+}
+
+ClientNetworkManager::~ClientNetworkManager()
+{
+	myIsRunning = false;
+	if (myReceieveThread != nullptr)
+	{
+		myReceieveThread->join();
+		delete myReceieveThread;
+		myReceieveThread = nullptr;
+	}
+
+	if (mySendThread != nullptr)
+	{
+		mySendThread->join();
+		delete mySendThread;
+		mySendThread = nullptr;
+	}
+	delete myNetwork;
+	myNetwork = nullptr;
+}
+
+void ClientNetworkManager::Initiate()
+{
+	myIsServer = false;
+	myNetwork = new ClientNetwork();
+	myNetworkID = 0;
+	__super::Initiate();
+	myClients.Init(16);
+}
+
+void ClientNetworkManager::Create()
+{
+	if (myInstance == nullptr)
+	{
+		myInstance = new ClientNetworkManager();
+		myInstance->Initiate();
+	}
+}
+
+void ClientNetworkManager::Destroy()
+{
+	delete myInstance;
+	myInstance = nullptr;
+}
+
+void ClientNetworkManager::StartNetwork()
+{
+	myNetwork->StartNetwork();
+	__super::StartNetwork();
+}
+
+void ClientNetworkManager::HandleMessage(const NetMessagePingRequest& aMessage, const sockaddr_in& aSenderAddress)
+{
+	NetMessagePingReply reply;
+	reply.PackMessage();
+
+	myNetwork->Send(reply.myStream);
+}
+
+void ClientNetworkManager::HandleMessage(const NetMessageConnectMessage& aMessage, const sockaddr_in& aSenderAddress)
+{
+	myNetworkID = aMessage.myServerID;
+	for (unsigned short i : aMessage.myClientsOnServer)
+	{
+		if (i != myNetworkID)
+		{
+			myClients.Add(OtherClients(i));
+		}
+	}
+}
+
+void ClientNetworkManager::HandleMessage(const NetMessageOnJoin& aMessage, const sockaddr_in& aSenderAddress)
+{
+	for (OtherClients& client : myClients)
+	{
+		if (client.myID == aMessage.mySenderID)
+		{
+			return;
+		}
+	}
+	myClients.Add(OtherClients(aMessage.mySenderID));
+}
 
 void ClientNetworkManager::ReceieveThread()
 {
@@ -49,34 +135,7 @@ void ClientNetworkManager::SendThread()
 	}
 }
 
-void ClientNetworkManager::Initiate()
-{
-	myIsServer = false;
-	myNetwork = new ClientNetwork();
-	myNetworkID = 0;
-	__super::Initiate();
-}
 
-void ClientNetworkManager::Create()
-{
-	if (myInstance == nullptr)
-	{
-		myInstance = new ClientNetworkManager();
-		myInstance->Initiate();
-	}
-}
-
-void ClientNetworkManager::Destroy()
-{
-	delete myInstance;
-	myInstance = nullptr;
-}
-
-void ClientNetworkManager::StartNetwork()
-{
-	myNetwork->StartNetwork();
-	__super::StartNetwork();
-}
 
 void ClientNetworkManager::ConnectToServer(const char* aServerIP)
 {
@@ -86,6 +145,11 @@ void ClientNetworkManager::ConnectToServer(const char* aServerIP)
 	DWORD username_len = 256 + 1;
 	GetUserNameA(username, &username_len);
 	AddMessage(NetMessageConnectMessage(username, -1));
+}
+
+const CU::GrowingArray<OtherClients>& ClientNetworkManager::GetClients()
+{
+	return myClients;
 }
 
 ClientNetworkManager* ClientNetworkManager::GetInstance()
@@ -98,26 +162,3 @@ ClientNetworkManager* ClientNetworkManager::GetInstance()
 	return nullptr;
 }
 
-ClientNetworkManager::ClientNetworkManager()
-{
-}
-
-ClientNetworkManager::~ClientNetworkManager()
-{
-	myIsRunning = false;
-	if (myReceieveThread != nullptr)
-	{
-		myReceieveThread->join();
-		delete myReceieveThread;
-		myReceieveThread = nullptr;
-	}
-
-	if (mySendThread != nullptr)
-	{
-		mySendThread->join();
-		delete mySendThread;
-		mySendThread = nullptr;
-	}
-	delete myNetwork;
-	myNetwork = nullptr;
-}

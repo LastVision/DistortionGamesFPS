@@ -15,7 +15,7 @@ public:
 
 	std::string myName;
 	short myServerID;
-	//CU::GrowingArray<unsigned short> myClientsOnServer;
+	CU::GrowingArray<unsigned short> myClientsOnServer;
 protected:
 
 	void DoSerialize(StreamType& aStream) override;

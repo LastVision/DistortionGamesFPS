@@ -2,18 +2,20 @@
 #include "NetMessageOnJoin.h"
 #include "NetworkMessageTypes.h"
 
-NetMessageOnJoin::NetMessageOnJoin()
+NetMessageOnJoin::NetMessageOnJoin(unsigned short anID)
 {
+	myID = int(eNetMessageType::ON_JOIN);
+	mySenderID = anID;
 }
 
+
+NetMessageOnJoin::NetMessageOnJoin()
+{
+	myID = int(eNetMessageType::ON_JOIN);
+}
 
 NetMessageOnJoin::~NetMessageOnJoin()
 {
-}
-
-void NetMessageOnJoin::Init()
-{
-	myID = int(eNetMessageType::ON_JOIN);
 }
 
 void NetMessageOnJoin::DoSerialize(StreamType& aStream)
