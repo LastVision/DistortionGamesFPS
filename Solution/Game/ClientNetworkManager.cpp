@@ -2,9 +2,6 @@
 #include "ClientNetworkManager.h"
 
 #include "ClientNetwork.h"
-#include <DL_Debug.h>
-#include "NetMessageConnectMessage.h"
-#include "NetworkMessageTypes.h"
 #include <thread>
 
 #include <NetMessageConnectMessage.h>
@@ -93,11 +90,6 @@ void ClientNetworkManager::ReceieveThread()
 
 		std::vector<Buffer> someBuffers;
 		myNetwork->Receieve(someBuffers);
-
-		if (someBuffers.size() == 0)
-		{
-			int error = WSAGetLastError();
-		}
 		for (Buffer message : someBuffers)
 		{
 			myReceieveBuffer[myCurrentBuffer ^ 1].Add(message);
@@ -139,6 +131,8 @@ const CU::GrowingArray<OtherClients>& ClientNetworkManager::GetClients()
 
 void ClientNetworkManager::HandleMessage(const NetMessagePingRequest& aMessage, const sockaddr_in& aSenderAddress)
 {
+	aMessage;
+	aSenderAddress;
 	NetMessagePingReply reply;
 	reply.PackMessage();
 	myDataSent += reply.myStream.size() * sizeof(char);
@@ -147,6 +141,7 @@ void ClientNetworkManager::HandleMessage(const NetMessagePingRequest& aMessage, 
 
 void ClientNetworkManager::HandleMessage(const NetMessageConnectMessage& aMessage, const sockaddr_in& aSenderAddress)
 {
+	aSenderAddress;
 	myNetworkID = aMessage.myServerID;
 	if (aMessage.myOtherClientID != myNetworkID)
 	{
@@ -156,6 +151,7 @@ void ClientNetworkManager::HandleMessage(const NetMessageConnectMessage& aMessag
 
 void ClientNetworkManager::HandleMessage(const NetMessageOnJoin& aMessage, const sockaddr_in& aSenderAddress)
 {
+	aSenderAddress;
 	for (OtherClients& client : myClients)
 	{
 		if (client.myID == aMessage.mySenderID)
@@ -172,6 +168,7 @@ void ClientNetworkManager::HandleMessage(const NetMessageOnJoin& aMessage, const
 
 void ClientNetworkManager::HandleMessage(const NetMessagePosition& aMessage, const sockaddr_in& aSenderAddress)
 {
+	aSenderAddress;
 	for (OtherClients &client : myClients)
 	{
 		if (client.myID == aMessage.mySenderID)

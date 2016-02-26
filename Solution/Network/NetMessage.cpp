@@ -21,7 +21,7 @@ void NetMessage::UnPackMessage(char* aMessage, int aSize)
 {
 	if (aSize > 0)
 	{
-		for (unsigned int i = 0; i < aSize; ++i)
+		for (int i = 0; i < aSize; ++i)
 		{
 			myStream.push_back(aMessage[i]);
 		}
