@@ -19,6 +19,10 @@ namespace Prism
 
 		bool RayCast(const CU::Vector3<float>& aOrigin, const CU::Vector3<float>& aNormalizedDirection, float aMaxRayDistance);
 
+		int CreatePlayerController(const CU::Vector3<float>& aStartPosition);
+		void Move(int aId, const CU::Vector3<float>& aDirection, float aMinDisplacement, float aDeltaTime);
+		void GetPosition(int aId, CU::Vector3<float>& aPositionOut);
+
 	private:
 		PhysicsInterface();
 		~PhysicsInterface();

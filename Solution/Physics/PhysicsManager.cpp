@@ -9,6 +9,7 @@
 #pragma comment(lib, "PhysX\\vc12win32\\PxTaskDEBUG.lib")
 #pragma comment(lib, "PhysX\\vc12win32\\PhysX3ExtensionsDEBUG.lib")
 #pragma comment(lib, "PhysX\\vc12win32\\PhysXVisualDebuggerSDKDEBUG.lib")
+#pragma comment(lib, "PhysX\\vc12win32\\PhysX3CharacterKinematicDEBUG_x86.lib")
 #else
 #pragma comment(lib, "PhysX\\vc12win32\\PhysX3_x86.lib")
 #pragma comment(lib, "PhysX\\vc12win32\\PhysX3Common_x86.lib")
@@ -17,6 +18,7 @@
 #pragma comment(lib, "PhysX\\vc12win32\\PxTask.lib")
 #pragma comment(lib, "PhysX\\vc12win32\\PhysX3Extensions.lib")
 #pragma comment(lib, "PhysX\\vc12win32\\PhysXVisualDebuggerSDK.lib")
+#pragma comment(lib, "PhysX\\vc12win32\\PhysX3CharacterKinematic_x86.lib")
 #endif
 
 #include <pxphysicsapi.h>
@@ -69,6 +71,9 @@ namespace Prism
 			DL_ASSERT("Failed to createScene");
 		}
 
+
+		
+
 		myScene->setVisualizationParameter(physx::PxVisualizationParameter::eSCALE, 1.f);
 		myScene->setVisualizationParameter(physx::PxVisualizationParameter::eCOLLISION_SHAPES, 1.f);
 
@@ -89,7 +94,7 @@ namespace Prism
 		myPhysicsSDK->getVisualDebugger()->setVisualDebuggerFlag(physx::PxVisualDebuggerFlag::eTRANSMIT_SCENEQUERIES, true);
 #endif
 
-		physx::PxMaterial* material = myPhysicsSDK->createMaterial(0.5, 0.5, 0.5);
+		myDefaultMaterial = myPhysicsSDK->createMaterial(0.5, 0.5, 0.5);
 		//physx::PxReal d = 0.0f;
 		physx::PxTransform pose = physx::PxTransform(physx::PxVec3(0.f, -10.f, 0.f), physx::PxQuat(physx::PxHalfPi, physx::PxVec3(0.f, 0.f, 1.f)));
 		physx::PxRigidStatic* plane = myPhysicsSDK->createRigidStatic(pose);
@@ -98,18 +103,22 @@ namespace Prism
 			DL_ASSERT("Failed to create plane");
 		}
 
-		physx::PxShape* shape = plane->createShape(physx::PxPlaneGeometry(), *material);
+		physx::PxShape* shape = plane->createShape(physx::PxPlaneGeometry(), *myDefaultMaterial);
 		if (!shape)
 		{
 			DL_ASSERT("Failed to create shape");
 		}
 
 		myScene->addActor(*plane);
+		myControllerManager = PxCreateControllerManager(*myScene);
+
+		myControllerManager->setOverlapRecoveryModule(true);
 	}
 
 
 	PhysicsManager::~PhysicsManager()
 	{
+		myControllerManager->release();
 	}
 
 	void PhysicsManager::Update()
@@ -157,5 +166,34 @@ namespace Prism
 	void PhysicsManager::onPvdDisconnected(physx::debugger::comm::PvdConnection&)
 	{
 		myDebugConnection->release();
+	}
+
+	int PhysicsManager::CreatePlayerController(const CU::Vector3<float>& aStartPosition)
+	{
+		physx::PxCapsuleControllerDesc controllerDesc;
+
+		//controllerDesc.climbingMode = physx::PxCapsuleClimbingMode::eEASY;
+		controllerDesc.height = 1.5f;
+		controllerDesc.radius = 0.25f;
+		controllerDesc.material = myDefaultMaterial;
+		controllerDesc.position = physx::PxExtendedVec3(aStartPosition.x, aStartPosition.y, aStartPosition.z);//fix
+
+		physx::PxController* controller = myControllerManager->createController(controllerDesc);
+
+		return myControllerManager->getNbControllers() - 1;
+	}
+
+	void PhysicsManager::Move(int aId, const CU::Vector3<float>& aDirection, float aMinDisplacement, float aDeltaTime)
+	{
+		physx::PxControllerFilters filter;
+		myControllerManager->getController(aId)->move(physx::PxVec3(aDirection.x, aDirection.y, aDirection.z), aMinDisplacement, aDeltaTime, filter, nullptr);
+	}
+
+	void PhysicsManager::GetPosition(int aId, CU::Vector3<float>& aPositionOut)
+	{
+		const physx::PxExtendedVec3& pos = myControllerManager->getController(aId)->getFootPosition();
+		aPositionOut.x = pos.x;
+		aPositionOut.y = pos.y;
+		aPositionOut.z = pos.z;
 	}
 }

@@ -1,16 +1,21 @@
 #include "stdafx.h"
 #include <InputWrapper.h>
 #include "Movement.h"
+#include <PhysicsInterface.h>
 #include <XMLReader.h>
 
 Movement::Movement(CU::Matrix44<float>& anOrientation, XMLReader& aReader, tinyxml2::XMLElement* anElement)
 	: myPitch(CU::Vector3<float>(0, 1.f, 0), 0)
 	, myYaw(CU::Vector3<float>(1.f, 0, 0), 0)
 	, myOrientation(anOrientation)
+	, myCapsuleControllerId(-1)
+	, myVerticalSpeed(-1.f)
 {
 	aReader.ForceReadAttribute(aReader.ForceFindFirstChild(anElement, "speed"), "value", mySpeed);
 	aReader.ForceReadAttribute(aReader.ForceFindFirstChild(anElement, "rotationSpeed"), "value", myRotationSpeed);
 	aReader.ForceReadAttribute(aReader.ForceFindFirstChild(anElement, "sprintMultiplier"), "value", mySprintMultiplier);
+
+	myCapsuleControllerId = Prism::PhysicsInterface::GetInstance()->CreatePlayerController(anOrientation.GetPos());
 }
 
 
@@ -27,6 +32,15 @@ void Movement::Update(float aDelta)
 
 void Movement::Move(float aDelta)
 {
+	if (CU::InputWrapper::GetInstance()->KeyDown(DIK_SPACE))
+	{
+		myVerticalSpeed = 0.25f;
+	}
+
+	myVerticalSpeed -= aDelta;
+
+	myVerticalSpeed = fmaxf(myVerticalSpeed, -0.5f);
+
 	CU::Vector3<float> movement;
 	if (CU::InputWrapper::GetInstance()->KeyIsPressed(DIK_S))
 	{
@@ -45,19 +59,30 @@ void Movement::Move(float aDelta)
 		movement.x += 1.f;
 	}
 
-	CU::Normalize(movement);
 
+	movement = movement * myOrientation;
+
+	movement.y = 0;
+	CU::Normalize(movement);
+	movement *= mySpeed;
 	if (CU::InputWrapper::GetInstance()->KeyIsPressed(DIK_LSHIFT))
 	{
 		movement *= mySprintMultiplier;
 	}
+	movement.y = myVerticalSpeed;
 
-	CU::Vector3<float> forward = CU::Cross(myOrientation.GetRight(), CU::Vector3<float>(0.f, 1.f, 0.f));
+	Prism::PhysicsInterface::GetInstance()->Move(myCapsuleControllerId, movement, 0.05f, aDelta);
 
-	CU::Normalize(forward);
+	CU::Vector3<float> pos;
+	Prism::PhysicsInterface::GetInstance()->GetPosition(myCapsuleControllerId, pos);
 
-	myOrientation.SetPos(myOrientation.GetPos() + forward * movement.z * mySpeed * aDelta);
-	myOrientation.SetPos(myOrientation.GetPos() + myOrientation.GetRight() * movement.x * mySpeed * aDelta);
+	myOrientation.SetPos(pos);
+	//CU::Vector3<float> forward = CU::Cross(myOrientation.GetRight(), CU::Vector3<float>(0.f, 1.f, 0.f));
+
+	//CU::Normalize(forward);
+
+	//myOrientation.SetPos(myOrientation.GetPos() + forward * movement.z * mySpeed * aDelta);
+	//myOrientation.SetPos(myOrientation.GetPos() + myOrientation.GetRight() * movement.x * mySpeed * aDelta);
 }
 
 void Movement::Rotate()

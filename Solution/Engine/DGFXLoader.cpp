@@ -53,7 +53,7 @@ namespace Prism
 #ifndef RELEASE_BUILD
 		if (CheckIfFbxIsNewer(dgfxFile) == true)
 		{
-			DL_MESSAGE_BOX("Found a FBX-File thats newer than the DGFX-File, did you forget to run the tool?", "Old DGFX", MB_ICONQUESTION);
+			DL_ASSERT("Found a FBX-File thats newer than the DGFX-File, did you forget to run the tool?");
 		}
 #endif
 
@@ -94,7 +94,7 @@ namespace Prism
 #ifndef RELEASE_BUILD
 		if (CheckIfFbxIsNewer(dgfxFile) == true)
 		{
-			DL_MESSAGE_BOX("Found a FBX-File thats newer than the DGFX-File, did you forget to run the tool?", "Old DGFX", MB_ICONQUESTION);
+			DL_ASSERT("Found a FBX-File thats newer than the DGFX-File, did you forget to run the tool?");
 		}
 #endif
 
@@ -134,7 +134,7 @@ namespace Prism
 #ifndef RELEASE_BUILD
 		if (CheckIfFbxIsNewer(dgfxFile) == true)
 		{
-			DL_MESSAGE_BOX("Found a FBX-File thats newer than the DGFX-File, did you forget to run the tool?", "Old DGFX", MB_ICONQUESTION);
+			DL_ASSERT("Found a FBX-File thats newer than the DGFX-File, did you forget to run the tool?");
 		}
 #endif
 

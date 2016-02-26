@@ -47,6 +47,21 @@ namespace Prism
 		return false;
 	}
 
+	int PhysicsInterface::CreatePlayerController(const CU::Vector3<float>& aStartPosition)
+	{
+		return myManager->CreatePlayerController(aStartPosition);
+	}
+
+	void PhysicsInterface::Move(int aId, const CU::Vector3<float>& aDirection, float aMinDisplacement, float aDeltaTime)
+	{
+		myManager->Move(aId, aDirection, aMinDisplacement, aDeltaTime);
+	}
+
+	void PhysicsInterface::GetPosition(int aId, CU::Vector3<float>& aPositionOut)
+	{
+		myManager->GetPosition(aId, aPositionOut);
+	}
+
 	PhysicsInterface::PhysicsInterface()
 	{
 		myManager = new PhysicsManager();

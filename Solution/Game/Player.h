@@ -34,6 +34,7 @@ private:
 	GUI::GUIManager3D* my3DGUIManager;
 	Prism::Camera* myCamera;
 	CU::Matrix44<float> myOrientation;
+	CU::Matrix44<float> myEyeOrientation;
 	Prism::SpriteProxy* myCrosshair;
 	Prism::Instance* myModel;
 	float myHeight;

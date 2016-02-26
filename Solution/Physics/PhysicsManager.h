@@ -5,6 +5,7 @@
 #include <extensions/pxdefaultallocator.h>
 #include <pvd/PxVisualDebugger.h>
 #include <physxvisualdebuggersdk/PvdConnection.h>
+#include <characterkinematic\PxControllerManager.h>
 #include <cooking\PxCooking.h>
 #include <Vector.h>
 
@@ -25,12 +26,18 @@ namespace Prism
 		physx::PxScene* GetScene(){ return myScene; }
 		physx::PxCooking* GetCooker(){ return myCooker; }
 
+		int CreatePlayerController(const CU::Vector3<float>& aStartPosition);
+		void Move(int aId, const CU::Vector3<float>& aDirection, float aMinDisplacement, float aDeltaTime);
+		void GetPosition(int aId, CU::Vector3<float>& aPositionOut);
+
 	private:
 		void onPvdSendClassDescriptions(physx::debugger::comm::PvdConnection&) override{}
 		void onPvdConnected(physx::debugger::comm::PvdConnection& connection) override;
 		void onPvdDisconnected(physx::debugger::comm::PvdConnection& connection) override;
 
 		physx::PxScene* myScene;
+		physx::PxMaterial* myDefaultMaterial;
+		physx::PxControllerManager* myControllerManager;
 		physx::PxReal myTimestep;
 		physx::PxFoundation* myFoundation;
 		physx::PxDefaultErrorCallback myDefaultErrorCallback;

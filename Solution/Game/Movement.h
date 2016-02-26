@@ -25,6 +25,9 @@ private:
 	float myRotationSpeed;
 	float mySpeed;
 	float mySprintMultiplier;
+	float myVerticalSpeed;
+
+	int myCapsuleControllerId;
 
 	CU::Quaternion myPitch;
 	CU::Quaternion myYaw;

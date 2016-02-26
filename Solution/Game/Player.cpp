@@ -23,13 +23,12 @@ Player::Player(Prism::Scene* aScene)
 
 	reader.ForceReadAttribute(reader.ForceFindFirstChild(element, "eyeHeight"), "value", myHeight);
 	reader.ForceReadAttribute(reader.ForceFindFirstChild(element, "crouchHeight"), "value", myCrouchHeight);
-	CU::Vector3<float> eyePosition(0, myHeight, 0);
 
 	tinyxml2::XMLElement* movementElement = reader.ForceFindFirstChild(element, "movement");
 	tinyxml2::XMLElement* healthElement = reader.ForceFindFirstChild(element, "health");
 
-	myOrientation.SetPos(eyePosition);
-	myCamera = new Prism::Camera(myOrientation);
+	myOrientation.SetPos(CU::Vector3<float>(0, 1.5f, 0));
+	myCamera = new Prism::Camera(myEyeOrientation);
 	myMovement = new Movement(myOrientation, reader, movementElement);
 	myHealth = new Health(reader, movementElement);
 	myShooting = new Shooting(aScene);
@@ -38,7 +37,7 @@ Player::Player(Prism::Scene* aScene)
 	CU::Vector2<float> size(128.f, 128.f);
 	myCrosshair = Prism::ModelLoader::GetInstance()->LoadSprite("Data/Resource/Texture/UI/T_crosshair.dds", size, size * 0.5f);
 
-	myModel = new Prism::Instance(*Prism::ModelLoader::GetInstance()->LoadModelAnimated("Data/Resource/Model/First_person/SK_arm_idle_UI_cm.fbx", "Data/Resource/Shader/S_effect_pbl_animated.fx"), myOrientation);
+	myModel = new Prism::Instance(*Prism::ModelLoader::GetInstance()->LoadModelAnimated("Data/Resource/Model/First_person/SK_arm_idle_UI_cm.fbx", "Data/Resource/Shader/S_effect_pbl_animated.fx"), myEyeOrientation);
 
 	aScene->AddInstance(myModel);
 
@@ -52,6 +51,7 @@ Player::Player(Prism::Scene* aScene)
 	//myWristOrientation = myOrientation * myModel->GetCurrentAnimation()->GetHiearchyToBone("r_wrist_jnt1");
 
 	my3DGUIManager = new GUI::GUIManager3D(myModel, aScene);
+
 }
 
 
@@ -71,36 +71,25 @@ void Player::Update(float aDelta)
 	CU::Vector3<float> prevPos(myOrientation.GetPos());
 
 	myMovement->Update(aDelta);
+	myEyeOrientation = myOrientation;
+	
 	CU::Vector3<float> position(myOrientation.GetPos());
-
-	myJumpAcceleration -= aDelta * 9.82f;
-
-	myJumpOffset += myJumpAcceleration;
-
-	myJumpOffset = fmaxf(0, myJumpOffset);
-
-	if (myJumpOffset < 0.001f && CU::InputWrapper::GetInstance()->KeyIsPressed(DIK_SPACE) == true)
-	{
-		myJumpAcceleration = 4.f;
-	}
 
 	if (CU::InputWrapper::GetInstance()->KeyIsPressed(DIK_LCONTROL) == true)
 	{
-		position.y = myCrouchHeight;
+		position.y += myCrouchHeight;
 	}
 	else
 	{
-		position.y = myHeight;
+		position.y += myHeight;
 	}
 
-	position.y += myJumpOffset;
+	myEyeOrientation.SetPos(position);
 
-	myOrientation.SetPos(position);
-
-	myShooting->Update(aDelta, myOrientation);
+	myShooting->Update(aDelta, myEyeOrientation);
 
 	myModel->Update(aDelta);
-	my3DGUIManager->Update(myOrientation, aDelta);
+	my3DGUIManager->Update(myEyeOrientation, aDelta);
 
 	CU::Vector3<float> playerPos(myOrientation.GetPos());
 	DEBUG_PRINT(playerPos);
