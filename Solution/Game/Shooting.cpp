@@ -34,10 +34,15 @@ void Shooting::Update(float aDelta, const CU::Matrix44<float>& aOrientation)
 		//myBullet->GetPhysEntity()->AddForce({ 0.f, 1.f, 0.f }, 100000.f);
 		//ShootAtDirection(aOrientation);
 		Entity* entity = Prism::PhysicsInterface::GetInstance()->RayCast(aOrientation.GetPos(), aOrientation.GetForward(), 30.f);
-		//entity->SendNote<DamageNote>(DamageNote(100));
-		if (entity != nullptr && entity->GetPhysEntity()->GetPhysicsType() == ePhysics::DYNAMIC)
+
+		if (entity != nullptr)
 		{
-			entity->GetPhysEntity()->AddForce(aOrientation.GetForward(), 25.f);
+			if (entity->GetPhysEntity()->GetPhysicsType() == ePhysics::DYNAMIC)
+			{
+				entity->GetPhysEntity()->AddForce(aOrientation.GetForward(), 25.f);
+			}
+
+			entity->SendNote<DamageNote>(DamageNote(100));
 		}
 	}
 
