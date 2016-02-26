@@ -2,6 +2,8 @@
 
 #include <Vector.h>
 
+class Entity;
+
 namespace Prism
 {
 	class PhysicsManager;
@@ -17,7 +19,7 @@ namespace Prism
 
 		void Update();
 
-		bool RayCast(const CU::Vector3<float>& aOrigin, const CU::Vector3<float>& aNormalizedDirection, float aMaxRayDistance);
+		Entity* RayCast(const CU::Vector3<float>& aOrigin, const CU::Vector3<float>& aNormalizedDirection, float aMaxRayDistance);
 
 		int CreatePlayerController(const CU::Vector3<float>& aStartPosition);
 		void Move(int aId, const CU::Vector3<float>& aDirection, float aMinDisplacement, float aDeltaTime);

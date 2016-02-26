@@ -15,8 +15,10 @@
 namespace Prism
 {
 	PhysEntity::PhysEntity(const PhysEntityData& aPhysData
-			, const CU::Matrix44<float>& aOrientation, const std::string& aFBXPath)
+			, const CU::Matrix44<float>& aOrientation, const std::string& aFBXPath
+			, Entity* aEntity)
 		: myShapes(nullptr)
+		, myEntity(aEntity)
 	{
 		for (int i = 0; i < 16; ++i)
 		{
@@ -85,6 +87,7 @@ namespace Prism
 			//physx::PxShape* shape = 
 			myStaticBody->createShape(physx::PxTriangleMeshGeometry(mesh), *material);
 			myStaticBody->setName("Tjohej");
+			myStaticBody->userData = this;
 			PhysicsInterface::GetInstance()->GetManager()->GetScene()->addActor(*myStaticBody);
 		}
 		else
@@ -103,6 +106,7 @@ namespace Prism
 			myDynamicBody = physx::PxCreateDynamic(*core, transform, geometry, *material, density);
 			myDynamicBody->setAngularDamping(0.75);
 			myDynamicBody->setLinearVelocity(physx::PxVec3(0, 0, 0));
+			myDynamicBody->userData = this;
 			PhysicsInterface::GetInstance()->GetManager()->GetScene()->addActor(*myDynamicBody);
 
 			physx::PxU32 nShapes = myDynamicBody->getNbShapes();

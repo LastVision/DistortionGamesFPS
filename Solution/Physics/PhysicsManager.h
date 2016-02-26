@@ -9,6 +9,7 @@
 #include <cooking\PxCooking.h>
 #include <Vector.h>
 
+class Entity;
 
 namespace Prism
 {
@@ -20,7 +21,7 @@ namespace Prism
 
 		void Update();
 
-		bool RayCast(const CU::Vector3<float>& aOrigin, const CU::Vector3<float>& aNormalizedDirection, float aMaxRayDistance);
+		Entity* RayCast(const CU::Vector3<float>& aOrigin, const CU::Vector3<float>& aNormalizedDirection, float aMaxRayDistance);
 
 		physx::PxPhysics* GetCore(){ return myPhysicsSDK; }
 		physx::PxScene* GetScene(){ return myScene; }

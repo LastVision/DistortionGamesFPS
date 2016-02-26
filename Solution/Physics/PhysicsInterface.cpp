@@ -38,13 +38,13 @@ namespace Prism
 		}
 	}
 
-	bool PhysicsInterface::RayCast(const CU::Vector3<float>& aOrigin, const CU::Vector3<float>& aNormalizedDirection, float aMaxRayDistance)
+	Entity* PhysicsInterface::RayCast(const CU::Vector3<float>& aOrigin, const CU::Vector3<float>& aNormalizedDirection, float aMaxRayDistance)
 	{
 		if (myManager != nullptr)
 		{
 			return myManager->RayCast(aOrigin, aNormalizedDirection, aMaxRayDistance);
 		}
-		return false;
+		return nullptr;
 	}
 
 	int PhysicsInterface::CreatePlayerController(const CU::Vector3<float>& aStartPosition)
