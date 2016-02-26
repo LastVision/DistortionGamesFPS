@@ -1,6 +1,5 @@
 #include "stdafx.h"
 #include "ClientNetworkManager.h"
-
 #include "ClientNetwork.h"
 #include <thread>
 
