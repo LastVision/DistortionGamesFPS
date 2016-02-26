@@ -13,7 +13,7 @@ public:
 	static ServerNetworkManager* GetInstance();
 
 	void StartNetwork() override;
-	void Update(float aDelta) override;
+//	void Update(float aDelta) override;
 private:
 	ServerNetworkManager();
 	~ServerNetworkManager();

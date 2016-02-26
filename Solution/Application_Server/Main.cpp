@@ -1,24 +1,37 @@
 #include "stdafx.h"
+
 #include <DL_Debug.h>
 #include <NetworkMessageTypes.h>
-#include <NetMessageConnectMessage.h>
-#include <NetMessageOnJoin.h>
-#include <NetMessagePosition.h>
 #include <ServerNetworkManager.h>
-#include <Utility.h>
 #include <TimerManager.h>
+
+volatile bool hasQuit = false;
+static BOOL WINAPI HandleExit(DWORD aCtrlType)
+{
+	switch (aCtrlType)
+	{
+	case CTRL_CLOSE_EVENT:
+		ServerNetworkManager::Destroy();
+		DL_Debug::Debug::Destroy();
+		CU::TimerManager::Destroy();
+		hasQuit = true;
+		break;
+	}
+	return FALSE;
+}
+
 void main()
 {
-
 	CU::TimerManager::Create();
 
 	DL_Debug::Debug::Create("NetworkLog.txt");
-	
+
 	ServerNetworkManager::Create();
 	ServerNetworkManager::GetInstance()->StartNetwork();
-	
 	float deltaTime = 0.f;
-	while (true)
+	MSG winMessage;
+	int a = SetConsoleCtrlHandler(HandleExit, TRUE);
+	while (hasQuit == false)
 	{
 		CU::TimerManager::GetInstance()->Update();
 		deltaTime = CU::TimerManager::GetInstance()->GetMasterTimer().GetTime().GetFrameTime();
@@ -27,7 +40,4 @@ void main()
 		ServerNetworkManager::GetInstance()->MainIsDone();
 		ServerNetworkManager::GetInstance()->WaitForReceieve();
 	}
-	ServerNetworkManager::Destroy();
-	DL_Debug::Debug::Destroy();
-	CU::TimerManager::Destroy();
 }

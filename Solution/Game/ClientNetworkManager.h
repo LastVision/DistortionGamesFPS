@@ -14,7 +14,7 @@ public:
 	void ConnectToServer(const char* aServerIP = "127.0.0.1");
 
 	const CU::GrowingArray<OtherClients>& GetClients();
-	void Update(float aDelta) override;
+	//void Update(float aDelta) override;
 private:
 	ClientNetworkManager();
 	~ClientNetworkManager();

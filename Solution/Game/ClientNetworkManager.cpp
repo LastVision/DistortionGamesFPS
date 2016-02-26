@@ -1,25 +1,15 @@
 #include "stdafx.h"
+#include "ClientNetworkManager.h"
 
 #include "ClientNetwork.h"
-#include "ClientNetworkManager.h"
-#include "NetMessageConnectMessage.h"
 #include <DL_Debug.h>
-#include <thread>
+#include "NetMessageConnectMessage.h"
 #include "NetworkMessageTypes.h"
-#include <PostNetPositionMessage.h>
-#include <PostMaster.h>
+#include <thread>
+
 #define BUFFERSIZE 512
 
-
 ClientNetworkManager* ClientNetworkManager::myInstance = nullptr;
-
-//void ClientNetworkManager::AddNetworkMessage(std::vector<char> aBuffer)
-//{
-//	if (myIsOnline == true)
-//	{
-//		myNetwork->Send(aBuffer);
-//	}
-//}
 
 ClientNetworkManager::ClientNetworkManager()
 {
@@ -47,15 +37,6 @@ ClientNetworkManager::~ClientNetworkManager()
 	myNetwork = nullptr;
 }
 
-void ClientNetworkManager::Initiate()
-{
-	myIsServer = false;
-	myNetwork = new ClientNetwork();
-	myNetworkID = 0;
-	__super::Initiate();
-	myClients.Init(16);
-}
-
 void ClientNetworkManager::Create()
 {
 	if (myInstance == nullptr)
@@ -71,58 +52,30 @@ void ClientNetworkManager::Destroy()
 	myInstance = nullptr;
 }
 
+ClientNetworkManager* ClientNetworkManager::GetInstance()
+{
+	if (myInstance != nullptr)
+	{
+		return myInstance;
+	}
+	DL_ASSERT("Instance were null, did you forget to create the ClientNetworkManager?");
+	return nullptr;
+}
+
+void ClientNetworkManager::Initiate()
+{
+	myIsServer = false;
+	myNetwork = new ClientNetwork();
+	myNetworkID = 0;
+	__super::Initiate();
+	myClients.Init(16);
+}
+
 void ClientNetworkManager::StartNetwork()
 {
 	myNetwork->StartNetwork();
 	__super::StartNetwork();
 }
-
-void ClientNetworkManager::HandleMessage(const NetMessagePingRequest& aMessage, const sockaddr_in& aSenderAddress)
-{
-	NetMessagePingReply reply;
-	reply.PackMessage();
-	myDataSent += reply.myStream.size() * sizeof(char);
-	myNetwork->Send(reply.myStream);
-}
-
-void ClientNetworkManager::HandleMessage(const NetMessageConnectMessage& aMessage, const sockaddr_in& aSenderAddress)
-{
-	myNetworkID = aMessage.myServerID;
-	if (aMessage.myOtherClientID != myNetworkID)
-	{
-		myClients.Add(OtherClients(aMessage.myOtherClientID));
-	}
-}
-
-void ClientNetworkManager::HandleMessage(const NetMessageOnJoin& aMessage, const sockaddr_in& aSenderAddress)
-{
-	for (OtherClients& client : myClients)
-	{
-		if (client.myID == aMessage.mySenderID)
-		{
-			return;
-		}
-	}
-	if (aMessage.mySenderID != myNetworkID)
-	{
-		myClients.Add(OtherClients(aMessage.mySenderID));
-	}
-}
-
-void ClientNetworkManager::HandleMessage(const NetMessagePosition& aMessage, const sockaddr_in& aSenderAddress)
-{
-	//PostMaster::GetInstance()->SendMessage(PostNetPositionMessage(aMessage.myPosition, aMessage.mySenderID));
-
-	for (OtherClients &client : myClients)
-	{
-		if (client.myID == aMessage.mySenderID)
-		{
-			client.myPosition = aMessage.myPosition;
-		}
-	}
-}
-
-
 
 void ClientNetworkManager::ReceieveThread()
 {
@@ -163,8 +116,6 @@ void ClientNetworkManager::SendThread()
 	}
 }
 
-
-
 void ClientNetworkManager::ConnectToServer(const char* aServerIP)
 {
 	DL_ASSERT_EXP(myIsServer == false, "Tried to Connect to Server from Server... this doesn't seem right.");
@@ -180,26 +131,46 @@ const CU::GrowingArray<OtherClients>& ClientNetworkManager::GetClients()
 	return myClients;
 }
 
-void ClientNetworkManager::Update(float aDelta)
+void ClientNetworkManager::HandleMessage(const NetMessagePingRequest& aMessage, const sockaddr_in& aSenderAddress)
 {
-	__super::Update(aDelta);
-	std::vector<Buffer> buff;
-	myNetwork->Receieve(buff);
-	for (Buffer &current : buff)
-	{
-		myReceieveBuffer[myCurrentBuffer].Add(current);
-	}
-	__super::HandleMessage();
-	myReceieveBuffer[myCurrentBuffer].RemoveAll();
+	NetMessagePingReply reply;
+	reply.PackMessage();
+	myDataSent += reply.myStream.size() * sizeof(char);
+	myNetwork->Send(reply.myStream);
 }
 
-ClientNetworkManager* ClientNetworkManager::GetInstance()
+void ClientNetworkManager::HandleMessage(const NetMessageConnectMessage& aMessage, const sockaddr_in& aSenderAddress)
 {
-	if (myInstance != nullptr)
+	myNetworkID = aMessage.myServerID;
+	if (aMessage.myOtherClientID != myNetworkID)
 	{
-		return myInstance;
+		myClients.Add(OtherClients(aMessage.myOtherClientID));
 	}
-	DL_ASSERT("Instance were null, did you forget to create the ClientNetworkManager?");
-	return nullptr;
 }
 
+void ClientNetworkManager::HandleMessage(const NetMessageOnJoin& aMessage, const sockaddr_in& aSenderAddress)
+{
+	for (OtherClients& client : myClients)
+	{
+		if (client.myID == aMessage.mySenderID)
+		{
+			return;
+		}
+	}
+
+	if (aMessage.mySenderID != myNetworkID)
+	{
+		myClients.Add(OtherClients(aMessage.mySenderID));
+	}
+}
+
+void ClientNetworkManager::HandleMessage(const NetMessagePosition& aMessage, const sockaddr_in& aSenderAddress)
+{
+	for (OtherClients &client : myClients)
+	{
+		if (client.myID == aMessage.mySenderID)
+		{
+			client.myPosition = aMessage.myPosition;
+		}
+	}
+}

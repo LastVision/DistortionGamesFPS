@@ -64,8 +64,8 @@ void SharedNetworkManager::StartNetwork()
 {
 
 	myIsRunning = true;
-	myReceieveThread = new std::thread([&]{ReceieveThread(); });
-	mySendThread = new std::thread([&]{SendThread(); });
+	myReceieveThread = new std::thread([&] {ReceieveThread(); });
+	mySendThread = new std::thread([&] {SendThread(); });
 
 #ifdef _DEBUG
 	if (myIsServer == true)
@@ -91,9 +91,8 @@ SharedNetworkManager::SharedNetworkManager()
 
 SharedNetworkManager::~SharedNetworkManager()
 {
-	
-}
 
+}
 
 void SharedNetworkManager::Update(float aDelta)
 {
@@ -109,7 +108,6 @@ void SharedNetworkManager::Update(float aDelta)
 		myPingTime = 1.f;
 	}
 }
-
 
 void SharedNetworkManager::SwapBuffers()
 {
@@ -140,44 +138,6 @@ void SharedNetworkManager::WaitForReceieve()
 	myReceieveIsDone = false;
 }
 
-void SharedNetworkManager::HandleMessage()
-{
-	for (Buffer& buffer : myReceieveBuffer[myCurrentBuffer])
-	{
-		eNetMessageType type = ReadType(buffer.myData);
-		switch (type)
-		{
-		case eNetMessageType::ON_CONNECT:
-			UnpackAndHandle(NetMessageConnectMessage(), buffer);
-			break;
-		case eNetMessageType::ON_JOIN:
-			UnpackAndHandle(NetMessageOnJoin(), buffer);
-			break;
-		case eNetMessageType::PING_REQUEST:
-			UnpackAndHandle(NetMessagePingRequest(), buffer);
-			break;
-		case eNetMessageType::PING_REPLY:
-			UnpackAndHandle(NetMessagePingReply(), buffer); 
-			break;
-		case eNetMessageType::POSITION:
-			UnpackAndHandle(NetMessagePosition(), buffer);
-			break;
-		default:
-			break;
-		}
-	}
-}
-
-void SharedNetworkManager::HandleMessage(const NetMessageConnectMessage&, const sockaddr_in&){}
-void SharedNetworkManager::HandleMessage(const NetMessagePingRequest& aMessage, const sockaddr_in& aSenderAddress){}
-void SharedNetworkManager::HandleMessage(const NetMessageOnJoin& aMessage, const sockaddr_in& aSenderAddress){}
-void SharedNetworkManager::HandleMessage(const NetMessagePosition& aMessage, const sockaddr_in& aSenderAddress){}
-
-void SharedNetworkManager::HandleMessage(const NetMessagePingReply& aMessage, const sockaddr_in& aSenderAddress)
-{
-	myMS = myResponsTime * 1000.f;
-}
-
 eNetMessageType SharedNetworkManager::ReadType(const char* aBuffer)
 {
 	return static_cast<eNetMessageType>(aBuffer[0]);
@@ -205,3 +165,41 @@ void SharedNetworkManager::AddNetworkMessage(std::vector<char> aBuffer)
 		mySendBuffer[myCurrentSendBuffer ^ 1].Add(aBuffer);
 	}
 }
+
+void SharedNetworkManager::HandleMessage()
+{
+	for (Buffer& buffer : myReceieveBuffer[myCurrentBuffer])
+	{
+		eNetMessageType type = ReadType(buffer.myData);
+		switch (type)
+		{
+		case eNetMessageType::ON_CONNECT:
+			UnpackAndHandle(NetMessageConnectMessage(), buffer);
+			break;
+		case eNetMessageType::ON_JOIN:
+			UnpackAndHandle(NetMessageOnJoin(), buffer);
+			break;
+		case eNetMessageType::PING_REQUEST:
+			UnpackAndHandle(NetMessagePingRequest(), buffer);
+			break;
+		case eNetMessageType::PING_REPLY:
+			UnpackAndHandle(NetMessagePingReply(), buffer);
+			break;
+		case eNetMessageType::POSITION:
+			UnpackAndHandle(NetMessagePosition(), buffer);
+			break;
+		default:
+			break;
+		}
+	}
+}
+
+void SharedNetworkManager::HandleMessage(const NetMessagePingReply& aMessage, const sockaddr_in& aSenderAddress)
+{
+	myMS = myResponsTime * 1000.f;
+}
+
+void SharedNetworkManager::HandleMessage(const NetMessageConnectMessage&, const sockaddr_in&) {}
+void SharedNetworkManager::HandleMessage(const NetMessagePingRequest& aMessage, const sockaddr_in& aSenderAddress) {}
+void SharedNetworkManager::HandleMessage(const NetMessageOnJoin& aMessage, const sockaddr_in& aSenderAddress) {}
+void SharedNetworkManager::HandleMessage(const NetMessagePosition& aMessage, const sockaddr_in& aSenderAddress) {}

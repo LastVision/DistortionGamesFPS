@@ -9,6 +9,32 @@
 
 ServerNetworkManager* ServerNetworkManager::myInstance = nullptr;
 
+ServerNetworkManager::ServerNetworkManager()
+{
+}
+
+ServerNetworkManager::~ServerNetworkManager()
+{
+	myMainIsDone = true;
+	myReceieveIsDone = true;
+	myIsRunning = false;
+	if (myReceieveThread != nullptr)
+	{
+		myReceieveThread->join();
+		delete myReceieveThread;
+		myReceieveThread = nullptr;
+	}
+
+	if (mySendThread != nullptr)
+	{
+		mySendThread->join();
+		delete mySendThread;
+		mySendThread = nullptr;
+	}
+	delete myNetwork;
+	myNetwork = nullptr;
+}
+
 void ServerNetworkManager::Initiate()
 {
 
@@ -50,77 +76,6 @@ void ServerNetworkManager::StartNetwork()
 	myNetwork->StartServer();
 	__super::StartNetwork();
 	myIsOnline = true;
-}
-
-void ServerNetworkManager::Update(float aDelta)
-{
-	__super::Update(aDelta);
-	std::vector<Buffer> buff;
-	myNetwork->Receieve(buff);
-	for (Buffer &current : buff)
-	{
-		myReceieveBuffer[myCurrentBuffer].Add(current);
-	}
-	__super::HandleMessage();
-	myReceieveBuffer[myCurrentBuffer].RemoveAll();
-}
-
-ServerNetworkManager::ServerNetworkManager()
-{
-}
-
-
-ServerNetworkManager::~ServerNetworkManager()
-{
-	myMainIsDone = true;
-	myReceieveIsDone = true;
-	myIsRunning = false;
-	if (myReceieveThread != nullptr)
-	{
-		myReceieveThread->join();
-		delete myReceieveThread;
-		myReceieveThread = nullptr;
-	}
-
-	if (mySendThread != nullptr)
-	{
-		mySendThread->join();
-		delete mySendThread;
-		mySendThread = nullptr;
-	}
-	delete myNetwork;
-	myNetwork = nullptr;
-}
-
-//void ServerNetworkManager::AddNetworkMessage(std::vector<char> aBuffer)
-//{
-//	if (myIsOnline == true)
-//	{
-//		for (Connection& connection : myClients)
-//		{
-//			myNetwork->Send(aBuffer, connection.myAddress);
-//		}
-//	}
-//}
-
-void ServerNetworkManager::HandleMessage(const NetMessageConnectMessage& aMessage, const sockaddr_in& aSenderAddress)
-{
-	CreateConnection(aMessage.myName, aSenderAddress);
-}
-
-void ServerNetworkManager::HandleMessage(const NetMessagePingRequest& aMessage, const sockaddr_in& aSenderAddress)
-{
-	NetMessagePingReply reply;
-	reply.PackMessage();
-
-	myNetwork->Send(reply.myStream, aSenderAddress);
-}
-
-void ServerNetworkManager::HandleMessage(const NetMessagePosition& aMessage, const sockaddr_in& aSenderAddress)
-{
-	NetMessagePosition position;
-	position = aMessage;
-	AddMessage(position);
 }
 
 void ServerNetworkManager::ReceieveThread()
@@ -198,7 +153,25 @@ void ServerNetworkManager::CreateConnection(const std::string& aName, const sock
 		onConnect.PackMessage();
 		myNetwork->Send(onConnect.myStream, newConnection.myAddress);
 	}
-
-
 	AddMessage(NetMessageOnJoin(newConnection.myID));
+}
+
+void ServerNetworkManager::HandleMessage(const NetMessageConnectMessage& aMessage, const sockaddr_in& aSenderAddress)
+{
+	CreateConnection(aMessage.myName, aSenderAddress);
+}
+
+void ServerNetworkManager::HandleMessage(const NetMessagePingRequest& aMessage, const sockaddr_in& aSenderAddress)
+{
+	NetMessagePingReply reply;
+	reply.PackMessage();
+
+	myNetwork->Send(reply.myStream, aSenderAddress);
+}
+
+void ServerNetworkManager::HandleMessage(const NetMessagePosition& aMessage, const sockaddr_in& aSenderAddress)
+{
+	NetMessagePosition position;
+	position = aMessage;
+	AddMessage(position);
 }

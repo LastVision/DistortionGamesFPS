@@ -9,8 +9,6 @@
 #include <NetMessagePingReply.h>
 #include <NetMessagePosition.h>
 
-
-
 namespace std
 {
 	class thread;
@@ -53,6 +51,7 @@ protected:
 
 	template<typename T> 
 	void UnpackAndHandle(T& aMessage, Buffer& aBuffer);
+
 	void HandleMessage();
 
 	virtual void HandleMessage(const NetMessageConnectMessage& aMessage, const sockaddr_in& aSenderAddress);
@@ -72,16 +71,11 @@ protected:
 
 	unsigned short myCurrentBuffer;
 	unsigned short myCurrentSendBuffer;
-
-	volatile bool myIsRunning;
-
-	volatile bool myReceieveIsDone;
-	volatile bool myMainIsDone;
-
-
-
 	unsigned short myNetworkID;
 
+	volatile bool myIsRunning;
+	volatile bool myReceieveIsDone;
+	volatile bool myMainIsDone;
 	
 	float myPingTime;
 	float myResponsTime;
