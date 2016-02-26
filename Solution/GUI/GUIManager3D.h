@@ -30,6 +30,7 @@ namespace GUI
 		Prism::Bar3D* myLeftBar;
 		Prism::Bar3D* myRightBar;
 		Prism::Bar3D* myTopBar;
+		Prism::Bar3D* myHealthBar;
 	};
 
 }
