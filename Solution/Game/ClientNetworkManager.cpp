@@ -13,12 +13,22 @@
 
 ClientNetworkManager* ClientNetworkManager::myInstance = nullptr;
 
+//void ClientNetworkManager::AddNetworkMessage(std::vector<char> aBuffer)
+//{
+//	if (myIsOnline == true)
+//	{
+//		myNetwork->Send(aBuffer);
+//	}
+//}
+
 ClientNetworkManager::ClientNetworkManager()
 {
 }
 
 ClientNetworkManager::~ClientNetworkManager()
 {
+	myMainIsDone = true;
+	myReceieveIsDone = true;
 	myIsRunning = false;
 	if (myReceieveThread != nullptr)
 	{
@@ -78,12 +88,9 @@ void ClientNetworkManager::HandleMessage(const NetMessagePingRequest& aMessage, 
 void ClientNetworkManager::HandleMessage(const NetMessageConnectMessage& aMessage, const sockaddr_in& aSenderAddress)
 {
 	myNetworkID = aMessage.myServerID;
-	for (unsigned short i : aMessage.myClientsOnServer)
+	if (aMessage.myOtherClientID != myNetworkID)
 	{
-		if (i != myNetworkID)
-		{
-			myClients.Add(OtherClients(i));
-		}
+		myClients.Add(OtherClients(aMessage.myOtherClientID));
 	}
 }
 
@@ -131,12 +138,13 @@ void ClientNetworkManager::ReceieveThread()
 		if (someBuffers.size() == 0)
 		{
 			int error = WSAGetLastError();
-			continue;
 		}
 		for (Buffer message : someBuffers)
 		{
 			myReceieveBuffer[myCurrentBuffer ^ 1].Add(message);
 		}
+		ReceieveIsDone();
+		WaitForMain();
 	}
 }
 
@@ -170,6 +178,19 @@ void ClientNetworkManager::ConnectToServer(const char* aServerIP)
 const CU::GrowingArray<OtherClients>& ClientNetworkManager::GetClients()
 {
 	return myClients;
+}
+
+void ClientNetworkManager::Update(float aDelta)
+{
+	__super::Update(aDelta);
+	std::vector<Buffer> buff;
+	myNetwork->Receieve(buff);
+	for (Buffer &current : buff)
+	{
+		myReceieveBuffer[myCurrentBuffer].Add(current);
+	}
+	__super::HandleMessage();
+	myReceieveBuffer[myCurrentBuffer].RemoveAll();
 }
 
 ClientNetworkManager* ClientNetworkManager::GetInstance()

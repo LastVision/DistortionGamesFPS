@@ -52,6 +52,19 @@ void ServerNetworkManager::StartNetwork()
 	myIsOnline = true;
 }
 
+void ServerNetworkManager::Update(float aDelta)
+{
+	__super::Update(aDelta);
+	std::vector<Buffer> buff;
+	myNetwork->Receieve(buff);
+	for (Buffer &current : buff)
+	{
+		myReceieveBuffer[myCurrentBuffer].Add(current);
+	}
+	__super::HandleMessage();
+	myReceieveBuffer[myCurrentBuffer].RemoveAll();
+}
+
 ServerNetworkManager::ServerNetworkManager()
 {
 }
@@ -59,6 +72,8 @@ ServerNetworkManager::ServerNetworkManager()
 
 ServerNetworkManager::~ServerNetworkManager()
 {
+	myMainIsDone = true;
+	myReceieveIsDone = true;
 	myIsRunning = false;
 	if (myReceieveThread != nullptr)
 	{
@@ -76,6 +91,17 @@ ServerNetworkManager::~ServerNetworkManager()
 	delete myNetwork;
 	myNetwork = nullptr;
 }
+
+//void ServerNetworkManager::AddNetworkMessage(std::vector<char> aBuffer)
+//{
+//	if (myIsOnline == true)
+//	{
+//		for (Connection& connection : myClients)
+//		{
+//			myNetwork->Send(aBuffer, connection.myAddress);
+//		}
+//	}
+//}
 
 void ServerNetworkManager::HandleMessage(const NetMessageConnectMessage& aMessage, const sockaddr_in& aSenderAddress)
 {
@@ -118,6 +144,8 @@ void ServerNetworkManager::ReceieveThread()
 			//Utility::PrintEndl("Server receieved a message.", LIGHT_GREEN_TEXT);
 			myReceieveBuffer[myCurrentBuffer ^ 1].Add(message);
 		}
+		ReceieveIsDone();
+		WaitForMain();
 	}
 }
 

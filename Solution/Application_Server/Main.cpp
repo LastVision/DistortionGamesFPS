@@ -23,6 +23,9 @@ void main()
 		CU::TimerManager::GetInstance()->Update();
 		deltaTime = CU::TimerManager::GetInstance()->GetMasterTimer().GetTime().GetFrameTime();
 		ServerNetworkManager::GetInstance()->Update(deltaTime);
+
+		ServerNetworkManager::GetInstance()->MainIsDone();
+		ServerNetworkManager::GetInstance()->WaitForReceieve();
 	}
 	ServerNetworkManager::Destroy();
 	DL_Debug::Debug::Destroy();

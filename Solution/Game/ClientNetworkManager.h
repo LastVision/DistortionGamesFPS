@@ -14,11 +14,12 @@ public:
 	void ConnectToServer(const char* aServerIP = "127.0.0.1");
 
 	const CU::GrowingArray<OtherClients>& GetClients();
-
+	void Update(float aDelta) override;
 private:
 	ClientNetworkManager();
 	~ClientNetworkManager();
 	static ClientNetworkManager* myInstance;
+	//void AddNetworkMessage(std::vector<char> aBuffer) override;
 
 	ClientNetwork* myNetwork;
 	void HandleMessage(const NetMessageConnectMessage& aMessage, const sockaddr_in& aSenderAddress) override;

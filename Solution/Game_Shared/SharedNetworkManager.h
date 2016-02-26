@@ -15,14 +15,14 @@ namespace std
 {
 	class thread;
 }
-class Message;
+
 class SharedNetworkManager
 {
 public:
 
 	virtual void Initiate();
 	virtual void StartNetwork();
-	void Update(float aDelta);
+	virtual void Update(float aDelta);
 
 	template<typename T>
 	void AddMessage(T& aMessage);
@@ -34,6 +34,11 @@ public:
 
 	void SwapBuffers();
 
+	void ReceieveIsDone();
+	void MainIsDone();
+
+	void WaitForMain();
+	void WaitForReceieve();
 
 
 protected:
@@ -69,6 +74,11 @@ protected:
 	unsigned short myCurrentSendBuffer;
 
 	volatile bool myIsRunning;
+
+	volatile bool myReceieveIsDone;
+	volatile bool myMainIsDone;
+
+
 
 	unsigned short myNetworkID;
 

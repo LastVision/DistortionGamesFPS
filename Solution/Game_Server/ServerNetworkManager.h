@@ -13,12 +13,14 @@ public:
 	static ServerNetworkManager* GetInstance();
 
 	void StartNetwork() override;
-
+	void Update(float aDelta) override;
 private:
 	ServerNetworkManager();
 	~ServerNetworkManager();
 	static ServerNetworkManager* myInstance;
 	ServerNetwork* myNetwork;
+
+	//void AddNetworkMessage(std::vector<char> aBuffer) override;
 
 	void HandleMessage(const NetMessageConnectMessage& aMessage, const sockaddr_in& aSender) override;
 	void HandleMessage(const NetMessagePingRequest& aMessage, const sockaddr_in& aSenderAddress) override;
