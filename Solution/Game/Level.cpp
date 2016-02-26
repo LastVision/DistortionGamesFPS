@@ -17,6 +17,8 @@
 #include <PhysicsInterface.h>
 #include "NetMessageOnJoin.h"
 
+#include "ClientNetworkManager.h"
+
 Level::Level()
 	: myEntities(512)
 	, myClients(16)
@@ -43,7 +45,7 @@ void Level::AddEntity(Entity* aEntity)
 
 void Level::Update(const float aDeltaTime)
 {
-	//NetworkManager::GetInstance()->Swap(true);
+	ClientNetworkManager::GetInstance()->Update(aDeltaTime);
 	myPlayer->Update(aDeltaTime);
 
 	for (int i = 0; i < myEntities.Size(); i++)
@@ -51,63 +53,11 @@ void Level::Update(const float aDeltaTime)
 		myEntities[i]->Update(aDeltaTime);
 	}
 
-	//if (CU::InputWrapper::GetInstance()->KeyDown(DIK_C) == true)
-	//{
-	//	NetworkManager::GetInstance()->ConnectToServer();
-	//	//NetworkManager::GetInstance()->ConnectToServer("172.22.53.245"); //LinusS IP
-	//}
-
-	//const CU::GrowingArray<Buffer>& messages = NetworkManager::GetInstance()->GetReceieveBuffer();
-	//for (Buffer buf : messages)
-	//{
-	//	eNetMessageType type = NetworkManager::GetInstance()->ReadType(&buf.myData[0]);
-
-	//	switch (type)
-	//	{
-	//	case eNetMessageType::ON_CONNECT:
-	//	{
-	//		NetMessageConnectMessage connect;
-	//		connect.UnPackMessage(buf.myData, buf.myLength);
-	//		NetworkManager::GetInstance()->SetNetworkID(connect.myServerID);
-
-	//		for (unsigned short c : connect.myClientsOnServer)
-	//		{
-	//			OtherClients other;
-	//			other.myID = c;
-	//			myClients.Add(other);
-	//		}
-	//		break;
-	//	}
-
-	//	case eNetMessageType::ON_JOIN:
-	//	{
-	//		NetMessageOnJoin onJoin;
-	//		onJoin.UnPackMessage(buf.myData, buf.myLength);
-	//		OtherClients c;
-	//		c.myID = onJoin.mySenderID;
-	//		myClients.Add(c);
-	//		break;
-	//	}
-	//	case eNetMessageType::POSITION:
-	//	{
-	//		NetMessagePosition pos;
-	//		pos.UnPackMessage(buf.myData, buf.myLength);
-	//		if (pos.mySenderID != NetworkManager::GetInstance()->GetNetworkID())
-	//		{
-	//			for (OtherClients& c : myClients)
-	//			{
-	//				if (pos.mySenderID == c.myID)
-	//				{
-	//					c.myPosition = pos.myPosition;
-	//				}
-	//			}
-
-	//		}
-	//		break;
-	//	}
-	//	}
-	//}
-
+	if (CU::InputWrapper::GetInstance()->KeyDown(DIK_C) == true)
+	{
+		ClientNetworkManager::GetInstance()->ConnectToServer();
+	}
+	DEBUG_PRINT(ClientNetworkManager::GetInstance()->GetResponsTime());
 	Prism::DebugDrawer::GetInstance()->RenderLinesToScreen(*myPlayer->GetCamera());
 
 	Prism::PhysicsInterface::GetInstance()->Update();

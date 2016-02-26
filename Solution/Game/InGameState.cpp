@@ -8,7 +8,6 @@
 #include "Level.h"
 #include "LevelFactory.h"
 #include "LobbyState.h"
-#include <MemoryTracker.h>
 #include <PostMaster.h>
 #include <ScriptSystem.h>
 #include <VTuneApi.h>
@@ -57,6 +56,7 @@ const eStateStatus InGameState::Update(const float& aDeltaTime)
 	}
 	else if (CU::InputWrapper::GetInstance()->KeyDown(DIK_N))
 	{
+		SET_RUNTIME(false);
 		myStateStack->PushSubGameState(new LobbyState());
 	}
 
@@ -73,7 +73,6 @@ void InGameState::Render()
 {
 	VTUNE_EVENT_BEGIN(VTUNE::GAME_RENDER);
 
-	DEBUG_PRINT(Prism::MemoryTracker::GetInstance()->GetRunTime());
 	myLevel->Render();
 
 	VTUNE_EVENT_END();

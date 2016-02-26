@@ -189,7 +189,9 @@ void Prism::Instance::BuildHierarchy(TransformationNodeInstance& aHierarchy, Mod
 
 	for (int i = 0; i < aModel->myChildTransforms.Size(); ++i)
 	{
+		SET_RUNTIME(false);
 		TransformationNodeInstance* newNode = new TransformationNodeInstance();
+		RESET_RUNTIME;
 		newNode->SetTransformationNode(aModel->myChildTransforms[i]);
 		aHierarchy.AddChildNode(newNode);
 

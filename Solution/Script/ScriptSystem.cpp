@@ -346,10 +346,9 @@ namespace LUA
 
 		auto column_start = (decltype(s1len))1;
 
-		//bool prevRunTime = ////Prism::MemoryTracker::GetInstance()->GetRunTime();
-		////Prism::MemoryTracker::GetInstance()->SetRunTime(false);
+		SET_RUNTIME(false);
 		auto column = new decltype(s1len)[s1len + 1];
-		////Prism::MemoryTracker::GetInstance()->SetRunTime(prevRunTime);
+		RESET_RUNTIME;
 
 		std::iota(column + column_start, column + s1len + 1, column_start);
 

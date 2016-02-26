@@ -39,6 +39,7 @@ CU::TimerManager::~TimerManager()
 
 void CU::TimerManager::Update()
 {
+
 	TimeUnit time = GetTime();
 
 	myMasterTimer.AddTime(time);

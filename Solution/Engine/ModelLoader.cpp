@@ -118,7 +118,7 @@ namespace Prism
 #ifndef THREADED_LOADING
 		return;
 #else
-		//MemoryTracker::GetInstance()->AllowNewDuringRunTime(std::this_thread::get_id());
+		MEMORY_TRACKER_ALLOW_NEW_DURING_RUNTIME(std::this_thread::get_id());
 		while (myIsRunning == true)
 		{
 			if (CheckIfWorking() == false)

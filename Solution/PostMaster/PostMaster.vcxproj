@@ -167,6 +167,8 @@
     <ClInclude Include="KillUnitMessage.h" />
     <ClInclude Include="MinimapEventMessage.h" />
     <ClInclude Include="MinimapMoveMessage.h" />
+    <ClInclude Include="PostNetConnectMessage.h" />
+    <ClInclude Include="PostNetPositionMessage.h" />
     <ClInclude Include="NotificationMessage.h" />
     <ClInclude Include="SelectUnitMessage.h" />
     <ClInclude Include="TextMessage.h" />
