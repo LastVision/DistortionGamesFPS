@@ -88,12 +88,9 @@ void ClientNetworkManager::HandleMessage(const NetMessagePingRequest& aMessage, 
 void ClientNetworkManager::HandleMessage(const NetMessageConnectMessage& aMessage, const sockaddr_in& aSenderAddress)
 {
 	myNetworkID = aMessage.myServerID;
-	for (unsigned short i : aMessage.myClientsOnServer)
+	if (aMessage.myOtherClientID != myNetworkID)
 	{
-		if (i != myNetworkID)
-		{
-			myClients.Add(OtherClients(i));
-		}
+		myClients.Add(OtherClients(aMessage.myOtherClientID));
 	}
 }
 
@@ -160,7 +157,7 @@ void ClientNetworkManager::SendThread()
 		{
 			myNetwork->Send(arr);
 		}
-		
+
 		mySendBuffer[myCurrentSendBuffer].RemoveAll();
 		myCurrentSendBuffer ^= 1;
 	}

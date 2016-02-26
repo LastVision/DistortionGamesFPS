@@ -23,6 +23,7 @@ NetMessageConnectMessage::NetMessageConnectMessage(sockaddr_in anAddress)
 NetMessageConnectMessage::NetMessageConnectMessage(const std::string& aName, short aServerID, short aOtherClientID)
 {
 	myID = int(eNetMessageType::ON_CONNECT);
+	myName = aName;
 	myServerID = aServerID;
 	myOtherClientID = aOtherClientID;
 }
