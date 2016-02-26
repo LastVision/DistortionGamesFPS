@@ -25,8 +25,6 @@ Prism::SetupInfo globalSetup;
 
 int WINAPI WinMain(HINSTANCE, HINSTANCE, LPTSTR, int aNumberCommands)
 {
-	Prism::MemoryTracker::GetInstance()->SetRunTime(false);
-
 	ShowCursor(false);
 	DL_Debug::Debug::Create();
 	CU::TimerManager::Create();
@@ -130,7 +128,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPTSTR, int aNumberCommands)
 	globalGame = nullptr;
 
 	Prism::Engine::Destroy();
-	Prism::MemoryTracker::Destroy();
+	MEMORY_TRACKER_DESTROY;
 	return 0;
 }
 

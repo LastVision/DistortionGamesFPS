@@ -68,7 +68,8 @@ void StateStack::PushSubGameState(GameState* aSubGameState)
 	Prism::ModelLoader::GetInstance()->Pause();
 	aSubGameState->InitState(myStateStackProxy, myCursor);
 	Prism::ModelLoader::GetInstance()->UnPause();
-	////Prism::MemoryTracker::GetInstance()->SetRunTime(true);
+	
+	SET_RUNTIME(true);
 
 	mySubIndex = myGameStates[myMainIndex].Size() - 1;
 }

@@ -3,7 +3,6 @@
 #include <thread>
 
 
-#define ENABLE_MEMORY_TRACKER
 
 namespace std
 {
@@ -48,6 +47,7 @@ namespace Prism
 		void Free(void* aAddress);
 
 		void SetRunTime(bool aStatus);
+		void ResetRunTime();
 		bool GetRunTime() const;
 		void AllowNewDuringRunTime(const std::thread::id& aThreadId);
 		void DumpToFile();
@@ -58,45 +58,38 @@ namespace Prism
 		~MemoryTracker();
 		void Add(void* aAddress, size_t aBytes, eMemoryType aMemoryType);
 		void Remove(void* aAddress, bool aLock = true);
-#ifndef RELEASE_BUILD
-
 
 		MemoryStatistics myMemoryStatistics;
 		MemoryData myTopicalData;
 		MemoryData* myData;
 		int myAllocations;
 		bool myRuntime;
+		bool myPreviousRuntime;
 
 		std::recursive_mutex* myMutex;
 
 		std::thread::id myAllowThread;
-#endif
 		static MemoryTracker* myInstance;
 	};
 
 	inline void MemoryTracker::SetRunTime(bool aStatus)
 	{
-#ifndef RELEASE_BUILD
-
+		myPreviousRuntime = myRuntime;
 		myRuntime = aStatus;
-#endif
+	}
+
+	inline void MemoryTracker::ResetRunTime()
+	{
+		myRuntime = myPreviousRuntime;
 	}
 
 	inline bool MemoryTracker::GetRunTime() const
 	{
-#ifndef RELEASE_BUILD
-
 		return myRuntime;
-#else
-		return false;
-#endif
 	}
 
 	inline void MemoryTracker::AllowNewDuringRunTime(const std::thread::id& aThreadId)
 	{
-#ifndef RELEASE_BUILD
-
 		myAllowThread = aThreadId;
-#endif
 	}
 }

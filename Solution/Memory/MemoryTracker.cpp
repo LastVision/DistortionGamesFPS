@@ -48,10 +48,8 @@ namespace Prism
 			myInstance = static_cast<MemoryTracker*>(malloc(sizeof(MemoryTracker)));
 			myInstance = new(myInstance)MemoryTracker();
 
-#ifndef RELEASE_BUILD
 			myInstance->myMutex = static_cast<std::recursive_mutex*>(malloc(sizeof(std::recursive_mutex)));
 			myInstance->myMutex = new(myInstance->myMutex)std::recursive_mutex();
-#endif
 		}
 
 		return myInstance;
@@ -59,8 +57,6 @@ namespace Prism
 
 	void MemoryTracker::Allocate(int aLine, const char* aFile, const char* aFunction)
 	{
-
-#ifndef RELEASE_BUILD
 		if (myMutex != nullptr)
 		{
 			myMutex->lock();
@@ -90,7 +86,6 @@ namespace Prism
 		{
 			myMutex->unlock();
 		}
-#endif
 	}
 
 	void MemoryTracker::Free(void* aAddress)
@@ -100,8 +95,6 @@ namespace Prism
 
 	void MemoryTracker::DumpToFile()
 	{
-
-#ifndef RELEASE_BUILD
 		DL_PRINT_VA("--- MEMORY LEAKS ---\n");
 		DL_PRINT_VA("Bytes:\tLine:\tFile:\t\t\t\t\t\tFunction:");
 
@@ -118,13 +111,10 @@ namespace Prism
 
 		DL_ASSERT_VA("\nMEMORYLEAK!\nFile: %s\nFunction: %s\nLine: %i\n\nTotal Leaks: %i"
 			, shortPath, myData[0].myFunctionName, myData[0].myLine, myAllocations);
-		
-#endif
 	}
 
 	void MemoryTracker::Add(void* aAddress, size_t aBytes, eMemoryType aMemoryType)
 	{
-#ifndef RELEASE_BUILD
 		if (myMutex != nullptr)
 		{
 			myMutex->lock();
@@ -165,12 +155,10 @@ namespace Prism
 		{
 			myMutex->unlock();
 		}
-#endif
 	}
 
 	void MemoryTracker::Remove(void* aAddress, bool aLock)
 	{
-#ifndef RELEASE_BUILD
 		if (aLock == true && myMutex != nullptr)
 		{
 			myMutex->lock();
@@ -191,25 +179,20 @@ namespace Prism
 		{
 			myMutex->unlock();
 		}
-#endif
 	}
 
 	MemoryTracker::MemoryTracker()
-#ifndef RELEASE_BUILD
 		: myData(nullptr)
 		, myAllocations(0)
 		, myRuntime(false)
-#endif
+		, myPreviousRuntime(false)
 	{
-#ifndef RELEASE_BUILD
 		myData = reinterpret_cast<MemoryData*>(::malloc(sizeof(MemoryData) * MAX_ALLOCATIONS));
-#endif
 	}
 
 
 	MemoryTracker::~MemoryTracker()
 	{
-#ifndef RELEASE_BUILD
 		if (myAllocations > 0)
 		{
 			DumpToFile();
@@ -218,6 +201,5 @@ namespace Prism
 
 		::free(myMutex);
 		myMutex = nullptr;
-#endif
 	}
 }
