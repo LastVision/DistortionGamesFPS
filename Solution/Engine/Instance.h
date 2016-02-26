@@ -13,6 +13,7 @@ namespace Prism
 	class Light;
 	class ModelAnimated;
 	class ModelProxy;
+	class Model;
 	class InstancingHelper;
 	enum class eOctreeType;
 
@@ -47,6 +48,7 @@ namespace Prism
 	private:
 		void operator=(Instance&) = delete;
 
+		void AddModelToInstancingHelper(Model* aModel, InstancingHelper& aInstancingHelper);
 		void RenderModelAnimated(ModelAnimated* aModel, const CU::Matrix44<float>& aParent
 			, const Camera& aCamera, TransformationNodeInstance& aHierarchy);
 		void BuildHierarchy(TransformationNodeInstance& aHierarchy, ModelAnimated* aModel);

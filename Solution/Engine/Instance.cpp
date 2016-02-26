@@ -85,12 +85,24 @@ void Prism::Instance::Render(const Camera& aCamera, InstancingHelper& aInstancin
 		}
 		else
 		{
-			Model* toRender = myProxy.myModel->GetRealModel(myOrientation.GetPos(), aCamera.GetOrientation().GetPos());
-			aInstancingHelper.AddModel(toRender, myOrientation, myScale, myOrientation.GetPos().y);
+			AddModelToInstancingHelper(myProxy.myModel, aInstancingHelper);
+
+
+			//Model* toRender = myProxy.myModel->GetRealModel(myOrientation.GetPos(), aCamera.GetOrientation().GetPos());
+			//aInstancingHelper.AddModel(toRender, myOrientation, myScale, myOrientation.GetPos().y);
 		}
 	}
 }
 
+void Prism::Instance::AddModelToInstancingHelper(Model* aModel, InstancingHelper& aInstancingHelper)
+{
+	aInstancingHelper.AddModel(aModel, myOrientation, myScale, myOrientation.GetPos().y);
+
+	for (int i = 0; i < aModel->GetChildren().Size(); ++i)
+	{
+		AddModelToInstancingHelper(aModel->GetChildren()[i], aInstancingHelper);
+	}
+}
 
 void Prism::Instance::RenderModelAnimated(ModelAnimated* aModel, const CU::Matrix44<float>& aParent
 	, const Camera& aCamera, TransformationNodeInstance& aHierarchy)
