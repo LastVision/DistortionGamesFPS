@@ -1,10 +1,9 @@
 #include "stdafx.h"
 #include "NetMessageConnectMessage.h"
 #include "NetworkMessageTypes.h"
-
+#include <MemoryTracker.h>
 NetMessageConnectMessage::NetMessageConnectMessage(const std::string& aName, short aServerID)
 {
-	myClientsOnServer.Init(8);
 	myID = int(eNetMessageType::ON_CONNECT);
 	myName = aName;
 	myServerID = aServerID;
@@ -12,6 +11,7 @@ NetMessageConnectMessage::NetMessageConnectMessage(const std::string& aName, sho
 
 NetMessageConnectMessage::NetMessageConnectMessage()
 {
+	myClientsOnServer.Init(8);
 	myID = int(eNetMessageType::ON_CONNECT);
 }
 
@@ -41,7 +41,7 @@ void NetMessageConnectMessage::DoSerialize(StreamType& aStream)
 
 void NetMessageConnectMessage::DoDeSerialize(StreamType& aStream)
 {
-	myClientsOnServer.Init(8);
+
 	__super::DoDeSerialize(aStream);
 	DESERIALIZE(aStream, myName);
 	DESERIALIZE(aStream, myServerID);

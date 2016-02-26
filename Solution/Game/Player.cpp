@@ -14,6 +14,7 @@
 #include <SpriteProxy.h>
 #include <XMLReader.h>
 #include <NetMessagePosition.h>
+#include "ClientNetworkManager.h"
 Player::Player(Prism::Scene* aScene)
 {
 	XMLReader reader;
@@ -107,19 +108,14 @@ void Player::Update(float aDelta)
 
 
 	mySendTime -= aDelta;
-	//if (mySendTime < 0.f)
-	//{
-	//	if (myOrientation.GetPos().x != prevPos.x || myOrientation.GetPos().y != prevPos.y || myOrientation.GetPos().z != prevPos.z)
-	//	{
-	//		NetMessagePosition pos;
-	//		pos.Init();
-	//		pos.mySenderID = NetworkManager::GetInstance()->GetNetworkID();
-	//		pos.myPosition = myOrientation.GetPos();
-	//		pos.PackMessage();
-	//		NetworkManager::GetInstance()->AddMessage(pos.myStream);
-	//		mySendTime = 1/120.f;
-	//	}
-	//}
+	if (mySendTime < 0.f)
+	{
+		if (myOrientation.GetPos().x != prevPos.x || myOrientation.GetPos().y != prevPos.y || myOrientation.GetPos().z != prevPos.z)
+		{
+			ClientNetworkManager::GetInstance()->AddMessage(NetMessagePosition(myOrientation.GetPos()));
+			mySendTime = 1 / 120.f;
+		}
+	}
 
 	myCamera->Update(aDelta);
 }

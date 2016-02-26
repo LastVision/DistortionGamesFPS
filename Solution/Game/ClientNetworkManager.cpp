@@ -6,6 +6,8 @@
 #include <DL_Debug.h>
 #include <thread>
 #include "NetworkMessageTypes.h"
+#include <PostNetPositionMessage.h>
+#include <PostMaster.h>
 #define BUFFERSIZE 512
 
 
@@ -94,8 +96,26 @@ void ClientNetworkManager::HandleMessage(const NetMessageOnJoin& aMessage, const
 			return;
 		}
 	}
-	myClients.Add(OtherClients(aMessage.mySenderID));
+	if (aMessage.mySenderID != myNetworkID)
+	{
+		myClients.Add(OtherClients(aMessage.mySenderID));
+	}
 }
+
+void ClientNetworkManager::HandleMessage(const NetMessagePosition& aMessage, const sockaddr_in& aSenderAddress)
+{
+	//PostMaster::GetInstance()->SendMessage(PostNetPositionMessage(aMessage.myPosition, aMessage.mySenderID));
+
+	for (OtherClients &client : myClients)
+	{
+		if (client.myID == aMessage.mySenderID)
+		{
+			client.myPosition = aMessage.myPosition;
+		}
+	}
+}
+
+
 
 void ClientNetworkManager::ReceieveThread()
 {

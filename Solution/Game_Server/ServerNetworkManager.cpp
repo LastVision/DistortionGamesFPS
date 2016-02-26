@@ -90,6 +90,13 @@ void ServerNetworkManager::HandleMessage(const NetMessagePingRequest& aMessage, 
 	myNetwork->Send(reply.myStream, aSenderAddress);
 }
 
+void ServerNetworkManager::HandleMessage(const NetMessagePosition& aMessage, const sockaddr_in& aSenderAddress)
+{
+	NetMessagePosition position;
+	position = aMessage;
+	AddMessage(position);
+}
+
 void ServerNetworkManager::ReceieveThread()
 {
 	char buffer[BUFFERSIZE];
@@ -157,10 +164,12 @@ void ServerNetworkManager::CreateConnection(const std::string& aName, const sock
 	NetMessageConnectMessage onConnect;
 	onConnect.myName = aName;
 	onConnect.myServerID = myIDCount;
+
 	for (Connection& connection : myClients)
 	{
 		onConnect.myClientsOnServer.Add(connection.myID);
 	}
+
 	onConnect.PackMessage();
 	myNetwork->Send(onConnect.myStream, newConnection.myAddress);
 

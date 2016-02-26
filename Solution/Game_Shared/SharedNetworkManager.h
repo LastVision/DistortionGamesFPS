@@ -78,6 +78,10 @@ protected:
 template<typename T>
 inline void SharedNetworkManager::AddMessage(T& aMessage)
 {
+	if (myIsServer == false)
+	{
+		aMessage.mySenderID = myNetworkID;
+	}
 	aMessage.PackMessage();
 	AddNetworkMessage(aMessage.myStream);
 }
