@@ -20,6 +20,13 @@ NetMessageConnectMessage::NetMessageConnectMessage(sockaddr_in anAddress)
 	myID = int(eNetMessageType::ON_CONNECT);
 }
 
+NetMessageConnectMessage::NetMessageConnectMessage(const std::string& aName, short aServerID, short aOtherClientID)
+{
+	myID = int(eNetMessageType::ON_CONNECT);
+	myServerID = aServerID;
+	myOtherClientID = aOtherClientID;
+}
+
 NetMessageConnectMessage::~NetMessageConnectMessage()
 {
 }
@@ -29,14 +36,7 @@ void NetMessageConnectMessage::DoSerialize(StreamType& aStream)
 	__super::DoSerialize(aStream);
 	SERIALIZE(aStream, myName);
 	SERIALIZE(aStream, myServerID);
-	SERIALIZE(aStream, myClientsOnServer.Size());
-	if (myClientsOnServer.Size() > 0)
-	{
-		for (unsigned short i : myClientsOnServer)
-		{
-			SERIALIZE(aStream, i);
-		}
-	}
+	SERIALIZE(aStream, myOtherClientID);
 }
 
 void NetMessageConnectMessage::DoDeSerialize(StreamType& aStream)
@@ -45,15 +45,5 @@ void NetMessageConnectMessage::DoDeSerialize(StreamType& aStream)
 	__super::DoDeSerialize(aStream);
 	DESERIALIZE(aStream, myName);
 	DESERIALIZE(aStream, myServerID);
-	int size = 0;
-	DESERIALIZE(aStream, size);
-	if (size > 0)
-	{
-		for (int i = 0; i < size; ++i)
-		{
-			unsigned short object;
-			DESERIALIZE(aStream, object);
-			myClientsOnServer.Add(object);
-		}
-	}
+	DESERIALIZE(aStream, myOtherClientID);
 }

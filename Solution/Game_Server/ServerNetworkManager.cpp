@@ -161,17 +161,16 @@ void ServerNetworkManager::CreateConnection(const std::string& aName, const sock
 	std::string conn(aName + " connected to the server!");
 	Utility::PrintEndl(conn, LIGHT_GREEN_TEXT);
 
-	NetMessageConnectMessage onConnect;
-	onConnect.myName = aName;
-	onConnect.myServerID = myIDCount;
+	//	onConnect.myName = aName;
+	//	onConnect.myServerID = myIDCount;
 
 	for (Connection& connection : myClients)
 	{
-		onConnect.myClientsOnServer.Add(connection.myID);
+		NetMessageConnectMessage onConnect(aName, myIDCount, connection.myID);
+		onConnect.PackMessage();
+		myNetwork->Send(onConnect.myStream, newConnection.myAddress);
 	}
 
-	onConnect.PackMessage();
-	myNetwork->Send(onConnect.myStream, newConnection.myAddress);
 
 	AddMessage(NetMessageOnJoin(newConnection.myID));
 }
