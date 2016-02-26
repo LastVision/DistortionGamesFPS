@@ -194,23 +194,33 @@ namespace Prism
 
 		physx::PxTriangleMesh* mesh = nullptr;
 		WavefrontObj wfo;
-		if (!wfo.loadObj(objPath.c_str(), false))
-		{
-			DL_ASSERT(CU::Concatenate("Error loading file: %s", objPath.c_str()));
-		}
-
-		physx::PxTriangleMeshDesc meshDesc;
-		meshDesc.points.count = wfo.mVertexCount;
-		meshDesc.triangles.count = wfo.mTriCount;
-		meshDesc.points.stride = sizeof(float) * 3;
-		meshDesc.triangles.stride = sizeof(int) * 3;
-		meshDesc.points.data = wfo.mVertices;
-		meshDesc.triangles.data = wfo.mIndices;
-
+	
 		bool ok;
+
+		if (CU::FileExists(cowPath) == false)
 		{
-			physx::PxDefaultFileOutputStream stream(cowPath.c_str());
-			ok = PhysicsInterface::GetInstance()->GetManager()->GetCooker()->cookTriangleMesh(meshDesc, stream);
+
+			if (!wfo.loadObj(objPath.c_str(), false))
+			{
+				DL_ASSERT(CU::Concatenate("Error loading file: %s", objPath.c_str()));
+			}
+
+			physx::PxTriangleMeshDesc meshDesc;
+			meshDesc.points.count = wfo.mVertexCount;
+			meshDesc.triangles.count = wfo.mTriCount;
+			meshDesc.points.stride = sizeof(float) * 3;
+			meshDesc.triangles.stride = sizeof(int) * 3;
+			meshDesc.points.data = wfo.mVertices;
+			meshDesc.triangles.data = wfo.mIndices;
+
+			{
+				physx::PxDefaultFileOutputStream stream(cowPath.c_str());
+				ok = PhysicsInterface::GetInstance()->GetManager()->GetCooker()->cookTriangleMesh(meshDesc, stream);
+			}
+		}
+		else
+		{
+			ok = true;
 		}
 		if (ok)
 		{
