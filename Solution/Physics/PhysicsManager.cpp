@@ -165,6 +165,10 @@ namespace Prism
 			{
 				if (buffer.touches[i].distance < closestDist)
 				{
+					if (buffer.touches[i].distance == 0.f)
+					{
+						continue;
+					}
 					closestDist = buffer.touches[i].distance;
 					ent = static_cast<PhysEntity*>(buffer.touches[i].actor->userData);
 				}
