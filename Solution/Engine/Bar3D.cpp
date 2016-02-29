@@ -179,6 +179,7 @@ namespace Prism
 		}
 		else
 		{
+			float uvPos = 0.f;
 			for (int i = 0; i < numbersToMake; ++i)
 			{
 				GUIVertex vertex;
@@ -206,14 +207,15 @@ namespace Prism
 				}
 				else
 				{
+					--uvPos;
 					vertex.myPosition = { -myQuadSize.x * i, 0, 0, 0 };
 					//vertex.myPosition.x = myQuadSize.x * i;
-					vertex.myUV = { 0, 0 };
+					vertex.myUV = { 0, uvPos };
 					vertices.Add(vertex);
 					
 					vertex.myPosition = { -myQuadSize.x * i, myQuadSize.y, 0, 0 };
 					//vertex.myPosition.x -= myQuadSize.x * i;
-					vertex.myUV = { 1, 0 };
+					vertex.myUV = { 1, uvPos };
 					vertices.Add(vertex);
 
 
