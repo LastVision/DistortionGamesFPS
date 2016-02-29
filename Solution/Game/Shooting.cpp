@@ -6,7 +6,6 @@
 #include <ModelLoader.h>
 #include <Scene.h>
 #include "Shooting.h"
-#include "Weapon.h"
 
 #include <EntityFactory.h>
 #include <PhysEntity.h>
@@ -54,39 +53,33 @@ void Shooting::Update(float aDelta, const CU::Matrix44<float>& aOrientation)
 	{
 		myCurrentWeapon = myGrenadeLauncher;
 	}
+
 	if (CU::InputWrapper::GetInstance()->KeyDown(DIK_R) == true)
 	{
 		myCurrentWeapon->Reload();
 	}
+
 	if (myCurrentWeapon == myPistol)
 	{
-		if (CU::InputWrapper::GetInstance()->MouseDown(0) == true && myBullets.Size() < 1024)
+		if (CU::InputWrapper::GetInstance()->MouseDown(0) == true)
 		{
-			myPistol->Shoot();
+			myPistol->Shoot(aOrientation);
 			//ShootAtDirection(aOrientation);
 		}
 	}
-	else
+	else if (myCurrentWeapon == myGrenadeLauncher)
 	{
-		if (CU::InputWrapper::GetInstance()->MouseIsPressed(0) == true && myBullets.Size() < 1024)
+		if (CU::InputWrapper::GetInstance()->MouseDown(0) == true && myBullets.Size() < 1024)
 		{
 			ShootAtDirection(aOrientation);
+			myCurrentWeapon->Shoot(aOrientation);
 		}
 	}
-	if (CU::InputWrapper::GetInstance()->MouseIsPressed(1) == true)// && myBullets.Size() < 256)
+	else if (myCurrentWeapon == myShotgun)
 	{
-		//myBullet->GetPhysEntity()->AddForce({ 0.f, 1.f, 0.f }, 100000.f);
-		//ShootAtDirection(aOrientation);
-		Entity* entity = Prism::PhysicsInterface::GetInstance()->RayCast(aOrientation.GetPos(), aOrientation.GetForward(), 30.f);
-
-		if (entity != nullptr)
+		if (CU::InputWrapper::GetInstance()->MouseDown(0) == true)
 		{
-			if (entity->GetPhysEntity()->GetPhysicsType() == ePhysics::DYNAMIC)
-			{
-				entity->GetPhysEntity()->AddForce(aOrientation.GetForward(), 25.f);
-			}
-
-			entity->SendNote<DamageNote>(DamageNote(100));
+			myCurrentWeapon->Shoot(aOrientation);
 		}
 	}
 
@@ -100,6 +93,26 @@ void Shooting::Update(float aDelta, const CU::Matrix44<float>& aOrientation)
 	{
 		myBullets[i]->Update(aDelta);
 	}
+}
+
+Weapon* Shooting::GetWeapon(eWeaponType aWeaponType)
+{
+	switch (aWeaponType)
+	{
+	case eWeaponType::PISTOL:
+		return myPistol;
+		break;
+	case eWeaponType::SHOTGUN:
+		return myShotgun;
+		break;
+	case eWeaponType::GRENADE_LAUNCHER:
+		return myGrenadeLauncher;
+		break;
+	default:
+		break;
+	}
+	DL_ASSERT("Get Weapon crash!");
+	return myPistol;
 }
 
 void Shooting::ShootAtDirection(const CU::Matrix44<float>& aOrientation)

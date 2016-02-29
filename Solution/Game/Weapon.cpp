@@ -1,6 +1,9 @@
 #include "stdafx.h"
-#include "Weapon.h"
 
+#include <DamageNote.h>
+#include <PhysEntity.h>
+#include <PhysicsInterface.h>
+#include "Weapon.h"
 
 Weapon::Weapon(eWeaponType aWeaponType)
 	: myWeaponType(aWeaponType)
@@ -10,15 +13,21 @@ Weapon::Weapon(eWeaponType aWeaponType)
 		myClipSize = 12;
 		myAmmoInClip = myClipSize;
 		myAmmoTotal = INT_MAX;
-		myDamage = 10.f;
+		myDamage = 10;
 	}
 	else if (myWeaponType == eWeaponType::SHOTGUN)
 	{
-		//DL_ASSERT("Shotgun not implemented");
+		myClipSize = 8;
+		myAmmoInClip = myClipSize;
+		myAmmoTotal = 64;
+		myDamage = 20;
 	}
 	else if (myWeaponType == eWeaponType::GRENADE_LAUNCHER)
 	{
-		//DL_ASSERT("GrenadeLauncher not implemented");
+		myClipSize = 5;
+		myAmmoInClip = myClipSize;
+		myAmmoTotal = 10;
+		myDamage = 50;
 	}
 	else
 	{
@@ -31,10 +40,36 @@ Weapon::~Weapon()
 {
 }
 
-void Weapon::Shoot()
+void Weapon::Shoot(const CU::Matrix44<float>& aOrientation)
 {
 	if (myAmmoInClip > 0)
 	{
+		if (myWeaponType == eWeaponType::PISTOL)
+		{
+			Entity* entity = Prism::PhysicsInterface::GetInstance()->RayCast(aOrientation.GetPos()
+				, aOrientation.GetForward(), 500.f);
+
+			if (entity != nullptr)
+			{
+				if (entity->GetPhysEntity()->GetPhysicsType() == ePhysics::DYNAMIC)
+				{
+					entity->GetPhysEntity()->AddForce(aOrientation.GetForward(), 25.f);
+				}
+
+				entity->SendNote<DamageNote>(DamageNote(myDamage));
+
+			}
+		}
+		else if (myWeaponType == eWeaponType::SHOTGUN)
+		{
+			ShootRowAround(aOrientation, aOrientation.GetForward() * CU::Matrix44<float>::CreateRotateAroundX(-0.25f));
+			ShootRowAround(aOrientation, aOrientation.GetForward());
+			ShootRowAround(aOrientation, aOrientation.GetForward() * CU::Matrix44<float>::CreateRotateAroundX(0.25f));
+		}
+		else if (myWeaponType == eWeaponType::GRENADE_LAUNCHER)
+		{
+
+		}
 		myAmmoInClip -= 1;
 	}
 }
@@ -49,6 +84,44 @@ void Weapon::Reload()
 	{
 		int ammoLeft = myAmmoTotal;
 		myAmmoTotal -= min(ammoLeft, myClipSize - myAmmoInClip);
-		myAmmoInClip = ammoLeft;
+		myAmmoInClip = myClipSize;
+	}
+}
+
+void Weapon::ShootRowAround(const CU::Matrix44<float>& aOrientation, const CU::Vector3<float>& aForward)
+{
+	CU::Vector3<float> forward = aForward;
+
+	Entity* entity = Prism::PhysicsInterface::GetInstance()->RayCast(aOrientation.GetPos()
+		, forward, 100.f);
+	if (entity != nullptr)
+	{
+		if (entity->GetPhysEntity()->GetPhysicsType() == ePhysics::DYNAMIC)
+		{
+			entity->GetPhysEntity()->AddForce(aOrientation.GetForward(), 25.f);
+		}
+		entity->SendNote<DamageNote>(DamageNote(myDamage));
+	}
+
+	entity = Prism::PhysicsInterface::GetInstance()->RayCast(aOrientation.GetPos()
+		, forward * CU::Matrix44<float>::CreateRotateAroundY(-0.25f), 100.f);
+	if (entity != nullptr)
+	{
+		if (entity->GetPhysEntity()->GetPhysicsType() == ePhysics::DYNAMIC)
+		{
+			entity->GetPhysEntity()->AddForce(aOrientation.GetForward(), 25.f);
+		}
+		entity->SendNote<DamageNote>(DamageNote(myDamage));
+	}
+
+	entity = Prism::PhysicsInterface::GetInstance()->RayCast(aOrientation.GetPos()
+		, forward * CU::Matrix44<float>::CreateRotateAroundY(0.25f), 100.f);
+	if (entity != nullptr)
+	{
+		if (entity->GetPhysEntity()->GetPhysicsType() == ePhysics::DYNAMIC)
+		{
+			entity->GetPhysEntity()->AddForce(aOrientation.GetForward(), 25.f);
+		}
+		entity->SendNote<DamageNote>(DamageNote(myDamage));
 	}
 }

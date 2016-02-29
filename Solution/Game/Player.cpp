@@ -15,7 +15,7 @@
 #include <Scene.h>
 #include <SpriteProxy.h>
 #include <XMLReader.h>
-#include "Weapon.h"
+
 Player::Player(Prism::Scene* aScene)
 {
 	XMLReader reader;
@@ -52,7 +52,10 @@ Player::Player(Prism::Scene* aScene)
 
 	//myWristOrientation = myOrientation * myModel->GetCurrentAnimation()->GetHiearchyToBone("r_wrist_jnt1");
 
-	my3DGUIManager = new GUI::GUIManager3D(myModel, aScene, myShooting->GetPistol()->GetClipSize(), myShooting->GetPistol()->GetAmmoInClip());
+	my3DGUIManager = new GUI::GUIManager3D(myModel, aScene
+		, myShooting->GetWeapon(eWeaponType::PISTOL)->GetClipSize(), myShooting->GetWeapon(eWeaponType::PISTOL)->GetAmmoInClip()
+		, myShooting->GetWeapon(eWeaponType::SHOTGUN)->GetClipSize(), myShooting->GetWeapon(eWeaponType::SHOTGUN)->GetAmmoInClip()
+		, myShooting->GetWeapon(eWeaponType::GRENADE_LAUNCHER)->GetClipSize(), myShooting->GetWeapon(eWeaponType::GRENADE_LAUNCHER)->GetAmmoInClip());
 
 }
 

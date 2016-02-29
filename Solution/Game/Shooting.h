@@ -1,5 +1,5 @@
 #pragma once
-
+#include "Weapon.h"
 class Entity;
 class Weapon;
 
@@ -17,7 +17,7 @@ public:
 
 	void Update(float aDelta, const CU::Matrix44<float>& aOrientation);
 
-	Weapon* GetPistol();
+	Weapon* GetWeapon(eWeaponType aWeaponType);
 private:
 	void ShootAtDirection(const CU::Matrix44<float>& aOrientation);
 	
@@ -32,8 +32,3 @@ private:
 	Weapon* myShotgun;
 	Weapon* myGrenadeLauncher;
 };
-
-inline Weapon* Shooting::GetPistol()
-{
-	return myPistol;
-}

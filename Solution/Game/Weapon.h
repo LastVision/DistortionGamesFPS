@@ -13,17 +13,18 @@ public:
 	Weapon(eWeaponType aWeaponType);
 	~Weapon();
 
-	void Shoot();
+	void Shoot(const CU::Matrix44<float>& aOrientation);
 	void Reload();
 	int& GetAmmoInClip();
 	int& GetClipSize();
 
 private:
+	void ShootRowAround(const CU::Matrix44<float>& aOrientation, const CU::Vector3<float>& aForward);
 	int myAmmoInClip;
 	int myClipSize;
 	int myAmmoTotal;
 
-	float myDamage;
+	int myDamage;
 
 	eWeaponType myWeaponType;
 };

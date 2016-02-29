@@ -11,21 +11,28 @@
 #include <TextureContainer.h>
 namespace GUI
 {
-	GUIManager3D::GUIManager3D(const Prism::Instance* aModel, Prism::Scene* aScene, int& aClipSize, int& aAmmoInClip)
+	GUIManager3D::GUIManager3D(const Prism::Instance* aModel, Prism::Scene* aScene
+		, int& aPistolClipSize, int& aPistolAmmoInClip
+		, int& aShotgunClipSize, int& aShotgunAmmoInClip
+		, int& aGrenadeLauncherClipSize, int& aGrenadeLauncherAmmoInClip)
 		: myScene(aScene)
 		, myTestValue(0.f)
 		, myLeftBar(nullptr)
-		, myPistolClipSize(aClipSize)
-		, myPistolAmmoInClip(aAmmoInClip)
+		, myPistolClipSize(aPistolClipSize)
+		, myPistolAmmoInClip(aPistolAmmoInClip)
+		, myShotgunClipSize(aShotgunClipSize)
+		, myShotgunAmmoInClip(aShotgunAmmoInClip)
+		, myGrenadeLauncherClipSize(aGrenadeLauncherClipSize)
+		, myGrenadeLauncherAmmoInClip(aGrenadeLauncherAmmoInClip)
 	{
 		myEffect = Prism::EffectContainer::GetInstance()->GetEffect("Data/Resource/Shader/S_effect_3dgui.fx");
 		myEffect->SetTexture(Prism::TextureContainer::GetInstance()->GetTexture("Data/Resource/Texture/UI/T_ammo_pistol.dds"));
 
 		myGUIBone = aModel->GetCurrentAnimation()->GetHiearchyToBone("ui_jnt3");
 		myHealthBone = aModel->GetCurrentAnimation()->GetHiearchyToBone("health_jnt5");
-		myLeftBar = new Prism::Bar3D({ 0.02f, 0.005f }, 32, myEffect, eBarPosition::LEFT);
-		myRightBar = new Prism::Bar3D({ 0.02f, 0.005f }, 32, myEffect, eBarPosition::RIGHT);
-		myTopBar = new Prism::Bar3D({ 0.02f, 0.005f }, aClipSize, myEffect, eBarPosition::TOP);
+		myLeftBar = new Prism::Bar3D({ 0.02f, 0.005f }, myShotgunClipSize, myEffect, eBarPosition::LEFT);
+		myRightBar = new Prism::Bar3D({ 0.02f, 0.005f }, myGrenadeLauncherClipSize, myEffect, eBarPosition::RIGHT);
+		myTopBar = new Prism::Bar3D({ 0.02f, 0.005f }, myPistolClipSize, myEffect, eBarPosition::TOP);
 		myHealthBar = new Prism::Bar3D({ 0.01f, 0.025f }, 15, myEffect, eBarPosition::HEALTH);
 	}
 
@@ -46,8 +53,8 @@ namespace GUI
 
 		myWristOrientation = CU::InverseSimple(*myGUIBone.myBind) * (*myGUIBone.myJoint) * aOrientation;
 		myHealthOrientation = CU::InverseSimple(*myHealthBone.myBind) * (*myHealthBone.myJoint) * aOrientation;
-		myLeftBar->SetValue(1.f);
-		myRightBar->SetValue(1.f);
+		myLeftBar->SetValue(myShotgunAmmoInClip / float(myShotgunClipSize));
+		myRightBar->SetValue(myGrenadeLauncherAmmoInClip / float(myGrenadeLauncherClipSize));
 		myTopBar->SetValue(myPistolAmmoInClip / float(myPistolClipSize));
 		myHealthBar->SetValue(cos(myTestValue));
 	}
