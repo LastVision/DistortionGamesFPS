@@ -3,6 +3,7 @@
 #include <Defines.h>
 #include <InputWrapper.h>
 #include <LightStructs.h>
+#include <Scene.h>
 #include <string>
 #include <StaticArray.h>
 #include <Vector.h>
@@ -66,9 +67,6 @@ private:
 	DLLParticle* myParticle;
 
 	Prism::DirectionalLight* myDirectionalLight;
-	CU::StaticArray<Prism::DirectionalLightData, NUMBER_OF_DIRECTIONAL_LIGHTS> myDirectionalLightData;
-	Prism::Scene* myScene;
-
 	CU::Vector3f myDirectionalLightRotation;
 
 	float myMouseSensitivty;
@@ -78,6 +76,8 @@ private:
 
 	std::string myModelFile;
 	std::string myShaderFile;
+
+	Prism::Scene myScene;
 };
 
 inline bool DLLApp::HasMouseDeltaYMoved()

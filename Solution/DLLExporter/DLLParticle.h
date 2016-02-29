@@ -20,7 +20,6 @@ public:
 	void Render(Prism::Camera* aCamera);
 private:
 	void ReLoadParticle();
-	void WatchFile(std::string& aParticleFile);
 
 	bool myIsLoaded;
 

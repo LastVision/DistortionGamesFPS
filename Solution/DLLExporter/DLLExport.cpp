@@ -5,7 +5,6 @@
 #include "DLLExport.h"
 #include "DLLModel.h"
 #include <Engine.h>
-#include <FileWatcher.h>
 #include <SetupInfo.h>
 
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
@@ -34,11 +33,6 @@ void Render()
 void Update()
 {
 	locDLLApplication->Update();
-}
-
-void UpdateFilewatcher()
-{
-	Prism::FileWatcher::GetInstance()->CheckFiles();
 }
 
 void RotateObjectAtX(float aSpeed)
