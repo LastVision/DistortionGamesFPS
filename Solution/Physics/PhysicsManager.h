@@ -11,6 +11,11 @@
 
 class Entity;
 
+namespace physx
+{
+	class PxDefaultCpuDispatcher;
+}
+
 namespace Prism
 {
 	class PhysicsManager : public physx::debugger::comm::PvdConnectionHandler
@@ -45,6 +50,7 @@ namespace Prism
 		physx::PxDefaultAllocator myDefaultAllocatorCallback;
 		physx::PxProfileZoneManager* myProfileZoneManager;
 		physx::PxPhysics* myPhysicsSDK;
+		physx::PxDefaultCpuDispatcher* myCpuDispatcher;
 		physx::debugger::comm::PvdConnection* myDebugConnection;
 		physx::PxCooking* myCooker;
 	};
