@@ -57,6 +57,7 @@
     <ClCompile Include="Health.cpp">
       <Filter>Player</Filter>
     </ClCompile>
+    <ClCompile Include="Weapon.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Game.h" />
@@ -122,6 +123,7 @@
     <ClInclude Include="Health.h">
       <Filter>Player</Filter>
     </ClInclude>
+    <ClInclude Include="Weapon.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="PreCompile">
