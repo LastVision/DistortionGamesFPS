@@ -100,30 +100,31 @@ namespace Prism
 
 	void Bar3D::CreateVertices(int aNumberOfQuads)
 	{
-		CU::GrowingArray<GUIVertex> vertices(4 * aNumberOfQuads);
-		CU::GrowingArray<CU::Vector4<float>> torusPosition(4 * aNumberOfQuads);
+		int numbersToMake = aNumberOfQuads + 1;
+		CU::GrowingArray<GUIVertex> vertices(4 * numbersToMake);
+		CU::GrowingArray<CU::Vector4<float>> torusPosition(4 * numbersToMake);
 
 		float inner = 0.05f;
-		float outer = 0.1f;
+		float outer = 0.075f;
 		if (myBarPosition == eBarPosition::LEFT || myBarPosition == eBarPosition::RIGHT || myBarPosition == eBarPosition::TOP)
 		{
-			for (int i = 0; i < aNumberOfQuads; ++i)
+			for (int i = 0; i < numbersToMake; ++i)
 			{
 				float angle = 0.f;
 				if (myBarPosition == eBarPosition::LEFT)
 				{
-					angle = (i / (float)aNumberOfQuads) * 2.093f;
+					angle = (i / (float)numbersToMake) * 2.093f;
 					angle += 1.64f;// *1.5f;
 					angle = -angle;
 				}
 				else if (myBarPosition == eBarPosition::RIGHT)
 				{
-					angle = (i / (float)aNumberOfQuads) * 2.093f;
+					angle = (i / (float)numbersToMake) * 2.093f;
 					angle -= 1.582f;// *1.5f;
 				}
 				else if (myBarPosition == eBarPosition::TOP)
 				{
-					angle = (i / (float)aNumberOfQuads) * 2.093f;
+					angle = (i / (float)numbersToMake) * 2.093f;
 					angle += 3.72f;// *1.5f;
 					angle = -angle;
 				}
@@ -134,10 +135,10 @@ namespace Prism
 				torusPosition.Add(vertexOuter);
 			}
 
+			float uvPos = 1;
 			for (int i = 0; i < torusPosition.Size(); ++i)
 			{
 				GUIVertex vertex;
-
 				if (i == 0)
 				{
 					vertex.myPosition = torusPosition[0];
@@ -162,13 +163,14 @@ namespace Prism
 				{
 					if (i % 2 == 0)
 					{
+						++uvPos;
 						vertex.myPosition = torusPosition[i];
-						vertex.myUV = { 1, 1 };
+						vertex.myUV = { 1.f, uvPos };
 					}
 					else
 					{
 						vertex.myPosition = torusPosition[i];
-						vertex.myUV = { 0, 1 };
+						vertex.myUV = { 0, uvPos };
 					}
 				}
 
@@ -177,7 +179,7 @@ namespace Prism
 		}
 		else
 		{
-			for (int i = 0; i < aNumberOfQuads; ++i)
+			for (int i = 0; i < numbersToMake; ++i)
 			{
 				GUIVertex vertex;
 				if (i == 0)
