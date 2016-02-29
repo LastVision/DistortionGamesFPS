@@ -32,10 +32,13 @@ namespace Prism
 		myTimestep = 1.f / 60.f;
 		
 		myFoundation = PxCreateFoundation(0x03030300, myDefaultAllocatorCallback, myDefaultErrorCallback);
-		myProfileZoneManager = &physx::PxProfileZoneManager::createProfileZoneManager(myFoundation);
+
+		myProfileZoneManager = nullptr;
+		//myProfileZoneManager = &physx::PxProfileZoneManager::createProfileZoneManager(myFoundation);
+
 		bool recordMemoryAllocations = true;
 		myPhysicsSDK = PxCreatePhysics(0x03030300, *myFoundation, physx::PxTolerancesScale(),
-			recordMemoryAllocations, myProfileZoneManager);
+			recordMemoryAllocations, nullptr);
 
 		PxInitExtensions(*myPhysicsSDK);
 
@@ -46,19 +49,23 @@ namespace Prism
 
 		myCooker = nullptr;
 		myCooker = PxCreateCooking(0x03030300, *myFoundation, params);
+
+
 		DL_ASSERT_EXP(myCooker != nullptr, "Failed to create cooker");
 
 		physx::PxSceneDesc sceneDesc(myPhysicsSDK->getTolerancesScale());
 		sceneDesc.gravity = physx::PxVec3(0.f, -9.82f, 0.f);
+		
+		myCpuDispatcher = physx::PxDefaultCpuDispatcherCreate(0);
+
 		if (!sceneDesc.cpuDispatcher)
 		{
-			physx::PxDefaultCpuDispatcher* mCpuDispatcher = physx::PxDefaultCpuDispatcherCreate(1);
-			if (!mCpuDispatcher)
+			if (!myCpuDispatcher)
 			{
 				DL_ASSERT("Failed to PxDefaultCpuDispatcherCreate");
 			}
 
-			sceneDesc.cpuDispatcher = mCpuDispatcher;
+			sceneDesc.cpuDispatcher = myCpuDispatcher;
 		}
 
 		if (!sceneDesc.filterShader)
@@ -119,7 +126,17 @@ namespace Prism
 
 	PhysicsManager::~PhysicsManager()
 	{
+		if (myDebugConnection != nullptr)
+		{
+			myDebugConnection->release();
+		}
 		myControllerManager->release();
+		myScene->release();
+		myCpuDispatcher->release();
+		myCooker->release();
+		PxCloseExtensions();
+		myPhysicsSDK->release();
+		myFoundation->release();
 	}
 
 	void PhysicsManager::Update()
