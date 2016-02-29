@@ -2,19 +2,20 @@
 
 
 #include <Camera.h>
+#include "ClientNetworkManager.h"
 #include <GUIManager3D.h>
 #include "Health.h"
 #include <InputWrapper.h>
 #include <Instance.h>
 #include <ModelLoader.h>
 #include "Movement.h"
+#include <NetMessagePosition.h>
 #include "Player.h"
 #include "Shooting.h"
 #include <Scene.h>
 #include <SpriteProxy.h>
 #include <XMLReader.h>
-#include <NetMessagePosition.h>
-#include "ClientNetworkManager.h"
+#include "Weapon.h"
 Player::Player(Prism::Scene* aScene)
 {
 	XMLReader reader;
@@ -51,7 +52,7 @@ Player::Player(Prism::Scene* aScene)
 
 	//myWristOrientation = myOrientation * myModel->GetCurrentAnimation()->GetHiearchyToBone("r_wrist_jnt1");
 
-	my3DGUIManager = new GUI::GUIManager3D(myModel, aScene);
+	my3DGUIManager = new GUI::GUIManager3D(myModel, aScene, myShooting->GetPistol()->GetClipSize(), myShooting->GetPistol()->GetAmmoInClip());
 
 }
 

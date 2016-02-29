@@ -6,6 +6,7 @@
 #include <ModelLoader.h>
 #include <Scene.h>
 #include "Shooting.h"
+#include "Weapon.h"
 
 #include <EntityFactory.h>
 #include <PhysEntity.h>
@@ -14,24 +15,63 @@
 Shooting::Shooting(Prism::Scene* aScene)
 	: myBulletSpeed(0.f)
 	, myScene(aScene)
+	, myCurrentWeapon(nullptr)
+	, myPistol(nullptr)
+	, myShotgun(nullptr)
+	, myGrenadeLauncher(nullptr)
 {
 	/*myBullet = EntityFactory::CreateEntity(eEntityType::PROJECTILE, *aScene, myBulletOrientation.GetPos());
 	myBullet->Reset();
 	myBullet->AddToScene();*/
 
 	myBullets.Init(64);
+
+	myPistol = new Weapon(eWeaponType::PISTOL);
+	myShotgun = new Weapon(eWeaponType::SHOTGUN);
+	myGrenadeLauncher = new Weapon(eWeaponType::GRENADE_LAUNCHER);
+	myCurrentWeapon = myPistol;
 }
 
 Shooting::~Shooting()
 {
 	myBullets.DeleteAll();
+	SAFE_DELETE(myPistol);
+	SAFE_DELETE(myShotgun);
+	SAFE_DELETE(myGrenadeLauncher);
 }
 
 void Shooting::Update(float aDelta, const CU::Matrix44<float>& aOrientation)
 {
-	if (CU::InputWrapper::GetInstance()->MouseIsPressed(0) == true && myBullets.Size() < 1024)
+	if (CU::InputWrapper::GetInstance()->KeyDown(DIK_1) == true)
 	{
-		ShootAtDirection(aOrientation);
+		myCurrentWeapon = myPistol;
+	}
+	if (CU::InputWrapper::GetInstance()->KeyDown(DIK_2) == true)
+	{
+		myCurrentWeapon = myShotgun;
+	}
+	if (CU::InputWrapper::GetInstance()->KeyDown(DIK_3) == true)
+	{
+		myCurrentWeapon = myGrenadeLauncher;
+	}
+	if (CU::InputWrapper::GetInstance()->KeyDown(DIK_R) == true)
+	{
+		myCurrentWeapon->Reload();
+	}
+	if (myCurrentWeapon == myPistol)
+	{
+		if (CU::InputWrapper::GetInstance()->MouseDown(0) == true && myBullets.Size() < 1024)
+		{
+			myPistol->Shoot();
+			//ShootAtDirection(aOrientation);
+		}
+	}
+	else
+	{
+		if (CU::InputWrapper::GetInstance()->MouseIsPressed(0) == true && myBullets.Size() < 1024)
+		{
+			ShootAtDirection(aOrientation);
+		}
 	}
 	if (CU::InputWrapper::GetInstance()->MouseIsPressed(1) == true)// && myBullets.Size() < 256)
 	{
