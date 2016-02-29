@@ -4,35 +4,47 @@
 #include <PhysEntity.h>
 #include <PhysicsInterface.h>
 #include "Weapon.h"
+#include <XMLReader.h>
 
 Weapon::Weapon(eWeaponType aWeaponType)
 	: myWeaponType(aWeaponType)
 {
+	XMLReader reader;
+	reader.OpenDocument("Data/Setting/SET_weapons.xml");
+	tinyxml2::XMLElement* root = reader.ForceFindFirstChild("root");
+
 	if (myWeaponType == eWeaponType::PISTOL)
 	{
-		myClipSize = 12;
+		tinyxml2::XMLElement* pistolElement = reader.ForceFindFirstChild(root, "pistol");
+		
+		reader.ForceReadAttribute(reader.ForceFindFirstChild(pistolElement, "clipsize"), "value", myClipSize);
+		reader.ForceReadAttribute(reader.ForceFindFirstChild(pistolElement, "damage"), "value", myDamage);
+		
 		myAmmoInClip = myClipSize;
 		myAmmoTotal = INT_MAX;
-		myDamage = 10;
 	}
 	else if (myWeaponType == eWeaponType::SHOTGUN)
 	{
-		myClipSize = 8;
+		tinyxml2::XMLElement* shotgunElement = reader.ForceFindFirstChild(root, "shotgun");
+
+		reader.ForceReadAttribute(reader.ForceFindFirstChild(shotgunElement, "clipsize"), "value", myClipSize);
+		reader.ForceReadAttribute(reader.ForceFindFirstChild(shotgunElement, "damage"), "value", myDamage);
+		reader.ForceReadAttribute(reader.ForceFindFirstChild(shotgunElement, "startammo"), "value", myAmmoTotal);
 		myAmmoInClip = myClipSize;
-		myAmmoTotal = 64;
-		myDamage = 20;
 	}
 	else if (myWeaponType == eWeaponType::GRENADE_LAUNCHER)
 	{
-		myClipSize = 5;
+		tinyxml2::XMLElement* grenadeLauncherElement = reader.ForceFindFirstChild(root, "grenadelauncher");
+		reader.ForceReadAttribute(reader.ForceFindFirstChild(grenadeLauncherElement, "clipsize"), "value", myClipSize);
+		reader.ForceReadAttribute(reader.ForceFindFirstChild(grenadeLauncherElement, "damage"), "value", myDamage);
+		reader.ForceReadAttribute(reader.ForceFindFirstChild(grenadeLauncherElement, "startammo"), "value", myAmmoTotal);
 		myAmmoInClip = myClipSize;
-		myAmmoTotal = 10;
-		myDamage = 50;
 	}
 	else
 	{
 		DL_ASSERT("Unknown weapontype");
 	}
+	reader.CloseDocument();
 }
 
 
@@ -62,9 +74,9 @@ void Weapon::Shoot(const CU::Matrix44<float>& aOrientation)
 		}
 		else if (myWeaponType == eWeaponType::SHOTGUN)
 		{
-			ShootRowAround(aOrientation, aOrientation.GetForward() * CU::Matrix44<float>::CreateRotateAroundX(CU::Math::RandomRange(-0.25f, -0.1f)));
+			ShootRowAround(aOrientation, aOrientation.GetForward() * CU::Matrix44<float>::CreateRotateAroundX(CU::Math::RandomRange(-0.25f, -0.01f)));
 			ShootRowAround(aOrientation, aOrientation.GetForward());
-			ShootRowAround(aOrientation, aOrientation.GetForward() * CU::Matrix44<float>::CreateRotateAroundX(CU::Math::RandomRange(0.1f, 0.25f)));
+			ShootRowAround(aOrientation, aOrientation.GetForward() * CU::Matrix44<float>::CreateRotateAroundX(CU::Math::RandomRange(0.01f, 0.25f)));
 		}
 		else if (myWeaponType == eWeaponType::GRENADE_LAUNCHER)
 		{
