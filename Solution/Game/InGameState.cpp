@@ -61,6 +61,25 @@ const eStateStatus InGameState::Update(const float& aDeltaTime)
 		myStateStack->PushSubGameState(new LobbyState());
 	}
 
+	if (CU::InputWrapper::GetInstance()->KeyDown(DIK_NUMPAD1))
+	{
+		SET_RUNTIME(false);
+		SAFE_DELETE(myLevel);
+		myLevel = myLevelFactory->LoadLevel(0);
+	}
+	else if (CU::InputWrapper::GetInstance()->KeyDown(DIK_NUMPAD2))
+	{
+		SET_RUNTIME(false);
+		SAFE_DELETE(myLevel);
+		myLevel = myLevelFactory->LoadLevel(1);
+	}
+	else if (CU::InputWrapper::GetInstance()->KeyDown(DIK_NUMPAD3))
+	{
+		SET_RUNTIME(false);
+		SAFE_DELETE(myLevel);
+		myLevel = myLevelFactory->LoadLevel(3);
+	}
+
 	myLevel->Update(aDeltaTime);
 
 	//LUA::ScriptSystem::GetInstance()->CallFunction("Update", { aDeltaTime });
