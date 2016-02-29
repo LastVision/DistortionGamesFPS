@@ -30,6 +30,8 @@ Weapon::Weapon(eWeaponType aWeaponType)
 		reader.ForceReadAttribute(reader.ForceFindFirstChild(shotgunElement, "clipsize"), "value", myClipSize);
 		reader.ForceReadAttribute(reader.ForceFindFirstChild(shotgunElement, "damage"), "value", myDamage);
 		reader.ForceReadAttribute(reader.ForceFindFirstChild(shotgunElement, "startammo"), "value", myAmmoTotal);
+		reader.ForceReadAttribute(reader.ForceFindFirstChild(shotgunElement, "minspreadrotation"), "value", myMinSpreadRotation);
+		reader.ForceReadAttribute(reader.ForceFindFirstChild(shotgunElement, "maxspreadrotation"), "value", myMaxSpreadRotation);
 		myAmmoInClip = myClipSize;
 	}
 	else if (myWeaponType == eWeaponType::GRENADE_LAUNCHER)
@@ -74,9 +76,9 @@ void Weapon::Shoot(const CU::Matrix44<float>& aOrientation)
 		}
 		else if (myWeaponType == eWeaponType::SHOTGUN)
 		{
-			ShootRowAround(aOrientation, aOrientation.GetForward() * CU::Matrix44<float>::CreateRotateAroundX(CU::Math::RandomRange(-0.25f, -0.01f)));
+			ShootRowAround(aOrientation, aOrientation.GetForward() * CU::Matrix44<float>::CreateRotateAroundX(CU::Math::RandomRange(-myMaxSpreadRotation, -myMinSpreadRotation)));
 			ShootRowAround(aOrientation, aOrientation.GetForward());
-			ShootRowAround(aOrientation, aOrientation.GetForward() * CU::Matrix44<float>::CreateRotateAroundX(CU::Math::RandomRange(0.01f, 0.25f)));
+			ShootRowAround(aOrientation, aOrientation.GetForward() * CU::Matrix44<float>::CreateRotateAroundX(CU::Math::RandomRange(myMinSpreadRotation, myMaxSpreadRotation)));
 		}
 		else if (myWeaponType == eWeaponType::GRENADE_LAUNCHER)
 		{
@@ -116,7 +118,7 @@ void Weapon::ShootRowAround(const CU::Matrix44<float>& aOrientation, const CU::V
 	}
 
 	entity = Prism::PhysicsInterface::GetInstance()->RayCast(aOrientation.GetPos()
-		, forward * CU::Matrix44<float>::CreateRotateAroundY(CU::Math::RandomRange(-0.25f, -0.01f)), 100.f);
+		, forward * CU::Matrix44<float>::CreateRotateAroundY(CU::Math::RandomRange(-myMaxSpreadRotation, -myMinSpreadRotation)), 100.f);
 	if (entity != nullptr)
 	{
 		if (entity->GetPhysEntity()->GetPhysicsType() == ePhysics::DYNAMIC)
@@ -127,7 +129,7 @@ void Weapon::ShootRowAround(const CU::Matrix44<float>& aOrientation, const CU::V
 	}
 
 	entity = Prism::PhysicsInterface::GetInstance()->RayCast(aOrientation.GetPos()
-		, forward * CU::Matrix44<float>::CreateRotateAroundY(CU::Math::RandomRange(0.01f, 0.25f)), 100.f);
+		, forward * CU::Matrix44<float>::CreateRotateAroundY(CU::Math::RandomRange(myMinSpreadRotation, myMaxSpreadRotation)), 100.f);
 	if (entity != nullptr)
 	{
 		if (entity->GetPhysEntity()->GetPhysicsType() == ePhysics::DYNAMIC)

@@ -23,8 +23,10 @@ private:
 	int myAmmoInClip;
 	int myClipSize;
 	int myAmmoTotal;
-
 	int myDamage;
+
+	float myMinSpreadRotation;
+	float myMaxSpreadRotation;
 
 	eWeaponType myWeaponType;
 };
