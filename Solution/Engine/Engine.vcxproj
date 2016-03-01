@@ -293,6 +293,7 @@
     <ClCompile Include="Model.cpp" />
     <ClCompile Include="ModelAnimated.cpp" />
     <ClCompile Include="Renderer.cpp" />
+    <ClCompile Include="RoomManager.cpp" />
     <ClCompile Include="SpotLightShadow.cpp" />
     <ClCompile Include="Sprite.cpp" />
     <ClCompile Include="ModelLoader.cpp" />
@@ -373,6 +374,7 @@
     <ClInclude Include="Model.h" />
     <ClInclude Include="ModelAnimated.h" />
     <ClInclude Include="Renderer.h" />
+    <ClInclude Include="RoomManager.h" />
     <ClInclude Include="SpotLightShadow.h" />
     <ClInclude Include="Sprite.h" />
     <ClInclude Include="ModelLoader.h" />

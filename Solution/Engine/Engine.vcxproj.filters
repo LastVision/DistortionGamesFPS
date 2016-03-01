@@ -162,6 +162,7 @@
       <Filter>Lights</Filter>
     </ClCompile>
     <ClCompile Include="Bar3D.cpp" />
+    <ClCompile Include="RoomManager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Engine.h" />
@@ -370,6 +371,7 @@
       <Filter>Rendering\Animation</Filter>
     </ClInclude>
     <ClInclude Include="Bar3D.h" />
+    <ClInclude Include="RoomManager.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Precompile">
