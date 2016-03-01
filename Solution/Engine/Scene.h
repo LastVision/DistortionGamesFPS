@@ -10,6 +10,7 @@ namespace Prism
 	class DirectionalLight;
 	class Instance;
 	class PointLight;
+	class RoomManager;
 	class SpotLight;
 	class SpotLightShadow;
 	class InstancingHelper;
@@ -42,13 +43,13 @@ namespace Prism
 		void operator=(Scene&) = delete;
 		void UpdateLights();
 
-		CU::GrowingArray<Instance*> myInstances;
 		CU::GrowingArray<DirectionalLight*> myDirectionalLights;
 		CU::GrowingArray<PointLight*> myPointLights;
 		CU::GrowingArray<SpotLight*> mySpotLights;
 		InstancingHelper* myInstancingHelper;
 
 		const Camera* myCamera;
+		RoomManager* myRoomManager;
 
 		CU::StaticArray<DirectionalLightData, NUMBER_OF_DIRECTIONAL_LIGHTS> myDirectionalLightData;
 		CU::StaticArray<PointLightData, NUMBER_OF_POINT_LIGHTS> myPointLightData;

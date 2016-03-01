@@ -2,11 +2,14 @@
 #include "Room.h"
 
 
-Room::Room()
+namespace Prism
 {
-}
+	Room::Room()
+	{
+	}
 
 
-Room::~Room()
-{
+	Room::~Room()
+	{
+	}
 }

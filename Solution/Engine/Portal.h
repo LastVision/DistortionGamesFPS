@@ -1,8 +1,11 @@
 #pragma once
-class Portal
-{
-public:
-	Portal();
-	~Portal();
-};
 
+namespace Prism
+{
+	class Portal
+	{
+	public:
+		Portal();
+		~Portal();
+	};
+}

@@ -1,8 +1,12 @@
 #pragma once
-class Room
-{
-public:
-	Room();
-	~Room();
-};
 
+
+namespace Prism
+{
+	class Room
+	{
+	public:
+		Room();
+		~Room();
+	};
+}
