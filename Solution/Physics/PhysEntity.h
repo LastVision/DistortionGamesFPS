@@ -36,6 +36,8 @@ namespace Prism
 
 		ePhysics GetPhysicsType() const;
 
+		void RemoveFromScene();
+
 	private:
 		physx::PxTriangleMesh* GetPhysMesh(const std::string& aFBXPath);
 
