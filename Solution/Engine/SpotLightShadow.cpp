@@ -59,7 +59,7 @@ namespace Prism
 		myCamera->InitShadowCamera(Prism::Engine::GetInstance()->GetWindowSize().x
 			, Prism::Engine::GetInstance()->GetWindowSize().y);
 		myTexture = new Texture();
-		myTexture->InitAsDepthBuffer();
+		myTexture->InitAsDepthBuffer(1024.f* 2.f, 1024.f*2.f);
 
 		myBiasMatrix.myMatrix[0] = 0.5;
 		myBiasMatrix.myMatrix[5] = 0.5;

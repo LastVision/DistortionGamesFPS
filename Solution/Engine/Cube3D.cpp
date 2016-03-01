@@ -325,9 +325,9 @@ namespace Prism
 			for (UINT p = 0; p < techDesc.Passes; ++p)
 			{
 				myEffect->GetTechnique("Render")->GetPassByIndex(p)->Apply(0, Engine::GetInstance()->GetContex());
-				Engine::GetInstance()->EnableWireframe();
+				Prism::Engine::GetInstance()->SetRasterizeState(eRasterizer::WIRE_FRAME);
 				Engine::GetInstance()->GetContex()->DrawIndexed(myIndexBaseData->myNumberOfIndices, 0, 0);
-				Engine::GetInstance()->DisableWireframe();
+				Prism::Engine::GetInstance()->SetRasterizeState(eRasterizer::CULL_BACK);
 			}
 		}
 		else

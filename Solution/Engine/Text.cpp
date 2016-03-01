@@ -62,11 +62,7 @@ void Prism::Text::SetText(const std::string& aText)
 
 void Prism::Text::Render()
 {
-	if (Engine::GetInstance()->myWireframeShouldShow == true)
-	{
-		Engine::GetInstance()->DisableWireframe();
-	}
-	Engine::GetInstance()->DisableZBuffer();
+	Engine::GetInstance()->SetDepthBufferState(eDepthStencil::Z_DISABLED);
 	
 	float blendFactor[4];
 	blendFactor[0] = 0.f;
@@ -81,12 +77,7 @@ void Prism::Text::Render()
 
 	BaseModel::Render();
 
-	Engine::GetInstance()->EnableZBuffer();
-
-	if (Engine::GetInstance()->myWireframeShouldShow == true)
-	{
-		Engine::GetInstance()->EnableWireframe();
-	}
+	Engine::GetInstance()->SetDepthBufferState(eDepthStencil::Z_ENABLED);
 }
 
 float Prism::Text::GetWidth() const

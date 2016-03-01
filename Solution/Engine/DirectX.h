@@ -38,7 +38,7 @@ namespace Prism
 		ID3D11Device* GetDevice();
 		ID3D11DeviceContext* GetContex();
 		ID3D11DepthStencilView* GetDepthStencil();
-		ID3D11RenderTargetView* GetDepthBuffer();
+		ID3D11RenderTargetView* GetBackbuffer();
 		ID3D11ShaderResourceView* GetBackbufferView();
 		ID3D11Texture2D* GetBackbufferTexture();
 		ID3D11Texture2D* GetDepthbufferTexture();
@@ -46,14 +46,20 @@ namespace Prism
 		void RestoreViewPort();
 		void SetBackBufferAsTarget();
 
-		void EnableZBuffer();
+		/*void EnableZBuffer();
 		void DisableZBuffer();
 
 		void EnableWireframe();
 		void DisableWireframe();
 
 		void EnableCulling();
-		void DisableCulling();
+		void DisableCulling();*/
+
+		void SetDepthBufferState(eDepthStencil aState);
+		eDepthStencil GetDepthBufferState() const;
+
+		void SetRasterizeState(eRasterizer aState);
+		eRasterizer GetRasterizerState() const;
 
 	private:
 		void operator=(const DirectX&) = delete;
@@ -63,13 +69,14 @@ namespace Prism
 		bool D3DSwapChainSetup();
 		bool D3DBackbufferSetup(int aWidth, int aHeight);
 		bool D3DViewPortSetup(int aWidth, int aHeight);
-		bool D3DEnabledStencilStateSetup();
+		/*bool D3DEnabledStencilStateSetup();
 		bool D3DDisabledStencilStateSetup();
 		bool D3DWireframeRasterizerStateSetup();
 		bool D3DSolidRasterizerStateSetup();
-		bool D3DNoCullingRasterizerStateSetup();
+		bool D3DNoCullingRasterizerStateSetup();*/
 
-
+		bool D3DSetupRasterizerStates();
+		bool D3DSetupDepthStencilStates();
 
 		ID3D11Device* myDevice;
 		ID3D11DeviceContext* myContext;
@@ -83,13 +90,20 @@ namespace Prism
 		ID3D11Texture2D* myDepthbufferTexture;
 		ID3D11Texture2D* myBackbufferTexture;
 
-		ID3D11DepthStencilState* myEnabledDepthStencilState;
+		/*ID3D11DepthStencilState* myEnabledDepthStencilState;
 		ID3D11DepthStencilState* myDisabledDepthStencilState;
 		ID3D11RasterizerState* mySolidRasterizer;
 		ID3D11RasterizerState* myWireframeRasterizer;
-		ID3D11RasterizerState* myNoCullingRasterizer;
+		ID3D11RasterizerState* myNoCullingRasterizer;*/
+
+		ID3D11RasterizerState* myRasterizerStates[static_cast<int>(eRasterizer::_COUNT)];
+		ID3D11DepthStencilState* myDepthStencilStates[static_cast<int>(eDepthStencil::_COUNT)];
 
 		D3D11_VIEWPORT* myViewPort;
+
+		eDepthStencil myDepthStencilState;
+		eRasterizer myRasterizerState;
+
 		HWND& myHWND;
 		SetupInfo mySetupInfo;
 	};

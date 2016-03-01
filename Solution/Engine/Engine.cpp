@@ -232,9 +232,9 @@ namespace Prism
 		return myDirectX->GetDepthStencil();
 	}
 
-	ID3D11RenderTargetView* Engine::GetDepthBuffer()
+	ID3D11RenderTargetView* Engine::GetBackbuffer()
 	{
-		return myDirectX->GetDepthBuffer();
+		return myDirectX->GetBackbuffer();
 	}
 
 	ID3D11ShaderResourceView* Engine::GetBackbufferView()
@@ -375,51 +375,24 @@ namespace Prism
 		myDirectX->SetBackBufferAsTarget();
 	}
 
-	void Engine::EnableZBuffer()
+	void Engine::SetDepthBufferState(eDepthStencil aState)
 	{
-		myDirectX->EnableZBuffer();
+		myDirectX->SetDepthBufferState(aState);
 	}
 
-	void Engine::DisableZBuffer()
+	eDepthStencil Engine::GetDepthBufferState() const
 	{
-		myDirectX->DisableZBuffer();
+		return myDirectX->GetDepthBufferState();
 	}
 
-	void Engine::ToggleWireframe()
+	void Engine::SetRasterizeState(eRasterizer aState)
 	{
-		myDirectX->EnableWireframe();
-
-		
-		if (myWireframeIsOn == true)
-		{
-			myDirectX->DisableWireframe();
-			myWireframeIsOn = false;
-			myWireframeShouldShow = false;
-			return;
-		}
-
-		myWireframeShouldShow = true;
-		myWireframeIsOn = true;
+		myDirectX->SetRasterizeState(aState);
 	}
 
-	void Engine::EnableWireframe()
+	eRasterizer Engine::GetRasterizerState() const
 	{
-		myDirectX->EnableWireframe();
-	}
-
-	void Engine::DisableWireframe()
-	{
-		myDirectX->DisableWireframe();
-	}
-
-	void Engine::EnableCulling()
-	{
-		myDirectX->EnableCulling();
-	}
-
-	void Engine::DisableCulling()
-	{
-		myDirectX->DisableCulling();
+		return myDirectX->GetRasterizerState();
 	}
 
 	void Engine::SetShouldRenderText(bool aStatus)
