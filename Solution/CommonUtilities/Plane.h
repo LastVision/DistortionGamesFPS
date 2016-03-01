@@ -66,7 +66,8 @@ namespace CU
 	template <typename T>
 	void Plane<T>::InitWith3Points(Vector3<T> aFirstPoint, Vector3<T> aSecondPoint, Vector3<T> aThirdPoint)
 	{
-		Vector3<T> normal = Cross(aSecondPoint - aFirstPoint, aThirdPoint - aSecondPoint);
+		Vector3<T> normal = Cross(aSecondPoint - aFirstPoint, aFirstPoint - aThirdPoint);
+		CU::Normalize(normal);
 
 		myABCD.x = normal.x;
 		myABCD.y = normal.y;

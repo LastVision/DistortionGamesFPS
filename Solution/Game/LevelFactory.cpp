@@ -90,6 +90,7 @@ void LevelFactory::ReadLevel(const std::string& aLevelPath)
 
 void LevelFactory::LoadRooms(XMLReader& aReader, tinyxml2::XMLElement* aElement)
 {
+	int i = 0;
 	for (tinyxml2::XMLElement* entityElement = aReader.ForceFindFirstChild(aElement, "room"); entityElement != nullptr;
 		entityElement = aReader.FindNextElement(entityElement, "room"))
 	{
@@ -101,7 +102,8 @@ void LevelFactory::LoadRooms(XMLReader& aReader, tinyxml2::XMLElement* aElement)
 
 		DL_ASSERT_EXP(rotation.x == 0 && rotation.y == 0 && rotation.z == 0, "Room rotation non-zero.");
 
-		myCurrentLevel->GetScene()->AddRoom(new Prism::Room(position, scale));
+		myCurrentLevel->GetScene()->AddRoom(new Prism::Room(position, scale, i));
+		++i;
 	}
 
 	myCurrentLevel->GetScene()->GetRoomManager()->CalcPortals();

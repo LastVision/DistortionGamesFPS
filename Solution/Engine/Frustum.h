@@ -5,6 +5,8 @@
 
 namespace Prism
 {
+	class Portal;
+
 	class Frustum
 	{
 	public:
@@ -14,6 +16,7 @@ namespace Prism
 		const CU::Vector3<float>& GetCornerMax() const;
 
 		void Update();
+		void Resize(Portal* aPortal);
 
 		bool Inside(const CU::Vector3<float>& aPosition, float aRadius) const;
 
@@ -22,30 +25,9 @@ namespace Prism
 	private:
 		void operator=(Frustum&) = delete;
 
-		CU::Vector3<float> CalcCornerMin() const;
-		CU::Vector3<float> CalcCornerMax() const;
-
 		const CU::Matrix44<float>& myOrientation;
 		CU::Matrix44<float> myOrientationInverted;
 
 		CU::Intersection::Fov90Frustum myIntersectionFrustum;
-
-		CU::Vector4<float> myUpLeft;
-		CU::Vector4<float> myUpRight;
-		CU::Vector4<float> myDownLeft;
-		CU::Vector4<float> myDownRight;
-		CU::Vector3<float> myCornerMin;
-		CU::Vector3<float> myCornerMax;
 	};
-
-
-	inline const CU::Vector3<float>& Frustum::GetCornerMin() const
-	{
-		return myCornerMin;
-	}
-
-	inline const CU::Vector3<float>& Frustum::GetCornerMax() const
-	{
-		return myCornerMax;
-	}
 }
