@@ -1,12 +1,14 @@
 #include "stdafx.h"
 #include "RoomManager.h"
 
-
-RoomManager::RoomManager()
+namespace Prism
 {
-}
+	RoomManager::RoomManager()
+	{
+	}
 
 
-RoomManager::~RoomManager()
-{
+	RoomManager::~RoomManager()
+	{
+	}
 }

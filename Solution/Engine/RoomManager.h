@@ -1,8 +1,11 @@
 #pragma once
-class RoomManager
-{
-public:
-	RoomManager();
-	~RoomManager();
-};
 
+namespace Prism
+{
+	class RoomManager
+	{
+	public:
+		RoomManager();
+		~RoomManager();
+	};
+}
