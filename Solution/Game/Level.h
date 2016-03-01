@@ -9,6 +9,7 @@ namespace Prism
 	class Camera;
 	class Scene;
 	class Instance;
+	class Room;
 }
 
 class Level

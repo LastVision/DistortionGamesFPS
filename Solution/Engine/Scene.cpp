@@ -7,6 +7,7 @@
 #include "Frustum.h"
 #include "Instance.h"
 #include "PointLight.h"
+#include "RoomManager.h"
 #include "Scene.h"
 #include "SpotLight.h"
 #include "InstancingHelper.h"
@@ -17,7 +18,6 @@ namespace Prism
 		: myCamera(nullptr)
 		, myRenderRadius(-10.f)
 	{
-		myInstances.Init(4096);
 		myDirectionalLights.Init(4);
 		myPointLights.Init(4);
 		mySpotLights.Init(4);
@@ -28,11 +28,11 @@ namespace Prism
 
 		myInstancingHelper = new InstancingHelper();
 		myInstancingHelper->SetCamera(myCamera);
+		myRoomManager = new RoomManager();
 	}
 
 	Scene::~Scene()
 	{
-		myInstances.RemoveAll();
 		SAFE_DELETE(myInstancingHelper);
 	}
 
@@ -40,9 +40,11 @@ namespace Prism
 	{
 		UpdateLights();
 
-		for (int i = 0; i < myInstances.Size(); ++i)
+		const CU::GrowingArray<Instance*>& instances = myRoomManager->GetActiveInstances(*myCamera);
+
+		for (int i = 0; i < instances.Size(); ++i)
 		{
-			myInstances[i]->Render(*myCamera, *myInstancingHelper);
+			instances[i]->Render(*myCamera, *myInstancingHelper);
 		}
 
 		myInstancingHelper->Render(myDirectionalLightData);
@@ -65,9 +67,14 @@ namespace Prism
 		}
 	}
 
+	void Scene::AddRoom(Room* aRoom)
+	{
+		myRoomManager->Add(aRoom);
+	}
+
 	void Scene::AddInstance(Instance* aInstance)
 	{
-		myInstances.Add(aInstance);
+		myRoomManager->Add(aInstance);
 	}
 
 	void Scene::AddLight(DirectionalLight* aLight)
@@ -124,10 +131,6 @@ namespace Prism
 
 	void Scene::RemoveInstance(Instance* aInstance)
 	{
-		int index = myInstances.Find(aInstance);
-		if (index != myInstances.FoundNone)
-		{
-			myInstances.RemoveCyclicAtIndex(index);
-		}
+		myRoomManager->Remove(aInstance);
 	}
 }

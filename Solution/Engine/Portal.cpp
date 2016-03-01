@@ -2,11 +2,14 @@
 #include "Portal.h"
 
 
-Portal::Portal()
+namespace Prism
 {
-}
+	Portal::Portal()
+	{
+	}
 
 
-Portal::~Portal()
-{
+	Portal::~Portal()
+	{
+	}
 }

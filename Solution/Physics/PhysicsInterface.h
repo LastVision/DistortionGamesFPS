@@ -23,6 +23,7 @@ namespace Prism
 
 		int CreatePlayerController(const CU::Vector3<float>& aStartPosition);
 		void Move(int aId, const CU::Vector3<float>& aDirection, float aMinDisplacement, float aDeltaTime);
+		void SetPosition(int aId, const CU::Vector3<float>& aPosition);
 		void GetPosition(int aId, CU::Vector3<float>& aPositionOut);
 
 	private:

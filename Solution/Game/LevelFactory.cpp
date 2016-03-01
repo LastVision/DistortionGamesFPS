@@ -3,6 +3,8 @@
 #include <EntityFactory.h>
 #include "Level.h"
 #include "LevelFactory.h"
+#include <Room.h>
+#include <Scene.h>
 #include <XMLReader.h>
 
 
@@ -78,10 +80,28 @@ void LevelFactory::ReadLevel(const std::string& aLevelPath)
 	tinyxml2::XMLElement* levelElement = reader.ForceFindFirstChild("root");
 	levelElement = reader.ForceFindFirstChild(levelElement, "scene");
 
+	LoadRooms(reader, levelElement);
 	LoadProps(reader, levelElement);
 	LoadUnits(reader, levelElement);
 
 	reader.CloseDocument();
+}
+
+void LevelFactory::LoadRooms(XMLReader& aReader, tinyxml2::XMLElement* aElement)
+{
+	for (tinyxml2::XMLElement* entityElement = aReader.ForceFindFirstChild(aElement, "room"); entityElement != nullptr;
+		entityElement = aReader.FindNextElement(entityElement, "room"))
+	{
+		CU::Vector3f position;
+		CU::Vector3f rotation;
+		CU::Vector3f scale;
+
+		ReadOrientation(aReader, entityElement, position, rotation, scale);
+
+		DL_ASSERT_EXP(rotation.x == 0 && rotation.y == 0 && rotation.z == 0, "Room rotation non-zero.");
+
+		myCurrentLevel->GetScene()->AddRoom(new Prism::Room(position, scale));
+	}
 }
 
 void LevelFactory::LoadProps(XMLReader& aReader, tinyxml2::XMLElement* aElement)

@@ -4,7 +4,7 @@
 
 Health::Health(XMLReader& aReader, tinyxml2::XMLElement* anElement)
 {
-	aReader.ForceReadAttribute(aReader.ForceFindFirstChild(anElement, "speed"), "value", myMaxHealth);
+	aReader.ForceReadAttribute(aReader.ForceFindFirstChild(anElement, "maxHealth"), "value", myMaxHealth);
 	myCurrentHealth = myMaxHealth;
 }
 
@@ -12,12 +12,19 @@ Health::~Health()
 {
 }
 
-void Health::TakeDamage(int aDamage)
+bool Health::TakeDamage(int aDamage)
 {
 	myCurrentHealth -= aDamage;
 	if (myCurrentHealth <= 0)
 	{
 		myCurrentHealth = 0;
 		//myEntity.Kill();
+		return false;
 	}
+	return true;
+}
+
+void Health::Reset()
+{
+	myCurrentHealth = myMaxHealth;
 }

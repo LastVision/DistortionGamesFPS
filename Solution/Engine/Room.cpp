@@ -1,12 +1,22 @@
 #include "stdafx.h"
+#include <Intersection.h>
 #include "Room.h"
 
 
-Room::Room()
+namespace Prism
 {
-}
+	Room::Room(const CU::Vector3<float>& aPosition, const CU::Vector3<float>& aScale)
+		: myAABB(aPosition, aScale)
+	{
+	}
 
 
-Room::~Room()
-{
+	Room::~Room()
+	{
+	}
+
+	bool Room::Inside(const CU::Vector3<float>& aPosition) const
+	{
+		return CU::Intersection::PointInsideAABB(myAABB, aPosition);
+	}
 }

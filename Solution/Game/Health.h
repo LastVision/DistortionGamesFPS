@@ -13,7 +13,12 @@ public:
 	Health(XMLReader& aReader, tinyxml2::XMLElement* anElement);
 	~Health();
 
-	void TakeDamage(int aDamage);
+	bool TakeDamage(int aDamage);
+
+	void Reset();
+
+	int GetCurrentHealth();
+	int GetMaxHealth();
 
 private:
 	
@@ -21,3 +26,12 @@ private:
 	int myCurrentHealth;
 };
 
+inline int Health::GetCurrentHealth()
+{
+	return myCurrentHealth;
+}
+
+inline int Health::GetMaxHealth()
+{
+	return myMaxHealth;
+}
