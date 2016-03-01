@@ -28,7 +28,7 @@ namespace GUI
 		myEffect->SetTexture(Prism::TextureContainer::GetInstance()->GetTexture("Data/Resource/Texture/UI/T_ammo_pistol.dds"));
 
 		myGUIBone = aModel->GetCurrentAnimation()->GetHiearchyToBone("ui_jnt3");
-		myHealthBone = aModel->GetCurrentAnimation()->GetHiearchyToBone("health_jnt5");
+		myHealthBone = aModel->GetCurrentAnimation()->GetHiearchyToBone("health_jnt3");
 		myLeftBar = new Prism::Bar3D({ 0.02f, 0.005f }, myShotgunClipSize, myEffect, eBarPosition::LEFT);
 		myRightBar = new Prism::Bar3D({ 0.02f, 0.005f }, myGrenadeLauncherClipSize, myEffect, eBarPosition::RIGHT);
 		myTopBar = new Prism::Bar3D({ 0.02f, 0.005f }, myPistolClipSize, myEffect, eBarPosition::TOP);

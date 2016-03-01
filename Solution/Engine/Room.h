@@ -10,6 +10,7 @@ namespace Prism
 		~Room();
 
 		bool Inside(const CU::Vector3<float>& aPosition) const;
+		bool Collide(const Room& aRoom) const;
 
 	private:
 		CU::Intersection::AABB myAABB;

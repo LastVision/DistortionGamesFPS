@@ -4,6 +4,7 @@
 #include "Level.h"
 #include "LevelFactory.h"
 #include <Room.h>
+#include <RoomManager.h>
 #include <Scene.h>
 #include <XMLReader.h>
 
@@ -102,6 +103,8 @@ void LevelFactory::LoadRooms(XMLReader& aReader, tinyxml2::XMLElement* aElement)
 
 		myCurrentLevel->GetScene()->AddRoom(new Prism::Room(position, scale));
 	}
+
+	myCurrentLevel->GetScene()->GetRoomManager()->CalcPortals();
 }
 
 void LevelFactory::LoadProps(XMLReader& aReader, tinyxml2::XMLElement* aElement)

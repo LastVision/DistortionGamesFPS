@@ -57,6 +57,11 @@ namespace Prism
 		myManager->Move(aId, aDirection, aMinDisplacement, aDeltaTime);
 	}
 
+	bool PhysicsInterface::GetAllowedToJump(int aId)
+	{
+		return myManager->GetAllowedToJump(aId);
+	}
+
 	void PhysicsInterface::SetPosition(int aId, const CU::Vector3<float>& aPosition)
 	{
 		myManager->SetPosition(aId, aPosition);

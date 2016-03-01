@@ -5,6 +5,7 @@
 namespace Prism
 {
 	class Instance;
+	class Portal;
 	class Room;
 
 	class RoomManager
@@ -14,7 +15,8 @@ namespace Prism
 		~RoomManager();
 
 		void Add(Room* aRoom);
-		void Add(Instance* anInstance);
+		void CalcPortals();
+		void Add(Instance* anInstance, bool anAlwaysRender);
 		void Remove(Instance* anInstance);
 
 		const CU::GrowingArray<Instance*>& GetActiveInstances(const Camera& aCamera);
@@ -33,8 +35,10 @@ namespace Prism
 		};
 
 		CU::GrowingArray<Room*> myRooms;
+		CU::GrowingArray<Portal*> myPortals;
 
 		CU::GrowingArray<InstanceInRoom> myInstances;
+		CU::GrowingArray<Instance*> myAlwaysRenderInstances;
 		CU::GrowingArray<Instance*> myActiveInstances;
 	};
 }
