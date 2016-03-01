@@ -31,7 +31,7 @@ namespace Prism
 		void OnResize(int aWidth, int aHeigth);
 
 		void AddRoom(Room* aRoom);
-		void AddInstance(Instance* aInstance);
+		void AddInstance(Instance* aInstance, bool aAlwaysRender = false);
 		void AddLight(DirectionalLight* aLight);
 		void AddLight(PointLight* aLight);
 		void AddLight(SpotLight* aLight);
@@ -40,6 +40,7 @@ namespace Prism
 
 		void SetCamera(const Camera& aCamera);
 		const Camera* GetCamera() const;
+		RoomManager* GetRoomManager() const;
 
 	private:
 		void operator=(Scene&) = delete;
@@ -64,5 +65,10 @@ namespace Prism
 	inline const Camera* Scene::GetCamera() const
 	{
 		return myCamera;
+	}
+
+	inline RoomManager* Scene::GetRoomManager() const
+	{
+		return myRoomManager;
 	}
 }

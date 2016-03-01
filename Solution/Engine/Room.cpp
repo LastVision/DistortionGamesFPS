@@ -19,4 +19,9 @@ namespace Prism
 	{
 		return CU::Intersection::PointInsideAABB(myAABB, aPosition);
 	}
+
+	bool Room::Collide(const Room& aRoom) const
+	{
+		return CU::Intersection::AABBvsAABB(myAABB, aRoom.myAABB);
+	}
 }

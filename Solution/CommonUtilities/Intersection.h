@@ -21,6 +21,7 @@ namespace CU
 		bool CircleVsRect(Vector2<float> aCenter, float aRadius, Vector2<float> aRectTopLeft, Vector2<float> aRectBottomRight);
 
 		//3D
+		bool AABBvsAABB(const AABB& anAABB1, const AABB& anAABB2);
 		bool AABBvsAABB(const Vector3<float>& aMin1, const Vector3<float>& aMax1, const Vector3<float>& aMin2, const Vector3<float>& aMax2);
 		bool PointInsideSphere(Sphere aSphere, CU::Vector3<float> aPoint);
 		bool SphereVsSphere(Sphere aSphere, Sphere aOtherSphere);
@@ -229,6 +230,11 @@ namespace CU
 		}
 
 		return true;
+	}
+
+	inline bool Intersection::AABBvsAABB(const AABB& anAABB1, const AABB& anAABB2)
+	{
+		return AABBvsAABB(anAABB1.myMinPos, anAABB1.myMaxPos, anAABB2.myMinPos, anAABB2.myMaxPos);
 	}
 
 	inline bool Intersection::AABBvsAABB(const Vector3<float>& aMin1, const Vector3<float>& aMax1, const Vector3<float>& aMin2, const Vector3<float>& aMax2)

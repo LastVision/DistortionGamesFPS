@@ -72,9 +72,9 @@ namespace Prism
 		myRoomManager->Add(aRoom);
 	}
 
-	void Scene::AddInstance(Instance* aInstance)
+	void Scene::AddInstance(Instance* aInstance, bool aAlwaysRender)
 	{
-		myRoomManager->Add(aInstance);
+		myRoomManager->Add(aInstance, aAlwaysRender);
 	}
 
 	void Scene::AddLight(DirectionalLight* aLight)

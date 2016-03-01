@@ -2,6 +2,7 @@
 #include "Camera.h"
 #include "Instance.h"
 #include <Intersection.h>
+#include "Portal.h"
 #include "Room.h"
 #include "RoomManager.h"
 
@@ -10,6 +11,7 @@ namespace Prism
 	RoomManager::RoomManager()
 		: myRooms(128)
 		, myInstances(4096)
+		, myAlwaysRenderInstances(128)
 		, myActiveInstances(4096)
 	{
 	}
@@ -26,20 +28,41 @@ namespace Prism
 		myRooms.Add(aRoom);
 	}
 
-	void RoomManager::Add(Instance* anInstance)
+	void RoomManager::CalcPortals()
 	{
-		bool success(false);
 		for (int i = 0; i < myRooms.Size(); ++i)
 		{
-			if (myRooms[i]->Inside(anInstance->GetPosition()) == true)
+			for (int j = i + 1; j < myRooms.Size(); ++j)
 			{
-				myInstances.Add(InstanceInRoom(i, anInstance));
-				success = true;
-				break;
+				if (myRooms[i]->Collide(*myRooms[j]) == true)
+				{
+					myPortals.Add(new Portal(myRooms[i], myRooms[j]));
+				}
 			}
 		}
+	}
 
-		//DL_ASSERT_EXP(success == true, "Instance found outside room.");
+	void RoomManager::Add(Instance* anInstance, bool anAlwaysRender)
+	{
+		if (anAlwaysRender == true)
+		{
+			myAlwaysRenderInstances.Add(anInstance);
+		}
+		else
+		{
+			bool success(false);
+			for (int i = 0; i < myRooms.Size(); ++i)
+			{
+				if (myRooms[i]->Inside(anInstance->GetPosition()) == true)
+				{
+					myInstances.Add(InstanceInRoom(i, anInstance));
+					success = true;
+					break;
+				}
+			}
+
+			//DL_ASSERT_EXP(success == true, "Instance found outside room.");
+		}
 	}
 
 	void RoomManager::Remove(Instance* anInstance)
@@ -61,9 +84,14 @@ namespace Prism
 		int currentRoom = GetRoomId(aCamera.GetOrientation().GetPos());
 
 		myActiveInstances.RemoveAll();
+
+		for (int i = 0; i < myAlwaysRenderInstances.Size(); ++i)
+		{
+			myActiveInstances.Add(myAlwaysRenderInstances[i]);
+		}
 		for (int i = 0; i < myInstances.Size(); ++i)
 		{
-			//if (currentRoom == myInstances[i].myRoomId)
+			if (currentRoom == myInstances[i].myRoomId)
 			{
 				myActiveInstances.Add(myInstances[i].myInstance);
 			}
