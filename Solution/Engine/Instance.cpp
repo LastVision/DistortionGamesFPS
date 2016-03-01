@@ -4,6 +4,7 @@
 #include "Camera.h"
 #include "Effect.h"
 #include "EffectContainer.h"
+#include "Frustum.h"
 #include "Instance.h"
 #include "Model.h"
 #include "ModelAnimated.h"
@@ -76,20 +77,22 @@ void Prism::Instance::Render(const Camera& aCamera, InstancingHelper& aInstancin
 	{
 		if (myProxy.IsAnimated() == true)
 		{
-			myProxy.GetEffect()->SetViewProjectionMatrix(aCamera.GetViewProjection());
-			myProxy.GetEffect()->SetScaleVector(myScale);
-			myProxy.GetEffect()->SetCameraPosition(aCamera.GetOrientation().GetPos());
+			if (aCamera.GetFrustum().Inside(myOrientation.GetPos(), myProxy.myModelAnimated->GetRadius()) == true)
+			{
+				myProxy.GetEffect()->SetViewProjectionMatrix(aCamera.GetViewProjection());
+				myProxy.GetEffect()->SetScaleVector(myScale);
+				myProxy.GetEffect()->SetCameraPosition(aCamera.GetOrientation().GetPos());
 
-			myProxy.GetEffect()->SetBones(myBones);
-			RenderModelAnimated(myProxy.myModelAnimated, myOrientation, aCamera, myHierarchy);
+				myProxy.GetEffect()->SetBones(myBones);
+				RenderModelAnimated(myProxy.myModelAnimated, myOrientation, aCamera, myHierarchy);
+			}
 		}
 		else
 		{
-			AddModelToInstancingHelper(myProxy.myModel, aInstancingHelper);
-
-
-			//Model* toRender = myProxy.myModel->GetRealModel(myOrientation.GetPos(), aCamera.GetOrientation().GetPos());
-			//aInstancingHelper.AddModel(toRender, myOrientation, myScale, myOrientation.GetPos().y);
+			if (aCamera.GetFrustum().Inside(myOrientation.GetPos(), myProxy.myModel->GetRadius()) == true)
+			{
+				AddModelToInstancingHelper(myProxy.myModel, aInstancingHelper);
+			}
 		}
 	}
 }

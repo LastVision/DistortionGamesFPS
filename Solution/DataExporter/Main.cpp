@@ -54,7 +54,7 @@ int main(int argC,      // Number of strings in array argv
 	char *argV[],   // Array of command-line argument strings
 	char *envP[])
 {
-	bool convertDGFX = false;
+	bool convertDGFX = true;
 	bool calcCollisionRadius = false;
 	bool createTerrainAndNavMesh = true;
 	for (int i = 0; i < argC; ++i)

@@ -69,7 +69,8 @@ namespace Prism
 			return nullptr;
 		}
 
-		Model* newModel = CreateModel(file);
+		Model* newModel = CreateModelHeader(file);
+		newModel = CreateModel(file, newModel);
 
 		file.close();
 
@@ -109,7 +110,8 @@ namespace Prism
 			return nullptr;
 		}
 
-		ModelAnimated* newModel = CreateModelAnimated(aFilePath, file);
+		ModelAnimated* newModel = CreateModelAnimatedHeader(file);
+		newModel = CreateModelAnimated(aFilePath, file, newModel);
 
 		file.close();
 
@@ -184,10 +186,9 @@ namespace Prism
 		return animation;
 	}
 
-	Model* DGFXLoader::CreateModel(std::fstream& aStream)
+	Model* DGFXLoader::CreateModelHeader(std::fstream& aStream)
 	{
 		Model* tempModel = new Model();
-
 		int fileVersion = -1;
 		aStream.read((char*)&fileVersion, sizeof(int));
 		DL_ASSERT_EXP(fileVersion == DGFX_VERSION, "Found a old DGFX-Model, try running the Converter again");
@@ -195,6 +196,18 @@ namespace Prism
 		{
 			assert(false && "Found a old DGFX-Model, RELEASE-ASSERT");
 			return nullptr;
+		}
+		aStream.read((char*)&tempModel->myRadius, sizeof(float));
+
+		return tempModel;
+	}
+
+	Model* DGFXLoader::CreateModel(std::fstream& aStream, Model* aModel)
+	{
+		Model* tempModel = aModel;
+		if (tempModel == nullptr)
+		{
+			tempModel = new Model();
 		}
 
 		int isNullObject = -1;
@@ -240,19 +253,32 @@ namespace Prism
 		return tempModel;
 	}
 
-	ModelAnimated* DGFXLoader::CreateModelAnimated(const std::string& aFBXPath, std::fstream& aStream)
+
+	ModelAnimated* DGFXLoader::CreateModelAnimatedHeader(std::fstream& aStream)
 	{
 		ModelAnimated* tempModel = new ModelAnimated();
-
 		int fileVersion = -1;
 		aStream.read((char*)&fileVersion, sizeof(int));
-		DL_ASSERT_EXP(fileVersion == DGFX_VERSION, "Found a old Animated DGFX-Model, try running the Converter again");
+		DL_ASSERT_EXP(fileVersion == DGFX_VERSION, "Found a old DGFX-Model, try running the Converter again");
 		if (aStream.fail() == true)
 		{
-			assert(false && "Found a old Animated DGFX-Model, RELEASE-ASSERT");
+			assert(false && "Found a old DGFX-Model, RELEASE-ASSERT");
 			return nullptr;
 		}
+		aStream.read((char*)&tempModel->myRadius, sizeof(float));
 
+		return tempModel;
+	}
+
+	ModelAnimated* DGFXLoader::CreateModelAnimated(const std::string& aFBXPath, std::fstream& aStream, ModelAnimated* aModelAnimated)
+	{
+		ModelAnimated* tempModel = aModelAnimated;
+		
+		if (tempModel == nullptr)
+		{
+			tempModel = new ModelAnimated();
+		}
+		
 		int isNullObject = -1;
 		aStream.read((char*)&isNullObject, sizeof(int));
 

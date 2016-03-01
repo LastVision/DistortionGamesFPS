@@ -1,12 +1,12 @@
 #include "../stdafx.h"
 
 
-
 #include "FbxLoader.h"
 #include <Vector4.h>
 #include <Matrix44.h>
 #include <DL_Assert.h>
 #include <CommonHelper.h>
+#include <XMLReader.h>
 #pragma warning(disable : 4239 4244)
 
 bool CheckFileExists(const std::string& aFile)
@@ -518,7 +518,7 @@ bool FillData(ModelData* someData, FbxNode* aNode, AnimationData* aAnimation, CU
 			{
 				if (CheckFileExists(albedoInfo.myFileName) == false)
 				{
-					someOutErrors.Add(CU::Concatenate("Failed to find texture: %s", albedoInfo.myFileName));
+					someOutErrors.Add(CU::Concatenate("Failed to find texture: %s", albedoInfo.myFileName.c_str()));
 				}
 
 				someData->myTextures.push_back(albedoInfo);
@@ -534,11 +534,11 @@ bool FillData(ModelData* someData, FbxNode* aNode, AnimationData* aAnimation, CU
 
 					if (CheckFileExists(playerAlbedo) == false)
 					{
-						someOutErrors.Add(CU::Concatenate("Failed to find texture: %s", playerAlbedo));
+						someOutErrors.Add(CU::Concatenate("Failed to find texture: %s", playerAlbedo.c_str()));
 					}
 					if (CheckFileExists(enemyAlbedo) == false)
 					{
-						someOutErrors.Add(CU::Concatenate("Failed to find texture: %s", enemyAlbedo));
+						someOutErrors.Add(CU::Concatenate("Failed to find texture: %s", enemyAlbedo.c_str()));
 					}
 				}
 			}
@@ -551,7 +551,7 @@ bool FillData(ModelData* someData, FbxNode* aNode, AnimationData* aAnimation, CU
 			{
 				if (CheckFileExists(normalInfo.myFileName) == false)
 				{
-					someOutErrors.Add(CU::Concatenate("Failed to find texture: %s", normalInfo.myFileName));
+					someOutErrors.Add(CU::Concatenate("Failed to find texture: %s", normalInfo.myFileName.c_str()));
 				}
 
 				someData->myTextures.push_back(normalInfo);
@@ -565,7 +565,7 @@ bool FillData(ModelData* someData, FbxNode* aNode, AnimationData* aAnimation, CU
 			{
 				if (CheckFileExists(roughnessInfo.myFileName) == false)
 				{
-					someOutErrors.Add(CU::Concatenate("Failed to find texture: %s", roughnessInfo.myFileName));
+					someOutErrors.Add(CU::Concatenate("Failed to find texture: %s", roughnessInfo.myFileName.c_str()));
 				}
 
 				someData->myTextures.push_back(roughnessInfo);
@@ -578,7 +578,7 @@ bool FillData(ModelData* someData, FbxNode* aNode, AnimationData* aAnimation, CU
 			{
 				if (CheckFileExists(metalnessInfo.myFileName) == false)
 				{
-					someOutErrors.Add(CU::Concatenate("Failed to find texture: %s", metalnessInfo.myFileName));
+					someOutErrors.Add(CU::Concatenate("Failed to find texture: %s", metalnessInfo.myFileName.c_str()));
 				}
 			
 				someData->myTextures.push_back(metalnessInfo);
@@ -591,7 +591,7 @@ bool FillData(ModelData* someData, FbxNode* aNode, AnimationData* aAnimation, CU
 			{
 				if (CheckFileExists(ambientInfo.myFileName) == false)
 				{
-					someOutErrors.Add(CU::Concatenate("Failed to find texture: %s", ambientInfo.myFileName));
+					someOutErrors.Add(CU::Concatenate("Failed to find texture: %s", ambientInfo.myFileName.c_str()));
 				}
 				
 				someData->myTextures.push_back(ambientInfo);
@@ -604,7 +604,7 @@ bool FillData(ModelData* someData, FbxNode* aNode, AnimationData* aAnimation, CU
 			{
 				if (CheckFileExists(emissiveInfo.myFileName) == false)
 				{
-					someOutErrors.Add(CU::Concatenate("Failed to find texture: %s", emissiveInfo.myFileName));
+					someOutErrors.Add(CU::Concatenate("Failed to find texture: %s", emissiveInfo.myFileName.c_str()));
 				}
 
 				someData->myTextures.push_back(emissiveInfo);
@@ -1619,6 +1619,7 @@ FbxModelData* FBXLoader::loadModel(const char* aFile, CU::GrowingArray<std::stri
 {
 	//DL_PRINT("FBXLoader Creating ModelData...");
 	myLoadingModel = new FbxModelData;
+
 	//DL_PRINT("Success!");
 	//DL_PRINT("FBXLoader Creating TextureData...");
 	myLoadingModel->myTextureData = new TextureData();
@@ -1677,11 +1678,26 @@ FbxModelData* FBXLoader::loadModel(const char* aFile, CU::GrowingArray<std::stri
 		pose = poses[0];
 	}
 
+
 	LoadAnimation(*myLoadingModel->myAnimation, scene->GetRootNode(), FbxAMatrix(), pose, lCurrentAnimLayer, -1, someOutErrors);
 	LoadNodeRecursive(myLoadingModel, *myLoadingModel->myAnimation, scene->GetRootNode(), FbxAMatrix(), pose, lCurrentAnimLayer, -1
 		, someOutErrors);
 
+	if (someOutErrors.Size() > 0)
+	{
+		int apa = 5;
+	}
 	//DL_PRINT("Success!");
+
+
+	std::string xmlPath(aFile, strlen(aFile) - 4);
+	xmlPath += ".xml";
+
+	XMLReader reader;
+	reader.OpenDocument(xmlPath);
+	reader.ForceReadAttribute(reader.ForceFindFirstChild(reader.ForceFindFirstChild("root"), "radius"), "value", myLoadingModel->myRadius);
+	reader.CloseDocument();
+	myLoadingModel->myRadius *= 100.f;
 
 	return myLoadingModel;
 }

@@ -54,6 +54,8 @@ namespace Prism
 		Model* GetRealModel(const CU::Vector3<float>& aModelPosition, const CU::Vector3<float>& aCameraPosition);
 		void SetFileName(const std::string& aFileName) override;
 
+		float GetRadius() const;
+
 	private:
 		void operator=(Model&) = delete;
 		void InitInstancingBuffers();
@@ -75,6 +77,8 @@ namespace Prism
 		bool myIsLodGroup;
 		LodGroup* myLodGroup;
 
+		float myRadius;
+
 		D3D11_BUFFER_DESC* myInstancingBufferDesc;
 		VertexBufferWrapper* myInstancingMatrixBuffer;
 		VertexBufferWrapper* myInstancingScaleBuffer;
@@ -90,5 +94,10 @@ namespace Prism
 		{
 			myChildren[i]->SetFileName(aFileName);
 		}
+	}
+
+	inline float Model::GetRadius() const
+	{
+		return myRadius;
 	}
 }

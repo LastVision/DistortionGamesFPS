@@ -59,7 +59,7 @@ namespace Prism
 		void FillDataForRadiusCalc(ModelData* aModelData, CU::GrowingArray<CU::Vector3<float>>& someVerticesOut
 			, const CU::Matrix44<float>& aOrientation);
 
-
+		void SaveHeaderToFile(FbxModelData* aModelData, std::fstream& aStream);
 		void SaveModelToFile(FbxModelData* aModelData, std::fstream& aStream);
 		void SaveModelDataToFile(ModelData* aData, std::fstream& aStream);
 		void SaveLodGroupToFile(Prism::LodGroup* aGroup, std::fstream& aStream);

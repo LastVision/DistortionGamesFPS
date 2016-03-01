@@ -128,7 +128,7 @@ namespace Prism
 	{
 		if (myDebugConnection != nullptr)
 		{
-			myDebugConnection->release();
+			//myDebugConnection->release();
 		}
 		myControllerManager->release();
 		myScene->release();

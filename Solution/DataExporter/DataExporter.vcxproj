@@ -56,21 +56,21 @@
     <OutDir>$(SolutionDir)..\Workbed\bin\</OutDir>
     <IntDir>$(SolutionDir)..\temp\$(ProjectName)\</IntDir>
     <TargetName>$(ProjectName)_$(Configuration)</TargetName>
-    <IncludePath>$(FBX_SDK_ROOT)\include\;$(SolutionDir)..\FBX\;$(SolutionDir)CommonUtilities\;$(SolutionDir)Engine\;$(SolutionDir)Timer\;$(SolutionDir)DL_Debug\;$(SolutionDir)\Memory;$(IncludePath)</IncludePath>
+    <IncludePath>$(FBX_SDK_ROOT)\include\;$(SolutionDir)..\FBX\;$(SolutionDir)CommonUtilities\;$(SolutionDir)Engine\;$(SolutionDir)Timer\;$(SolutionDir)DL_Debug\;$(IncludePath)</IncludePath>
     <LibraryPath>$(SolutionDir)..\Libs3rdParty\;$(SolutionDir)..\Libs3rdParty\DirectXLibs\;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <OutDir>$(SolutionDir)..\Workbed\bin\</OutDir>
     <IntDir>$(SolutionDir)..\temp\$(ProjectName)\</IntDir>
     <TargetName>$(ProjectName)_$(Configuration)</TargetName>
-    <IncludePath>$(FBX_SDK_ROOT)\include\;$(SolutionDir)..\FBX\;$(SolutionDir)CommonUtilities\;$(SolutionDir)Engine\;$(SolutionDir)Timer\;$(SolutionDir)DL_Debug\;$(SolutionDir)\Memory;$(IncludePath)</IncludePath>
+    <IncludePath>$(FBX_SDK_ROOT)\include\;$(SolutionDir)..\FBX\;$(SolutionDir)CommonUtilities\;$(SolutionDir)Engine\;$(SolutionDir)Timer\;$(SolutionDir)DL_Debug\;$(IncludePath)</IncludePath>
     <LibraryPath>$(SolutionDir)..\Libs3rdParty\;$(SolutionDir)..\Libs3rdParty\DirectXLibs\;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DataExporter|Win32'">
     <OutDir>$(SolutionDir)..\Workbed\bin\</OutDir>
     <IntDir>$(SolutionDir)..\temp\$(ProjectName)\</IntDir>
     <TargetName>DataExporter</TargetName>
-    <IncludePath>$(FBX_SDK_ROOT)\include\;$(SolutionDir)..\FBX\;$(SolutionDir)CommonUtilities\;$(SolutionDir)Engine\;$(SolutionDir)Timer\;$(SolutionDir)DL_Debug\;$(SolutionDir)\Memory;$(IncludePath)</IncludePath>
+    <IncludePath>$(FBX_SDK_ROOT)\include\;$(SolutionDir)..\FBX\;$(SolutionDir)CommonUtilities\;$(SolutionDir)Engine\;$(SolutionDir)Timer\;$(SolutionDir)DL_Debug\;$(IncludePath)</IncludePath>
     <LibraryPath>$(SolutionDir)..\Libs3rdParty\;$(SolutionDir)..\Libs3rdParty\DirectXLibs\;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -143,9 +143,6 @@
     </ProjectReference>
     <ProjectReference Include="..\Engine\Engine.vcxproj">
       <Project>{56e2c751-a07c-49d7-9073-839a5d0a71d2}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\Memory\Memory.vcxproj">
-      <Project>{25945336-03d1-42a6-8764-7ef11dbc42e6}</Project>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

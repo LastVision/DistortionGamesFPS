@@ -29,6 +29,9 @@ DGFXReader::~DGFXReader()
 		int fileVersion = -1;
 		binFile.read((char*)&fileVersion, sizeof(int));
 
+		float radius = -1;
+		binFile.read((char*)&radius, sizeof(float));
+
 		int isNullObject = -1;
 		binFile.read((char*)&isNullObject, sizeof(int));
 
