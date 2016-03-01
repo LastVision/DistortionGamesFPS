@@ -112,9 +112,9 @@ namespace Prism
 		{
 			myPointLights[i]->Update();
 
-			myPointLightData[i].myColor = myPointLights[i]->GetColor();
+			/*myPointLightData[i].myColor = myPointLights[i]->GetColor();
 			myPointLightData[i].myPosition = myPointLights[i]->GetPosition();
-			myPointLightData[i].myRange = myPointLights[i]->GetRange();
+			myPointLightData[i].myRange = myPointLights[i]->GetRange();*/
 		}
 
 		for (int i = 0; i < mySpotLights.Size(); ++i)
