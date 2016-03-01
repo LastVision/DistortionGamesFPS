@@ -10,6 +10,7 @@ namespace Prism
 {
 	RoomManager::RoomManager()
 		: myRooms(128)
+		, myPortals(128)
 		, myInstances(4096)
 		, myAlwaysRenderInstances(128)
 		, myActiveInstances(4096)
@@ -36,7 +37,7 @@ namespace Prism
 			{
 				if (myRooms[i]->Collide(*myRooms[j]) == true)
 				{
-					myPortals.Add(new Portal(myRooms[i], myRooms[j]));
+					myPortals.Add(new Portal(*myRooms[i], *myRooms[j]));
 				}
 			}
 		}
