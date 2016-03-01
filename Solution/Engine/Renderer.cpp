@@ -131,7 +131,7 @@ namespace Prism
 	{
 		myEngine->GetContex()->ClearRenderTargetView(myFinalTexture->GetRenderTargetView(), myClearColor);
 		
-		Engine::GetInstance()->DisableZBuffer();
+		Engine::GetInstance()->SetDepthBufferState(eDepthStencil::Z_DISABLED);
 
 		myFullScreenHelper->CombineTextures(mySceneData[0].myFinished, mySceneData[0].myScene
 			, mySceneData[1].myFinished, mySceneData[1].myScene, myFinalTexture);
@@ -141,7 +141,7 @@ namespace Prism
 
 		mySceneIndex = 0;
 
-		Engine::GetInstance()->EnableZBuffer();
+		Engine::GetInstance()->SetDepthBufferState(eDepthStencil::Z_ENABLED);
 	}
 
 	void Renderer::OnResize(float aWidth, float aHeight)

@@ -165,7 +165,7 @@ namespace Prism
 
 	void DebugDrawer::RenderTextToScreen()
 	{
-		Engine::GetInstance()->DisableZBuffer();
+		Engine::GetInstance()->SetDepthBufferState(eDepthStencil::Z_DISABLED);
 		CU::Vector2<float> window(Engine::GetInstance()->GetWindowSize());
 
 		float rowHeight = 28.f;
@@ -179,19 +179,20 @@ namespace Prism
 		}
 #endif
 		myDebugTexts.RemoveAll();
-		Engine::GetInstance()->EnableZBuffer();
+
+		Engine::GetInstance()->SetDepthBufferState(eDepthStencil::Z_ENABLED);
 	}
 
 	void DebugDrawer::RenderLinesToScreen(const Camera& aCamera)
 	{
-		Engine::GetInstance()->DisableZBuffer();
+		Engine::GetInstance()->SetDepthBufferState(eDepthStencil::Z_DISABLED);
 
 		myLine3DRenderer->Render(my3DLines, aCamera);
 		myCube3DRenderer->Render(aCamera);
 		
 		my3DLines.RemoveAll();
 
-		Engine::GetInstance()->EnableZBuffer();
+		Engine::GetInstance()->SetDepthBufferState(eDepthStencil::Z_ENABLED);
 	}
 
 	DebugDrawer::DebugDrawer()

@@ -81,11 +81,14 @@ void Prism::Texture::Init(float aWidth, float aHeight, unsigned int aBindFlag
 	}
 }
 
-void Prism::Texture::InitAsDepthBuffer()
+void Prism::Texture::InitAsDepthBuffer(float aWidth, float aHeight)
 {
 	myIsDepthTexture = true;
-	int width = 1024 * 2;
-	int height = 1024 * 2;
+	/*int width = 1024 * 2;
+	int height = 1024 * 2;*/
+
+	int width = static_cast<int>(aWidth);
+	int height = static_cast<int>(aHeight);
 
 	myFileName = "Initied as DSV";
 	myShaderView = nullptr;
@@ -306,7 +309,7 @@ void Prism::Texture::Resize(float aWidth, float aHeight)
 
 	if (myIsDepthTexture == true)
 	{
-		InitAsDepthBuffer();
+		InitAsDepthBuffer(aWidth, aHeight);
 	}
 	else
 	{

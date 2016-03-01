@@ -51,17 +51,12 @@ void Prism::DebugText::Render(const std::string& aString, const CU::Vector2<floa
 	, const CU::Vector2<float>& aScale, const CU::Vector4<float>& aColor)
 {
 	aColor;
-	if (Engine::GetInstance()->myWireframeShouldShow == true)
-	{
-		Engine::GetInstance()->DisableWireframe();
-	}
-
 	if (myLastText != aString)
 	{
 		ConstructBuffers(aString);
 	}
 
-	Engine::GetInstance()->DisableZBuffer();
+	Engine::GetInstance()->SetDepthBufferState(eDepthStencil::Z_DISABLED);
 
 	myPosition = aPosition;
 	myScale = aScale;
@@ -79,12 +74,7 @@ void Prism::DebugText::Render(const std::string& aString, const CU::Vector2<floa
 
 	BaseModel::Render();
 
-	Engine::GetInstance()->EnableZBuffer();
-
-	if (Engine::GetInstance()->myWireframeShouldShow == true)
-	{
-		Engine::GetInstance()->EnableWireframe();
-	}
+	Engine::GetInstance()->SetDepthBufferState(eDepthStencil::Z_ENABLED);
 }
 
 

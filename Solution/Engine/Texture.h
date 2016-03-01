@@ -18,7 +18,7 @@ namespace Prism
 		void Init(float aWidth, float aHeight, unsigned int aBindFlag
 			, unsigned int aFormat);
 
-		void InitAsDepthBuffer();
+		void InitAsDepthBuffer(float aWidth, float aHeight);
 		void CopyDepthBuffer(ID3D11Texture2D* aSource);
 
 		bool LoadTexture(const std::string& aFilePath);

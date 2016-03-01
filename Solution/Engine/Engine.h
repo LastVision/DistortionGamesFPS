@@ -59,7 +59,7 @@ namespace Prism
 		ID3D11Device* GetDevice();
 		ID3D11DeviceContext* GetContex();
 		ID3D11DepthStencilView* GetDepthView();
-		ID3D11RenderTargetView* GetDepthBuffer();
+		ID3D11RenderTargetView* GetBackbuffer();
 		ID3D11ShaderResourceView* GetBackbufferView();
 		ID3D11Texture2D* GetDepthBufferTexture();
 		Font* GetFont(eFont aFont);
@@ -80,16 +80,11 @@ namespace Prism
 		void RestoreViewPort();
 		void SetBackBufferAsTarget();
 
-		void EnableZBuffer();
-		void DisableZBuffer();
+		void SetDepthBufferState(eDepthStencil aState);
+		eDepthStencil GetDepthBufferState() const;
 
-		void ToggleWireframe();
-
-		void EnableWireframe();
-		void DisableWireframe();
-
-		void EnableCulling();
-		void DisableCulling();
+		void SetRasterizeState(eRasterizer aState);
+		eRasterizer GetRasterizerState() const;
 
 		void SetShowDebugText(bool aShowDebug);
 		void SetClearColor(const CU::Vector4<float>& aClearColor);

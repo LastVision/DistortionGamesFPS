@@ -41,13 +41,13 @@ namespace Prism
 
 	void Bar3D::Render(const Camera& aCamera, const CU::Matrix44<float>& aWorld)
 	{
-		Prism::Engine::GetInstance()->DisableCulling();
+		Prism::Engine::GetInstance()->SetRasterizeState(eRasterizer::NO_CULLING);
 		myEffect->SetWorldMatrix(aWorld);
 		myEffect->SetViewProjectionMatrix(aCamera.GetViewProjection());
 		myEffect->SetCameraPosition(aCamera.GetOrientation().GetPos());
 		//BaseModel::Render();
 		Render();
-		Prism::Engine::GetInstance()->EnableCulling();
+		Prism::Engine::GetInstance()->SetRasterizeState(eRasterizer::CULL_BACK);
 	}
 
 	void Bar3D::Render()

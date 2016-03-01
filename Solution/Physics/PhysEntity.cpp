@@ -234,4 +234,16 @@ namespace Prism
 
 		return mesh;
 	}
+
+	void PhysEntity::RemoveFromScene()
+	{
+		if (myPhysicsType == ePhysics::DYNAMIC)
+		{
+			PhysicsInterface::GetInstance()->GetManager()->GetScene()->removeActor(*myDynamicBody);
+		}
+		else
+		{
+			PhysicsInterface::GetInstance()->GetManager()->GetScene()->removeActor(*myStaticBody);
+		}
+	}
 }

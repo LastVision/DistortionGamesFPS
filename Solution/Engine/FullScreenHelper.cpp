@@ -73,12 +73,12 @@ namespace Prism
 	void FullScreenHelper::Process(Texture* aSource, Texture* aTarget, int aEffect, Texture* aFogOfWarTexture)
 	{
 		ActivateBuffers();
-		Engine::GetInstance()->DisableZBuffer();
+		Engine::GetInstance()->SetDepthBufferState(eDepthStencil::Z_DISABLED);
 
 		if (aEffect == ePostProcessing::NONE)
 		{
 			CopyTexture(aSource, aTarget);
-			Engine::GetInstance()->EnableZBuffer();
+			Engine::GetInstance()->SetDepthBufferState(eDepthStencil::Z_ENABLED);
 			return;
 		}
 
@@ -120,7 +120,7 @@ namespace Prism
 		}
 
 		
-		Engine::GetInstance()->EnableZBuffer();
+		Engine::GetInstance()->SetDepthBufferState(eDepthStencil::Z_ENABLED);
 	}
 
 	void FullScreenHelper::RenderToScreen(Texture* aSource)
@@ -138,7 +138,7 @@ namespace Prism
 		Engine::GetInstance()->RestoreViewPort();
 		Engine::GetInstance()->SetBackBufferAsTarget();
 
-		ID3D11RenderTargetView* target = Engine::GetInstance()->GetDepthBuffer();
+		ID3D11RenderTargetView* target = Engine::GetInstance()->GetBackbuffer();
 		ID3D11DepthStencilView* depth = aDepth->GetDepthStencilView();
 		Engine::GetInstance()->GetContex()->OMSetRenderTargets(1, &target, depth);
 

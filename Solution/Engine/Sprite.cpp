@@ -99,7 +99,7 @@ Prism::Sprite::Sprite(ID3D11Texture2D* aTexture, const CU::Vector2<float>& aSpri
 void Prism::Sprite::Render(const CU::Vector2<float>& aPosition, const CU::Vector2<float>& aScale
 	, const CU::Vector4<float>& aColor)
 {
-	Engine::GetInstance()->DisableZBuffer();
+	Engine::GetInstance()->SetDepthBufferState(eDepthStencil::Z_DISABLED);
 
 	myPosition = aPosition;
 	myScale = aScale;
@@ -117,7 +117,7 @@ void Prism::Sprite::Render(const CU::Vector2<float>& aPosition, const CU::Vector
 
 	BaseModel::Render();
 
-	Engine::GetInstance()->EnableZBuffer();
+	Engine::GetInstance()->SetDepthBufferState(eDepthStencil::Z_ENABLED);
 }
 
 void Prism::Sprite::CreateVertices()
