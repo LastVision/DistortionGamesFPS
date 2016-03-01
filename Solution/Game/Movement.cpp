@@ -30,6 +30,11 @@ void Movement::Update(float aDelta)
 	Move(aDelta);
 }
 
+void Movement::SetPosition(const CU::Vector3<float>& aPosition)
+{
+	Prism::PhysicsInterface::GetInstance()->SetPosition(myCapsuleControllerId, aPosition);
+}
+
 void Movement::Move(float aDelta)
 {
 	if (CU::InputWrapper::GetInstance()->KeyDown(DIK_SPACE))

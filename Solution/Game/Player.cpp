@@ -17,6 +17,7 @@
 #include <XMLReader.h>
 
 Player::Player(Prism::Scene* aScene)
+	: myAlive(true)
 {
 	XMLReader reader;
 	reader.OpenDocument("Data/Setting/SET_player.xml");
@@ -32,9 +33,9 @@ Player::Player(Prism::Scene* aScene)
 	myOrientation.SetPos(CU::Vector3<float>(0, 1.5f, 0));
 	myCamera = new Prism::Camera(myEyeOrientation);
 	myMovement = new Movement(myOrientation, reader, movementElement);
-	myHealth = new Health(reader, movementElement);
+	myHealth = new Health(reader, healthElement);
 	myShooting = new Shooting(aScene);
-
+	mySpawnPosition = myOrientation.GetPos();
 	reader.CloseDocument();
 	CU::Vector2<float> size(128.f, 128.f);
 	myCrosshair = Prism::ModelLoader::GetInstance()->LoadSprite("Data/Resource/Texture/UI/T_crosshair.dds", size, size * 0.5f);
@@ -73,6 +74,16 @@ Player::~Player()
 
 void Player::Update(float aDelta)
 {
+	if (CU::InputWrapper::GetInstance()->KeyDown(DIK_H) == true)
+	{
+		myAlive = myHealth->TakeDamage(5);
+	}
+
+	if (myAlive == false)
+	{
+		Respawn();
+	}
+
 	CU::Vector3<float> prevPos(myOrientation.GetPos());
 
 	myMovement->Update(aDelta);
@@ -94,7 +105,7 @@ void Player::Update(float aDelta)
 	myShooting->Update(aDelta, myEyeOrientation);
 
 	myModel->Update(aDelta);
-	my3DGUIManager->Update(myEyeOrientation, aDelta);
+	my3DGUIManager->Update(myEyeOrientation, myHealth->GetCurrentHealth(), myHealth->GetMaxHealth(), aDelta);
 
 	CU::Vector3<float> playerPos(myOrientation.GetPos());
 	DEBUG_PRINT(playerPos);
@@ -118,4 +129,11 @@ void Player::Render()
 	const CU::Vector2<float>& windowSize = Prism::Engine::GetInstance()->GetWindowSize();
 	myCrosshair->Render(windowSize * 0.5f);
 	my3DGUIManager->Render();
+}
+
+void Player::Respawn()
+{
+	myMovement->SetPosition(mySpawnPosition);
+	myHealth->Reset();
+	myAlive = true;
 }

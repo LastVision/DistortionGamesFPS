@@ -20,7 +20,7 @@ namespace GUI
 			, int& aGrenadeLauncherClipSize, int& aGrenadeLauncherAmmoInClip);
 		~GUIManager3D();
 
-		void Update(const CU::Matrix44<float>& aOrientation, float aDeltaTime);
+		void Update(const CU::Matrix44<float>& aOrientation, int aCurrentHealth, int aMaxHealth, float aDeltaTime);
 		void Render();
 
 	private:

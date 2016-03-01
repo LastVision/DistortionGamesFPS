@@ -24,6 +24,7 @@ public:
 
 	void Render();
 	
+	void Respawn();
 
 	Prism::Camera* GetCamera() const;
 
@@ -42,6 +43,8 @@ private:
 	float myJumpAcceleration;
 	float myJumpOffset;
 	float mySendTime;
+	bool myAlive;
+	CU::Vector3<float> mySpawnPosition;
 };
 
 inline Prism::Camera* Player::GetCamera() const
