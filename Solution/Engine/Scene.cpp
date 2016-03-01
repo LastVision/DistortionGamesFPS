@@ -67,6 +67,11 @@ namespace Prism
 		}
 	}
 
+	void Scene::AddRoom(Room* aRoom)
+	{
+		myRoomManager->Add(aRoom);
+	}
+
 	void Scene::AddInstance(Instance* aInstance)
 	{
 		myRoomManager->Add(aInstance);

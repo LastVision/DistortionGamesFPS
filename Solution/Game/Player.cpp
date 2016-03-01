@@ -41,7 +41,7 @@ Player::Player(Prism::Scene* aScene)
 
 	myModel = new Prism::Instance(*Prism::ModelLoader::GetInstance()->LoadModelAnimated("Data/Resource/Model/First_person/SK_arm_idle_UI_cm.fbx", "Data/Resource/Shader/S_effect_pbl_animated.fx"), myEyeOrientation);
 
-	aScene->AddInstance(myModel);
+	//aScene->AddInstance(myModel);
 
 	myJumpAcceleration = 0;
 	myJumpOffset = 0;

@@ -10,6 +10,7 @@ namespace Prism
 	class DirectionalLight;
 	class Instance;
 	class PointLight;
+	class Room;
 	class RoomManager;
 	class SpotLight;
 	class SpotLightShadow;
@@ -29,6 +30,7 @@ namespace Prism
 
 		void OnResize(int aWidth, int aHeigth);
 
+		void AddRoom(Room* aRoom);
 		void AddInstance(Instance* aInstance);
 		void AddLight(DirectionalLight* aLight);
 		void AddLight(PointLight* aLight);

@@ -33,6 +33,7 @@ private:
 	void ReadLeveList(const std::string& aLevelListPath);
 	void ReadLevel(const std::string& aLevelPath);
 
+	void LoadRooms(XMLReader& aReader, tinyxml2::XMLElement* aElement);
 	void LoadProps(XMLReader& aReader, tinyxml2::XMLElement* aElement);
 	void LoadUnits(XMLReader& aReader, tinyxml2::XMLElement* aElement);
 
