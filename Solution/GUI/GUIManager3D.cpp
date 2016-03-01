@@ -17,7 +17,6 @@ namespace GUI
 		, int& aGrenadeLauncherClipSize, int& aGrenadeLauncherAmmoInClip)
 		: myScene(aScene)
 		, myTestValue(0.f)
-		, myLeftBar(nullptr)
 		, myPistolClipSize(aPistolClipSize)
 		, myPistolAmmoInClip(aPistolAmmoInClip)
 		, myShotgunClipSize(aShotgunClipSize)
@@ -34,6 +33,9 @@ namespace GUI
 		myRightBar = new Prism::Bar3D({ 0.02f, 0.005f }, myGrenadeLauncherClipSize, myEffect, eBarPosition::RIGHT);
 		myTopBar = new Prism::Bar3D({ 0.02f, 0.005f }, myPistolClipSize, myEffect, eBarPosition::TOP);
 		myHealthBar = new Prism::Bar3D({ 0.01f, 0.025f }, 15, myEffect, eBarPosition::HEALTH);
+
+		myTopAmmoLeft = new Prism::Bar3D({ 0.05f, 0.025f }, 1, myEffect, eBarPosition::TOP_AMMOLEFT);
+		myTopAmmoLeft->SetValue(1.f);
 	}
 
 
@@ -42,7 +44,8 @@ namespace GUI
 		SAFE_DELETE(myLeftBar);
 		SAFE_DELETE(myTopBar);
 		SAFE_DELETE(myRightBar);
-		SAFE_DELETE(myHealthBar)
+		SAFE_DELETE(myHealthBar);
+		SAFE_DELETE(myTopAmmoLeft);
 	}
 
 	void GUIManager3D::Update(const CU::Matrix44<float>& aOrientation, float aDeltaTime)
@@ -65,5 +68,6 @@ namespace GUI
 		myRightBar->Render(*myScene->GetCamera(), myWristOrientation);
 		myTopBar->Render(*myScene->GetCamera(), myWristOrientation);
 		myHealthBar->Render(*myScene->GetCamera(), myHealthOrientation);
+		myTopAmmoLeft->Render(*myScene->GetCamera(), myWristOrientation);
 	}
 }

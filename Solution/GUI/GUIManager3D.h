@@ -41,6 +41,8 @@ namespace GUI
 		int& myShotgunAmmoInClip;
 		int& myGrenadeLauncherClipSize;
 		int& myGrenadeLauncherAmmoInClip;
+
+		Prism::Bar3D* myTopAmmoLeft;
 	};
 
 }

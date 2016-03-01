@@ -8,7 +8,8 @@ enum class eBarPosition
 	LEFT,
 	TOP,
 	RIGHT,
-	HEALTH
+	HEALTH,
+	TOP_AMMOLEFT
 };
 
 namespace Prism

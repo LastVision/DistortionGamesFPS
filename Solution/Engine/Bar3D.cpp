@@ -177,51 +177,63 @@ namespace Prism
 				vertices.Add(vertex);
 			}
 		}
-		else
+		else if (myBarPosition == eBarPosition::HEALTH)
 		{
-			float uvPos = 0.f;
+			float uvPos = 1.f;
 			for (int i = 0; i < numbersToMake; ++i)
 			{
 				GUIVertex vertex;
 				if (i == 0)
 				{
 					vertex.myPosition = { myQuadSize.x, 0, 0, 0 };
-					//vertex.myPosition.y += myQuadSize.y * i;
-					vertex.myUV = { 1, 0 };
+					vertex.myUV = { 0, 0 };
 					vertices.Add(vertex);
 
 					vertex.myPosition = { myQuadSize.x, myQuadSize.y, 0, 0 };
-					//vertex.myPosition.y += myQuadSize.y * i;
-					vertex.myUV = { 1, 1 };
+					vertex.myUV = { 1, 0 };
 					vertices.Add(vertex);
 
 					vertex.myPosition = { 0, 0, 0, 0 };
-					//vertex.myPosition.y += myQuadSize.y * i;
-					vertex.myUV = { 0, 0 };
-					vertices.Add(vertex);
-					
-					vertex.myPosition = { 0, myQuadSize.y, 0, 0 };
-					//vertex.myPosition.y += myQuadSize.y * i;
 					vertex.myUV = { 0, 1 };
+					vertices.Add(vertex);
+
+					vertex.myPosition = { 0, myQuadSize.y, 0, 0 };
+					vertex.myUV = { 1, 1 };
 					vertices.Add(vertex);
 				}
 				else
 				{
 					--uvPos;
 					vertex.myPosition = { -myQuadSize.x * i, 0, 0, 0 };
-					//vertex.myPosition.x = myQuadSize.x * i;
 					vertex.myUV = { 0, uvPos };
 					vertices.Add(vertex);
-					
+
 					vertex.myPosition = { -myQuadSize.x * i, myQuadSize.y, 0, 0 };
-					//vertex.myPosition.x -= myQuadSize.x * i;
 					vertex.myUV = { 1, uvPos };
 					vertices.Add(vertex);
-
-
 				}
 
 			}
+		}
+		else if (myBarPosition == eBarPosition::TOP_AMMOLEFT)
+		{
+			float yOffset = 0.025f;
+			GUIVertex vertex;
+			vertex.myPosition = { myQuadSize.x * 0.5f, 0 + yOffset, 0, 0 };
+			vertex.myUV = { 1, 0 };
+			vertices.Add(vertex);
+
+			vertex.myPosition = { myQuadSize.x * 0.5f, myQuadSize.y * 0.5f + yOffset, 0, 0 };
+			vertex.myUV = { 1, 1 };
+			vertices.Add(vertex);
+
+			vertex.myPosition = { -myQuadSize.x * 0.5f, 0 + yOffset, 0, 0 };
+			vertex.myUV = { 0, 0 };
+			vertices.Add(vertex);
+
+			vertex.myPosition = { -myQuadSize.x * 0.5f, myQuadSize.y * 0.5f + yOffset, 0, 0 };
+			vertex.myUV = { 0, 1 };
+			vertices.Add(vertex);
 		}
 
 		SetupVertexBuffer(vertices.Size(), sizeof(GUIVertex), reinterpret_cast<char*>(&vertices[0])
