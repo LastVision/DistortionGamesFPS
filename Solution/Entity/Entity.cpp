@@ -172,5 +172,6 @@ void Entity::Kill()
 	if (myIsInScene == true)
 	{
 		RemoveFromScene();
+		myPhysEntity->RemoveFromScene();
 	}
 }
