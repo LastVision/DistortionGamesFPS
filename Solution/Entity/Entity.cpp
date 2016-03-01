@@ -2,6 +2,7 @@
 
 #include "AnimationComponent.h"
 #include "GraphicsComponent.h"
+#include "HealthComponent.h"
 #include "ProjectileComponent.h"
 #include <Scene.h>
 #include <Instance.h>
@@ -43,6 +44,13 @@ Entity::Entity(const EntityData& aEntityData, Prism::Scene& aScene, const CU::Ve
 	{
 		myComponents[static_cast<int>(eComponentType::PROJECTILE)] = new ProjectileComponent(*this, aEntityData.myProjecileData);
 	}
+
+	if (aEntityData.myHealthData.myExistsInEntity == true)
+	{
+		myComponents[static_cast<int>(eComponentType::HEALTH)] = new HealthComponent(*this, aEntityData.myHealthData);
+	}
+
+
 	
 
 	//myPhysEntity = new Prism::PhysEntity(&pos.x, aEntityData.myPhysData, myOrientation, aEntityData.myGraphicsData.myModelPath);
@@ -161,5 +169,8 @@ void Entity::Kill()
 {
 	myAlive = false;
 
-
+	if (myIsInScene == true)
+	{
+		RemoveFromScene();
+	}
 }
