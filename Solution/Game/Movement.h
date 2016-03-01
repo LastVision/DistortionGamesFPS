@@ -15,6 +15,8 @@ public:
 	~Movement();
 
 	void Update(float aDelta);
+
+	void SetPosition(const CU::Vector3<float>& aPosition);
 private:
 	void operator=(Movement&) = delete;
 	void Move(float aDelta);

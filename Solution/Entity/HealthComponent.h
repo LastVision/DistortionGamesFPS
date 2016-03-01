@@ -25,12 +25,12 @@ private:
 	int myCurrentHealth;
 };
 
-inline static eComponentType GetTypeStatic()
+inline eComponentType HealthComponent::GetTypeStatic()
 {
 	return eComponentType::HEALTH;
 }
 
-inline eComponentType GetType()
+inline eComponentType HealthComponent::GetType()
 {
 	return GetTypeStatic();
 }

@@ -48,7 +48,7 @@ namespace GUI
 		SAFE_DELETE(myTopAmmoLeft);
 	}
 
-	void GUIManager3D::Update(const CU::Matrix44<float>& aOrientation, float aDeltaTime)
+	void GUIManager3D::Update(const CU::Matrix44<float>& aOrientation, int aCurrentHealth, int aMaxHealth, float aDeltaTime)
 	{
 		myTestValue += aDeltaTime;
 		myEffect->SetGradiantValue(cos(myTestValue));
@@ -59,7 +59,7 @@ namespace GUI
 		myLeftBar->SetValue(myShotgunAmmoInClip / float(myShotgunClipSize));
 		myRightBar->SetValue(myGrenadeLauncherAmmoInClip / float(myGrenadeLauncherClipSize));
 		myTopBar->SetValue(myPistolAmmoInClip / float(myPistolClipSize));
-		myHealthBar->SetValue(cos(myTestValue));
+		myHealthBar->SetValue(aCurrentHealth / float(aMaxHealth));
 	}
 
 	void GUIManager3D::Render()
