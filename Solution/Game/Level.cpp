@@ -24,6 +24,10 @@ Level::Level()
 	, myClients(16)
 {
 	Prism::PhysicsInterface::Create();
+	//Prism::PhysicsInterface::Destroy();
+	//Prism::PhysicsInterface::GetInstance()->RayCast({ 0, 0, 0 }, { 0, 1, 0 }, 10.f);
+	//Prism::PhysicsInterface::GetInstance()->Update();
+
 	myScene = new Prism::Scene();
 	myPlayer = new Player(myScene);
 	myScene->SetCamera(*myPlayer->GetCamera());

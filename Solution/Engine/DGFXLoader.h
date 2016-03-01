@@ -48,8 +48,10 @@ namespace Prism
 			NR_OF_TEXTURETYPES,
 		};
 
-		Model* CreateModel(std::fstream& aStream);
-		ModelAnimated* CreateModelAnimated(const std::string& aFBXPath, std::fstream& aStream);
+		Model* CreateModelHeader(std::fstream& aStream);
+		Model* CreateModel(std::fstream& aStream, Model* aModel = nullptr);
+		ModelAnimated* CreateModelAnimatedHeader(std::fstream& aStream);
+		ModelAnimated* CreateModelAnimated(const std::string& aFBXPath, std::fstream& aStream, ModelAnimated* aModelAnimated = nullptr);
 
 		void LoadData(VertexIndexWrapper* aIndexWrapper, VertexDataWrapper* aVertexData
 			, CU::GrowingArray<D3D11_INPUT_ELEMENT_DESC*>& someInputElements, Surface& aSurface

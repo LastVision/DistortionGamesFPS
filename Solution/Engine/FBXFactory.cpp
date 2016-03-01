@@ -589,6 +589,8 @@ namespace Prism
 		CU::BuildFoldersInPath(aOutputPath);
 		std::fstream file;
 		file.open(aOutputPath, std::ios::out | std::ios::binary);
+
+		SaveHeaderToFile(fbxModelData, file);
 		SaveModelToFile(fbxModelData, file);
 		file.close();
 
@@ -633,12 +635,16 @@ namespace Prism
 		delete vertexRawData;
 	}
 
-
-	void FBXFactory::SaveModelToFile(FbxModelData* aModelData, std::fstream& aStream)
+	void FBXFactory::SaveHeaderToFile(FbxModelData* aModelData, std::fstream& aStream)
 	{
 		int version = DGFX_VERSION;
 		aStream.write((char*)&version, sizeof(int)); //DGFX-Version
 
+		aStream.write((char*)&aModelData->myRadius, sizeof(float));
+	}
+
+	void FBXFactory::SaveModelToFile(FbxModelData* aModelData, std::fstream& aStream)
+	{
 		int isNullObject = 1;
 		if (aModelData->myData)
 		{

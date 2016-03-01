@@ -41,6 +41,8 @@ namespace Prism
 		void Render(const CU::Matrix44<float>& aOrientation);
 		void SetFileName(const std::string& aFileName) override;
 
+		float GetRadius() const;
+
 	private:
 		bool myIsNULLObject;
 
@@ -52,6 +54,8 @@ namespace Prism
 		TransformationNode* myTransformation;
 		Animation* myAnimation;
 		CU::Matrix44f myOrientation;
+
+		float myRadius;
 
 		int myVertexCount;
 		ModelAnimated* myParent;
@@ -65,5 +69,10 @@ namespace Prism
 		{
 			myChildren[i]->SetFileName(aFileName);
 		}
+	}
+
+	inline float ModelAnimated::GetRadius() const
+	{
+		return myRadius;
 	}
 }
