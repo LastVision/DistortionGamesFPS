@@ -21,6 +21,8 @@ public:
 	void Pan(float aDeltaTime, float aMouseSens);
 	void Rotate(float aDeltaTime, float aMouseSens);
 
+	void Update(float aDeltaTime);
+
 	void ResetCamera();
 
 	void SetZoomSpeed(float aValue);

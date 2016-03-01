@@ -9,9 +9,6 @@
 #include "Effect.h"
 #include "Engine.h"
 
-#ifdef DLL_EXPORT
-#include "FileWatcher.h"
-#endif
 
 namespace Prism
 {
@@ -43,29 +40,28 @@ namespace Prism
 
 	ParticleEmitterData* ParticleDataContainer::GetParticleData(const std::string& aFilePath)
 	{
-#ifndef DLL_EXPORT
+//#ifndef DLL_EXPORT
 		auto it = myParticleData.find(aFilePath);
-
 		if (it == myParticleData.end())
 		{
 			LoadParticleData(aFilePath);
 		}
 
 		return myParticleData[aFilePath];
-#else
-		auto it = myParticleData.find(aFilePath);
-
-		if (it != myParticleData.end()) 
-		{
-			DL_DEBUG("Object found, removing.");
-			delete it->second;
-			it->second = nullptr;
-			myParticleData.erase(aFilePath);
-		}
-		LoadParticleData(aFilePath);
-
-		return myParticleData[aFilePath];
-#endif
+//#else
+//		auto it = myParticleData.find(aFilePath);
+//
+//		if (it != myParticleData.end()) 
+//		{
+//			DL_DEBUG("Object found, removing.");
+//			delete it->second;
+//			it->second = nullptr;
+//			myParticleData.erase(aFilePath);
+//		}
+//		LoadParticleData(aFilePath);
+//
+//		return myParticleData[aFilePath];
+//#endif
 	}
 
 
@@ -80,19 +76,16 @@ namespace Prism
 			Engine::GetInstance()->GetContex()->IASetInputLayout(tempData->myInputLayout);
 			Engine::GetInstance()->GetContex()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_POINTLIST);
 
-			tempData->myEffect->GetTechnique(false)->GetDesc(tempData->myTechniqueDesc);
+			tempData->myEffect->GetTechnique("Render")->GetDesc(tempData->myTechniqueDesc);
 		}
 	}
 
 	void ParticleDataContainer::LoadParticleData(const std::string& aFilePath)
 	{
 		ParticleEmitterData* newData = new ParticleEmitterData();
-
 		newData->LoadDataFile(aFilePath);
 		DL_ASSERT_EXP(newData != nullptr, "Failed to load data. newData became nullptr.");
-
 		myParticleData[aFilePath] = newData;
-
 	}
 }
 

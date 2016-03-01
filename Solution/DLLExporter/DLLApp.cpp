@@ -10,7 +10,6 @@
 #include <EffectContainer.h>
 #include <Engine.h>
 #include <EngineEnums.h>
-#include <FileWatcher.h>
 #include <Instance.h>
 #include <InputWrapper.h>
 #include <Matrix.h>
@@ -25,6 +24,7 @@ DLLApp::DLLApp(int* aHwnd, Prism::SetupInfo& aWindowSetup, WNDPROC aWindowProc)
 {
 	DL_Debug::Debug::Create();
 	CU::TimerManager::Create();
+	DL_DEBUG("Startup!");
 
 	myPanelWindowHandler = (HWND)aHwnd;
 
@@ -39,7 +39,7 @@ DLLApp::DLLApp(int* aHwnd, Prism::SetupInfo& aWindowSetup, WNDPROC aWindowProc)
 	myCamera = new DLLCamera(windowSize, 1.0f, 1.0f, 1.0f);
 	myModel = new DLLModel();
 	myParticle = new DLLParticle();
-
+	myScene.SetCamera(*myCamera->GetCamera());
 	
 }
 
@@ -58,34 +58,29 @@ DLLApp::~DLLApp()
 void DLLApp::Render()
 {
 	Prism::Engine::GetInstance()->Render();
-
-	myDirectionalLight->Update();
-	myDirectionalLightData[0].myDirection = myDirectionalLight->GetCurrentDir();
-	myDirectionalLightData[0].myColor = myDirectionalLight->GetColor();
-
-	if (myModel->GetInstance() != nullptr)
-	{
-		myModel->GetInstance()->UpdateDirectionalLights(myDirectionalLightData);
-		myModel->GetInstance()->Render(*myCamera->GetCamera());
-	}
+	myScene.Render();
 	myParticle->Render(myCamera->GetCamera());
-
-	Prism::DebugDrawer::GetInstance()->Render(*myCamera->GetCamera());
 }
 
 void DLLApp::Update()
 {
 	CU::TimerManager::GetInstance()->Update();
 	float deltaTime = CU::TimerManager::GetInstance()->GetMasterTimer().GetTime().GetFrameTime();
+	myCamera->Update(deltaTime);
 	CU::InputWrapper::GetInstance()->Update();
 	LogicUpdate(deltaTime);
 }
 
 void DLLApp::LoadModel(const char* aModelFile, const char* aShaderFile)
 {
+	if (myModel->GetInstance() != nullptr)
+	{
+		myScene.RemoveInstance(myModel->GetInstance());
+	}
 	myModel->LoadModel(aModelFile, aShaderFile);
 	myModelFile = aModelFile;
 	myShaderFile = aShaderFile;
+	myScene.AddInstance(myModel->GetInstance());
 }
 
 void DLLApp::LoadParticle(const char* aParticleFile)
@@ -156,7 +151,7 @@ void DLLApp::SetupLight()
 	myDirectionalLight->SetDir(CU::Vector3f( 0.f, 0.f, -1.f ));
 	myDirectionalLight->SetColor(CU::Vector4f(1.f, 1.f, 1.f, 1.f));
 
-	memset(&myDirectionalLightData[0], 0, sizeof(Prism::DirectionalLightData) * NUMBER_OF_DIRECTIONAL_LIGHTS);
+	myScene.AddLight(myDirectionalLight);
 }
 
 void DLLApp::SetDirectionalLightRotation(CU::Vector3f aRotation)

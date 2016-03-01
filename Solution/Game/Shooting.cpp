@@ -14,39 +14,72 @@
 Shooting::Shooting(Prism::Scene* aScene)
 	: myBulletSpeed(0.f)
 	, myScene(aScene)
+	, myCurrentWeapon(nullptr)
+	, myPistol(nullptr)
+	, myShotgun(nullptr)
+	, myGrenadeLauncher(nullptr)
 {
 	/*myBullet = EntityFactory::CreateEntity(eEntityType::PROJECTILE, *aScene, myBulletOrientation.GetPos());
 	myBullet->Reset();
 	myBullet->AddToScene();*/
 
 	myBullets.Init(64);
+
+	myPistol = new Weapon(eWeaponType::PISTOL);
+	myShotgun = new Weapon(eWeaponType::SHOTGUN);
+	myGrenadeLauncher = new Weapon(eWeaponType::GRENADE_LAUNCHER);
+	myCurrentWeapon = myPistol;
 }
 
 Shooting::~Shooting()
 {
 	myBullets.DeleteAll();
+	SAFE_DELETE(myPistol);
+	SAFE_DELETE(myShotgun);
+	SAFE_DELETE(myGrenadeLauncher);
 }
 
 void Shooting::Update(float aDelta, const CU::Matrix44<float>& aOrientation)
 {
-	if (CU::InputWrapper::GetInstance()->MouseIsPressed(0) == true && myBullets.Size() < 1024)
+	if (CU::InputWrapper::GetInstance()->KeyDown(DIK_1) == true)
 	{
-		ShootAtDirection(aOrientation);
+		myCurrentWeapon = myPistol;
 	}
-	if (CU::InputWrapper::GetInstance()->MouseIsPressed(1) == true)// && myBullets.Size() < 256)
+	if (CU::InputWrapper::GetInstance()->KeyDown(DIK_2) == true)
 	{
-		//myBullet->GetPhysEntity()->AddForce({ 0.f, 1.f, 0.f }, 100000.f);
-		//ShootAtDirection(aOrientation);
-		Entity* entity = Prism::PhysicsInterface::GetInstance()->RayCast(aOrientation.GetPos(), aOrientation.GetForward(), 30.f);
+		myCurrentWeapon = myShotgun;
+	}
+	if (CU::InputWrapper::GetInstance()->KeyDown(DIK_3) == true)
+	{
+		myCurrentWeapon = myGrenadeLauncher;
+	}
 
-		if (entity != nullptr)
+	if (CU::InputWrapper::GetInstance()->KeyDown(DIK_R) == true)
+	{
+		myCurrentWeapon->Reload();
+	}
+
+	if (myCurrentWeapon == myPistol)
+	{
+		if (CU::InputWrapper::GetInstance()->MouseDown(0) == true)
 		{
-			if (entity->GetPhysEntity()->GetPhysicsType() == ePhysics::DYNAMIC)
-			{
-				entity->GetPhysEntity()->AddForce(aOrientation.GetForward(), 25.f);
-			}
-
-			entity->SendNote<DamageNote>(DamageNote(100));
+			myPistol->Shoot(aOrientation);
+			//ShootAtDirection(aOrientation);
+		}
+	}
+	else if (myCurrentWeapon == myGrenadeLauncher)
+	{
+		if (CU::InputWrapper::GetInstance()->MouseDown(0) == true && myBullets.Size() < 1024)
+		{
+			ShootAtDirection(aOrientation);
+			myCurrentWeapon->Shoot(aOrientation);
+		}
+	}
+	else if (myCurrentWeapon == myShotgun)
+	{
+		if (CU::InputWrapper::GetInstance()->MouseDown(0) == true)
+		{
+			myCurrentWeapon->Shoot(aOrientation);
 		}
 	}
 
@@ -60,6 +93,26 @@ void Shooting::Update(float aDelta, const CU::Matrix44<float>& aOrientation)
 	{
 		myBullets[i]->Update(aDelta);
 	}
+}
+
+Weapon* Shooting::GetWeapon(eWeaponType aWeaponType)
+{
+	switch (aWeaponType)
+	{
+	case eWeaponType::PISTOL:
+		return myPistol;
+		break;
+	case eWeaponType::SHOTGUN:
+		return myShotgun;
+		break;
+	case eWeaponType::GRENADE_LAUNCHER:
+		return myGrenadeLauncher;
+		break;
+	default:
+		break;
+	}
+	DL_ASSERT("Get Weapon crash!");
+	return myPistol;
 }
 
 void Shooting::ShootAtDirection(const CU::Matrix44<float>& aOrientation)

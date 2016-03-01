@@ -64,6 +64,7 @@ bool DL_Debug::Debug::Create(std::string aFile)
 	strftime(buf, sizeof(buf), "%Y-%m-%d_%H_%M_%S", &tstruct);
 
 #ifdef RELEASE_BUILD
+#ifndef DLL_EXPORT
 	char documents[MAX_PATH];
 	HRESULT hResult = SHGetFolderPath(NULL, CSIDL_PERSONAL, NULL, SHGFP_TYPE_CURRENT, documents);
 	std::stringstream documentPath;
@@ -72,6 +73,9 @@ bool DL_Debug::Debug::Create(std::string aFile)
 	CreateDirectory(logFolder.c_str(), NULL);
 	logFolder += "\\log";
 	CreateDirectory(logFolder.c_str(), NULL);
+#else
+	CreateDirectory("log", NULL);
+#endif
 #else
 	CreateDirectory("log", NULL);
 #endif

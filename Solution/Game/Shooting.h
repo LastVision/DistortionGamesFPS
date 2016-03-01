@@ -1,6 +1,7 @@
 #pragma once
-
+#include "Weapon.h"
 class Entity;
+class Weapon;
 
 namespace Prism
 {
@@ -15,6 +16,8 @@ public:
 	~Shooting();
 
 	void Update(float aDelta, const CU::Matrix44<float>& aOrientation);
+
+	Weapon* GetWeapon(eWeaponType aWeaponType);
 private:
 	void ShootAtDirection(const CU::Matrix44<float>& aOrientation);
 	
@@ -23,5 +26,9 @@ private:
 	CU::Matrix44<float> myBulletOrientation;
 	float myBulletSpeed;
 	Prism::Scene* myScene;
-};
 
+	Weapon* myCurrentWeapon;
+	Weapon* myPistol;
+	Weapon* myShotgun;
+	Weapon* myGrenadeLauncher;
+};

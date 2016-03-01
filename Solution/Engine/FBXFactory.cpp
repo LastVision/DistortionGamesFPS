@@ -419,7 +419,7 @@ namespace Prism
 #else
 		CU::GrowingArray<std::string> errors(16);
 		FBXData* data = new FBXData();
-		FbxModelData* fbxModelData = myLoader->loadModel(aFilePath,	errors);
+		FbxModelData* fbxModelData = myLoader->loadModel(aFilePath.c_str(),	errors);
 		data->myData = fbxModelData;
 		data->myPath = aFilePath;
 		myFBXData.push_back(data);
@@ -485,7 +485,7 @@ namespace Prism
 #else
 		CU::GrowingArray<std::string> errors(16);
 		FBXData* data = new FBXData();
-		FbxModelData* fbxModelData = myLoader->loadModel(aFilePath, errors);
+		FbxModelData* fbxModelData = myLoader->loadModel(aFilePath.c_str(), errors);
 		data->myData = fbxModelData;
 		data->myPath = aFilePath;
 		myFBXData.push_back(data);

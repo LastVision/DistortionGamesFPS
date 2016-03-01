@@ -152,21 +152,18 @@ namespace Prism
 		myData.myMinVelocity = myMinVelocity;;
 
 		myData.myLifeTime = myParticlesLifeTime;
-
 		myTexture = TextureContainer::GetInstance()->GetTexture(myTextureName.c_str());
 		myEffect = EffectContainer::GetInstance()->GetEffect(myEffectName.c_str());
-		
+
 		CreateInputLayout();
 		myTechniqueDesc = new _D3DX11_TECHNIQUE_DESC();
-
 	}
 
 	void ParticleEmitterData::CreateInputLayout()
 	{
 		HRESULT hr;
-
 		D3DX11_PASS_DESC passDesc;
-		hr = myEffect->GetTechnique(false)->GetPassByIndex(0)->GetDesc(&passDesc);
+		hr = myEffect->GetTechnique("Render")->GetPassByIndex(0)->GetDesc(&passDesc);
 		DL_ASSERT_EXP(!FAILED(hr), "[ParticleEmitterData](CreateInputLayout) : Failed to get Pass Description!");
 
 		const D3D11_INPUT_ELEMENT_DESC VertexParticleLayout[] =
@@ -178,7 +175,6 @@ namespace Prism
 			{ "TIME",		0, DXGI_FORMAT_R32_FLOAT,		0, 32,	D3D11_INPUT_PER_VERTEX_DATA, 0 },
 			{ "ROTATION",	0, DXGI_FORMAT_R32_FLOAT,		0, 36,	D3D11_INPUT_PER_VERTEX_DATA, 0 }
 		};
-
 		UINT size = ARRAYSIZE(VertexParticleLayout);
 
 		hr = Engine::GetInstance()->GetDevice()->CreateInputLayout(VertexParticleLayout
@@ -187,7 +183,6 @@ namespace Prism
 			, passDesc.IAInputSignatureSize
 			, &myInputLayout);
 		DL_ASSERT_EXP(!FAILED(hr), "[ParticleEmitterData](CreateInputLayout) : Failed to Create InputLayout!");
-
 		Engine::GetInstance()->SetDebugName(myInputLayout, "ParticleEmitterData::myInputLayout");
 	}
 }

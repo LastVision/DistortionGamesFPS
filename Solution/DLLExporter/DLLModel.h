@@ -23,7 +23,6 @@ public:
 
 	Prism::Instance* GetInstance() const;
 private:
-	void WatchFiles(const char* aModelFile, const char* aShaderFile);
 
 	void AutoRotate(float aDeltaTime);
 	void ManualRotate();
