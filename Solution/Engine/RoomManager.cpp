@@ -37,7 +37,7 @@ namespace Prism
 			{
 				if (myRooms[i]->Collide(*myRooms[j]) == true)
 				{
-					myPortals.Add(new Portal(*myRooms[i], *myRooms[j]));
+					myPortals.Add(new Portal(myRooms[i], myRooms[j]));
 				}
 			}
 		}
@@ -92,7 +92,7 @@ namespace Prism
 		}
 		for (int i = 0; i < myInstances.Size(); ++i)
 		{
-			if (currentRoom == myInstances[i].myRoomId)
+			//if (currentRoom == myInstances[i].myRoomId)
 			{
 				myActiveInstances.Add(myInstances[i].myInstance);
 			}
