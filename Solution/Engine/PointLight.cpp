@@ -11,20 +11,29 @@ namespace Prism
 {
 	PointLight::PointLight()
 		: myRange(0)
-		, myInstance(nullptr)
+		, myLightMesh(nullptr)
 	{
+		ModelProxy* model = ModelLoader::GetInstance()->LoadModel("Data/Resource/Model/Light_mesh/SM_sphere.fbx"
+			, "Data/Resource/Shader/S_effect_deferred_light_mesh.fx");
+		myLightMesh = new Instance(*model, myOrientation);
 	}
 
 	void PointLight::Initiate()
 	{
-		ModelProxy* model = ModelLoader::GetInstance()->LoadCube(1, 1, 1);
-		myInstance = new Instance(*model, myOrientation);
+		
 	}
 
-	void PointLight::Render(Camera* aCamera)
+	void PointLight::Update()
+	{
+		myLightData.myColor = GetColor();
+		myLightData.myPosition = GetPosition();
+		myLightData.myRange = GetRange();
+	}
+
+	void PointLight::Render(const Camera& aCamera)
 	{
 		if (this != nullptr)
-			myInstance->Render(*aCamera);
+			myLightMesh->Render(aCamera);
 	}
 
 };

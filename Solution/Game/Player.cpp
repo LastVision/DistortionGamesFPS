@@ -1,6 +1,5 @@
 #include "stdafx.h"
 
-
 #include <Camera.h>
 #include "ClientNetworkManager.h"
 #include <GUIManager3D.h>
@@ -40,8 +39,7 @@ Player::Player(Prism::Scene* aScene)
 	CU::Vector2<float> size(128.f, 128.f);
 	myCrosshair = Prism::ModelLoader::GetInstance()->LoadSprite("Data/Resource/Texture/UI/T_crosshair.dds", size, size * 0.5f);
 
-	myModel = new Prism::Instance(*Prism::ModelLoader::GetInstance()->LoadModelAnimated("Data/Resource/Model/First_person/SK_arm_idle_UI_cm.fbx", "Data/Resource/Shader/S_effect_pbl_animated.fx"), myEyeOrientation);
-
+	myModel = new Prism::Instance(*Prism::ModelLoader::GetInstance()->LoadModelAnimated("Data/Resource/Model/First_person/SK_arm_pistol_draw.fbx", "Data/Resource/Shader/S_effect_pbl_animated.fx"), myEyeOrientation);
 	aScene->AddInstance(myModel, true);
 
 	myJumpAcceleration = 0;

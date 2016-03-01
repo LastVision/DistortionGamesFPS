@@ -6,6 +6,7 @@
 #include "IndexBufferWrapper.h"
 #include "Texture.h"
 #include "Scene.h"
+#include "PointLight.h"
 
 namespace Prism
 {
@@ -53,6 +54,33 @@ namespace Prism
 		SAFE_DELETE(myNormalTexture);
 		SAFE_DELETE(myDepthTexture);
 		SAFE_DELETE(myDepthTexture);
+	}
+
+	void DeferredRenderer::Render(Scene* aScene)
+	{
+		ID3D11DeviceContext* context = Engine::GetInstance()->GetContex();
+		context->ClearRenderTargetView(myAlbedoTexture->GetRenderTargetView(), myClearColor);
+		context->ClearRenderTargetView(myNormalTexture->GetRenderTargetView(), myClearColor);
+		context->ClearRenderTargetView(myDepthTexture->GetRenderTargetView(), myClearColor);
+
+		context->ClearDepthStencilView(myDepthStencilTexture->GetDepthStencilView(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
+		//context->ClearDepthStencilView(Engine::GetInstance()->GetDepthStencilView(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
+
+		ID3D11RenderTargetView* targets[3];
+		targets[0] = myAlbedoTexture->GetRenderTargetView();
+		targets[1] = myNormalTexture->GetRenderTargetView();
+		targets[2] = myDepthTexture->GetRenderTargetView();
+
+		/*context->OMSetRenderTargets(3, targets
+		, Engine::GetInstance()->GetDepthStencilView());*/
+		context->OMSetRenderTargets(3, targets
+			, myDepthStencilTexture->GetDepthStencilView());
+
+		aScene->Render();
+
+		ActivateBuffers();
+
+		RenderDeferred(aScene);
 	}
 
 	void DeferredRenderer::InitFullscreenQuad()
@@ -159,7 +187,7 @@ namespace Prism
 		myAmbientPass.myAlbedo->SetResource(myAlbedoTexture->GetShaderView());
 		myAmbientPass.myNormal->SetResource(myNormalTexture->GetShaderView());
 		myAmbientPass.myDepth->SetResource(myDepthTexture->GetShaderView());
-		myAmbientPass.myCubemap->SetResource(myCubemap->GetShaderView());
+		//myAmbientPass.myCubemap->SetResource(myCubemap->GetShaderView());
 
 		Render(myAmbientPass.myEffect);
 
@@ -171,7 +199,7 @@ namespace Prism
 		context->OMSetRenderTargets(1, &backbuffer
 			, myDepthStencilTexture->GetDepthStencilView());
 
-		//aScene->UpdateLights();
+		aScene->UpdateLights();
 		RenderPointLights(aScene);
 	}
 
@@ -191,15 +219,15 @@ namespace Prism
 		myLightPass.myNotInvertedView->SetMatrix(&camera.GetOrientation().myMatrix[0]);
 
 
-		//const CU::GrowingArray<PointLight*>& lights = aScene->GetPointLights();
-		//context->ClearDepthStencilView(Engine::GetInstance()->GetDepthStencilView(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
+		const CU::GrowingArray<PointLight*>& lights = aScene->GetPointLights();
+		context->ClearDepthStencilView(Engine::GetInstance()->GetDepthView(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 
 		Engine::GetInstance()->SetRasterizeState(eRasterizer::NO_CULLING);
 		Engine::GetInstance()->SetDepthBufferState(eDepthStencil::READ_NO_WRITE);
-		//for (int i = 0; i < lights.Size(); ++i)
+		for (int i = 0; i < lights.Size(); ++i)
 		{
-			//myLightPass.myPointLightVariable->SetRawValue(&lights[i]->GetLightData(), 0, sizeof(PointLightData));
-			//lights[i]->Render();
+			myLightPass.myPointLightVariable->SetRawValue(&lights[i]->GetLightData(), 0, sizeof(PointLightData));
+			lights[i]->Render(camera);
 
 			//Render(myLightPass.myEffect);
 		}

@@ -29,7 +29,7 @@ namespace Prism
 		Model();
 		~Model();
 
-		void Init(int aMaxInstances);
+		void Init(int aMaxInstances, bool aLightMesh = false);
 		void InitCube(float aWidth = 1.f, float aHeight = 1.f, float aDepth = 1.f
 				, CU::Vector4f aColour = { 0.7f, 0.7f, 0.7f, 1.f });
 

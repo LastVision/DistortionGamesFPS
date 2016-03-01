@@ -61,7 +61,7 @@ namespace Prism
 		}
 	}
 
-	void Model::Init(int aMaxInstances)
+	void Model::Init(int aMaxInstances, bool aLightMesh)
 	{
 		DL_ASSERT_EXP(myInited == false, "Tried to Init a model twice");
 
@@ -75,16 +75,29 @@ namespace Prism
 				vertexDesc[i] = *myVertexFormat[i];
 			}
 
-			vertexDesc[myVertexFormat.Size() + 0] = { "myWorld", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 1, 0, D3D11_INPUT_PER_INSTANCE_DATA, 1 };
-			vertexDesc[myVertexFormat.Size() + 1] = { "myWorld", 1, DXGI_FORMAT_R32G32B32A32_FLOAT, 1, 16, D3D11_INPUT_PER_INSTANCE_DATA, 1 };
-			vertexDesc[myVertexFormat.Size() + 2] = { "myWorld", 2, DXGI_FORMAT_R32G32B32A32_FLOAT, 1, 32, D3D11_INPUT_PER_INSTANCE_DATA, 1 };
-			vertexDesc[myVertexFormat.Size() + 3] = { "myWorld", 3, DXGI_FORMAT_R32G32B32A32_FLOAT, 1, 48, D3D11_INPUT_PER_INSTANCE_DATA, 1 };
+			if (aLightMesh == false)
+			{
+				vertexDesc[myVertexFormat.Size() + 0] = { "myWorld", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 1, 0, D3D11_INPUT_PER_INSTANCE_DATA, 1 };
+				vertexDesc[myVertexFormat.Size() + 1] = { "myWorld", 1, DXGI_FORMAT_R32G32B32A32_FLOAT, 1, 16, D3D11_INPUT_PER_INSTANCE_DATA, 1 };
+				vertexDesc[myVertexFormat.Size() + 2] = { "myWorld", 2, DXGI_FORMAT_R32G32B32A32_FLOAT, 1, 32, D3D11_INPUT_PER_INSTANCE_DATA, 1 };
+				vertexDesc[myVertexFormat.Size() + 3] = { "myWorld", 3, DXGI_FORMAT_R32G32B32A32_FLOAT, 1, 48, D3D11_INPUT_PER_INSTANCE_DATA, 1 };
 
-			vertexDesc[myVertexFormat.Size() + 4] = { "myScale", 0, DXGI_FORMAT_R32G32B32_FLOAT, 2, 0, D3D11_INPUT_PER_INSTANCE_DATA, 1 };
-			vertexDesc[myVertexFormat.Size() + 5] = { "myHeight", 0, DXGI_FORMAT_R32_FLOAT, 3, 0, D3D11_INPUT_PER_INSTANCE_DATA, 1 };
+				vertexDesc[myVertexFormat.Size() + 4] = { "myScale", 0, DXGI_FORMAT_R32G32B32_FLOAT, 2, 0, D3D11_INPUT_PER_INSTANCE_DATA, 1 };
+				vertexDesc[myVertexFormat.Size() + 5] = { "myHeight", 0, DXGI_FORMAT_R32_FLOAT, 3, 0, D3D11_INPUT_PER_INSTANCE_DATA, 1 };
+			}
 
-			EvaluateEffectTechnique(true);
-			InitInputLayout(vertexDesc, size, "Model::InputLayout");
+			
+			if (aLightMesh == false)
+			{
+				EvaluateEffectTechnique(true);
+				InitInputLayout(vertexDesc, size, "Model::InputLayout");
+			}
+			else
+			{
+				//EvaluateEffectTechnique(false);
+				myTechniqueName = "Render";
+				InitInputLayout(vertexDesc, size-6, "Model::InputLayout");
+			}
 			delete[] vertexDesc;
 			InitVertexBuffer(myVertexBaseData->myStride, D3D11_USAGE_IMMUTABLE, 0);
 			InitIndexBuffer();
@@ -101,7 +114,7 @@ namespace Prism
 		for (int i = 0; i < myChildren.Size(); ++i)
 		{
 			myChildren[i]->myFileName = myFileName;
-			myChildren[i]->Init(myMaxInstances);
+			myChildren[i]->Init(myMaxInstances, aLightMesh);
 		}
 
 

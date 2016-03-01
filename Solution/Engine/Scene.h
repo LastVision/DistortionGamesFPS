@@ -27,6 +27,7 @@ namespace Prism
 		~Scene();
 
 		void Render();
+		void UpdateLights();
 
 		void OnResize(int aWidth, int aHeigth);
 
@@ -42,9 +43,10 @@ namespace Prism
 		const Camera* GetCamera() const;
 		RoomManager* GetRoomManager() const;
 
+		const CU::GrowingArray<PointLight*>& GetPointLights() const;
+
 	private:
 		void operator=(Scene&) = delete;
-		void UpdateLights();
 
 		CU::GrowingArray<DirectionalLight*> myDirectionalLights;
 		CU::GrowingArray<PointLight*> myPointLights;
@@ -65,6 +67,11 @@ namespace Prism
 	inline const Camera* Scene::GetCamera() const
 	{
 		return myCamera;
+	}
+
+	inline const CU::GrowingArray<PointLight*>& Scene::GetPointLights() const
+	{
+		return myPointLights;
 	}
 
 	inline RoomManager* Scene::GetRoomManager() const

@@ -7,6 +7,7 @@ class Player;
 namespace Prism
 {
 	class Camera;
+	class DeferredRenderer;
 	class Scene;
 	class Instance;
 	class Room;
@@ -27,6 +28,7 @@ public:
 
 private:
 	Prism::Scene* myScene;
+	Prism::DeferredRenderer* myDeferredRenderer;
 
 	Player* myPlayer;
 	CU::GrowingArray<Entity*> myEntities;

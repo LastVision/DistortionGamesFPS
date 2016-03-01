@@ -233,6 +233,14 @@ namespace Prism
 	{
 		physx::PxControllerFilters filter;
 		myControllerManager->getController(aId)->move(physx::PxVec3(aDirection.x, aDirection.y, aDirection.z), aMinDisplacement, aDeltaTime, filter, nullptr);
+		
+	}
+
+	bool PhysicsManager::GetAllowedToJump(int aId)
+	{
+		physx::PxControllerState state;
+		myControllerManager->getController(aId)->getState(state);
+		return state.touchedActor != nullptr;
 	}
 
 	void PhysicsManager::SetPosition(int aId, const CU::Vector3<float>& aPosition)
