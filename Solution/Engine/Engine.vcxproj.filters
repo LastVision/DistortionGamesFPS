@@ -84,10 +84,10 @@
       <Filter>Rendering\Text</Filter>
     </ClCompile>
     <ClCompile Include="FullScreenHelper.cpp">
-      <Filter>Rendering\PostProcessing</Filter>
+      <Filter>Rendering\Renderer</Filter>
     </ClCompile>
     <ClCompile Include="Renderer.cpp">
-      <Filter>Rendering\PostProcessing</Filter>
+      <Filter>Rendering\Renderer</Filter>
     </ClCompile>
     <ClCompile Include="Tga32.cpp">
       <Filter>Tga32</Filter>
@@ -170,6 +170,9 @@
     </ClCompile>
     <ClCompile Include="RoomManager.cpp">
       <Filter>Room</Filter>
+    </ClCompile>
+    <ClCompile Include="DeferredRenderer.cpp">
+      <Filter>Rendering\Renderer</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -289,10 +292,10 @@
       <Filter>Rendering\Text</Filter>
     </ClInclude>
     <ClInclude Include="FullScreenHelper.h">
-      <Filter>Rendering\PostProcessing</Filter>
+      <Filter>Rendering\Renderer</Filter>
     </ClInclude>
     <ClInclude Include="Renderer.h">
-      <Filter>Rendering\PostProcessing</Filter>
+      <Filter>Rendering\Renderer</Filter>
     </ClInclude>
     <ClInclude Include="Tga32.h">
       <Filter>Tga32</Filter>
@@ -388,6 +391,9 @@
     <ClInclude Include="RoomManager.h">
       <Filter>Room</Filter>
     </ClInclude>
+    <ClInclude Include="DeferredRenderer.h">
+      <Filter>Rendering\Renderer</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Precompile">
@@ -423,9 +429,6 @@
     <Filter Include="Rendering\Text">
       <UniqueIdentifier>{c692a68a-c85e-4a75-9e93-03f0b69dd9e6}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Rendering\PostProcessing">
-      <UniqueIdentifier>{9eae83a0-4dc4-4207-9000-7994f620f042}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Tga32">
       <UniqueIdentifier>{18b9410f-d7c0-46f2-af85-b20098396534}</UniqueIdentifier>
     </Filter>
@@ -443,6 +446,9 @@
     </Filter>
     <Filter Include="Room">
       <UniqueIdentifier>{f7a44424-c94b-40e1-a0ec-afe7f1d8612b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\Renderer">
+      <UniqueIdentifier>{9eae83a0-4dc4-4207-9000-7994f620f042}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>
