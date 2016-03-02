@@ -11,7 +11,7 @@
 #include <EntityFactory.h>
 #include <FadeMessage.h>
 #include <FileWatcher.h>
-#include "Game.h"
+#include "ClientGame.h"
 #include <InputWrapper.h>
 #include <ModelLoader.h>
 #include <StreakDataContainer.h>
@@ -31,7 +31,7 @@
 
 #include "ClientNetworkManager.h"
 
-Game::Game()
+ClientGame::ClientGame()
 	: myLockMouse(true)
 	, myWindowHandler(nullptr)
 	, myIsComplete(false)
@@ -57,7 +57,7 @@ Game::Game()
 	myStateStack.SetCursor(myCursor);
 }
 
-Game::~Game()
+ClientGame::~ClientGame()
 {
 	PostMaster::GetInstance()->UnSubscribe(eMessageType::FADE, this);
 	SAFE_DELETE(myCursor);
@@ -75,7 +75,7 @@ Game::~Game()
 //	NetworkManager::Destroy();
 }
 
-bool Game::Init(HWND& aHwnd)
+bool ClientGame::Init(HWND& aHwnd)
 {
 	myWindowHandler = &aHwnd;
 	myIsComplete = false;
@@ -97,12 +97,12 @@ bool Game::Init(HWND& aHwnd)
 	return true;
 }
 
-bool Game::Destroy()
+bool ClientGame::Destroy()
 {
 	return true;
 }
 
-bool Game::Update()
+bool ClientGame::Update()
 {
 	CU::InputWrapper::GetInstance()->Update();
 	CU::TimerManager::GetInstance()->Update();
@@ -148,26 +148,26 @@ bool Game::Update()
 	return true;
 }
 
-void Game::Pause()
+void ClientGame::Pause()
 {
 	myLockMouse = false;
 	ShowCursor(true);
 }
 
-void Game::UnPause()
+void ClientGame::UnPause()
 {
 	myLockMouse = true;
 	ShowCursor(false);
 }
 
-void Game::OnResize(int aWidth, int aHeight)
+void ClientGame::OnResize(int aWidth, int aHeight)
 {
 	myStateStack.OnResize(aWidth, aHeight);
 	myCursor->OnResize(aWidth, aHeight);
 	PostMaster::GetInstance()->SendMessage(ResizeMessage(aWidth, aHeight));
 }
 
-void Game::ReceiveMessage(const FadeMessage& aMessage)
+void ClientGame::ReceiveMessage(const FadeMessage& aMessage)
 {
 	Prism::Engine::GetInstance()->StartFade(aMessage.myDuration);
 }
