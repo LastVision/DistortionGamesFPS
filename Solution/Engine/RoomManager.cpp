@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "Camera.h"
+#include "Frustum.h"
 #include "Instance.h"
 #include <Intersection.h>
 #include "Portal.h"
@@ -11,6 +12,7 @@ namespace Prism
 	RoomManager::RoomManager()
 		: myRooms(128)
 		, myPortals(128)
+		, myCurrentRoomIds(16)
 		, myInstances(4096)
 		, myAlwaysRenderInstances(128)
 		, myActiveInstances(4096)
@@ -37,7 +39,7 @@ namespace Prism
 			{
 				if (myRooms[i]->Collide(*myRooms[j]) == true)
 				{
-					myPortals.Add(new Portal(*myRooms[i], *myRooms[j]));
+					myPortals.Add(new Portal(myRooms[i], myRooms[j]));
 				}
 			}
 		}
@@ -82,9 +84,18 @@ namespace Prism
 
 	const CU::GrowingArray<Instance*>& RoomManager::GetActiveInstances(const Camera& aCamera)
 	{
-		int currentRoom = GetRoomId(aCamera.GetOrientation().GetPos());
-
 		myActiveInstances.RemoveAll();
+		myCurrentRoomIds.RemoveAll();
+
+		for (int i = 0; i < myPortals.Size(); ++i)
+		{
+			myPortals[i]->SetAlreadyPassed(false);
+		}
+
+		int playerRoom = GetRoomId(aCamera.GetOrientation().GetPos());
+		myCurrentRoomIds.Add(playerRoom);
+
+		FindActiveRooms(aCamera.GetFrustum(), playerRoom);
 
 		for (int i = 0; i < myAlwaysRenderInstances.Size(); ++i)
 		{
@@ -92,11 +103,38 @@ namespace Prism
 		}
 		for (int i = 0; i < myInstances.Size(); ++i)
 		{
-			if (currentRoom == myInstances[i].myRoomId)
+			for (int j = 0; j < myCurrentRoomIds.Size(); ++j)
 			{
-				myActiveInstances.Add(myInstances[i].myInstance);
+				if (myCurrentRoomIds[j] == myInstances[i].myRoomId)
+				{
+					myActiveInstances.Add(myInstances[i].myInstance);
+					break;
+				}
 			}
 		}
+
+#ifndef RELEASE_BUILD
+#ifdef SHOW_PORTAL_CULLING_DEBUG_TEXT
+		DEBUG_PRINT(playerRoom);
+		DEBUG_PRINT(myActiveInstances.Size());
+		DEBUG_PRINT(myInstances.Size());
+		float renderPercentage = 100.f * float(myActiveInstances.Size())
+			/ (myInstances.Size() + myAlwaysRenderInstances.Size());
+		DEBUG_PRINT(renderPercentage);
+		for (int j = 0; j < myCurrentRoomIds.Size(); ++j)
+		{
+			DEBUG_PRINT(myCurrentRoomIds[j]);
+		}
+		if (renderPercentage > 25.f)
+		{
+			for (int i = 25.f; i < renderPercentage; i += 5.f)
+			{
+				DEBUG_PRINT("WARNING, rendering huge part of level");
+
+			}
+		}
+#endif
+#endif
 		return myActiveInstances;
 	}
 
@@ -112,5 +150,32 @@ namespace Prism
 
 		DL_ASSERT("Unable to find room Id");
 		return 0;
+	}
+
+	void RoomManager::FindActiveRooms(Frustum aFrustum, int aRoomId, Portal* anArrivePortal)
+	{
+		if (anArrivePortal != nullptr)
+		{
+			aFrustum.Resize(anArrivePortal);
+		}
+		const CU::GrowingArray<Portal*>& portals = myRooms[aRoomId]->GetPortals();
+
+		for (int i = 0; i < portals.Size(); ++i)
+		{
+			Portal* current = portals[i];
+			if (current->GetAlreadyPassed() == false
+				&& aFrustum.Inside(current->GetCenterPosition(), current->GetRadius()) == true)
+			{
+				current->SetAlreadyPassed(true);
+
+				int otherRoomId = current->GetOther(myRooms[aRoomId])->GetRoomId();
+				if (myCurrentRoomIds.Find(otherRoomId) == myCurrentRoomIds.FoundNone)
+				{
+					myCurrentRoomIds.Add(otherRoomId);
+
+					FindActiveRooms(aFrustum, otherRoomId, current);
+				}
+			}
+		}
 	}
 }

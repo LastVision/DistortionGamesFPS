@@ -5,8 +5,10 @@
 
 namespace Prism
 {
-	Room::Room(const CU::Vector3<float>& aPosition, const CU::Vector3<float>& aScale)
+	Room::Room(const CU::Vector3<float>& aPosition, const CU::Vector3<float>& aScale, int aRoomId)
 		: myAABB(aPosition, aScale)
+		, myPortals(8)
+		, myRoomId(aRoomId)
 	{
 	}
 
@@ -23,5 +25,10 @@ namespace Prism
 	bool Room::Collide(const Room& aRoom) const
 	{
 		return CU::Intersection::AABBvsAABB(myAABB, aRoom.myAABB);
+	}
+
+	void Room::AddPortal(Portal* aPortal)
+	{
+		myPortals.Add(aPortal);
 	}
 }

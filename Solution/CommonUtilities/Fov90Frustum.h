@@ -11,6 +11,8 @@ namespace CU
 		public:
 			Fov90Frustum(float aNear, float aFar);
 			bool Inside(const Vector3<float>& aPos, float aRadius) const;
+			void Resize(const CU::Vector3<float>& aBottomLeft, const CU::Vector3<float>& aTopRight);
+
 
 			void OnResize(float aNearPlane, float aFarPlane);
 
@@ -53,6 +55,16 @@ namespace CU
 			return true;
 		}
 		return false;
+	}
+
+	inline void CU::Intersection::Fov90Frustum::Resize(const CU::Vector3<float>& aBottomLeft, const CU::Vector3<float>& aTopRight)
+	{
+		CU::Vector3<float> zero;
+		CU::Vector3<float> x(1.f, 0, 0);
+		CU::Vector3<float> y(0, 1.f, 0);
+		CU::Vector3<float> z(0, 0, 1.f);
+		myVolume.myPlanes[2].InitWith3Points(zero, aTopRight, y);
+		myVolume.myPlanes[3].InitWith3Points(zero, aBottomLeft, -y);
 	}
 
 	inline void CU::Intersection::Fov90Frustum::OnResize(float aNearPlane, float aFarPlane)

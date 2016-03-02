@@ -1,6 +1,6 @@
 #pragma once
+#include "Frustum.h"
 #include <GrowingArray.h>
-
 
 namespace Prism
 {
@@ -23,6 +23,8 @@ namespace Prism
 
 	private:
 		int GetRoomId(const CU::Vector3<float>& aPosition) const;
+		void FindActiveRooms(Frustum aFrustum, int aRoomId, Portal* anArrivePortal = nullptr);
+
 		struct InstanceInRoom
 		{
 			InstanceInRoom(){}
@@ -36,6 +38,7 @@ namespace Prism
 
 		CU::GrowingArray<Room*> myRooms;
 		CU::GrowingArray<Portal*> myPortals;
+		CU::GrowingArray<int> myCurrentRoomIds;
 
 		CU::GrowingArray<InstanceInRoom> myInstances;
 		CU::GrowingArray<Instance*> myAlwaysRenderInstances;
