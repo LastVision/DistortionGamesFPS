@@ -8,3 +8,8 @@ ServerGame::ServerGame()
 ServerGame::~ServerGame()
 {
 }
+
+bool ServerGame::Update()
+{
+	return true;
+}
