@@ -2,6 +2,7 @@
 #include "Weapon.h"
 class Entity;
 class Weapon;
+class Player;
 
 namespace Prism
 {
@@ -12,7 +13,7 @@ namespace Prism
 class Shooting
 {
 public:
-	Shooting(Prism::Scene* aScene);
+	Shooting(Prism::Scene* aScene, Player* aPlayer);
 	~Shooting();
 
 	void Update(float aDelta, const CU::Matrix44<float>& aOrientation);
@@ -31,4 +32,6 @@ private:
 	Weapon* myPistol;
 	Weapon* myShotgun;
 	Weapon* myGrenadeLauncher;
+
+	Player* myPlayer;
 };
