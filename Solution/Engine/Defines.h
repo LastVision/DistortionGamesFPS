@@ -32,4 +32,4 @@
 #define RENDER_DEBUG_TEXT
 
 //Show debug text for portal culling assistance
-//#define SHOW_PORTAL_CULLING_DEBUG_TEXT
+#define SHOW_PORTAL_CULLING_DEBUG_TEXT

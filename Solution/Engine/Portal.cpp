@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include <CommonHelper.h>
 #include <Intersection.h>
 #include "Portal.h"
 #include "Room.h"
@@ -23,7 +24,13 @@ namespace Prism
 			myLargeRoom = mySmallRoom;
 			mySmallRoom = temp;
 		}
-		DL_ASSERT_EXP(success == true, "Failed to create portal.");
+		DL_ASSERT_EXP(success == true, CU::Concatenate("Failed to create portal between: (x: %f y: %f z: %f), (x: %f y: %f z: %f)"
+			, aabb0.myCenterPos.x
+			, aabb0.myCenterPos.y
+			, aabb0.myCenterPos.z
+			, aabb1.myCenterPos.x
+			, aabb1.myCenterPos.y
+			, aabb1.myCenterPos.z));
 
 		myAABB.InitWithTwoPoints(myBottomLeft, myTopRight);
 
@@ -40,7 +47,7 @@ namespace Prism
 	{
 	}
 
-	Room* Portal::GetOther(Room* aRoom)
+	Room* Portal::GetOther(const Room* aRoom)
 	{
 		if (aRoom == myLargeRoom)
 		{

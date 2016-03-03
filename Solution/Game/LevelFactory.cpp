@@ -97,12 +97,26 @@ void LevelFactory::LoadRooms(XMLReader& aReader, tinyxml2::XMLElement* aElement)
 		CU::Vector3f position;
 		CU::Vector3f rotation;
 		CU::Vector3f scale;
-
 		ReadOrientation(aReader, entityElement, position, rotation, scale);
-
 		DL_ASSERT_EXP(rotation.x == 0 && rotation.y == 0 && rotation.z == 0, "Room rotation non-zero.");
 
-		myCurrentLevel->GetScene()->AddRoom(new Prism::Room(position, scale, i));
+		std::string name;
+		aReader.ForceReadAttribute(entityElement, "name", name);
+		std::string type;
+		aReader.ForceReadAttribute(entityElement, "type", type);
+
+
+
+		DL_ASSERT_EXP(type == "room" || type == "connector", CU::Concatenate("Room type can't be: %s", type.c_str()));
+
+		Prism::eRoomType typeEnum(Prism::eRoomType::ROOM);
+
+		if (type == "connector")
+		{
+			typeEnum = Prism::eRoomType::CONNECTOR;
+		}
+
+		myCurrentLevel->GetScene()->AddRoom(new Prism::Room(position, scale, i, name, typeEnum));
 		++i;
 	}
 
