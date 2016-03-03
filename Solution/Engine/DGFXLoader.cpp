@@ -48,6 +48,8 @@ namespace Prism
 			return myModels[aFilePath];
 		}
 
+		DL_PRINT_VA("Loading (as DGFX): %s", aFilePath.c_str());
+
 		std::string dgfxFile = CU::GetGeneratedDataFolderFilePath(aFilePath, "dgfx");
 
 #ifndef RELEASE_BUILD
