@@ -1,5 +1,6 @@
 #include "stdafx.h"
 
+#include <AnimationSystem.h>
 #include <Camera.h>
 #include "ClientNetworkManager.h"
 #include <GUIManager3D.h>
@@ -33,14 +34,22 @@ Player::Player(Prism::Scene* aScene)
 	myCamera = new Prism::Camera(myEyeOrientation);
 	myMovement = new Movement(myOrientation, reader, movementElement);
 	myHealth = new Health(reader, healthElement);
-	myShooting = new Shooting(aScene);
+	myShooting = new Shooting(aScene, this);
 	mySpawnPosition = myOrientation.GetPos();
 	reader.CloseDocument();
 	CU::Vector2<float> size(128.f, 128.f);
 	myCrosshair = Prism::ModelLoader::GetInstance()->LoadSprite("Data/Resource/Texture/UI/T_crosshair.dds", size, size * 0.5f);
 
-	myModel = new Prism::Instance(*Prism::ModelLoader::GetInstance()->LoadModelAnimated("Data/Resource/Model/First_person/SK_arm_pistol_draw.fbx", "Data/Resource/Shader/S_effect_pbl_animated.fx"), myEyeOrientation);
+	Prism::ModelProxy* model = Prism::ModelLoader::GetInstance()->LoadModelAnimated("Data/Resource/Model/First_person/SK_arm_pistol_idle.fbx", "Data/Resource/Shader/S_effect_pbl_animated.fx");
+	myModel = new Prism::Instance(*model, myEyeOrientation);
 	aScene->AddInstance(myModel, true);
+
+	AddAnimation(ePlayerState::PISTOL_IDLE, "Data/Resource/Model/First_person/SK_arm_pistol_idle.fbx", true, true);
+	AddAnimation(ePlayerState::PISTOL_HOLSTER, "Data/Resource/Model/First_person/SK_arm_pistol_holster.fbx", false, true);
+	AddAnimation(ePlayerState::PISTOL_DRAW, "Data/Resource/Model/First_person/SK_arm_pistol_draw.fbx", false, true);
+	AddAnimation(ePlayerState::PISTOL_RELOAD, "Data/Resource/Model/First_person/SK_arm_pistol_reload.fbx", false, true);
+	AddAnimation(ePlayerState::PISTOL_SHOOT, "Data/Resource/Model/First_person/SK_arm_pistol_fire.fbx", false, true);
+	
 
 	myJumpAcceleration = 0;
 	myJumpOffset = 0;
@@ -48,7 +57,11 @@ Player::Player(Prism::Scene* aScene)
 	myModel->Update(1.f / 30.f);
 	mySendTime = 3;
 
+	while (Prism::ModelLoader::GetInstance()->IsLoading() == true)
+	{
 
+	}
+	PlayAnimation(ePlayerState::PISTOL_IDLE);
 	//myWristOrientation = myOrientation * myModel->GetCurrentAnimation()->GetHiearchyToBone("r_wrist_jnt1");
 
 	my3DGUIManager = new GUI::GUIManager3D(myModel, aScene
@@ -101,8 +114,29 @@ void Player::Update(float aDelta)
 	myEyeOrientation.SetPos(position);
 
 	myShooting->Update(aDelta, myEyeOrientation);
+	
+	Prism::AnimationData& data = myAnimations[int(myPlayerState)];
+	if (myModel->IsAnimationDone() == false || data.myShouldLoop == true)
+	{
+		myModel->Update(aDelta);
+	}
+	if (myModel->IsAnimationDone() == true && data.myShouldLoop == false)
+	{
+		eWeaponType weaponType = myShooting->GetCurrentWeapon()->GetWeaponType();
+		switch (weaponType)
+		{
+		case eWeaponType::PISTOL:
+			myPlayerState = ePlayerState::PISTOL_IDLE;
+			PlayAnimation(myPlayerState);
+			break;
+		case eWeaponType::GRENADE_LAUNCHER:
+			break;
+		case eWeaponType::SHOTGUN:
+			break;
+		}
+	}
+	data.myElapsedTime += aDelta;
 
-	myModel->Update(aDelta);
 	my3DGUIManager->Update(myEyeOrientation, myHealth->GetCurrentHealth(), myHealth->GetMaxHealth(), aDelta);
 
 	CU::Vector3<float> playerPos(myOrientation.GetPos());
@@ -134,4 +168,43 @@ void Player::Respawn()
 	myMovement->SetPosition(mySpawnPosition);
 	myHealth->Reset();
 	myAlive = true;
+}
+
+bool Player::IsCurrentAnimationDone() const
+{
+	return myModel->IsAnimationDone();
+}
+
+void Player::RestartCurrentAnimation()
+{
+	myModel->ResetAnimationTime(0.f);
+}
+
+void Player::AddAnimation(ePlayerState aState, const std::string& aAnimationPath
+	, bool aLoopFlag, bool aResetTimeOnRestart)
+{
+	Prism::ModelLoader::GetInstance()->LoadModelAnimated(aAnimationPath, "Data/Resource/Shader/S_effect_pbl_animated.fx");
+	//Prism::AnimationSystem::GetInstance()->GetAnimation(aAnimationPath.c_str());
+	Prism::AnimationData newData;
+	newData.myElapsedTime = 0.f;
+	newData.myFile = aAnimationPath;
+	newData.myShouldLoop = aLoopFlag;
+	newData.myResetTimeOnRestart = aResetTimeOnRestart;
+	myAnimations[int(aState)] = newData;
+}
+
+void Player::PlayAnimation(ePlayerState aAnimationState)
+{
+	myPlayerState = aAnimationState;
+	Prism::AnimationData& data = myAnimations[int(aAnimationState)];
+	myModel->SetAnimation(Prism::AnimationSystem::GetInstance()->GetAnimation(data.myFile.c_str()));
+
+	if (data.myResetTimeOnRestart == true)
+	{
+		myModel->ResetAnimationTime(0.f);
+	}
+	else
+	{
+		myModel->ResetAnimationTime(data.myElapsedTime);
+	}
 }
