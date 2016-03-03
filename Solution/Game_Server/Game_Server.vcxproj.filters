@@ -7,6 +7,9 @@
     <Filter Include="Network">
       <UniqueIdentifier>{c65366a9-dff3-467b-9cf4-b41e5490d60d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="StateStack">
+      <UniqueIdentifier>{bdcd5e13-4557-42da-a178-c318b0a7eca8}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
@@ -16,6 +19,21 @@
       <Filter>Network</Filter>
     </ClInclude>
     <ClInclude Include="ServerGame.h" />
+    <ClInclude Include="ServerState.h">
+      <Filter>StateStack</Filter>
+    </ClInclude>
+    <ClInclude Include="ServerStateStack.h">
+      <Filter>StateStack</Filter>
+    </ClInclude>
+    <ClInclude Include="ServerStateStackProxy.h">
+      <Filter>StateStack</Filter>
+    </ClInclude>
+    <ClInclude Include="StateEnums.h">
+      <Filter>StateStack</Filter>
+    </ClInclude>
+    <ClInclude Include="ServerInGameState.h">
+      <Filter>StateStack</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -25,5 +43,14 @@
       <Filter>Network</Filter>
     </ClCompile>
     <ClCompile Include="ServerGame.cpp" />
+    <ClCompile Include="ServerStateStack.cpp">
+      <Filter>StateStack</Filter>
+    </ClCompile>
+    <ClCompile Include="ServerStateStackProxy.cpp">
+      <Filter>StateStack</Filter>
+    </ClCompile>
+    <ClCompile Include="ServerInGameState.cpp">
+      <Filter>StateStack</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>
