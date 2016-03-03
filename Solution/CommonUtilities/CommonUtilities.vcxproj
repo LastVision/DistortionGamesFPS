@@ -241,6 +241,7 @@
     <ClInclude Include="Sphere.h" />
     <ClInclude Include="StaticArray.h" />
     <ClInclude Include="stdafx.h" />
+    <ClInclude Include="ThreadUtilities.h" />
     <ClInclude Include="tinyxml2.h" />
     <ClInclude Include="Tweener.h" />
     <ClInclude Include="Vector.h" />
@@ -271,6 +272,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='DataExporter|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="ThreadUtilities.cpp" />
     <ClCompile Include="tinyxml2.cpp" />
     <ClCompile Include="XMLFunctions.cpp" />
     <ClCompile Include="XMLReader.cpp" />

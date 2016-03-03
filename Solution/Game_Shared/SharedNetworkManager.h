@@ -1,7 +1,5 @@
 #pragma once
 #include <vector>
-#include <GrowingArray.h>
-#include <StaticArray.h>
 #include <NetworkMessageTypes.h>
 
 namespace std
