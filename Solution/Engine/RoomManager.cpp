@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "Camera.h"
+#include <CommonHelper.h>
 #include "Frustum.h"
 #include "Instance.h"
 #include <Intersection.h>
@@ -64,7 +65,10 @@ namespace Prism
 				}
 			}
 
-			//DL_ASSERT_EXP(success == true, "Instance found outside room.");
+			DL_ASSERT_EXP(success == true, CU::Concatenate("Instance found outside room: (x: %f y: %f z: %f)"
+				, anInstance->GetOrientation().GetPos().x
+				, anInstance->GetOrientation().GetPos().y
+				, anInstance->GetOrientation().GetPos().z));
 		}
 	}
 
@@ -97,6 +101,22 @@ namespace Prism
 
 		FindActiveRooms(aCamera.GetFrustum(), playerRoom);
 
+		for (int i = 0; i < myCurrentRoomIds.Size(); ++i)
+		{
+			const Room* current(myRooms[myCurrentRoomIds[i]]);
+			if (current->GetType() == eRoomType::ROOM)
+			{
+				for (int j = 0; j < current->GetPortals().Size(); ++j)
+				{
+					const Room* other(current->GetPortals()[j]->GetOther(current));
+					if (myCurrentRoomIds.Find(other->GetRoomId()) == myCurrentRoomIds.FoundNone)
+					{
+						myCurrentRoomIds.Add(other->GetRoomId());
+					}
+				}
+			}
+		}
+
 		for (int i = 0; i < myAlwaysRenderInstances.Size(); ++i)
 		{
 			myActiveInstances.Add(myAlwaysRenderInstances[i]);
@@ -115,7 +135,7 @@ namespace Prism
 
 #ifndef RELEASE_BUILD
 #ifdef SHOW_PORTAL_CULLING_DEBUG_TEXT
-		DEBUG_PRINT(playerRoom);
+		//DEBUG_PRINT(playerRoom);
 		DEBUG_PRINT(myActiveInstances.Size());
 		DEBUG_PRINT(myInstances.Size());
 		float renderPercentage = 100.f * float(myActiveInstances.Size())
@@ -123,7 +143,13 @@ namespace Prism
 		DEBUG_PRINT(renderPercentage);
 		for (int j = 0; j < myCurrentRoomIds.Size(); ++j)
 		{
-			DEBUG_PRINT(myCurrentRoomIds[j]);
+			const std::string& roomName(myRooms[myCurrentRoomIds[j]]->GetName());
+			if(j == 0)
+			{
+				const std::string& playerRoom(roomName);
+				DEBUG_PRINT(playerRoom);
+			}
+			DEBUG_PRINT(roomName);
 		}
 		if (renderPercentage > 25.f)
 		{

@@ -11,7 +11,7 @@ namespace Prism
 		Portal(Room* aRoom0, Room* aRoom1);
 		~Portal();
 
-		Room* GetOther(Room* aRoom);
+		Room* GetOther(const Room* aRoom);
 
 		const CU::Vector3<float>& GetTopRight() const;
 		const CU::Vector3<float>& GetBottomLeft() const;
