@@ -14,11 +14,11 @@ namespace Prism
 	class Room;
 }
 
-class Level : public SharedLevel
+class ClientLevel : public SharedLevel
 {
 public:
-	Level();
-	~Level();
+	ClientLevel();
+	~ClientLevel();
 
 	void Update(const float aDeltaTime) override;
 	void Render();
@@ -35,7 +35,7 @@ private:
 
 };
 
-inline Prism::Scene* Level::GetScene()
+inline Prism::Scene* ClientLevel::GetScene()
 {
 	return myScene;
 }

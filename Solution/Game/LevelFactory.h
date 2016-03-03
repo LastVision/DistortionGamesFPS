@@ -1,7 +1,7 @@
 #pragma once
 #include <GrowingArray.h>
 
-class Level;
+class ClientLevel;
 class XMLReader;
 
 namespace tinyxml2
@@ -23,9 +23,9 @@ public:
 	LevelFactory(const std::string& aLevelListPath);
 	~LevelFactory();
 
-	Level* LoadLevel(const int& aID);
-	Level* LoadCurrentLevel();
-	Level* LoadNextLevel();
+	ClientLevel* LoadLevel(const int& aID);
+	ClientLevel* LoadCurrentLevel();
+	ClientLevel* LoadNextLevel();
 
 	bool IsLastLevel();
 
@@ -40,7 +40,7 @@ private:
 	void ReadOrientation(XMLReader& aReader, tinyxml2::XMLElement* aElement, 
 		CU::Vector3f& aOutPosition, CU::Vector3f& aOutRotation, CU::Vector3f& aOutScale);
 
-	Level* myCurrentLevel;
+	ClientLevel* myCurrentLevel;
 	int myCurrentID;
 
 	CU::GrowingArray<LevelPathInformation> myLevelPaths;

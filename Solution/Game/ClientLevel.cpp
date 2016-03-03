@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include <Instance.h>
-#include "Level.h"
+#include "ClientLevel.h"
 #include <ModelLoader.h>
 #include "Player.h"
 #include <Scene.h>
@@ -21,7 +21,7 @@
 #include "DeferredRenderer.h"
 #include <PointLight.h>
 
-Level::Level()
+ClientLevel::ClientLevel()
 	: myClients(16)
 {
 	Prism::PhysicsInterface::Create();
@@ -44,7 +44,7 @@ Level::Level()
 	//myDeferredRenderer = new Prism::DeferredRenderer();
 }
 
-Level::~Level()
+ClientLevel::~ClientLevel()
 {
 	SAFE_DELETE(myPlayer);
 	SAFE_DELETE(myScene);
@@ -52,7 +52,7 @@ Level::~Level()
 	Prism::PhysicsInterface::Destroy();
 }
 
-void Level::Update(const float aDeltaTime)
+void ClientLevel::Update(const float aDeltaTime)
 {
 	SharedLevel::Update(aDeltaTime);
 	ClientNetworkManager::GetInstance()->Update(aDeltaTime);
@@ -72,7 +72,7 @@ void Level::Update(const float aDeltaTime)
 	Prism::PhysicsInterface::GetInstance()->Update();
 }
 
-void Level::Render()
+void ClientLevel::Render()
 {
 	//myDeferredRenderer->Render(myScene);
 	myScene->Render();

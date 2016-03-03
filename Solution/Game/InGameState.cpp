@@ -5,7 +5,7 @@
 #include <FadeMessage.h>
 #include "InGameState.h"
 #include <InputWrapper.h>
-#include "Level.h"
+#include "ClientLevel.h"
 #include "LevelFactory.h"
 #include "LobbyState.h"
 #include <PostMaster.h>

@@ -1,7 +1,7 @@
 #include "stdafx.h"
 
 #include <EntityFactory.h>
-#include "Level.h"
+#include "ClientLevel.h"
 #include "LevelFactory.h"
 #include <Room.h>
 #include <RoomManager.h>
@@ -25,7 +25,7 @@ LevelFactory::~LevelFactory()
 {
 }
 
-Level* LevelFactory::LoadLevel(const int& aID)
+ClientLevel* LevelFactory::LoadLevel(const int& aID)
 {
 	DL_ASSERT_EXP(aID <= myLevelPaths.Size(), "[LevelFactory] Trying to load a non-existing level! Check so the ID: " 
 		+ std::to_string(aID) + " are a valid id in LI_level.xml");
@@ -34,14 +34,14 @@ Level* LevelFactory::LoadLevel(const int& aID)
 	return LoadCurrentLevel();
 }
 
-Level* LevelFactory::LoadCurrentLevel()
+ClientLevel* LevelFactory::LoadCurrentLevel()
 {
-	myCurrentLevel = new Level();
+	myCurrentLevel = new ClientLevel();
 	ReadLevel(myLevelPaths[myCurrentID].myPath);
 	return myCurrentLevel;
 }
 
-Level* LevelFactory::LoadNextLevel()
+ClientLevel* LevelFactory::LoadNextLevel()
 {
 	if (IsLastLevel() == true)
 	{

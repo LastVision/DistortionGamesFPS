@@ -7,12 +7,6 @@
     <ClCompile Include="InGameState.cpp">
       <Filter>StateStack</Filter>
     </ClCompile>
-    <ClCompile Include="StateStack.cpp">
-      <Filter>StateStack</Filter>
-    </ClCompile>
-    <ClCompile Include="StateStackProxy.cpp">
-      <Filter>StateStack</Filter>
-    </ClCompile>
     <ClCompile Include="ScriptInterface.cpp" />
     <ClCompile Include="ConsoleState.cpp">
       <Filter>StateStack</Filter>
@@ -31,9 +25,6 @@
     </ClCompile>
     <ClCompile Include="EmitterManager.cpp">
       <Filter>Managers</Filter>
-    </ClCompile>
-    <ClCompile Include="Level.cpp">
-      <Filter>Level</Filter>
     </ClCompile>
     <ClCompile Include="LevelFactory.cpp">
       <Filter>Level\Factory</Filter>
@@ -58,6 +49,15 @@
     </ClCompile>
     <ClCompile Include="Weapon.cpp" />
     <ClCompile Include="ClientGame.cpp" />
+    <ClCompile Include="StateStack.cpp">
+      <Filter>StateStack</Filter>
+    </ClCompile>
+    <ClCompile Include="StateStackProxy.cpp">
+      <Filter>StateStack</Filter>
+    </ClCompile>
+    <ClCompile Include="ClientLevel.cpp">
+      <Filter>Level</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
@@ -70,12 +70,6 @@
       <Filter>StateStack</Filter>
     </ClInclude>
     <ClInclude Include="StateEnums.h">
-      <Filter>StateStack</Filter>
-    </ClInclude>
-    <ClInclude Include="StateStack.h">
-      <Filter>StateStack</Filter>
-    </ClInclude>
-    <ClInclude Include="StateStackProxy.h">
       <Filter>StateStack</Filter>
     </ClInclude>
     <ClInclude Include="ScriptInterface.h" />
@@ -98,9 +92,6 @@
       <Filter>Managers</Filter>
     </ClInclude>
     <ClInclude Include="GameDefines.h" />
-    <ClInclude Include="Level.h">
-      <Filter>Level</Filter>
-    </ClInclude>
     <ClInclude Include="LevelFactory.h">
       <Filter>Level\Factory</Filter>
     </ClInclude>
@@ -124,6 +115,15 @@
     </ClInclude>
     <ClInclude Include="Weapon.h" />
     <ClInclude Include="ClientGame.h" />
+    <ClInclude Include="StateStack.h">
+      <Filter>StateStack</Filter>
+    </ClInclude>
+    <ClInclude Include="StateStackProxy.h">
+      <Filter>StateStack</Filter>
+    </ClInclude>
+    <ClInclude Include="ClientLevel.h">
+      <Filter>Level</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="PreCompile">

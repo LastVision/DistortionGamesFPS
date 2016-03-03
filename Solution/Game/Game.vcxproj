@@ -213,7 +213,7 @@
     <ClInclude Include="GameState.h" />
     <ClInclude Include="Health.h" />
     <ClInclude Include="InGameState.h" />
-    <ClInclude Include="Level.h" />
+    <ClInclude Include="ClientLevel.h" />
     <ClInclude Include="LevelFactory.h" />
     <ClInclude Include="LobbyState.h" />
     <ClInclude Include="Movement.h" />
@@ -237,7 +237,7 @@
     <ClCompile Include="ClientGame.cpp" />
     <ClCompile Include="Health.cpp" />
     <ClCompile Include="InGameState.cpp" />
-    <ClCompile Include="Level.cpp" />
+    <ClCompile Include="ClientLevel.cpp" />
     <ClCompile Include="LevelFactory.cpp" />
     <ClCompile Include="LobbyState.cpp" />
     <ClCompile Include="Movement.cpp" />
