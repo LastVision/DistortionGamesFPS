@@ -4,6 +4,7 @@
 #include <NetworkMessageTypes.h>
 #include <ServerNetworkManager.h>
 #include <TimerManager.h>
+#include <ServerGame.h>
 
 volatile bool hasQuit = false;
 static BOOL WINAPI HandleExit(DWORD aCtrlType)
@@ -25,14 +26,15 @@ void main()
 	CU::TimerManager::Create();
 
 	DL_Debug::Debug::Create("NetworkLog.txt");
-
+	ServerGame game;
 	ServerNetworkManager::Create();
 	ServerNetworkManager::GetInstance()->StartNetwork();
 	float deltaTime = 0.f;
 	MSG winMessage;
 	int a = SetConsoleCtrlHandler(HandleExit, TRUE);
-	while (hasQuit == false)
+	while (game.Update() == true)
 	{
+		if (hasQuit == true)break;
 		CU::TimerManager::GetInstance()->Update();
 		deltaTime = CU::TimerManager::GetInstance()->GetMasterTimer().GetTime().GetFrameTime();
 		ServerNetworkManager::GetInstance()->Update(deltaTime);

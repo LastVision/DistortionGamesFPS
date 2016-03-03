@@ -129,13 +129,19 @@ void SharedNetworkManager::MainIsDone()
 
 void SharedNetworkManager::WaitForMain()
 {
-	while (myMainIsDone == false);
+	while (myMainIsDone == false)
+	{
+		std::this_thread::sleep_for(std::chrono::nanoseconds(1));
+	}
 	myMainIsDone = false;
 }
 
 void SharedNetworkManager::WaitForReceieve()
 {
-	while (myReceieveIsDone == false);
+	while (myReceieveIsDone == false)
+	{
+		std::this_thread::sleep_for(std::chrono::nanoseconds(1));
+	}
 	myReceieveIsDone = false;
 }
 

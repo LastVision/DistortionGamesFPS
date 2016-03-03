@@ -88,7 +88,6 @@ void ServerNetworkManager::ReceieveThread()
 	char buffer[BUFFERSIZE];
 	while (myIsRunning == true)
 	{
-		std::this_thread::sleep_for(std::chrono::nanoseconds(1));
 		ZeroMemory(&buffer, BUFFERSIZE);
 
 		std::vector<Buffer> someBuffers;
@@ -105,6 +104,8 @@ void ServerNetworkManager::ReceieveThread()
 		}
 		ReceieveIsDone();
 		WaitForMain();
+		std::this_thread::sleep_for(std::chrono::nanoseconds(1));
+
 	}
 }
 
@@ -112,7 +113,6 @@ void ServerNetworkManager::SendThread()
 {
 	while (myIsRunning == true)
 	{
-		std::this_thread::sleep_for(std::chrono::nanoseconds(1));
 		for (std::vector<char> arr : mySendBuffer[myCurrentSendBuffer])
 		{
 			for (Connection& connection : myClients)
@@ -122,6 +122,7 @@ void ServerNetworkManager::SendThread()
 		}
 		mySendBuffer[myCurrentSendBuffer].RemoveAll();
 		myCurrentSendBuffer ^= 1;
+		std::this_thread::sleep_for(std::chrono::nanoseconds(1));
 	}
 }
 
