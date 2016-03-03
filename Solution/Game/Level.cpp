@@ -22,8 +22,7 @@
 #include <PointLight.h>
 
 Level::Level()
-	: myEntities(512)
-	, myClients(16)
+	: myClients(16)
 {
 	Prism::PhysicsInterface::Create();
 	//Prism::PhysicsInterface::Destroy();
@@ -47,27 +46,17 @@ Level::Level()
 
 Level::~Level()
 {
-	myEntities.DeleteAll();
 	SAFE_DELETE(myPlayer);
 	SAFE_DELETE(myScene);
 	//SAFE_DELETE(myDeferredRenderer);
 	Prism::PhysicsInterface::Destroy();
 }
 
-void Level::AddEntity(Entity* aEntity)
-{
-	myEntities.Add(aEntity);
-}
-
 void Level::Update(const float aDeltaTime)
 {
+	SharedLevel::Update(aDeltaTime);
 	ClientNetworkManager::GetInstance()->Update(aDeltaTime);
 	myPlayer->Update(aDeltaTime);
-
-	for (int i = 0; i < myEntities.Size(); i++)
-	{
-		myEntities[i]->Update(aDeltaTime);
-	}
 
 	if (CU::InputWrapper::GetInstance()->KeyDown(DIK_C) == true)
 	{

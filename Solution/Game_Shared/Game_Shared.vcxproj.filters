@@ -7,6 +7,9 @@
     <Filter Include="Network">
       <UniqueIdentifier>{e6ab7b65-8924-4539-8e9e-329b153b796e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Level">
+      <UniqueIdentifier>{31f7f677-ea48-4dcf-a128-480fa5fe43e6}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
@@ -16,6 +19,9 @@
       <Filter>Network</Filter>
     </ClInclude>
     <ClInclude Include="SharedGame.h" />
+    <ClInclude Include="SharedLevel.h">
+      <Filter>Level</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -25,5 +31,8 @@
       <Filter>Network</Filter>
     </ClCompile>
     <ClCompile Include="SharedGame.cpp" />
+    <ClCompile Include="SharedLevel.cpp">
+      <Filter>Level</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

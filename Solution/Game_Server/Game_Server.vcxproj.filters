@@ -10,6 +10,9 @@
     <Filter Include="StateStack">
       <UniqueIdentifier>{bdcd5e13-4557-42da-a178-c318b0a7eca8}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Level">
+      <UniqueIdentifier>{89e05da9-eaad-4416-bb1f-ca49595eb8df}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
@@ -34,6 +37,10 @@
     <ClInclude Include="ServerInGameState.h">
       <Filter>StateStack</Filter>
     </ClInclude>
+    <ClInclude Include="ServerLobbyState.h">
+      <Filter>StateStack</Filter>
+    </ClInclude>
+    <ClInclude Include="ServerLevel.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -52,5 +59,9 @@
     <ClCompile Include="ServerInGameState.cpp">
       <Filter>StateStack</Filter>
     </ClCompile>
+    <ClCompile Include="ServerLobbyState.cpp">
+      <Filter>StateStack</Filter>
+    </ClCompile>
+    <ClCompile Include="ServerLevel.cpp" />
   </ItemGroup>
 </Project>

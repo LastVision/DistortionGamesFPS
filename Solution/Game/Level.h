@@ -2,6 +2,7 @@
 #include <GrowingArray.h>
 #include <Matrix.h>
 #include <NetworkMessageTypes.h>
+#include <SharedLevel.h>
 class Player;
 
 namespace Prism
@@ -13,15 +14,13 @@ namespace Prism
 	class Room;
 }
 
-class Level
+class Level : public SharedLevel
 {
 public:
 	Level();
 	~Level();
 
-	void AddEntity(Entity* aEntity);
-
-	void Update(const float aDeltaTime);
+	void Update(const float aDeltaTime) override;
 	void Render();
 	bool connected;
 	Prism::Scene* GetScene();
@@ -31,7 +30,6 @@ private:
 	Prism::DeferredRenderer* myDeferredRenderer;
 
 	Player* myPlayer;
-	CU::GrowingArray<Entity*> myEntities;
 	CU::GrowingArray<OtherClients> myClients;
 
 

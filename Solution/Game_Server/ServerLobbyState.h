@@ -1,13 +1,10 @@
 #pragma once
 #include "ServerState.h"
-
-class ServerLevel;
-
-class ServerInGameState : public ServerState
+class ServerLobbyState : public ServerState
 {
 public:
-	ServerInGameState();
-	~ServerInGameState();
+	ServerLobbyState();
+	~ServerLobbyState();
 
 	void InitState(ServerStateStackProxy* aStateStackProxy) override;
 	void EndState() override;
@@ -15,6 +12,6 @@ public:
 	const eStateStatus Update(const float aDeltaTime) override;
 	void ResumeState() override;
 private:
-	ServerLevel* myCurrentLevel;
+	
 };
 

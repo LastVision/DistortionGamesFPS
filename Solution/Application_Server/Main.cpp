@@ -27,6 +27,7 @@ void main()
 
 	DL_Debug::Debug::Create("NetworkLog.txt");
 	ServerGame game;
+	game.Init();
 	ServerNetworkManager::Create();
 	ServerNetworkManager::GetInstance()->StartNetwork();
 	float deltaTime = 0.f;

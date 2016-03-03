@@ -42,13 +42,13 @@
     <OutDir>$(SolutionDir)..\Libs\</OutDir>
     <IntDir>$(SolutionDir)..\temp\$(ProjectName)\</IntDir>
     <TargetName>$(ProjectName)_$(Configuration)</TargetName>
-    <IncludePath>$(SolutionDir)Network\;$(SolutionDir)CommonUtilities\;$(SolutionDir)DL_Debug\;$(SolutionDir)Game_Shared\;$(SolutionDir)\Memory;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)Timer\;$(SolutionDir)Network\;$(SolutionDir)CommonUtilities\;$(SolutionDir)DL_Debug\;$(SolutionDir)Game_Shared\;$(SolutionDir)\Memory;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <OutDir>$(SolutionDir)..\Libs\</OutDir>
     <IntDir>$(SolutionDir)..\temp\$(ProjectName)\</IntDir>
     <TargetName>$(ProjectName)_$(Configuration)</TargetName>
-    <IncludePath>$(SolutionDir)Network\;$(SolutionDir)CommonUtilities\;$(SolutionDir)DL_Debug\;$(SolutionDir)Game_Shared\;$(SolutionDir)\Memory;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)Timer\;$(SolutionDir)Network\;$(SolutionDir)CommonUtilities\;$(SolutionDir)DL_Debug\;$(SolutionDir)Game_Shared\;$(SolutionDir)\Memory;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -81,6 +81,8 @@
   <ItemGroup>
     <ClInclude Include="ServerGame.h" />
     <ClInclude Include="ServerInGameState.h" />
+    <ClInclude Include="ServerLevel.h" />
+    <ClInclude Include="ServerLobbyState.h" />
     <ClInclude Include="ServerNetworkManager.h" />
     <ClInclude Include="ServerState.h" />
     <ClInclude Include="ServerStateStack.h" />
@@ -91,6 +93,8 @@
   <ItemGroup>
     <ClCompile Include="ServerGame.cpp" />
     <ClCompile Include="ServerInGameState.cpp" />
+    <ClCompile Include="ServerLevel.cpp" />
+    <ClCompile Include="ServerLobbyState.cpp" />
     <ClCompile Include="ServerNetworkManager.cpp" />
     <ClCompile Include="ServerStateStack.cpp" />
     <ClCompile Include="ServerStateStackProxy.cpp" />
