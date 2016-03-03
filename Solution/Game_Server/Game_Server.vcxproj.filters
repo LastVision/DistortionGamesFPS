@@ -40,7 +40,9 @@
     <ClInclude Include="ServerLobbyState.h">
       <Filter>StateStack</Filter>
     </ClInclude>
-    <ClInclude Include="ServerLevel.h" />
+    <ClInclude Include="ServerLevel.h">
+      <Filter>Level</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -62,6 +64,8 @@
     <ClCompile Include="ServerLobbyState.cpp">
       <Filter>StateStack</Filter>
     </ClCompile>
-    <ClCompile Include="ServerLevel.cpp" />
+    <ClCompile Include="ServerLevel.cpp">
+      <Filter>Level</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>
