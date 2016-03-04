@@ -178,6 +178,7 @@
     <ClInclude Include="ShootNote.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="TriggerComponent.h" />
+    <ClInclude Include="TriggerComponentData.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AnimationComponent.cpp" />

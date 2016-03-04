@@ -120,5 +120,8 @@
     <ClInclude Include="TriggerComponent.h">
       <Filter>Component</Filter>
     </ClInclude>
+    <ClInclude Include="TriggerComponentData.h">
+      <Filter>EntityFactory\EntityData\ComponentData</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
