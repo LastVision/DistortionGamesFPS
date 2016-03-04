@@ -44,11 +44,11 @@ Player::Player(Prism::Scene* aScene)
 	myModel = new Prism::Instance(*model, myEyeOrientation);
 	aScene->AddInstance(myModel, true);
 
-	AddAnimation(ePlayerState::PISTOL_IDLE, "Data/Resource/Model/First_person/SK_arm_pistol_idle.fbx", true, 0.f);
-	AddAnimation(ePlayerState::PISTOL_HOLSTER, "Data/Resource/Model/First_person/SK_arm_pistol_holster.fbx", false, 0.f);
-	AddAnimation(ePlayerState::PISTOL_DRAW, "Data/Resource/Model/First_person/SK_arm_pistol_draw.fbx", false, 0.f);
-	AddAnimation(ePlayerState::PISTOL_RELOAD, "Data/Resource/Model/First_person/SK_arm_pistol_reload.fbx", false, 0.f);
-	AddAnimation(ePlayerState::PISTOL_SHOOT, "Data/Resource/Model/First_person/SK_arm_pistol_fire.fbx", false, 0.f);
+	AddAnimation(ePlayerState::PISTOL_IDLE, "Data/Resource/Model/First_person/SK_arm_pistol_idle.fbx", true, true);
+	AddAnimation(ePlayerState::PISTOL_HOLSTER, "Data/Resource/Model/First_person/SK_arm_pistol_holster.fbx", false, true);
+	AddAnimation(ePlayerState::PISTOL_DRAW, "Data/Resource/Model/First_person/SK_arm_pistol_draw.fbx", false, true);
+	AddAnimation(ePlayerState::PISTOL_RELOAD, "Data/Resource/Model/First_person/SK_arm_pistol_reload.fbx", false, true);
+	AddAnimation(ePlayerState::PISTOL_SHOOT, "Data/Resource/Model/First_person/SK_arm_pistol_fire.fbx", false, true);
 	
 
 	myJumpAcceleration = 0;
@@ -120,6 +120,21 @@ void Player::Update(float aDelta)
 	{
 		myModel->Update(aDelta);
 	}
+	if (myModel->IsAnimationDone() == true && data.myShouldLoop == false)
+	{
+		eWeaponType weaponType = myShooting->GetCurrentWeapon()->GetWeaponType();
+		switch (weaponType)
+		{
+		case eWeaponType::PISTOL:
+			myPlayerState = ePlayerState::PISTOL_IDLE;
+			PlayAnimation(myPlayerState);
+			break;
+		case eWeaponType::GRENADE_LAUNCHER:
+			break;
+		case eWeaponType::SHOTGUN:
+			break;
+		}
+	}
 	data.myElapsedTime += aDelta;
 
 	my3DGUIManager->Update(myEyeOrientation, myHealth->GetCurrentHealth(), myHealth->GetMaxHealth(), aDelta);
@@ -180,6 +195,7 @@ void Player::AddAnimation(ePlayerState aState, const std::string& aAnimationPath
 
 void Player::PlayAnimation(ePlayerState aAnimationState)
 {
+	myPlayerState = aAnimationState;
 	Prism::AnimationData& data = myAnimations[int(aAnimationState)];
 	myModel->SetAnimation(Prism::AnimationSystem::GetInstance()->GetAnimation(data.myFile.c_str()));
 

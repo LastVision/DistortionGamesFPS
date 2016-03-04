@@ -19,6 +19,8 @@ public:
 	void Update(float aDelta, const CU::Matrix44<float>& aOrientation);
 
 	Weapon* GetWeapon(eWeaponType aWeaponType);
+	Weapon* GetCurrentWeapon();
+
 private:
 	void ShootAtDirection(const CU::Matrix44<float>& aOrientation);
 	
@@ -35,3 +37,8 @@ private:
 
 	Player* myPlayer;
 };
+
+inline Weapon* Shooting::GetCurrentWeapon()
+{
+	return myCurrentWeapon;
+}

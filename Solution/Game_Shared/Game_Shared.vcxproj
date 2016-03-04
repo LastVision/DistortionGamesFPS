@@ -43,14 +43,14 @@
     <IntDir>$(SolutionDir)..\temp\$(ProjectName)\</IntDir>
     <TargetName>$(ProjectName)_$(Configuration)</TargetName>
     <ExecutablePath>$(ExecutablePath)</ExecutablePath>
-    <IncludePath>$(SolutionDir)Entity\;$(SolutionDir)\Memory;$(SolutionDir)PostMaster\;$(SolutionDir)Network\;$(SolutionDir)CommonUtilities\;$(SolutionDir)DL_Debug\;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)Engine\;$(SolutionDir)Entity\;$(SolutionDir)\Memory;$(SolutionDir)PostMaster\;$(SolutionDir)Network\;$(SolutionDir)CommonUtilities\;$(SolutionDir)DL_Debug\;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <OutDir>$(SolutionDir)..\Libs\</OutDir>
     <IntDir>$(SolutionDir)..\temp\$(ProjectName)\</IntDir>
     <TargetName>$(ProjectName)_$(Configuration)</TargetName>
     <ExecutablePath>$(ExecutablePath)</ExecutablePath>
-    <IncludePath>$(SolutionDir)Entity\;$(SolutionDir)\Memory;$(SolutionDir)PostMaster\;$(SolutionDir)Network\;$(SolutionDir)CommonUtilities\;$(SolutionDir)DL_Debug\;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)Engine\;$(SolutionDir)Entity\;$(SolutionDir)\Memory;$(SolutionDir)PostMaster\;$(SolutionDir)Network\;$(SolutionDir)CommonUtilities\;$(SolutionDir)DL_Debug\;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -83,12 +83,14 @@
   <ItemGroup>
     <ClInclude Include="SharedGame.h" />
     <ClInclude Include="SharedLevel.h" />
+    <ClInclude Include="SharedLevelFactory.h" />
     <ClInclude Include="SharedNetworkManager.h" />
     <ClInclude Include="stdafx.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="SharedGame.cpp" />
     <ClCompile Include="SharedLevel.cpp" />
+    <ClCompile Include="SharedLevelFactory.cpp" />
     <ClCompile Include="SharedNetworkManager.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>

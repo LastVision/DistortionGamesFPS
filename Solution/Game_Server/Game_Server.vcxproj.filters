@@ -13,6 +13,9 @@
     <Filter Include="Level">
       <UniqueIdentifier>{89e05da9-eaad-4416-bb1f-ca49595eb8df}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Level\Factory">
+      <UniqueIdentifier>{82738a90-795c-4af8-9d12-d1677f52503b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
@@ -43,6 +46,9 @@
     <ClInclude Include="ServerLevel.h">
       <Filter>Level</Filter>
     </ClInclude>
+    <ClInclude Include="ServerLevelFactory.h">
+      <Filter>Level\Factory</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -66,6 +72,9 @@
     </ClCompile>
     <ClCompile Include="ServerLevel.cpp">
       <Filter>Level</Filter>
+    </ClCompile>
+    <ClCompile Include="ServerLevelFactory.cpp">
+      <Filter>Level\Factory</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

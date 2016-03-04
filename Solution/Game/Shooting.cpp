@@ -66,9 +66,12 @@ void Shooting::Update(float aDelta, const CU::Matrix44<float>& aOrientation)
 	{
 		if (CU::InputWrapper::GetInstance()->MouseDown(0) == true)
 		{
-			myPistol->Shoot(aOrientation);
-			myPlayer->PlayAnimation(ePlayerState::PISTOL_SHOOT);
-			//ShootAtDirection(aOrientation);
+			if (myPistol->GetAmmoInClip() > 0)
+			{
+				myPistol->Shoot(aOrientation);
+				myPlayer->PlayAnimation(ePlayerState::PISTOL_SHOOT);
+				//ShootAtDirection(aOrientation);
+			}
 		}
 	}
 	else if (myCurrentWeapon == myGrenadeLauncher)

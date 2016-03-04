@@ -2,6 +2,7 @@
 #include "ServerState.h"
 
 class ServerLevel;
+class ServerLevelFactory;
 
 class ServerInGameState : public ServerState
 {
@@ -15,6 +16,7 @@ public:
 	const eStateStatus Update(const float aDeltaTime) override;
 	void ResumeState() override;
 private:
-	ServerLevel* myCurrentLevel;
+	ServerLevel* myLevel;
+	ServerLevelFactory* myLevelFactory;
 };
 
