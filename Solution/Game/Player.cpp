@@ -1,5 +1,6 @@
 #include "stdafx.h"
 
+#include <Animation.h>
 #include <AnimationSystem.h>
 #include <Camera.h>
 #include "ClientNetworkManager.h"
@@ -76,7 +77,15 @@ Player::Player(Prism::Scene* aScene)
 	{
 
 	}
-	//myWristOrientation = myOrientation * myModel->GetCurrentAnimation()->GetHiearchyToBone("r_wrist_jnt1");
+
+	for (int i = 0; i < static_cast<int>(ePlayerState::_COUNT); ++i)
+	{
+		myAnimations[i].myUIBone = Prism::AnimationSystem::GetInstance()->GetAnimation(myAnimations[i].myData.myFile.c_str())->GetHiearchyToBone("ui_jnt3");
+		myAnimations[i].myHealthBone = Prism::AnimationSystem::GetInstance()->GetAnimation(myAnimations[i].myData.myFile.c_str())->GetHiearchyToBone("health_jnt3");
+
+		//myAnimations[i].myUIBone.myBind = &CU::InverseSimple(*myAnimations[i].myUIBone.myBind);
+		//myAnimations[i].myHealthBone.myBind = &CU::InverseSimple(*myAnimations[i].myHealthBone.myBind);
+	}
 
 	my3DGUIManager = new GUI::GUIManager3D(myModel, aScene
 		, myShooting->GetWeapon(eWeaponType::PISTOL)->GetClipSize(), myShooting->GetWeapon(eWeaponType::PISTOL)->GetAmmoInClip()
@@ -131,7 +140,13 @@ void Player::Update(float aDelta)
 	
 	UpdateAnimation(aDelta);
 
-	my3DGUIManager->Update(myEyeOrientation, myHealth->GetCurrentHealth(), myHealth->GetMaxHealth(), aDelta);
+	CU::Matrix44<float> uiJoint = CU::InverseSimple(*myAnimations[static_cast<int>(myCurrentState)].myUIBone.myBind) 
+		* (*myAnimations[static_cast<int>(myCurrentState)].myUIBone.myJoint) * myEyeOrientation;
+	
+	CU::Matrix44<float> healthJoint = CU::InverseSimple(*myAnimations[static_cast<int>(myCurrentState)].myHealthBone.myBind)
+		* (*myAnimations[static_cast<int>(myCurrentState)].myHealthBone.myJoint) * myEyeOrientation;
+
+	my3DGUIManager->Update(uiJoint, healthJoint, myHealth->GetCurrentHealth(), myHealth->GetMaxHealth(), aDelta);
 
 	CU::Vector3<float> playerPos(myOrientation.GetPos());
 	DEBUG_PRINT(playerPos);
@@ -165,7 +180,7 @@ void Player::UpdateAnimation(float aDelta)
 		}
 	}
 
-	Prism::AnimationData& data = myAnimations[int(myCurrentState)];
+	Prism::AnimationData& data = myAnimations[int(myCurrentState)].myData;
 	if (myModel->IsAnimationDone() == false || data.myShouldLoop == true)
 	{
 		myModel->Update(aDelta);
@@ -225,13 +240,13 @@ void Player::AddAnimation(ePlayerState aState, const std::string& aAnimationPath
 	newData.myFile = aAnimationPath;
 	newData.myShouldLoop = aLoopFlag;
 	newData.myResetTimeOnRestart = aResetTimeOnRestart;
-	myAnimations[int(aState)] = newData;
+	myAnimations[int(aState)].myData = newData;
 }
 
 void Player::PlayAnimation(ePlayerState aAnimationState)
 {
 	myCurrentState = aAnimationState;
-	Prism::AnimationData& data = myAnimations[int(aAnimationState)];
+	Prism::AnimationData& data = myAnimations[int(aAnimationState)].myData;
 	myModel->SetAnimation(Prism::AnimationSystem::GetInstance()->GetAnimation(data.myFile.c_str()));
 
 	if (data.myResetTimeOnRestart == true)

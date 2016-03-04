@@ -3,7 +3,7 @@
 #include <AnimationData.h>
 #include <GameEnum.h>
 #include <StaticArray.h>
-
+#include <BoneName.h>
 class Movement;
 class Shooting;
 class Health;
@@ -58,9 +58,15 @@ private:
 	bool myAlive;
 	CU::Vector3<float> mySpawnPosition;
 
+	struct PlayerAnimationData
+	{
+		Prism::AnimationData myData;
+		GUIBone myUIBone;
+		GUIBone myHealthBone;
+	};
 	
 	void AddAnimation(ePlayerState aState, const std::string& aAnimationPath, bool aLoopFlag, bool aResetTimeOnRestart);
-	CU::StaticArray<Prism::AnimationData, int(ePlayerState::_COUNT)> myAnimations;
+	CU::StaticArray<PlayerAnimationData, int(ePlayerState::_COUNT)> myAnimations;
 
 	ePlayerState myCurrentState;
 

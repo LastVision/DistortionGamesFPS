@@ -27,8 +27,8 @@ namespace GUI
 		myEffect = Prism::EffectContainer::GetInstance()->GetEffect("Data/Resource/Shader/S_effect_3dgui.fx");
 		myEffect->SetTexture(Prism::TextureContainer::GetInstance()->GetTexture("Data/Resource/Texture/UI/T_ammo_pistol.dds"));
 
-		myGUIBone = aModel->GetCurrentAnimation()->GetHiearchyToBone("ui_jnt3");
-		myHealthBone = aModel->GetCurrentAnimation()->GetHiearchyToBone("health_jnt3");
+		//myGUIBone = aModel->GetCurrentAnimation()->GetHiearchyToBone("ui_jnt3");
+		//myHealthBone = aModel->GetCurrentAnimation()->GetHiearchyToBone("health_jnt3");
 		myLeftBar = new Prism::Bar3D({ 0.02f, 0.005f }, myShotgunClipSize, myEffect, eBarPosition::LEFT);
 		myRightBar = new Prism::Bar3D({ 0.02f, 0.005f }, myGrenadeLauncherClipSize, myEffect, eBarPosition::RIGHT);
 		myTopBar = new Prism::Bar3D({ 0.02f, 0.005f }, myPistolClipSize, myEffect, eBarPosition::TOP);
@@ -48,14 +48,19 @@ namespace GUI
 		SAFE_DELETE(myTopAmmoLeft);
 	}
 
-	void GUIManager3D::Update(const CU::Matrix44<float>& aOrientation, int aCurrentHealth, int aMaxHealth, float aDeltaTime)
+	void GUIManager3D::Update(const CU::Matrix44<float>& aUIJointOrientation
+		, const CU::Matrix44<float>& aHealthJointOrientation
+		, int aCurrentHealth, int aMaxHealth, float aDeltaTime)
 	{
 		myTestValue += aDeltaTime;
 		myEffect->SetGradiantValue(cos(myTestValue));
 		myEffect->SetGradiantDirection({ 0.f, 1.f });
 
-		myWristOrientation = CU::InverseSimple(*myGUIBone.myBind) * (*myGUIBone.myJoint) * aOrientation;
-		myHealthOrientation = CU::InverseSimple(*myHealthBone.myBind) * (*myHealthBone.myJoint) * aOrientation;
+		//myWristOrientation = CU::InverseSimple(*myGUIBone.myBind) * (*myGUIBone.myJoint) * aOrientation;
+		//myHealthOrientation = CU::InverseSimple(*myHealthBone.myBind) * (*myHealthBone.myJoint) * aOrientation;
+		myWristOrientation = aUIJointOrientation;
+		myHealthOrientation = aHealthJointOrientation;
+
 		myLeftBar->SetValue(myShotgunAmmoInClip / float(myShotgunClipSize));
 		myRightBar->SetValue(myGrenadeLauncherAmmoInClip / float(myGrenadeLauncherClipSize));
 		myTopBar->SetValue(myPistolAmmoInClip / float(myPistolClipSize));
