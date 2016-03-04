@@ -1,46 +1,34 @@
 #include "stdafx.h"
 
 #include <DL_Debug.h>
-#include <NetworkMessageTypes.h>
-#include <ServerNetworkManager.h>
 #include <TimerManager.h>
 #include <ServerGame.h>
+#include <assert.h>
+#include <TimerManager.h>
+#include <ServerNetworkManager.h>
 
-volatile bool hasQuit = false;
+ServerGame* globalServerGame;
+
 static BOOL WINAPI HandleExit(DWORD aCtrlType)
 {
 	switch (aCtrlType)
 	{
 	case CTRL_CLOSE_EVENT:
-		ServerNetworkManager::Destroy();
 		DL_Debug::Debug::Destroy();
-		CU::TimerManager::Destroy();
-		hasQuit = true;
-		break;
+		delete globalServerGame;
+		globalServerGame = nullptr;
+		return TRUE;
 	}
 	return FALSE;
 }
 
 void main()
 {
-	CU::TimerManager::Create();
+	int error = SetConsoleCtrlHandler(HandleExit, TRUE);
+	assert(error != 0 && "Failed to set console handler, can't exit clean. Nothing is created!");
 
 	DL_Debug::Debug::Create("NetworkLog.txt");
-	ServerGame game;
-	game.Init();
-	ServerNetworkManager::Create();
-	ServerNetworkManager::GetInstance()->StartNetwork();
-	float deltaTime = 0.f;
-	MSG winMessage;
-	int a = SetConsoleCtrlHandler(HandleExit, TRUE);
-	while (game.Update() == true)
-	{
-		if (hasQuit == true)break;
-		CU::TimerManager::GetInstance()->Update();
-		deltaTime = CU::TimerManager::GetInstance()->GetMasterTimer().GetTime().GetFrameTime();
-		ServerNetworkManager::GetInstance()->Update(deltaTime);
-
-		ServerNetworkManager::GetInstance()->MainIsDone();
-		ServerNetworkManager::GetInstance()->WaitForReceieve();
-	}
+	globalServerGame = new ServerGame();
+	globalServerGame->Init();
+	while (globalServerGame->Update() == true);
 }

@@ -5,6 +5,7 @@
 #include "EntityEnumConverter.h"
 #include "HealthComponentData.h"
 #include "XMLReader.h"
+#include "TriggerComponentData.h"
 
 void ComponentLoader::LoadAnimationComponent(XMLReader& aDocument, tinyxml2::XMLElement* aSourceElement, AnimationComponentData& aOutputData)
 {
@@ -71,6 +72,21 @@ void ComponentLoader::LoadHealthComponent(XMLReader& aDocument, tinyxml2::XMLEle
 		if (elementName == CU::ToLower("MaxHealth"))
 		{
 			aDocument.ForceReadAttribute(e, "value", aOutputData.myMaxHealth);
+		}
+	}
+}
+
+void ComponentLoader::LoadTriggerComponent(XMLReader& aDocument, tinyxml2::XMLElement* aSourceElement, TriggerComponentData& aOutputData)
+{
+	aOutputData.myExistsInEntity = true;
+	aOutputData.myTriggerType = -1;
+
+	for (tinyxml2::XMLElement* e = aDocument.FindFirstChild(aSourceElement); e != nullptr; e = aDocument.FindNextElement(e))
+	{
+		std::string elementName = CU::ToLower(e->Name());
+		if (elementName == CU::ToLower("Trigger"))
+		{
+			aDocument.ForceReadAttribute(e, "type", aOutputData.myTriggerType);
 		}
 	}
 }

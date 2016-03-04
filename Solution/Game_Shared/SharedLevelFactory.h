@@ -36,6 +36,7 @@ protected:
 	virtual void LoadRooms(XMLReader& aReader, tinyxml2::XMLElement* aElement) = 0;
 	virtual void LoadProps(XMLReader& aReader, tinyxml2::XMLElement* aElement) = 0;
 	virtual void LoadUnits(XMLReader& aReader, tinyxml2::XMLElement* aElement) = 0;
+	virtual void LoadTriggers(XMLReader& aReader, tinyxml2::XMLElement* aElement) = 0;
 
 	void ReadOrientation(XMLReader& aReader, tinyxml2::XMLElement* aElement,
 		CU::Vector3f& aOutPosition, CU::Vector3f& aOutRotation, CU::Vector3f& aOutScale);

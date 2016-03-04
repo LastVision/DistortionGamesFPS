@@ -11,7 +11,7 @@ public:
 
 	void PackMessage();
 	void UnPackMessage(char* aMessage, int aSize);
-
+	virtual bool GetIsImportant();
 
 	StreamType myStream;
 	uint32_t myTimeStamp;

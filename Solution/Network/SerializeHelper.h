@@ -95,7 +95,7 @@ namespace detail {
 
 	template <class T>
 	struct get_size_helper {
-		static size_t value(const T& obj) { return sizeof(T); }
+		static size_t value(const T&) { return sizeof(T); }
 	};
 
 } // end detail namespace 

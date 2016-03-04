@@ -22,7 +22,7 @@ class Entity
 	friend class EntityFactory;
 
 public:
-	Entity(const EntityData& aEntityData, Prism::Scene& aScene, const CU::Vector3<float>& aStartPosition, 
+	Entity(const EntityData& aEntityData, Prism::Scene* aScene, bool aClientSide, const CU::Vector3<float>& aStartPosition, 
 		const CU::Vector3f& aRotation, const CU::Vector3f& aScale);
 	~Entity();
 
@@ -42,7 +42,7 @@ public:
 	const CU::Matrix44<float>& GetOrientation() const;
 	void SetOrientation(const CU::Matrix44<float>& aOrientation);
 
-	Prism::Scene& GetScene();
+	Prism::Scene* GetScene();
 	eEntityType GetType() const;
 
 	eEntityState GetState() const;
@@ -63,11 +63,12 @@ private:
 	Prism::ParticleEmitterInstance* myEmitterConnection;
 
 	bool myAlive;
+	bool myIsClientSide;
 	bool myIsInScene;
 	std::string mySubType;
 	eEntityState myState;
 
-	Prism::Scene& myScene;
+	Prism::Scene* myScene;
 
 	CU::Matrix44<float> myOrientation;
 	Prism::PhysEntity* myPhysEntity;
@@ -107,8 +108,9 @@ inline void Entity::SetOrientation(const CU::Matrix44<float>& aOrientation)
 	myOrientation = aOrientation;
 }
 
-inline Prism::Scene& Entity::GetScene()
+inline Prism::Scene* Entity::GetScene()
 {
+	DL_ASSERT_EXP(myIsClientSide == true, "You can't get the scene on server side.");
 	return myScene;
 }
 

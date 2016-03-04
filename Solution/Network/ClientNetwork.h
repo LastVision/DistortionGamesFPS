@@ -9,7 +9,7 @@ public:
 	ClientNetwork();
 	~ClientNetwork();
 
-	void StartNetwork();
+	void StartNetwork(int aPortNum);
 	void Send(const std::vector<char>& anArray);
 	void Receieve(std::vector<Buffer>& someBuffers);
 
@@ -25,7 +25,7 @@ private:
 	sockaddr_in myServerAddress;
 
 	uint16_t myPort;
-	uint16_t mySocket;
+	SOCKET mySocket;
 	uint16_t myIDFromServer;
 
 	std::string myName;

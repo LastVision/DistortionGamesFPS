@@ -17,6 +17,7 @@ NetMessageConnectMessage::NetMessageConnectMessage()
 
 NetMessageConnectMessage::NetMessageConnectMessage(sockaddr_in anAddress)
 {
+	anAddress;
 	myID = int(eNetMessageType::ON_CONNECT);
 }
 

@@ -24,4 +24,5 @@ private:
 	void LoadRooms(XMLReader& aReader, tinyxml2::XMLElement* aElement) override;
 	void LoadProps(XMLReader& aReader, tinyxml2::XMLElement* aElement) override;
 	void LoadUnits(XMLReader& aReader, tinyxml2::XMLElement* aElement) override;
+	void LoadTriggers(XMLReader& aReader, tinyxml2::XMLElement* aElement) override;
 };

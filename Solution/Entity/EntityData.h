@@ -4,6 +4,7 @@
 #include "GraphicsComponentData.h"
 #include "HealthComponentData.h"
 #include "ProjectileComponentData.h"
+#include "TriggerComponentData.h"
 #include <PhysEntityData.h>
 
 struct EntityData
@@ -14,6 +15,7 @@ struct EntityData
 	ProjectileComponentData myProjecileData;
 	PhysEntityData myPhysData;
 	HealthComponentData myHealthData;
+	TriggerComponentData myTriggerData;
 
 	std::string mySubType;
 };

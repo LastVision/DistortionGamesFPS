@@ -1,9 +1,10 @@
 #pragma once
 #include <GrowingArray.h>
+#include <Subscriber.h>
 
 class Entity;
 
-class SharedLevel
+class SharedLevel : public Subscriber
 {
 public:
 	SharedLevel();
@@ -15,5 +16,6 @@ public:
 
 protected:
 	CU::GrowingArray<Entity*> myEntities;
+	CU::GrowingArray<Entity*> myPlayers;
 };
 

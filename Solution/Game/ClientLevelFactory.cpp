@@ -39,6 +39,7 @@ void ClientLevelFactory::ReadLevel(const std::string& aLevelPath)
 	LoadRooms(reader, levelElement);
 	LoadProps(reader, levelElement);
 	LoadUnits(reader, levelElement);
+	LoadTriggers(reader, levelElement);
 
 	reader.CloseDocument();
 }
@@ -97,8 +98,8 @@ void ClientLevelFactory::LoadProps(XMLReader& aReader, tinyxml2::XMLElement* aEl
 		propRotation.y = CU::Math::DegreeToRad(propRotation.y);
 		propRotation.z = CU::Math::DegreeToRad(propRotation.z);
 		
-		Entity* newEntity = EntityFactory::CreateEntity(eEntityType::PROP, propType, *static_cast<ClientLevel*>(myCurrentLevel)->GetScene()
-			, propPosition, propRotation, propScale);
+		Entity* newEntity = EntityFactory::CreateEntity(eEntityType::PROP, propType, static_cast<ClientLevel*>(myCurrentLevel)->GetScene()
+			, true, propPosition, propRotation, propScale);
 		newEntity->AddToScene();
 		newEntity->Reset();
 
@@ -125,8 +126,36 @@ void ClientLevelFactory::LoadUnits(XMLReader& aReader, tinyxml2::XMLElement* aEl
 		unitRotation.y = CU::Math::DegreeToRad(unitRotation.y);
 		unitRotation.z = CU::Math::DegreeToRad(unitRotation.z);
 
-		Entity* newEntity = EntityFactory::CreateEntity(eEntityType::UNIT, unitType, *static_cast<ClientLevel*>(myCurrentLevel)->GetScene()
-			, unitPosition, unitRotation, unitScale);
+		Entity* newEntity = EntityFactory::CreateEntity(eEntityType::UNIT, unitType, static_cast<ClientLevel*>(myCurrentLevel)->GetScene()
+			, true, unitPosition, unitRotation, unitScale);
+		newEntity->AddToScene();
+		newEntity->Reset();
+
+		myCurrentLevel->AddEntity(newEntity);
+	}
+}
+
+void ClientLevelFactory::LoadTriggers(XMLReader& aReader, tinyxml2::XMLElement* aElement)
+{
+	for (tinyxml2::XMLElement* entityElement = aReader.FindFirstChild(aElement, "trigger"); entityElement != nullptr;
+		entityElement = aReader.FindNextElement(entityElement, "trigger"))
+	{
+		std::string triggerType;
+		aReader.ForceReadAttribute(entityElement, "triggerType", triggerType);
+		triggerType = CU::ToLower(triggerType);
+
+		CU::Vector3f triggerPosition;
+		CU::Vector3f triggerRotation;
+		CU::Vector3f triggerScale;
+
+		ReadOrientation(aReader, entityElement, triggerPosition, triggerRotation, triggerScale);
+
+		triggerRotation.x = CU::Math::DegreeToRad(triggerRotation.x);
+		triggerRotation.y = CU::Math::DegreeToRad(triggerRotation.y);
+		triggerRotation.z = CU::Math::DegreeToRad(triggerRotation.z);
+
+		Entity* newEntity = EntityFactory::CreateEntity(eEntityType::UNIT, triggerType, static_cast<ClientLevel*>(myCurrentLevel)->GetScene()
+			, true, triggerPosition, triggerRotation, triggerScale);
 		newEntity->AddToScene();
 		newEntity->Reset();
 

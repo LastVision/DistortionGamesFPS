@@ -24,13 +24,17 @@ public:
 	void Render();
 	bool connected;
 	Prism::Scene* GetScene();
+	void ReceiveMessage(const NetworkAddPlayerMessage& aMessage) override;
+
 
 private:
 	Prism::Scene* myScene;
 	Prism::DeferredRenderer* myDeferredRenderer;
 
+	CU::GrowingArray<Entity*> myInstances;
+	CU::GrowingArray<CU::Matrix44f> myInstanceOrientations;
+
 	Player* myPlayer;
-	CU::GrowingArray<OtherClients> myClients;
 
 
 };

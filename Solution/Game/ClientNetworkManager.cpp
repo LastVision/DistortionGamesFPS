@@ -2,12 +2,15 @@
 #include "ClientNetworkManager.h"
 #include "ClientNetwork.h"
 #include <thread>
+#include <PostMaster.h>
 
 #include <NetMessageConnectMessage.h>
 #include <NetMessageOnJoin.h>
 #include <NetMessagePingRequest.h>
 #include <NetMessagePingReply.h>
 #include <NetMessagePosition.h>
+
+#include <NetworkAddPlayerMessage.h>
 
 #define BUFFERSIZE 512
 
@@ -73,10 +76,10 @@ void ClientNetworkManager::Initiate()
 	myClients.Init(16);
 }
 
-void ClientNetworkManager::StartNetwork()
+void ClientNetworkManager::StartNetwork(unsigned int aPortNum)
 {
-	myNetwork->StartNetwork();
-	__super::StartNetwork();
+	myNetwork->StartNetwork(aPortNum);
+	__super::StartNetwork(aPortNum);
 }
 
 void ClientNetworkManager::ReceieveThread()
@@ -94,7 +97,7 @@ void ClientNetworkManager::ReceieveThread()
 		}
 		ReceieveIsDone();
 		WaitForMain();
-		std::this_thread::sleep_for(std::chrono::nanoseconds(1));
+		Sleep(1);
 	}
 }
 
@@ -109,7 +112,7 @@ void ClientNetworkManager::SendThread()
 
 		mySendBuffer[myCurrentSendBuffer].RemoveAll();
 		myCurrentSendBuffer ^= 1;
-		std::this_thread::sleep_for(std::chrono::nanoseconds(1));
+		Sleep(1);
 	}
 }
 
@@ -162,6 +165,7 @@ void ClientNetworkManager::HandleMessage(const NetMessageOnJoin& aMessage, const
 	if (aMessage.mySenderID != myNetworkID)
 	{
 		myClients.Add(OtherClients(aMessage.mySenderID));
+		PostMaster::GetInstance()->SendMessage(NetworkAddPlayerMessage(aMessage.mySenderID));
 	}
 }
 

@@ -1,6 +1,6 @@
 #pragma once
 #include <Matrix.h>
-#include <BoneName.h>
+
 namespace Prism
 {
 	class Bar3D;
@@ -20,15 +20,18 @@ namespace GUI
 			, int& aGrenadeLauncherClipSize, int& aGrenadeLauncherAmmoInClip);
 		~GUIManager3D();
 
-		void Update(const CU::Matrix44<float>& aOrientation, int aCurrentHealth, int aMaxHealth, float aDeltaTime);
+		void Update(const CU::Matrix44<float>& aUIJointOrientation, const CU::Matrix44<float>& aHealthJointOrientation
+			, int aCurrentHealth, int aMaxHealth, float aDeltaTime);
 		void Render();
 
 	private:
+		void operator=(GUIManager3D&) = delete;
+
 		float myTestValue;
 		CU::Matrix44<float> myWristOrientation;
-		GUIBone myGUIBone;
+		//GUIBone myGUIBone;
 		CU::Matrix44<float> myHealthOrientation;
-		GUIBone myHealthBone;
+		//GUIBone myHealthBone;
 		Prism::Scene* myScene;
 		Prism::Effect* myEffect;
 		Prism::Bar3D* myLeftBar;

@@ -7,6 +7,11 @@ namespace std
 	class thread;
 }
 
+struct ImportantMessage
+{
+	//Add Data
+};
+
 class NetMessageConnectMessage;
 class NetMessageOnJoin;
 class NetMessagePingRequest;
@@ -18,11 +23,11 @@ class SharedNetworkManager
 public:
 
 	virtual void Initiate();
-	virtual void StartNetwork();
+	virtual void StartNetwork(unsigned int aPortNum);
 	virtual void Update(float aDelta);
 
 	template<typename T>
-	void AddMessage(T& aMessage);
+	void AddMessage(T aMessage);
 	
 	eNetMessageType ReadType(const char* aBuffer);
 	eNetMessageType ReadType(const std::vector<char>& aBuffer);
@@ -48,7 +53,10 @@ protected:
 	virtual void ReceieveThread() = 0;
 
 	template<typename T> 
-	void UnpackAndHandle(T& aMessage, Buffer& aBuffer);
+	void UnpackAndHandle(T aMessage, Buffer& aBuffer);
+	template<typename T>
+	T CreateMessage();
+	
 
 	void HandleMessage();
 
@@ -82,22 +90,37 @@ protected:
 	double myDataSent;
 	double myDataToPrint;
 
+	unsigned int myImportantID;
 };
 
 template<typename T>
-inline void SharedNetworkManager::AddMessage(T& aMessage)
+inline void SharedNetworkManager::AddMessage(T aMessage)
 {
 	if (myIsServer == false)
 	{
 		aMessage.mySenderID = myNetworkID;
 	}
+
+	if (aMessage.GetIsImportant() == true)
+	{
+		//Add to important list.		
+	}
+
 	aMessage.PackMessage();
 	myDataSent += aMessage.myStream.size() * sizeof(char);
 	AddNetworkMessage(aMessage.myStream);
 }
 
 template<typename T>
-void SharedNetworkManager::UnpackAndHandle(T& aMessage, Buffer& aBuffer)
+T SharedNetworkManager::CreateMessage()
+{
+	T toReturn;
+	toReturn.SetImportantID(myImportantID++);
+	return toReturn;
+}
+
+template<typename T>
+void SharedNetworkManager::UnpackAndHandle(T aMessage, Buffer& aBuffer)
 {
 	aMessage.UnPackMessage(aBuffer.myData, aBuffer.myLength);
 	HandleMessage(aMessage, aBuffer.mySenderAddress);

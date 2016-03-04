@@ -20,7 +20,7 @@ void SharedNetworkManager::Initiate()
 	myMainIsDone = true;
 }
 
-void SharedNetworkManager::StartNetwork()
+void SharedNetworkManager::StartNetwork(unsigned int /*aPortNum*/)
 {
 
 	myIsRunning = true;
@@ -90,7 +90,7 @@ void SharedNetworkManager::WaitForMain()
 {
 	while (myMainIsDone == false)
 	{
-		std::this_thread::sleep_for(std::chrono::nanoseconds(1));
+		Sleep(1);
 	}
 	myMainIsDone = false;
 }
@@ -99,7 +99,7 @@ void SharedNetworkManager::WaitForReceieve()
 {
 	while (myReceieveIsDone == false)
 	{
-		std::this_thread::sleep_for(std::chrono::nanoseconds(1));
+		Sleep(1);
 	}
 	myReceieveIsDone = false;
 }
@@ -160,12 +160,12 @@ void SharedNetworkManager::HandleMessage()
 	}
 }
 
-void SharedNetworkManager::HandleMessage(const NetMessagePingReply& aMessage, const sockaddr_in& aSenderAddress)
+void SharedNetworkManager::HandleMessage(const NetMessagePingReply&, const sockaddr_in&)
 {
 	myMS = myResponsTime * 1000.f;
 }
 
 void SharedNetworkManager::HandleMessage(const NetMessageConnectMessage&, const sockaddr_in&) {}
-void SharedNetworkManager::HandleMessage(const NetMessagePingRequest& aMessage, const sockaddr_in& aSenderAddress) {}
-void SharedNetworkManager::HandleMessage(const NetMessageOnJoin& aMessage, const sockaddr_in& aSenderAddress) {}
-void SharedNetworkManager::HandleMessage(const NetMessagePosition& aMessage, const sockaddr_in& aSenderAddress) {}
+void SharedNetworkManager::HandleMessage(const NetMessagePingRequest&, const sockaddr_in&) {}
+void SharedNetworkManager::HandleMessage(const NetMessageOnJoin&, const sockaddr_in&) {}
+void SharedNetworkManager::HandleMessage(const NetMessagePosition&, const sockaddr_in&) {}
