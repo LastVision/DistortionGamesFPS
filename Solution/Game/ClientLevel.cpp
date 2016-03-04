@@ -24,6 +24,7 @@
 #include <PointLight.h>
 
 #include <PhysEntity.h>
+#include <PostMaster.h>
 
 ClientLevel::ClientLevel()
 	: myInstanceOrientations(16)
@@ -33,7 +34,7 @@ ClientLevel::ClientLevel()
 	//Prism::PhysicsInterface::Destroy();
 	//Prism::PhysicsInterface::GetInstance()->RayCast({ 0, 0, 0 }, { 0, 1, 0 }, 10.f);
 	//Prism::PhysicsInterface::GetInstance()->Update();
-
+	PostMaster::GetInstance()->Subscribe(eMessageType::NETWORK_ADD_PLAYER, this);
 	myScene = new Prism::Scene();
 	myPlayer = new Player(myScene);
 	myScene->SetCamera(*myPlayer->GetCamera());
@@ -59,6 +60,7 @@ ClientLevel::ClientLevel()
 
 ClientLevel::~ClientLevel()
 {
+	PostMaster::GetInstance()->UnSubscribe(eMessageType::NETWORK_ADD_PLAYER, this);
 	myInstances.DeleteAll();
 	SAFE_DELETE(myPlayer);
 	SAFE_DELETE(myScene);

@@ -4,12 +4,15 @@
 #include <Entity.h>
 #include <EntityFactory.h>
 #include <NetworkAddPlayerMessage.h>
+#include <PostMaster.h>
 ServerLevel::ServerLevel()
 {
+	PostMaster::GetInstance()->Subscribe(eMessageType::NETWORK_ADD_PLAYER, this);
 }
 
 ServerLevel::~ServerLevel()
 {
+	PostMaster::GetInstance()->UnSubscribe(eMessageType::NETWORK_ADD_PLAYER, this);
 }
 
 void ServerLevel::Update(const float aDeltaTime)
