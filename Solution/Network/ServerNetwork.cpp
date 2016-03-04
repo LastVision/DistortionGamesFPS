@@ -82,14 +82,6 @@ void ServerNetwork::StartServer(unsigned int aPortNum)
 
 }
 
-void ServerNetwork::Send(const std::vector<char>& anArray)
-{
-	/*for (int i = 0; i < myClients.Size(); ++i)
-	{
-	Send(anArray, myClients[i].myAdress);
-	}*/
-}
-
 void ServerNetwork::Send(const std::vector<char>& anArray, const sockaddr_in& anAddress)
 {
 	if (sendto(myListenSocket, &anArray[0], anArray.size(), 0, (struct sockaddr *)&anAddress

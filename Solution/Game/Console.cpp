@@ -5,7 +5,6 @@
 #include "ConsoleHelp.h"
 #include "ConsoleHistoryManager.h"
 #include <InputWrapper.h>
-#include <RunScriptMessage.h>
 #include <ScriptSystem.h>
 #include <PostMaster.h>
 #include <ModelLoader.h>
@@ -35,14 +34,14 @@ Console::Console()
 	myHistory->Load();
 	myBackspace = new ConsoleBackspace(myInput);
 	myHelp = new ConsoleHelp();
-	PostMaster::GetInstance()->Subscribe(eMessageType::RUN_SCRIPT, this);
+	//PostMaster::GetInstance()->Subscribe(eMessageType::RUN_SCRIPT, this);
 #endif
 }
 
 Console::~Console()
 {
 #ifndef RELEASE_BUILD
-	PostMaster::GetInstance()->UnSubscribe(eMessageType::RUN_SCRIPT, this);
+	//PostMaster::GetInstance()->UnSubscribe(eMessageType::RUN_SCRIPT, this);
 	SAFE_DELETE(myHistory);
 	SAFE_DELETE(myBackspace);
 	SAFE_DELETE(myHelp);
@@ -80,32 +79,32 @@ void Console::Update()
 	//DEBUG_PRINT(myInput);
 }
 
-void Console::ReceiveMessage(const RunScriptMessage& aMessage)
-{
-	if (aMessage.myMessageType == eMessageType::RUN_SCRIPT)
-	{
-		std::fstream output;
-		output.open(aMessage.myFilePath, std::ios::in);
-
-		std::string line;
-		std::string errorLine;
-		while (std::getline(output, line))
-		{
-			if (LUA::ScriptSystem::GetInstance()->ValidateLuaString(line, errorLine))
-			{
-				LUA::ScriptSystem::GetInstance()->RunLuaFromString(line);
-				Console::GetInstance()->GetConsoleHistory()->AddHistory(line, eHistoryType::GENERATED_COMMAND);
-			}
-			else
-			{
-				Console::GetInstance()->GetConsoleHistory()->AddHistory(errorLine, eHistoryType::ERROR);
-			}
-	
-		}
-		Console::GetInstance()->GetConsoleHistory()->Save();
-		output.close();
-	}
-}
+//void Console::ReceiveMessage(const RunScriptMessage& aMessage)
+//{
+//	if (aMessage.myMessageType == eMessageType::RUN_SCRIPT)
+//	{
+//		std::fstream output;
+//		output.open(aMessage.myFilePath, std::ios::in);
+//
+//		std::string line;
+//		std::string errorLine;
+//		while (std::getline(output, line))
+//		{
+//			if (LUA::ScriptSystem::GetInstance()->ValidateLuaString(line, errorLine))
+//			{
+//				LUA::ScriptSystem::GetInstance()->RunLuaFromString(line);
+//				Console::GetInstance()->GetConsoleHistory()->AddHistory(line, eHistoryType::GENERATED_COMMAND);
+//			}
+//			else
+//			{
+//				Console::GetInstance()->GetConsoleHistory()->AddHistory(errorLine, eHistoryType::ERROR);
+//			}
+//	
+//		}
+//		Console::GetInstance()->GetConsoleHistory()->Save();
+//		output.close();
+//	}
+//}
 
 void Console::AddHistory(const std::string& aMessage, eHistoryType aType)
 {

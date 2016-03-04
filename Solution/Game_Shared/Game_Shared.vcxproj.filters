@@ -15,33 +15,33 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="stdafx.h">
-      <Filter>Precompile</Filter>
-    </ClInclude>
+    <ClInclude Include="SharedGame.h" />
     <ClInclude Include="SharedNetworkManager.h">
       <Filter>Network</Filter>
-    </ClInclude>
-    <ClInclude Include="SharedGame.h" />
-    <ClInclude Include="SharedLevel.h">
-      <Filter>Level</Filter>
     </ClInclude>
     <ClInclude Include="SharedLevelFactory.h">
       <Filter>Level\Factory</Filter>
     </ClInclude>
+    <ClInclude Include="SharedLevel.h">
+      <Filter>Level</Filter>
+    </ClInclude>
+    <ClInclude Include="stdafx.h">
+      <Filter>Precompile</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="stdafx.cpp">
-      <Filter>Precompile</Filter>
-    </ClCompile>
+    <ClCompile Include="SharedGame.cpp" />
     <ClCompile Include="SharedNetworkManager.cpp">
       <Filter>Network</Filter>
     </ClCompile>
-    <ClCompile Include="SharedGame.cpp" />
+    <ClCompile Include="SharedLevelFactory.cpp">
+      <Filter>Level\Factory</Filter>
+    </ClCompile>
     <ClCompile Include="SharedLevel.cpp">
       <Filter>Level</Filter>
     </ClCompile>
-    <ClCompile Include="SharedLevelFactory.cpp">
-      <Filter>Level\Factory</Filter>
+    <ClCompile Include="stdafx.cpp">
+      <Filter>Precompile</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

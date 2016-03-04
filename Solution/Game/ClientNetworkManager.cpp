@@ -94,7 +94,7 @@ void ClientNetworkManager::ReceieveThread()
 		}
 		ReceieveIsDone();
 		WaitForMain();
-		std::this_thread::sleep_for(std::chrono::nanoseconds(1));
+		Sleep(1);
 	}
 }
 
@@ -109,7 +109,7 @@ void ClientNetworkManager::SendThread()
 
 		mySendBuffer[myCurrentSendBuffer].RemoveAll();
 		myCurrentSendBuffer ^= 1;
-		std::this_thread::sleep_for(std::chrono::nanoseconds(1));
+		Sleep(1);
 	}
 }
 

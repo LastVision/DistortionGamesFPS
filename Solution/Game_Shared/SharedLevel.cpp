@@ -4,6 +4,7 @@
 
 SharedLevel::SharedLevel()
 	: myEntities(256)
+	, myPlayers(16)
 {
 }
 

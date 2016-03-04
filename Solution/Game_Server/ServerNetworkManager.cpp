@@ -95,7 +95,7 @@ void ServerNetworkManager::ReceieveThread()
 
 		if (someBuffers.size() == 0)
 		{
-			int error = WSAGetLastError();
+			WSAGetLastError();
 		}
 		for (Buffer message : someBuffers)
 		{
@@ -104,7 +104,7 @@ void ServerNetworkManager::ReceieveThread()
 		}
 		ReceieveIsDone();
 		WaitForMain();
-		std::this_thread::sleep_for(std::chrono::nanoseconds(1));
+		Sleep(1);
 
 	}
 }
@@ -122,7 +122,7 @@ void ServerNetworkManager::SendThread()
 		}
 		mySendBuffer[myCurrentSendBuffer].RemoveAll();
 		myCurrentSendBuffer ^= 1;
-		std::this_thread::sleep_for(std::chrono::nanoseconds(1));
+		Sleep(1);
 	}
 }
 
@@ -166,7 +166,7 @@ void ServerNetworkManager::HandleMessage(const NetMessageConnectMessage& aMessag
 	CreateConnection(aMessage.myName, aSenderAddress);
 }
 
-void ServerNetworkManager::HandleMessage(const NetMessagePingRequest& aMessage, const sockaddr_in& aSenderAddress)
+void ServerNetworkManager::HandleMessage(const NetMessagePingRequest&, const sockaddr_in& aSenderAddress)
 {
 	NetMessagePingReply reply;
 	reply.PackMessage();
@@ -174,7 +174,7 @@ void ServerNetworkManager::HandleMessage(const NetMessagePingRequest& aMessage, 
 	myNetwork->Send(reply.myStream, aSenderAddress);
 }
 
-void ServerNetworkManager::HandleMessage(const NetMessagePosition& aMessage, const sockaddr_in& aSenderAddress)
+void ServerNetworkManager::HandleMessage(const NetMessagePosition& aMessage, const sockaddr_in&)
 {
 	NetMessagePosition position;
 	position = aMessage;
