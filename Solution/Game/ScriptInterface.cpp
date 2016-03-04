@@ -1,25 +1,10 @@
 #include "stdafx.h"
 
-#include <ArtifactMessage.h>
-#include <CinematicMessage.h>
 #include "Console.h"
 #include <Entity.h>
-#include <GameStateMessage.h>
-#include <KillUnitMessage.h>
-#include <MoveCameraMessage.h>
 #include <PostMaster.h>
-#include <ResourceMessage.h>
-#include <RunScriptMessage.h>
 #include "ScriptInterface.h"
 #include <ScriptSystem.h>
-#include <SpawnUnitMessage.h>
-#include <TextMessage.h>
-#include <TimeMultiplierMessage.h>
-#include <ToggleBuildTimeMessage.h>
-#include <ToggleGUIMessage.h>
-#include <ToggleFogOfWarMessage.h>
-#include <ToggleRenderLinesMessage.h>
-#include <VictoryMessage.h>
 
 namespace Script_Interface
 {
@@ -43,7 +28,7 @@ namespace Script_Interface
 	int ScriptRun(lua_State* aState)//string aScriptFile
 	{
 		std::string filePath = lua_tostring(aState, 1);
-		PostMaster::GetInstance()->SendMessage(RunScriptMessage(filePath));
+		//PostMaster::GetInstance()->SendMessage(RunScriptMessage(filePath));
 		return 0;
 	}
 }

@@ -28,6 +28,7 @@ void ServerLobbyState::EndState()
 
 const eStateStatus ServerLobbyState::Update(const float aDeltaTime)
 {
+	aDeltaTime;
 	myStateStack->PushMainState(new ServerInGameState());
 
 	return myStateStatus;

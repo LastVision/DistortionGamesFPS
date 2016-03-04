@@ -25,7 +25,7 @@ private:
 	sockaddr_in myServerAddress;
 
 	uint16_t myPort;
-	uint16_t mySocket;
+	SOCKET mySocket;
 	uint16_t myIDFromServer;
 
 	std::string myName;

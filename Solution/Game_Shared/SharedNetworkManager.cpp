@@ -160,12 +160,12 @@ void SharedNetworkManager::HandleMessage()
 	}
 }
 
-void SharedNetworkManager::HandleMessage(const NetMessagePingReply& aMessage, const sockaddr_in& aSenderAddress)
+void SharedNetworkManager::HandleMessage(const NetMessagePingReply&, const sockaddr_in&)
 {
 	myMS = myResponsTime * 1000.f;
 }
 
 void SharedNetworkManager::HandleMessage(const NetMessageConnectMessage&, const sockaddr_in&) {}
-void SharedNetworkManager::HandleMessage(const NetMessagePingRequest& aMessage, const sockaddr_in& aSenderAddress) {}
-void SharedNetworkManager::HandleMessage(const NetMessageOnJoin& aMessage, const sockaddr_in& aSenderAddress) {}
-void SharedNetworkManager::HandleMessage(const NetMessagePosition& aMessage, const sockaddr_in& aSenderAddress) {}
+void SharedNetworkManager::HandleMessage(const NetMessagePingRequest&, const sockaddr_in&) {}
+void SharedNetworkManager::HandleMessage(const NetMessageOnJoin&, const sockaddr_in&) {}
+void SharedNetworkManager::HandleMessage(const NetMessagePosition&, const sockaddr_in&) {}

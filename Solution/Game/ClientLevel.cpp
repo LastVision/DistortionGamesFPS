@@ -73,7 +73,7 @@ void ClientLevel::Update(const float aDeltaTime)
 		ClientNetworkManager::GetInstance()->ConnectToServer("81.170.227.192");
 	}
 	unsigned short ms = ClientNetworkManager::GetInstance()->GetResponsTime();
-	float kbs = ClientNetworkManager::GetInstance()->GetDataSent();
+	float kbs = static_cast<float>(ClientNetworkManager::GetInstance()->GetDataSent());
 
 	DEBUG_PRINT(ms);
 	DEBUG_PRINT(kbs);

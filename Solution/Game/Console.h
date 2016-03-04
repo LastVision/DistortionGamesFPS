@@ -42,7 +42,6 @@ public:
 	ConsoleHistoryManager* GetConsoleHistory();
 	ConsoleHelp* GetConsoleHelp();
 
-	void ReceiveMessage(const RunScriptMessage& aMessage) override;
 
 	void ClearInput();
 

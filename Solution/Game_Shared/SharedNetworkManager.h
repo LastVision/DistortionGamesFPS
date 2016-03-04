@@ -27,7 +27,7 @@ public:
 	virtual void Update(float aDelta);
 
 	template<typename T>
-	void AddMessage(T& aMessage);
+	void AddMessage(T aMessage);
 	
 	eNetMessageType ReadType(const char* aBuffer);
 	eNetMessageType ReadType(const std::vector<char>& aBuffer);
@@ -53,7 +53,7 @@ protected:
 	virtual void ReceieveThread() = 0;
 
 	template<typename T> 
-	void UnpackAndHandle(T& aMessage, Buffer& aBuffer);
+	void UnpackAndHandle(T aMessage, Buffer& aBuffer);
 	template<typename T>
 	T CreateMessage();
 	
@@ -94,7 +94,7 @@ protected:
 };
 
 template<typename T>
-inline void SharedNetworkManager::AddMessage(T& aMessage)
+inline void SharedNetworkManager::AddMessage(T aMessage)
 {
 	if (myIsServer == false)
 	{
@@ -120,7 +120,7 @@ T SharedNetworkManager::CreateMessage()
 }
 
 template<typename T>
-void SharedNetworkManager::UnpackAndHandle(T& aMessage, Buffer& aBuffer)
+void SharedNetworkManager::UnpackAndHandle(T aMessage, Buffer& aBuffer)
 {
 	aMessage.UnPackMessage(aBuffer.myData, aBuffer.myLength);
 	HandleMessage(aMessage, aBuffer.mySenderAddress);
