@@ -115,6 +115,29 @@ void Player::Update(float aDelta)
 
 	myShooting->Update(aDelta, myEyeOrientation);
 	
+	UpdateAnimation(aDelta);
+
+	my3DGUIManager->Update(myEyeOrientation, myHealth->GetCurrentHealth(), myHealth->GetMaxHealth(), aDelta);
+
+	CU::Vector3<float> playerPos(myOrientation.GetPos());
+	DEBUG_PRINT(playerPos);
+
+
+	mySendTime -= aDelta;
+	if (mySendTime < 0.f)
+	{
+		if (myOrientation.GetPos().x != prevPos.x || myOrientation.GetPos().y != prevPos.y || myOrientation.GetPos().z != prevPos.z)
+		{
+			ClientNetworkManager::GetInstance()->AddMessage(NetMessagePosition(myOrientation.GetPos()));
+			mySendTime = 1 / 30.f;
+		}
+	}
+
+	myCamera->Update(aDelta);
+}
+
+void Player::UpdateAnimation(float aDelta)
+{
 	Prism::AnimationData& data = myAnimations[int(myPlayerState)];
 	if (myModel->IsAnimationDone() == false || data.myShouldLoop == true)
 	{
@@ -136,24 +159,6 @@ void Player::Update(float aDelta)
 		}
 	}
 	data.myElapsedTime += aDelta;
-
-	my3DGUIManager->Update(myEyeOrientation, myHealth->GetCurrentHealth(), myHealth->GetMaxHealth(), aDelta);
-
-	CU::Vector3<float> playerPos(myOrientation.GetPos());
-	DEBUG_PRINT(playerPos);
-
-
-	mySendTime -= aDelta;
-	if (mySendTime < 0.f)
-	{
-		if (myOrientation.GetPos().x != prevPos.x || myOrientation.GetPos().y != prevPos.y || myOrientation.GetPos().z != prevPos.z)
-		{
-			ClientNetworkManager::GetInstance()->AddMessage(NetMessagePosition(myOrientation.GetPos()));
-			mySendTime = 1 / 30.f;
-		}
-	}
-
-	myCamera->Update(aDelta);
 }
 
 void Player::Render()

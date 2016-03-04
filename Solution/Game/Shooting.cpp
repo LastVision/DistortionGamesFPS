@@ -45,6 +45,7 @@ void Shooting::Update(float aDelta, const CU::Matrix44<float>& aOrientation)
 {
 	if (CU::InputWrapper::GetInstance()->KeyDown(DIK_1) == true)
 	{
+		myPlayer->PlayAnimation(ePlayerState::PISTOL_DRAW);
 		myCurrentWeapon = myPistol;
 	}
 	if (CU::InputWrapper::GetInstance()->KeyDown(DIK_2) == true)
