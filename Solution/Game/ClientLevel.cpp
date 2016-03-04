@@ -18,6 +18,7 @@
 #include <NetMessageConnectMessage.h>
 
 #include <NetworkAddPlayerMessage.h>
+#include <NetworkAddEnemyMessage.h>
 
 #include "ClientNetworkManager.h"
 #include "DeferredRenderer.h"
@@ -35,6 +36,8 @@ ClientLevel::ClientLevel()
 	//Prism::PhysicsInterface::GetInstance()->RayCast({ 0, 0, 0 }, { 0, 1, 0 }, 10.f);
 	//Prism::PhysicsInterface::GetInstance()->Update();
 	PostMaster::GetInstance()->Subscribe(eMessageType::NETWORK_ADD_PLAYER, this);
+	PostMaster::GetInstance()->Subscribe(eMessageType::NETWORK_ADD_ENEMY, this);
+
 	myScene = new Prism::Scene();
 	myPlayer = new Player(myScene);
 	myScene->SetCamera(*myPlayer->GetCamera());
@@ -56,6 +59,8 @@ ClientLevel::ClientLevel()
 ClientLevel::~ClientLevel()
 {
 	PostMaster::GetInstance()->UnSubscribe(eMessageType::NETWORK_ADD_PLAYER, this);
+	PostMaster::GetInstance()->UnSubscribe(eMessageType::NETWORK_ADD_ENEMY, this);
+
 	myInstances.DeleteAll();
 	SAFE_DELETE(myPlayer);
 	SAFE_DELETE(myScene);
@@ -105,5 +110,16 @@ void ClientLevel::ReceiveMessage(const NetworkAddPlayerMessage& aMessage)
 	newPlayer->AddToScene();
 	newPlayer->Reset();
 	myPlayers.Add(newPlayer);
+	Prism::MemoryTracker::GetInstance()->SetRunTime(isRunTime);
+}
+
+void ClientLevel::ReceiveMessage(const NetworkAddEnemyMessage& aMessage)
+{
+	bool isRunTime = Prism::MemoryTracker::GetInstance()->GetRunTime();
+	Prism::MemoryTracker::GetInstance()->SetRunTime(false);
+	Entity* newEnemy = EntityFactory::CreateEntity(eEntityType::UNIT, "grunt", myScene, true, aMessage.myPosition);
+	newEnemy->AddToScene();
+	newEnemy->Reset();
+	myEntities.Add(newEnemy);
 	Prism::MemoryTracker::GetInstance()->SetRunTime(isRunTime);
 }

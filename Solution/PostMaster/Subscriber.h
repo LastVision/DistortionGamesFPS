@@ -7,7 +7,9 @@ struct GameStateMessage;
 struct OnClickMessage;
 struct ResizeMessage;
 struct Message;
+
 struct NetworkAddPlayerMessage;
+struct NetworkAddEnemyMessage;
 class Subscriber
 {
 public:
@@ -20,6 +22,9 @@ public:
 	virtual void ReceiveMessage(const Message& aMessage);
 	virtual void ReceiveMessage(const OnClickMessage& aMessage);
 	virtual void ReceiveMessage(const ResizeMessage& aMessage);
+
+	/* Network Based Messages below*/
 	virtual void ReceiveMessage(const NetworkAddPlayerMessage& aMessage);
+	virtual void ReceiveMessage(const NetworkAddEnemyMessage& aMessage);
 };
 

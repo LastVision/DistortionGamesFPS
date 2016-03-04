@@ -4,6 +4,7 @@
 #include <Entity.h>
 #include <EntityFactory.h>
 #include <NetworkAddPlayerMessage.h>
+#include <NetworkAddEnemyMessage.h>
 #include <PostMaster.h>
 ServerLevel::ServerLevel()
 {
@@ -30,4 +31,8 @@ void ServerLevel::ReceiveMessage(const NetworkAddPlayerMessage& aMessage)
 	newPlayer->Reset();
 	myPlayers.Add(newPlayer);
 	Prism::MemoryTracker::GetInstance()->SetRunTime(isRunTime);
+
+	PostMaster::GetInstance()->SendMessage(NetworkAddEnemyMessage({ 0.f, 0.f, 0.f }, aMessage.myAddress));
+
+
 }

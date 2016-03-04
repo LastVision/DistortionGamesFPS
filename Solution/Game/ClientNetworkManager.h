@@ -26,7 +26,7 @@ private:
 	void HandleMessage(const NetMessagePingRequest& aMessage, const sockaddr_in& aSenderAddress) override;
 	void HandleMessage(const NetMessageOnJoin& aMessage, const sockaddr_in& aSenderAddress) override;
 	void HandleMessage(const NetMessagePosition& aMessage, const sockaddr_in& aSenderAddress) override;
-
+	void HandleMessage(const NetMessageAddEnemy& aMessage, const sockaddr_in& aSenderAddress) override;
 	void ReceieveThread() override;
 	void SendThread() override;
 

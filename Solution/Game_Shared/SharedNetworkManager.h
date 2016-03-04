@@ -17,6 +17,7 @@ class NetMessageOnJoin;
 class NetMessagePingRequest;
 class NetMessagePingReply;
 class NetMessagePosition;
+class NetMessageAddEnemy;
 
 class SharedNetworkManager
 {
@@ -65,6 +66,8 @@ protected:
 	virtual void HandleMessage(const NetMessagePingRequest& aMessage, const sockaddr_in& aSenderAddress);
 	virtual void HandleMessage(const NetMessagePingReply& aMessage, const sockaddr_in& aSenderAddress);
 	virtual void HandleMessage(const NetMessagePosition& aMessage, const sockaddr_in& aSenderAddress);
+	virtual void HandleMessage(const NetMessageAddEnemy& aMessage, const sockaddr_in& aSenderAddress);
+
 
 	std::thread* myReceieveThread;
 	std::thread* mySendThread;

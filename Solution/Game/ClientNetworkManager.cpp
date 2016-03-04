@@ -9,8 +9,10 @@
 #include <NetMessagePingRequest.h>
 #include <NetMessagePingReply.h>
 #include <NetMessagePosition.h>
+#include <NetMessageAddEnemy.h>
 
 #include <NetworkAddPlayerMessage.h>
+#include <NetworkAddEnemyMessage.h>
 
 #define BUFFERSIZE 512
 
@@ -166,7 +168,7 @@ void ClientNetworkManager::HandleMessage(const NetMessageOnJoin& aMessage, const
 	if (aMessage.mySenderID != myNetworkID)
 	{
 		myClients.Add(OtherClients(aMessage.mySenderID));
-		PostMaster::GetInstance()->SendMessage(NetworkAddPlayerMessage(aMessage.mySenderID));
+		PostMaster::GetInstance()->SendMessage(NetworkAddPlayerMessage(static_cast<unsigned short>(aMessage.mySenderID)));
 	}
 }
 
@@ -180,4 +182,9 @@ void ClientNetworkManager::HandleMessage(const NetMessagePosition& aMessage, con
 			client.myPosition = aMessage.myPosition;
 		}
 	}
+}
+
+void ClientNetworkManager::HandleMessage(const NetMessageAddEnemy& aMessage, const sockaddr_in& aSenderAddress)
+{
+	PostMaster::GetInstance()->SendMessage(NetworkAddEnemyMessage(aMessage.myPosition));
 }

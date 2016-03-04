@@ -54,5 +54,8 @@
     <ClInclude Include="NetworkAddPlayerMessage.h">
       <Filter>Message\NetworkMessages</Filter>
     </ClInclude>
+    <ClInclude Include="NetworkAddEnemyMessage.h">
+      <Filter>Message\NetworkMessages</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

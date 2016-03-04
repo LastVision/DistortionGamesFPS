@@ -11,3 +11,4 @@ void Subscriber::ReceiveMessage(const Message&){}
 void Subscriber::ReceiveMessage(const OnClickMessage&){}
 void Subscriber::ReceiveMessage(const ResizeMessage&){}
 void Subscriber::ReceiveMessage(const NetworkAddPlayerMessage&){}
+void Subscriber::ReceiveMessage(const NetworkAddEnemyMessage&){}

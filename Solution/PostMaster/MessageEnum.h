@@ -9,5 +9,6 @@ enum class eMessageType
 
 
 	NETWORK_ADD_PLAYER,
+	NETWORK_ADD_ENEMY,
 	COUNT,
 };

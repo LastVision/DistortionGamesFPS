@@ -11,7 +11,7 @@ enum class eNetMessageType
 	PING_REPLY,
 	
 	POSITION,
-
+	ADD_ENEMY,
 	
 };
 
