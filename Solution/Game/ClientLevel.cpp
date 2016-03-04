@@ -22,7 +22,8 @@
 #include <PointLight.h>
 
 ClientLevel::ClientLevel()
-	: myClients(16)
+	: myInstanceOrientations(16)
+	, myInstances(16)
 {
 	Prism::PhysicsInterface::Create();
 	//Prism::PhysicsInterface::Destroy();
@@ -42,10 +43,19 @@ ClientLevel::ClientLevel()
 	//myTempPosition = { 835.f, 0.f, -1000.f };
 
 	//myDeferredRenderer = new Prism::DeferredRenderer();
+
+	CU::Matrix44f orientation;
+	myInstanceOrientations.Add(orientation);
+
+	Prism::Instance* newInstance;
+	newInstance = new Prism::Instance(*Prism::ModelLoader::GetInstance()->LoadCube(), myInstanceOrientations[0]);
+	myInstances.Add(newInstance);
+	myScene->AddInstance(myInstances[0]);
 }
 
 ClientLevel::~ClientLevel()
 {
+	myInstances.DeleteAll();
 	SAFE_DELETE(myPlayer);
 	SAFE_DELETE(myScene);
 	//SAFE_DELETE(myDeferredRenderer);
@@ -69,6 +79,12 @@ void ClientLevel::Update(const float aDeltaTime)
 	DEBUG_PRINT(kbs);
 	Prism::DebugDrawer::GetInstance()->RenderLinesToScreen(*myPlayer->GetCamera());
 
+	if (ClientNetworkManager::GetInstance()->GetClients().Size() > 0)
+	{
+		myInstanceOrientations[0].SetPos(ClientNetworkManager::GetInstance()->GetClients()[0].myPosition);
+	}
+
+
 	Prism::PhysicsInterface::GetInstance()->Update();
 }
 
@@ -78,8 +94,6 @@ void ClientLevel::Render()
 	myScene->Render();
 	myPlayer->Render();
 
-	for (int i = 0; i < ClientNetworkManager::GetInstance()->GetClients().Size(); i++)
-	{
-		Prism::DebugDrawer::GetInstance()->RenderBox(ClientNetworkManager::GetInstance()->GetClients()[i].myPosition, eColorDebug::BLUE, 1.f);
-	}
+
+
 }

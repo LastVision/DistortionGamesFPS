@@ -29,8 +29,10 @@ private:
 	Prism::Scene* myScene;
 	Prism::DeferredRenderer* myDeferredRenderer;
 
+	CU::GrowingArray<Prism::Instance*> myInstances;
+	CU::GrowingArray<CU::Matrix44f> myInstanceOrientations;
+
 	Player* myPlayer;
-	CU::GrowingArray<OtherClients> myClients;
 
 
 };
