@@ -90,7 +90,7 @@ void SharedNetworkManager::WaitForMain()
 {
 	while (myMainIsDone == false)
 	{
-		std::this_thread::sleep_for(std::chrono::nanoseconds(1));
+		Sleep(1);
 	}
 	myMainIsDone = false;
 }
@@ -99,7 +99,7 @@ void SharedNetworkManager::WaitForReceieve()
 {
 	while (myReceieveIsDone == false)
 	{
-		std::this_thread::sleep_for(std::chrono::nanoseconds(1));
+		Sleep(1);
 	}
 	myReceieveIsDone = false;
 }

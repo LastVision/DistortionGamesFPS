@@ -47,10 +47,10 @@ ClientLevel::ClientLevel()
 	CU::Matrix44f orientation;
 	myInstanceOrientations.Add(orientation);
 
-	Prism::Instance* newInstance;
-	newInstance = new Prism::Instance(*Prism::ModelLoader::GetInstance()->LoadModel("Data/Resource/Model/Prop/SM_dev_box.fbx", "Data/Resource/Shader/S_effect_pbldebug.fx"), myInstanceOrientations[0]);
-	myInstances.Add(newInstance);
-	myScene->AddInstance(myInstances[0], true);
+	//Prism::Instance* newInstance;
+	//newInstance = new Prism::Instance(*Prism::ModelLoader::GetInstance()->LoadModel("Data/Resource/Model/Prop/SM_dev_box.fbx", "Data/Resource/Shader/S_effect_pbldebug.fx"), myInstanceOrientations[0]);
+	//myInstances.Add(newInstance);
+	//myScene->AddInstance(myInstances[0], true);
 }
 
 ClientLevel::~ClientLevel()

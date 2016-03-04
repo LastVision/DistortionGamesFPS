@@ -15,5 +15,6 @@ public:
 
 protected:
 	CU::GrowingArray<Entity*> myEntities;
+	CU::GrowingArray<Entity*> myPlayers;
 };
 
