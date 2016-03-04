@@ -25,14 +25,6 @@ public:
 	Weapon* GetCurrentWeapon();
 
 private:
-	void ShootAtDirection(const CU::Matrix44<float>& aOrientation);
-	
-	Entity* myBullet;
-	CU::GrowingArray<Entity*> myBullets;
-	CU::Matrix44<float> myBulletOrientation;
-	float myBulletSpeed;
-	Prism::Scene* myScene;
-
 	Weapon* myCurrentWeapon;
 	Pistol* myPistol;
 	Shotgun* myShotgun;
