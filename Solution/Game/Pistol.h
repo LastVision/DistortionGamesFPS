@@ -12,7 +12,10 @@ public:
 	void Shoot(const CU::Matrix44<float>& aOrientation) override;
 	void Reload() override;
 
-	void HandleRaycast(Entity* anEntity, const CU::Vector3<float>& aDirection) override;
+	void HandleRaycast(Entity* anEntity, const CU::Vector3<float>& aDirection);
+
+private:
+	std::function<void(Entity*, const CU::Vector3<float>&)> myRaycastHandler;
 
 };
 

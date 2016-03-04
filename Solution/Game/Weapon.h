@@ -18,11 +18,9 @@ public:
 	const int& GetAmmoInClip() const;
 	const int& GetClipSize() const;
 	eWeaponType GetWeaponType();
-	virtual void HandleRaycast(Entity* anEntity, const CU::Vector3<float>& aDirection) {};
+	//virtual void HandleRaycast(Entity* anEntity, const CU::Vector3<float>& aDirection) {};
 
-protected:
-	std::function<void(Entity*, const CU::Vector3<float>&)> myRaycastHandler;
-	
+protected:	
 	int myAmmoInClip;
 	int myClipSize;
 	int myAmmoTotal;

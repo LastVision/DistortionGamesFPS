@@ -32,6 +32,7 @@ GrenadeLauncher::~GrenadeLauncher()
 
 void GrenadeLauncher::Shoot(const CU::Matrix44<float>& aOrientation)
 {
+	aOrientation;
 	if (myAmmoInClip > 0)
 	{
 		myAmmoInClip -= 1;

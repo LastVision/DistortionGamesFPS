@@ -24,6 +24,11 @@ Shotgun::Shotgun()
 	myAmmoInClip = myClipSize;
 
 	reader.CloseDocument();
+
+	myRaycastHandler = [=](Entity* anEntity, const CU::Vector3<float>& aDirection)
+	{
+		this->HandleRaycast(anEntity, aDirection);
+	};
 }
 
 
@@ -68,38 +73,13 @@ void Shotgun::ShootRowAround(const CU::Matrix44<float>& aOrientation, const CU::
 {
 	CU::Vector3<float> forward = aForward;
 
-	bool ShouldReadRaycastProxyHere = true;
+	Prism::PhysicsInterface::GetInstance()->RayCast(aOrientation.GetPos(), forward, 100.f, myRaycastHandler);
 
-	//Entity* entity = Prism::PhysicsInterface::GetInstance()->RayCast(aOrientation.GetPos()
-	//	, forward, 100.f);
-	//if (entity != nullptr)
-	//{
-	//	if (entity->GetPhysEntity()->GetPhysicsType() == ePhysics::DYNAMIC)
-	//	{
-	//		entity->GetPhysEntity()->AddForce(aOrientation.GetForward(), 25.f);
-	//	}
-	//	entity->SendNote<DamageNote>(DamageNote(myDamage));
-	//}
+	Prism::PhysicsInterface::GetInstance()->RayCast(aOrientation.GetPos()
+		, forward * CU::Matrix44<float>::CreateRotateAroundY(CU::Math::RandomRange(-myMaxSpreadRotation, -myMinSpreadRotation))
+		, 100.f, myRaycastHandler);
 
-	//entity = Prism::PhysicsInterface::GetInstance()->RayCast(aOrientation.GetPos()
-	//	, forward * CU::Matrix44<float>::CreateRotateAroundY(CU::Math::RandomRange(-myMaxSpreadRotation, -myMinSpreadRotation)), 100.f);
-	//if (entity != nullptr)
-	//{
-	//	if (entity->GetPhysEntity()->GetPhysicsType() == ePhysics::DYNAMIC)
-	//	{
-	//		entity->GetPhysEntity()->AddForce(aOrientation.GetForward(), 25.f);
-	//	}
-	//	entity->SendNote<DamageNote>(DamageNote(myDamage));
-	//}
-
-	//entity = Prism::PhysicsInterface::GetInstance()->RayCast(aOrientation.GetPos()
-	//	, forward * CU::Matrix44<float>::CreateRotateAroundY(CU::Math::RandomRange(myMinSpreadRotation, myMaxSpreadRotation)), 100.f);
-	//if (entity != nullptr)
-	//{
-	//	if (entity->GetPhysEntity()->GetPhysicsType() == ePhysics::DYNAMIC)
-	//	{
-	//		entity->GetPhysEntity()->AddForce(aOrientation.GetForward(), 25.f);
-	//	}
-	//	entity->SendNote<DamageNote>(DamageNote(myDamage));
-	//}
+	Prism::PhysicsInterface::GetInstance()->RayCast(aOrientation.GetPos()
+		, forward * CU::Matrix44<float>::CreateRotateAroundY(CU::Math::RandomRange(myMinSpreadRotation, myMaxSpreadRotation))
+		, 100.f, myRaycastHandler);
 }
