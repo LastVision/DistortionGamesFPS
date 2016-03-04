@@ -57,11 +57,11 @@ Player::Player(Prism::Scene* aScene)
 	myModel->Update(1.f / 30.f);
 	mySendTime = 3;
 
-	while (Prism::ModelLoader::GetInstance()->IsLoading() == true)
+	PlayAnimation(ePlayerState::PISTOL_IDLE);
+	while (myModel->GetCurrentAnimation() == nullptr)
 	{
 
 	}
-	PlayAnimation(ePlayerState::PISTOL_IDLE);
 	//myWristOrientation = myOrientation * myModel->GetCurrentAnimation()->GetHiearchyToBone("r_wrist_jnt1");
 
 	my3DGUIManager = new GUI::GUIManager3D(myModel, aScene
@@ -188,8 +188,8 @@ void Player::RestartCurrentAnimation()
 void Player::AddAnimation(ePlayerState aState, const std::string& aAnimationPath
 	, bool aLoopFlag, bool aResetTimeOnRestart)
 {
-	Prism::ModelLoader::GetInstance()->LoadModelAnimated(aAnimationPath, "Data/Resource/Shader/S_effect_pbl_animated.fx");
-	//Prism::AnimationSystem::GetInstance()->GetAnimation(aAnimationPath.c_str());
+	//Prism::ModelLoader::GetInstance()->LoadModelAnimated(aAnimationPath, "Data/Resource/Shader/S_effect_pbl_animated.fx");
+	Prism::AnimationSystem::GetInstance()->GetAnimation(aAnimationPath.c_str());
 	Prism::AnimationData newData;
 	newData.myElapsedTime = 0.f;
 	newData.myFile = aAnimationPath;
