@@ -47,6 +47,11 @@ Weapon::Weapon(eWeaponType aWeaponType)
 		DL_ASSERT("Unknown weapontype");
 	}
 	reader.CloseDocument();
+
+	myRaycastHandler = [=](Entity* anEntity, const CU::Vector3<float>& aDirection)
+	{
+		this->HandleRaycast(anEntity, aDirection);
+	};
 }
 
 
@@ -60,19 +65,10 @@ void Weapon::Shoot(const CU::Matrix44<float>& aOrientation)
 	{
 		if (myWeaponType == eWeaponType::PISTOL)
 		{
-			Entity* entity = Prism::PhysicsInterface::GetInstance()->RayCast(aOrientation.GetPos()
-				, aOrientation.GetForward(), 500.f);
+			bool ShouldReadRaycastProxyHere = true;
 
-			if (entity != nullptr)
-			{
-				if (entity->GetPhysEntity()->GetPhysicsType() == ePhysics::DYNAMIC)
-				{
-					entity->GetPhysEntity()->AddForce(aOrientation.GetForward(), 25.f);
-				}
-
-				entity->SendNote<DamageNote>(DamageNote(myDamage));
-
-			}
+			Prism::PhysicsInterface::GetInstance()->RayCast(aOrientation.GetPos()
+				, aOrientation.GetForward(), 500.f, myRaycastHandler);
 		}
 		else if (myWeaponType == eWeaponType::SHOTGUN)
 		{
@@ -102,40 +98,56 @@ void Weapon::Reload()
 	}
 }
 
+void Weapon::HandleRaycast(Entity* anEntity, const CU::Vector3<float>& aDirection)
+{
+	if (anEntity != nullptr)
+	{
+		if (anEntity->GetPhysEntity()->GetPhysicsType() == ePhysics::DYNAMIC)
+		{
+			anEntity->GetPhysEntity()->AddForce(aDirection, 25.f);
+		}
+
+		anEntity->SendNote<DamageNote>(DamageNote(myDamage));
+
+	}
+}
+
 void Weapon::ShootRowAround(const CU::Matrix44<float>& aOrientation, const CU::Vector3<float>& aForward)
 {
 	CU::Vector3<float> forward = aForward;
 
-	Entity* entity = Prism::PhysicsInterface::GetInstance()->RayCast(aOrientation.GetPos()
-		, forward, 100.f);
-	if (entity != nullptr)
-	{
-		if (entity->GetPhysEntity()->GetPhysicsType() == ePhysics::DYNAMIC)
-		{
-			entity->GetPhysEntity()->AddForce(aOrientation.GetForward(), 25.f);
-		}
-		entity->SendNote<DamageNote>(DamageNote(myDamage));
-	}
+	bool ShouldReadRaycastProxyHere = true;
 
-	entity = Prism::PhysicsInterface::GetInstance()->RayCast(aOrientation.GetPos()
-		, forward * CU::Matrix44<float>::CreateRotateAroundY(CU::Math::RandomRange(-myMaxSpreadRotation, -myMinSpreadRotation)), 100.f);
-	if (entity != nullptr)
-	{
-		if (entity->GetPhysEntity()->GetPhysicsType() == ePhysics::DYNAMIC)
-		{
-			entity->GetPhysEntity()->AddForce(aOrientation.GetForward(), 25.f);
-		}
-		entity->SendNote<DamageNote>(DamageNote(myDamage));
-	}
+	//Entity* entity = Prism::PhysicsInterface::GetInstance()->RayCast(aOrientation.GetPos()
+	//	, forward, 100.f);
+	//if (entity != nullptr)
+	//{
+	//	if (entity->GetPhysEntity()->GetPhysicsType() == ePhysics::DYNAMIC)
+	//	{
+	//		entity->GetPhysEntity()->AddForce(aOrientation.GetForward(), 25.f);
+	//	}
+	//	entity->SendNote<DamageNote>(DamageNote(myDamage));
+	//}
 
-	entity = Prism::PhysicsInterface::GetInstance()->RayCast(aOrientation.GetPos()
-		, forward * CU::Matrix44<float>::CreateRotateAroundY(CU::Math::RandomRange(myMinSpreadRotation, myMaxSpreadRotation)), 100.f);
-	if (entity != nullptr)
-	{
-		if (entity->GetPhysEntity()->GetPhysicsType() == ePhysics::DYNAMIC)
-		{
-			entity->GetPhysEntity()->AddForce(aOrientation.GetForward(), 25.f);
-		}
-		entity->SendNote<DamageNote>(DamageNote(myDamage));
-	}
+	//entity = Prism::PhysicsInterface::GetInstance()->RayCast(aOrientation.GetPos()
+	//	, forward * CU::Matrix44<float>::CreateRotateAroundY(CU::Math::RandomRange(-myMaxSpreadRotation, -myMinSpreadRotation)), 100.f);
+	//if (entity != nullptr)
+	//{
+	//	if (entity->GetPhysEntity()->GetPhysicsType() == ePhysics::DYNAMIC)
+	//	{
+	//		entity->GetPhysEntity()->AddForce(aOrientation.GetForward(), 25.f);
+	//	}
+	//	entity->SendNote<DamageNote>(DamageNote(myDamage));
+	//}
+
+	//entity = Prism::PhysicsInterface::GetInstance()->RayCast(aOrientation.GetPos()
+	//	, forward * CU::Matrix44<float>::CreateRotateAroundY(CU::Math::RandomRange(myMinSpreadRotation, myMaxSpreadRotation)), 100.f);
+	//if (entity != nullptr)
+	//{
+	//	if (entity->GetPhysEntity()->GetPhysicsType() == ePhysics::DYNAMIC)
+	//	{
+	//		entity->GetPhysEntity()->AddForce(aOrientation.GetForward(), 25.f);
+	//	}
+	//	entity->SendNote<DamageNote>(DamageNote(myDamage));
+	//}
 }

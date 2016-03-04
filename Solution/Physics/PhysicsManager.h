@@ -26,7 +26,7 @@ namespace Prism
 
 		void Update();
 
-		Entity* RayCast(const CU::Vector3<float>& aOrigin, const CU::Vector3<float>& aNormalizedDirection, float aMaxRayDistance);
+		void RayCast(const CU::Vector3<float>& aOrigin, const CU::Vector3<float>& aNormalizedDirection, float aMaxRayDistance, std::function<void(Entity*, const CU::Vector3<float>&)> aFunctionToCall);
 
 		physx::PxPhysics* GetCore(){ return myPhysicsSDK; }
 		physx::PxScene* GetScene(){ return myScene; }
@@ -39,6 +39,10 @@ namespace Prism
 		void GetPosition(int aId, CU::Vector3<float>& aPositionOut);
 
 	private:
+		//raycastJobs  dubbla buffrar
+
+			//raycastResult dubbla buffrar
+
 		void onPvdSendClassDescriptions(physx::debugger::comm::PvdConnection&) override{}
 		void onPvdConnected(physx::debugger::comm::PvdConnection& connection) override;
 		void onPvdDisconnected(physx::debugger::comm::PvdConnection& connection) override;
