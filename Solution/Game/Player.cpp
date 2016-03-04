@@ -18,6 +18,8 @@
 
 Player::Player(Prism::Scene* aScene)
 	: myAlive(true)
+	, myCurrentState(ePlayerState::PISTOL_IDLE)
+	, myIntentions(8)
 {
 	XMLReader reader;
 	reader.OpenDocument("Data/Setting/SET_player.xml");
@@ -40,15 +42,27 @@ Player::Player(Prism::Scene* aScene)
 	CU::Vector2<float> size(128.f, 128.f);
 	myCrosshair = Prism::ModelLoader::GetInstance()->LoadSprite("Data/Resource/Texture/UI/T_crosshair.dds", size, size * 0.5f);
 
-	Prism::ModelProxy* model = Prism::ModelLoader::GetInstance()->LoadModelAnimated("Data/Resource/Model/First_person/SK_arm_pistol_idle.fbx", "Data/Resource/Shader/S_effect_pbl_animated.fx");
+	Prism::ModelProxy* model = Prism::ModelLoader::GetInstance()->LoadModelAnimated("Data/Resource/Model/First_person/Pistol/SK_arm_pistol_idle.fbx", "Data/Resource/Shader/S_effect_pbl_animated.fx");
 	myModel = new Prism::Instance(*model, myEyeOrientation);
 	aScene->AddInstance(myModel, true);
 
-	AddAnimation(ePlayerState::PISTOL_IDLE, "Data/Resource/Model/First_person/SK_arm_pistol_idle.fbx", true, true);
-	AddAnimation(ePlayerState::PISTOL_HOLSTER, "Data/Resource/Model/First_person/SK_arm_pistol_holster.fbx", false, true);
-	AddAnimation(ePlayerState::PISTOL_DRAW, "Data/Resource/Model/First_person/SK_arm_pistol_draw.fbx", false, true);
-	AddAnimation(ePlayerState::PISTOL_RELOAD, "Data/Resource/Model/First_person/SK_arm_pistol_reload.fbx", false, true);
-	AddAnimation(ePlayerState::PISTOL_SHOOT, "Data/Resource/Model/First_person/SK_arm_pistol_fire.fbx", false, true);
+	AddAnimation(ePlayerState::PISTOL_IDLE, "Data/Resource/Model/First_person/Pistol/SK_arm_pistol_idle.fbx", true, true);
+	AddAnimation(ePlayerState::PISTOL_HOLSTER, "Data/Resource/Model/First_person/Pistol/SK_arm_pistol_holster.fbx", false, true);
+	AddAnimation(ePlayerState::PISTOL_DRAW, "Data/Resource/Model/First_person/Pistol/SK_arm_pistol_draw.fbx", false, true);
+	AddAnimation(ePlayerState::PISTOL_RELOAD, "Data/Resource/Model/First_person/Pistol/SK_arm_pistol_reload.fbx", false, true);
+	AddAnimation(ePlayerState::PISTOL_FIRE, "Data/Resource/Model/First_person/Pistol/SK_arm_pistol_fire.fbx", false, true);
+
+	AddAnimation(ePlayerState::SHOTGUN_IDLE, "Data/Resource/Model/First_person/Shotgun/SK_arm_shotgun_idle.fbx", true, true);
+	AddAnimation(ePlayerState::SHOTGUN_HOLSTER, "Data/Resource/Model/First_person/Shotgun/SK_arm_shotgun_holster.fbx", false, true);
+	AddAnimation(ePlayerState::SHOTGUN_DRAW, "Data/Resource/Model/First_person/Shotgun/SK_arm_shotgun_draw.fbx", false, true);
+	AddAnimation(ePlayerState::SHOTGUN_RELOAD, "Data/Resource/Model/First_person/Shotgun/SK_arm_shotgun_reload.fbx", false, true);
+	AddAnimation(ePlayerState::SHOTGUN_FIRE, "Data/Resource/Model/First_person/Shotgun/SK_arm_shotgun_fire.fbx", false, true);
+
+	AddAnimation(ePlayerState::GRENADE_LAUNCHER_IDLE, "Data/Resource/Model/First_person/GrenadeLauncher/SK_arm_grenade_launcher_idle.fbx", true, true);
+	AddAnimation(ePlayerState::GRENADE_LAUNCHER_HOLSTER, "Data/Resource/Model/First_person/GrenadeLauncher/SK_arm_grenade_launcher_holster.fbx", false, true);
+	AddAnimation(ePlayerState::GRENADE_LAUNCHER_DRAW, "Data/Resource/Model/First_person/GrenadeLauncher/SK_arm_grenade_launcher_draw.fbx", false, true);
+	AddAnimation(ePlayerState::GRENADE_LAUNCHER_RELOAD, "Data/Resource/Model/First_person/GrenadeLauncher/SK_arm_grenade_launcher_reload.fbx", false, true);
+	AddAnimation(ePlayerState::GRENADE_LAUNCHER_FIRE, "Data/Resource/Model/First_person/GrenadeLauncher/SK_arm_grenade_launcher_fire.fbx", false, true);
 	
 
 	myJumpAcceleration = 0;
@@ -138,23 +152,39 @@ void Player::Update(float aDelta)
 
 void Player::UpdateAnimation(float aDelta)
 {
-	Prism::AnimationData& data = myAnimations[int(myPlayerState)];
+	if (myCurrentState == ePlayerState::PISTOL_IDLE
+		|| myCurrentState == ePlayerState::SHOTGUN_IDLE
+		|| myCurrentState == ePlayerState::GRENADE_LAUNCHER_IDLE)
+	{
+		if (myIntentions.Size() > 0)
+		{
+			myCurrentState = myIntentions[0];
+			myIntentions.RemoveNonCyclicAtIndex(0);
+
+			PlayAnimation(myCurrentState);
+		}
+	}
+
+	Prism::AnimationData& data = myAnimations[int(myCurrentState)];
 	if (myModel->IsAnimationDone() == false || data.myShouldLoop == true)
 	{
 		myModel->Update(aDelta);
 	}
 	if (myModel->IsAnimationDone() == true && data.myShouldLoop == false)
 	{
-		eWeaponType weaponType = myShooting->GetCurrentWeapon()->GetWeaponType();
-		switch (weaponType)
+		switch (myShooting->GetCurrentWeapon()->GetWeaponType())
 		{
 		case eWeaponType::PISTOL:
-			myPlayerState = ePlayerState::PISTOL_IDLE;
-			PlayAnimation(myPlayerState);
+			myCurrentState = ePlayerState::PISTOL_IDLE;
+			PlayAnimation(myCurrentState);
 			break;
 		case eWeaponType::GRENADE_LAUNCHER:
+			myCurrentState = ePlayerState::GRENADE_LAUNCHER_IDLE;
+			PlayAnimation(myCurrentState);
 			break;
 		case eWeaponType::SHOTGUN:
+			myCurrentState = ePlayerState::SHOTGUN_IDLE;
+			PlayAnimation(myCurrentState);
 			break;
 		}
 	}
@@ -200,7 +230,7 @@ void Player::AddAnimation(ePlayerState aState, const std::string& aAnimationPath
 
 void Player::PlayAnimation(ePlayerState aAnimationState)
 {
-	myPlayerState = aAnimationState;
+	myCurrentState = aAnimationState;
 	Prism::AnimationData& data = myAnimations[int(aAnimationState)];
 	myModel->SetAnimation(Prism::AnimationSystem::GetInstance()->GetAnimation(data.myFile.c_str()));
 
@@ -212,4 +242,28 @@ void Player::PlayAnimation(ePlayerState aAnimationState)
 	{
 		myModel->ResetAnimationTime(data.myElapsedTime);
 	}
+}
+
+void Player::AddIntention(ePlayerState aPlayerState, bool aClearIntentions)
+{
+	if (aClearIntentions == true)
+	{
+		myIntentions.RemoveAll();
+		switch (myShooting->GetCurrentWeapon()->GetWeaponType())
+		{
+		case eWeaponType::PISTOL:
+			myCurrentState = ePlayerState::PISTOL_IDLE;
+			PlayAnimation(myCurrentState);
+			break;
+		case eWeaponType::GRENADE_LAUNCHER:
+			myCurrentState = ePlayerState::GRENADE_LAUNCHER_IDLE;
+			PlayAnimation(myCurrentState);
+			break;
+		case eWeaponType::SHOTGUN:
+			myCurrentState = ePlayerState::SHOTGUN_IDLE;
+			PlayAnimation(myCurrentState);
+			break;
+		}
+	}
+	myIntentions.Add(aPlayerState);
 }

@@ -38,7 +38,7 @@ public:
 	void RestartCurrentAnimation();
 
 	void PlayAnimation(ePlayerState aAnimationState);
-	void SetIntention(ePlayerState aPlayerState);
+	void AddIntention(ePlayerState aPlayerState, bool aClearIntentions);
 
 private:
 	Movement* myMovement;
@@ -61,8 +61,11 @@ private:
 	
 	void AddAnimation(ePlayerState aState, const std::string& aAnimationPath, bool aLoopFlag, bool aResetTimeOnRestart);
 	CU::StaticArray<Prism::AnimationData, int(ePlayerState::_COUNT)> myAnimations;
-	ePlayerState myPlayerState;
-	ePlayerState myIntention;
+
+	ePlayerState myCurrentState;
+
+
+	CU::GrowingArray<ePlayerState> myIntentions;
 };
 
 inline Prism::Camera* Player::GetCamera() const
