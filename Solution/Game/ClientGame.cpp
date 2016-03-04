@@ -68,11 +68,11 @@ ClientGame::~ClientGame()
 	CU::InputWrapper::Destroy();
 	CU::TimerManager::Destroy();
 	Console::Destroy();
-	PostMaster::Destroy();
 	myStateStack.Clear();
 	Prism::DebugDrawer::Destroy();
 	ClientNetworkManager::Destroy();
 	EntityFactory::Destroy();
+	PostMaster::Destroy();
 //	NetworkManager::Destroy();
 }
 

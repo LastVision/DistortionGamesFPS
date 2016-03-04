@@ -12,10 +12,10 @@ ServerGame::ServerGame()
 
 ServerGame::~ServerGame()
 {
-	PostMaster::Destroy();
 	CU::TimerManager::Destroy();
 	ServerNetworkManager::Destroy();
 	myStateStack.Clear();
+	PostMaster::Destroy();
 }
 
 bool ServerGame::Init()
