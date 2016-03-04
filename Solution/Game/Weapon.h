@@ -17,6 +17,7 @@ public:
 	void Reload();
 	int& GetAmmoInClip();
 	int& GetClipSize();
+	eWeaponType GetWeaponType();
 
 private:
 	void ShootRowAround(const CU::Matrix44<float>& aOrientation, const CU::Vector3<float>& aForward);
@@ -39,4 +40,9 @@ inline int& Weapon::GetAmmoInClip()
 inline int& Weapon::GetClipSize()
 {
 	return myClipSize;
+}
+
+inline eWeaponType Weapon::GetWeaponType()
+{
+	return myWeaponType;
 }

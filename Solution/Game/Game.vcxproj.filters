@@ -26,9 +26,6 @@
     <ClCompile Include="EmitterManager.cpp">
       <Filter>Managers</Filter>
     </ClCompile>
-    <ClCompile Include="LevelFactory.cpp">
-      <Filter>Level\Factory</Filter>
-    </ClCompile>
     <ClCompile Include="Movement.cpp">
       <Filter>Player</Filter>
     </ClCompile>
@@ -57,6 +54,9 @@
     </ClCompile>
     <ClCompile Include="ClientLevel.cpp">
       <Filter>Level</Filter>
+    </ClCompile>
+    <ClCompile Include="ClientLevelFactory.cpp">
+      <Filter>Level\Factory</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -92,9 +92,6 @@
       <Filter>Managers</Filter>
     </ClInclude>
     <ClInclude Include="GameDefines.h" />
-    <ClInclude Include="LevelFactory.h">
-      <Filter>Level\Factory</Filter>
-    </ClInclude>
     <ClInclude Include="Movement.h">
       <Filter>Player</Filter>
     </ClInclude>
@@ -123,6 +120,9 @@
     </ClInclude>
     <ClInclude Include="ClientLevel.h">
       <Filter>Level</Filter>
+    </ClInclude>
+    <ClInclude Include="ClientLevelFactory.h">
+      <Filter>Level\Factory</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

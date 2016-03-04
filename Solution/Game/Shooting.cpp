@@ -10,14 +10,16 @@
 #include <EntityFactory.h>
 #include <PhysEntity.h>
 #include <PhysicsInterface.h>
+#include "Player.h"
 
-Shooting::Shooting(Prism::Scene* aScene)
+Shooting::Shooting(Prism::Scene* aScene, Player* aPlayer)
 	: myBulletSpeed(0.f)
 	, myScene(aScene)
 	, myCurrentWeapon(nullptr)
 	, myPistol(nullptr)
 	, myShotgun(nullptr)
 	, myGrenadeLauncher(nullptr)
+	, myPlayer(aPlayer)
 {
 	/*myBullet = EntityFactory::CreateEntity(eEntityType::PROJECTILE, *aScene, myBulletOrientation.GetPos());
 	myBullet->Reset();
@@ -43,6 +45,7 @@ void Shooting::Update(float aDelta, const CU::Matrix44<float>& aOrientation)
 {
 	if (CU::InputWrapper::GetInstance()->KeyDown(DIK_1) == true)
 	{
+		myPlayer->PlayAnimation(ePlayerState::PISTOL_DRAW);
 		myCurrentWeapon = myPistol;
 	}
 	if (CU::InputWrapper::GetInstance()->KeyDown(DIK_2) == true)
@@ -56,6 +59,7 @@ void Shooting::Update(float aDelta, const CU::Matrix44<float>& aOrientation)
 
 	if (CU::InputWrapper::GetInstance()->KeyDown(DIK_R) == true)
 	{
+		myPlayer->PlayAnimation(ePlayerState::PISTOL_RELOAD);
 		myCurrentWeapon->Reload();
 	}
 
@@ -63,8 +67,12 @@ void Shooting::Update(float aDelta, const CU::Matrix44<float>& aOrientation)
 	{
 		if (CU::InputWrapper::GetInstance()->MouseDown(0) == true)
 		{
-			myPistol->Shoot(aOrientation);
-			//ShootAtDirection(aOrientation);
+			if (myPistol->GetAmmoInClip() > 0)
+			{
+				myPistol->Shoot(aOrientation);
+				myPlayer->PlayAnimation(ePlayerState::PISTOL_SHOOT);
+				//ShootAtDirection(aOrientation);
+			}
 		}
 	}
 	else if (myCurrentWeapon == myGrenadeLauncher)

@@ -5,7 +5,7 @@
 #include <Subscriber.h>
 
 class ClientLevel;
-class LevelFactory;
+class ClientLevelFactory;
 class MessageState;
 
 
@@ -43,5 +43,5 @@ public:
 private:
 	GUI::GUIManager* myGUIManager;
 	ClientLevel* myLevel;
-	LevelFactory* myLevelFactory;
+	ClientLevelFactory* myLevelFactory;
 };

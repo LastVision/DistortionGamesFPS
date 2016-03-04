@@ -83,6 +83,16 @@ enum class eEntityState : int
 	_COUNT,
 };
 
+enum class ePlayerState : int
+{
+	PISTOL_IDLE,
+	PISTOL_SHOOT,
+	PISTOL_RELOAD,
+	PISTOL_DRAW,
+	PISTOL_HOLSTER,
+	_COUNT,
+};
+
 enum class eComponentType
 {
 	NOT_USED = -1,

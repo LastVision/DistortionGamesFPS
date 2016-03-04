@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "ServerInGameState.h"
 #include "ServerLevel.h"
+#include "ServerLevelFactory.h"
 #include "ServerLobbyState.h"
 #include "ServerStateStackProxy.h"
 #include <iostream>
@@ -8,11 +9,13 @@
 ServerInGameState::ServerInGameState()
 {
 	myIsActiveState = false;
+	myLevelFactory = new ServerLevelFactory("Data/Level/LI_level.xml");
 }
 
 ServerInGameState::~ServerInGameState()
 {
-	SAFE_DELETE(myCurrentLevel);
+	SAFE_DELETE(myLevel);
+	SAFE_DELETE(myLevelFactory);
 }
 
 void ServerInGameState::InitState(ServerStateStackProxy* aStateStackProxy)
@@ -20,7 +23,7 @@ void ServerInGameState::InitState(ServerStateStackProxy* aStateStackProxy)
 	myStateStack = aStateStackProxy;
 	myStateStatus = eStateStatus::KEEP_STATE;
 
-	myCurrentLevel = new ServerLevel();
+	myLevel = static_cast<ServerLevel*>(myLevelFactory->LoadCurrentLevel());
 
 	myIsActiveState = true;
 }
@@ -32,7 +35,7 @@ void ServerInGameState::EndState()
 
 const eStateStatus ServerInGameState::Update(const float aDeltaTime)
 {
-	myCurrentLevel->Update(aDeltaTime);
+	myLevel->Update(aDeltaTime);
 
 	return myStateStatus;
 }

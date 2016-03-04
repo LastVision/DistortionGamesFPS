@@ -25,6 +25,7 @@
 #include <Vector.h>
 #include <XMLReader.h>
 
+#include <AnimationSystem.h>
 #include "ScriptInterface.h"
 #include <ScriptSystem.h>
 #include "InGameState.h"
@@ -48,7 +49,7 @@ ClientGame::ClientGame()
 
 	Prism::Audio::AudioInterface::GetInstance()->Init("Data/Resource/Sound/Init.bnk");
 	Prism::Audio::AudioInterface::GetInstance()->LoadBank("Data/Resource/Sound/RTSSoundBank.bnk");
-
+	Prism::AnimationSystem::GetInstance();
 	Prism::Engine::GetInstance()->SetShowDebugText(myShowSystemInfo);
 
 	myCursor = new GUI::Cursor(Prism::Engine::GetInstance()->GetWindowSizeInt());
