@@ -12,5 +12,6 @@ public:
 	bool Update() override;
 private:
 	ServerStateStack myStateStack;
+	float myDeltaTime;
 };
 

@@ -7,6 +7,11 @@ namespace std
 	class thread;
 }
 
+struct ImportantMessage
+{
+	//Add Data
+};
+
 class NetMessageConnectMessage;
 class NetMessageOnJoin;
 class NetMessagePingRequest;
@@ -18,7 +23,7 @@ class SharedNetworkManager
 public:
 
 	virtual void Initiate();
-	virtual void StartNetwork();
+	virtual void StartNetwork(unsigned int aPortNum);
 	virtual void Update(float aDelta);
 
 	template<typename T>
@@ -49,6 +54,9 @@ protected:
 
 	template<typename T> 
 	void UnpackAndHandle(T& aMessage, Buffer& aBuffer);
+	template<typename T>
+	T CreateMessage();
+	
 
 	void HandleMessage();
 
@@ -82,6 +90,7 @@ protected:
 	double myDataSent;
 	double myDataToPrint;
 
+	unsigned int myImportantID;
 };
 
 template<typename T>
@@ -91,9 +100,23 @@ inline void SharedNetworkManager::AddMessage(T& aMessage)
 	{
 		aMessage.mySenderID = myNetworkID;
 	}
+
+	if (aMessage.GetIsImportant() == true)
+	{
+		//Add to important list.		
+	}
+
 	aMessage.PackMessage();
 	myDataSent += aMessage.myStream.size() * sizeof(char);
 	AddNetworkMessage(aMessage.myStream);
+}
+
+template<typename T>
+T SharedNetworkManager::CreateMessage()
+{
+	T toReturn;
+	toReturn.SetImportantID(myImportantID++);
+	return toReturn;
 }
 
 template<typename T>
