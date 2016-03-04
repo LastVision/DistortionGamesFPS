@@ -79,9 +79,14 @@ void ComponentLoader::LoadHealthComponent(XMLReader& aDocument, tinyxml2::XMLEle
 void ComponentLoader::LoadTriggerComponent(XMLReader& aDocument, tinyxml2::XMLElement* aSourceElement, TriggerComponentData& aOutputData)
 {
 	aOutputData.myExistsInEntity = true;
+	aOutputData.myTriggerType = -1;
 
 	for (tinyxml2::XMLElement* e = aDocument.FindFirstChild(aSourceElement); e != nullptr; e = aDocument.FindNextElement(e))
 	{
-	
+		std::string elementName = CU::ToLower(e->Name());
+		if (elementName == CU::ToLower("Trigger"))
+		{
+			aDocument.ForceReadAttribute(e, "type", aOutputData.myTriggerType);
+		}
 	}
 }

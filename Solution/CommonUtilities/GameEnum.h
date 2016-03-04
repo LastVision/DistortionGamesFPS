@@ -18,6 +18,13 @@ enum eEntityType
 	_COUNT,
 };
 
+enum class eTriggerType : int
+{
+	EMPTY = -1,
+	LEVEL_CHANGE,
+	_COUNT,
+};
+
 enum class ePhysics
 {
 	STATIC,
