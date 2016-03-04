@@ -38,7 +38,7 @@ public:
 
 	void AddToScene();
 	void RemoveFromScene();
-
+	void SetPosition(const CU::Vector3f& aPosition);
 	const CU::Matrix44<float>& GetOrientation() const;
 	void SetOrientation(const CU::Matrix44<float>& aOrientation);
 
