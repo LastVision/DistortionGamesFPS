@@ -57,7 +57,7 @@ Entity* EntityFactory::CreateEntity(eEntityType aType, Prism::Scene* aScene, boo
 Entity* EntityFactory::CreateEntity(eEntityType aType, std::string aSubType, Prism::Scene* aScene, bool aClientSide, const CU::Vector3f& aPosition,
 	const CU::Vector3f& aRotation, const CU::Vector3f& aScale)
 {
-	if (aType == eEntityType::PROP || aType == eEntityType::UNIT)
+	if (aType == eEntityType::PROP || aType == eEntityType::UNIT || aType == eEntityType::TRIGGER)
 	{
 		if (myInstance->myLoadedSubEntityData.find(aSubType) != myInstance->myLoadedSubEntityData.end())
 		{
@@ -85,7 +85,7 @@ void EntityFactory::LoadEntity(const char* aEntityPath)
 	std::string entitySubType;
 	entityDocument.ForceReadAttribute(entityElement, "type", entityType);
 	newData.myType = EntityEnumConverter::ConvertStringToEntityType(CU::ToLower(entityType));
-	if (newData.myType == eEntityType::PROP || newData.myType == eEntityType::UNIT)
+	if (newData.myType == eEntityType::PROP || newData.myType == eEntityType::UNIT || newData.myType == eEntityType::TRIGGER)
 	{
 		entityDocument.ForceReadAttribute(entityElement, "subType", entitySubType);
 		newData.mySubType = CU::ToLower(entitySubType);
@@ -154,7 +154,7 @@ void EntityFactory::LoadEntity(const char* aEntityPath)
 			DL_ASSERT(errorMessage.c_str());
 		}
 	}
-	if (newData.myType == eEntityType::PROP || newData.myType == eEntityType::UNIT)
+	if (newData.myType == eEntityType::PROP || newData.myType == eEntityType::UNIT || newData.myType == eEntityType::TRIGGER)
 	{
 		myLoadedSubEntityData[newData.mySubType] = newData;
 	}
