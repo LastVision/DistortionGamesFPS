@@ -188,7 +188,7 @@ void Shooting::ShootAtDirection(const CU::Matrix44<float>& aOrientation)
 	myBullet->GetPhysEntity()->AddForce(aOrientation.GetForward(), 20.f);*/
 
 	SET_RUNTIME(false);
-	Entity* bullet = EntityFactory::CreateEntity(eEntityType::PROJECTILE, *myScene, myBulletOrientation.GetPos());
+	Entity* bullet = EntityFactory::CreateEntity(eEntityType::PROJECTILE, myScene, true, myBulletOrientation.GetPos());
 	RESET_RUNTIME;
 	bullet->Reset();
 	bullet->AddToScene();

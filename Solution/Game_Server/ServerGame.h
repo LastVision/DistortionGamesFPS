@@ -7,10 +7,10 @@ class ServerGame : public SharedGame
 public:
 	ServerGame();
 	~ServerGame();
-
 	bool Init();
 	bool Update() override;
 private:
 	ServerStateStack myStateStack;
+	float myDeltaTime;
 };
 

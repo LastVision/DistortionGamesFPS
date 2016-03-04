@@ -15,9 +15,9 @@ ClientNetwork::~ClientNetwork()
 	WSACleanup();
 }
 
-void ClientNetwork::StartNetwork()
+void ClientNetwork::StartNetwork(int aPortNum)
 {
-	myPort = 13397;
+	myPort = aPortNum;
 	if (WSAStartup(MAKEWORD(2, 2), &myWSAData) != 0)
 	{
 		//Error

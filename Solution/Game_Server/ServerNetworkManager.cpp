@@ -76,10 +76,10 @@ ServerNetworkManager* ServerNetworkManager::GetInstance()
 	return nullptr;
 }
 
-void ServerNetworkManager::StartNetwork()
+void ServerNetworkManager::StartNetwork(unsigned int aPortNum)
 {
-	myNetwork->StartServer();
-	__super::StartNetwork();
+	myNetwork->StartServer(aPortNum);
+	__super::StartNetwork(aPortNum);
 	myIsOnline = true;
 }
 

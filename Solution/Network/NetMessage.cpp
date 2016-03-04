@@ -29,6 +29,11 @@ void NetMessage::UnPackMessage(char* aMessage, int aSize)
 	}
 }
 
+bool NetMessage::GetIsImportant()
+{
+	return false;
+}
+
 void NetMessage::DoSerialize(StreamType& aStream)
 {
 	SERIALIZE(aStream, myID);

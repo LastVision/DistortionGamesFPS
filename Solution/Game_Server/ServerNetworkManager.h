@@ -10,7 +10,7 @@ public:
 	static void Destroy();
 	static ServerNetworkManager* GetInstance();
 
-	void StartNetwork() override;
+	void StartNetwork(unsigned int aPortNum = 13397) override;
 private:
 	ServerNetworkManager();
 	~ServerNetworkManager();

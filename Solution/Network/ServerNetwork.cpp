@@ -15,10 +15,11 @@ ServerNetwork::~ServerNetwork()
 	WSACleanup();
 }
 
-void ServerNetwork::StartServer()
+void ServerNetwork::StartServer(unsigned int aPortNum)
 {
 	//myClients.Init(8);
-	myPort = "13397";
+	std::string ab(std::to_string(aPortNum).c_str());
+	myPort = ab.c_str();
 	addrinfo* addrResult;
 	addrinfo  hints;
 

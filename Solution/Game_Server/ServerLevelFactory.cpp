@@ -63,12 +63,11 @@ void ServerLevelFactory::LoadProps(XMLReader& aReader, tinyxml2::XMLElement* aEl
 		propRotation.y = CU::Math::DegreeToRad(propRotation.y);
 		propRotation.z = CU::Math::DegreeToRad(propRotation.z);
 
-		/*Entity* newEntity = EntityFactory::CreateEntity(eEntityType::PROP, propType, *myCurrentLevel->GetScene()
+		Entity* newEntity = EntityFactory::CreateEntity(eEntityType::PROP, propType, nullptr, false
 			, propPosition, propRotation, propScale);
-		newEntity->AddToScene();
 		newEntity->Reset();
 
-		myCurrentLevel->AddEntity(newEntity);*/
+		myCurrentLevel->AddEntity(newEntity);
 	}
 }
 
@@ -91,11 +90,10 @@ void ServerLevelFactory::LoadUnits(XMLReader& aReader, tinyxml2::XMLElement* aEl
 		unitRotation.y = CU::Math::DegreeToRad(unitRotation.y);
 		unitRotation.z = CU::Math::DegreeToRad(unitRotation.z);
 
-		/*Entity* newEntity = EntityFactory::CreateEntity(eEntityType::UNIT, unitType, *myCurrentLevel->GetScene()
+		Entity* newEntity = EntityFactory::CreateEntity(eEntityType::UNIT, unitType, nullptr, false
 			, unitPosition, unitRotation, unitScale);
-		newEntity->AddToScene();
 		newEntity->Reset();
 
-		myCurrentLevel->AddEntity(newEntity);*/
+		myCurrentLevel->AddEntity(newEntity);
 	}
 }

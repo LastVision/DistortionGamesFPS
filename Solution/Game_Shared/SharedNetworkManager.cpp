@@ -20,7 +20,7 @@ void SharedNetworkManager::Initiate()
 	myMainIsDone = true;
 }
 
-void SharedNetworkManager::StartNetwork()
+void SharedNetworkManager::StartNetwork(unsigned int /*aPortNum*/)
 {
 
 	myIsRunning = true;

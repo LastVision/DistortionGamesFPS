@@ -9,7 +9,7 @@ public:
 	ClientNetwork();
 	~ClientNetwork();
 
-	void StartNetwork();
+	void StartNetwork(int aPortNum);
 	void Send(const std::vector<char>& anArray);
 	void Receieve(std::vector<Buffer>& someBuffers);
 

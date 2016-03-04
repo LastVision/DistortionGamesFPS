@@ -32,14 +32,15 @@ namespace Prism
 			, aabb1.myCenterPos.y
 			, aabb1.myCenterPos.z));
 
-		myAABB.InitWithTwoPoints(myBottomLeft, myTopRight);
+		myAABB.InitWithTwoPoints(myBottomLeftFront, myTopRightBack);
 
-		myCenterPosition = (myBottomLeft + myTopRight) * 0.5f;
+		myCenterPosition = (myBottomLeftFront + myTopRightBack) * 0.5f;
 
-		myRadius = CU::Length(myTopRight - myCenterPosition);
+		myRadius = CU::Length(myTopRightBack - myCenterPosition);
 
 		mySmallRoom->AddPortal(this);
 		myLargeRoom->AddPortal(this);
+		CalcPoints(); // tried to calc all 4 different corners of portal, not verified //Linus
 	}
 
 
@@ -71,38 +72,38 @@ namespace Prism
 
 		if (PlaneInsideAABB(anAABB1, cube[0], cube[2]) == true) // bottom side totally inside
 		{
-			myBottomLeft.y = anAABB1.myMaxPos.y;
-			myTopRight.y = anAABB1.myMaxPos.y;
+			myBottomLeftFront.y = anAABB1.myMaxPos.y;
+			myTopRightBack.y = anAABB1.myMaxPos.y;
 			return true;
 		}
 		else if (PlaneInsideAABB(anAABB1, cube[0], cube[5]) == true) // left side totally inside
 		{
-			myBottomLeft.x = anAABB1.myMaxPos.x;
-			myTopRight.x = anAABB1.myMaxPos.x;
+			myBottomLeftFront.x = anAABB1.myMaxPos.x;
+			myTopRightBack.x = anAABB1.myMaxPos.x;
 			return true;
 		}
 		else if (PlaneInsideAABB(anAABB1, cube[0], cube[7]) == true) // front side totally inside
 		{
-			myBottomLeft.z = anAABB1.myMaxPos.z;
-			myTopRight.z = anAABB1.myMaxPos.z;
+			myBottomLeftFront.z = anAABB1.myMaxPos.z;
+			myTopRightBack.z = anAABB1.myMaxPos.z;
 			return true;
 		}
 		else if (PlaneInsideAABB(anAABB1, cube[4], cube[6]) == true) // top side totally inside
 		{
-			myBottomLeft.y = anAABB1.myMinPos.y;
-			myTopRight.y = anAABB1.myMinPos.y;
+			myBottomLeftFront.y = anAABB1.myMinPos.y;
+			myTopRightBack.y = anAABB1.myMinPos.y;
 			return true;
 		}
 		else if (PlaneInsideAABB(anAABB1, cube[3], cube[6]) == true) // right side totally inside
 		{
-			myBottomLeft.x = anAABB1.myMinPos.x;
-			myTopRight.x = anAABB1.myMinPos.x;
+			myBottomLeftFront.x = anAABB1.myMinPos.x;
+			myTopRightBack.x = anAABB1.myMinPos.x;
 			return true;
 		}
 		else if (PlaneInsideAABB(anAABB1, cube[1], cube[6]) == true) // back side totally inside
 		{
-			myBottomLeft.z = anAABB1.myMinPos.z;
-			myTopRight.z = anAABB1.myMinPos.z;
+			myBottomLeftFront.z = anAABB1.myMinPos.z;
+			myTopRightBack.z = anAABB1.myMinPos.z;
 			return true;
 		}
 
@@ -113,11 +114,93 @@ namespace Prism
 	{
 		if (CU::Intersection::PointInsideAABB(anAABB, aMin) && CU::Intersection::PointInsideAABB(anAABB, aMax) == true)
 		{
-			myBottomLeft = aMin;
-			myTopRight = aMax;
+			myBottomLeftFront = aMin;
+			myTopRightBack = aMax;
 			return true;
 		}
 
 		return false;
+	}
+
+	void Portal::CalcPoints()
+	{
+		float* lowX = nullptr;
+		float* lowY = nullptr;
+		float* highX = nullptr;
+		float* highY = nullptr;
+		float* z = nullptr;
+
+		int dir = -1;
+		if (myBottomLeftFront.x == myTopRightBack.x)
+		{
+			dir = 0;
+			z = &myBottomLeftFront.x;
+			lowX = &myBottomLeftFront.y;
+			lowY = &myBottomLeftFront.z;
+			highX = &myTopRightBack.y;
+			highY = &myTopRightBack.z;
+		}
+		else if (myBottomLeftFront.y == myTopRightBack.y)
+		{
+			dir = 1;
+			z = &myBottomLeftFront.y;
+			lowX = &myBottomLeftFront.x;
+			lowY = &myBottomLeftFront.z;
+			highX = &myTopRightBack.x;
+			highY = &myTopRightBack.z;
+		}
+		else
+		{
+			dir = 2;
+			DL_ASSERT_EXP(myBottomLeftFront.z == myTopRightBack.z, "Portal not exact plane.");
+			z = &myBottomLeftFront.z;
+			lowX = &myBottomLeftFront.x;
+			lowY = &myBottomLeftFront.y;
+			highX = &myTopRightBack.x;
+			highY = &myTopRightBack.y;
+		}
+
+		if (dir == 0)
+		{
+			myPoints[0] = myBottomLeftFront;
+			
+			myPoints[1] = myBottomLeftFront;
+			myPoints[1].z = myTopRightBack.z;
+
+			myPoints[2] = myBottomLeftFront;
+			myPoints[2].y = myTopRightBack.y;
+
+			myPoints[3] = myTopRightBack;
+		}
+		else if (dir == 1)
+		{
+			myPoints[0] = myBottomLeftFront;
+
+			myPoints[1] = myBottomLeftFront;
+			myPoints[1].x = myTopRightBack.x;
+
+			myPoints[2] = myBottomLeftFront;
+			myPoints[2].z = myTopRightBack.z;
+
+			myPoints[3] = myTopRightBack;
+		}
+		else
+		{
+			DL_ASSERT_EXP(dir == 2, "unknown direction");
+			myPoints[0] = myBottomLeftFront;
+
+			myPoints[1] = myBottomLeftFront;
+			myPoints[1].x = myTopRightBack.x;
+
+			myPoints[2] = myBottomLeftFront;
+			myPoints[2].y = myTopRightBack.y;
+
+			myPoints[3] = myTopRightBack;
+		}
+
+		for (int i = 0; i < 4 - 1; ++i)
+		{
+			DL_ASSERT_EXP(myPoints[i] != myPoints[i + 1], "Portal points have same position");
+		}
 	}
 }

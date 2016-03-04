@@ -8,6 +8,6 @@ public:
 
 	void Update(const float aDeltaTime) override;
 private:
-	float myTestTimer;
+	
 };
 

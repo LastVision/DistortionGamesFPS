@@ -25,7 +25,7 @@ GraphicsComponent::GraphicsComponent(Entity& aEntity, const GraphicsComponentDat
 
 GraphicsComponent::~GraphicsComponent()
 {
-	myEntity.GetScene().RemoveInstance(myInstance);
+	myEntity.GetScene()->RemoveInstance(myInstance);
 	SAFE_DELETE(myInstance);
 }
 

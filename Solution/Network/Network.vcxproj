@@ -84,6 +84,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="ClientNetwork.h" />
+    <ClInclude Include="NetImportantMessage.h" />
     <ClInclude Include="NetMessage.h" />
     <ClInclude Include="NetMessageConnectMessage.h" />
     <ClInclude Include="NetMessageOnJoin.h" />
@@ -98,6 +99,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ClientNetwork.cpp" />
+    <ClCompile Include="NetImportantMessage.cpp" />
     <ClCompile Include="NetMessage.cpp" />
     <ClCompile Include="NetMessageConnectMessage.cpp" />
     <ClCompile Include="NetMessageOnJoin.cpp" />

@@ -73,10 +73,10 @@ void ClientNetworkManager::Initiate()
 	myClients.Init(16);
 }
 
-void ClientNetworkManager::StartNetwork()
+void ClientNetworkManager::StartNetwork(unsigned int aPortNum)
 {
-	myNetwork->StartNetwork();
-	__super::StartNetwork();
+	myNetwork->StartNetwork(aPortNum);
+	__super::StartNetwork(aPortNum);
 }
 
 void ClientNetworkManager::ReceieveThread()
