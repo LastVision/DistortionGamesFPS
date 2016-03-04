@@ -3,6 +3,9 @@
 class Entity;
 class Weapon;
 class Player;
+class Pistol;
+class Shotgun;
+class GrenadeLauncher;
 
 namespace Prism
 {
@@ -31,9 +34,9 @@ private:
 	Prism::Scene* myScene;
 
 	Weapon* myCurrentWeapon;
-	Weapon* myPistol;
-	Weapon* myShotgun;
-	Weapon* myGrenadeLauncher;
+	Pistol* myPistol;
+	Shotgun* myShotgun;
+	GrenadeLauncher* myGrenadeLauncher;
 
 	Player* myPlayer;
 };

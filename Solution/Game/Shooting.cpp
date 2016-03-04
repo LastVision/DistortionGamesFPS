@@ -1,16 +1,21 @@
 #include "stdafx.h"
 
 #include <DamageNote.h>
+#include <EntityFactory.h>
+#include "GrenadeLauncher.h"
 #include <InputWrapper.h>
 #include <Instance.h>
 #include <ModelLoader.h>
-#include <Scene.h>
-#include "Shooting.h"
-
-#include <EntityFactory.h>
 #include <PhysEntity.h>
 #include <PhysicsInterface.h>
 #include "Player.h"
+#include "Pistol.h"
+#include <Scene.h>
+#include "Shooting.h"
+#include "Shotgun.h"
+
+
+
 
 Shooting::Shooting(Prism::Scene* aScene, Player* aPlayer)
 	: myBulletSpeed(0.f)
@@ -27,9 +32,9 @@ Shooting::Shooting(Prism::Scene* aScene, Player* aPlayer)
 
 	myBullets.Init(64);
 
-	myPistol = new Weapon(eWeaponType::PISTOL);
-	myShotgun = new Weapon(eWeaponType::SHOTGUN);
-	myGrenadeLauncher = new Weapon(eWeaponType::GRENADE_LAUNCHER);
+	myPistol = new Pistol();
+	myShotgun = new Shotgun();
+	myGrenadeLauncher = new GrenadeLauncher();
 	myCurrentWeapon = myPistol;
 }
 
