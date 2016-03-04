@@ -15,9 +15,9 @@ namespace GUI
 	{
 	public:
 		GUIManager3D(const Prism::Instance* aModel, Prism::Scene* aScene
-			, int& aPistolClipSize, int& aPistolAmmoInClip
-			, int& aShotgunClipSize, int& aShotgunAmmoInClip
-			, int& aGrenadeLauncherClipSize, int& aGrenadeLauncherAmmoInClip);
+			, const int& aPistolClipSize, const int& aPistolAmmoInClip
+			, const int& aShotgunClipSize, const int& aShotgunAmmoInClip
+			, const int& aGrenadeLauncherClipSize, const int& aGrenadeLauncherAmmoInClip);
 		~GUIManager3D();
 
 		void Update(const CU::Matrix44<float>& aUIJointOrientation, const CU::Matrix44<float>& aHealthJointOrientation
@@ -38,12 +38,12 @@ namespace GUI
 		Prism::Bar3D* myRightBar;
 		Prism::Bar3D* myTopBar;
 		Prism::Bar3D* myHealthBar;
-		int& myPistolClipSize;
-		int& myPistolAmmoInClip;
-		int& myShotgunClipSize;
-		int& myShotgunAmmoInClip;
-		int& myGrenadeLauncherClipSize;
-		int& myGrenadeLauncherAmmoInClip;
+		const int& myPistolClipSize;
+		const int& myPistolAmmoInClip;
+		const int& myShotgunClipSize;
+		const int& myShotgunAmmoInClip;
+		const int& myGrenadeLauncherClipSize;
+		const int& myGrenadeLauncherAmmoInClip;
 
 		Prism::Bar3D* myTopAmmoLeft;
 	};

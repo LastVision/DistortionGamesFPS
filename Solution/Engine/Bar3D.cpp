@@ -62,7 +62,7 @@ namespace Prism
 
 		for (int s = 0; s < mySurfaces.Size(); ++s)
 		{
-			int verticesToSend = abs(myValue) * myNbrOfQuads;
+			int verticesToSend = int(abs(myValue) * myNbrOfQuads);
 			int rest = verticesToSend * 2;
 			verticesToSend = rest + 2;
 			mySurfaces[s]->Activate();

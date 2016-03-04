@@ -153,7 +153,7 @@ namespace Prism
 		}
 		if (renderPercentage > 25.f)
 		{
-			for (int i = 25.f; i < renderPercentage; i += 5.f)
+			for (float i = 25.f; i < renderPercentage; i += 5.f)
 			{
 				DEBUG_PRINT("WARNING, rendering huge part of level");
 

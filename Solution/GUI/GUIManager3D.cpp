@@ -12,9 +12,9 @@
 namespace GUI
 {
 	GUIManager3D::GUIManager3D(const Prism::Instance*, Prism::Scene* aScene
-		, int& aPistolClipSize, int& aPistolAmmoInClip
-		, int& aShotgunClipSize, int& aShotgunAmmoInClip
-		, int& aGrenadeLauncherClipSize, int& aGrenadeLauncherAmmoInClip)
+		, const int& aPistolClipSize, const int& aPistolAmmoInClip
+		, const int& aShotgunClipSize, const int& aShotgunAmmoInClip
+		, const int& aGrenadeLauncherClipSize, const int& aGrenadeLauncherAmmoInClip)
 		: myScene(aScene)
 		, myTestValue(0.f)
 		, myPistolClipSize(aPistolClipSize)

@@ -8,6 +8,7 @@
 #include <Instance.h>
 #include <EmitterMessage.h>
 #include <PostMaster.h>
+#include "TriggerComponent.h"
 
 #include <PhysEntity.h>
 
@@ -54,7 +55,10 @@ Entity::Entity(const EntityData& aEntityData, Prism::Scene* aScene, bool aClient
 		myComponents[static_cast<int>(eComponentType::HEALTH)] = new HealthComponent(*this, aEntityData.myHealthData);
 	}
 
-
+	if (aEntityData.myTriggerData.myExistsInEntity == true)
+	{
+		myComponents[static_cast<int>(eComponentType::TRIGGER)] = new TriggerComponent(*this, aEntityData.myTriggerData);
+	}
 	
 
 	//myPhysEntity = new Prism::PhysEntity(&pos.x, aEntityData.myPhysData, myOrientation, aEntityData.myGraphicsData.myModelPath);

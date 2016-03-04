@@ -66,7 +66,7 @@ namespace Prism
 
 	void ParticleEmitterInstance::Render()
 	{
-		int toGraphicsCard = UpdateVertexBuffer();
+		/*int toGraphicsCard =*/ UpdateVertexBuffer();
 		myParticleEmitterData->myEffect->SetTexture(TextureContainer::GetInstance()->GetTexture(myParticleEmitterData->myTextureName));
 		//myParticleEmitterData->myEffect->SetWorldMatrix(myOrientation);
 
@@ -224,6 +224,7 @@ namespace Prism
 
 	void ParticleEmitterInstance::UpdateEmitter(float aDeltaTime, const CU::Matrix44f& aWorldMatrix)
 	{
+		aWorldMatrix;
 		if (myStates[ACTIVE] == TRUE)
 		{
 			myEmissionTime -= aDeltaTime;

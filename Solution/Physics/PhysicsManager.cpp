@@ -29,6 +29,10 @@ namespace Prism
 {
 	PhysicsManager::PhysicsManager()
 	{
+		myRaycastJobs[0].Init(64);
+		myRaycastJobs[1].Init(64);
+		myRaycastResults[0].Init(64);
+		myRaycastResults[1].Init(64);
 		myTimestep = 1.f / 60.f;
 		
 		myFoundation = PxCreateFoundation(0x03030300, myDefaultAllocatorCallback, myDefaultErrorCallback);
@@ -153,21 +157,39 @@ namespace Prism
 			// do something useful..
 		}
 
+		for (int i = 0; i < myRaycastJobs[0].Size(); ++i)
+		{
+			RayCast(myRaycastJobs[0][i]);
+		}
+
+		myRaycastJobs[0].RemoveAll();
+
+		for (int i = 0; i < myRaycastResults[0].Size(); ++i)
+		{
+			myRaycastResults[0][i].myFunctionToCall(myRaycastResults[0][i].myEntity, myRaycastResults[0][i].myDirection);
+		}
+
+		myRaycastResults[0].RemoveAll();
 		//Sleep(16);
 	}
 
-	Entity* PhysicsManager::RayCast(const CU::Vector3<float>& aOrigin, const CU::Vector3<float>& aNormalizedDirection, float aMaxRayDistance)
+	void PhysicsManager::RayCast(const CU::Vector3<float>& aOrigin, const CU::Vector3<float>& aNormalizedDirection, float aMaxRayDistance, std::function<void(Entity*, const CU::Vector3<float>&)> aFunctionToCall)
+	{
+		myRaycastJobs[0].Add(RaycastJob(aOrigin, aNormalizedDirection, aMaxRayDistance, aFunctionToCall));
+	}
+
+	void PhysicsManager::RayCast(const RaycastJob& aRaycastJob)
 	{
 		bool returnValue = false;
 		physx::PxVec3 origin;
-		origin.x = aOrigin.x;
-		origin.y = aOrigin.y;
-		origin.z = aOrigin.z;
+		origin.x = aRaycastJob.myOrigin.x;
+		origin.y = aRaycastJob.myOrigin.y;
+		origin.z = aRaycastJob.myOrigin.z;
 		physx::PxVec3 unitDirection;
-		unitDirection.x = aNormalizedDirection.x;
-		unitDirection.y = aNormalizedDirection.y;
-		unitDirection.z = aNormalizedDirection.z;
-		physx::PxReal maxDistance = aMaxRayDistance;
+		unitDirection.x = aRaycastJob.myNormalizedDirection.x;
+		unitDirection.y = aRaycastJob.myNormalizedDirection.y;
+		unitDirection.z = aRaycastJob.myNormalizedDirection.z;
+		physx::PxReal maxDistance = aRaycastJob.myMaxRayDistance;
 
 		physx::PxRaycastHit touches[32];
 		physx::PxRaycastBuffer buffer(touches, 32);
@@ -175,10 +197,10 @@ namespace Prism
 		returnValue = myScene->raycast(origin, unitDirection, maxDistance, buffer);
 		if (returnValue == true)
 		{
-			Prism::PhysEntity *ent = nullptr;//static_cast<PhysEntity*>(buffer.touches[0].actor->userData);
+			Prism::PhysEntity* ent = nullptr;//static_cast<PhysEntity*>(buffer.touches[0].actor->userData);
 
 			float closestDist = FLT_MAX;
-			for (int i = 0; i < buffer.nbTouches; ++i)
+			for (int i = 0; i < int(buffer.nbTouches); ++i)
 			{
 				if (buffer.touches[i].distance < closestDist)
 				{
@@ -192,14 +214,11 @@ namespace Prism
 			}
 			if (ent == nullptr)
 			{
-				return nullptr;
+				myRaycastResults[0].Add(RaycastResult(nullptr, aRaycastJob.myNormalizedDirection, aRaycastJob.myFunctionToCall));
 			}
-			return ent->GetEntity();
+			myRaycastResults[0].Add(RaycastResult(ent->GetEntity(), aRaycastJob.myNormalizedDirection, aRaycastJob.myFunctionToCall));
 		}
-		return nullptr;
-		//myScene->Ge = touches[0].actor->getOwnerClient();
-
-		//return returnValue;
+		myRaycastResults[0].Add(RaycastResult(nullptr, aRaycastJob.myNormalizedDirection, aRaycastJob.myFunctionToCall));
 	}
 
 	void PhysicsManager::onPvdConnected(physx::debugger::comm::PvdConnection&)
@@ -224,7 +243,7 @@ namespace Prism
 		controllerDesc.material = myDefaultMaterial;
 		controllerDesc.position = physx::PxExtendedVec3(aStartPosition.x, aStartPosition.y, aStartPosition.z);//fix
 
-		physx::PxController* controller = myControllerManager->createController(controllerDesc);
+		myControllerManager->createController(controllerDesc);
 
 		return myControllerManager->getNbControllers() - 1;
 	}
@@ -252,8 +271,8 @@ namespace Prism
 	void PhysicsManager::GetPosition(int aId, CU::Vector3<float>& aPositionOut)
 	{
 		const physx::PxExtendedVec3& pos = myControllerManager->getController(aId)->getFootPosition();
-		aPositionOut.x = pos.x;
-		aPositionOut.y = pos.y;
-		aPositionOut.z = pos.z;
+		aPositionOut.x = float(pos.x);
+		aPositionOut.y = float(pos.y);
+		aPositionOut.z = float(pos.z);
 	}
 }
