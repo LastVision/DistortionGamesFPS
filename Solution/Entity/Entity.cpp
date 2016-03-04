@@ -151,6 +151,12 @@ void Entity::RemoveFromScene()
 	myIsInScene = false;
 }
 
+
+void Entity::SetPosition(const CU::Vector3f& aPosition)
+{
+	myOrientation.SetPos(aPosition);
+}
+
 eEntityType Entity::GetType() const
 {
 	return myEntityData.myType;
