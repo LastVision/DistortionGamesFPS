@@ -18,6 +18,10 @@ namespace EntityEnumConverter
 		{
 			return eEntityType::UNIT;
 		}
+		else if (aType == "trigger")
+		{
+			return eEntityType::TRIGGER;
+		}
 
 		DL_ASSERT("The " + aType + " entity type is not supported, please tell Daniel about it.");
 		return eEntityType::_COUNT;

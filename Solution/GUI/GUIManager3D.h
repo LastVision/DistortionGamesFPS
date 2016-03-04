@@ -25,6 +25,8 @@ namespace GUI
 		void Render();
 
 	private:
+		void operator=(GUIManager3D&) = delete;
+
 		float myTestValue;
 		CU::Matrix44<float> myWristOrientation;
 		//GUIBone myGUIBone;

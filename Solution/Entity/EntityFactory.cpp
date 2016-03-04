@@ -143,6 +143,10 @@ void EntityFactory::LoadEntity(const char* aEntityPath)
 		{
 			myComponentLoader->LoadHealthComponent(entityDocument, e, newData.myHealthData);
 		}
+		else if (elementName == CU::ToLower("TriggerComponent"))
+		{
+			myComponentLoader->LoadTriggerComponent(entityDocument, e, newData.myTriggerData);
+		}
 		else
 		{
 			std::string errorMessage = "The component " + elementName +

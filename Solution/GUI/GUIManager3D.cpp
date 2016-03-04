@@ -11,7 +11,7 @@
 #include <TextureContainer.h>
 namespace GUI
 {
-	GUIManager3D::GUIManager3D(const Prism::Instance* aModel, Prism::Scene* aScene
+	GUIManager3D::GUIManager3D(const Prism::Instance*, Prism::Scene* aScene
 		, int& aPistolClipSize, int& aPistolAmmoInClip
 		, int& aShotgunClipSize, int& aShotgunAmmoInClip
 		, int& aGrenadeLauncherClipSize, int& aGrenadeLauncherAmmoInClip)

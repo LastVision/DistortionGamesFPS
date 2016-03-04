@@ -14,6 +14,7 @@ enum eEntityType
 	UNIT = 1,
 	PROP = 2,
 	PROJECTILE = 4,
+	TRIGGER = 8,
 	_COUNT,
 };
 
@@ -110,6 +111,7 @@ enum class eComponentType
 	GRAPHICS,
 	PROJECTILE,
 	HEALTH,
+	TRIGGER,
 	_COUNT,
 };
 

@@ -3,6 +3,5 @@
 struct TriggerComponentData
 {
 	bool myExistsInEntity = false;
-
-
+	
 };
