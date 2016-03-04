@@ -41,12 +41,12 @@ void EntityFactory::LoadEntities(const char* aEntityListXML)
 	entityListDocument.CloseDocument();
 }
 
-Entity* EntityFactory::CreateEntity(eEntityType aType, Prism::Scene& aScene, const CU::Vector3f& aPosition
+Entity* EntityFactory::CreateEntity(eEntityType aType, Prism::Scene* aScene, bool aClientSide, const CU::Vector3f& aPosition
 	, const CU::Vector3f& aRotation, const CU::Vector3f& aScale)
 {
 	if (myInstance->myLoadedEntityData.find(aType) != myInstance->myLoadedEntityData.end())
 	{
-		Entity* newEntity = new Entity(myInstance->myLoadedEntityData.find(aType)->second, aScene, aPosition, aRotation
+		Entity* newEntity = new Entity(myInstance->myLoadedEntityData.find(aType)->second, aScene, aClientSide, aPosition, aRotation
 			, aScale);
 		return newEntity;
 	}
@@ -54,14 +54,14 @@ Entity* EntityFactory::CreateEntity(eEntityType aType, Prism::Scene& aScene, con
 	return nullptr;
 }
 
-Entity* EntityFactory::CreateEntity(eEntityType aType, std::string aSubType, Prism::Scene& aScene, const CU::Vector3f& aPosition,
+Entity* EntityFactory::CreateEntity(eEntityType aType, std::string aSubType, Prism::Scene* aScene, bool aClientSide, const CU::Vector3f& aPosition,
 	const CU::Vector3f& aRotation, const CU::Vector3f& aScale)
 {
 	if (aType == eEntityType::PROP || aType == eEntityType::UNIT)
 	{
 		if (myInstance->myLoadedSubEntityData.find(aSubType) != myInstance->myLoadedSubEntityData.end())
 		{
-			Entity* newEntity = new Entity(myInstance->myLoadedSubEntityData.find(aSubType)->second, aScene, aPosition, aRotation
+			Entity* newEntity = new Entity(myInstance->myLoadedSubEntityData.find(aSubType)->second, aScene, aClientSide, aPosition, aRotation
 				, aScale);
 			newEntity->mySubType = aSubType;
 			return newEntity;
