@@ -29,6 +29,10 @@ namespace Prism
 {
 	PhysicsManager::PhysicsManager()
 	{
+		myRaycastJobs[0].Init(64);
+		myRaycastJobs[1].Init(64);
+		myRaycastResults[0].Init(64);
+		myRaycastResults[1].Init(64);
 		myTimestep = 1.f / 60.f;
 		
 		myFoundation = PxCreateFoundation(0x03030300, myDefaultAllocatorCallback, myDefaultErrorCallback);
@@ -153,21 +157,39 @@ namespace Prism
 			// do something useful..
 		}
 
+		for (int i = 0; i < myRaycastJobs[0].Size(); ++i)
+		{
+			RayCast(myRaycastJobs[0][i]);
+		}
+
+		myRaycastJobs[0].RemoveAll();
+
+		for (int i = 0; i < myRaycastResults[0].Size(); ++i)
+		{
+			myRaycastResults[0][i].myFunctionToCall(myRaycastResults[0][i].myEntity, myRaycastResults[0][i].myDirection);
+		}
+
+		myRaycastResults[0].RemoveAll();
 		//Sleep(16);
 	}
 
 	void PhysicsManager::RayCast(const CU::Vector3<float>& aOrigin, const CU::Vector3<float>& aNormalizedDirection, float aMaxRayDistance, std::function<void(Entity*, const CU::Vector3<float>&)> aFunctionToCall)
 	{
+		myRaycastJobs[0].Add(RaycastJob(aOrigin, aNormalizedDirection, aMaxRayDistance, aFunctionToCall));
+	}
+
+	void PhysicsManager::RayCast(const RaycastJob& aRaycastJob)
+	{
 		bool returnValue = false;
 		physx::PxVec3 origin;
-		origin.x = aOrigin.x;
-		origin.y = aOrigin.y;
-		origin.z = aOrigin.z;
+		origin.x = aRaycastJob.myOrigin.x;
+		origin.y = aRaycastJob.myOrigin.y;
+		origin.z = aRaycastJob.myOrigin.z;
 		physx::PxVec3 unitDirection;
-		unitDirection.x = aNormalizedDirection.x;
-		unitDirection.y = aNormalizedDirection.y;
-		unitDirection.z = aNormalizedDirection.z;
-		physx::PxReal maxDistance = aMaxRayDistance;
+		unitDirection.x = aRaycastJob.myNormalizedDirection.x;
+		unitDirection.y = aRaycastJob.myNormalizedDirection.y;
+		unitDirection.z = aRaycastJob.myNormalizedDirection.z;
+		physx::PxReal maxDistance = aRaycastJob.myMaxRayDistance;
 
 		physx::PxRaycastHit touches[32];
 		physx::PxRaycastBuffer buffer(touches, 32);
@@ -192,11 +214,11 @@ namespace Prism
 			}
 			if (ent == nullptr)
 			{
-				aFunctionToCall(nullptr, aNormalizedDirection);
+				myRaycastResults[0].Add(RaycastResult(nullptr, aRaycastJob.myNormalizedDirection, aRaycastJob.myFunctionToCall));
 			}
-			aFunctionToCall(ent->GetEntity(), aNormalizedDirection);
+			myRaycastResults[0].Add(RaycastResult(ent->GetEntity(), aRaycastJob.myNormalizedDirection, aRaycastJob.myFunctionToCall));
 		}
-		aFunctionToCall(nullptr, aNormalizedDirection);
+		myRaycastResults[0].Add(RaycastResult(nullptr, aRaycastJob.myNormalizedDirection, aRaycastJob.myFunctionToCall));
 	}
 
 	void PhysicsManager::onPvdConnected(physx::debugger::comm::PvdConnection&)
