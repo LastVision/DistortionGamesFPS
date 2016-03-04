@@ -18,8 +18,10 @@ public:
 	int& GetAmmoInClip();
 	int& GetClipSize();
 	eWeaponType GetWeaponType();
+	void HandleRaycast(Entity* anEntity, const CU::Vector3<float>& aDirection);
 
 private:
+	std::function<void(Entity*, const CU::Vector3<float>&)> myRaycastHandler;
 	void ShootRowAround(const CU::Matrix44<float>& aOrientation, const CU::Vector3<float>& aForward);
 	int myAmmoInClip;
 	int myClipSize;

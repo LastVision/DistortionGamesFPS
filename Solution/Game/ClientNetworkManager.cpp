@@ -148,6 +148,7 @@ void ClientNetworkManager::HandleMessage(const NetMessageConnectMessage& aMessag
 	if (aMessage.myOtherClientID != myNetworkID)
 	{
 		myClients.Add(OtherClients(aMessage.myOtherClientID));
+		PostMaster::GetInstance()->SendMessage(NetworkAddPlayerMessage(aMessage.myOtherClientID));
 	}
 }
 

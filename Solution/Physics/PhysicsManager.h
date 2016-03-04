@@ -3,6 +3,7 @@
 #include <PxPhysics.h>
 #include <extensions/pxdefaulterrorcallback.h>
 #include <extensions/pxdefaultallocator.h>
+#include <GrowingArray.h>
 #include <pvd/PxVisualDebugger.h>
 #include <physxvisualdebuggersdk/PvdConnection.h>
 #include <characterkinematic\PxControllerManager.h>
@@ -26,7 +27,7 @@ namespace Prism
 
 		void Update();
 
-		Entity* RayCast(const CU::Vector3<float>& aOrigin, const CU::Vector3<float>& aNormalizedDirection, float aMaxRayDistance);
+		void RayCast(const CU::Vector3<float>& aOrigin, const CU::Vector3<float>& aNormalizedDirection, float aMaxRayDistance, std::function<void(Entity*, const CU::Vector3<float>&)> aFunctionToCall);
 
 		physx::PxPhysics* GetCore(){ return myPhysicsSDK; }
 		physx::PxScene* GetScene(){ return myScene; }
@@ -39,6 +40,41 @@ namespace Prism
 		void GetPosition(int aId, CU::Vector3<float>& aPositionOut);
 
 	private:
+		//raycastJobs  dubbla buffrar
+
+		//raycastResult dubbla buffrar
+
+		struct RaycastJob
+		{
+			RaycastJob() {}
+			RaycastJob(const CU::Vector3<float>& aOrigin, const CU::Vector3<float>& aNormalizedDirection, float aMaxRayDistance, std::function<void(Entity*, const CU::Vector3<float>&)> aFunctionToCall)
+				: myOrigin(aOrigin)
+				, myNormalizedDirection(aNormalizedDirection)
+				, myMaxRayDistance(aMaxRayDistance)
+				, myFunctionToCall(aFunctionToCall)
+			{}
+			CU::Vector3<float> myOrigin;
+			CU::Vector3<float> myNormalizedDirection;
+			float myMaxRayDistance;
+			std::function<void(Entity*, const CU::Vector3<float>&)> myFunctionToCall;
+		};
+		void RayCast(const RaycastJob& aRaycastJob);
+		CU::GrowingArray<RaycastJob> myRaycastJobs[2];
+
+		struct RaycastResult
+		{
+			RaycastResult() {}
+			RaycastResult(Entity* anEntity, const CU::Vector3<float>& aDirection, std::function<void(Entity*, const CU::Vector3<float>&)> aFunctionToCall)
+				: myEntity(anEntity)
+				, myDirection(aDirection)
+				, myFunctionToCall(aFunctionToCall)
+			{}
+			Entity* myEntity;
+			CU::Vector3<float> myDirection;
+			std::function<void(Entity*, const CU::Vector3<float>&)> myFunctionToCall;
+		};
+		CU::GrowingArray<RaycastResult> myRaycastResults[2];
+
 		void onPvdSendClassDescriptions(physx::debugger::comm::PvdConnection&) override{}
 		void onPvdConnected(physx::debugger::comm::PvdConnection& connection) override;
 		void onPvdDisconnected(physx::debugger::comm::PvdConnection& connection) override;
