@@ -7,7 +7,7 @@ enum class eMessageType
 	FADE,
 	PARTICLE,
 
-	NETWORK_POSITION,
-	NETWORK_ON_CONNECT,
+
+	NETWORK_ADD_PLAYER,
 	COUNT,
 };

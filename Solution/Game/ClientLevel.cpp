@@ -6,20 +6,24 @@
 #include <Scene.h>
 #include <InputWrapper.h>
 #include "NetworkMessageTypes.h"
-#include "NetworkMessageTypes.h"
-#include "NetMessagePosition.h"
+
 #include "DebugDrawer.h"
 
 #include "EntityFactory.h"
 #include "Entity.h"
 #include "GameEnum.h"
-#include <NetMessageConnectMessage.h>
 #include <PhysicsInterface.h>
-#include "NetMessageOnJoin.h"
+
+#include <NetMessageOnJoin.h>
+#include <NetMessageConnectMessage.h>
+
+#include <NetworkAddPlayerMessage.h>
 
 #include "ClientNetworkManager.h"
 #include "DeferredRenderer.h"
 #include <PointLight.h>
+
+#include <PhysEntity.h>
 
 ClientLevel::ClientLevel()
 	: myInstanceOrientations(16)
@@ -79,9 +83,10 @@ void ClientLevel::Update(const float aDeltaTime)
 	DEBUG_PRINT(kbs);
 	Prism::DebugDrawer::GetInstance()->RenderLinesToScreen(*myPlayer->GetCamera());
 
-	if (ClientNetworkManager::GetInstance()->GetClients().Size() > 0)
+	for (int i = 0; i < myPlayers.Size(); ++i)
 	{
-		myInstanceOrientations[0].SetPos(ClientNetworkManager::GetInstance()->GetClients()[0].myPosition);
+		//myPlayers[i]->SetPos(ClientNetworkManager::GetInstance()->GetClients()[i].myPosition);
+		myPlayers[i]->GetPhysEntity()->SetPosition(ClientNetworkManager::GetInstance()->GetClients()[i].myPosition);
 	}
 
 
@@ -93,7 +98,15 @@ void ClientLevel::Render()
 	//myDeferredRenderer->Render(myScene);
 	myScene->Render();
 	myPlayer->Render();
+}
 
-
-
+void ClientLevel::ReceiveMessage(const NetworkAddPlayerMessage& aMessage)
+{
+	bool isRunTime = Prism::MemoryTracker::GetInstance()->GetRunTime();
+	Prism::MemoryTracker::GetInstance()->SetRunTime(false);
+	Entity* newPlayer = EntityFactory::CreateEntity(eEntityType::UNIT, "player", myScene, true, { 0.f, 0.f, 0.f });
+	newPlayer->AddToScene();
+	newPlayer->Reset();
+	myPlayers.Add(newPlayer);
+	Prism::MemoryTracker::GetInstance()->SetRunTime(isRunTime);
 }

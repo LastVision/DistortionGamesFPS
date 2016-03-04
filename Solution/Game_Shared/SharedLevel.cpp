@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "SharedLevel.h"
 #include <Entity.h>
+#include <EntityFactory.h>
 
 SharedLevel::SharedLevel()
 	: myEntities(256)

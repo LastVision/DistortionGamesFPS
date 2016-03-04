@@ -4,6 +4,7 @@
 #include <TimerManager.h>
 #include "ServerNetworkManager.h"
 #include "NetworkMessageTypes.h"
+#include "PostMaster.h"
 
 ServerGame::ServerGame()
 {
@@ -11,6 +12,7 @@ ServerGame::ServerGame()
 
 ServerGame::~ServerGame()
 {
+	PostMaster::Destroy();
 	CU::TimerManager::Destroy();
 	ServerNetworkManager::Destroy();
 	myStateStack.Clear();
@@ -18,6 +20,7 @@ ServerGame::~ServerGame()
 
 bool ServerGame::Init()
 {
+	PostMaster::Create();
 	CU::TimerManager::Create();
 	ServerNetworkManager::Create();
 	ServerNetworkManager::GetInstance()->StartNetwork();

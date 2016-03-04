@@ -159,8 +159,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="EmitterMessage.h" />
-    <ClInclude Include="PostNetConnectMessage.h" />
-    <ClInclude Include="PostNetPositionMessage.h" />
+    <ClInclude Include="NetworkAddPlayerMessage.h" />
     <ClInclude Include="GameStateMessage.h" />
     <ClInclude Include="Message.h" />
     <ClInclude Include="MessageEnum.h" />

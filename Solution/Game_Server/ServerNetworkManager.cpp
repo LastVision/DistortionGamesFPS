@@ -3,12 +3,15 @@
 #include "ServerNetwork.h"
 #include <thread>
 #include <Utility.h>
+#include <PostMaster.h>
 
 #include <NetMessageConnectMessage.h>
 #include <NetMessageOnJoin.h>
 #include <NetMessagePingRequest.h>
 #include <NetMessagePingReply.h>
 #include <NetMessagePosition.h>
+
+#include <NetworkAddPlayerMessage.h>
 
 #define BUFFERSIZE 512
 
@@ -159,6 +162,7 @@ void ServerNetworkManager::CreateConnection(const std::string& aName, const sock
 		myNetwork->Send(onConnect.myStream, newConnection.myAddress);
 	}
 	AddMessage(NetMessageOnJoin(newConnection.myID));
+	PostMaster::GetInstance()->SendMessage(NetworkAddPlayerMessage(myIDCount));
 }
 
 void ServerNetworkManager::HandleMessage(const NetMessageConnectMessage& aMessage, const sockaddr_in& aSenderAddress)

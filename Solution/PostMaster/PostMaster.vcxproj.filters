@@ -51,10 +51,7 @@
     <ClInclude Include="EmitterMessage.h">
       <Filter>Message</Filter>
     </ClInclude>
-    <ClInclude Include="PostNetPositionMessage.h">
-      <Filter>Message\NetworkMessages</Filter>
-    </ClInclude>
-    <ClInclude Include="PostNetConnectMessage.h">
+    <ClInclude Include="NetworkAddPlayerMessage.h">
       <Filter>Message\NetworkMessages</Filter>
     </ClInclude>
   </ItemGroup>

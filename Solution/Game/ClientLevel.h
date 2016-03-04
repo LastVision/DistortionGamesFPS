@@ -24,6 +24,8 @@ public:
 	void Render();
 	bool connected;
 	Prism::Scene* GetScene();
+	void ReceiveMessage(const NetworkAddPlayerMessage& aMessage) override;
+
 
 private:
 	Prism::Scene* myScene;

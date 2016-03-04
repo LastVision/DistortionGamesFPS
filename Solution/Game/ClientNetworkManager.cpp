@@ -2,12 +2,15 @@
 #include "ClientNetworkManager.h"
 #include "ClientNetwork.h"
 #include <thread>
+#include <PostMaster.h>
 
 #include <NetMessageConnectMessage.h>
 #include <NetMessageOnJoin.h>
 #include <NetMessagePingRequest.h>
 #include <NetMessagePingReply.h>
 #include <NetMessagePosition.h>
+
+#include <NetworkAddPlayerMessage.h>
 
 #define BUFFERSIZE 512
 
@@ -162,6 +165,7 @@ void ClientNetworkManager::HandleMessage(const NetMessageOnJoin& aMessage, const
 	if (aMessage.mySenderID != myNetworkID)
 	{
 		myClients.Add(OtherClients(aMessage.mySenderID));
+		PostMaster::GetInstance()->SendMessage(NetworkAddPlayerMessage(aMessage.mySenderID));
 	}
 }
 

@@ -1,5 +1,6 @@
 #pragma once
 #include <SharedLevel.h>
+
 class ServerLevel : public SharedLevel
 {
 public:
@@ -7,6 +8,7 @@ public:
 	~ServerLevel();
 
 	void Update(const float aDeltaTime) override;
+	void ReceiveMessage(const NetworkAddPlayerMessage& aMessage);
 private:
 	
 };
