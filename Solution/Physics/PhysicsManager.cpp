@@ -200,7 +200,7 @@ namespace Prism
 			Prism::PhysEntity* ent = nullptr;//static_cast<PhysEntity*>(buffer.touches[0].actor->userData);
 
 			float closestDist = FLT_MAX;
-			for (int i = 0; i < buffer.nbTouches; ++i)
+			for (int i = 0; i < int(buffer.nbTouches); ++i)
 			{
 				if (buffer.touches[i].distance < closestDist)
 				{
@@ -243,7 +243,7 @@ namespace Prism
 		controllerDesc.material = myDefaultMaterial;
 		controllerDesc.position = physx::PxExtendedVec3(aStartPosition.x, aStartPosition.y, aStartPosition.z);//fix
 
-		physx::PxController* controller = myControllerManager->createController(controllerDesc);
+		myControllerManager->createController(controllerDesc);
 
 		return myControllerManager->getNbControllers() - 1;
 	}
@@ -271,8 +271,8 @@ namespace Prism
 	void PhysicsManager::GetPosition(int aId, CU::Vector3<float>& aPositionOut)
 	{
 		const physx::PxExtendedVec3& pos = myControllerManager->getController(aId)->getFootPosition();
-		aPositionOut.x = pos.x;
-		aPositionOut.y = pos.y;
-		aPositionOut.z = pos.z;
+		aPositionOut.x = float(pos.x);
+		aPositionOut.y = float(pos.y);
+		aPositionOut.z = float(pos.z);
 	}
 }

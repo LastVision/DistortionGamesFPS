@@ -154,7 +154,7 @@ void EmitterManager::ReceiveMessage(const EmitterMessage& aMessage)
 		{
 			myEmitters[particleType]->myCurrentIndex = 0;
 
-			short index = myEmitters[particleType]->myCurrentIndex;
+			//short index = myEmitters[particleType]->myCurrentIndex;
 		//	DL_ASSERT_EXP(myEmitters[particleType]->myEmitters[index][0]->IsActive() == false, "Particle popped");
 		}
 

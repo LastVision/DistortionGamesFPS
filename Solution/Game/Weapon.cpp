@@ -65,8 +65,6 @@ void Weapon::Shoot(const CU::Matrix44<float>& aOrientation)
 	{
 		if (myWeaponType == eWeaponType::PISTOL)
 		{
-			bool ShouldReadRaycastProxyHere = true;
-
 			Prism::PhysicsInterface::GetInstance()->RayCast(aOrientation.GetPos()
 				, aOrientation.GetForward(), 500.f, myRaycastHandler);
 		}

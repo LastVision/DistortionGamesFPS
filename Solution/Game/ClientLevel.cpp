@@ -99,6 +99,7 @@ void ClientLevel::Render()
 
 void ClientLevel::ReceiveMessage(const NetworkAddPlayerMessage& aMessage)
 {
+	aMessage;
 	bool isRunTime = Prism::MemoryTracker::GetInstance()->GetRunTime();
 	Prism::MemoryTracker::GetInstance()->SetRunTime(false);
 	Entity* newPlayer = EntityFactory::CreateEntity(eEntityType::UNIT, "player", myScene, true, { 0.f, 0.f, 0.f });

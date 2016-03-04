@@ -428,7 +428,7 @@ namespace Prism
 		stencilDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ZERO;
 		stencilDesc.DepthFunc = D3D11_COMPARISON_GREATER_EQUAL;
 		stencilDesc.StencilEnable = false;
-		stencilDesc.StencilReadMask = 0xFFFFFFFF;
+		stencilDesc.StencilReadMask = UINT8(0xFF);
 		stencilDesc.StencilWriteMask = 0x0;
 
 		stencilDesc.FrontFace.StencilFunc = D3D11_COMPARISON_EQUAL;
