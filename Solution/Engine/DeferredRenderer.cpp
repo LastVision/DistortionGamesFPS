@@ -64,7 +64,6 @@ namespace Prism
 		context->ClearRenderTargetView(myDepthTexture->GetRenderTargetView(), myClearColor);
 
 		context->ClearDepthStencilView(myDepthStencilTexture->GetDepthStencilView(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
-		//context->ClearDepthStencilView(Engine::GetInstance()->GetDepthStencilView(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 
 		ID3D11RenderTargetView* targets[3];
 		targets[0] = myAlbedoTexture->GetRenderTargetView();
@@ -81,6 +80,14 @@ namespace Prism
 		ActivateBuffers();
 
 		RenderDeferred(aScene);
+	}
+
+	void DeferredRenderer::OnResize(float aWidth, float aHeight)
+	{
+		myAlbedoTexture->Resize(aWidth, aHeight);
+		myNormalTexture->Resize(aWidth, aHeight);
+		myDepthTexture->Resize(aWidth, aHeight);
+		myDepthStencilTexture->Resize(aWidth, aHeight);
 	}
 
 	void DeferredRenderer::InitFullscreenQuad()
@@ -212,15 +219,11 @@ namespace Prism
 		myLightPass.myNormal->SetResource(myNormalTexture->GetShaderView());
 		myLightPass.myDepth->SetResource(myDepthTexture->GetShaderView());
 
-		myLightPass.myProjection->SetMatrix(&camera.GetProjection().myMatrix[0]);
-		myLightPass.myView->SetMatrix(&CU::InverseSimple(camera.GetOrientation()).myMatrix[0]);
-
-		myLightPass.myInvertedProjection->SetMatrix(&CU::InverseReal(camera.GetProjection()).myMatrix[0]);
-		myLightPass.myNotInvertedView->SetMatrix(&camera.GetOrientation().myMatrix[0]);
+		myLightPass.myInvertedProjection->SetMatrix(&CU::InverseReal(aScene->GetCamera()->GetProjection()).myMatrix[0]);
+		myLightPass.myNotInvertedView->SetMatrix(&aScene->GetCamera()->GetOrientation().myMatrix[0]);
 
 
 		const CU::GrowingArray<PointLight*>& lights = aScene->GetPointLights();
-		context->ClearDepthStencilView(Engine::GetInstance()->GetDepthView(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 
 		Engine::GetInstance()->SetRasterizeState(eRasterizer::NO_CULLING);
 		Engine::GetInstance()->SetDepthBufferState(eDepthStencil::READ_NO_WRITE);
@@ -266,9 +269,6 @@ namespace Prism
 		myLightPass.myPointLightVariable
 			= myLightPass.myEffect->GetEffect()->GetVariableByName("PointLights");
 
-		myLightPass.myView = myLightPass.myEffect->GetEffect()->GetVariableByName("View")->AsMatrix();
-		myLightPass.myProjection = myLightPass.myEffect->GetEffect()->GetVariableByName("Projection")->AsMatrix();
-		myLightPass.myWorld = myLightPass.myEffect->GetEffect()->GetVariableByName("World")->AsMatrix();
 		myLightPass.myInvertedProjection = myLightPass.myEffect->GetEffect()->GetVariableByName("InvertedProjection")->AsMatrix();
 		myLightPass.myNotInvertedView = myLightPass.myEffect->GetEffect()->GetVariableByName("NotInvertedView")->AsMatrix();
 	}

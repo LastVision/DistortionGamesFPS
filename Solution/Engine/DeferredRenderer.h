@@ -18,6 +18,7 @@ namespace Prism
 		~DeferredRenderer();
 
 		void Render(Scene* aScene);
+		void OnResize(float aWidth, float aHeight);
 
 	private:
 		struct RenderToScreenData
@@ -42,9 +43,6 @@ namespace Prism
 			ID3DX11EffectShaderResourceVariable* myNormal = nullptr;
 			ID3DX11EffectShaderResourceVariable* myDepth = nullptr;
 			ID3DX11EffectVariable* myPointLightVariable;
-			ID3DX11EffectMatrixVariable* myProjection;
-			ID3DX11EffectMatrixVariable* myView;
-			ID3DX11EffectMatrixVariable* myWorld;
 			ID3DX11EffectMatrixVariable* myInvertedProjection;
 			ID3DX11EffectMatrixVariable* myNotInvertedView;
 		};

@@ -18,11 +18,6 @@ namespace Prism
 		myLightMesh = new Instance(*model, myOrientation);
 	}
 
-	void PointLight::Initiate()
-	{
-		
-	}
-
 	void PointLight::Update()
 	{
 		myLightData.myColor = GetColor();
@@ -32,8 +27,7 @@ namespace Prism
 
 	void PointLight::Render(const Camera& aCamera)
 	{
-		if (this != nullptr)
-			myLightMesh->Render(aCamera);
+		myLightMesh->Render(aCamera);
 	}
 
 };
