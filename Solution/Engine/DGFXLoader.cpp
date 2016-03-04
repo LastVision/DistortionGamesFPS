@@ -163,6 +163,9 @@ namespace Prism
 			return nullptr;
 		}
 
+		float radius = 0.f;
+		stream.read((char*)&radius, sizeof(float));
+
 		int isNullObject = -1;
 		stream.read((char*)&isNullObject, sizeof(int));
 
