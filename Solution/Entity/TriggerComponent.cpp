@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "TriggerComponent.h"
 #include "TriggerComponentData.h"
+#include <PhysEntity.h>
 
 TriggerComponent::TriggerComponent(Entity& anEntity, const TriggerComponentData& someData)
 	: Component(anEntity)
@@ -11,4 +12,12 @@ TriggerComponent::TriggerComponent(Entity& anEntity, const TriggerComponentData&
 
 TriggerComponent::~TriggerComponent()
 {
+}
+
+void TriggerComponent::Update(float aDelta)
+{
+
+
+
+
 }

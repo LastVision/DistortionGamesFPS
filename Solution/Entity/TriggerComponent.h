@@ -10,6 +10,8 @@ public:
 	TriggerComponent(Entity& anEntity, const TriggerComponentData& someData);
 	~TriggerComponent();
 
+	void Update(float aDelta) override;
+
 	static eComponentType GetTypeStatic();
 	eComponentType GetType() override;
 

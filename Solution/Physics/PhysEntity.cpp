@@ -15,8 +15,8 @@
 namespace Prism
 {
 	PhysEntity::PhysEntity(const PhysEntityData& aPhysData
-			, const CU::Matrix44<float>& aOrientation, const std::string& aFBXPath
-			, Entity* aEntity)
+		, const CU::Matrix44<float>& aOrientation, const std::string& aFBXPath
+		, Entity* aEntity)
 		: myShapes(nullptr)
 		, myEntity(aEntity)
 	{
@@ -90,7 +90,7 @@ namespace Prism
 			myStaticBody->userData = this;
 			PhysicsInterface::GetInstance()->GetManager()->GetScene()->addActor(*myStaticBody);
 		}
-		else
+		else if (myPhysicsType == ePhysics::DYNAMIC)
 		{
 			/*myDynamicBody = core->createRigidDynamic(transform);
 			physx::PxShape* shape = myDynamicBody->createShape(physx::PxTriangleMeshGeometry(mesh), *material);
@@ -111,6 +111,28 @@ namespace Prism
 
 			physx::PxU32 nShapes = myDynamicBody->getNbShapes();
 			myShapes = new physx::PxShape*[nShapes];
+		}
+		else if (myPhysicsType == ePhysics::PHANTOM)
+		{
+			physx::PxVec3 dimensions(
+				aPhysData.myPhysicsMax.x - aPhysData.myPhysicsMin.x
+				, aPhysData.myPhysicsMax.y - aPhysData.myPhysicsMin.y
+				, aPhysData.myPhysicsMax.z - aPhysData.myPhysicsMin.z);
+			physx::PxBoxGeometry geometry(dimensions / 2.f);
+			myDynamicBody = physx::PxCreateDynamic(*core, transform, geometry, *material, density);
+			myDynamicBody->setAngularDamping(0.75);
+			myDynamicBody->setLinearVelocity(physx::PxVec3(0, 0, 0));
+			myDynamicBody->userData = this;
+
+			physx::PxU32 nShapes = myDynamicBody->getNbShapes();
+			myShapes = new physx::PxShape*[nShapes];
+
+			physx::PxShape* treasureShape;
+			myDynamicBody->getShapes(&treasureShape, 1.f);
+
+			treasureShape->setFlag(physx::PxShapeFlag::eSIMULATION_SHAPE, false);
+			treasureShape->setFlag(physx::PxShapeFlag::eTRIGGER_SHAPE, true);
+			PhysicsInterface::GetInstance()->GetManager()->GetScene()->addActor(*myDynamicBody);
 		}
 	}
 
@@ -198,7 +220,7 @@ namespace Prism
 
 		physx::PxTriangleMesh* mesh = nullptr;
 		WavefrontObj wfo;
-	
+
 		bool ok;
 
 		if (CU::FileExists(cowPath) == false)
@@ -237,7 +259,7 @@ namespace Prism
 
 	void PhysEntity::RemoveFromScene()
 	{
-		if (myPhysicsType == ePhysics::DYNAMIC)
+		if (myPhysicsType == ePhysics::DYNAMIC || myPhysicsType == ePhysics::PHANTOM)
 		{
 			PhysicsInterface::GetInstance()->GetManager()->GetScene()->removeActor(*myDynamicBody);
 		}
