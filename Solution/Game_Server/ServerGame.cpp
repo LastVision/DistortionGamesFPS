@@ -11,10 +11,9 @@ ServerGame::ServerGame()
 
 ServerGame::~ServerGame()
 {
-	myStateStack.Clear();
-	ServerNetworkManager::Destroy();
 	CU::TimerManager::Destroy();
-
+	ServerNetworkManager::Destroy();
+	myStateStack.Clear();
 }
 
 bool ServerGame::Init()

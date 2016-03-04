@@ -8,3 +8,8 @@ SharedGame::SharedGame()
 SharedGame::~SharedGame()
 {
 }
+
+void SharedGame::ManualDestroy()
+{
+
+}

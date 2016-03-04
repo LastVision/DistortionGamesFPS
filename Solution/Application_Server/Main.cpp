@@ -4,17 +4,17 @@
 #include <TimerManager.h>
 #include <ServerGame.h>
 #include <assert.h>
+#include <TimerManager.h>
+#include <ServerNetworkManager.h>
 
-volatile bool hasQuit = false;
 ServerGame* globalServerGame;
+
 static BOOL WINAPI HandleExit(DWORD aCtrlType)
 {
 	switch (aCtrlType)
 	{
 	case CTRL_CLOSE_EVENT:
 		DL_Debug::Debug::Destroy();
-		hasQuit = true;
-
 		delete globalServerGame;
 		globalServerGame = nullptr;
 		return TRUE;
@@ -30,10 +30,5 @@ void main()
 	DL_Debug::Debug::Create("NetworkLog.txt");
 	globalServerGame = new ServerGame();
 	globalServerGame->Init();
-
-	while (globalServerGame->Update() == true)
-	{
-		if (hasQuit == true)break;
-
-	}
+	while (globalServerGame->Update() == true);
 }
