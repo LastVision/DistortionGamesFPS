@@ -177,6 +177,7 @@
     <ClInclude Include="ProjectileComponentData.h" />
     <ClInclude Include="ShootNote.h" />
     <ClInclude Include="stdafx.h" />
+    <ClInclude Include="TriggerComponent.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AnimationComponent.cpp" />
@@ -199,6 +200,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Internal|Win32'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="TriggerComponent.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Audio\Audio.vcxproj">

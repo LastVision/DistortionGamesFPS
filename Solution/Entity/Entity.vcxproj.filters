@@ -59,6 +59,9 @@
     <ClCompile Include="ProjectileComponent.cpp">
       <Filter>Component</Filter>
     </ClCompile>
+    <ClCompile Include="TriggerComponent.cpp">
+      <Filter>Component</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
@@ -113,6 +116,9 @@
     </ClInclude>
     <ClInclude Include="HealthComponentData.h">
       <Filter>EntityFactory\EntityData\ComponentData</Filter>
+    </ClInclude>
+    <ClInclude Include="TriggerComponent.h">
+      <Filter>Component</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
