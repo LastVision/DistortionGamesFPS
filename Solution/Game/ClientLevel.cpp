@@ -83,7 +83,6 @@ ClientLevel::~ClientLevel()
 void ClientLevel::Update(const float aDeltaTime)
 {
 	SharedLevel::Update(aDeltaTime);
-	ClientNetworkManager::GetInstance()->Update(aDeltaTime);
 	myPlayer->Update(aDeltaTime);
 	myEmitterManager->UpdateEmitters(aDeltaTime, CU::Matrix44f());
 	if (CU::InputWrapper::GetInstance()->KeyDown(DIK_C) == true)
@@ -97,16 +96,18 @@ void ClientLevel::Update(const float aDeltaTime)
 	DEBUG_PRINT(kbs);
 	Prism::DebugDrawer::GetInstance()->RenderLinesToScreen(*myPlayer->GetCamera());
 
-	for (int i = 0; i < myPlayers.Size(); ++i)
-	{
-		CU::Vector3f position = ClientNetworkManager::GetInstance()->GetClients()[i].myPosition;
-		myPlayers[i]->SetPosition(position);
-	}
+	//for (int i = 0; i < myPlayers.Size(); ++i)
+	//{
+	//	CU::Vector3f position = ClientNetworkManager::GetInstance()->GetClients()[i].myPosition;
+	//	myPlayers[i]->SetPosition(position);
+	//}
 
 	DebugMusic();
 
 	Prism::PhysicsInterface::GetInstance()->Update();
 	Prism::PhysicsInterface::GetInstance()->EndFrame();
+
+	ClientNetworkManager::GetInstance()->Update(aDeltaTime);
 }
 
 void ClientLevel::Render()
@@ -124,6 +125,8 @@ void ClientLevel::ReceiveMessage(const NetworkAddPlayerMessage& aMessage)
 	bool isRunTime = Prism::MemoryTracker::GetInstance()->GetRunTime();
 	Prism::MemoryTracker::GetInstance()->SetRunTime(false);
 	Entity* newPlayer = EntityFactory::CreateEntity(eEntityType::UNIT, "player", myScene, true, { 0.f, 0.f, 0.f });
+	newPlayer->GetComponent<NetworkComponent>()->SetNetworkID(aMessage.myNetworkID);
+	newPlayer->GetComponent<NetworkComponent>()->SetPlayer(true);
 	newPlayer->AddToScene();
 	newPlayer->Reset();
 	myPlayers.Add(newPlayer);
