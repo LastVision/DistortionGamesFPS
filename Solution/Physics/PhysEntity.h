@@ -25,6 +25,8 @@ namespace Prism
 			Entity* aEntity);
 		~PhysEntity();
 
+		void SwapOrientations();
+
 		float* GetPosition();
 		float* GetOrientation();
 		Entity* GetEntity();

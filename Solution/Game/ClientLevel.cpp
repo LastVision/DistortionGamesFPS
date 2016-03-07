@@ -27,6 +27,9 @@
 #include <PhysEntity.h>
 #include <PostMaster.h>
 
+#include "EmitterManager.h"
+#include <EmitterMessage.h>
+
 ClientLevel::ClientLevel()
 	: myInstanceOrientations(16)
 	, myInstances(16)
@@ -47,12 +50,15 @@ ClientLevel::ClientLevel()
 
 	myDeferredRenderer = new Prism::DeferredRenderer();
 
+
+	myEmitterManager = new EmitterManager(*myPlayer->GetCamera());
 	CU::Matrix44f orientation;
 	myInstanceOrientations.Add(orientation);
 }
 
 ClientLevel::~ClientLevel()
 {
+	SAFE_DELETE(myEmitterManager);
 	PostMaster::GetInstance()->UnSubscribe(eMessageType::NETWORK_ADD_PLAYER, this);
 	PostMaster::GetInstance()->UnSubscribe(eMessageType::NETWORK_ADD_ENEMY, this);
 
@@ -69,7 +75,7 @@ void ClientLevel::Update(const float aDeltaTime)
 	SharedLevel::Update(aDeltaTime);
 	ClientNetworkManager::GetInstance()->Update(aDeltaTime);
 	myPlayer->Update(aDeltaTime);
-
+	myEmitterManager->UpdateEmitters(aDeltaTime, CU::Matrix44f());
 	if (CU::InputWrapper::GetInstance()->KeyDown(DIK_C) == true)
 	{
 		ClientNetworkManager::GetInstance()->ConnectToServer("81.170.227.192");
@@ -89,12 +95,15 @@ void ClientLevel::Update(const float aDeltaTime)
 
 
 	Prism::PhysicsInterface::GetInstance()->Update();
+	Prism::PhysicsInterface::GetInstance()->EndFrame();
 }
 
 void ClientLevel::Render()
 {
 	myDeferredRenderer->Render(myScene);
 	//myScene->Render();
+	//myDeferredRenderer->Render(myScene);
+	myEmitterManager->RenderEmitters();
 	myPlayer->Render();
 }
 
@@ -115,6 +124,7 @@ void ClientLevel::ReceiveMessage(const NetworkAddEnemyMessage& aMessage)
 	bool isRunTime = Prism::MemoryTracker::GetInstance()->GetRunTime();
 	Prism::MemoryTracker::GetInstance()->SetRunTime(false);
 	Entity* newEnemy = EntityFactory::CreateEntity(eEntityType::UNIT, "grunt", myScene, true, aMessage.myPosition);
+	//PostMaster::GetInstance()->SendMessage(EmitterMessage("Example", aMessage.myPosition));
 	newEnemy->AddToScene();
 	newEnemy->Reset();
 	myEntities.Add(newEnemy);

@@ -28,6 +28,7 @@
 namespace Prism
 {
 	PhysicsManager::PhysicsManager()
+		: myPhysEntities(4096)
 	{
 		myRaycastJobs[0].Init(64);
 		myRaycastJobs[1].Init(64);
@@ -141,6 +142,21 @@ namespace Prism
 		PxCloseExtensions();
 		myPhysicsSDK->release();
 		myFoundation->release();
+	}
+
+	void PhysicsManager::Add(PhysEntity* aPhysEntity)
+	{
+		myPhysEntities.Add(aPhysEntity);
+	}
+
+	void PhysicsManager::SwapOrientations()
+	{
+		//mutex
+		for (int i = 0; i < myPhysEntities.Size(); ++i)
+		{
+			myPhysEntities[i]->SwapOrientations();
+		}
+		//release mutex
 	}
 
 	void PhysicsManager::Update()
