@@ -128,6 +128,11 @@ void ClientNetworkManager::ConnectToServer(const char* aServerIP)
 	AddMessage(NetMessageConnectMessage(username, -1));
 }
 
+unsigned int ClientNetworkManager::GetNetworkID() const
+{
+	return myNetworkID;
+}
+
 const CU::GrowingArray<OtherClients>& ClientNetworkManager::GetClients()
 {
 	return myClients;
