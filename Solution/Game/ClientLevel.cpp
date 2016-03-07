@@ -94,7 +94,6 @@ void ClientLevel::Update(const float aDeltaTime)
 	}
 
 
-	Prism::PhysicsInterface::GetInstance()->Update();
 	Prism::PhysicsInterface::GetInstance()->EndFrame();
 }
 

@@ -100,12 +100,7 @@ void Entity::Update(float aDeltaTime)
 			myComponents[i]->Update(aDeltaTime);
 		}
 	}
-
-	if (myEntityData.myPhysData.myPhysics == ePhysics::DYNAMIC)
-	{
-		myPhysEntity->UpdateOrientation();
-		memcpy(&myOrientation.myMatrix[0], myPhysEntity->GetOrientation(), sizeof(float) * 16);
-	}
+	memcpy(&myOrientation.myMatrix[0], myPhysEntity->GetOrientation(), sizeof(float) * 16);
 }
 
 void Entity::AddComponent(Component* aComponent)

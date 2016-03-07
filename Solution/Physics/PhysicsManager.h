@@ -27,6 +27,9 @@ namespace Prism
 		PhysicsManager();
 		~PhysicsManager();
 
+#ifdef THREAD_PHYSICS
+		void InitThread();
+#endif
 		void Add(PhysEntity* aPhysEntity);
 		void SwapOrientations();
 
@@ -45,6 +48,11 @@ namespace Prism
 		void GetPosition(int aId, CU::Vector3<float>& aPositionOut);
 
 	private:
+#ifdef THREAD_PHYSICS
+		void ThreadUpdate();
+		std::thread* myPhysicsThread;
+		volatile bool myQuit;
+#endif
 		struct RaycastJob
 		{
 			RaycastJob() {}

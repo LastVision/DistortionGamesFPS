@@ -26,20 +26,18 @@ namespace Prism
 		return myManager;
 	}
 
-	void PhysicsInterface::Update()
+#ifdef THREAD_PHYSICS
+	void PhysicsInterface::InitThread()
 	{
-		if (myManager != nullptr)
-		{
-			myManager->Update();
-		}
-		else
-		{
-			DL_ASSERT("No PhysicsManager");
-		}
+		myManager->InitThread();
 	}
+#endif
 
 	void PhysicsInterface::EndFrame()
 	{
+#ifndef THREAD_PHYSICS
+		myManager->Update();
+#endif
 		myManager->SwapOrientations();
 	}
 
@@ -58,7 +56,7 @@ namespace Prism
 
 	void PhysicsInterface::Move(int aId, const CU::Vector3<float>& aDirection, float aMinDisplacement, float aDeltaTime)
 	{
-		myManager->Move(aId, aDirection, aMinDisplacement, aDeltaTime);
+		//myManager->Move(aId, aDirection, aMinDisplacement, aDeltaTime);
 	}
 
 	bool PhysicsInterface::GetAllowedToJump(int aId)
@@ -73,7 +71,7 @@ namespace Prism
 
 	void PhysicsInterface::GetPosition(int aId, CU::Vector3<float>& aPositionOut)
 	{
-		myManager->GetPosition(aId, aPositionOut);
+		//myManager->GetPosition(aId, aPositionOut);
 	}
 
 	PhysicsInterface::PhysicsInterface()

@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "PhysicsManager.h"
+#include <ThreadUtilities.h>
 
 #ifdef _DEBUG
 #pragma comment(lib, "PhysX\\vc12win32\\PhysX3DEBUG_x86.lib")
@@ -29,6 +30,9 @@ namespace Prism
 {
 	PhysicsManager::PhysicsManager()
 		: myPhysEntities(4096)
+#ifdef THREAD_PHYSICS
+		, myQuit(false)
+#endif
 	{
 		myRaycastJobs[0].Init(64);
 		myRaycastJobs[1].Init(64);
@@ -131,6 +135,11 @@ namespace Prism
 
 	PhysicsManager::~PhysicsManager()
 	{
+#ifdef THREAD_PHYSICS
+		myQuit = true;
+		myPhysicsThread->join();
+		SAFE_DELETE(myPhysicsThread);
+#endif
 		if (myDebugConnection != nullptr)
 		{
 			//myDebugConnection->release();
@@ -143,6 +152,24 @@ namespace Prism
 		myPhysicsSDK->release();
 		myFoundation->release();
 	}
+
+#ifdef THREAD_PHYSICS
+	void PhysicsManager::InitThread()
+	{
+		myPhysicsThread = new std::thread(&PhysicsManager::ThreadUpdate, this);
+
+		CU::SetThreadName(myPhysicsThread->get_id(), "Physics thread");
+	}
+
+	void PhysicsManager::ThreadUpdate()
+	{
+		while (myQuit == false)
+		{
+			Update();
+			Sleep(16);
+		}
+	}
+#endif
 
 	void PhysicsManager::Add(PhysEntity* aPhysEntity)
 	{
@@ -171,6 +198,15 @@ namespace Prism
 		while (!myScene->fetchResults())
 		{
 			// do something useful..
+		}
+
+
+		for (int i = 0; i < myPhysEntities.Size(); ++i)
+		{
+			if (myPhysEntities[i]->GetPhysicsType() == ePhysics::DYNAMIC)
+			{
+				myPhysEntities[i]->UpdateOrientation();
+			}
 		}
 
 		for (int i = 0; i < myRaycastJobs[0].Size(); ++i)

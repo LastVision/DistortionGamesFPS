@@ -79,10 +79,10 @@ void Movement::Move(float aDelta)
 	}
 	movement.y = myVerticalSpeed;
 
-	Prism::PhysicsInterface::GetInstance()->Move(myCapsuleControllerId, movement, 0.05f, aDelta);
+	//Prism::PhysicsInterface::GetInstance()->Move(myCapsuleControllerId, movement, 0.05f, aDelta);
 
 	CU::Vector3<float> pos;
-	Prism::PhysicsInterface::GetInstance()->GetPosition(myCapsuleControllerId, pos);
+	//Prism::PhysicsInterface::GetInstance()->GetPosition(myCapsuleControllerId, pos);
 
 	myOrientation.SetPos(pos);
 	//CU::Vector3<float> forward = CU::Cross(myOrientation.GetRight(), CU::Vector3<float>(0.f, 1.f, 0.f));

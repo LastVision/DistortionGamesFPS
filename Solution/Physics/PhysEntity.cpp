@@ -23,6 +23,7 @@ namespace Prism
 		for (int i = 0; i < 16; ++i)
 		{
 			my4x4Float[i] = aOrientation.myMatrix[i];
+			myThread4x4Float[i] = aOrientation.myMatrix[i];
 		}
 
 		myPosition[0] = my4x4Float[12];
@@ -148,9 +149,9 @@ namespace Prism
 		myThread4x4Float[15] = 1;
 
 
-		myPosition[0] = graphicsTransform.p.x;
-		myPosition[1] = graphicsTransform.p.y;
-		myPosition[2] = graphicsTransform.p.z;
+		//myPosition[0] = graphicsTransform.p.x;
+		//myPosition[1] = graphicsTransform.p.y;
+		//myPosition[2] = graphicsTransform.p.z;
 	}
 
 	void PhysEntity::AddForce(const CU::Vector3<float>& aDirection, float aMagnitude)
