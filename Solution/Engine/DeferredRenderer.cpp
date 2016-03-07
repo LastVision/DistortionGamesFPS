@@ -151,24 +151,6 @@ namespace Prism
 		Engine::GetInstance()->GetContex()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	}
 
-	void DeferredRenderer::RenderTextureToScreen(Texture* aTexture)
-	{
-		Engine::GetInstance()->RestoreViewPort();
-		ID3D11DeviceContext* context = Engine::GetInstance()->GetContex();
-
-		ID3D11RenderTargetView* backbuffer = Engine::GetInstance()->GetBackbuffer();
-		context->ClearRenderTargetView(backbuffer, myClearColor);
-		context->ClearDepthStencilView(Engine::GetInstance()->GetDepthView(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
-		context->OMSetRenderTargets(1, &backbuffer
-			, Engine::GetInstance()->GetDepthView());
-
-		myRenderToScreenData.mySource->SetResource(aTexture->GetShaderView());
-
-		Render(myRenderToScreenData.myEffect);
-
-		myRenderToScreenData.mySource->SetResource(NULL);
-	}
-
 	void DeferredRenderer::Render(Effect* aEffect)
 	{
 		D3DX11_TECHNIQUE_DESC techDesc;
@@ -203,9 +185,9 @@ namespace Prism
 		myAmbientPass.myDepth->SetResource(nullptr);
 		myAmbientPass.myCubemap->SetResource(nullptr);
 
-#ifdef USE_LIGHTS
 		context->OMSetRenderTargets(1, &backbuffer
 			, myDepthStencilTexture->GetDepthStencilView());
+#ifdef USE_LIGHTS
 
 		aScene->UpdateLights();
 		RenderPointLights(aScene);

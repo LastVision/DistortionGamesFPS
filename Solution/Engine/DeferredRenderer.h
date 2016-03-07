@@ -52,7 +52,6 @@ namespace Prism
 		void InitFullscreenQuad();
 		void CreateVertices();
 		void ActivateBuffers();
-		void RenderTextureToScreen(Texture* aTexture);
 		void Render(Effect* aEffect);
 		void RenderDeferred(Scene* aScene);
 		void RenderPointLights(Scene* aScene);
