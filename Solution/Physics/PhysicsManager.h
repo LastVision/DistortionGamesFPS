@@ -32,7 +32,7 @@ namespace Prism
 
 		void Update();
 
-		void RayCast(const CU::Vector3<float>& aOrigin, const CU::Vector3<float>& aNormalizedDirection, float aMaxRayDistance, std::function<void(Entity*, const CU::Vector3<float>&)> aFunctionToCall);
+		void RayCast(const CU::Vector3<float>& aOrigin, const CU::Vector3<float>& aNormalizedDirection, float aMaxRayDistance, std::function<void(Entity*, const CU::Vector3<float>&, const CU::Vector3<float>&)> aFunctionToCall);
 
 		physx::PxPhysics* GetCore(){ return myPhysicsSDK; }
 		physx::PxScene* GetScene(){ return myScene; }
@@ -48,7 +48,7 @@ namespace Prism
 		struct RaycastJob
 		{
 			RaycastJob() {}
-			RaycastJob(const CU::Vector3<float>& aOrigin, const CU::Vector3<float>& aNormalizedDirection, float aMaxRayDistance, std::function<void(Entity*, const CU::Vector3<float>&)> aFunctionToCall)
+			RaycastJob(const CU::Vector3<float>& aOrigin, const CU::Vector3<float>& aNormalizedDirection, float aMaxRayDistance, std::function<void(Entity*, const CU::Vector3<float>&, const CU::Vector3<float>&)> aFunctionToCall)
 				: myOrigin(aOrigin)
 				, myNormalizedDirection(aNormalizedDirection)
 				, myMaxRayDistance(aMaxRayDistance)
@@ -57,7 +57,7 @@ namespace Prism
 			CU::Vector3<float> myOrigin;
 			CU::Vector3<float> myNormalizedDirection;
 			float myMaxRayDistance;
-			std::function<void(Entity*, const CU::Vector3<float>&)> myFunctionToCall;
+			std::function<void(Entity*, const CU::Vector3<float>&, const CU::Vector3<float>&)> myFunctionToCall;
 		};
 		void RayCast(const RaycastJob& aRaycastJob);
 		CU::GrowingArray<RaycastJob> myRaycastJobs[2];
@@ -65,14 +65,16 @@ namespace Prism
 		struct RaycastResult
 		{
 			RaycastResult() {}
-			RaycastResult(Entity* anEntity, const CU::Vector3<float>& aDirection, std::function<void(Entity*, const CU::Vector3<float>&)> aFunctionToCall)
+			RaycastResult(Entity* anEntity, const CU::Vector3<float>& aDirection, const CU::Vector3<float>& aHitPosition, std::function<void(Entity*, const CU::Vector3<float>&, const CU::Vector3<float>&)> aFunctionToCall)
 				: myEntity(anEntity)
 				, myDirection(aDirection)
+				, myHitPosition(aHitPosition)
 				, myFunctionToCall(aFunctionToCall)
 			{}
 			Entity* myEntity;
 			CU::Vector3<float> myDirection;
-			std::function<void(Entity*, const CU::Vector3<float>&)> myFunctionToCall;
+			CU::Vector3<float> myHitPosition;
+			std::function<void(Entity*, const CU::Vector3<float>&, const CU::Vector3<float>&)> myFunctionToCall;
 		};
 		CU::GrowingArray<RaycastResult> myRaycastResults[2];
 

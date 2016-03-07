@@ -16,7 +16,7 @@ public:
 	void Update(float aDelta) override;
 
 	void ReceiveMessage(const NetworkSetPositionMessage& aMessage) override;
-
+	void SetPlayer(bool aBool);
 
 private:
 	unsigned int myNetworkID;
@@ -27,6 +27,9 @@ private:
 
 	CU::Vector3<float> myFirstPosition;
 	CU::Vector3<float> mySecondPosition;
+	CU::Vector3<float> mySecondPosition2;
+
+	bool myIsPlayer;
 	bool myShouldReturn;
 	float mySendTime;
 	float myAlpha;

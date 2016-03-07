@@ -24,9 +24,9 @@ Pistol::Pistol()
 
 	reader.CloseDocument();
 
-	myRaycastHandler = [=](Entity* anEntity, const CU::Vector3<float>& aDirection)
+	myRaycastHandler = [=](Entity* anEntity, const CU::Vector3<float>& aDirection, const CU::Vector3<float>& aHitPosition)
 	{
-		this->HandleRaycast(anEntity, aDirection);
+		this->HandleRaycast(anEntity, aDirection, aHitPosition);
 	};
 }
 
@@ -50,7 +50,7 @@ void Pistol::Reload()
 	myAmmoInClip = myClipSize;
 }
 
-void Pistol::HandleRaycast(Entity* anEntity, const CU::Vector3<float>& aDirection)
+void Pistol::HandleRaycast(Entity* anEntity, const CU::Vector3<float>& aDirection, const CU::Vector3<float>& aHitPosition)
 {
 	if (anEntity != nullptr)
 	{

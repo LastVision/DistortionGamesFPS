@@ -182,14 +182,14 @@ namespace Prism
 
 		for (int i = 0; i < myRaycastResults[0].Size(); ++i)
 		{
-			myRaycastResults[0][i].myFunctionToCall(myRaycastResults[0][i].myEntity, myRaycastResults[0][i].myDirection);
+			myRaycastResults[0][i].myFunctionToCall(myRaycastResults[0][i].myEntity, myRaycastResults[0][i].myDirection, myRaycastResults[0][i].myHitPosition);
 		}
 
 		myRaycastResults[0].RemoveAll();
 		//Sleep(16);
 	}
 
-	void PhysicsManager::RayCast(const CU::Vector3<float>& aOrigin, const CU::Vector3<float>& aNormalizedDirection, float aMaxRayDistance, std::function<void(Entity*, const CU::Vector3<float>&)> aFunctionToCall)
+	void PhysicsManager::RayCast(const CU::Vector3<float>& aOrigin, const CU::Vector3<float>& aNormalizedDirection, float aMaxRayDistance, std::function<void(Entity*, const CU::Vector3<float>&, const CU::Vector3<float>&)> aFunctionToCall)
 	{
 		myRaycastJobs[0].Add(RaycastJob(aOrigin, aNormalizedDirection, aMaxRayDistance, aFunctionToCall));
 	}
@@ -211,10 +211,10 @@ namespace Prism
 		physx::PxRaycastBuffer buffer(touches, 32);
 
 		returnValue = myScene->raycast(origin, unitDirection, maxDistance, buffer);
+		CU::Vector3<float> hitPosition;
 		if (returnValue == true)
 		{
 			Prism::PhysEntity* ent = nullptr;//static_cast<PhysEntity*>(buffer.touches[0].actor->userData);
-
 			float closestDist = FLT_MAX;
 			for (int i = 0; i < int(buffer.nbTouches); ++i)
 			{
@@ -226,15 +226,19 @@ namespace Prism
 					}
 					closestDist = buffer.touches[i].distance;
 					ent = static_cast<PhysEntity*>(buffer.touches[i].actor->userData);
+					hitPosition.x = buffer.touches[i].position.x;
+					hitPosition.y = buffer.touches[i].position.y;
+					hitPosition.z = buffer.touches[i].position.z;
+
 				}
 			}
 			if (ent == nullptr)
 			{
-				myRaycastResults[0].Add(RaycastResult(nullptr, aRaycastJob.myNormalizedDirection, aRaycastJob.myFunctionToCall));
+				myRaycastResults[0].Add(RaycastResult(nullptr, aRaycastJob.myNormalizedDirection, hitPosition, aRaycastJob.myFunctionToCall));
 			}
-			myRaycastResults[0].Add(RaycastResult(ent->GetEntity(), aRaycastJob.myNormalizedDirection, aRaycastJob.myFunctionToCall));
+			myRaycastResults[0].Add(RaycastResult(ent->GetEntity(), aRaycastJob.myNormalizedDirection, hitPosition, aRaycastJob.myFunctionToCall));
 		}
-		myRaycastResults[0].Add(RaycastResult(nullptr, aRaycastJob.myNormalizedDirection, aRaycastJob.myFunctionToCall));
+		myRaycastResults[0].Add(RaycastResult(nullptr, aRaycastJob.myNormalizedDirection, hitPosition, aRaycastJob.myFunctionToCall));
 	}
 
 	void PhysicsManager::onPvdConnected(physx::debugger::comm::PvdConnection&)

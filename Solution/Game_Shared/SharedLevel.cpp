@@ -13,6 +13,7 @@ SharedLevel::SharedLevel()
 
 SharedLevel::~SharedLevel()
 {
+	myPlayers.DeleteAll();
 	myEnemies.DeleteAll();
 	myEntities.DeleteAll();
 	Prism::PhysicsInterface::Destroy();

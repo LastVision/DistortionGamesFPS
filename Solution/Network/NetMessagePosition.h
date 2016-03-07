@@ -6,6 +6,7 @@ class NetMessagePosition : public NetMessage
 public:
 	NetMessagePosition();
 	NetMessagePosition(const CU::Vector3<float>& aPos, unsigned int aNetworkID);
+
 	~NetMessagePosition();
 
 

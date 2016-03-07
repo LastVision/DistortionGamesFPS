@@ -11,10 +11,12 @@ NetworkComponent::NetworkComponent(Entity& anEntity, CU::Matrix44<float>& anOrie
 	: Component(anEntity)
 	, myOrientation(anOrientation)
 	, myAlpha(0.f)
+	, myIsPlayer(false)
 {
 	mySendTime = 1 * 0.033f;
-	myFirstPosition = { 0.f, 0.f, 0.f };
+	myFirstPosition = myOrientation.GetPos();
 	mySecondPosition = { 1.f, 0.5f, -56.f };
+	mySecondPosition2 = { 0.f, 0.f, 0.f };
 	PostMaster::GetInstance()->Subscribe(eMessageType::NETWORK_SET_POSITION, this);
 }
 
@@ -36,7 +38,7 @@ void NetworkComponent::SetNetworkID(unsigned int anID)
 
 void NetworkComponent::Update(float aDelta)
 {
-	myAlpha += aDelta * 1.f;
+	myAlpha += aDelta * 0.25f;
 	if (myEntity.GetIsClient() == true)
 	{
 		CU::Vector3<float> newPos = CU::Math::Lerp(myPrevPosition, myServerPosition, myAlpha);
@@ -48,24 +50,39 @@ void NetworkComponent::Update(float aDelta)
 		if (mySendTime < 0.f)
 		{
 			//myServerPosition += aDelta * 5.f;
-			if (myShouldReturn == false)
+			if (myIsPlayer == false)
 			{
-				myServerPosition = CU::Math::Lerp(myFirstPosition, mySecondPosition, myAlpha);
+				if (myShouldReturn == false)
+				{
+					if (myFirstPosition.z < 0.f)
+					{
+						myServerPosition = CU::Math::Lerp(myFirstPosition, mySecondPosition2, myAlpha);
+					}
+					else
+					{
+						myServerPosition = CU::Math::Lerp(myFirstPosition, mySecondPosition, myAlpha);
+					}
+				}
+				else
+				{
+					if (myFirstPosition.z < 0.f)
+					{
+						myServerPosition = CU::Math::Lerp(mySecondPosition2, myFirstPosition, myAlpha);
+					}
+					else
+					{
+						myServerPosition = CU::Math::Lerp(mySecondPosition, myFirstPosition, myAlpha);
+					}
+				}
+				if (myAlpha >= 1)
+				{
+					myShouldReturn = !myShouldReturn;
+					myAlpha = 0;
+				}
 			}
-			else
-			{
-				myServerPosition = CU::Math::Lerp(mySecondPosition, myFirstPosition, myAlpha);
 
-			}
-			if (myAlpha >= 1)
-			{
-				myShouldReturn = !myShouldReturn;
-				myAlpha = 0;
-			}
-
-
-			PostMaster::GetInstance()->SendMessage(NetworkSendPositionMessage(myServerPosition, myNetworkID));
 			mySendTime = 1 * 0.033f;
+			PostMaster::GetInstance()->SendMessage(NetworkSendPositionMessage(myServerPosition, myNetworkID));
 		}
 	}
 }
@@ -78,4 +95,9 @@ void NetworkComponent::ReceiveMessage(const NetworkSetPositionMessage& aMessage)
 		myServerPosition = aMessage.myPosition;
 		myAlpha = 0.f;
 	}
+}
+
+void NetworkComponent::SetPlayer(bool aBool)
+{
+	myIsPlayer = aBool;
 }
