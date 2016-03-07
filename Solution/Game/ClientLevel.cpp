@@ -30,12 +30,13 @@
 #include "EmitterManager.h"
 #include <EmitterMessage.h>
 
+#include <NetworkComponent.h>
+
 ClientLevel::ClientLevel()
 	: myInstanceOrientations(16)
 	, myInstances(16)
 	, myPointLights(64)
 {
-	Prism::PhysicsInterface::Create();
 	//Prism::PhysicsInterface::Destroy();
 	//Prism::PhysicsInterface::GetInstance()->RayCast({ 0, 0, 0 }, { 0, 1, 0 }, 10.f);
 	//Prism::PhysicsInterface::GetInstance()->Update();
@@ -67,7 +68,6 @@ ClientLevel::~ClientLevel()
 	SAFE_DELETE(myPlayer);
 	SAFE_DELETE(myScene);
 	SAFE_DELETE(myDeferredRenderer);
-	Prism::PhysicsInterface::Destroy();
 }
 
 void ClientLevel::Update(const float aDeltaTime)
@@ -124,10 +124,13 @@ void ClientLevel::ReceiveMessage(const NetworkAddEnemyMessage& aMessage)
 	bool isRunTime = Prism::MemoryTracker::GetInstance()->GetRunTime();
 	Prism::MemoryTracker::GetInstance()->SetRunTime(false);
 	Entity* newEnemy = EntityFactory::CreateEntity(eEntityType::UNIT, "grunt", myScene, true, aMessage.myPosition);
+
+	newEnemy->GetComponent<NetworkComponent>()->SetNetworkID(aMessage.myNetworkID);
+
 	//PostMaster::GetInstance()->SendMessage(EmitterMessage("Example", aMessage.myPosition));
 	newEnemy->AddToScene();
 	newEnemy->Reset();
-	myEntities.Add(newEnemy);
+	myEnemies.Add(newEnemy);
 	Prism::MemoryTracker::GetInstance()->SetRunTime(isRunTime);
 }
 

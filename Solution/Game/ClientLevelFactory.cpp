@@ -111,7 +111,9 @@ void ClientLevelFactory::LoadProps(XMLReader& aReader, tinyxml2::XMLElement* aEl
 
 void ClientLevelFactory::LoadUnits(XMLReader& aReader, tinyxml2::XMLElement* aElement)
 {
-	for (tinyxml2::XMLElement* entityElement = aReader.FindFirstChild(aElement, "unit"); entityElement != nullptr;
+	aReader;
+	aElement;
+	/*for (tinyxml2::XMLElement* entityElement = aReader.FindFirstChild(aElement, "unit"); entityElement != nullptr;
 		entityElement = aReader.FindNextElement(entityElement, "unit"))
 	{
 		std::string unitType;
@@ -134,7 +136,7 @@ void ClientLevelFactory::LoadUnits(XMLReader& aReader, tinyxml2::XMLElement* aEl
 		newEntity->Reset();
 
 		myCurrentLevel->AddEntity(newEntity);
-	}
+	}*/
 }
 
 void ClientLevelFactory::LoadTriggers(XMLReader& aReader, tinyxml2::XMLElement* aElement)

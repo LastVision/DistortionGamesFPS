@@ -2,21 +2,30 @@
 #include "SharedLevel.h"
 #include <Entity.h>
 #include <EntityFactory.h>
-
+#include <PhysicsInterface.h>
 SharedLevel::SharedLevel()
 	: myEntities(256)
+	, myEnemies(512)
 	, myPlayers(16)
 {
+	Prism::PhysicsInterface::Create();
 }
 
 SharedLevel::~SharedLevel()
 {
+	myEnemies.DeleteAll();
 	myEntities.DeleteAll();
+	Prism::PhysicsInterface::Destroy();
 }
 
 void SharedLevel::AddEntity(Entity* aEntity)
 {
 	myEntities.Add(aEntity);
+}
+
+void SharedLevel::AddEnemy(Entity* anEntity)
+{
+	myEnemies.Add(anEntity);
 }
 
 void SharedLevel::Update(const float aDeltaTime)
@@ -25,4 +34,10 @@ void SharedLevel::Update(const float aDeltaTime)
 	{
 		entity->Update(aDeltaTime);
 	}
+
+	for (Entity* entity : myEnemies)
+	{
+		entity->Update(aDeltaTime);
+	}
+
 }
