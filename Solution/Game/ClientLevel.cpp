@@ -1,5 +1,7 @@
 #include "stdafx.h"
 #include <Instance.h>
+#include <AudioInterface.h>
+
 #include "ClientLevel.h"
 #include <ModelLoader.h>
 #include "Player.h"
@@ -55,6 +57,10 @@ ClientLevel::ClientLevel()
 	myEmitterManager = new EmitterManager(*myPlayer->GetCamera());
 	CU::Matrix44f orientation;
 	myInstanceOrientations.Add(orientation);
+
+	Prism::Audio::AudioInterface::GetInstance()->PostEvent("PlayBackground", 0);
+	Prism::Audio::AudioInterface::GetInstance()->PostEvent("PlayFirstLayer", 0);
+	Prism::Audio::AudioInterface::GetInstance()->PostEvent("PlaySecondLayer", 0);
 }
 
 ClientLevel::~ClientLevel()
@@ -68,6 +74,10 @@ ClientLevel::~ClientLevel()
 	SAFE_DELETE(myPlayer);
 	SAFE_DELETE(myScene);
 	SAFE_DELETE(myDeferredRenderer);
+
+	Prism::Audio::AudioInterface::GetInstance()->PostEvent("StopBackground", 0);
+	Prism::Audio::AudioInterface::GetInstance()->PostEvent("StopFirstLayer", 0);
+	Prism::Audio::AudioInterface::GetInstance()->PostEvent("StopSecondLayer", 0);
 }
 
 void ClientLevel::Update(const float aDeltaTime)
@@ -93,6 +103,7 @@ void ClientLevel::Update(const float aDeltaTime)
 		myPlayers[i]->SetPosition(position);
 	}
 
+	DebugMusic();
 
 	Prism::PhysicsInterface::GetInstance()->Update();
 	Prism::PhysicsInterface::GetInstance()->EndFrame();
@@ -138,4 +149,32 @@ void ClientLevel::AddLight(Prism::PointLight* aLight)
 {
 	myPointLights.Add(aLight);
 	myScene->AddLight(aLight);
+}
+
+void ClientLevel::DebugMusic()
+{
+	if (CU::InputWrapper::GetInstance()->KeyDown(DIK_4) == true)
+	{
+		Prism::Audio::AudioInterface::GetInstance()->PostEvent("FadeInBackground", 0);
+	}
+	if (CU::InputWrapper::GetInstance()->KeyDown(DIK_5) == true)
+	{
+		Prism::Audio::AudioInterface::GetInstance()->PostEvent("FadeOutBackground", 0);
+	}
+	if (CU::InputWrapper::GetInstance()->KeyDown(DIK_6) == true)
+	{
+		Prism::Audio::AudioInterface::GetInstance()->PostEvent("FadeInFirstLayer", 0);
+	}
+	if (CU::InputWrapper::GetInstance()->KeyDown(DIK_7) == true)
+	{
+		Prism::Audio::AudioInterface::GetInstance()->PostEvent("FadeOutFirstLayer", 0);
+	}
+	if (CU::InputWrapper::GetInstance()->KeyDown(DIK_8) == true)
+	{
+		Prism::Audio::AudioInterface::GetInstance()->PostEvent("FadeInSecondLayer", 0);
+	}
+	if (CU::InputWrapper::GetInstance()->KeyDown(DIK_9) == true)
+	{
+		Prism::Audio::AudioInterface::GetInstance()->PostEvent("FadeOutSecondLayer", 0);
+	}
 }

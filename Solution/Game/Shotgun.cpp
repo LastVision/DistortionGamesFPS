@@ -25,9 +25,9 @@ Shotgun::Shotgun()
 
 	reader.CloseDocument();
 
-	myRaycastHandler = [=](Entity* anEntity, const CU::Vector3<float>& aDirection)
+	myRaycastHandler = [=](Entity* anEntity, const CU::Vector3<float>& aDirection, const CU::Vector3<float>& aHitPosition)
 	{
-		this->HandleRaycast(anEntity, aDirection);
+		this->HandleRaycast(anEntity, aDirection, aHitPosition);
 	};
 }
 
@@ -55,7 +55,7 @@ void Shotgun::Reload()
 	myAmmoInClip = myClipSize;
 }
 
-void Shotgun::HandleRaycast(Entity* anEntity, const CU::Vector3<float>& aDirection)
+void Shotgun::HandleRaycast(Entity* anEntity, const CU::Vector3<float>& aDirection, const CU::Vector3<float>& aHitPosition)
 {
 	if (anEntity != nullptr)
 	{
@@ -63,7 +63,7 @@ void Shotgun::HandleRaycast(Entity* anEntity, const CU::Vector3<float>& aDirecti
 		{
 			anEntity->GetPhysEntity()->AddForce(aDirection, 25.f);
 		}
-
+		aHitPosition;
 		anEntity->SendNote<DamageNote>(DamageNote(myDamage));
 
 	}
