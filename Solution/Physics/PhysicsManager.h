@@ -19,11 +19,16 @@ namespace physx
 
 namespace Prism
 {
+	class PhysEntity;
+
 	class PhysicsManager : public physx::debugger::comm::PvdConnectionHandler
 	{
 	public:
 		PhysicsManager();
 		~PhysicsManager();
+
+		void Add(PhysEntity* aPhysEntity);
+		void SwapOrientations();
 
 		void Update();
 
@@ -40,10 +45,6 @@ namespace Prism
 		void GetPosition(int aId, CU::Vector3<float>& aPositionOut);
 
 	private:
-		//raycastJobs  dubbla buffrar
-
-		//raycastResult dubbla buffrar
-
 		struct RaycastJob
 		{
 			RaycastJob() {}
@@ -74,6 +75,8 @@ namespace Prism
 			std::function<void(Entity*, const CU::Vector3<float>&)> myFunctionToCall;
 		};
 		CU::GrowingArray<RaycastResult> myRaycastResults[2];
+
+		CU::GrowingArray<PhysEntity*> myPhysEntities;
 
 		void onPvdSendClassDescriptions(physx::debugger::comm::PvdConnection&) override{}
 		void onPvdConnected(physx::debugger::comm::PvdConnection& connection) override;
