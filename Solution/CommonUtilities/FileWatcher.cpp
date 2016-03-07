@@ -3,7 +3,7 @@
 #include "FileWatcher.h"
 #include <fstream>
 
-namespace LUA
+namespace CU
 {
 	FileWatcher::FileWatcher()
 		: myThread(nullptr)

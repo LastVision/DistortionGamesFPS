@@ -7,7 +7,7 @@
 #include <thread>
 #include <mutex>
 
-namespace LUA
+namespace CU
 {
 	typedef std::function<void(const std::string&)> callback_function_file;
 

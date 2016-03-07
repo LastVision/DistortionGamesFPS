@@ -10,7 +10,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ScriptSystem.cpp" />
-    <ClCompile Include="FileWatcher.cpp" />
     <ClCompile Include="stdafx.cpp">
       <Filter>PreCompile</Filter>
     </ClCompile>
@@ -33,7 +32,6 @@
       <Filter>LuaFiles</Filter>
     </ClInclude>
     <ClInclude Include="LuaArgs.h" />
-    <ClInclude Include="FileWatcher.h" />
     <ClInclude Include="stdafx.h">
       <Filter>PreCompile</Filter>
     </ClInclude>
