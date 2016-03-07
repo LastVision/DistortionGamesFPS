@@ -237,7 +237,7 @@ namespace Prism
 
 	bool Effect::ReloadShader(const std::string& aFile)
 	{
-		Sleep(100);
+		Sleep(10);
 		myFileName = aFile;
 
 		HRESULT hr;
