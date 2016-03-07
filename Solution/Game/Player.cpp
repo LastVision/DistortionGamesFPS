@@ -1,5 +1,7 @@
 #include "stdafx.h"
 
+#include <Animation.h>
+#include <AnimationSystem.h>
 #include <Camera.h>
 #include "ClientNetworkManager.h"
 #include <GUIManager3D.h>
@@ -17,6 +19,8 @@
 
 Player::Player(Prism::Scene* aScene)
 	: myAlive(true)
+	, myCurrentState(ePlayerState::PISTOL_IDLE)
+	, myIntentions(8)
 {
 	XMLReader reader;
 	reader.OpenDocument("Data/Setting/SET_player.xml");
@@ -33,14 +37,34 @@ Player::Player(Prism::Scene* aScene)
 	myCamera = new Prism::Camera(myEyeOrientation);
 	myMovement = new Movement(myOrientation, reader, movementElement);
 	myHealth = new Health(reader, healthElement);
-	myShooting = new Shooting(aScene);
+	myShooting = new Shooting(aScene, this);
 	mySpawnPosition = myOrientation.GetPos();
 	reader.CloseDocument();
 	CU::Vector2<float> size(128.f, 128.f);
 	myCrosshair = Prism::ModelLoader::GetInstance()->LoadSprite("Data/Resource/Texture/UI/T_crosshair.dds", size, size * 0.5f);
 
-	myModel = new Prism::Instance(*Prism::ModelLoader::GetInstance()->LoadModelAnimated("Data/Resource/Model/First_person/SK_arm_pistol_draw.fbx", "Data/Resource/Shader/S_effect_pbl_animated.fx"), myEyeOrientation);
+	Prism::ModelProxy* model = Prism::ModelLoader::GetInstance()->LoadModelAnimated("Data/Resource/Model/First_person/Pistol/SK_arm_pistol_idle.fbx", "Data/Resource/Shader/S_effect_pbl_animated.fx");
+	myModel = new Prism::Instance(*model, myEyeOrientation);
 	aScene->AddInstance(myModel, true);
+
+	AddAnimation(ePlayerState::PISTOL_IDLE, "Data/Resource/Model/First_person/Pistol/SK_arm_pistol_idle.fbx", true, true);
+	AddAnimation(ePlayerState::PISTOL_HOLSTER, "Data/Resource/Model/First_person/Pistol/SK_arm_pistol_holster.fbx", false, true);
+	AddAnimation(ePlayerState::PISTOL_DRAW, "Data/Resource/Model/First_person/Pistol/SK_arm_pistol_draw.fbx", false, true);
+	AddAnimation(ePlayerState::PISTOL_RELOAD, "Data/Resource/Model/First_person/Pistol/SK_arm_pistol_reload.fbx", false, true);
+	AddAnimation(ePlayerState::PISTOL_FIRE, "Data/Resource/Model/First_person/Pistol/SK_arm_pistol_fire.fbx", false, true);
+
+	AddAnimation(ePlayerState::SHOTGUN_IDLE, "Data/Resource/Model/First_person/Shotgun/SK_arm_shotgun_idle.fbx", true, true);
+	AddAnimation(ePlayerState::SHOTGUN_HOLSTER, "Data/Resource/Model/First_person/Shotgun/SK_arm_shotgun_holster.fbx", false, true);
+	AddAnimation(ePlayerState::SHOTGUN_DRAW, "Data/Resource/Model/First_person/Shotgun/SK_arm_shotgun_draw.fbx", false, true);
+	AddAnimation(ePlayerState::SHOTGUN_RELOAD, "Data/Resource/Model/First_person/Shotgun/SK_arm_shotgun_reload.fbx", false, true);
+	AddAnimation(ePlayerState::SHOTGUN_FIRE, "Data/Resource/Model/First_person/Shotgun/SK_arm_shotgun_fire.fbx", false, true);
+
+	AddAnimation(ePlayerState::GRENADE_LAUNCHER_IDLE, "Data/Resource/Model/First_person/GrenadeLauncher/SK_arm_grenade_launcher_idle.fbx", true, true);
+	AddAnimation(ePlayerState::GRENADE_LAUNCHER_HOLSTER, "Data/Resource/Model/First_person/GrenadeLauncher/SK_arm_grenade_launcher_holster.fbx", false, true);
+	AddAnimation(ePlayerState::GRENADE_LAUNCHER_DRAW, "Data/Resource/Model/First_person/GrenadeLauncher/SK_arm_grenade_launcher_draw.fbx", false, true);
+	AddAnimation(ePlayerState::GRENADE_LAUNCHER_RELOAD, "Data/Resource/Model/First_person/GrenadeLauncher/SK_arm_grenade_launcher_reload.fbx", false, true);
+	AddAnimation(ePlayerState::GRENADE_LAUNCHER_FIRE, "Data/Resource/Model/First_person/GrenadeLauncher/SK_arm_grenade_launcher_fire.fbx", false, true);
+	
 
 	myJumpAcceleration = 0;
 	myJumpOffset = 0;
@@ -48,8 +72,20 @@ Player::Player(Prism::Scene* aScene)
 	myModel->Update(1.f / 30.f);
 	mySendTime = 3;
 
+	PlayAnimation(ePlayerState::PISTOL_IDLE);
+	while (myModel->GetCurrentAnimation() == nullptr)
+	{
 
-	//myWristOrientation = myOrientation * myModel->GetCurrentAnimation()->GetHiearchyToBone("r_wrist_jnt1");
+	}
+
+	for (int i = 0; i < static_cast<int>(ePlayerState::_COUNT); ++i)
+	{
+		myAnimations[i].myUIBone = Prism::AnimationSystem::GetInstance()->GetAnimation(myAnimations[i].myData.myFile.c_str())->GetHiearchyToBone("ui_jnt3");
+		myAnimations[i].myHealthBone = Prism::AnimationSystem::GetInstance()->GetAnimation(myAnimations[i].myData.myFile.c_str())->GetHiearchyToBone("health_jnt3");
+
+		//myAnimations[i].myUIBone.myBind = &CU::InverseSimple(*myAnimations[i].myUIBone.myBind);
+		//myAnimations[i].myHealthBone.myBind = &CU::InverseSimple(*myAnimations[i].myHealthBone.myBind);
+	}
 
 	my3DGUIManager = new GUI::GUIManager3D(myModel, aScene
 		, myShooting->GetWeapon(eWeaponType::PISTOL)->GetClipSize(), myShooting->GetWeapon(eWeaponType::PISTOL)->GetAmmoInClip()
@@ -101,9 +137,16 @@ void Player::Update(float aDelta)
 	myEyeOrientation.SetPos(position);
 
 	myShooting->Update(aDelta, myEyeOrientation);
+	
+	UpdateAnimation(aDelta);
 
-	myModel->Update(aDelta);
-	my3DGUIManager->Update(myEyeOrientation, myHealth->GetCurrentHealth(), myHealth->GetMaxHealth(), aDelta);
+	CU::Matrix44<float> uiJoint = CU::InverseSimple(*myAnimations[static_cast<int>(myCurrentState)].myUIBone.myBind) 
+		* (*myAnimations[static_cast<int>(myCurrentState)].myUIBone.myJoint) * myEyeOrientation;
+	
+	CU::Matrix44<float> healthJoint = CU::InverseSimple(*myAnimations[static_cast<int>(myCurrentState)].myHealthBone.myBind)
+		* (*myAnimations[static_cast<int>(myCurrentState)].myHealthBone.myJoint) * myEyeOrientation;
+
+	my3DGUIManager->Update(uiJoint, healthJoint, myHealth->GetCurrentHealth(), myHealth->GetMaxHealth(), aDelta);
 
 	CU::Vector3<float> playerPos(myOrientation.GetPos());
 	DEBUG_PRINT(playerPos);
@@ -122,6 +165,47 @@ void Player::Update(float aDelta)
 	myCamera->Update(aDelta);
 }
 
+void Player::UpdateAnimation(float aDelta)
+{
+	if (myCurrentState == ePlayerState::PISTOL_IDLE
+		|| myCurrentState == ePlayerState::SHOTGUN_IDLE
+		|| myCurrentState == ePlayerState::GRENADE_LAUNCHER_IDLE)
+	{
+		if (myIntentions.Size() > 0)
+		{
+			myCurrentState = myIntentions[0];
+			myIntentions.RemoveNonCyclicAtIndex(0);
+
+			PlayAnimation(myCurrentState);
+		}
+	}
+
+	Prism::AnimationData& data = myAnimations[int(myCurrentState)].myData;
+	if (myModel->IsAnimationDone() == false || data.myShouldLoop == true)
+	{
+		myModel->Update(aDelta);
+	}
+	if (myModel->IsAnimationDone() == true && data.myShouldLoop == false)
+	{
+		switch (myShooting->GetCurrentWeapon()->GetWeaponType())
+		{
+		case eWeaponType::PISTOL:
+			myCurrentState = ePlayerState::PISTOL_IDLE;
+			PlayAnimation(myCurrentState);
+			break;
+		case eWeaponType::GRENADE_LAUNCHER:
+			myCurrentState = ePlayerState::GRENADE_LAUNCHER_IDLE;
+			PlayAnimation(myCurrentState);
+			break;
+		case eWeaponType::SHOTGUN:
+			myCurrentState = ePlayerState::SHOTGUN_IDLE;
+			PlayAnimation(myCurrentState);
+			break;
+		}
+	}
+	data.myElapsedTime += aDelta;
+}
+
 void Player::Render()
 {
 	const CU::Vector2<float>& windowSize = Prism::Engine::GetInstance()->GetWindowSize();
@@ -134,4 +218,67 @@ void Player::Respawn()
 	myMovement->SetPosition(mySpawnPosition);
 	myHealth->Reset();
 	myAlive = true;
+}
+
+bool Player::IsCurrentAnimationDone() const
+{
+	return myModel->IsAnimationDone();
+}
+
+void Player::RestartCurrentAnimation()
+{
+	myModel->ResetAnimationTime(0.f);
+}
+
+void Player::AddAnimation(ePlayerState aState, const std::string& aAnimationPath
+	, bool aLoopFlag, bool aResetTimeOnRestart)
+{
+	//Prism::ModelLoader::GetInstance()->LoadModelAnimated(aAnimationPath, "Data/Resource/Shader/S_effect_pbl_animated.fx");
+	Prism::AnimationSystem::GetInstance()->GetAnimation(aAnimationPath.c_str());
+	Prism::AnimationData newData;
+	newData.myElapsedTime = 0.f;
+	newData.myFile = aAnimationPath;
+	newData.myShouldLoop = aLoopFlag;
+	newData.myResetTimeOnRestart = aResetTimeOnRestart;
+	myAnimations[int(aState)].myData = newData;
+}
+
+void Player::PlayAnimation(ePlayerState aAnimationState)
+{
+	myCurrentState = aAnimationState;
+	Prism::AnimationData& data = myAnimations[int(aAnimationState)].myData;
+	myModel->SetAnimation(Prism::AnimationSystem::GetInstance()->GetAnimation(data.myFile.c_str()));
+
+	if (data.myResetTimeOnRestart == true)
+	{
+		myModel->ResetAnimationTime(0.f);
+	}
+	else
+	{
+		myModel->ResetAnimationTime(data.myElapsedTime);
+	}
+}
+
+void Player::AddIntention(ePlayerState aPlayerState, bool aClearIntentions)
+{
+	if (aClearIntentions == true)
+	{
+		myIntentions.RemoveAll();
+		switch (myShooting->GetCurrentWeapon()->GetWeaponType())
+		{
+		case eWeaponType::PISTOL:
+			myCurrentState = ePlayerState::PISTOL_IDLE;
+			PlayAnimation(myCurrentState);
+			break;
+		case eWeaponType::GRENADE_LAUNCHER:
+			myCurrentState = ePlayerState::GRENADE_LAUNCHER_IDLE;
+			PlayAnimation(myCurrentState);
+			break;
+		case eWeaponType::SHOTGUN:
+			myCurrentState = ePlayerState::SHOTGUN_IDLE;
+			PlayAnimation(myCurrentState);
+			break;
+		}
+	}
+	myIntentions.Add(aPlayerState);
 }

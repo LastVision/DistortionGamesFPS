@@ -1,33 +1,80 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="Source Files">
-      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
-      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    <Filter Include="Precompile">
+      <UniqueIdentifier>{0da62480-ca07-45c9-acde-c9144917966b}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files">
-      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
-      <Extensions>h;hh;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    <Filter Include="Network">
+      <UniqueIdentifier>{c65366a9-dff3-467b-9cf4-b41e5490d60d}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Resource Files">
-      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
-      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    <Filter Include="StateStack">
+      <UniqueIdentifier>{bdcd5e13-4557-42da-a178-c318b0a7eca8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Level">
+      <UniqueIdentifier>{89e05da9-eaad-4416-bb1f-ca49595eb8df}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Level\Factory">
+      <UniqueIdentifier>{82738a90-795c-4af8-9d12-d1677f52503b}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
-      <Filter>Header Files</Filter>
+      <Filter>Precompile</Filter>
     </ClInclude>
     <ClInclude Include="ServerNetworkManager.h">
-      <Filter>Header Files</Filter>
+      <Filter>Network</Filter>
+    </ClInclude>
+    <ClInclude Include="ServerGame.h" />
+    <ClInclude Include="ServerState.h">
+      <Filter>StateStack</Filter>
+    </ClInclude>
+    <ClInclude Include="ServerStateStack.h">
+      <Filter>StateStack</Filter>
+    </ClInclude>
+    <ClInclude Include="ServerStateStackProxy.h">
+      <Filter>StateStack</Filter>
+    </ClInclude>
+    <ClInclude Include="StateEnums.h">
+      <Filter>StateStack</Filter>
+    </ClInclude>
+    <ClInclude Include="ServerInGameState.h">
+      <Filter>StateStack</Filter>
+    </ClInclude>
+    <ClInclude Include="ServerLobbyState.h">
+      <Filter>StateStack</Filter>
+    </ClInclude>
+    <ClInclude Include="ServerLevel.h">
+      <Filter>Level</Filter>
+    </ClInclude>
+    <ClInclude Include="ServerLevelFactory.h">
+      <Filter>Level\Factory</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Precompile</Filter>
     </ClCompile>
     <ClCompile Include="ServerNetworkManager.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Network</Filter>
+    </ClCompile>
+    <ClCompile Include="ServerGame.cpp" />
+    <ClCompile Include="ServerStateStack.cpp">
+      <Filter>StateStack</Filter>
+    </ClCompile>
+    <ClCompile Include="ServerStateStackProxy.cpp">
+      <Filter>StateStack</Filter>
+    </ClCompile>
+    <ClCompile Include="ServerInGameState.cpp">
+      <Filter>StateStack</Filter>
+    </ClCompile>
+    <ClCompile Include="ServerLobbyState.cpp">
+      <Filter>StateStack</Filter>
+    </ClCompile>
+    <ClCompile Include="ServerLevel.cpp">
+      <Filter>Level</Filter>
+    </ClCompile>
+    <ClCompile Include="ServerLevelFactory.cpp">
+      <Filter>Level\Factory</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

@@ -48,6 +48,8 @@ namespace Prism
 			return myModels[aFilePath];
 		}
 
+		DL_PRINT_VA("Loading (as DGFX): %s", aFilePath.c_str());
+
 		std::string dgfxFile = CU::GetGeneratedDataFolderFilePath(aFilePath, "dgfx");
 
 #ifndef RELEASE_BUILD
@@ -160,6 +162,9 @@ namespace Prism
 			_wassert(L"FOUND OLD ANIMATION_DGFX", L"DGFXLoader.cpp", 173);
 			return nullptr;
 		}
+
+		float radius = 0.f;
+		stream.read((char*)&radius, sizeof(float));
 
 		int isNullObject = -1;
 		stream.read((char*)&isNullObject, sizeof(int));

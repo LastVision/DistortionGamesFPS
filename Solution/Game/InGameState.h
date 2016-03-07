@@ -4,8 +4,8 @@
 #include <GrowingArray.h>
 #include <Subscriber.h>
 
-class Level;
-class LevelFactory;
+class ClientLevel;
+class ClientLevelFactory;
 class MessageState;
 
 
@@ -42,6 +42,6 @@ public:
 
 private:
 	GUI::GUIManager* myGUIManager;
-	Level* myLevel;
-	LevelFactory* myLevelFactory;
+	ClientLevel* myLevel;
+	ClientLevelFactory* myLevelFactory;
 };

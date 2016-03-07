@@ -5,8 +5,8 @@
 #include <FadeMessage.h>
 #include "InGameState.h"
 #include <InputWrapper.h>
-#include "Level.h"
-#include "LevelFactory.h"
+#include "ClientLevel.h"
+#include "ClientLevelFactory.h"
 #include "LobbyState.h"
 #include <PostMaster.h>
 #include <ScriptSystem.h>
@@ -19,7 +19,7 @@ InGameState::InGameState()
 	: myGUIManager(nullptr)
 {
 	myIsActiveState = false;
-	myLevelFactory = new LevelFactory("Data/Level/LI_level.xml");
+	myLevelFactory = new ClientLevelFactory("Data/Level/LI_level.xml");
 }
 
 InGameState::~InGameState()
@@ -38,7 +38,7 @@ void InGameState::InitState(StateStackProxy* aStateStackProxy, GUI::Cursor* aCur
 	myCursor->SetShouldRender(false);
 
 	//PostMaster::GetInstance()->SendMessage(RunScriptMessage("Data/Script/Autorun.script"));
-	myLevel = myLevelFactory->LoadCurrentLevel();
+	myLevel = static_cast<ClientLevel*>(myLevelFactory->LoadCurrentLevel());
 
 	myIsActiveState = true;
 }
@@ -65,19 +65,19 @@ const eStateStatus InGameState::Update(const float& aDeltaTime)
 	{
 		SET_RUNTIME(false);
 		SAFE_DELETE(myLevel);
-		myLevel = myLevelFactory->LoadLevel(0);
+		myLevel = static_cast<ClientLevel*>(myLevelFactory->LoadLevel(0));
 	}
 	else if (CU::InputWrapper::GetInstance()->KeyDown(DIK_NUMPAD2))
 	{
 		SET_RUNTIME(false);
 		SAFE_DELETE(myLevel);
-		myLevel = myLevelFactory->LoadLevel(1);
+		myLevel = static_cast<ClientLevel*>(myLevelFactory->LoadLevel(1));
 	}
 	else if (CU::InputWrapper::GetInstance()->KeyDown(DIK_NUMPAD3))
 	{
 		SET_RUNTIME(false);
 		SAFE_DELETE(myLevel);
-		myLevel = myLevelFactory->LoadLevel(3);
+		myLevel = static_cast<ClientLevel*>(myLevelFactory->LoadLevel(3));
 	}
 
 	myLevel->Update(aDeltaTime);

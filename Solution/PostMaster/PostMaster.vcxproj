@@ -158,43 +158,17 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="ArtifactMessage.h" />
-    <ClInclude Include="BlockMapMessage.h" />
     <ClInclude Include="EmitterMessage.h" />
-    <ClInclude Include="EventPositionMessage.h" />
-    <ClInclude Include="InWorldTextMessage.h" />
-    <ClInclude Include="KilledPromotedMessage.h" />
-    <ClInclude Include="KillUnitMessage.h" />
-    <ClInclude Include="MinimapEventMessage.h" />
-    <ClInclude Include="MinimapMoveMessage.h" />
-    <ClInclude Include="PostNetConnectMessage.h" />
-    <ClInclude Include="PostNetPositionMessage.h" />
-    <ClInclude Include="NotificationMessage.h" />
-    <ClInclude Include="SelectUnitMessage.h" />
-    <ClInclude Include="TextMessage.h" />
-    <ClInclude Include="TimeMultiplierMessage.h" />
-    <ClInclude Include="FadeMessage.h" />
+    <ClInclude Include="NetworkAddEnemyMessage.h" />
+    <ClInclude Include="NetworkAddPlayerMessage.h" />
     <ClInclude Include="GameStateMessage.h" />
-    <ClInclude Include="ToggleFogOfWarMessage.h" />
-    <ClInclude Include="ToggleRenderLinesMessage.h" />
-    <ClInclude Include="RunScriptMessage.h" />
     <ClInclude Include="Message.h" />
     <ClInclude Include="MessageEnum.h" />
-    <ClInclude Include="MoveCameraMessage.h" />
     <ClInclude Include="OnClickMessage.h" />
     <ClInclude Include="PostMaster.h" />
     <ClInclude Include="ResizeMessage.h" />
-    <ClInclude Include="ResourceMessage.h" />
-    <ClInclude Include="SpawnUnitMessage.h" />
-    <ClInclude Include="CinematicMessage.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="Subscriber.h" />
-    <ClInclude Include="ToggleBuildTimeMessage.h" />
-    <ClInclude Include="ToggleGUIMessage.h" />
-    <ClInclude Include="TriggerMessage.h" />
-    <ClInclude Include="TutorialMessage.h" />
-    <ClInclude Include="UpgradeUnitMessage.h" />
-    <ClInclude Include="VictoryMessage.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="GameStateMessage.cpp" />

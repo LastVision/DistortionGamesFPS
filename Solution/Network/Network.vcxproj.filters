@@ -42,6 +42,10 @@
     <ClCompile Include="ServerNetwork.cpp">
       <Filter>Interfaces</Filter>
     </ClCompile>
+    <ClCompile Include="NetImportantMessage.cpp" />
+    <ClCompile Include="NetMessageAddEnemy.cpp">
+      <Filter>Messages</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
@@ -79,6 +83,10 @@
     </ClInclude>
     <ClInclude Include="ServerNetwork.h">
       <Filter>Interfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="NetImportantMessage.h" />
+    <ClInclude Include="NetMessageAddEnemy.h">
+      <Filter>Messages</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

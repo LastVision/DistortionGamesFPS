@@ -337,6 +337,7 @@
   <ItemGroup>
     <ClInclude Include="Animation.h" />
     <ClInclude Include="AnimationCurve.h" />
+    <ClInclude Include="AnimationData.h" />
     <ClInclude Include="AnimationNode.h" />
     <ClInclude Include="AnimationProxy.h" />
     <ClInclude Include="AnimationSystem.h" />

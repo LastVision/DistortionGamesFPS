@@ -15,10 +15,11 @@ ServerNetwork::~ServerNetwork()
 	WSACleanup();
 }
 
-void ServerNetwork::StartServer()
+void ServerNetwork::StartServer(unsigned int aPortNum)
 {
 	//myClients.Init(8);
-	myPort = "13397";
+	std::string ab(std::to_string(aPortNum).c_str());
+	myPort = ab.c_str();
 	addrinfo* addrResult;
 	addrinfo  hints;
 
@@ -79,14 +80,6 @@ void ServerNetwork::StartServer()
 
 	Utility::PrintEndl("Server successfully started!", LIGHT_GREEN_TEXT);
 
-}
-
-void ServerNetwork::Send(const std::vector<char>& anArray)
-{
-	/*for (int i = 0; i < myClients.Size(); ++i)
-	{
-	Send(anArray, myClients[i].myAdress);
-	}*/
 }
 
 void ServerNetwork::Send(const std::vector<char>& anArray, const sockaddr_in& anAddress)

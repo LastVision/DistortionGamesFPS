@@ -394,6 +394,9 @@
     <ClInclude Include="DeferredRenderer.h">
       <Filter>Rendering\Renderer</Filter>
     </ClInclude>
+    <ClInclude Include="AnimationData.h">
+      <Filter>Rendering\Animation</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Precompile">

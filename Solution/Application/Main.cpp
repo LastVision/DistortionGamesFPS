@@ -1,5 +1,5 @@
 #include "stdafx.h"
-#include <Game.h>
+#include <ClientGame.h>
 #include <ModelLoader.h>
 #include <SetupInfo.h>
 #include <string.h>
@@ -15,7 +15,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 bool ReadSetup(Prism::SetupInfo& aSetup, const std::string& aFilePath);
 void OnResize();
 
-Game* globalGame = nullptr;
+ClientGame* globalGame = nullptr;
 int globalClientWidth = 800;
 int globalClientHeight = 600;
 bool globalIsResizing = false;
@@ -82,7 +82,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPTSTR, int aNumberCommands)
 		return 1;
 	}
 
-	globalGame = new Game();
+	globalGame = new ClientGame();
 	if (globalGame->Init(hwnd) == false)
 	{
 		return 1;

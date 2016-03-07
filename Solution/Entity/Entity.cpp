@@ -8,15 +8,17 @@
 #include <Instance.h>
 #include <EmitterMessage.h>
 #include <PostMaster.h>
+#include "TriggerComponent.h"
 
 #include <PhysEntity.h>
 
-Entity::Entity(const EntityData& aEntityData, Prism::Scene& aScene, const CU::Vector3<float>& aStartPosition,
+Entity::Entity(const EntityData& aEntityData, Prism::Scene* aScene, bool aClientSide, const CU::Vector3<float>& aStartPosition,
 		const CU::Vector3f& aRotation, const CU::Vector3f& aScale)
 	: myScene(aScene)
 	, myEntityData(aEntityData)
 	, myEmitterConnection(nullptr)
 	, myPhysEntity(nullptr)
+	, myIsClientSide(aClientSide)
 {
 	for (int i = 0; i < static_cast<int>(eComponentType::_COUNT); ++i)
 	{
@@ -25,19 +27,22 @@ Entity::Entity(const EntityData& aEntityData, Prism::Scene& aScene, const CU::Ve
 
 	myOrientation.SetPos(aStartPosition);
 
-	if (aEntityData.myAnimationData.myExistsInEntity == true)
+	if (myScene != nullptr)
 	{
-		myComponents[static_cast<int>(eComponentType::ANIMATION)] = new AnimationComponent(*this, aEntityData.myAnimationData);
-		GetComponent<AnimationComponent>()->SetRotation(aRotation);
-		GetComponent<AnimationComponent>()->SetScale(aScale);
-		myPhysEntity = new Prism::PhysEntity(aEntityData.myPhysData, myOrientation, aEntityData.myAnimationData.myModelPath, this);
-	}
-	else if (aEntityData.myGraphicsData.myExistsInEntity == true)
-	{
-		myComponents[static_cast<int>(eComponentType::GRAPHICS)] = new GraphicsComponent(*this, aEntityData.myGraphicsData);
-		GetComponent<GraphicsComponent>()->SetRotation(aRotation);
-		GetComponent<GraphicsComponent>()->SetScale(aScale);
-		myPhysEntity = new Prism::PhysEntity(aEntityData.myPhysData, myOrientation, aEntityData.myGraphicsData.myModelPath, this);
+		if (aEntityData.myAnimationData.myExistsInEntity == true)
+		{
+			myComponents[static_cast<int>(eComponentType::ANIMATION)] = new AnimationComponent(*this, aEntityData.myAnimationData);
+			GetComponent<AnimationComponent>()->SetRotation(aRotation);
+			GetComponent<AnimationComponent>()->SetScale(aScale);
+			myPhysEntity = new Prism::PhysEntity(aEntityData.myPhysData, myOrientation, aEntityData.myAnimationData.myModelPath, this);
+		}
+		else if (aEntityData.myGraphicsData.myExistsInEntity == true)
+		{
+			myComponents[static_cast<int>(eComponentType::GRAPHICS)] = new GraphicsComponent(*this, aEntityData.myGraphicsData);
+			GetComponent<GraphicsComponent>()->SetRotation(aRotation);
+			GetComponent<GraphicsComponent>()->SetScale(aScale);
+			myPhysEntity = new Prism::PhysEntity(aEntityData.myPhysData, myOrientation, aEntityData.myGraphicsData.myModelPath, this);
+		}
 	}
 	
 	if (aEntityData.myProjecileData.myExistsInEntity == true)
@@ -50,7 +55,10 @@ Entity::Entity(const EntityData& aEntityData, Prism::Scene& aScene, const CU::Ve
 		myComponents[static_cast<int>(eComponentType::HEALTH)] = new HealthComponent(*this, aEntityData.myHealthData);
 	}
 
-
+	if (aEntityData.myTriggerData.myExistsInEntity == true)
+	{
+		myComponents[static_cast<int>(eComponentType::TRIGGER)] = new TriggerComponent(*this, aEntityData.myTriggerData);
+	}
 	
 
 	//myPhysEntity = new Prism::PhysEntity(&pos.x, aEntityData.myPhysData, myOrientation, aEntityData.myGraphicsData.myModelPath);
@@ -116,14 +124,15 @@ void Entity::RemoveComponent(eComponentType aComponent)
 void Entity::AddToScene()
 {
 	DL_ASSERT_EXP(myIsInScene == false, "Tried to add Entity to scene twice");
+	DL_ASSERT_EXP(myIsClientSide == true, "You can't add Entity to scene on server side.");
 
 	if (GetComponent<GraphicsComponent>() != nullptr && GetComponent<GraphicsComponent>()->GetInstance() != nullptr)
 	{
-		myScene.AddInstance(GetComponent<GraphicsComponent>()->GetInstance());
+		myScene->AddInstance(GetComponent<GraphicsComponent>()->GetInstance());
 	}
 	else if (GetComponent<AnimationComponent>() != nullptr && GetComponent<AnimationComponent>()->GetInstance() != nullptr)
 	{
-		myScene.AddInstance(GetComponent<AnimationComponent>()->GetInstance());
+		myScene->AddInstance(GetComponent<AnimationComponent>()->GetInstance());
 	}
 	
 	myIsInScene = true;
@@ -132,17 +141,24 @@ void Entity::AddToScene()
 void Entity::RemoveFromScene()
 {
 	DL_ASSERT_EXP(myIsInScene == true, "Tried to remove Entity not in scene");
+	DL_ASSERT_EXP(myIsClientSide == true, "You can't remove Entity to scene on server side.");
 
 	if (GetComponent<GraphicsComponent>() != nullptr)
 	{
-		myScene.RemoveInstance(GetComponent<GraphicsComponent>()->GetInstance());
+		myScene->RemoveInstance(GetComponent<GraphicsComponent>()->GetInstance());
 	}
 	else if (GetComponent<AnimationComponent>() != nullptr)
 	{
-		myScene.RemoveInstance(GetComponent<AnimationComponent>()->GetInstance());
+		myScene->RemoveInstance(GetComponent<AnimationComponent>()->GetInstance());
 	}
 
 	myIsInScene = false;
+}
+
+
+void Entity::SetPosition(const CU::Vector3f& aPosition)
+{
+	myOrientation.SetPos(aPosition);
 }
 
 eEntityType Entity::GetType() const

@@ -41,12 +41,12 @@ void EntityFactory::LoadEntities(const char* aEntityListXML)
 	entityListDocument.CloseDocument();
 }
 
-Entity* EntityFactory::CreateEntity(eEntityType aType, Prism::Scene& aScene, const CU::Vector3f& aPosition
+Entity* EntityFactory::CreateEntity(eEntityType aType, Prism::Scene* aScene, bool aClientSide, const CU::Vector3f& aPosition
 	, const CU::Vector3f& aRotation, const CU::Vector3f& aScale)
 {
 	if (myInstance->myLoadedEntityData.find(aType) != myInstance->myLoadedEntityData.end())
 	{
-		Entity* newEntity = new Entity(myInstance->myLoadedEntityData.find(aType)->second, aScene, aPosition, aRotation
+		Entity* newEntity = new Entity(myInstance->myLoadedEntityData.find(aType)->second, aScene, aClientSide, aPosition, aRotation
 			, aScale);
 		return newEntity;
 	}
@@ -54,14 +54,14 @@ Entity* EntityFactory::CreateEntity(eEntityType aType, Prism::Scene& aScene, con
 	return nullptr;
 }
 
-Entity* EntityFactory::CreateEntity(eEntityType aType, std::string aSubType, Prism::Scene& aScene, const CU::Vector3f& aPosition,
+Entity* EntityFactory::CreateEntity(eEntityType aType, std::string aSubType, Prism::Scene* aScene, bool aClientSide, const CU::Vector3f& aPosition,
 	const CU::Vector3f& aRotation, const CU::Vector3f& aScale)
 {
-	if (aType == eEntityType::PROP || aType == eEntityType::UNIT)
+	if (aType == eEntityType::PROP || aType == eEntityType::UNIT || aType == eEntityType::TRIGGER)
 	{
 		if (myInstance->myLoadedSubEntityData.find(aSubType) != myInstance->myLoadedSubEntityData.end())
 		{
-			Entity* newEntity = new Entity(myInstance->myLoadedSubEntityData.find(aSubType)->second, aScene, aPosition, aRotation
+			Entity* newEntity = new Entity(myInstance->myLoadedSubEntityData.find(aSubType)->second, aScene, aClientSide, aPosition, aRotation
 				, aScale);
 			newEntity->mySubType = aSubType;
 			return newEntity;
@@ -85,7 +85,7 @@ void EntityFactory::LoadEntity(const char* aEntityPath)
 	std::string entitySubType;
 	entityDocument.ForceReadAttribute(entityElement, "type", entityType);
 	newData.myType = EntityEnumConverter::ConvertStringToEntityType(CU::ToLower(entityType));
-	if (newData.myType == eEntityType::PROP || newData.myType == eEntityType::UNIT)
+	if (newData.myType == eEntityType::PROP || newData.myType == eEntityType::UNIT || newData.myType == eEntityType::TRIGGER)
 	{
 		entityDocument.ForceReadAttribute(entityElement, "subType", entitySubType);
 		newData.mySubType = CU::ToLower(entitySubType);
@@ -102,6 +102,18 @@ void EntityFactory::LoadEntity(const char* aEntityPath)
 	else if (CU::ToLower(physicsType) == "dynamic")
 	{
 		newData.myPhysData.myPhysics = ePhysics::DYNAMIC;
+
+		entityDocument.ForceReadAttribute(entityDocument.ForceFindFirstChild(entityPhysics, "min"), "x", newData.myPhysData.myPhysicsMin.x);
+		entityDocument.ForceReadAttribute(entityDocument.ForceFindFirstChild(entityPhysics, "min"), "y", newData.myPhysData.myPhysicsMin.y);
+		entityDocument.ForceReadAttribute(entityDocument.ForceFindFirstChild(entityPhysics, "min"), "z", newData.myPhysData.myPhysicsMin.z);
+
+		entityDocument.ForceReadAttribute(entityDocument.ForceFindFirstChild(entityPhysics, "max"), "x", newData.myPhysData.myPhysicsMax.x);
+		entityDocument.ForceReadAttribute(entityDocument.ForceFindFirstChild(entityPhysics, "max"), "y", newData.myPhysData.myPhysicsMax.y);
+		entityDocument.ForceReadAttribute(entityDocument.ForceFindFirstChild(entityPhysics, "max"), "z", newData.myPhysData.myPhysicsMax.z);
+	}
+	else if (CU::ToLower(physicsType) == "phantom")
+	{
+		newData.myPhysData.myPhysics = ePhysics::PHANTOM;
 
 		entityDocument.ForceReadAttribute(entityDocument.ForceFindFirstChild(entityPhysics, "min"), "x", newData.myPhysData.myPhysicsMin.x);
 		entityDocument.ForceReadAttribute(entityDocument.ForceFindFirstChild(entityPhysics, "min"), "y", newData.myPhysData.myPhysicsMin.y);
@@ -143,6 +155,10 @@ void EntityFactory::LoadEntity(const char* aEntityPath)
 		{
 			myComponentLoader->LoadHealthComponent(entityDocument, e, newData.myHealthData);
 		}
+		else if (elementName == CU::ToLower("TriggerComponent"))
+		{
+			myComponentLoader->LoadTriggerComponent(entityDocument, e, newData.myTriggerData);
+		}
 		else
 		{
 			std::string errorMessage = "The component " + elementName +
@@ -150,7 +166,7 @@ void EntityFactory::LoadEntity(const char* aEntityPath)
 			DL_ASSERT(errorMessage.c_str());
 		}
 	}
-	if (newData.myType == eEntityType::PROP || newData.myType == eEntityType::UNIT)
+	if (newData.myType == eEntityType::PROP || newData.myType == eEntityType::UNIT || newData.myType == eEntityType::TRIGGER)
 	{
 		myLoadedSubEntityData[newData.mySubType] = newData;
 	}

@@ -11,9 +11,11 @@
 #include <GameConstants.h>
 #include "GameDefines.h"
 #include <GrowingArray.h>
+#include <StaticArray.h>
 #include <MathHelper.h>
 #include <Matrix.h>
 #include <string>
 #include <unordered_map>
 #include <Vector.h>
 #include <MemoryMacros.h>
+#include <ThreadUtilities.h>

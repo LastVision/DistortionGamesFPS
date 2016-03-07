@@ -8,8 +8,8 @@ public:
 	ServerNetwork();
 	~ServerNetwork();
 
-	void StartServer();
-	void Send(const std::vector<char>& anArray);
+	void StartServer(unsigned int aPortNum);
+	//void Send(const std::vector<char>& anArray);
 	void Send(const std::vector<char>& anArray, const sockaddr_in& anAddress);
 
 	void Receieve(std::vector<Buffer>& someBuffers);

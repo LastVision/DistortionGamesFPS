@@ -15,17 +15,19 @@ ClientNetwork::~ClientNetwork()
 	WSACleanup();
 }
 
-void ClientNetwork::StartNetwork()
+void ClientNetwork::StartNetwork(int aPortNum)
 {
-	myPort = 13397;
+	myPort = static_cast<uint16_t>(aPortNum);
 	if (WSAStartup(MAKEWORD(2, 2), &myWSAData) != 0)
 	{
-		//Error
+		DL_ASSERT("WSAStartup Failed [Client]");
 	}
+
+	//mySocket = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
 
 	if ((mySocket = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP)) == SOCKET_ERROR)
 	{
-		//Error
+		DL_ASSERT("Failed to set socket!");
 	}
 
 	ZeroMemory(&myServerAddress, sizeof(myServerAddress));

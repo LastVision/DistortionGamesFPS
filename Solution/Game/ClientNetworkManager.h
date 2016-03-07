@@ -10,7 +10,7 @@ public:
 	static void Destroy();
 	static ClientNetworkManager* GetInstance();
 
-	void StartNetwork() override;
+	void StartNetwork(unsigned int aPortNum = 13397) override;
 	void ConnectToServer(const char* aServerIP = "127.0.0.1");
 
 	const CU::GrowingArray<OtherClients>& GetClients();
@@ -26,7 +26,7 @@ private:
 	void HandleMessage(const NetMessagePingRequest& aMessage, const sockaddr_in& aSenderAddress) override;
 	void HandleMessage(const NetMessageOnJoin& aMessage, const sockaddr_in& aSenderAddress) override;
 	void HandleMessage(const NetMessagePosition& aMessage, const sockaddr_in& aSenderAddress) override;
-
+	void HandleMessage(const NetMessageAddEnemy& aMessage, const sockaddr_in& aSenderAddress) override;
 	void ReceieveThread() override;
 	void SendThread() override;
 

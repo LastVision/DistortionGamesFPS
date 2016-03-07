@@ -14,6 +14,14 @@ enum eEntityType
 	UNIT = 1,
 	PROP = 2,
 	PROJECTILE = 4,
+	TRIGGER = 8,
+	_COUNT,
+};
+
+enum class eTriggerType : int
+{
+	EMPTY = -1,
+	LEVEL_CHANGE,
 	_COUNT,
 };
 
@@ -21,6 +29,7 @@ enum class ePhysics
 {
 	STATIC,
 	DYNAMIC,
+	PHANTOM,
 };
 
 enum class ePropType
@@ -83,6 +92,26 @@ enum class eEntityState : int
 	_COUNT,
 };
 
+enum class ePlayerState : int
+{
+	PISTOL_IDLE,
+	PISTOL_FIRE,
+	PISTOL_RELOAD,
+	PISTOL_DRAW,
+	PISTOL_HOLSTER,
+	SHOTGUN_IDLE,
+	SHOTGUN_FIRE,
+	SHOTGUN_RELOAD,
+	SHOTGUN_DRAW,
+	SHOTGUN_HOLSTER,
+	GRENADE_LAUNCHER_IDLE,
+	GRENADE_LAUNCHER_FIRE,
+	GRENADE_LAUNCHER_RELOAD,
+	GRENADE_LAUNCHER_DRAW,
+	GRENADE_LAUNCHER_HOLSTER,
+	_COUNT,
+};
+
 enum class eComponentType
 {
 	NOT_USED = -1,
@@ -90,6 +119,7 @@ enum class eComponentType
 	GRAPHICS,
 	PROJECTILE,
 	HEALTH,
+	TRIGGER,
 	_COUNT,
 };
 

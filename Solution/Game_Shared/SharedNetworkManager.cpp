@@ -1,54 +1,14 @@
 #include "stdafx.h"
 #include "SharedNetworkManager.h"
-#include <sstream>
-#include <thread>
 
 #include <NetMessageConnectMessage.h>
 #include <NetMessageOnJoin.h>
 #include <NetMessagePingRequest.h>
 #include <NetMessagePingReply.h>
 #include <NetMessagePosition.h>
+#include <NetMessageAddEnemy.h>
 
 #define BUFFERSIZE 512
-#ifdef _DEBUG
-#pragma region ThreadNaming
-const DWORD MS_VC_EXCEPTION = 0x406D1388;
-#pragma pack(push,8)
-typedef struct tagTHREADNAME_INFO
-{
-	DWORD dwType; // Must be 0x1000.
-	LPCSTR szName; // Pointer to name (in user addr space).
-	DWORD dwThreadID; // Thread ID (-1=caller thread).
-	DWORD dwFlags; // Reserved for future use, must be zero.
-} THREADNAME_INFO;
-#pragma pack(pop)
-void SetThreadName(DWORD dwThreadID, const char* threadName)
-{
-	THREADNAME_INFO info;
-	info.dwType = 0x1000;
-	info.szName = threadName;
-	info.dwThreadID = dwThreadID;
-	info.dwFlags = 0;
-#pragma warning(push)
-#pragma warning(disable: 6320 6322)
-	__try {
-		RaiseException(MS_VC_EXCEPTION, 0, sizeof(info) / sizeof(ULONG_PTR), (ULONG_PTR*)&info);
-	}
-	__except (EXCEPTION_EXECUTE_HANDLER) {
-	}
-#pragma warning(pop)
-}
-
-void _SetThreadName(std::thread::id& anID, const char* aThreadName)
-{
-	std::stringstream ss;
-	ss << anID;
-	DWORD id;
-	ss >> id;
-	SetThreadName(id, aThreadName);
-}
-#pragma endregion
-#endif
 
 void SharedNetworkManager::Initiate()
 {
@@ -61,7 +21,7 @@ void SharedNetworkManager::Initiate()
 	myMainIsDone = true;
 }
 
-void SharedNetworkManager::StartNetwork()
+void SharedNetworkManager::StartNetwork(unsigned int /*aPortNum*/)
 {
 
 	myIsRunning = true;
@@ -71,13 +31,13 @@ void SharedNetworkManager::StartNetwork()
 #ifdef _DEBUG
 	if (myIsServer == true)
 	{
-		_SetThreadName(myReceieveThread->get_id(), "Receieve Thread - Server");
-		_SetThreadName(mySendThread->get_id(), "Send Thread - Server");
+		CU::SetThreadName(myReceieveThread->get_id(), "Receieve Thread - Server");
+		CU::SetThreadName(mySendThread->get_id(), "Send Thread - Server");
 	}
 	else
 	{
-		_SetThreadName(myReceieveThread->get_id(), "Receieve Thread - Client");
-		_SetThreadName(mySendThread->get_id(), "Send Thread - Client");
+		CU::SetThreadName(myReceieveThread->get_id(), "Receieve Thread - Client");
+		CU::SetThreadName(mySendThread->get_id(), "Send Thread - Client");
 	}
 #endif
 }
@@ -129,13 +89,19 @@ void SharedNetworkManager::MainIsDone()
 
 void SharedNetworkManager::WaitForMain()
 {
-	while (myMainIsDone == false);
+	while (myMainIsDone == false)
+	{
+		Sleep(1);
+	}
 	myMainIsDone = false;
 }
 
 void SharedNetworkManager::WaitForReceieve()
 {
-	while (myReceieveIsDone == false);
+	while (myReceieveIsDone == false)
+	{
+		Sleep(1);
+	}
 	myReceieveIsDone = false;
 }
 
@@ -189,18 +155,22 @@ void SharedNetworkManager::HandleMessage()
 		case eNetMessageType::POSITION:
 			UnpackAndHandle(NetMessagePosition(), buffer);
 			break;
+		case eNetMessageType::ADD_ENEMY:
+			UnpackAndHandle(NetMessageAddEnemy(), buffer);
+			break;
 		default:
 			break;
 		}
 	}
 }
 
-void SharedNetworkManager::HandleMessage(const NetMessagePingReply& aMessage, const sockaddr_in& aSenderAddress)
+void SharedNetworkManager::HandleMessage(const NetMessagePingReply&, const sockaddr_in&)
 {
 	myMS = myResponsTime * 1000.f;
 }
 
 void SharedNetworkManager::HandleMessage(const NetMessageConnectMessage&, const sockaddr_in&) {}
-void SharedNetworkManager::HandleMessage(const NetMessagePingRequest& aMessage, const sockaddr_in& aSenderAddress) {}
-void SharedNetworkManager::HandleMessage(const NetMessageOnJoin& aMessage, const sockaddr_in& aSenderAddress) {}
-void SharedNetworkManager::HandleMessage(const NetMessagePosition& aMessage, const sockaddr_in& aSenderAddress) {}
+void SharedNetworkManager::HandleMessage(const NetMessagePingRequest&, const sockaddr_in&) {}
+void SharedNetworkManager::HandleMessage(const NetMessageOnJoin&, const sockaddr_in&) {}
+void SharedNetworkManager::HandleMessage(const NetMessagePosition&, const sockaddr_in&) {}
+void SharedNetworkManager::HandleMessage(const NetMessageAddEnemy&, const sockaddr_in&){}

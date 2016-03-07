@@ -2,12 +2,17 @@
 #include "ClientNetworkManager.h"
 #include "ClientNetwork.h"
 #include <thread>
+#include <PostMaster.h>
 
 #include <NetMessageConnectMessage.h>
 #include <NetMessageOnJoin.h>
 #include <NetMessagePingRequest.h>
 #include <NetMessagePingReply.h>
 #include <NetMessagePosition.h>
+#include <NetMessageAddEnemy.h>
+
+#include <NetworkAddPlayerMessage.h>
+#include <NetworkAddEnemyMessage.h>
 
 #define BUFFERSIZE 512
 
@@ -73,10 +78,10 @@ void ClientNetworkManager::Initiate()
 	myClients.Init(16);
 }
 
-void ClientNetworkManager::StartNetwork()
+void ClientNetworkManager::StartNetwork(unsigned int aPortNum)
 {
-	myNetwork->StartNetwork();
-	__super::StartNetwork();
+	myNetwork->StartNetwork(aPortNum);
+	__super::StartNetwork(aPortNum);
 }
 
 void ClientNetworkManager::ReceieveThread()
@@ -84,7 +89,6 @@ void ClientNetworkManager::ReceieveThread()
 	char buffer[BUFFERSIZE];
 	while (myIsRunning == true)
 	{
-		std::this_thread::sleep_for(std::chrono::nanoseconds(1));
 		ZeroMemory(&buffer, BUFFERSIZE);
 
 		std::vector<Buffer> someBuffers;
@@ -95,6 +99,7 @@ void ClientNetworkManager::ReceieveThread()
 		}
 		ReceieveIsDone();
 		WaitForMain();
+		Sleep(1);
 	}
 }
 
@@ -102,7 +107,6 @@ void ClientNetworkManager::SendThread()
 {
 	while (myIsRunning == true)
 	{
-		std::this_thread::sleep_for(std::chrono::nanoseconds(1));
 		for (std::vector<char> arr : mySendBuffer[myCurrentSendBuffer])
 		{
 			myNetwork->Send(arr);
@@ -110,6 +114,7 @@ void ClientNetworkManager::SendThread()
 
 		mySendBuffer[myCurrentSendBuffer].RemoveAll();
 		myCurrentSendBuffer ^= 1;
+		Sleep(1);
 	}
 }
 
@@ -145,6 +150,7 @@ void ClientNetworkManager::HandleMessage(const NetMessageConnectMessage& aMessag
 	if (aMessage.myOtherClientID != myNetworkID)
 	{
 		myClients.Add(OtherClients(aMessage.myOtherClientID));
+		PostMaster::GetInstance()->SendMessage(NetworkAddPlayerMessage(aMessage.myOtherClientID));
 	}
 }
 
@@ -162,6 +168,7 @@ void ClientNetworkManager::HandleMessage(const NetMessageOnJoin& aMessage, const
 	if (aMessage.mySenderID != myNetworkID)
 	{
 		myClients.Add(OtherClients(aMessage.mySenderID));
+		PostMaster::GetInstance()->SendMessage(NetworkAddPlayerMessage(static_cast<unsigned short>(aMessage.mySenderID)));
 	}
 }
 
@@ -175,4 +182,9 @@ void ClientNetworkManager::HandleMessage(const NetMessagePosition& aMessage, con
 			client.myPosition = aMessage.myPosition;
 		}
 	}
+}
+
+void ClientNetworkManager::HandleMessage(const NetMessageAddEnemy& aMessage, const sockaddr_in& aSenderAddress)
+{
+	PostMaster::GetInstance()->SendMessage(NetworkAddEnemyMessage(aMessage.myPosition));
 }

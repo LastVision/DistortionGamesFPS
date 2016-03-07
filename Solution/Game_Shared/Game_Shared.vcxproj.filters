@@ -1,33 +1,47 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="Source Files">
-      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
-      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    <Filter Include="Precompile">
+      <UniqueIdentifier>{ec4b8537-8167-4b1c-b1c0-bcb00740e8ea}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files">
-      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
-      <Extensions>h;hh;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    <Filter Include="Network">
+      <UniqueIdentifier>{e6ab7b65-8924-4539-8e9e-329b153b796e}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Resource Files">
-      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
-      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    <Filter Include="Level">
+      <UniqueIdentifier>{31f7f677-ea48-4dcf-a128-480fa5fe43e6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Level\Factory">
+      <UniqueIdentifier>{b26b5a5b-ad6a-4e6e-a2cc-165c8e5a07e4}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="stdafx.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
+    <ClInclude Include="SharedGame.h" />
     <ClInclude Include="SharedNetworkManager.h">
-      <Filter>Header Files</Filter>
+      <Filter>Network</Filter>
+    </ClInclude>
+    <ClInclude Include="SharedLevelFactory.h">
+      <Filter>Level\Factory</Filter>
+    </ClInclude>
+    <ClInclude Include="SharedLevel.h">
+      <Filter>Level</Filter>
+    </ClInclude>
+    <ClInclude Include="stdafx.h">
+      <Filter>Precompile</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="stdafx.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
+    <ClCompile Include="SharedGame.cpp" />
     <ClCompile Include="SharedNetworkManager.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Network</Filter>
+    </ClCompile>
+    <ClCompile Include="SharedLevelFactory.cpp">
+      <Filter>Level\Factory</Filter>
+    </ClCompile>
+    <ClCompile Include="SharedLevel.cpp">
+      <Filter>Level</Filter>
+    </ClCompile>
+    <ClCompile Include="stdafx.cpp">
+      <Filter>Precompile</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

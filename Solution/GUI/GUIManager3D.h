@@ -1,6 +1,6 @@
 #pragma once
 #include <Matrix.h>
-#include <BoneName.h>
+
 namespace Prism
 {
 	class Bar3D;
@@ -15,32 +15,35 @@ namespace GUI
 	{
 	public:
 		GUIManager3D(const Prism::Instance* aModel, Prism::Scene* aScene
-			, int& aPistolClipSize, int& aPistolAmmoInClip
-			, int& aShotgunClipSize, int& aShotgunAmmoInClip
-			, int& aGrenadeLauncherClipSize, int& aGrenadeLauncherAmmoInClip);
+			, const int& aPistolClipSize, const int& aPistolAmmoInClip
+			, const int& aShotgunClipSize, const int& aShotgunAmmoInClip
+			, const int& aGrenadeLauncherClipSize, const int& aGrenadeLauncherAmmoInClip);
 		~GUIManager3D();
 
-		void Update(const CU::Matrix44<float>& aOrientation, int aCurrentHealth, int aMaxHealth, float aDeltaTime);
+		void Update(const CU::Matrix44<float>& aUIJointOrientation, const CU::Matrix44<float>& aHealthJointOrientation
+			, int aCurrentHealth, int aMaxHealth, float aDeltaTime);
 		void Render();
 
 	private:
+		void operator=(GUIManager3D&) = delete;
+
 		float myTestValue;
 		CU::Matrix44<float> myWristOrientation;
-		GUIBone myGUIBone;
+		//GUIBone myGUIBone;
 		CU::Matrix44<float> myHealthOrientation;
-		GUIBone myHealthBone;
+		//GUIBone myHealthBone;
 		Prism::Scene* myScene;
 		Prism::Effect* myEffect;
 		Prism::Bar3D* myLeftBar;
 		Prism::Bar3D* myRightBar;
 		Prism::Bar3D* myTopBar;
 		Prism::Bar3D* myHealthBar;
-		int& myPistolClipSize;
-		int& myPistolAmmoInClip;
-		int& myShotgunClipSize;
-		int& myShotgunAmmoInClip;
-		int& myGrenadeLauncherClipSize;
-		int& myGrenadeLauncherAmmoInClip;
+		const int& myPistolClipSize;
+		const int& myPistolAmmoInClip;
+		const int& myShotgunClipSize;
+		const int& myShotgunAmmoInClip;
+		const int& myGrenadeLauncherClipSize;
+		const int& myGrenadeLauncherAmmoInClip;
 
 		Prism::Bar3D* myTopAmmoLeft;
 	};

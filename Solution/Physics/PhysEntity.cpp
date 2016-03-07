@@ -15,8 +15,8 @@
 namespace Prism
 {
 	PhysEntity::PhysEntity(const PhysEntityData& aPhysData
-			, const CU::Matrix44<float>& aOrientation, const std::string& aFBXPath
-			, Entity* aEntity)
+		, const CU::Matrix44<float>& aOrientation, const std::string& aFBXPath
+		, Entity* aEntity)
 		: myShapes(nullptr)
 		, myEntity(aEntity)
 	{
@@ -24,32 +24,6 @@ namespace Prism
 		{
 			my4x4Float[i] = aOrientation.myMatrix[i];
 		}
-
-		/*
-		my4x4Float[12] += dimensions.x *0.5f;
-		my4x4Float[13] += dimensions.y *0.5f;
-		my4x4Float[14] += dimensions.z *0.5f;*/
-
-		/*dimensions.x = fabsf(dimensions.x);
-		dimensions.y = fabsf(dimensions.y);
-		dimensions.z = fabsf(dimensions.z);*/
-
-		/*my4x4Float[0] = 0;
-		my4x4Float[1] = 0;
-		my4x4Float[2] = 0;
-		my4x4Float[3] = 0;
-		my4x4Float[4] = 0;
-		my4x4Float[5] = 0;
-		my4x4Float[6] = 0;
-		my4x4Float[7] = 0;
-		my4x4Float[8] = 0;
-		my4x4Float[9] = 0;
-		my4x4Float[10] = 0;
-		my4x4Float[11] = 0;
-		my4x4Float[12] = 0;
-		my4x4Float[13] = 0;
-		my4x4Float[14] = 0;
-		my4x4Float[15] = 0;*/
 
 		myPosition[0] = my4x4Float[12];
 		myPosition[1] = my4x4Float[13];
@@ -59,45 +33,26 @@ namespace Prism
 		physx::PxMaterial* material = core->createMaterial(0.5, 0.5, 0.5);
 
 		physx::PxReal density = 1.f;
-		/*physx::PxTransform transform(physx::PxVec3(
-			aInitPosition[0]+aPhysData.myPhysicsMin.x
-			, aInitPosition[1] + aPhysData.myPhysicsMin.y
-			, aInitPosition[2] + aPhysData.myPhysicsMin.z)
-			, physx::PxQuat::createIdentity());*/
 
 		physx::PxMat44 matrix(my4x4Float);
 		physx::PxTransform transform(matrix);
 
-
-
 		myStaticBody = nullptr;
 		myDynamicBody = nullptr;
 		myPhysicsType = aPhysData.myPhysics;
-		//physx::PxCreate
+
 		if (myPhysicsType == ePhysics::STATIC)
 		{
 			physx::PxTriangleMesh* mesh = GetPhysMesh(aFBXPath);
-			/*myStaticBody = physx::PxCreateStatic(*core, transform, geometry, *material);
-			PhysicsInterface::GetInstance()->GetManager()->GetScene()->addActor(*myStaticBody);*/
-
-			//physx::PxVec3 scale(1.f, 1.f, 1.f);
-			//physx::PxMeshScale meshScale = physx::PxMeshScale(scale, physx::PxQuat(physx::PxIdentity));
 
 			myStaticBody = core->createRigidStatic(transform);
-			//physx::PxShape* shape = 
 			myStaticBody->createShape(physx::PxTriangleMeshGeometry(mesh), *material);
 			myStaticBody->setName("Tjohej");
 			myStaticBody->userData = this;
 			PhysicsInterface::GetInstance()->GetManager()->GetScene()->addActor(*myStaticBody);
 		}
-		else
+		else if (myPhysicsType == ePhysics::DYNAMIC)
 		{
-			/*myDynamicBody = core->createRigidDynamic(transform);
-			physx::PxShape* shape = myDynamicBody->createShape(physx::PxTriangleMeshGeometry(mesh), *material);
-			myDynamicBody->setName("TjohejD");
-			PhysicsInterface::GetInstance()->GetManager()->GetScene()->addActor(*myDynamicBody);*/
-
-
 			physx::PxVec3 dimensions(
 				aPhysData.myPhysicsMax.x - aPhysData.myPhysicsMin.x
 				, aPhysData.myPhysicsMax.y - aPhysData.myPhysicsMin.y
@@ -111,6 +66,28 @@ namespace Prism
 
 			physx::PxU32 nShapes = myDynamicBody->getNbShapes();
 			myShapes = new physx::PxShape*[nShapes];
+		}
+		else if (myPhysicsType == ePhysics::PHANTOM)
+		{
+			physx::PxVec3 dimensions(
+				aPhysData.myPhysicsMax.x - aPhysData.myPhysicsMin.x
+				, aPhysData.myPhysicsMax.y - aPhysData.myPhysicsMin.y
+				, aPhysData.myPhysicsMax.z - aPhysData.myPhysicsMin.z);
+			physx::PxBoxGeometry geometry(dimensions / 2.f);
+			myDynamicBody = physx::PxCreateDynamic(*core, transform, geometry, *material, density);
+			myDynamicBody->setAngularDamping(0.75);
+			myDynamicBody->setLinearVelocity(physx::PxVec3(0, 0, 0));
+			myDynamicBody->userData = this;
+
+			physx::PxU32 nShapes = myDynamicBody->getNbShapes();
+			myShapes = new physx::PxShape*[nShapes];
+
+			physx::PxShape* treasureShape;
+			myDynamicBody->getShapes(&treasureShape, 1.f);
+
+			treasureShape->setFlag(physx::PxShapeFlag::eSIMULATION_SHAPE, false);
+			treasureShape->setFlag(physx::PxShapeFlag::eTRIGGER_SHAPE, true);
+			PhysicsInterface::GetInstance()->GetManager()->GetScene()->addActor(*myDynamicBody);
 		}
 	}
 
@@ -178,6 +155,8 @@ namespace Prism
 
 	void PhysEntity::SetPosition(const CU::Vector3<float>& aPosition)
 	{
+		DL_ASSERT_EXP(myPhysicsType == ePhysics::DYNAMIC, "Cant set position to STATIC objects");
+
 		physx::PxTransform transform(physx::PxVec3(aPosition.x, aPosition.y, aPosition.z)
 			, physx::PxQuat::createIdentity());
 		myDynamicBody->setGlobalPose(transform);
@@ -185,6 +164,8 @@ namespace Prism
 
 	physx::PxTriangleMesh* PhysEntity::GetPhysMesh(const std::string& aFBXPath)
 	{
+		DL_ASSERT_EXP(myPhysicsType == ePhysics::STATIC, "Cant get phys mesh on DYNAMIC objects");
+
 		std::string objPath(aFBXPath);
 		std::string cowPath(aFBXPath);
 
@@ -198,7 +179,7 @@ namespace Prism
 
 		physx::PxTriangleMesh* mesh = nullptr;
 		WavefrontObj wfo;
-	
+
 		bool ok;
 
 		if (CU::FileExists(cowPath) == false)
@@ -237,7 +218,7 @@ namespace Prism
 
 	void PhysEntity::RemoveFromScene()
 	{
-		if (myPhysicsType == ePhysics::DYNAMIC)
+		if (myPhysicsType == ePhysics::DYNAMIC || myPhysicsType == ePhysics::PHANTOM)
 		{
 			PhysicsInterface::GetInstance()->GetManager()->GetScene()->removeActor(*myDynamicBody);
 		}

@@ -1,8 +1,9 @@
 #pragma once
+#include "../PostMaster/Subscriber.h"
 #include "../Game_Shared/SharedNetworkManager.h"
 
 class ServerNetwork;
-class ServerNetworkManager : public SharedNetworkManager
+class ServerNetworkManager : public SharedNetworkManager, public Subscriber
 {
 public:
 	void Initiate() override;
@@ -10,7 +11,7 @@ public:
 	static void Destroy();
 	static ServerNetworkManager* GetInstance();
 
-	void StartNetwork() override;
+	void StartNetwork(unsigned int aPortNum = 13397) override;
 private:
 	ServerNetworkManager();
 	~ServerNetworkManager();
@@ -20,6 +21,9 @@ private:
 	void HandleMessage(const NetMessageConnectMessage& aMessage, const sockaddr_in& aSender) override;
 	void HandleMessage(const NetMessagePingRequest& aMessage, const sockaddr_in& aSenderAddress) override;
 	void HandleMessage(const NetMessagePosition& aMessage, const sockaddr_in& aSenderAddress) override;
+
+	void ReceiveMessage(const NetworkAddEnemyMessage& aMessage) override;
+
 
 	void ReceieveThread() override;
 	void SendThread() override;
