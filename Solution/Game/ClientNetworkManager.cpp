@@ -175,13 +175,6 @@ void ClientNetworkManager::HandleMessage(const NetMessageOnJoin& aMessage, const
 void ClientNetworkManager::HandleMessage(const NetMessagePosition& aMessage, const sockaddr_in& aSenderAddress)
 {
 	aSenderAddress;
-	/*for (OtherClients &client : myClients)
-	{
-		if (client.myID == aMessage.mySenderID)
-		{
-			client.myPosition = aMessage.myPosition;
-		}
-	}*/
 	PostMaster::GetInstance()->SendMessage(NetworkSetPositionMessage(aMessage.myPosition,aMessage.myNetworkID));
 }
 
