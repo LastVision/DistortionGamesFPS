@@ -29,6 +29,8 @@ void ServerLevel::ReceiveMessage(const NetworkAddPlayerMessage& aMessage)
 	Prism::MemoryTracker::GetInstance()->SetRunTime(false);
 	Entity* newPlayer = EntityFactory::CreateEntity(eEntityType::UNIT, "player", nullptr, false, { 0.f, 0.f, 0.f });
 	newPlayer->Reset();
+	newPlayer->GetComponent<NetworkComponent>()->SetPlayer(true);
+	newPlayer->GetComponent<NetworkComponent>()->SetNetworkID(aMessage.myNetworkID);
 	myPlayers.Add(newPlayer);
 	Prism::MemoryTracker::GetInstance()->SetRunTime(isRunTime);
 
