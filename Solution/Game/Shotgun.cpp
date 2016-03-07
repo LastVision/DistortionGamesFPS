@@ -2,6 +2,8 @@
 
 #include <DamageNote.h>
 #include <Entity.h>
+#include <EmitterMessage.h>
+#include <PostMaster.h>
 #include <PhysEntity.h>
 #include <PhysicsInterface.h>
 #include "Shotgun.h"
@@ -63,9 +65,9 @@ void Shotgun::HandleRaycast(Entity* anEntity, const CU::Vector3<float>& aDirecti
 		{
 			anEntity->GetPhysEntity()->AddForce(aDirection, 25.f);
 		}
-		aHitPosition;
 		anEntity->SendNote<DamageNote>(DamageNote(myDamage));
 
+		PostMaster::GetInstance()->SendMessage(EmitterMessage("Shotgun", aHitPosition));
 	}
 }
 
