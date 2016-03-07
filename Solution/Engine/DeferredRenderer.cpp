@@ -203,11 +203,13 @@ namespace Prism
 		myAmbientPass.myDepth->SetResource(nullptr);
 		myAmbientPass.myCubemap->SetResource(nullptr);
 
+#ifdef USE_LIGHTS
 		context->OMSetRenderTargets(1, &backbuffer
 			, myDepthStencilTexture->GetDepthStencilView());
 
 		aScene->UpdateLights();
 		RenderPointLights(aScene);
+#endif
 	}
 
 	void DeferredRenderer::RenderPointLights(Scene* aScene)
@@ -254,6 +256,14 @@ namespace Prism
 			= myAmbientPass.myEffect->GetEffect()->GetVariableByName("DepthTexture")->AsShaderResource();
 		myAmbientPass.myCubemap
 			= myAmbientPass.myEffect->GetEffect()->GetVariableByName("CubeMap")->AsShaderResource();
+		myAmbientPass.myAmbientMultiplier
+			= myAmbientPass.myEffect->GetEffect()->GetVariableByName("AmbientMultiplier")->AsScalar();
+
+#ifdef USE_LIGHTS
+		myAmbientPass.myAmbientMultiplier->SetFloat(0.05f);
+#else
+		myAmbientPass.myAmbientMultiplier->SetFloat(1.f);
+#endif
 	}
 
 	void DeferredRenderer::SetupLightData()

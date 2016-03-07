@@ -15,6 +15,8 @@ namespace Prism
 	class PointLight;
 }
 
+class EmitterManager;
+
 class ClientLevel : public SharedLevel
 {
 public:
@@ -39,7 +41,7 @@ private:
 	CU::GrowingArray<Prism::PointLight*> myPointLights;
 
 	Player* myPlayer;
-
+	EmitterManager* myEmitterManager;
 
 };
 

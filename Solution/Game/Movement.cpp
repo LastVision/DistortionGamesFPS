@@ -39,10 +39,10 @@ void Movement::Move(float aDelta)
 {
 	if (CU::InputWrapper::GetInstance()->KeyDown(DIK_SPACE))
 	{
-		if (Prism::PhysicsInterface::GetInstance()->GetAllowedToJump(myCapsuleControllerId) == true)
-		{
+		/*if (Prism::PhysicsInterface::GetInstance()->GetAllowedToJump(myCapsuleControllerId) == true)
+		{*/
 			myVerticalSpeed = 0.25f;
-		}
+		//}
 	}
 
 	myVerticalSpeed -= aDelta;

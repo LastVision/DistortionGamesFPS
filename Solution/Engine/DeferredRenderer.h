@@ -2,6 +2,7 @@
 #include "BaseModel.h"
 
 struct ID3DX11EffectVariable;
+struct ID3DX11EffectScalarVariable;
 struct ID3DX11EffectShaderResourceVariable;
 struct ID3DX11EffectMatrixVariable;
 
@@ -34,6 +35,7 @@ namespace Prism
 			ID3DX11EffectShaderResourceVariable* myNormal = nullptr;
 			ID3DX11EffectShaderResourceVariable* myDepth = nullptr;
 			ID3DX11EffectShaderResourceVariable* myCubemap = nullptr;
+			ID3DX11EffectScalarVariable* myAmbientMultiplier = nullptr;
 		};
 
 		struct LightPass
