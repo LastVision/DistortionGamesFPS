@@ -46,34 +46,6 @@ ClientLevel::ClientLevel()
 	myPlayer = new Player(myScene);
 	myScene->SetCamera(*myPlayer->GetCamera());
 
-	/*Prism::PointLight* light = new Prism::PointLight();
-	light->SetPosition({ 1.f, 0.2f, 0.f });
-	light->SetColor({ 0.f, 1.f, 0.f, 1.f });
-	light->SetRange(5.f);
-	myScene->AddLight(light);
-	Prism::PointLight* light4 = new Prism::PointLight();
-	light4->SetPosition({ 1.f, 0.2f, -0.5f });
-	light4->SetColor({ 1.f, 0.f, 0.f, 1.f });
-	light4->SetRange(5.f);
-	myScene->AddLight(light4);
-	Prism::PointLight* light5 = new Prism::PointLight();
-	light5->SetPosition({ 1.f, 0.2f, -1.f });
-	light5->SetColor({ 0.f, 0.f, 1.f, 1.f });
-	light5->SetRange(5.f);
-	myScene->AddLight(light5);
-
-	Prism::PointLight* light2 = new Prism::PointLight();
-	light2->SetPosition({ 1.f, 1.f, -10.f });
-	light2->SetColor({ 0.f, 0.f, 1.f, 1.f });
-	light2->SetRange(10.f);
-	myScene->AddLight(light2);
-
-	Prism::PointLight* light3 = new Prism::PointLight();
-	light3->SetPosition({ 1.f, 1.f, -56.f });
-	light3->SetColor({ 1.f, 0.f, 1.f, 1.f });
-	light3->SetRange(10.f);
-	myScene->AddLight(light3);*/
-
 	//myTempPosition = { 835.f, 0.f, -1000.f };
 
 	myDeferredRenderer = new Prism::DeferredRenderer();
