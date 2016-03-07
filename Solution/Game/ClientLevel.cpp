@@ -33,6 +33,7 @@
 ClientLevel::ClientLevel()
 	: myInstanceOrientations(16)
 	, myInstances(16)
+	, myPointLights(64)
 {
 	Prism::PhysicsInterface::Create();
 	//Prism::PhysicsInterface::Destroy();
@@ -46,14 +47,38 @@ ClientLevel::ClientLevel()
 	myScene->SetCamera(*myPlayer->GetCamera());
 
 	/*Prism::PointLight* light = new Prism::PointLight();
-	light->SetPosition({ 0.f, 1.f, 0.f, 0.f });
+	light->SetPosition({ 1.f, 0.2f, 0.f });
 	light->SetColor({ 0.f, 1.f, 0.f, 1.f });
-	light->SetRange(50.f);
-	myScene->AddLight(light);*/
+	light->SetRange(5.f);
+	myScene->AddLight(light);
+	Prism::PointLight* light4 = new Prism::PointLight();
+	light4->SetPosition({ 1.f, 0.2f, -0.5f });
+	light4->SetColor({ 1.f, 0.f, 0.f, 1.f });
+	light4->SetRange(5.f);
+	myScene->AddLight(light4);
+	Prism::PointLight* light5 = new Prism::PointLight();
+	light5->SetPosition({ 1.f, 0.2f, -1.f });
+	light5->SetColor({ 0.f, 0.f, 1.f, 1.f });
+	light5->SetRange(5.f);
+	myScene->AddLight(light5);
+
+	Prism::PointLight* light2 = new Prism::PointLight();
+	light2->SetPosition({ 1.f, 1.f, -10.f });
+	light2->SetColor({ 0.f, 0.f, 1.f, 1.f });
+	light2->SetRange(10.f);
+	myScene->AddLight(light2);
+
+	Prism::PointLight* light3 = new Prism::PointLight();
+	light3->SetPosition({ 1.f, 1.f, -56.f });
+	light3->SetColor({ 1.f, 0.f, 1.f, 1.f });
+	light3->SetRange(10.f);
+	myScene->AddLight(light3);*/
 
 	//myTempPosition = { 835.f, 0.f, -1000.f };
 
-	//myDeferredRenderer = new Prism::DeferredRenderer();
+	myDeferredRenderer = new Prism::DeferredRenderer();
+
+
 	myEmitterManager = new EmitterManager(*myPlayer->GetCamera());
 	CU::Matrix44f orientation;
 	myInstanceOrientations.Add(orientation);
@@ -66,9 +91,10 @@ ClientLevel::~ClientLevel()
 	PostMaster::GetInstance()->UnSubscribe(eMessageType::NETWORK_ADD_ENEMY, this);
 
 	myInstances.DeleteAll();
+	myPointLights.DeleteAll();
 	SAFE_DELETE(myPlayer);
 	SAFE_DELETE(myScene);
-	//SAFE_DELETE(myDeferredRenderer);
+	SAFE_DELETE(myDeferredRenderer);
 	Prism::PhysicsInterface::Destroy();
 }
 
@@ -101,8 +127,9 @@ void ClientLevel::Update(const float aDeltaTime)
 
 void ClientLevel::Render()
 {
+	myDeferredRenderer->Render(myScene);
+	//myScene->Render();
 	//myDeferredRenderer->Render(myScene);
-	myScene->Render();
 	myEmitterManager->RenderEmitters();
 	myPlayer->Render();
 }
@@ -124,9 +151,15 @@ void ClientLevel::ReceiveMessage(const NetworkAddEnemyMessage& aMessage)
 	bool isRunTime = Prism::MemoryTracker::GetInstance()->GetRunTime();
 	Prism::MemoryTracker::GetInstance()->SetRunTime(false);
 	Entity* newEnemy = EntityFactory::CreateEntity(eEntityType::UNIT, "grunt", myScene, true, aMessage.myPosition);
-	//PostMaster::GetInstance()->SendMessage(EmitterMessage("Example", aMessage.myPosition));
+	PostMaster::GetInstance()->SendMessage(EmitterMessage("Example", aMessage.myPosition));
 	newEnemy->AddToScene();
 	newEnemy->Reset();
 	myEntities.Add(newEnemy);
 	Prism::MemoryTracker::GetInstance()->SetRunTime(isRunTime);
+}
+
+void ClientLevel::AddLight(Prism::PointLight* aLight)
+{
+	myPointLights.Add(aLight);
+	myScene->AddLight(aLight);
 }

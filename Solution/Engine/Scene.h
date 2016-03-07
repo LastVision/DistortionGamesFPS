@@ -1,5 +1,5 @@
 #pragma once
-#include "Defines.h"
+#include <Defines.h>
 #include <GrowingArray.h>
 #include "LightStructs.h"
 #include <StaticArray.h>

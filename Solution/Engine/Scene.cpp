@@ -1,7 +1,7 @@
 #include "stdafx.h"
 
 #include "Camera.h"
-#include "Defines.h"
+#include <Defines.h>
 #include "DirectionalLight.h"
 #include "EngineEnums.h"
 #include "Frustum.h"

@@ -209,7 +209,6 @@
     <ClInclude Include="Console.h" />
     <ClInclude Include="EmitterManager.h" />
     <ClInclude Include="ClientGame.h" />
-    <ClInclude Include="GameDefines.h" />
     <ClInclude Include="GameState.h" />
     <ClInclude Include="GrenadeLauncher.h" />
     <ClInclude Include="Health.h" />

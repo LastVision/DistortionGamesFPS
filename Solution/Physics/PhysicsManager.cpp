@@ -264,8 +264,9 @@ namespace Prism
 
 	void PhysicsManager::SetPosition(int aId, const CU::Vector3<float>& aPosition)
 	{
-		physx::PxControllerFilters filter;
-		myControllerManager->getController(aId)->setFootPosition(physx::PxExtendedVec3(aPosition.x, aPosition.y, aPosition.z));
+		DL_ASSERT("Not impl. yet");
+		//physx::PxControllerFilters filter;
+		//myControllerManager->getController(aId)->setFootPosition(physx::PxExtendedVec3(aPosition.x, aPosition.y, aPosition.z));
 	}
 
 	void PhysicsManager::GetPosition(int aId, CU::Vector3<float>& aPositionOut)

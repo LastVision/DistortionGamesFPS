@@ -177,6 +177,9 @@
     <ClCompile Include="StreakEmitterInstance.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\CommonUtilities\CommonUtilities.vcxproj">
+      <Project>{cf69d483-5bf1-4673-99e2-c04b953ca73c}</Project>
+    </ProjectReference>
     <ProjectReference Include="..\DL_Debug\DL_Debug.vcxproj">
       <Project>{79d52050-1454-49c9-9186-ab74c959970e}</Project>
     </ProjectReference>
