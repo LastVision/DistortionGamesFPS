@@ -1,5 +1,6 @@
 #pragma once
 #include "BaseModel.h"
+#include "EffectListener.h"
 
 struct ID3DX11EffectVariable;
 struct ID3DX11EffectScalarVariable;
@@ -12,6 +13,44 @@ namespace Prism
 	class Scene;
 	class Texture;
 
+	struct RenderToScreenData : public EffectListener
+	{
+		void OnEffectLoad() override;
+
+		Effect* myEffect = nullptr;
+		ID3DX11EffectShaderResourceVariable* mySource = nullptr;
+	};
+
+	struct AmbientPass : public EffectListener
+	{
+		void OnEffectLoad() override;
+
+		Effect* myEffect = nullptr;
+		ID3DX11EffectShaderResourceVariable* myAlbedo = nullptr;
+		ID3DX11EffectShaderResourceVariable* myNormal = nullptr;
+		ID3DX11EffectShaderResourceVariable* myDepth = nullptr;
+		ID3DX11EffectShaderResourceVariable* myCubemap = nullptr;
+		ID3DX11EffectScalarVariable* myAmbientMultiplier = nullptr;
+	};
+
+	struct LightPass : public EffectListener
+	{
+		void OnEffectLoad() override;
+
+		Effect* myEffect = nullptr;
+		ID3DX11EffectShaderResourceVariable* myAlbedo = nullptr;
+		ID3DX11EffectShaderResourceVariable* myNormal = nullptr;
+		ID3DX11EffectShaderResourceVariable* myDepth = nullptr;
+		ID3DX11EffectShaderResourceVariable* myMetalness = nullptr;
+		ID3DX11EffectShaderResourceVariable* myAmbientOcclusion = nullptr;
+		ID3DX11EffectShaderResourceVariable* myRoughness = nullptr;
+
+		ID3DX11EffectVariable* myPointLightVariable;
+		ID3DX11EffectMatrixVariable* myInvertedProjection;
+		ID3DX11EffectMatrixVariable* myNotInvertedView;
+	};
+
+
 	class DeferredRenderer : public BaseModel
 	{
 	public:
@@ -22,37 +61,6 @@ namespace Prism
 		void OnResize(float aWidth, float aHeight);
 
 	private:
-		struct RenderToScreenData
-		{
-			Effect* myEffect = nullptr;
-			ID3DX11EffectShaderResourceVariable* mySource = nullptr;
-		};
-
-		struct AmbientPass
-		{
-			Effect* myEffect = nullptr;
-			ID3DX11EffectShaderResourceVariable* myAlbedo = nullptr;
-			ID3DX11EffectShaderResourceVariable* myNormal = nullptr;
-			ID3DX11EffectShaderResourceVariable* myDepth = nullptr;
-			ID3DX11EffectShaderResourceVariable* myCubemap = nullptr;
-			ID3DX11EffectScalarVariable* myAmbientMultiplier = nullptr;
-		};
-
-		struct LightPass
-		{
-			Effect* myEffect = nullptr;
-			ID3DX11EffectShaderResourceVariable* myAlbedo = nullptr;
-			ID3DX11EffectShaderResourceVariable* myNormal = nullptr;
-			ID3DX11EffectShaderResourceVariable* myDepth = nullptr;
-			ID3DX11EffectShaderResourceVariable* myMetalness = nullptr;
-			ID3DX11EffectShaderResourceVariable* myAmbientOcclusion = nullptr;
-			ID3DX11EffectShaderResourceVariable* myRoughness = nullptr;
-
-			ID3DX11EffectVariable* myPointLightVariable;
-			ID3DX11EffectMatrixVariable* myInvertedProjection;
-			ID3DX11EffectMatrixVariable* myNotInvertedView;
-		};
-
 		struct GBufferData
 		{
 			Texture* myAlbedoTexture;

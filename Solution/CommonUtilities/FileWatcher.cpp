@@ -35,7 +35,7 @@ namespace CU
 			directoryOfFile = directoryOfFile.substr(0, directoryOfFile.find_last_of("\\/"));
 
 			std::string theFile(theString);
-			theFile = theFile.substr(theFile.find_first_of("\\/") + 1, theFile.size());
+			theFile = theFile.substr(theFile.find_last_of("\\/") + 1, theFile.size());
 
 			std::vector<callback_function_file> callbacks = myCallbacks[theFile];
 			for (unsigned int i = 0; i < callbacks.size(); i++)
@@ -100,7 +100,7 @@ namespace CU
 
 					if (currentFileTime64 != savedFileTime64)
 					{
-						std::string fileThatChangedPath = aDir + "\\" + std::string(currentFile.cFileName);
+						std::string fileThatChangedPath = aDir + "/" + std::string(currentFile.cFileName);
 						bool isDependency = myDependencies.find(fileThatChangedPath) != myDependencies.end();
 						if (isDependency)
 						{
@@ -162,7 +162,7 @@ namespace CU
 				foundFile = foundFile.substr(0, foundFile.find_last_of("\""));
 				if (!foundFile.empty())
 				{
-					std::string depFile = directoryOfFile + "\\" + foundFile;
+					std::string depFile = directoryOfFile + "/" + foundFile;
 					WatchFileChange(depFile, aFunctionToCallOnChange);
 					myDependencies[depFile].push_back(aFile);
 				}
@@ -187,7 +187,7 @@ namespace CU
 		directoryOfFile = directoryOfFile.substr(0, directoryOfFile.find_last_of("\\/"));
 
 		std::string theFile(aFile);
-		theFile = theFile.substr(theFile.find_first_of("\\/") + 1, theFile.size());
+		theFile = theFile.substr(theFile.find_last_of("\\/") + 1, theFile.size());
 
 		myCallbacks[theFile].push_back(aFunctionToCallOnChange);
 		return WatchDirectory(directoryOfFile);
