@@ -125,5 +125,8 @@
       <Filter>EntityFactory\EntityData\ComponentData</Filter>
     </ClInclude>
     <ClInclude Include="NetworkComponent.h" />
+    <ClInclude Include="NetworkComponentData.h">
+      <Filter>EntityFactory\EntityData\ComponentData</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

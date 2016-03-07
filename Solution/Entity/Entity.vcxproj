@@ -173,6 +173,7 @@
     <ClInclude Include="HealthComponent.h" />
     <ClInclude Include="HealthComponentData.h" />
     <ClInclude Include="NetworkComponent.h" />
+    <ClInclude Include="NetworkComponentData.h" />
     <ClInclude Include="PollingStation.h" />
     <ClInclude Include="ProjectileComponent.h" />
     <ClInclude Include="ProjectileComponentData.h" />
