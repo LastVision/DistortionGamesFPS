@@ -186,5 +186,5 @@ void ClientNetworkManager::HandleMessage(const NetMessagePosition& aMessage, con
 
 void ClientNetworkManager::HandleMessage(const NetMessageAddEnemy& aMessage, const sockaddr_in& aSenderAddress)
 {
-	PostMaster::GetInstance()->SendMessage(NetworkAddEnemyMessage(aMessage.myPosition));
+	PostMaster::GetInstance()->SendMessage(NetworkAddEnemyMessage(aMessage.myPosition, aMessage.myNetworkID));
 }

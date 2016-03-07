@@ -4,12 +4,13 @@
 class NetMessageAddEnemy : public NetMessage
 {
 public:
-	NetMessageAddEnemy(const CU::Vector3<float> &aPosition);
+	NetMessageAddEnemy(const CU::Vector3<float> &aPosition, unsigned int aNetworkID);
 	NetMessageAddEnemy();
 	~NetMessageAddEnemy();
 
 
 	CU::Vector3<float> myPosition;
+	unsigned int myNetworkID;
 protected:
 
 	void DoSerialize(StreamType& aStream) override;

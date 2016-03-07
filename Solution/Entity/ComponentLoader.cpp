@@ -4,6 +4,7 @@
 #include "ComponentLoader.h"
 #include "EntityEnumConverter.h"
 #include "HealthComponentData.h"
+#include "NetworkComponentData.h"
 #include "XMLReader.h"
 #include "TriggerComponentData.h"
 
@@ -55,13 +56,6 @@ void ComponentLoader::LoadGraphicsComponent(XMLReader& aDocument, tinyxml2::XMLE
 	}
 }
 
-void ComponentLoader::LoadProjectileComponent(XMLReader& aDocument, tinyxml2::XMLElement* aSourceElement, ProjectileComponentData& aOutputData)
-{
-	aDocument;
-	aSourceElement;
-	aOutputData.myExistsInEntity = true;
-}
-
 void ComponentLoader::LoadHealthComponent(XMLReader& aDocument, tinyxml2::XMLElement* aSourceElement, HealthComponentData& aOutputData)
 {
 	aOutputData.myExistsInEntity = true;
@@ -74,6 +68,20 @@ void ComponentLoader::LoadHealthComponent(XMLReader& aDocument, tinyxml2::XMLEle
 			aDocument.ForceReadAttribute(e, "value", aOutputData.myMaxHealth);
 		}
 	}
+}
+
+void ComponentLoader::LoadNetworkComponent(XMLReader& aDocument, tinyxml2::XMLElement* aSourceElement, NetworkComponentData& aOutputData)
+{
+	aDocument;
+	aSourceElement;
+	aOutputData.myExistsInEntity = true;
+}
+
+void ComponentLoader::LoadProjectileComponent(XMLReader& aDocument, tinyxml2::XMLElement* aSourceElement, ProjectileComponentData& aOutputData)
+{
+	aDocument;
+	aSourceElement;
+	aOutputData.myExistsInEntity = true;
 }
 
 void ComponentLoader::LoadTriggerComponent(XMLReader& aDocument, tinyxml2::XMLElement* aSourceElement, TriggerComponentData& aOutputData)

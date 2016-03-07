@@ -44,30 +44,44 @@ namespace Prism
 			ID3DX11EffectShaderResourceVariable* myAlbedo = nullptr;
 			ID3DX11EffectShaderResourceVariable* myNormal = nullptr;
 			ID3DX11EffectShaderResourceVariable* myDepth = nullptr;
+			ID3DX11EffectShaderResourceVariable* myMetalness = nullptr;
+			ID3DX11EffectShaderResourceVariable* myAmbientOcclusion = nullptr;
+			ID3DX11EffectShaderResourceVariable* myRoughness = nullptr;
+
 			ID3DX11EffectVariable* myPointLightVariable;
 			ID3DX11EffectMatrixVariable* myInvertedProjection;
 			ID3DX11EffectMatrixVariable* myNotInvertedView;
 		};
 
+		struct GBufferData
+		{
+			Texture* myAlbedoTexture;
+			Texture* myNormalTexture;
+			Texture* myDepthTexture;
+
+			Texture* myMetalnessTexture;
+			Texture* myAmbientOcclusionTexture;
+			Texture* myRoughnessTexture;
+		};
+
 		void InitFullscreenQuad();
 		void CreateVertices();
 		void ActivateBuffers();
-		void RenderTextureToScreen(Texture* aTexture);
 		void Render(Effect* aEffect);
 		void RenderDeferred(Scene* aScene);
 		void RenderPointLights(Scene* aScene);
 
 		void SetupAmbientData();
 		void SetupLightData();
+		void SetupGBufferData();
 
-		Texture* myAlbedoTexture;
-		Texture* myNormalTexture;
-		Texture* myDepthTexture;
+		
 		Texture* myDepthStencilTexture;
 		Texture* myCubemap;
 		RenderToScreenData myRenderToScreenData;
 		AmbientPass myAmbientPass;
 		LightPass myLightPass;
+		GBufferData myGBufferData;
 
 		float myClearColor[4];
 	};
