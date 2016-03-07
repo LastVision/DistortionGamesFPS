@@ -153,15 +153,6 @@ namespace Prism
 		myDynamicBody->addForce(physx::PxVec3(aDirection.x, aDirection.y, aDirection.z) * aMagnitude, physx::PxForceMode::eVELOCITY_CHANGE);
 	}
 
-	void PhysEntity::SetPosition(const CU::Vector3<float>& aPosition)
-	{
-		DL_ASSERT_EXP(myPhysicsType == ePhysics::DYNAMIC, "Cant set position to STATIC objects");
-
-		physx::PxTransform transform(physx::PxVec3(aPosition.x, aPosition.y, aPosition.z)
-			, physx::PxQuat::createIdentity());
-		myDynamicBody->setGlobalPose(transform);
-	}
-
 	physx::PxTriangleMesh* PhysEntity::GetPhysMesh(const std::string& aFBXPath)
 	{
 		DL_ASSERT_EXP(myPhysicsType == ePhysics::STATIC, "Cant get phys mesh on DYNAMIC objects");

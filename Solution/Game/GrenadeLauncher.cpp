@@ -66,7 +66,7 @@ void GrenadeLauncher::ShootAtDirection(const CU::Matrix44<float>& aOrientation)
 	RESET_RUNTIME;
 	bullet->Reset();
 	bullet->AddToScene();
-	bullet->GetPhysEntity()->SetPosition(aOrientation.GetPos());
+	//bullet->GetPhysEntity()->SetPosition(aOrientation.GetPos());
 	bullet->GetPhysEntity()->AddForce(aOrientation.GetForward(), 20.f);
 
 	myBullets.Add(bullet);

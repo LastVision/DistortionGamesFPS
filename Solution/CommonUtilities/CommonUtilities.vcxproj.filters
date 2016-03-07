@@ -115,6 +115,7 @@
       <Filter>Math\Quaternion</Filter>
     </ClInclude>
     <ClInclude Include="ThreadUtilities.h" />
+    <ClInclude Include="Defines.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Math">

@@ -218,7 +218,6 @@
     <ClInclude Include="SpotLight.h">
       <Filter>Lights</Filter>
     </ClInclude>
-    <ClInclude Include="Defines.h" />
     <ClInclude Include="LightStructs.h">
       <Filter>Lights</Filter>
     </ClInclude>

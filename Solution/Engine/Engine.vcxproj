@@ -349,7 +349,6 @@
     <ClInclude Include="Cube3DRenderer.h" />
     <ClInclude Include="DebugDrawer.h" />
     <ClInclude Include="DeferredRenderer.h" />
-    <ClInclude Include="Defines.h" />
     <ClInclude Include="DGFXFileFormat.h" />
     <ClInclude Include="DGFXLoader.h" />
     <ClInclude Include="DirectX.h" />
