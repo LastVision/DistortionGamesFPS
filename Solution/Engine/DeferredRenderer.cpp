@@ -210,6 +210,7 @@ namespace Prism
 		myAmbientPass.myNormal->SetResource(myGBufferData.myNormalTexture->GetShaderView());
 		myAmbientPass.myDepth->SetResource(myGBufferData.myDepthTexture->GetShaderView());
 		myAmbientPass.myCubemap->SetResource(myCubemap->GetShaderView());
+		myAmbientPass.myEffect->SetCameraPosition(aScene->GetCamera()->GetOrientation().GetPos());
 
 		Render(myAmbientPass.myEffect);
 

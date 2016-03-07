@@ -32,6 +32,8 @@ public:
 
 	void AddLight(Prism::PointLight* aLight);
 
+	void DebugMusic();
+
 private:
 	Prism::Scene* myScene;
 	Prism::DeferredRenderer* myDeferredRenderer;
