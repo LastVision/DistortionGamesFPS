@@ -36,4 +36,4 @@
 
 //#define USE_LIGHTS
 
-//#define THREAD_PHYSICS
+#define THREAD_PHYSICS

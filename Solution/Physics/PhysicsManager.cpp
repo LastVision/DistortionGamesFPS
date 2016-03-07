@@ -38,6 +38,8 @@ namespace Prism
 		myRaycastJobs[1].Init(64);
 		myRaycastResults[0].Init(64);
 		myRaycastResults[1].Init(64);
+		myMoveJobs[0].Init(8);
+		myMoveJobs[1].Init(8);
 		myTimestep = 1.f / 60.f;
 		
 		myFoundation = PxCreateFoundation(0x03030300, myDefaultAllocatorCallback, myDefaultErrorCallback);
@@ -166,7 +168,7 @@ namespace Prism
 		while (myQuit == false)
 		{
 			Update();
-			Sleep(16);
+			//Sleep(16);
 		}
 	}
 #endif
@@ -200,6 +202,20 @@ namespace Prism
 			// do something useful..
 		}
 
+		for (int i = 0; i < myMoveJobs[0].Size(); ++i)
+		{
+			Move(myMoveJobs[0][i]);
+		}
+
+		if (myMoveJobs[0].Size() > 0)
+		{
+			const physx::PxExtendedVec3& pos = myControllerManager->getController(myMoveJobs[0][0].myId)->getFootPosition();
+			myPlayerPosition.x = float(pos.x);
+			myPlayerPosition.y = float(pos.y);
+			myPlayerPosition.z = float(pos.z);
+		}
+
+		myMoveJobs[0].RemoveAll();
 
 		for (int i = 0; i < myPhysEntities.Size(); ++i)
 		{
@@ -268,9 +284,15 @@ namespace Prism
 			{
 				myRaycastResults[0].Add(RaycastResult(nullptr, aRaycastJob.myNormalizedDirection, aRaycastJob.myFunctionToCall));
 			}
-			myRaycastResults[0].Add(RaycastResult(ent->GetEntity(), aRaycastJob.myNormalizedDirection, aRaycastJob.myFunctionToCall));
+			else
+			{
+				myRaycastResults[0].Add(RaycastResult(ent->GetEntity(), aRaycastJob.myNormalizedDirection, aRaycastJob.myFunctionToCall));
+			}
 		}
-		myRaycastResults[0].Add(RaycastResult(nullptr, aRaycastJob.myNormalizedDirection, aRaycastJob.myFunctionToCall));
+		else
+		{
+			myRaycastResults[0].Add(RaycastResult(nullptr, aRaycastJob.myNormalizedDirection, aRaycastJob.myFunctionToCall));
+		}
 	}
 
 	void PhysicsManager::onPvdConnected(physx::debugger::comm::PvdConnection&)
@@ -302,9 +324,15 @@ namespace Prism
 
 	void PhysicsManager::Move(int aId, const CU::Vector3<float>& aDirection, float aMinDisplacement, float aDeltaTime)
 	{
-		physx::PxControllerFilters filter;
-		myControllerManager->getController(aId)->move(physx::PxVec3(aDirection.x, aDirection.y, aDirection.z), aMinDisplacement, aDeltaTime, filter, nullptr);
+		myMoveJobs[0].Add(MoveJob(aId, aDirection, aMinDisplacement, aDeltaTime));
 		
+	}
+	void PhysicsManager::Move(const MoveJob& aMoveJob)
+	{
+		physx::PxControllerFilters filter;
+		myControllerManager->getController(aMoveJob.myId)->move(
+			physx::PxVec3(aMoveJob.myDirection.x, aMoveJob.myDirection.y, aMoveJob.myDirection.z)
+			, aMoveJob.myMinDisplacement, aMoveJob.myDeltaTime, filter, nullptr);
 	}
 
 	bool PhysicsManager::GetAllowedToJump(int aId)
@@ -323,9 +351,6 @@ namespace Prism
 
 	void PhysicsManager::GetPosition(int aId, CU::Vector3<float>& aPositionOut)
 	{
-		const physx::PxExtendedVec3& pos = myControllerManager->getController(aId)->getFootPosition();
-		aPositionOut.x = float(pos.x);
-		aPositionOut.y = float(pos.y);
-		aPositionOut.z = float(pos.z);
+		aPositionOut = myPlayerPosition;
 	}
 }

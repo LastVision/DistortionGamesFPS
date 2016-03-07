@@ -158,10 +158,10 @@ namespace Prism
 	{
 		//not implemented yet in threaded environment
 
-		//DL_ASSERT_EXP(myPhysicsType == ePhysics::DYNAMIC, "Cant add Force to STATIC objects");
+		DL_ASSERT_EXP(myPhysicsType == ePhysics::DYNAMIC, "Cant add Force to STATIC objects");
 
-		//myDynamicBody->setLinearVelocity(physx::PxVec3(0, 0, 0));
-		//myDynamicBody->addForce(physx::PxVec3(aDirection.x, aDirection.y, aDirection.z) * aMagnitude, physx::PxForceMode::eVELOCITY_CHANGE);
+		myDynamicBody->setLinearVelocity(physx::PxVec3(0, 0, 0));
+		myDynamicBody->addForce(physx::PxVec3(aDirection.x, aDirection.y, aDirection.z) * aMagnitude, physx::PxForceMode::eVELOCITY_CHANGE);
 	}
 
 	physx::PxTriangleMesh* PhysEntity::GetPhysMesh(const std::string& aFBXPath)
@@ -220,7 +220,7 @@ namespace Prism
 
 	void PhysEntity::RemoveFromScene()
 	{
-		DL_ASSERT("Not impl yet");
+		//DL_ASSERT("Not impl yet");
 		if (myPhysicsType == ePhysics::DYNAMIC || myPhysicsType == ePhysics::PHANTOM)
 		{
 			PhysicsInterface::GetInstance()->GetManager()->GetScene()->removeActor(*myDynamicBody);
