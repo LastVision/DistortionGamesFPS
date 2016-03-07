@@ -172,6 +172,7 @@
     <ClInclude Include="GraphicsComponentData.h" />
     <ClInclude Include="HealthComponent.h" />
     <ClInclude Include="HealthComponentData.h" />
+    <ClInclude Include="NetworkComponent.h" />
     <ClInclude Include="PollingStation.h" />
     <ClInclude Include="ProjectileComponent.h" />
     <ClInclude Include="ProjectileComponentData.h" />
@@ -189,6 +190,7 @@
     <ClCompile Include="EntityFactory.cpp" />
     <ClCompile Include="GraphicsComponent.cpp" />
     <ClCompile Include="HealthComponent.cpp" />
+    <ClCompile Include="NetworkComponent.cpp" />
     <ClCompile Include="PollingStation.cpp" />
     <ClCompile Include="ProjectileComponent.cpp" />
     <ClCompile Include="stdafx.cpp">

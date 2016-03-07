@@ -62,6 +62,7 @@
     <ClCompile Include="TriggerComponent.cpp">
       <Filter>Component</Filter>
     </ClCompile>
+    <ClCompile Include="NetworkComponent.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
@@ -123,5 +124,6 @@
     <ClInclude Include="TriggerComponentData.h">
       <Filter>EntityFactory\EntityData\ComponentData</Filter>
     </ClInclude>
+    <ClInclude Include="NetworkComponent.h" />
   </ItemGroup>
 </Project>
