@@ -152,15 +152,15 @@ void Player::Update(float aDelta)
 	DEBUG_PRINT(playerPos);
 
 
-	mySendTime -= aDelta;
-	if (mySendTime < 0.f)
-	{
-		if (myOrientation.GetPos().x != prevPos.x || myOrientation.GetPos().y != prevPos.y || myOrientation.GetPos().z != prevPos.z)
-		{
-			ClientNetworkManager::GetInstance()->AddMessage(NetMessagePosition(myOrientation.GetPos()));
-			mySendTime = 1 / 30.f;
-		}
-	}
+	//mySendTime -= aDelta;
+	//if (mySendTime < 0.f)
+	//{
+	//	if (myOrientation.GetPos().x != prevPos.x || myOrientation.GetPos().y != prevPos.y || myOrientation.GetPos().z != prevPos.z)
+	//	{
+	//		ClientNetworkManager::GetInstance()->AddMessage(NetMessagePosition(myOrientation.GetPos()));
+	//		mySendTime = 1 / 30.f;
+	//	}
+	//}
 
 	myCamera->Update(aDelta);
 }

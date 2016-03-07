@@ -10,6 +10,9 @@ struct Message;
 
 struct NetworkAddPlayerMessage;
 struct NetworkAddEnemyMessage;
+struct NetworkSetPositionMessage;
+struct NetworkSendPositionMessage;
+
 class Subscriber
 {
 public:
@@ -26,5 +29,7 @@ public:
 	/* Network Based Messages below*/
 	virtual void ReceiveMessage(const NetworkAddPlayerMessage& aMessage);
 	virtual void ReceiveMessage(const NetworkAddEnemyMessage& aMessage);
+	virtual void ReceiveMessage(const NetworkSetPositionMessage& aMessage);
+	virtual void ReceiveMessage(const NetworkSendPositionMessage& aMessage);
 };
 

@@ -37,7 +37,6 @@ ClientLevel::ClientLevel()
 	, myInstances(16)
 	, myPointLights(64)
 {
-	Prism::PhysicsInterface::Create();
 	//Prism::PhysicsInterface::Destroy();
 	//Prism::PhysicsInterface::GetInstance()->RayCast({ 0, 0, 0 }, { 0, 1, 0 }, 10.f);
 	//Prism::PhysicsInterface::GetInstance()->Update();
@@ -69,7 +68,6 @@ ClientLevel::~ClientLevel()
 	SAFE_DELETE(myPlayer);
 	SAFE_DELETE(myScene);
 	SAFE_DELETE(myDeferredRenderer);
-	Prism::PhysicsInterface::Destroy();
 }
 
 void ClientLevel::Update(const float aDeltaTime)
