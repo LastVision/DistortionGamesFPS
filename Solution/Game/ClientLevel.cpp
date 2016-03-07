@@ -137,7 +137,7 @@ void ClientLevel::ReceiveMessage(const NetworkAddEnemyMessage& aMessage)
 {
 	bool isRunTime = Prism::MemoryTracker::GetInstance()->GetRunTime();
 	Prism::MemoryTracker::GetInstance()->SetRunTime(false);
-	Entity* newEnemy = EntityFactory::CreateEntity(eEntityType::UNIT, "grunt", myScene, true, aMessage.myPosition);
+	Entity* newEnemy = EntityFactory::CreateEntity(eEntityType::UNIT, "gundroid", myScene, true, aMessage.myPosition);
 
 	newEnemy->AddToScene();
 	newEnemy->Reset();
