@@ -14,6 +14,8 @@ namespace Prism
 	class Room;
 }
 
+class EmitterManager;
+
 class ClientLevel : public SharedLevel
 {
 public:
@@ -36,7 +38,7 @@ private:
 	CU::GrowingArray<CU::Matrix44f> myInstanceOrientations;
 
 	Player* myPlayer;
-
+	EmitterManager* myEmitterManager;
 
 };
 

@@ -92,7 +92,7 @@ void EmitterManager::RenderEmitters()
 		}
 		for (int k = 0; k < PREALLOCATED_EMITTERGROUP; k++)
 		{
-		int finished = 0;
+			int finished = 0;
 			if (myEmitterList[i]->myFinishedGroups[k] == FINISHED)
 			{
 				continue;
@@ -104,14 +104,11 @@ void EmitterManager::RenderEmitters()
 				if (instance->IsActive() == false)
 				{
 					finished++;
-					
+
 				}
 				else
 				{
-					if (instance->GetShouldAlwaysShow() == true)
-					{
-						instance->Render();
-					}
+					instance->Render();
 				}
 			}
 
@@ -141,70 +138,67 @@ void EmitterManager::ReceiveMessage(const EmitterMessage& aMessage)
 		}
 	}
 
-	if (aMessage.myShouldAlwaysShow == true || aMessage.myIsArtifact == true)
+	std::string particleType = CU::ToLower(aMessage.myParticleTypeString);
+	if (particleType == "")
 	{
-		std::string particleType = CU::ToLower(aMessage.myParticleTypeString);
-		if (particleType == "")
-		{
-			return;
-		}
-		DL_ASSERT_EXP(myEmitters.find(particleType) != myEmitters.end(), "Effect did not exist!");
-
-		if (myEmitters[particleType]->myCurrentIndex > (PREALLOCATED_EMITTERGROUP - 1))
-		{
-			myEmitters[particleType]->myCurrentIndex = 0;
-
-			//short index = myEmitters[particleType]->myCurrentIndex;
-		//	DL_ASSERT_EXP(myEmitters[particleType]->myEmitters[index][0]->IsActive() == false, "Particle popped");
-		}
-
-		short index = myEmitters[particleType]->myCurrentIndex;
-
-		/*if (myEmitters[particleType]->myEmitters[index][0]->IsActive() == true)
-		{
-			return;
-		}*/
-
-		for (int i = 0; i < myEmitters[particleType]->myEmitters[index].Size(); ++i)
-		{
-			Prism::ParticleEmitterInstance* instance = myEmitters[particleType]->myEmitters[index][i];
-
-
-			instance->SetEntity(nullptr);
-
-			if (aMessage.myShouldAlwaysShow == true)
-			{
-				instance->SetShouldAlwaysShow(true);
-			}
-
-			instance->SetPosition(position);
-			instance->Activate();
-			if (aMessage.myEmitterLifeTime > 0.f)
-			{
-				instance->SetEmitterLifeTime(aMessage.myEmitterLifeTime);
-			}
-			if (aMessage.myRadius > 0.f)
-			{
-				instance->SetRadius(aMessage.myRadius);
-			}
-			if ((aMessage.mySize.x > 0.f) && (aMessage.mySize.y > 0.f) && (aMessage.mySize.z > 0.f))
-			{
-				instance->SetSize(aMessage.mySize);
-			}
-
-			if (aMessage.myShouldKillEmitter == true)
-			{
-				instance->SetEmitterLifeTime(aMessage.myEmitterLifeTime);
-			}
-
-
-
-		}
-		myEmitters[particleType]->myFinishedGroups[index] = UNFINISHED;
-		myEmitters[particleType]->myFinishedCount++;
-		myEmitters[particleType]->myGroupIsActive = true;
-		myEmitters[particleType]->myCurrentIndex++;
+		return;
 	}
+	DL_ASSERT_EXP(myEmitters.find(particleType) != myEmitters.end(), "Effect did not exist!");
+
+	if (myEmitters[particleType]->myCurrentIndex > (PREALLOCATED_EMITTERGROUP - 1))
+	{
+		myEmitters[particleType]->myCurrentIndex = 0;
+
+		//short index = myEmitters[particleType]->myCurrentIndex;
+		//	DL_ASSERT_EXP(myEmitters[particleType]->myEmitters[index][0]->IsActive() == false, "Particle popped");
+	}
+
+	short index = myEmitters[particleType]->myCurrentIndex;
+
+	/*if (myEmitters[particleType]->myEmitters[index][0]->IsActive() == true)
+	{
+	return;
+	}*/
+
+	for (int i = 0; i < myEmitters[particleType]->myEmitters[index].Size(); ++i)
+	{
+		Prism::ParticleEmitterInstance* instance = myEmitters[particleType]->myEmitters[index][i];
+
+
+		instance->SetEntity(nullptr);
+
+		if (aMessage.myShouldAlwaysShow == true)
+		{
+			instance->SetShouldAlwaysShow(true);
+		}
+
+		instance->SetPosition(position);
+		instance->Activate();
+		if (aMessage.myEmitterLifeTime > 0.f)
+		{
+			instance->SetEmitterLifeTime(aMessage.myEmitterLifeTime);
+		}
+		if (aMessage.myRadius > 0.f)
+		{
+			instance->SetRadius(aMessage.myRadius);
+		}
+		if ((aMessage.mySize.x > 0.f) && (aMessage.mySize.y > 0.f) && (aMessage.mySize.z > 0.f))
+		{
+			instance->SetSize(aMessage.mySize);
+		}
+
+		if (aMessage.myShouldKillEmitter == true)
+		{
+			instance->SetEmitterLifeTime(aMessage.myEmitterLifeTime);
+		}
+
+
+
+	}
+	myEmitters[particleType]->myFinishedGroups[index] = UNFINISHED;
+	myEmitters[particleType]->myFinishedCount++;
+	myEmitters[particleType]->myGroupIsActive = true;
+	myEmitters[particleType]->myCurrentIndex++;
 }
 
 void EmitterManager::ReadListOfLists(const std::string& aPath)
