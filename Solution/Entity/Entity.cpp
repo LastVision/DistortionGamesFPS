@@ -3,6 +3,7 @@
 #include "AnimationComponent.h"
 #include "GraphicsComponent.h"
 #include "HealthComponent.h"
+#include "NetworkComponent.h"
 #include "ProjectileComponent.h"
 #include <Scene.h>
 #include <Instance.h>
@@ -48,6 +49,11 @@ Entity::Entity(const EntityData& aEntityData, Prism::Scene* aScene, bool aClient
 	if (aEntityData.myProjecileData.myExistsInEntity == true)
 	{
 		myComponents[static_cast<int>(eComponentType::PROJECTILE)] = new ProjectileComponent(*this, aEntityData.myProjecileData);
+	}
+
+	if (aEntityData.myNetworkData.myExistsInEntity == true)
+	{
+		myComponents[static_cast<int>(eComponentType::NETWORK)] = new NetworkComponent(*this);
 	}
 
 	if (aEntityData.myHealthData.myExistsInEntity == true)
