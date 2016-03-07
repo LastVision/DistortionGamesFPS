@@ -89,6 +89,8 @@ namespace Prism
 			treasureShape->setFlag(physx::PxShapeFlag::eTRIGGER_SHAPE, true);
 			PhysicsInterface::GetInstance()->GetManager()->GetScene()->addActor(*myDynamicBody);
 		}
+
+		PhysicsInterface::GetInstance()->GetManager()->Add(this);
 	}
 
 
@@ -98,9 +100,15 @@ namespace Prism
 		myShapes = nullptr;
 	}
 
+	void PhysEntity::SwapOrientations()
+	{
+		std::swap(my4x4Float, myThread4x4Float);
+	}
+
 	float* PhysEntity::GetPosition()
 	{
-		return myPosition;
+		DL_ASSERT("Not used? Not verified to work.");
+		return &my4x4Float[12];
 	}
 
 	float* PhysEntity::GetOrientation()
@@ -119,25 +127,25 @@ namespace Prism
 		physx::PxTransform graphicsTransform(pT.p, pT.q);
 		physx::PxMat33 m = physx::PxMat33(graphicsTransform.q);
 
-		my4x4Float[0] = m(0, 0);
-		my4x4Float[1] = m(1, 0);
-		my4x4Float[2] = m(2, 0);
-		my4x4Float[3] = 0;
-
-		my4x4Float[4] = m(0, 1);
-		my4x4Float[5] = m(1, 1);
-		my4x4Float[6] = m(2, 1);
-		my4x4Float[7] = 0;
-
-		my4x4Float[8] = m(0, 2);
-		my4x4Float[9] = m(1, 2);
-		my4x4Float[10] = m(2, 2);
-		my4x4Float[11] = 0;
-
-		my4x4Float[12] = graphicsTransform.p.x;
-		my4x4Float[13] = graphicsTransform.p.y;
-		my4x4Float[14] = graphicsTransform.p.z;
-		my4x4Float[15] = 1;
+		myThread4x4Float[0] = m(0, 0);
+		myThread4x4Float[1] = m(1, 0);
+		myThread4x4Float[2] = m(2, 0);
+		myThread4x4Float[3] = 0;
+		
+		myThread4x4Float[4] = m(0, 1);
+		myThread4x4Float[5] = m(1, 1);
+		myThread4x4Float[6] = m(2, 1);
+		myThread4x4Float[7] = 0;
+		
+		myThread4x4Float[8] = m(0, 2);
+		myThread4x4Float[9] = m(1, 2);
+		myThread4x4Float[10] = m(2, 2);
+		myThread4x4Float[11] = 0;
+		
+		myThread4x4Float[12] = graphicsTransform.p.x;
+		myThread4x4Float[13] = graphicsTransform.p.y;
+		myThread4x4Float[14] = graphicsTransform.p.z;
+		myThread4x4Float[15] = 1;
 
 
 		myPosition[0] = graphicsTransform.p.x;
@@ -147,10 +155,12 @@ namespace Prism
 
 	void PhysEntity::AddForce(const CU::Vector3<float>& aDirection, float aMagnitude)
 	{
-		DL_ASSERT_EXP(myPhysicsType == ePhysics::DYNAMIC, "Cant add Force to STATIC objects");
+		//not implemented yet in threaded environment
 
-		myDynamicBody->setLinearVelocity(physx::PxVec3(0, 0, 0));
-		myDynamicBody->addForce(physx::PxVec3(aDirection.x, aDirection.y, aDirection.z) * aMagnitude, physx::PxForceMode::eVELOCITY_CHANGE);
+		//DL_ASSERT_EXP(myPhysicsType == ePhysics::DYNAMIC, "Cant add Force to STATIC objects");
+
+		//myDynamicBody->setLinearVelocity(physx::PxVec3(0, 0, 0));
+		//myDynamicBody->addForce(physx::PxVec3(aDirection.x, aDirection.y, aDirection.z) * aMagnitude, physx::PxForceMode::eVELOCITY_CHANGE);
 	}
 
 	physx::PxTriangleMesh* PhysEntity::GetPhysMesh(const std::string& aFBXPath)
@@ -209,6 +219,7 @@ namespace Prism
 
 	void PhysEntity::RemoveFromScene()
 	{
+		DL_ASSERT("Not impl yet");
 		if (myPhysicsType == ePhysics::DYNAMIC || myPhysicsType == ePhysics::PHANTOM)
 		{
 			PhysicsInterface::GetInstance()->GetManager()->GetScene()->removeActor(*myDynamicBody);

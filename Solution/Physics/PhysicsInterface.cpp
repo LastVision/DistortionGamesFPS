@@ -38,6 +38,11 @@ namespace Prism
 		}
 	}
 
+	void PhysicsInterface::EndFrame()
+	{
+		myManager->SwapOrientations();
+	}
+
 	void PhysicsInterface::RayCast(const CU::Vector3<float>& aOrigin, const CU::Vector3<float>& aNormalizedDirection, float aMaxRayDistance, std::function<void(Entity*, const CU::Vector3<float>&)> aFunctionToCall)
 	{
 		if (myManager != nullptr)
