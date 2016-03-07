@@ -2,6 +2,8 @@
 
 #include <DamageNote.h>
 #include <Entity.h>
+#include <EmitterMessage.h>
+#include <PostMaster.h>
 #include <PhysEntity.h>
 #include <PhysicsInterface.h>
 #include "Pistol.h"
@@ -58,7 +60,7 @@ void Pistol::HandleRaycast(Entity* anEntity, const CU::Vector3<float>& aDirectio
 		{
 			anEntity->GetPhysEntity()->AddForce(aDirection, 25.f);
 		}
-
+		PostMaster::GetInstance()->SendMessage(EmitterMessage("Shotgun", aHitPosition));
 		anEntity->SendNote<DamageNote>(DamageNote(myDamage));
 
 	}
