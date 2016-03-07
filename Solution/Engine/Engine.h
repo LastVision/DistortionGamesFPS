@@ -51,6 +51,7 @@ namespace Prism
 		static bool Create(HWND& aHwnd, WNDPROC aWndProc, SetupInfo& aSetupInfo);
 		static void Destroy();
 		static Engine* GetInstance();
+		void Update(float aDeltaTime);
 		void Render();
 		void OnResize(int aWidth, int aHeigth);
 		bool IsFullscreen() const;

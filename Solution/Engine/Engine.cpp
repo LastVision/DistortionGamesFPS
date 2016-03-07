@@ -91,6 +91,20 @@ namespace Prism
 		return myInstance;
 	}
 
+	void Engine::Update(float aDeltaTime)
+	{
+		if (myFadeData.myIsFading == true)
+		{
+			myFadeData.myCurrentTime -= aDeltaTime;
+
+			if (myFadeData.myCurrentTime <= 0.f)
+			{
+				myFadeData.myIsFading = false;
+				myFadeData.myCurrentTime = 0.f;
+			}
+		}
+	}
+
 	void Engine::Render()
 	{
 		DEBUG_PRINT(GET_RUNTIME);
@@ -133,14 +147,6 @@ namespace Prism
 
 		if (myFadeData.myIsFading == true)
 		{
-			myFadeData.myCurrentTime -= CU::TimerManager::GetInstance()->GetMasterTimer().GetTime().GetFrameTime();
-
-			if (myFadeData.myCurrentTime <= 0.f)
-			{
-				myFadeData.myIsFading = false;
-				myFadeData.myCurrentTime = 0.f;
-			}
-
 			myFadeData.mySprite->Render({ 0.f, 0.f }, { 1.f, 1.f }, { 1.f, 1.f, 1.f, 1.f * myFadeData.myCurrentTime / myFadeData.myTotalTime });
 		}
 
@@ -200,15 +206,9 @@ namespace Prism
 
 	Model* Engine::DLLLoadModel(const std::string& aModelPath, Effect* aEffect)
 	{
-		CU::TimerManager::GetInstance()->StartTimer("LoadModel");
-
 		Model* model = myModelFactory->LoadModel(aModelPath.c_str());
 		model->SetEffect(aEffect);
 		model->Init(1);
-
-		int elapsed = static_cast<int>(
-			CU::TimerManager::GetInstance()->StopTimer("LoadModel").GetMilliseconds());
-		RESOURCE_LOG("Model \"%s\" took %d ms to load", aModelPath.c_str(), elapsed);
 
 		return model;
 	}

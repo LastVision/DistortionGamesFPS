@@ -12,6 +12,11 @@
 
 class Entity;
 
+namespace CU
+{
+	class TimerManager;
+}
+
 namespace physx
 {
 	class PxDefaultCpuDispatcher;
@@ -49,6 +54,7 @@ namespace Prism
 
 	private:
 #ifdef THREAD_PHYSICS
+		CU::TimerManager* myTimerManager;
 		void ThreadUpdate();
 		std::thread* myPhysicsThread;
 		volatile bool myQuit;

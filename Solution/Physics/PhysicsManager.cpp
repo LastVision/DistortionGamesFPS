@@ -25,6 +25,7 @@
 #include "PhysEntity.h"
 #include <pxphysicsapi.h>
 #include <PxQueryReport.h>
+#include <TimerManager.h>
 
 namespace Prism
 {
@@ -32,6 +33,7 @@ namespace Prism
 		: myPhysEntities(4096)
 #ifdef THREAD_PHYSICS
 		, myQuit(false)
+		, myTimerManager(new CU::TimerManager())
 #endif
 	{
 		myRaycastJobs[0].Init(64);
@@ -141,6 +143,7 @@ namespace Prism
 		myQuit = true;
 		myPhysicsThread->join();
 		SAFE_DELETE(myPhysicsThread);
+		SAFE_DELETE(myTimerManager);
 #endif
 		if (myDebugConnection != nullptr)
 		{
@@ -167,8 +170,9 @@ namespace Prism
 	{
 		while (myQuit == false)
 		{
+			myTimerManager->Update();
 			Update();
-			//Sleep(16);
+			myTimerManager->CapFrameRate(60.f);
 		}
 	}
 #endif

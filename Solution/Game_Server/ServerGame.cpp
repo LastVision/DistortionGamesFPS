@@ -12,7 +12,6 @@ ServerGame::ServerGame()
 
 ServerGame::~ServerGame()
 {
-	CU::TimerManager::Destroy();
 	ServerNetworkManager::Destroy();
 	myStateStack.Clear();
 	PostMaster::Destroy();
@@ -21,7 +20,6 @@ ServerGame::~ServerGame()
 bool ServerGame::Init()
 {
 	PostMaster::Create();
-	CU::TimerManager::Create();
 	ServerNetworkManager::Create();
 	ServerNetworkManager::GetInstance()->StartNetwork();
 	myStateStack.PushMainState(new ServerInGameState());
@@ -30,9 +28,9 @@ bool ServerGame::Init()
 
 bool ServerGame::Update()
 {
-	CU::TimerManager::GetInstance()->Update();
+	myTimerManager->Update();
 
-	myDeltaTime = CU::TimerManager::GetInstance()->GetMasterTimer().GetTime().GetFrameTime();
+	myDeltaTime = myTimerManager->GetMasterTimer().GetTime().GetFrameTime();
 
 	if (myStateStack.UpdateCurrentState(myDeltaTime) == false)
 	{

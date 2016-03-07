@@ -60,7 +60,7 @@ namespace Prism
 #endif
 
 
-		CU::TimerManager::GetInstance()->StartTimer("LoadDGFX");
+		//CU::TimerManager::GetInstance()->StartTimer("LoadDGFX");
 
 		std::fstream file;
 		file.open(dgfxFile.c_str(), std::ios::in | std::ios::binary);
@@ -76,9 +76,9 @@ namespace Prism
 
 		file.close();
 
-		int elapsed = static_cast<int>(
-			CU::TimerManager::GetInstance()->StopTimer("LoadDGFX").GetMilliseconds());
-		RESOURCE_LOG("DGFX-Model \"%s\" took %d ms to load", dgfxFile.c_str(), elapsed);
+		//int elapsed = static_cast<int>(
+		//	CU::TimerManager::GetInstance()->StopTimer("LoadDGFX").GetMilliseconds());
+		//RESOURCE_LOG("DGFX-Model \"%s\" took %d ms to load", dgfxFile.c_str(), elapsed);
 
 		myModels[aFilePath] = newModel;
 
@@ -101,7 +101,7 @@ namespace Prism
 		}
 #endif
 
-		CU::TimerManager::GetInstance()->StartTimer("LoadDGFXAnimated");
+		//CU::TimerManager::GetInstance()->StartTimer("LoadDGFXAnimated");
 
 		std::fstream file;
 		file.open(dgfxFile.c_str(), std::ios::in | std::ios::binary);
@@ -117,9 +117,9 @@ namespace Prism
 
 		file.close();
 
-		int elapsed = static_cast<int>(
-			CU::TimerManager::GetInstance()->StopTimer("LoadDGFXAnimated").GetMilliseconds());
-		RESOURCE_LOG("Animated DGFX-Model \"%s\" took %d ms to load", dgfxFile.c_str(), elapsed);
+		//int elapsed = static_cast<int>(
+		//	CU::TimerManager::GetInstance()->StopTimer("LoadDGFXAnimated").GetMilliseconds());
+		//RESOURCE_LOG("Animated DGFX-Model \"%s\" took %d ms to load", dgfxFile.c_str(), elapsed);
 
 		myModelsAnimated[aFilePath] = newModel;
 
@@ -142,7 +142,7 @@ namespace Prism
 		}
 #endif
 
-		CU::TimerManager::GetInstance()->StartTimer("LoadAnimationDGFX");
+		//CU::TimerManager::GetInstance()->StartTimer("LoadAnimationDGFX");
 
 
 		std::fstream stream;
@@ -184,9 +184,9 @@ namespace Prism
 		Animation* animation = LoadAnimation(aFilePath, nullptr, stream);
 		stream.close();
 
-		int elapsed = static_cast<int>(
-			CU::TimerManager::GetInstance()->StopTimer("LoadAnimationDGFX").GetMilliseconds());
-		RESOURCE_LOG("DGFX-Animation \"%s\" took %d ms to load", dgfxFile.c_str(), elapsed);
+		//int elapsed = static_cast<int>(
+		//	CU::TimerManager::GetInstance()->StopTimer("LoadAnimationDGFX").GetMilliseconds());
+		//RESOURCE_LOG("DGFX-Animation \"%s\" took %d ms to load", dgfxFile.c_str(), elapsed);
 
 		return animation;
 	}
