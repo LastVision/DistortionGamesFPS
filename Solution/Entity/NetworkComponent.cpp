@@ -17,3 +17,8 @@ const unsigned int NetworkComponent::GetNetworkID() const
 {
 	return myNetworkID;
 }
+
+void NetworkComponent::SetNetworkID(unsigned int anID)
+{
+	myNetworkID = anID;
+}

@@ -1,4 +1,4 @@
- #include "stdafx.h"
+#include "stdafx.h"
 #include "ServerLevel.h"
 
 #include <Entity.h>
@@ -6,6 +6,7 @@
 #include <NetworkAddPlayerMessage.h>
 #include <NetworkAddEnemyMessage.h>
 #include <PostMaster.h>
+#include <NetworkComponent.h>
 ServerLevel::ServerLevel()
 {
 	PostMaster::GetInstance()->Subscribe(eMessageType::NETWORK_ADD_PLAYER, this);
@@ -31,7 +32,14 @@ void ServerLevel::ReceiveMessage(const NetworkAddPlayerMessage& aMessage)
 	myPlayers.Add(newPlayer);
 	Prism::MemoryTracker::GetInstance()->SetRunTime(isRunTime);
 
-	PostMaster::GetInstance()->SendMessage(NetworkAddEnemyMessage({ 0.f, 0.f, 0.f }, aMessage.myAddress));
+	for (Entity* e : myEnemies)
+	{
+		if (e->GetComponent<NetworkComponent>() != nullptr)
+		{
+			PostMaster::GetInstance()->SendMessage(NetworkAddEnemyMessage({ 0.f, 0.f, 0.f }, e->
+					GetComponent<NetworkComponent>()->GetNetworkID(), aMessage.myAddress));
+		}
+	}
 
 
 }

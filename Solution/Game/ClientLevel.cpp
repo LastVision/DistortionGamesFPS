@@ -30,6 +30,8 @@
 #include "EmitterManager.h"
 #include <EmitterMessage.h>
 
+#include <NetworkComponent.h>
+
 ClientLevel::ClientLevel()
 	: myInstanceOrientations(16)
 	, myInstances(16)
@@ -124,10 +126,13 @@ void ClientLevel::ReceiveMessage(const NetworkAddEnemyMessage& aMessage)
 	bool isRunTime = Prism::MemoryTracker::GetInstance()->GetRunTime();
 	Prism::MemoryTracker::GetInstance()->SetRunTime(false);
 	Entity* newEnemy = EntityFactory::CreateEntity(eEntityType::UNIT, "grunt", myScene, true, aMessage.myPosition);
+
+	newEnemy->GetComponent<NetworkComponent>()->SetNetworkID(aMessage.myNetworkID);
+
 	//PostMaster::GetInstance()->SendMessage(EmitterMessage("Example", aMessage.myPosition));
 	newEnemy->AddToScene();
 	newEnemy->Reset();
-	myEntities.Add(newEnemy);
+	myEnemies.Add(newEnemy);
 	Prism::MemoryTracker::GetInstance()->SetRunTime(isRunTime);
 }
 

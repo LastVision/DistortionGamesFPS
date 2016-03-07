@@ -195,6 +195,7 @@ void ServerNetworkManager::ReceiveMessage(const NetworkAddEnemyMessage& aMessage
 {
 	NetMessageAddEnemy toSend;
 	toSend.myPosition = aMessage.myPosition;
+	toSend.myNetworkID = aMessage.myNetworkID;
 	toSend.PackMessage();
 	myNetwork->Send(toSend.myStream, aMessage.myAddress);
 }
