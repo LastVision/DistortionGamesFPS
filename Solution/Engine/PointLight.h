@@ -1,5 +1,7 @@
 #pragma once
 
+#include "LightStructs.h"
+
 class Camera;
 class Instance;
 
