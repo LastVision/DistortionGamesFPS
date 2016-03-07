@@ -80,6 +80,11 @@ void NetworkComponent::Update(float aDelta)
 					myAlpha = 0;
 				}
 			}
+			else
+			{
+				int apa = 0;
+			}
+
 
 			mySendTime = 1 * 0.033f;
 			PostMaster::GetInstance()->SendMessage(NetworkSendPositionMessage(myServerPosition, myNetworkID));

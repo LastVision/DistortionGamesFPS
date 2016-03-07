@@ -128,11 +128,12 @@ void ClientLevel::ReceiveMessage(const NetworkAddEnemyMessage& aMessage)
 	Prism::MemoryTracker::GetInstance()->SetRunTime(false);
 	Entity* newEnemy = EntityFactory::CreateEntity(eEntityType::UNIT, "grunt", myScene, true, aMessage.myPosition);
 
-	newEnemy->GetComponent<NetworkComponent>()->SetNetworkID(aMessage.myNetworkID);
-
-	//PostMaster::GetInstance()->SendMessage(EmitterMessage("Example", aMessage.myPosition));
 	newEnemy->AddToScene();
 	newEnemy->Reset();
+
+	//PostMaster::GetInstance()->SendMessage(EmitterMessage("Example", aMessage.myPosition));
+	newEnemy->GetComponent<NetworkComponent>()->SetNetworkID(aMessage.myNetworkID);
+
 	myEnemies.Add(newEnemy);
 	Prism::MemoryTracker::GetInstance()->SetRunTime(isRunTime);
 }

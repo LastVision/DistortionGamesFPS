@@ -15,6 +15,7 @@
 #include <NetworkAddPlayerMessage.h>
 #include <NetworkAddEnemyMessage.h>
 #include <NetworkSendPositionMessage.h>
+#include <NetworkSetPositionMessage.h>
 
 #define BUFFERSIZE 512
 
@@ -186,11 +187,9 @@ void ServerNetworkManager::HandleMessage(const NetMessagePingRequest&, const soc
 	myNetwork->Send(reply.myStream, aSenderAddress);
 }
 
-void ServerNetworkManager::HandleMessage(const NetMessagePosition&, const sockaddr_in&)
+void ServerNetworkManager::HandleMessage(const NetMessagePosition& aMessage, const sockaddr_in&)
 {
-	/*NetMessagePosition position;
-	position = aMessage;
-	AddMessage(position);*/
+	PostMaster::GetInstance()->SendMessage(NetworkSetPositionMessage(aMessage.myPosition, aMessage.myNetworkID));
 }
 
 
