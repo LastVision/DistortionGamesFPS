@@ -10,6 +10,41 @@
 
 namespace Prism
 {
+	void RenderToScreenData::OnEffectLoad()
+	{
+		mySource = myEffect->GetEffect()->GetVariableByName("DiffuseTexture")->AsShaderResource();
+	}
+
+	void AmbientPass::OnEffectLoad()
+	{
+		myAlbedo = myEffect->GetEffect()->GetVariableByName("AlbedoTexture")->AsShaderResource();
+		myNormal = myEffect->GetEffect()->GetVariableByName("NormalTexture")->AsShaderResource();
+		myDepth = myEffect->GetEffect()->GetVariableByName("DepthTexture")->AsShaderResource();
+		myCubemap = myEffect->GetEffect()->GetVariableByName("CubeMap")->AsShaderResource();
+		myAmbientMultiplier = myEffect->GetEffect()->GetVariableByName("AmbientMultiplier")->AsScalar();
+
+#ifdef USE_LIGHTS
+		myAmbientMultiplier->SetFloat(0.05f);
+#else
+		myAmbientMultiplier->SetFloat(1.f);
+#endif
+	}
+
+	void LightPass::OnEffectLoad()
+	{
+		myAlbedo = myEffect->GetEffect()->GetVariableByName("AlbedoTexture")->AsShaderResource();
+		myNormal = myEffect->GetEffect()->GetVariableByName("NormalTexture")->AsShaderResource();
+		myDepth = myEffect->GetEffect()->GetVariableByName("DepthTexture")->AsShaderResource();
+		myMetalness = myEffect->GetEffect()->GetVariableByName("MetalnessTexture")->AsShaderResource();
+		myAmbientOcclusion = myEffect->GetEffect()->GetVariableByName("AOTexture")->AsShaderResource();
+		myRoughness = myEffect->GetEffect()->GetVariableByName("RoughnessTexture")->AsShaderResource();
+
+		myPointLightVariable = myEffect->GetEffect()->GetVariableByName("PointLights");
+
+		myInvertedProjection = myEffect->GetEffect()->GetVariableByName("InvertedProjection")->AsMatrix();
+		myNotInvertedView = myEffect->GetEffect()->GetVariableByName("NotInvertedView")->AsMatrix();
+	}
+
 	DeferredRenderer::DeferredRenderer()
 	{
 		CU::Vector2<float> windowSize = Engine::GetInstance()->GetWindowSize();
@@ -24,14 +59,16 @@ namespace Prism
 
 		myRenderToScreenData.myEffect = 
 			EffectContainer::GetInstance()->GetEffect("Data/Resource/Shader/S_effect_render_to_texture.fx");
-		myRenderToScreenData.mySource =
-			myRenderToScreenData.myEffect->GetEffect()->GetVariableByName("DiffuseTexture")->AsShaderResource();
+		myRenderToScreenData.OnEffectLoad();
+		myRenderToScreenData.myEffect->AddListener(&myRenderToScreenData);
 
 		SetupAmbientData();
 		SetupLightData();
 		SetupGBufferData();
 
 		InitFullscreenQuad();
+
+		myCubemap = TextureContainer::GetInstance()->GetTexture("Data/Resource/Texture/CubeMap/T_cubemap_level01.dds");
 	}
 
 
@@ -172,7 +209,8 @@ namespace Prism
 		myAmbientPass.myAlbedo->SetResource(myGBufferData.myAlbedoTexture->GetShaderView());
 		myAmbientPass.myNormal->SetResource(myGBufferData.myNormalTexture->GetShaderView());
 		myAmbientPass.myDepth->SetResource(myGBufferData.myDepthTexture->GetShaderView());
-		//myAmbientPass.myCubemap->SetResource(myCubemap->GetShaderView());
+		myAmbientPass.myCubemap->SetResource(myCubemap->GetShaderView());
+		myAmbientPass.myEffect->SetCameraPosition(aScene->GetCamera()->GetOrientation().GetPos());
 
 		Render(myAmbientPass.myEffect);
 
@@ -230,7 +268,11 @@ namespace Prism
 	{
 		myAmbientPass.myEffect = EffectContainer::GetInstance()->GetEffect(
 			"Data/Resource/Shader/S_effect_deferred_ambient.fx");
-		myAmbientPass.myAlbedo
+
+		myAmbientPass.OnEffectLoad();
+		myAmbientPass.myEffect->AddListener(&myAmbientPass);
+
+		/*myAmbientPass.myAlbedo
 			= myAmbientPass.myEffect->GetEffect()->GetVariableByName("AlbedoTexture")->AsShaderResource();
 		myAmbientPass.myNormal
 			= myAmbientPass.myEffect->GetEffect()->GetVariableByName("NormalTexture")->AsShaderResource();
@@ -245,14 +287,18 @@ namespace Prism
 		myAmbientPass.myAmbientMultiplier->SetFloat(0.05f);
 #else
 		myAmbientPass.myAmbientMultiplier->SetFloat(1.f);
-#endif
+#endif*/
 	}
 
 	void DeferredRenderer::SetupLightData()
 	{
 		myLightPass.myEffect = EffectContainer::GetInstance()->GetEffect(
 			"Data/Resource/Shader/S_effect_deferred_light_mesh.fx");
-		myLightPass.myAlbedo
+
+		myLightPass.OnEffectLoad();
+		myLightPass.myEffect->AddListener(&myLightPass);
+
+		/*myLightPass.myAlbedo
 			= myLightPass.myEffect->GetEffect()->GetVariableByName("AlbedoTexture")->AsShaderResource();
 		myLightPass.myNormal
 			= myLightPass.myEffect->GetEffect()->GetVariableByName("NormalTexture")->AsShaderResource();
@@ -269,7 +315,7 @@ namespace Prism
 			= myLightPass.myEffect->GetEffect()->GetVariableByName("PointLights");
 
 		myLightPass.myInvertedProjection = myLightPass.myEffect->GetEffect()->GetVariableByName("InvertedProjection")->AsMatrix();
-		myLightPass.myNotInvertedView = myLightPass.myEffect->GetEffect()->GetVariableByName("NotInvertedView")->AsMatrix();
+		myLightPass.myNotInvertedView = myLightPass.myEffect->GetEffect()->GetVariableByName("NotInvertedView")->AsMatrix();*/
 	}
 
 	void DeferredRenderer::SetupGBufferData()

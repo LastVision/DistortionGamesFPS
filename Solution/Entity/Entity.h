@@ -55,6 +55,8 @@ public:
 	Prism::PhysEntity* GetPhysEntity() const;
 	void Kill();
 
+	bool GetIsClient();
+
 private:
 	void operator=(Entity&) = delete;
 

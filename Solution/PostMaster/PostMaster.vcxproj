@@ -164,6 +164,8 @@
     <ClInclude Include="GameStateMessage.h" />
     <ClInclude Include="Message.h" />
     <ClInclude Include="MessageEnum.h" />
+    <ClInclude Include="NetworkSendPositionMessage.h" />
+    <ClInclude Include="NetworkSetPositionMessage.h" />
     <ClInclude Include="OnClickMessage.h" />
     <ClInclude Include="PostMaster.h" />
     <ClInclude Include="ResizeMessage.h" />

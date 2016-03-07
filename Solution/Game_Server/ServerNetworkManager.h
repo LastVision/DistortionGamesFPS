@@ -23,7 +23,7 @@ private:
 	void HandleMessage(const NetMessagePosition& aMessage, const sockaddr_in& aSenderAddress) override;
 
 	void ReceiveMessage(const NetworkAddEnemyMessage& aMessage) override;
-
+	void ReceiveMessage(const NetworkSendPositionMessage& aMessage) override;
 
 	void ReceieveThread() override;
 	void SendThread() override;

@@ -2,6 +2,8 @@
 
 #include <DamageNote.h>
 #include <Entity.h>
+#include <EmitterMessage.h>
+#include <PostMaster.h>
 #include <PhysEntity.h>
 #include <PhysicsInterface.h>
 #include "Pistol.h"
@@ -24,9 +26,9 @@ Pistol::Pistol()
 
 	reader.CloseDocument();
 
-	myRaycastHandler = [=](Entity* anEntity, const CU::Vector3<float>& aDirection)
+	myRaycastHandler = [=](Entity* anEntity, const CU::Vector3<float>& aDirection, const CU::Vector3<float>& aHitPosition)
 	{
-		this->HandleRaycast(anEntity, aDirection);
+		this->HandleRaycast(anEntity, aDirection, aHitPosition);
 	};
 }
 
@@ -50,7 +52,7 @@ void Pistol::Reload()
 	myAmmoInClip = myClipSize;
 }
 
-void Pistol::HandleRaycast(Entity* anEntity, const CU::Vector3<float>& aDirection)
+void Pistol::HandleRaycast(Entity* anEntity, const CU::Vector3<float>& aDirection, const CU::Vector3<float>& aHitPosition)
 {
 	if (anEntity != nullptr)
 	{
@@ -58,7 +60,7 @@ void Pistol::HandleRaycast(Entity* anEntity, const CU::Vector3<float>& aDirectio
 		{
 			anEntity->GetPhysEntity()->AddForce(aDirection, 25.f);
 		}
-
+		PostMaster::GetInstance()->SendMessage(EmitterMessage("Shotgun", aHitPosition));
 		anEntity->SendNote<DamageNote>(DamageNote(myDamage));
 
 	}

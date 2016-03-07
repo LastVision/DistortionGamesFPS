@@ -1,5 +1,7 @@
 #include "stdafx.h"
 #include <Instance.h>
+#include <AudioInterface.h>
+
 #include "ClientLevel.h"
 #include <ModelLoader.h>
 #include "Player.h"
@@ -37,7 +39,6 @@ ClientLevel::ClientLevel()
 	, myInstances(16)
 	, myPointLights(64)
 {
-	Prism::PhysicsInterface::Create();
 	//Prism::PhysicsInterface::Destroy();
 	//Prism::PhysicsInterface::GetInstance()->RayCast({ 0, 0, 0 }, { 0, 1, 0 }, 10.f);
 	//Prism::PhysicsInterface::GetInstance()->Update();
@@ -56,6 +57,10 @@ ClientLevel::ClientLevel()
 	myEmitterManager = new EmitterManager(*myPlayer->GetCamera());
 	CU::Matrix44f orientation;
 	myInstanceOrientations.Add(orientation);
+
+	Prism::Audio::AudioInterface::GetInstance()->PostEvent("PlayBackground", 0);
+	Prism::Audio::AudioInterface::GetInstance()->PostEvent("PlayFirstLayer", 0);
+	Prism::Audio::AudioInterface::GetInstance()->PostEvent("PlaySecondLayer", 0);
 }
 
 ClientLevel::~ClientLevel()
@@ -69,13 +74,15 @@ ClientLevel::~ClientLevel()
 	SAFE_DELETE(myPlayer);
 	SAFE_DELETE(myScene);
 	SAFE_DELETE(myDeferredRenderer);
-	Prism::PhysicsInterface::Destroy();
+
+	Prism::Audio::AudioInterface::GetInstance()->PostEvent("StopBackground", 0);
+	Prism::Audio::AudioInterface::GetInstance()->PostEvent("StopFirstLayer", 0);
+	Prism::Audio::AudioInterface::GetInstance()->PostEvent("StopSecondLayer", 0);
 }
 
 void ClientLevel::Update(const float aDeltaTime)
 {
 	SharedLevel::Update(aDeltaTime);
-	ClientNetworkManager::GetInstance()->Update(aDeltaTime);
 	myPlayer->Update(aDeltaTime);
 	myEmitterManager->UpdateEmitters(aDeltaTime, CU::Matrix44f());
 	if (CU::InputWrapper::GetInstance()->KeyDown(DIK_C) == true)
@@ -89,14 +96,17 @@ void ClientLevel::Update(const float aDeltaTime)
 	DEBUG_PRINT(kbs);
 	Prism::DebugDrawer::GetInstance()->RenderLinesToScreen(*myPlayer->GetCamera());
 
-	for (int i = 0; i < myPlayers.Size(); ++i)
-	{
-		CU::Vector3f position = ClientNetworkManager::GetInstance()->GetClients()[i].myPosition;
-		myPlayers[i]->SetPosition(position);
-	}
+	//for (int i = 0; i < myPlayers.Size(); ++i)
+	//{
+	//	CU::Vector3f position = ClientNetworkManager::GetInstance()->GetClients()[i].myPosition;
+	//	myPlayers[i]->SetPosition(position);
+	//}
 
+	DebugMusic();
 
 	Prism::PhysicsInterface::GetInstance()->EndFrame();
+
+	ClientNetworkManager::GetInstance()->Update(aDeltaTime);
 }
 
 void ClientLevel::Render()
@@ -114,6 +124,8 @@ void ClientLevel::ReceiveMessage(const NetworkAddPlayerMessage& aMessage)
 	bool isRunTime = Prism::MemoryTracker::GetInstance()->GetRunTime();
 	Prism::MemoryTracker::GetInstance()->SetRunTime(false);
 	Entity* newPlayer = EntityFactory::CreateEntity(eEntityType::UNIT, "player", myScene, true, { 0.f, 0.f, 0.f });
+	newPlayer->GetComponent<NetworkComponent>()->SetNetworkID(aMessage.myNetworkID);
+	newPlayer->GetComponent<NetworkComponent>()->SetPlayer(true);
 	newPlayer->AddToScene();
 	newPlayer->Reset();
 	myPlayers.Add(newPlayer);
@@ -139,4 +151,32 @@ void ClientLevel::AddLight(Prism::PointLight* aLight)
 {
 	myPointLights.Add(aLight);
 	myScene->AddLight(aLight);
+}
+
+void ClientLevel::DebugMusic()
+{
+	if (CU::InputWrapper::GetInstance()->KeyDown(DIK_4) == true)
+	{
+		Prism::Audio::AudioInterface::GetInstance()->PostEvent("FadeInBackground", 0);
+	}
+	if (CU::InputWrapper::GetInstance()->KeyDown(DIK_5) == true)
+	{
+		Prism::Audio::AudioInterface::GetInstance()->PostEvent("FadeOutBackground", 0);
+	}
+	if (CU::InputWrapper::GetInstance()->KeyDown(DIK_6) == true)
+	{
+		Prism::Audio::AudioInterface::GetInstance()->PostEvent("FadeInFirstLayer", 0);
+	}
+	if (CU::InputWrapper::GetInstance()->KeyDown(DIK_7) == true)
+	{
+		Prism::Audio::AudioInterface::GetInstance()->PostEvent("FadeOutFirstLayer", 0);
+	}
+	if (CU::InputWrapper::GetInstance()->KeyDown(DIK_8) == true)
+	{
+		Prism::Audio::AudioInterface::GetInstance()->PostEvent("FadeInSecondLayer", 0);
+	}
+	if (CU::InputWrapper::GetInstance()->KeyDown(DIK_9) == true)
+	{
+		Prism::Audio::AudioInterface::GetInstance()->PostEvent("FadeOutSecondLayer", 0);
+	}
 }

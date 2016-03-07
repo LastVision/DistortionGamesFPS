@@ -19,7 +19,7 @@ ServerLevel::~ServerLevel()
 
 void ServerLevel::Update(const float aDeltaTime)
 {
-	aDeltaTime;
+	__super::Update(aDeltaTime);
 }
 
 void ServerLevel::ReceiveMessage(const NetworkAddPlayerMessage& aMessage)

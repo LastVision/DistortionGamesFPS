@@ -65,7 +65,6 @@ namespace Prism
 		}
 
 		return true;
-
 	}
 
 	ID3DX11EffectTechnique* Effect::GetTechnique(const std::string& aName)
@@ -238,6 +237,7 @@ namespace Prism
 
 	bool Effect::ReloadShader(const std::string& aFile)
 	{
+		Sleep(10);
 		myFileName = aFile;
 
 		HRESULT hr;

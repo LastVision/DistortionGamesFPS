@@ -48,7 +48,7 @@ ClientGame::ClientGame()
 	Prism::Audio::AudioInterface::CreateInstance();
 
 	Prism::Audio::AudioInterface::GetInstance()->Init("Data/Resource/Sound/Init.bnk");
-	Prism::Audio::AudioInterface::GetInstance()->LoadBank("Data/Resource/Sound/RTSSoundBank.bnk");
+	Prism::Audio::AudioInterface::GetInstance()->LoadBank("Data/Resource/Sound/MachinaSoundBank.bnk");
 	Prism::AnimationSystem::GetInstance();
 	Prism::Engine::GetInstance()->SetShowDebugText(myShowSystemInfo);
 

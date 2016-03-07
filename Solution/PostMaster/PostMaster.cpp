@@ -18,6 +18,7 @@ PostMaster::~PostMaster()
 	{
 		if (mySubscribers[i].Size() > 0)
 		{
+			DL_DEBUG("Subscriber not unsubscribed at index %i",i);
 			DL_ASSERT("Subscriber not unsubscribed at Postmaster-Destroy.");
 		}
 

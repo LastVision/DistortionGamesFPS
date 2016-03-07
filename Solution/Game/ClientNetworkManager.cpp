@@ -13,7 +13,7 @@
 
 #include <NetworkAddPlayerMessage.h>
 #include <NetworkAddEnemyMessage.h>
-
+#include <NetworkSetPositionMessage.h>
 #define BUFFERSIZE 512
 
 ClientNetworkManager* ClientNetworkManager::myInstance = nullptr;
@@ -128,6 +128,11 @@ void ClientNetworkManager::ConnectToServer(const char* aServerIP)
 	AddMessage(NetMessageConnectMessage(username, -1));
 }
 
+unsigned int ClientNetworkManager::GetNetworkID() const
+{
+	return myNetworkID;
+}
+
 const CU::GrowingArray<OtherClients>& ClientNetworkManager::GetClients()
 {
 	return myClients;
@@ -175,13 +180,7 @@ void ClientNetworkManager::HandleMessage(const NetMessageOnJoin& aMessage, const
 void ClientNetworkManager::HandleMessage(const NetMessagePosition& aMessage, const sockaddr_in& aSenderAddress)
 {
 	aSenderAddress;
-	for (OtherClients &client : myClients)
-	{
-		if (client.myID == aMessage.mySenderID)
-		{
-			client.myPosition = aMessage.myPosition;
-		}
-	}
+	PostMaster::GetInstance()->SendMessage(NetworkSetPositionMessage(aMessage.myPosition,aMessage.myNetworkID));
 }
 
 void ClientNetworkManager::HandleMessage(const NetMessageAddEnemy& aMessage, const sockaddr_in& aSenderAddress)
