@@ -75,6 +75,11 @@ namespace Prism
 		myManager->SetVelocity(aDynamicBody, aVelocity);
 	}
 
+	void PhysicsInterface::SetPosition(physx::PxRigidDynamic* aDynamicBody, const CU::Vector3<float>& aPosition)
+	{
+		myManager->SetPosition(aDynamicBody, aPosition);
+	}
+
 	int PhysicsInterface::CreatePlayerController(const CU::Vector3<float>& aStartPosition)
 	{
 		return myManager->CreatePlayerController(aStartPosition);

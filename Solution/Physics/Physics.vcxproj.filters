@@ -9,6 +9,7 @@
     <ClInclude Include="PhysEntity.h" />
     <ClInclude Include="PhysEntityData.h" />
     <ClInclude Include="wavefront.h" />
+    <ClInclude Include="PhysicsHelperFunc.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="PhysicsInterface.cpp" />

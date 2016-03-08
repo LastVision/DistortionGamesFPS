@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "PhysicsManager.h"
 #include <ThreadUtilities.h>
+#include "PhysicsHelperFunc.h"
 
 #ifdef _DEBUG
 #pragma comment(lib, "PhysX\\vc12win32\\PhysX3DEBUG_x86.lib")
@@ -47,6 +48,8 @@ namespace Prism
 		myForceJobs[1].Init(64);
 		myVelocityJobs[0].Init(64);
 		myVelocityJobs[1].Init(64);
+		myPositionJobs[0].Init(64);
+		myPositionJobs[1].Init(64);
 		myTimestep = 1.f / 60.f;
 		
 		myFoundation = PxCreateFoundation(0x03030300, myDefaultAllocatorCallback, myDefaultErrorCallback);
@@ -212,6 +215,7 @@ namespace Prism
 		std::swap(myMoveJobs[0], myMoveJobs[1]);
 		std::swap(myForceJobs[0], myForceJobs[1]);
 		std::swap(myVelocityJobs[0], myVelocityJobs[1]);
+		std::swap(myPositionJobs[0], myPositionJobs[1]);
 	}
 
 	void PhysicsManager::Update()
@@ -264,6 +268,12 @@ namespace Prism
 		}
 		myVelocityJobs[1].RemoveAll();
 
+		for (int i = 0; i < myPositionJobs[1].Size(); ++i)
+		{
+			SetPosition(myPositionJobs[1][i]);
+		}
+		myPositionJobs[1].RemoveAll();
+
 		for (int i = 0; i < myPhysEntities.Size(); ++i)
 		{
 			if (myPhysEntities[i]->GetPhysicsType() == ePhysics::DYNAMIC)
@@ -291,14 +301,8 @@ namespace Prism
 	void PhysicsManager::RayCast(const RaycastJob& aRaycastJob)
 	{
 		bool returnValue = false;
-		physx::PxVec3 origin;
-		origin.x = aRaycastJob.myOrigin.x;
-		origin.y = aRaycastJob.myOrigin.y;
-		origin.z = aRaycastJob.myOrigin.z;
-		physx::PxVec3 unitDirection;
-		unitDirection.x = aRaycastJob.myNormalizedDirection.x;
-		unitDirection.y = aRaycastJob.myNormalizedDirection.y;
-		unitDirection.z = aRaycastJob.myNormalizedDirection.z;
+		physx::PxVec3 origin(ConvertVector(aRaycastJob.myOrigin));
+		physx::PxVec3 unitDirection(ConvertVector(aRaycastJob.myNormalizedDirection));
 		physx::PxReal maxDistance = aRaycastJob.myMaxRayDistance;
 
 		physx::PxRaycastHit touches[32];
@@ -348,7 +352,7 @@ namespace Prism
 
 	void PhysicsManager::AddForce(const ForceJob& aForceJob)
 	{
-		aForceJob.myDynamicBody->addForce(physx::PxVec3(aForceJob.myDirection.x, aForceJob.myDirection.y, aForceJob.myDirection.z) * aForceJob.myMagnitude, physx::PxForceMode::eVELOCITY_CHANGE);
+		aForceJob.myDynamicBody->addForce(ConvertVector(aForceJob.myDirection) * aForceJob.myMagnitude, physx::PxForceMode::eVELOCITY_CHANGE);
 	}
 
 	void PhysicsManager::SetVelocity(physx::PxRigidDynamic* aDynamicBody, const CU::Vector3<float>& aVelocity)
@@ -358,7 +362,19 @@ namespace Prism
 
 	void PhysicsManager::SetVelocity(const VelocityJob& aVelocityJob)
 	{
-		aVelocityJob.myDynamicBody->setLinearVelocity(physx::PxVec3(aVelocityJob.myVelocity.x, aVelocityJob.myVelocity.x, aVelocityJob.myVelocity.x));
+		aVelocityJob.myDynamicBody->setLinearVelocity(ConvertVector(aVelocityJob.myVelocity));
+	}
+
+	void PhysicsManager::SetPosition(physx::PxRigidDynamic* aDynamicBody, const CU::Vector3<float>& aPosition)
+	{
+		myPositionJobs[0].Add(PositionJob(aDynamicBody, aPosition));
+	}
+
+	void PhysicsManager::SetPosition(const PositionJob& aPositionJob)
+	{
+		physx::PxTransform pose = physx::PxTransform(
+			ConvertVector(aPositionJob.myPosition), physx::PxQuat(physx::PxHalfPi, physx::PxVec3(0.f, 0.f, 1.f)));
+		aPositionJob.myDynamicBody->setGlobalPose(pose);
 	}
 
 	void PhysicsManager::onPvdConnected(physx::debugger::comm::PvdConnection&)
@@ -397,8 +413,7 @@ namespace Prism
 	{
 		physx::PxControllerFilters filter;
 		myControllerManager->getController(aMoveJob.myId)->move(
-			physx::PxVec3(aMoveJob.myDirection.x, aMoveJob.myDirection.y, aMoveJob.myDirection.z)
-			, aMoveJob.myMinDisplacement, aMoveJob.myDeltaTime, filter, nullptr);
+			ConvertVector(aMoveJob.myDirection), aMoveJob.myMinDisplacement, aMoveJob.myDeltaTime, filter, nullptr);
 	}
 
 	bool PhysicsManager::GetAllowedToJump(int aId)
