@@ -95,7 +95,7 @@ void ClientLevel::Update(const float aDeltaTime)
 
 	if (CU::InputWrapper::GetInstance()->KeyDown(DIK_J))
 	{
-		ClientNetworkManager::GetInstance()->AddMessage(NetMessageOnHit(eNetMessageType::PLAYER_ON_HIT, 5.f, 1));
+		ClientNetworkManager::GetInstance()->AddMessage(NetMessageOnHit(eNetMessageType::PLAYER_ON_HIT, 5.f, 2));
 	}
 
 

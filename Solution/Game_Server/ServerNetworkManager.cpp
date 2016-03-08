@@ -130,7 +130,10 @@ void ServerNetworkManager::SendThread()
 		{
 			for (Connection& connection : myClients)
 			{
-				myNetwork->Send(arr, connection.myAddress);
+				if (connection.myID != short(arr[5]))
+				{
+					myNetwork->Send(arr, connection.myAddress);
+				}
 			}
 		}
 		mySendBuffer[myCurrentSendBuffer].RemoveAll();
@@ -210,6 +213,7 @@ void ServerNetworkManager::ReceiveMessage(const NetworkAddEnemyMessage& aMessage
 void ServerNetworkManager::ReceiveMessage(const NetworkSendPositionMessage& aMessage)
 {
 	NetMessagePosition toSend;
+	toSend.mySenderID = (short)aMessage.myNetworkID;
 	toSend.myPosition = aMessage.myPosition;
 	toSend.myNetworkID = aMessage.myNetworkID;
 	AddMessage(toSend);
