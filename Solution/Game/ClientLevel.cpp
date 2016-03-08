@@ -28,6 +28,7 @@
 #include <PointLight.h>
 
 #include <PhysEntity.h>
+#include <PhysicsInterface.h>
 #include <PostMaster.h>
 
 #include "EmitterManager.h"

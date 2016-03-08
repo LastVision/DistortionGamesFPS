@@ -92,11 +92,11 @@ namespace Prism
 			DL_ASSERT("Failed to createScene");
 		}
 
-
-		
-
 		myScene->setVisualizationParameter(physx::PxVisualizationParameter::eSCALE, 1.f);
 		myScene->setVisualizationParameter(physx::PxVisualizationParameter::eCOLLISION_SHAPES, 1.f);
+		myScene->setFlag(physx::PxSceneFlag::eENABLE_KINEMATIC_PAIRS, true);
+		myScene->setFlag(physx::PxSceneFlag::eENABLE_KINEMATIC_STATIC_PAIRS, true);
+		myScene->setSimulationEventCallback(this);
 
 #ifdef _DEBUG
 		if (myPhysicsSDK->getPvdConnectionManager())
@@ -250,6 +250,35 @@ namespace Prism
 		myRaycastJobs[0].Add(RaycastJob(aOrigin, aNormalizedDirection, aMaxRayDistance, aFunctionToCall));
 	}
 
+	void PhysicsManager::onTrigger(physx::PxTriggerPair* somePairs, physx::PxU32 aCount)
+	{
+		for (physx::PxU32 i = 0; i < aCount; i++)
+		{
+			const physx::PxTriggerPair& cp = somePairs[i];
+
+			if (somePairs->status == physx::PxPairFlag::Enum::eNOTIFY_TOUCH_FOUND)
+			{
+				//myTriggerManager.OnTrigger(somePairs->triggerActor->userData, stat_cast<PhysEntity*>(somePairs->triggerActor->userData));
+				//if (pairs->triggerActor == myPlayer)
+				//{
+				//
+				//}
+				//PhysEntity* ent = static_cast<PhysEntity*>(somePairs->triggerActor->userData);
+				//
+				//if (ent->myOnTriggerCallBack)
+				//{
+				//	ent->myOnTriggerCallBack();
+				//}
+				//TriggerEntity* ent = static_cast<TriggerEntity*>(somePairs->triggerActor->userData);
+				//ent;
+				//int apa = 5;
+				//ent->Collide(somePairs->otherActor->userData);
+				//ent->Collide(static_cast<PhysEntity*>(somePairs->otherActor->userData));
+				//myTriggerManager.Add(TriggerJob(static_cast<PhysEntity*>(somePairs->triggerActor->userData), static_cast<PhysEntity*>(somePairs->otherActor->userData)));
+			}
+		}
+	}
+
 	void PhysicsManager::RayCast(const RaycastJob& aRaycastJob)
 	{
 		bool returnValue = false;
@@ -324,6 +353,7 @@ namespace Prism
 		controllerDesc.radius = 0.25f;
 		controllerDesc.material = myDefaultMaterial;
 		controllerDesc.position = physx::PxExtendedVec3(aStartPosition.x, aStartPosition.y, aStartPosition.z);//fix
+		//controllerDesc.userData = that;
 
 		myControllerManager->createController(controllerDesc);
 
@@ -360,5 +390,10 @@ namespace Prism
 	void PhysicsManager::GetPosition(int aId, CU::Vector3<float>& aPositionOut)
 	{
 		aPositionOut = myPlayerPosition;
+	}
+
+	void PhysicsManager::SubscribeToTriggers(physx::PxSimulationEventCallback* aSubscriber)
+	{
+		myScene->setSimulationEventCallback(aSubscriber);
 	}
 }
