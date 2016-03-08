@@ -213,6 +213,8 @@
     <ClInclude Include="AABB.h" />
     <ClInclude Include="Camera2D.h" />
     <ClInclude Include="CommonHelper.h" />
+    <ClInclude Include="Defines.h" />
+    <ClInclude Include="FileWatcher.h" />
     <ClInclude Include="FuzzySet.h" />
     <ClInclude Include="GameEnum.h" />
     <ClInclude Include="Fov90Frustum.h" />
@@ -257,6 +259,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Camera2D.cpp" />
+    <ClCompile Include="FileWatcher.cpp" />
     <ClCompile Include="FuzzySet.cpp" />
     <ClCompile Include="MathHelper.cpp" />
     <ClCompile Include="Quaternion.cpp" />

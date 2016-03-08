@@ -46,6 +46,8 @@ namespace Prism
 		if (it == myEffects.end())
 		{
 			LoadEffect(aFilePath);
+
+			myFilewatcher.WatchFileChangeWithDependencies(aFilePath, std::bind(&EffectContainer::ReloadShader, this, std::placeholders::_1));
 		}
 
 		return myEffects[aFilePath];
@@ -108,6 +110,14 @@ namespace Prism
 			, CU::Concatenate("Found invalid Shader: %s", aFilePath.c_str()));
 	}
 
+	void EffectContainer::ReloadShader(const std::string& aFilePath)
+	{
+		if (myEffects.find(aFilePath) != myEffects.end())
+		{
+			myEffects[aFilePath]->Init(aFilePath);
+		}
+	}
+
 	std::string EffectContainer::GetCSOPath(const std::string& aFXPath)
 	{
 		int startIndex = aFXPath.find_last_of('/');
@@ -122,6 +132,8 @@ namespace Prism
 
 	void EffectContainer::Update(const float aDeltaTime)
 	{
+		myFilewatcher.FlushChanges();
+
 		for (int i = 0; i < myEffectArrays.Size(); ++i)
 		{
 			myEffectArrays[i]->UpdateTime(aDeltaTime);

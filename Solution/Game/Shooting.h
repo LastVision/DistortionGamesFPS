@@ -3,6 +3,9 @@
 class Entity;
 class Weapon;
 class Player;
+class Pistol;
+class Shotgun;
+class GrenadeLauncher;
 
 namespace Prism
 {
@@ -22,18 +25,10 @@ public:
 	Weapon* GetCurrentWeapon();
 
 private:
-	void ShootAtDirection(const CU::Matrix44<float>& aOrientation);
-	
-	Entity* myBullet;
-	CU::GrowingArray<Entity*> myBullets;
-	CU::Matrix44<float> myBulletOrientation;
-	float myBulletSpeed;
-	Prism::Scene* myScene;
-
 	Weapon* myCurrentWeapon;
-	Weapon* myPistol;
-	Weapon* myShotgun;
-	Weapon* myGrenadeLauncher;
+	Pistol* myPistol;
+	Shotgun* myShotgun;
+	GrenadeLauncher* myGrenadeLauncher;
 
 	Player* myPlayer;
 };

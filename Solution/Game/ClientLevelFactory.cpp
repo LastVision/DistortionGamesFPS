@@ -3,11 +3,12 @@
 #include <EntityFactory.h>
 #include "ClientLevel.h"
 #include "ClientLevelFactory.h"
+#include <PhysicsInterface.h>
+#include <PointLight.h>
 #include <Room.h>
 #include <RoomManager.h>
 #include <Scene.h>
 #include <XMLReader.h>
-
 
 ClientLevelFactory::ClientLevelFactory(const std::string& aLevelListPath)
 	: SharedLevelFactory(aLevelListPath)
@@ -26,6 +27,9 @@ SharedLevel* ClientLevelFactory::LoadCurrentLevel()
 {
 	myCurrentLevel = new ClientLevel();
 	ReadLevel(myLevelPaths[myCurrentID].myPath);
+#ifdef THREAD_PHYSICS
+	Prism::PhysicsInterface::GetInstance()->InitThread();
+#endif
 	return myCurrentLevel;
 }
 
@@ -40,6 +44,7 @@ void ClientLevelFactory::ReadLevel(const std::string& aLevelPath)
 	LoadProps(reader, levelElement);
 	LoadUnits(reader, levelElement);
 	LoadTriggers(reader, levelElement);
+	LoadLights(reader, levelElement);
 
 	reader.CloseDocument();
 }
@@ -109,7 +114,9 @@ void ClientLevelFactory::LoadProps(XMLReader& aReader, tinyxml2::XMLElement* aEl
 
 void ClientLevelFactory::LoadUnits(XMLReader& aReader, tinyxml2::XMLElement* aElement)
 {
-	for (tinyxml2::XMLElement* entityElement = aReader.FindFirstChild(aElement, "unit"); entityElement != nullptr;
+	aReader;
+	aElement;
+	/*for (tinyxml2::XMLElement* entityElement = aReader.FindFirstChild(aElement, "unit"); entityElement != nullptr;
 		entityElement = aReader.FindNextElement(entityElement, "unit"))
 	{
 		std::string unitType;
@@ -132,7 +139,7 @@ void ClientLevelFactory::LoadUnits(XMLReader& aReader, tinyxml2::XMLElement* aEl
 		newEntity->Reset();
 
 		myCurrentLevel->AddEntity(newEntity);
-	}
+	}*/
 }
 
 void ClientLevelFactory::LoadTriggers(XMLReader& aReader, tinyxml2::XMLElement* aElement)
@@ -160,5 +167,34 @@ void ClientLevelFactory::LoadTriggers(XMLReader& aReader, tinyxml2::XMLElement* 
 		newEntity->Reset();
 
 		myCurrentLevel->AddEntity(newEntity);
+	}
+}
+
+void ClientLevelFactory::LoadLights(XMLReader& aReader, tinyxml2::XMLElement* aElement)
+{
+	for (tinyxml2::XMLElement* lightElement = aReader.FindFirstChild(aElement, "pointlight"); lightElement != nullptr;
+		lightElement = aReader.FindNextElement(lightElement, "pointlight"))
+	{
+		CU::Vector3<float> position;
+		CU::Vector4<float> color;
+		float range;
+
+		aReader.ForceReadAttribute(aReader.ForceFindFirstChild(lightElement, "position"), "X", position.x);
+		aReader.ForceReadAttribute(aReader.ForceFindFirstChild(lightElement, "position"), "Y", position.y);
+		aReader.ForceReadAttribute(aReader.ForceFindFirstChild(lightElement, "position"), "Z", position.z);
+
+		aReader.ForceReadAttribute(aReader.ForceFindFirstChild(lightElement, "color"), "R", color.x);
+		aReader.ForceReadAttribute(aReader.ForceFindFirstChild(lightElement, "color"), "G", color.y);
+		aReader.ForceReadAttribute(aReader.ForceFindFirstChild(lightElement, "color"), "B", color.z);
+		aReader.ForceReadAttribute(aReader.ForceFindFirstChild(lightElement, "color"), "A", color.w);
+
+		aReader.ForceReadAttribute(aReader.ForceFindFirstChild(lightElement, "range"), "value", range);
+
+
+		Prism::PointLight* light = new Prism::PointLight();
+		light->SetPosition(position);
+		light->SetColor(color);
+		light->SetRange(range);
+		static_cast<ClientLevel*>(myCurrentLevel)->AddLight(light);
 	}
 }

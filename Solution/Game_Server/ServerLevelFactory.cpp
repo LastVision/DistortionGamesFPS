@@ -7,8 +7,11 @@
 #include "ServerLevelFactory.h"
 #include <XMLReader.h>
 
+#include <NetworkComponent.h>
+
 ServerLevelFactory::ServerLevelFactory(const std::string& aLevelListPath)
 	: SharedLevelFactory(aLevelListPath)
+	, myIDCount(16)
 {
 }
 
@@ -68,6 +71,12 @@ void ServerLevelFactory::LoadProps(XMLReader& aReader, tinyxml2::XMLElement* aEl
 			, propPosition, propRotation, propScale);
 		newEntity->Reset();
 
+		if (newEntity->GetComponent<NetworkComponent>() != nullptr)
+		{
+			myIDCount++;
+			newEntity->GetComponent<NetworkComponent>()->SetNetworkID(myIDCount);
+		}
+
 		myCurrentLevel->AddEntity(newEntity);
 	}
 }
@@ -95,7 +104,14 @@ void ServerLevelFactory::LoadUnits(XMLReader& aReader, tinyxml2::XMLElement* aEl
 			, unitPosition, unitRotation, unitScale);
 		newEntity->Reset();
 
-		myCurrentLevel->AddEntity(newEntity);
+		if (newEntity->GetComponent<NetworkComponent>() != nullptr)
+		{
+			myIDCount++;
+			newEntity->GetComponent<NetworkComponent>()->SetNetworkID(myIDCount);
+		}
+
+
+		myCurrentLevel->AddEnemy(newEntity);
 	}
 }
 
@@ -120,6 +136,12 @@ void ServerLevelFactory::LoadTriggers(XMLReader& aReader, tinyxml2::XMLElement* 
 
 		Entity* newEntity = EntityFactory::CreateEntity(eEntityType::UNIT, triggerType, nullptr, false, triggerPosition, triggerRotation, triggerScale);
 		newEntity->Reset();
+
+		if (newEntity->GetComponent<NetworkComponent>() != nullptr)
+		{
+			myIDCount++;
+			newEntity->GetComponent<NetworkComponent>()->SetNetworkID(myIDCount);
+		}
 
 		myCurrentLevel->AddEntity(newEntity);
 	}

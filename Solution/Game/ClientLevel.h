@@ -12,7 +12,10 @@ namespace Prism
 	class Scene;
 	class Instance;
 	class Room;
+	class PointLight;
 }
+
+class EmitterManager;
 
 class ClientLevel : public SharedLevel
 {
@@ -31,7 +34,11 @@ public:
 	bool connected;
 	Prism::Scene* GetScene();
 	void ReceiveMessage(const NetworkAddPlayerMessage& aMessage) override;
+	void ReceiveMessage(const NetworkAddEnemyMessage& aMessage) override;
 
+	void AddLight(Prism::PointLight* aLight);
+
+	void DebugMusic();
 
 private:
 	Prism::Scene* myScene;
@@ -39,9 +46,10 @@ private:
 
 	CU::GrowingArray<Entity*> myInstances;
 	CU::GrowingArray<CU::Matrix44f> myInstanceOrientations;
+	CU::GrowingArray<Prism::PointLight*> myPointLights;
 
 	Player* myPlayer;
-
+	EmitterManager* myEmitterManager;
 
 };
 

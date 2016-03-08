@@ -166,7 +166,6 @@
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="FileWatcher.cpp" />
     <ClCompile Include="ScriptSystem.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
@@ -180,7 +179,6 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="FileWatcher.h" />
     <ClInclude Include="LuaArgs.h" />
     <ClInclude Include="LuaFiles\lauxlib.h" />
     <ClInclude Include="LuaFiles\lua.h" />

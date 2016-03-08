@@ -25,6 +25,8 @@ namespace Prism
 			Entity* aEntity);
 		~PhysEntity();
 
+		void SwapOrientations();
+
 		float* GetPosition();
 		float* GetOrientation();
 		Entity* GetEntity();
@@ -32,7 +34,6 @@ namespace Prism
 		void UpdateOrientation();
 
 		void AddForce(const CU::Vector3<float>& aDirection, float aMagnitude);
-		void SetPosition(const CU::Vector3<float>& aPosition);
 
 		ePhysics GetPhysicsType() const;
 

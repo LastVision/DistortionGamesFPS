@@ -117,8 +117,9 @@ enum class eComponentType
 	NOT_USED = -1,
 	ANIMATION,
 	GRAPHICS,
-	PROJECTILE,
 	HEALTH,
+	NETWORK,
+	PROJECTILE,
 	TRIGGER,
 	_COUNT,
 };

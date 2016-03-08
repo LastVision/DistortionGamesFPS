@@ -10,8 +10,12 @@
 #include <NetMessagePingRequest.h>
 #include <NetMessagePingReply.h>
 #include <NetMessagePosition.h>
+#include <NetMessageAddEnemy.h>
 
 #include <NetworkAddPlayerMessage.h>
+#include <NetworkAddEnemyMessage.h>
+#include <NetworkSendPositionMessage.h>
+#include <NetworkSetPositionMessage.h>
 
 #define BUFFERSIZE 512
 
@@ -19,10 +23,15 @@ ServerNetworkManager* ServerNetworkManager::myInstance = nullptr;
 
 ServerNetworkManager::ServerNetworkManager()
 {
+	PostMaster::GetInstance()->Subscribe(eMessageType::NETWORK_ADD_ENEMY, this);
+	PostMaster::GetInstance()->Subscribe(eMessageType::NETWORK_SEND_POSITION, this);
 }
 
 ServerNetworkManager::~ServerNetworkManager()
 {
+	PostMaster::GetInstance()->UnSubscribe(eMessageType::NETWORK_ADD_ENEMY, this);
+	PostMaster::GetInstance()->UnSubscribe(eMessageType::NETWORK_SEND_POSITION, this);
+
 	myMainIsDone = true;
 	myReceieveIsDone = true;
 	myIsRunning = false;
@@ -162,7 +171,7 @@ void ServerNetworkManager::CreateConnection(const std::string& aName, const sock
 		myNetwork->Send(onConnect.myStream, newConnection.myAddress);
 	}
 	AddMessage(NetMessageOnJoin(newConnection.myID));
-	PostMaster::GetInstance()->SendMessage(NetworkAddPlayerMessage(myIDCount));
+	PostMaster::GetInstance()->SendMessage(NetworkAddPlayerMessage(myIDCount, newConnection.myAddress));
 }
 
 void ServerNetworkManager::HandleMessage(const NetMessageConnectMessage& aMessage, const sockaddr_in& aSenderAddress)
@@ -180,7 +189,24 @@ void ServerNetworkManager::HandleMessage(const NetMessagePingRequest&, const soc
 
 void ServerNetworkManager::HandleMessage(const NetMessagePosition& aMessage, const sockaddr_in&)
 {
-	NetMessagePosition position;
-	position = aMessage;
-	AddMessage(position);
+	PostMaster::GetInstance()->SendMessage(NetworkSetPositionMessage(aMessage.myPosition, aMessage.myNetworkID));
 }
+
+
+void ServerNetworkManager::ReceiveMessage(const NetworkAddEnemyMessage& aMessage)
+{
+	NetMessageAddEnemy toSend;
+	toSend.myPosition = aMessage.myPosition;
+	toSend.myNetworkID = aMessage.myNetworkID;
+	toSend.PackMessage();
+	myNetwork->Send(toSend.myStream, aMessage.myAddress);
+}
+
+void ServerNetworkManager::ReceiveMessage(const NetworkSendPositionMessage& aMessage)
+{
+	NetMessagePosition toSend;
+	toSend.myPosition = aMessage.myPosition;
+	toSend.myNetworkID = aMessage.myNetworkID;
+	AddMessage(toSend);
+}
+

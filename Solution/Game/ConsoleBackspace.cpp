@@ -19,7 +19,7 @@ void ConsoleBackspace::Update(bool aButtonIsPressed)
 		myHasReachedFirstWait = false;
 		return;
 	}
-	float deltaTime = CU::TimerManager::GetInstance()->GetMasterTimer().GetTime().GetFrameTime();
+	float deltaTime = 1.f / 60.f; //CU::TimerManager::GetInstance()->GetMasterTimer().GetTime().GetFrameTime();
 	
 	myCurrentTime += deltaTime;
 	if (aButtonIsPressed == true && myString.size() > 0 && myCurrentTime == 0 + deltaTime)

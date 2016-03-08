@@ -115,6 +115,8 @@
       <Filter>Math\Quaternion</Filter>
     </ClInclude>
     <ClInclude Include="ThreadUtilities.h" />
+    <ClInclude Include="Defines.h" />
+    <ClInclude Include="FileWatcher.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Math">
@@ -172,6 +174,7 @@
       <Filter>Math\Quaternion</Filter>
     </ClCompile>
     <ClCompile Include="ThreadUtilities.cpp" />
+    <ClCompile Include="FileWatcher.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="CommonUtilities.rc" />

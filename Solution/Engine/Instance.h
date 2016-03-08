@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Defines.h"
+#include <Defines.h>
 #include "LightStructs.h"
 #include <Matrix.h>
 #include <StaticArray.h>

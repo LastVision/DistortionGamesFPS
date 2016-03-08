@@ -7,20 +7,20 @@
 
 CU::TimerManager* CU::TimerManager::myInstance = nullptr;
 
-void CU::TimerManager::Create()
-{
-	myInstance = new TimerManager();
-}
+//void CU::TimerManager::Create()
+//{
+//	myInstance = new TimerManager();
+//}
 
-void CU::TimerManager::Destroy()
-{
-	delete myInstance;
-}
+//void CU::TimerManager::Destroy()
+//{
+//	delete myInstance;
+//}
 
-CU::TimerManager* CU::TimerManager::GetInstance()
-{
-	return myInstance;
-}
+//CU::TimerManager* CU::TimerManager::GetInstance()
+//{
+//	return myInstance;
+//}
 
 CU::TimerManager::TimerManager()
 {
@@ -33,9 +33,9 @@ CU::TimerManager::TimerManager()
 }
 
 
-CU::TimerManager::~TimerManager()
-{
-}
+//CU::TimerManager::~TimerManager()
+//{
+//}
 
 void CU::TimerManager::Update()
 {

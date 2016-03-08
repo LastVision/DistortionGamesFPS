@@ -3,6 +3,7 @@
 #include "AnimationComponent.h"
 #include "GraphicsComponent.h"
 #include "HealthComponent.h"
+#include "NetworkComponent.h"
 #include "ProjectileComponent.h"
 #include <Scene.h>
 #include <Instance.h>
@@ -44,10 +45,26 @@ Entity::Entity(const EntityData& aEntityData, Prism::Scene* aScene, bool aClient
 			myPhysEntity = new Prism::PhysEntity(aEntityData.myPhysData, myOrientation, aEntityData.myGraphicsData.myModelPath, this);
 		}
 	}
+	else
+	{
+		if (aEntityData.myAnimationData.myExistsInEntity == true)
+		{
+			myPhysEntity = new Prism::PhysEntity(aEntityData.myPhysData, myOrientation, aEntityData.myAnimationData.myModelPath, this);
+		}
+		else if (aEntityData.myGraphicsData.myExistsInEntity == true)
+		{
+			myPhysEntity = new Prism::PhysEntity(aEntityData.myPhysData, myOrientation, aEntityData.myGraphicsData.myModelPath, this);
+		}
+	}
 	
 	if (aEntityData.myProjecileData.myExistsInEntity == true)
 	{
 		myComponents[static_cast<int>(eComponentType::PROJECTILE)] = new ProjectileComponent(*this, aEntityData.myProjecileData);
+	}
+
+	if (aEntityData.myNetworkData.myExistsInEntity == true)
+	{
+		myComponents[static_cast<int>(eComponentType::NETWORK)] = new NetworkComponent(*this, myOrientation);
 	}
 
 	if (aEntityData.myHealthData.myExistsInEntity == true)
@@ -103,8 +120,11 @@ void Entity::Update(float aDeltaTime)
 
 	if (myEntityData.myPhysData.myPhysics == ePhysics::DYNAMIC)
 	{
-		myPhysEntity->UpdateOrientation();
+		if (myComponents[static_cast<int>(eComponentType::NETWORK)] == nullptr)
+		{
+			myPhysEntity->UpdateOrientation();
 		memcpy(&myOrientation.myMatrix[0], myPhysEntity->GetOrientation(), sizeof(float) * 16);
+		}
 	}
 }
 
@@ -190,4 +210,9 @@ void Entity::Kill()
 		RemoveFromScene();
 		myPhysEntity->RemoveFromScene();
 	}
+}
+
+bool Entity::GetIsClient()
+{
+	return myIsClientSide;
 }

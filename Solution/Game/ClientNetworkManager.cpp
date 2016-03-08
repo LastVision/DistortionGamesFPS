@@ -9,9 +9,11 @@
 #include <NetMessagePingRequest.h>
 #include <NetMessagePingReply.h>
 #include <NetMessagePosition.h>
+#include <NetMessageAddEnemy.h>
 
 #include <NetworkAddPlayerMessage.h>
-
+#include <NetworkAddEnemyMessage.h>
+#include <NetworkSetPositionMessage.h>
 #define BUFFERSIZE 512
 
 ClientNetworkManager* ClientNetworkManager::myInstance = nullptr;
@@ -126,6 +128,11 @@ void ClientNetworkManager::ConnectToServer(const char* aServerIP)
 	AddMessage(NetMessageConnectMessage(username, -1));
 }
 
+unsigned int ClientNetworkManager::GetNetworkID() const
+{
+	return myNetworkID;
+}
+
 const CU::GrowingArray<OtherClients>& ClientNetworkManager::GetClients()
 {
 	return myClients;
@@ -166,18 +173,17 @@ void ClientNetworkManager::HandleMessage(const NetMessageOnJoin& aMessage, const
 	if (aMessage.mySenderID != myNetworkID)
 	{
 		myClients.Add(OtherClients(aMessage.mySenderID));
-		PostMaster::GetInstance()->SendMessage(NetworkAddPlayerMessage(aMessage.mySenderID));
+		PostMaster::GetInstance()->SendMessage(NetworkAddPlayerMessage(static_cast<unsigned short>(aMessage.mySenderID)));
 	}
 }
 
 void ClientNetworkManager::HandleMessage(const NetMessagePosition& aMessage, const sockaddr_in& aSenderAddress)
 {
 	aSenderAddress;
-	for (OtherClients &client : myClients)
-	{
-		if (client.myID == aMessage.mySenderID)
-		{
-			client.myPosition = aMessage.myPosition;
-		}
-	}
+	PostMaster::GetInstance()->SendMessage(NetworkSetPositionMessage(aMessage.myPosition,aMessage.myNetworkID));
+}
+
+void ClientNetworkManager::HandleMessage(const NetMessageAddEnemy& aMessage, const sockaddr_in& aSenderAddress)
+{
+	PostMaster::GetInstance()->SendMessage(NetworkAddEnemyMessage(aMessage.myPosition, aMessage.myNetworkID));
 }

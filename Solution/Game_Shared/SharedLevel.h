@@ -12,11 +12,13 @@ public:
 	virtual ~SharedLevel();
 
 	void AddEntity(Entity* aEntity);
+	void AddEnemy(Entity* anEntity);
 
 	virtual void Update(const float aDeltaTime);
 
 protected:
 	CU::GrowingArray<Entity*> myEntities;
+	CU::GrowingArray<Entity*> myEnemies;
 	CU::GrowingArray<Entity*> myPlayers;
 };
 

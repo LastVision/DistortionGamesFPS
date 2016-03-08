@@ -5,7 +5,7 @@
 #include <unordered_map>
 #include <vector>
 #include "LuaArgs.h"
-#include "FileWatcher.h"
+#include <FileWatcher.h>
 #include <fstream>
 
 namespace LUA
@@ -82,7 +82,7 @@ namespace LUA
 		std::vector<Documentation> myDocumentation;
 
 		lua_State* myLuaState;
-		FileWatcher myFileWatcher;
+		CU::FileWatcher myFileWatcher;
 		std::fstream myOutputFile;
 		static ScriptSystem* myInstance;
 	};

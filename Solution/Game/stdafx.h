@@ -4,12 +4,12 @@
 
 #include <CommonHelper.h>
 #include <DebugDrawer.h>
+#include <Defines.h>
 #include <DL_Debug.h>
 #include <Engine.h>
 #include <GameEnum.h>
 #include <Entity.h>
 #include <GameConstants.h>
-#include "GameDefines.h"
 #include <GrowingArray.h>
 #include <StaticArray.h>
 #include <MathHelper.h>

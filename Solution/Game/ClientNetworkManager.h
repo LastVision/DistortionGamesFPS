@@ -12,7 +12,7 @@ public:
 
 	void StartNetwork(unsigned int aPortNum = 13397) override;
 	void ConnectToServer(const char* aServerIP = "127.0.0.1");
-
+	unsigned int GetNetworkID() const;
 	const CU::GrowingArray<OtherClients>& GetClients();
 	//void Update(float aDelta) override;
 private:
@@ -26,7 +26,7 @@ private:
 	void HandleMessage(const NetMessagePingRequest& aMessage, const sockaddr_in& aSenderAddress) override;
 	void HandleMessage(const NetMessageOnJoin& aMessage, const sockaddr_in& aSenderAddress) override;
 	void HandleMessage(const NetMessagePosition& aMessage, const sockaddr_in& aSenderAddress) override;
-
+	void HandleMessage(const NetMessageAddEnemy& aMessage, const sockaddr_in& aSenderAddress) override;
 	void ReceieveThread() override;
 	void SendThread() override;
 

@@ -1,5 +1,7 @@
 #pragma once
 
+#include "LightStructs.h"
+
 class Camera;
 class Instance;
 
@@ -9,7 +11,6 @@ namespace Prism
 	{
 	public:
 		PointLight();
-		void Initiate();
 		void Render(const Camera& aCamera);
 		void Update();
 
@@ -17,7 +18,7 @@ namespace Prism
 		void SetColor(const CU::Vector4<float>& aVector);
 
 		CU::Vector4<float> GetPosition() const;
-		void SetPosition(const CU::Vector4<float>& aPosition);
+		void SetPosition(const CU::Vector3<float>& aPosition);
 
 		void SetRange(float aRange);
 		float GetRange() const;
@@ -48,7 +49,7 @@ namespace Prism
 		return myOrientation.GetPos4();
 	}
 
-	inline void PointLight::SetPosition(const CU::Vector4<float>& aPosition)
+	inline void PointLight::SetPosition(const CU::Vector3<float>& aPosition)
 	{
 		myOrientation.SetPos(aPosition);
 	}

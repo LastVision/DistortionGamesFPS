@@ -11,35 +11,32 @@ class Weapon
 {
 public:
 	Weapon(eWeaponType aWeaponType);
-	~Weapon();
+	virtual ~Weapon();
 
-	void Shoot(const CU::Matrix44<float>& aOrientation);
-	void Reload();
-	int& GetAmmoInClip();
-	int& GetClipSize();
+	virtual void Shoot(const CU::Matrix44<float>& aOrientation) = 0;
+	virtual void Reload() = 0;
+	const int& GetAmmoInClip() const;
+	const int& GetClipSize() const;
 	eWeaponType GetWeaponType();
-	void HandleRaycast(Entity* anEntity, const CU::Vector3<float>& aDirection);
+	//virtual void HandleRaycast(Entity* anEntity, const CU::Vector3<float>& aDirection) {};
 
-private:
-	std::function<void(Entity*, const CU::Vector3<float>&)> myRaycastHandler;
-	void ShootRowAround(const CU::Matrix44<float>& aOrientation, const CU::Vector3<float>& aForward);
+protected:	
 	int myAmmoInClip;
 	int myClipSize;
 	int myAmmoTotal;
 	int myDamage;
 
-	float myMinSpreadRotation;
-	float myMaxSpreadRotation;
+
 
 	eWeaponType myWeaponType;
 };
 
-inline int& Weapon::GetAmmoInClip()
+inline const int& Weapon::GetAmmoInClip() const
 {
 	return myAmmoInClip;
 }
 
-inline int& Weapon::GetClipSize()
+inline const int& Weapon::GetClipSize() const
 {
 	return myClipSize;
 }
