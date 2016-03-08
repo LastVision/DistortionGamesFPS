@@ -162,6 +162,7 @@ namespace Prism
 
 		//myDynamicBody->setLinearVelocity(physx::PxVec3(0, 0, 0));
 		//myDynamicBody->addForce(physx::PxVec3(aDirection.x, aDirection.y, aDirection.z) * aMagnitude, physx::PxForceMode::eVELOCITY_CHANGE);
+		PhysicsInterface::GetInstance()->AddForce(myDynamicBody, aDirection, aMagnitude);
 	}
 
 	physx::PxTriangleMesh* PhysEntity::GetPhysMesh(const std::string& aFBXPath)

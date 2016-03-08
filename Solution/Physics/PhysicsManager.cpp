@@ -43,8 +43,8 @@ namespace Prism
 		myRaycastJobs[1].Init(64);
 		myRaycastResults[0].Init(64);
 		myRaycastResults[1].Init(64);
-		myMoveJobs[0].Init(8);
-		myMoveJobs[1].Init(8);
+		myForceJobs[0].Init(64);
+		myForceJobs[1].Init(64);
 		myTimestep = 1.f / 60.f;
 		
 		myFoundation = PxCreateFoundation(0x03030300, myDefaultAllocatorCallback, myDefaultErrorCallback);
@@ -207,6 +207,8 @@ namespace Prism
 
 		std::swap(myRaycastJobs[0], myRaycastJobs[1]);
 		std::swap(myRaycastResults[0], myRaycastResults[1]);
+		std::swap(myMoveJobs[0], myMoveJobs[1]);
+		std::swap(myForceJobs[0], myForceJobs[1]);
 	}
 
 	void PhysicsManager::Update()
@@ -223,6 +225,14 @@ namespace Prism
 			// do something useful..
 		}
 
+
+		Move(myMoveJobs[1]);
+		const physx::PxExtendedVec3& pos = myControllerManager->getController(myMoveJobs[1].myId)->getFootPosition();
+		myPlayerPosition.x = float(pos.x);
+		myPlayerPosition.y = float(pos.y);
+		myPlayerPosition.z = float(pos.z);
+
+		/*
 		for (int i = 0; i < myMoveJobs[0].Size(); ++i)
 		{
 			Move(myMoveJobs[0][i]);
@@ -230,13 +240,20 @@ namespace Prism
 
 		if (myMoveJobs[0].Size() > 0)
 		{
-			const physx::PxExtendedVec3& pos = myControllerManager->getController(myMoveJobs[0][0].myId)->getFootPosition();
-			myPlayerPosition.x = float(pos.x);
-			myPlayerPosition.y = float(pos.y);
-			myPlayerPosition.z = float(pos.z);
+		const physx::PxExtendedVec3& pos = myControllerManager->getController(myMoveJobs[0][0].myId)->getFootPosition();
+		myPlayerPosition.x = float(pos.x);
+		myPlayerPosition.y = float(pos.y);
+		myPlayerPosition.z = float(pos.z);
 		}
 
 		myMoveJobs[0].RemoveAll();
+		*/
+
+		for (int i = 0; i < myForceJobs[1].Size(); ++i)
+		{
+			AddForce(myForceJobs[1][i]);
+		}
+		myForceJobs[1].RemoveAll();
 
 		for (int i = 0; i < myPhysEntities.Size(); ++i)
 		{
@@ -315,6 +332,16 @@ namespace Prism
 		}
 	}
 
+	void PhysicsManager::AddForce(physx::PxRigidDynamic* aDynamicBody, const CU::Vector3<float>& aDirection, float aMagnitude)
+	{
+		myForceJobs[0].Add(ForceJob(aDynamicBody, aDirection, aMagnitude));
+	}
+
+	void PhysicsManager::AddForce(const ForceJob& aForceJob)
+	{
+		aForceJob.myDynamicBody->addForce(physx::PxVec3(aForceJob.myDirection.x, aForceJob.myDirection.y, aForceJob.myDirection.z) * aForceJob.myMagnitude, physx::PxForceMode::eVELOCITY_CHANGE);
+	}
+
 	void PhysicsManager::onPvdConnected(physx::debugger::comm::PvdConnection&)
 	{
 		myPhysicsSDK->getVisualDebugger()->setVisualizeConstraints(true);
@@ -344,8 +371,7 @@ namespace Prism
 
 	void PhysicsManager::Move(int aId, const CU::Vector3<float>& aDirection, float aMinDisplacement, float aDeltaTime)
 	{
-		myMoveJobs[0].Add(MoveJob(aId, aDirection, aMinDisplacement, aDeltaTime));
-		
+		myMoveJobs[0] = MoveJob(aId, aDirection, aMinDisplacement, aDeltaTime);
 	}
 
 	void PhysicsManager::Move(const MoveJob& aMoveJob)

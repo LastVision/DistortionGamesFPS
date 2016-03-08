@@ -43,12 +43,16 @@ namespace Prism
 		myManager->Update();
 #endif
 
+#ifdef THREAD_PHYSICS
 		myManager->SetLogicDone();
 		myManager->WaitForPhysics();
+#endif
 
 		myManager->Swap();
 
+#ifdef THREAD_PHYSICS
 		myManager->SetSwapDone();
+#endif
 
 		myManager->EndFrame();
 	}
@@ -59,6 +63,11 @@ namespace Prism
 		{
 			myManager->RayCast(aOrigin, aNormalizedDirection, aMaxRayDistance, aFunctionToCall);
 		}
+	}
+
+	void PhysicsInterface::AddForce(physx::PxRigidDynamic* aDynamicBody, const CU::Vector3<float>& aDirection, float aMagnitude)
+	{
+		myManager->AddForce(aDynamicBody, aDirection, aMagnitude);
 	}
 
 	int PhysicsInterface::CreatePlayerController(const CU::Vector3<float>& aStartPosition)
