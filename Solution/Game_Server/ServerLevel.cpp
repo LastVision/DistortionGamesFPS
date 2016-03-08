@@ -15,6 +15,19 @@ ServerLevel::~ServerLevel()
 	PostMaster::GetInstance()->UnSubscribe(eMessageType::NETWORK_ADD_PLAYER, this);
 }
 
+void ServerLevel::onTrigger(physx::PxTriggerPair *pairs, physx::PxU32 count)
+{
+	for (physx::PxU32 i = 0; i < count; i++)
+	{
+		const physx::PxTriggerPair& cp = pairs[i];
+
+		//if (pairs->triggerActor == myPlayer
+		//{
+		//
+		//}
+	}
+}
+
 void ServerLevel::Update(const float aDeltaTime)
 {
 	aDeltaTime;

@@ -1,10 +1,11 @@
 #pragma once
 #include <GrowingArray.h>
 #include <Subscriber.h>
+#include "../../PhysX/Include/PxSimulationEventCallback.h"
 
 class Entity;
 
-class SharedLevel : public Subscriber
+class SharedLevel : public Subscriber, public physx::PxSimulationEventCallback
 {
 public:
 	SharedLevel();
