@@ -55,12 +55,12 @@ namespace Prism
 		void SetFileName(const std::string& aFileName) override;
 
 		float GetRadius() const;
+		bool IsNullObject();
 
 	private:
 		void operator=(Model&) = delete;
 		void InitInstancingBuffers();
 		void SetupInstancingBuffers();
-
 		bool myIsNULLObject;
 
 		

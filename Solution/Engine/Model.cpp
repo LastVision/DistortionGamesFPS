@@ -597,4 +597,10 @@ namespace Prism
 		}
 		Engine::GetInstance()->SetDebugName(myInstancingHeightBuffer->myVertexBuffer, "Model::myInstancingHeightBuffer->myVertexBuffer");
 	}
+
+	bool Model::IsNullObject()
+	{
+		return myIsNULLObject;
+	}
+
 }
