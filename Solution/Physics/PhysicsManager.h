@@ -36,7 +36,7 @@ namespace Prism
 		void InitThread();
 #endif
 		void Add(PhysEntity* aPhysEntity);
-		void SwapOrientations();
+		void Swap();
 
 		void Update();
 
@@ -52,12 +52,23 @@ namespace Prism
 		void SetPosition(int aId, const CU::Vector3<float>& aPosition);
 		void GetPosition(int aId, CU::Vector3<float>& aPositionOut);
 
+		void WaitForLogic();
+		void WaitForPhysics();
+		void WaitForSwap();
+		void SetLogicDone();
+		void SetPhysicsDone();
+		void SetSwapDone();
+		void EndFrame();
+
 	private:
 #ifdef THREAD_PHYSICS
 		CU::TimerManager* myTimerManager;
 		void ThreadUpdate();
 		std::thread* myPhysicsThread;
 		volatile bool myQuit;
+		volatile bool myLogicDone;
+		volatile bool myPhysicsDone;
+		volatile bool mySwapDone;
 #endif
 		struct RaycastJob
 		{
@@ -130,4 +141,37 @@ namespace Prism
 
 		CU::Vector3<float> myPlayerPosition;
 	};
+
+	inline void PhysicsManager::WaitForLogic()
+	{
+		while (myLogicDone == false);
+		myLogicDone = false;
+	}
+
+	inline void PhysicsManager::WaitForPhysics()
+	{
+		while (myPhysicsDone == false);
+		myPhysicsDone = false;
+	}
+
+	inline void PhysicsManager::WaitForSwap()
+	{
+		while (mySwapDone == false);
+		mySwapDone = false;
+	}
+
+	inline void PhysicsManager::SetLogicDone()
+	{
+		myLogicDone = true;
+	}
+
+	inline void PhysicsManager::SetPhysicsDone()
+	{
+		myPhysicsDone = true;
+	}
+
+	inline void PhysicsManager::SetSwapDone()
+	{
+		mySwapDone = true;
+	}
 }

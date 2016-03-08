@@ -33,6 +33,9 @@ namespace Prism
 		: myPhysEntities(4096)
 #ifdef THREAD_PHYSICS
 		, myQuit(false)
+		, myLogicDone(false)
+		, myPhysicsDone(false)
+		, mySwapDone(false)
 		, myTimerManager(new CU::TimerManager())
 #endif
 	{
@@ -172,6 +175,12 @@ namespace Prism
 		{
 			myTimerManager->Update();
 			Update();
+
+			if (myLogicDone == true)
+			{
+				SetPhysicsDone();
+				WaitForSwap();
+			}
 			myTimerManager->CapFrameRate(60.f);
 		}
 	}
@@ -182,14 +191,15 @@ namespace Prism
 		myPhysEntities.Add(aPhysEntity);
 	}
 
-	void PhysicsManager::SwapOrientations()
+	void PhysicsManager::Swap()
 	{
-		//mutex
 		for (int i = 0; i < myPhysEntities.Size(); ++i)
 		{
 			myPhysEntities[i]->SwapOrientations();
 		}
-		//release mutex
+
+		std::swap(myRaycastJobs[0], myRaycastJobs[1]);
+		std::swap(myRaycastResults[0], myRaycastResults[1]);
 	}
 
 	void PhysicsManager::Update()
@@ -229,19 +239,14 @@ namespace Prism
 			}
 		}
 
-		for (int i = 0; i < myRaycastJobs[0].Size(); ++i)
+		for (int i = 0; i < myRaycastJobs[1].Size(); ++i)
 		{
-			RayCast(myRaycastJobs[0][i]);
+			RayCast(myRaycastJobs[1][i]);
 		}
 
-		myRaycastJobs[0].RemoveAll();
+		myRaycastJobs[1].RemoveAll();
 
-		for (int i = 0; i < myRaycastResults[0].Size(); ++i)
-		{
-			myRaycastResults[0][i].myFunctionToCall(myRaycastResults[0][i].myEntity, myRaycastResults[0][i].myDirection, myRaycastResults[0][i].myHitPosition);
-		}
-
-		myRaycastResults[0].RemoveAll();
+		
 		//Sleep(16);
 	}
 
@@ -290,16 +295,16 @@ namespace Prism
 			}
 			if (ent == nullptr)
 			{
-				myRaycastResults[0].Add(RaycastResult(nullptr, aRaycastJob.myNormalizedDirection, hitPosition, aRaycastJob.myFunctionToCall));
+				myRaycastResults[1].Add(RaycastResult(nullptr, aRaycastJob.myNormalizedDirection, hitPosition, aRaycastJob.myFunctionToCall));
 			}
 			else
 			{
-				myRaycastResults[0].Add(RaycastResult(ent->GetEntity(), aRaycastJob.myNormalizedDirection, hitPosition, aRaycastJob.myFunctionToCall));
+				myRaycastResults[1].Add(RaycastResult(ent->GetEntity(), aRaycastJob.myNormalizedDirection, hitPosition, aRaycastJob.myFunctionToCall));
 			}
 		}
 		else
 		{
-			myRaycastResults[0].Add(RaycastResult(nullptr, aRaycastJob.myNormalizedDirection, hitPosition, aRaycastJob.myFunctionToCall));
+			myRaycastResults[1].Add(RaycastResult(nullptr, aRaycastJob.myNormalizedDirection, hitPosition, aRaycastJob.myFunctionToCall));
 		}
 	}
 
@@ -335,6 +340,7 @@ namespace Prism
 		myMoveJobs[0].Add(MoveJob(aId, aDirection, aMinDisplacement, aDeltaTime));
 		
 	}
+
 	void PhysicsManager::Move(const MoveJob& aMoveJob)
 	{
 		physx::PxControllerFilters filter;
@@ -360,5 +366,15 @@ namespace Prism
 	void PhysicsManager::GetPosition(int aId, CU::Vector3<float>& aPositionOut)
 	{
 		aPositionOut = myPlayerPosition;
+	}
+
+	void PhysicsManager::EndFrame()
+	{
+		for (int i = 0; i < myRaycastResults[0].Size(); ++i)
+		{
+			myRaycastResults[0][i].myFunctionToCall(myRaycastResults[0][i].myEntity, myRaycastResults[0][i].myDirection, myRaycastResults[0][i].myHitPosition);
+		}
+
+		myRaycastResults[0].RemoveAll();
 	}
 }

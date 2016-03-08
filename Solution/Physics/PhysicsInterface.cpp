@@ -38,7 +38,15 @@ namespace Prism
 #ifndef THREAD_PHYSICS
 		myManager->Update();
 #endif
-		myManager->SwapOrientations();
+
+		myManager->SetLogicDone();
+		myManager->WaitForPhysics();
+
+		myManager->Swap();
+
+		myManager->SetSwapDone();
+
+		myManager->EndFrame();
 	}
 
 	void PhysicsInterface::RayCast(const CU::Vector3<float>& aOrigin, const CU::Vector3<float>& aNormalizedDirection, float aMaxRayDistance, std::function<void(Entity*, const CU::Vector3<float>&, const CU::Vector3<float>&)> aFunctionToCall)
