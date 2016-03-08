@@ -100,11 +100,11 @@ namespace Prism
 			DL_ASSERT("Failed to createScene");
 		}
 
-
-		
-
 		myScene->setVisualizationParameter(physx::PxVisualizationParameter::eSCALE, 1.f);
 		myScene->setVisualizationParameter(physx::PxVisualizationParameter::eCOLLISION_SHAPES, 1.f);
+		myScene->setFlag(physx::PxSceneFlag::eENABLE_KINEMATIC_PAIRS, true);
+		myScene->setFlag(physx::PxSceneFlag::eENABLE_KINEMATIC_STATIC_PAIRS, true);
+		myScene->setSimulationEventCallback(this);
 
 #ifdef _DEBUG
 		if (myPhysicsSDK->getPvdConnectionManager())
@@ -247,10 +247,10 @@ namespace Prism
 
 		if (myMoveJobs[0].Size() > 0)
 		{
-		const physx::PxExtendedVec3& pos = myControllerManager->getController(myMoveJobs[0][0].myId)->getFootPosition();
-		myPlayerPosition.x = float(pos.x);
-		myPlayerPosition.y = float(pos.y);
-		myPlayerPosition.z = float(pos.z);
+			const physx::PxExtendedVec3& pos = myControllerManager->getController(myMoveJobs[0][0].myId)->getFootPosition();
+			myPlayerPosition.x = float(pos.x);
+			myPlayerPosition.y = float(pos.y);
+			myPlayerPosition.z = float(pos.z);
 		}
 
 		myMoveJobs[0].RemoveAll();
@@ -289,13 +289,42 @@ namespace Prism
 
 		myRaycastJobs[1].RemoveAll();
 
-		
+
 		//Sleep(16);
 	}
 
 	void PhysicsManager::RayCast(const CU::Vector3<float>& aOrigin, const CU::Vector3<float>& aNormalizedDirection, float aMaxRayDistance, std::function<void(Entity*, const CU::Vector3<float>&, const CU::Vector3<float>&)> aFunctionToCall)
 	{
 		myRaycastJobs[0].Add(RaycastJob(aOrigin, aNormalizedDirection, aMaxRayDistance, aFunctionToCall));
+	}
+
+	void PhysicsManager::onTrigger(physx::PxTriggerPair* somePairs, physx::PxU32 aCount)
+	{
+		for (physx::PxU32 i = 0; i < aCount; i++)
+		{
+			const physx::PxTriggerPair& cp = somePairs[i];
+
+			if (somePairs->status == physx::PxPairFlag::Enum::eNOTIFY_TOUCH_FOUND)
+			{
+				//myTriggerManager.OnTrigger(somePairs->triggerActor->userData, stat_cast<PhysEntity*>(somePairs->triggerActor->userData));
+				//if (pairs->triggerActor == myPlayer)
+				//{
+				//
+				//}
+				//PhysEntity* ent = static_cast<PhysEntity*>(somePairs->triggerActor->userData);
+				//
+				//if (ent->myOnTriggerCallBack)
+				//{
+				//	ent->myOnTriggerCallBack();
+				//}
+				//TriggerEntity* ent = static_cast<TriggerEntity*>(somePairs->triggerActor->userData);
+				//ent;
+				//int apa = 5;
+				//ent->Collide(somePairs->otherActor->userData);
+				//ent->Collide(static_cast<PhysEntity*>(somePairs->otherActor->userData));
+				//myTriggerManager.Add(TriggerJob(static_cast<PhysEntity*>(somePairs->triggerActor->userData), static_cast<PhysEntity*>(somePairs->otherActor->userData)));
+			}
+		}
 	}
 
 	void PhysicsManager::RayCast(const RaycastJob& aRaycastJob)
@@ -368,7 +397,7 @@ namespace Prism
 	void PhysicsManager::SetPosition(physx::PxRigidDynamic* aDynamicBody, const CU::Vector3<float>& aPosition)
 	{
 		myPositionJobs[0].Add(PositionJob(aDynamicBody, aPosition));
-	}
+		}
 
 	void PhysicsManager::SetPosition(const PositionJob& aPositionJob)
 	{
@@ -398,6 +427,7 @@ namespace Prism
 		controllerDesc.radius = 0.25f;
 		controllerDesc.material = myDefaultMaterial;
 		controllerDesc.position = physx::PxExtendedVec3(aStartPosition.x, aStartPosition.y, aStartPosition.z);//fix
+		//controllerDesc.userData = that;
 
 		myControllerManager->createController(controllerDesc);
 
@@ -408,7 +438,7 @@ namespace Prism
 	{
 		myMoveJobs[0] = MoveJob(aId, aDirection, aMinDisplacement, aDeltaTime);
 	}
-
+		
 	void PhysicsManager::Move(const MoveJob& aMoveJob)
 	{
 		physx::PxControllerFilters filter;

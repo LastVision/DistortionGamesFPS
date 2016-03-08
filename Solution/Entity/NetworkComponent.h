@@ -16,6 +16,8 @@ public:
 	void Update(float aDelta) override;
 
 	void ReceiveMessage(const NetworkSetPositionMessage& aMessage) override;
+	void ReceiveMessage(const NetworkOnHitMessage& aMessage) override;
+
 	void SetPlayer(bool aBool);
 
 private:

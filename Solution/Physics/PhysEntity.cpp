@@ -75,20 +75,19 @@ namespace Prism
 				, aPhysData.myPhysicsMax.y - aPhysData.myPhysicsMin.y
 				, aPhysData.myPhysicsMax.z - aPhysData.myPhysicsMin.z);
 			physx::PxBoxGeometry geometry(dimensions / 2.f);
-			myDynamicBody = physx::PxCreateDynamic(*core, transform, geometry, *material, density);
-			myDynamicBody->setAngularDamping(0.75);
-			myDynamicBody->setLinearVelocity(physx::PxVec3(0, 0, 0));
-			myDynamicBody->userData = this;
+			myStaticBody = physx::PxCreateStatic(*core, transform, geometry, *material);
+			myStaticBody->userData = this;
+			myStaticBody->setName("Phantom");
 
-			physx::PxU32 nShapes = myDynamicBody->getNbShapes();
+			physx::PxU32 nShapes = myStaticBody->getNbShapes();
 			myShapes = new physx::PxShape*[nShapes];
 
 			physx::PxShape* treasureShape;
-			myDynamicBody->getShapes(&treasureShape, 1.f);
+			myStaticBody->getShapes(&treasureShape, 1.f);
 
 			treasureShape->setFlag(physx::PxShapeFlag::eSIMULATION_SHAPE, false);
 			treasureShape->setFlag(physx::PxShapeFlag::eTRIGGER_SHAPE, true);
-			PhysicsInterface::GetInstance()->GetManager()->GetScene()->addActor(*myDynamicBody);
+			PhysicsInterface::GetInstance()->GetManager()->GetScene()->addActor(*myStaticBody);
 		}
 
 		PhysicsInterface::GetInstance()->GetManager()->Add(this);
@@ -132,17 +131,17 @@ namespace Prism
 		myThread4x4Float[1] = m(1, 0);
 		myThread4x4Float[2] = m(2, 0);
 		myThread4x4Float[3] = 0;
-		
+
 		myThread4x4Float[4] = m(0, 1);
 		myThread4x4Float[5] = m(1, 1);
 		myThread4x4Float[6] = m(2, 1);
 		myThread4x4Float[7] = 0;
-		
+
 		myThread4x4Float[8] = m(0, 2);
 		myThread4x4Float[9] = m(1, 2);
 		myThread4x4Float[10] = m(2, 2);
 		myThread4x4Float[11] = 0;
-		
+
 		myThread4x4Float[12] = graphicsTransform.p.x;
 		myThread4x4Float[13] = graphicsTransform.p.y;
 		myThread4x4Float[14] = graphicsTransform.p.z;
@@ -235,8 +234,7 @@ namespace Prism
 
 	void PhysEntity::RemoveFromScene()
 	{
-		//DL_ASSERT("Not impl yet");
-		if (myPhysicsType == ePhysics::DYNAMIC || myPhysicsType == ePhysics::PHANTOM)
+		if (myPhysicsType == ePhysics::DYNAMIC)
 		{
 			PhysicsInterface::GetInstance()->GetManager()->GetScene()->removeActor(*myDynamicBody);
 		}

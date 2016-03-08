@@ -22,6 +22,7 @@ enum class eTriggerType : int
 {
 	EMPTY = -1,
 	LEVEL_CHANGE,
+	HEALTH_PACK,
 	_COUNT,
 };
 
@@ -30,6 +31,7 @@ enum class ePhysics
 	STATIC,
 	DYNAMIC,
 	PHANTOM,
+	CAPSULE,
 };
 
 enum class ePropType

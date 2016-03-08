@@ -18,6 +18,7 @@
 
 #include <NetMessageOnJoin.h>
 #include <NetMessageConnectMessage.h>
+#include <NetMessageOnHit.h>
 
 #include <NetworkAddPlayerMessage.h>
 #include <NetworkAddEnemyMessage.h>
@@ -27,6 +28,7 @@
 #include <PointLight.h>
 
 #include <PhysEntity.h>
+#include <PhysicsInterface.h>
 #include <PostMaster.h>
 
 #include "EmitterManager.h"
@@ -89,10 +91,18 @@ void ClientLevel::Update(const float aDeltaTime)
 	SharedLevel::Update(aDeltaTime);
 	myPlayer->Update(aDeltaTime);
 	myEmitterManager->UpdateEmitters(aDeltaTime, CU::Matrix44f());
-	if (CU::InputWrapper::GetInstance()->KeyDown(DIK_C) == true)
+
+	if (CU::InputWrapper::GetInstance()->KeyDown(DIK_T))
 	{
-		ClientNetworkManager::GetInstance()->ConnectToServer("81.170.227.192");
+		ClientNetworkManager::GetInstance()->AddMessage(NetMessageOnHit(eNetMessageType::PLAYER_ON_HIT, 5.f, 17));
 	}
+
+	if (CU::InputWrapper::GetInstance()->KeyDown(DIK_J))
+	{
+		ClientNetworkManager::GetInstance()->AddMessage(NetMessageOnHit(eNetMessageType::PLAYER_ON_HIT, 5.f, 1));
+	}
+
+
 	unsigned short ms = ClientNetworkManager::GetInstance()->GetResponsTime();
 	float kbs = static_cast<float>(ClientNetworkManager::GetInstance()->GetDataSent());
 

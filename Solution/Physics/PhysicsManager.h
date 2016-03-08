@@ -6,6 +6,7 @@
 #include <GrowingArray.h>
 #include <pvd/PxVisualDebugger.h>
 #include <physxvisualdebuggersdk/PvdConnection.h>
+#include <PxSimulationEventCallback.h>
 #include <characterkinematic\PxControllerManager.h>
 #include <cooking\PxCooking.h>
 #include <Vector.h>
@@ -27,7 +28,7 @@ namespace Prism
 {
 	class PhysEntity;
 
-	class PhysicsManager : public physx::debugger::comm::PvdConnectionHandler
+	class PhysicsManager : public physx::debugger::comm::PvdConnectionHandler, public physx::PxSimulationEventCallback
 	{
 	public:
 		PhysicsManager();
@@ -55,6 +56,12 @@ namespace Prism
 		void AddForce(physx::PxRigidDynamic* aDynamicBody, const CU::Vector3<float>& aDirection, float aMagnitude);
 		void SetVelocity(physx::PxRigidDynamic* aDynamicBody, const CU::Vector3<float>& aVelocity);
 		void SetPosition(physx::PxRigidDynamic* aDynamicBody, const CU::Vector3<float>& aPosition);
+
+		void onConstraintBreak(physx::PxConstraintInfo*, physx::PxU32) override {};
+		void onWake(physx::PxActor**, physx::PxU32) override {};
+		void onSleep(physx::PxActor**, physx::PxU32) override {};
+		void onContact(const physx::PxContactPairHeader&, const physx::PxContactPair*, physx::PxU32) override {};
+		void onTrigger(physx::PxTriggerPair*, physx::PxU32) override;
 
 		physx::PxPhysics* GetCore(){ return myPhysicsSDK; }
 		physx::PxScene* GetScene(){ return myScene; }

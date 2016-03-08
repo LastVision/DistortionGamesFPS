@@ -11,12 +11,13 @@
 #include <NetMessagePingReply.h>
 #include <NetMessagePosition.h>
 #include <NetMessageAddEnemy.h>
+#include <NetMessageOnHit.h>
 
 #include <NetworkAddPlayerMessage.h>
 #include <NetworkAddEnemyMessage.h>
 #include <NetworkSendPositionMessage.h>
 #include <NetworkSetPositionMessage.h>
-
+#include <NetworkOnHitMessage.h>
 #define BUFFERSIZE 512
 
 ServerNetworkManager* ServerNetworkManager::myInstance = nullptr;
@@ -192,6 +193,10 @@ void ServerNetworkManager::HandleMessage(const NetMessagePosition& aMessage, con
 	PostMaster::GetInstance()->SendMessage(NetworkSetPositionMessage(aMessage.myPosition, aMessage.myNetworkID));
 }
 
+void ServerNetworkManager::HandleMessage(const NetMessageOnHit& aMessage, const sockaddr_in&)
+{
+	PostMaster::GetInstance()->SendMessage(NetworkOnHitMessage(aMessage.myDamage, aMessage.myNetworkID));
+}
 
 void ServerNetworkManager::ReceiveMessage(const NetworkAddEnemyMessage& aMessage)
 {

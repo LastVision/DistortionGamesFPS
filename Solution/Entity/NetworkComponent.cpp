@@ -2,10 +2,14 @@
 #include "NetworkComponent.h"
 #include "Entity.h"
 #include <MathHelper.h>
+
 #include <NetworkSetPositionMessage.h>
 #include <NetworkSendPositionMessage.h>
+#include <NetworkOnHitMessage.h>
+#include "DamageNote.h"
 
 #include <PostMaster.h>
+#include "HealthComponent.h"
 
 NetworkComponent::NetworkComponent(Entity& anEntity, CU::Matrix44<float>& anOrientation)
 	: Component(anEntity)
@@ -18,12 +22,16 @@ NetworkComponent::NetworkComponent(Entity& anEntity, CU::Matrix44<float>& anOrie
 	mySecondPosition = { 1.f, 0.5f, -56.f };
 	mySecondPosition2 = { 0.f, 0.f, 0.f };
 	PostMaster::GetInstance()->Subscribe(eMessageType::NETWORK_SET_POSITION, this);
+	PostMaster::GetInstance()->Subscribe(eMessageType::NETWORK_ON_HIT, this);
+
 }
 
 
 NetworkComponent::~NetworkComponent()
 {
 	PostMaster::GetInstance()->UnSubscribe(eMessageType::NETWORK_SET_POSITION, this);
+	PostMaster::GetInstance()->UnSubscribe(eMessageType::NETWORK_ON_HIT, this);
+
 }
 
 const unsigned int NetworkComponent::GetNetworkID() const
@@ -52,32 +60,35 @@ void NetworkComponent::Update(float aDelta)
 			//myServerPosition += aDelta * 5.f;
 			if (myIsPlayer == false)
 			{
-				if (myShouldReturn == false)
+				if (myEntity.GetComponent<HealthComponent>()->GetHealth() > 0)
 				{
-					if (myFirstPosition.z < 0.f)
+					if (myShouldReturn == false)
 					{
-						myServerPosition = CU::Math::Lerp(myFirstPosition, mySecondPosition2, myAlpha);
+						if (myFirstPosition.z < 0.f)
+						{
+							myServerPosition = CU::Math::Lerp(myFirstPosition, mySecondPosition2, myAlpha);
+						}
+						else
+						{
+							myServerPosition = CU::Math::Lerp(myFirstPosition, mySecondPosition, myAlpha);
+						}
 					}
 					else
 					{
-						myServerPosition = CU::Math::Lerp(myFirstPosition, mySecondPosition, myAlpha);
+						if (myFirstPosition.z < 0.f)
+						{
+							myServerPosition = CU::Math::Lerp(mySecondPosition2, myFirstPosition, myAlpha);
+						}
+						else
+						{
+							myServerPosition = CU::Math::Lerp(mySecondPosition, myFirstPosition, myAlpha);
+						}
 					}
-				}
-				else
-				{
-					if (myFirstPosition.z < 0.f)
+					if (myAlpha >= 1)
 					{
-						myServerPosition = CU::Math::Lerp(mySecondPosition2, myFirstPosition, myAlpha);
+						myShouldReturn = !myShouldReturn;
+						myAlpha = 0;
 					}
-					else
-					{
-						myServerPosition = CU::Math::Lerp(mySecondPosition, myFirstPosition, myAlpha);
-					}
-				}
-				if (myAlpha >= 1)
-				{
-					myShouldReturn = !myShouldReturn;
-					myAlpha = 0;
 				}
 			}
 			else
@@ -99,6 +110,14 @@ void NetworkComponent::ReceiveMessage(const NetworkSetPositionMessage& aMessage)
 		myPrevPosition = myServerPosition;
 		myServerPosition = aMessage.myPosition;
 		myAlpha = 0.f;
+	}
+}
+
+void NetworkComponent::ReceiveMessage(const NetworkOnHitMessage& aMessage)
+{
+	if (myNetworkID == aMessage.myNetworkID)
+	{
+		myEntity.SendNote(DamageNote(aMessage.myDamage));
 	}
 }
 
