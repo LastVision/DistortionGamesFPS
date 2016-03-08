@@ -165,6 +165,13 @@ namespace Prism
 		PhysicsInterface::GetInstance()->AddForce(myDynamicBody, aDirection, aMagnitude);
 	}
 
+	void PhysEntity::SetVelocity(const CU::Vector3<float>& aVelocity)
+	{
+		DL_ASSERT_EXP(myPhysicsType == ePhysics::DYNAMIC, "Cant add Force to STATIC objects");
+
+		PhysicsInterface::GetInstance()->SetVelocity(myDynamicBody, aVelocity);
+	}
+
 	physx::PxTriangleMesh* PhysEntity::GetPhysMesh(const std::string& aFBXPath)
 	{
 		DL_ASSERT_EXP(myPhysicsType == ePhysics::STATIC, "Cant get phys mesh on DYNAMIC objects");

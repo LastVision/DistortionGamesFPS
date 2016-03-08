@@ -34,6 +34,7 @@ namespace Prism
 		void UpdateOrientation();
 
 		void AddForce(const CU::Vector3<float>& aDirection, float aMagnitude);
+		void SetVelocity(const CU::Vector3<float>& aVelocity);
 
 		ePhysics GetPhysicsType() const;
 

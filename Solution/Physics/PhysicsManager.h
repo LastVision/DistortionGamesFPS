@@ -53,6 +53,7 @@ namespace Prism
 
 		void RayCast(const CU::Vector3<float>& aOrigin, const CU::Vector3<float>& aNormalizedDirection, float aMaxRayDistance, std::function<void(Entity*, const CU::Vector3<float>&, const CU::Vector3<float>&)> aFunctionToCall);
 		void AddForce(physx::PxRigidDynamic* aDynamicBody, const CU::Vector3<float>& aDirection, float aMagnitude);
+		void SetVelocity(physx::PxRigidDynamic* aDynamicBody, const CU::Vector3<float>& aVelocity);
 
 		physx::PxPhysics* GetCore(){ return myPhysicsSDK; }
 		physx::PxScene* GetScene(){ return myScene; }
@@ -147,6 +148,23 @@ namespace Prism
 		};
 		CU::GrowingArray<ForceJob> myForceJobs[2];
 		void AddForce(const ForceJob& aForceJob);
+
+		struct VelocityJob
+		{
+			VelocityJob()
+				: myDynamicBody(nullptr)
+			{}
+
+			VelocityJob(physx::PxRigidDynamic* aDynamicBody, const CU::Vector3<float>& aVelocity)
+				: myDynamicBody(aDynamicBody)
+				, myVelocity(aVelocity)
+			{}
+
+			physx::PxRigidDynamic* myDynamicBody;
+			CU::Vector3<float> myVelocity;
+		};
+		CU::GrowingArray<VelocityJob> myVelocityJobs[2];
+		void SetVelocity(const VelocityJob& aVelocityJob);
 
 		CU::GrowingArray<PhysEntity*> myPhysEntities;
 

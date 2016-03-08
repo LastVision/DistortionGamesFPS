@@ -45,6 +45,8 @@ namespace Prism
 		myRaycastResults[1].Init(64);
 		myForceJobs[0].Init(64);
 		myForceJobs[1].Init(64);
+		myVelocityJobs[0].Init(64);
+		myVelocityJobs[1].Init(64);
 		myTimestep = 1.f / 60.f;
 		
 		myFoundation = PxCreateFoundation(0x03030300, myDefaultAllocatorCallback, myDefaultErrorCallback);
@@ -209,6 +211,7 @@ namespace Prism
 		std::swap(myRaycastResults[0], myRaycastResults[1]);
 		std::swap(myMoveJobs[0], myMoveJobs[1]);
 		std::swap(myForceJobs[0], myForceJobs[1]);
+		std::swap(myVelocityJobs[0], myVelocityJobs[1]);
 	}
 
 	void PhysicsManager::Update()
@@ -254,6 +257,12 @@ namespace Prism
 			AddForce(myForceJobs[1][i]);
 		}
 		myForceJobs[1].RemoveAll();
+
+		for (int i = 0; i < myVelocityJobs[1].Size(); ++i)
+		{
+			SetVelocity(myVelocityJobs[1][i]);
+		}
+		myVelocityJobs[1].RemoveAll();
 
 		for (int i = 0; i < myPhysEntities.Size(); ++i)
 		{
@@ -340,6 +349,16 @@ namespace Prism
 	void PhysicsManager::AddForce(const ForceJob& aForceJob)
 	{
 		aForceJob.myDynamicBody->addForce(physx::PxVec3(aForceJob.myDirection.x, aForceJob.myDirection.y, aForceJob.myDirection.z) * aForceJob.myMagnitude, physx::PxForceMode::eVELOCITY_CHANGE);
+	}
+
+	void PhysicsManager::SetVelocity(physx::PxRigidDynamic* aDynamicBody, const CU::Vector3<float>& aVelocity)
+	{
+		myVelocityJobs[0].Add(VelocityJob(aDynamicBody, aVelocity));
+	}
+
+	void PhysicsManager::SetVelocity(const VelocityJob& aVelocityJob)
+	{
+		aVelocityJob.myDynamicBody->setLinearVelocity(physx::PxVec3(aVelocityJob.myVelocity.x, aVelocityJob.myVelocity.x, aVelocityJob.myVelocity.x));
 	}
 
 	void PhysicsManager::onPvdConnected(physx::debugger::comm::PvdConnection&)
