@@ -1,5 +1,6 @@
 #pragma once
 #include "NetMessage.h"
+#include "NetworkMessageTypes.h"
 class NetMessageOnHit :
 	public NetMessage
 {

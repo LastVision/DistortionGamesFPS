@@ -1,12 +1,12 @@
 #include "stdafx.h"
 #include "NetMessageOnHit.h"
-#include "NetworkMessageTypes.h"
+
 
 NetMessageOnHit::NetMessageOnHit(eNetMessageType aType, float aDamage, unsigned int aNetworkID)
 {
 	myDamage = aDamage;
 	myNetworkID = aNetworkID;
-	myID = int(aType);
+	myID = uint8_t(aType);
 }
 
 NetMessageOnHit::NetMessageOnHit()
