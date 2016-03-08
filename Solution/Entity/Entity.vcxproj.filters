@@ -63,6 +63,9 @@
       <Filter>Component</Filter>
     </ClCompile>
     <ClCompile Include="NetworkComponent.cpp" />
+    <ClCompile Include="InputComponent.cpp">
+      <Filter>Component</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
@@ -127,6 +130,9 @@
     <ClInclude Include="NetworkComponent.h" />
     <ClInclude Include="NetworkComponentData.h">
       <Filter>EntityFactory\EntityData\ComponentData</Filter>
+    </ClInclude>
+    <ClInclude Include="InputComponent.h">
+      <Filter>Component</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
