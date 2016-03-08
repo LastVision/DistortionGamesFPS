@@ -101,7 +101,10 @@ namespace Prism
 
 	void Instance::AddModelToInstancingHelper(Model* aModel, InstancingHelper& aInstancingHelper)
 	{
-		aInstancingHelper.AddModel(aModel, myOrientation, myScale, myOrientation.GetPos().y);
+		if (aModel->IsNullObject() == false)
+		{
+			aInstancingHelper.AddModel(aModel, myOrientation, myScale, myOrientation.GetPos().y);
+		}
 
 		for (int i = 0; i < aModel->GetChildren().Size(); ++i)
 		{
