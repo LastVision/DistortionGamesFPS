@@ -1,7 +1,6 @@
 #include "stdafx.h"
 #include "NetMessageOnHit.h"
 
-
 NetMessageOnHit::NetMessageOnHit(eNetMessageType aType, float aDamage, unsigned int aNetworkID)
 {
 	myDamage = aDamage;

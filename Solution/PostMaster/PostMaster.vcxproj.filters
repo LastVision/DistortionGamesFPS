@@ -63,5 +63,8 @@
     <ClInclude Include="NetworkSendPositionMessage.h">
       <Filter>Message\NetworkMessages</Filter>
     </ClInclude>
+    <ClInclude Include="NetworkOnHitMessage.h">
+      <Filter>Message\NetworkMessages</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

@@ -34,6 +34,6 @@
 //Show debug text for portal culling assistance
 #define SHOW_PORTAL_CULLING_DEBUG_TEXT
 
-#define USE_LIGHTS
+//#define USE_LIGHTS
 
 #define THREAD_PHYSICS

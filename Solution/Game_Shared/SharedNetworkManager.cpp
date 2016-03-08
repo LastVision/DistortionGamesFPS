@@ -7,6 +7,7 @@
 #include <NetMessagePingReply.h>
 #include <NetMessagePosition.h>
 #include <NetMessageAddEnemy.h>
+#include <NetMessageOnHit.h>
 
 #define BUFFERSIZE 512
 
@@ -158,6 +159,9 @@ void SharedNetworkManager::HandleMessage()
 		case eNetMessageType::ADD_ENEMY:
 			UnpackAndHandle(NetMessageAddEnemy(), buffer);
 			break;
+		case eNetMessageType::PLAYER_ON_HIT:
+			UnpackAndHandle(NetMessageOnHit(), buffer);
+			break;
 		default:
 			break;
 		}
@@ -174,3 +178,4 @@ void SharedNetworkManager::HandleMessage(const NetMessagePingRequest&, const soc
 void SharedNetworkManager::HandleMessage(const NetMessageOnJoin&, const sockaddr_in&) {}
 void SharedNetworkManager::HandleMessage(const NetMessagePosition&, const sockaddr_in&) {}
 void SharedNetworkManager::HandleMessage(const NetMessageAddEnemy&, const sockaddr_in&){}
+void SharedNetworkManager::HandleMessage(const NetMessageOnHit&, const sockaddr_in&){}

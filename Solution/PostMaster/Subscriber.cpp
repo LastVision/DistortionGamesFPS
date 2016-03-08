@@ -16,3 +16,4 @@ void Subscriber::ReceiveMessage(const NetworkAddPlayerMessage&){}
 void Subscriber::ReceiveMessage(const NetworkAddEnemyMessage&){}
 void Subscriber::ReceiveMessage(const NetworkSetPositionMessage& aMessage){}
 void Subscriber::ReceiveMessage(const NetworkSendPositionMessage& aMessage){}
+void Subscriber::ReceiveMessage(const NetworkOnHitMessage&){}

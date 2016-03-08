@@ -17,6 +17,8 @@ public:
 
 	void Reset() override;
 
+	int GetHealth();
+
 	static eComponentType GetTypeStatic();
 	eComponentType GetType() override;
 
@@ -33,4 +35,9 @@ inline eComponentType HealthComponent::GetTypeStatic()
 inline eComponentType HealthComponent::GetType()
 {
 	return GetTypeStatic();
+}
+
+inline int HealthComponent::GetHealth()
+{
+	return myCurrentHealth;
 }
