@@ -90,6 +90,7 @@
     <ClInclude Include="NetImportantMessage.h" />
     <ClInclude Include="NetMessage.h" />
     <ClInclude Include="NetMessageConnectMessage.h" />
+    <ClInclude Include="NetMessageOnHit.h" />
     <ClInclude Include="NetMessageOnJoin.h" />
     <ClInclude Include="NetMessagePingReply.h" />
     <ClInclude Include="NetMessagePingRequest.h" />
@@ -106,6 +107,7 @@
     <ClCompile Include="NetImportantMessage.cpp" />
     <ClCompile Include="NetMessage.cpp" />
     <ClCompile Include="NetMessageConnectMessage.cpp" />
+    <ClCompile Include="NetMessageOnHit.cpp" />
     <ClCompile Include="NetMessageOnJoin.cpp" />
     <ClCompile Include="NetMessagePingReply.cpp" />
     <ClCompile Include="NetMessagePingRequest.cpp" />

@@ -46,6 +46,9 @@
     <ClCompile Include="NetMessageAddEnemy.cpp">
       <Filter>Messages</Filter>
     </ClCompile>
+    <ClCompile Include="NetMessageOnHit.cpp">
+      <Filter>Messages</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
@@ -86,6 +89,9 @@
     </ClInclude>
     <ClInclude Include="NetImportantMessage.h" />
     <ClInclude Include="NetMessageAddEnemy.h">
+      <Filter>Messages</Filter>
+    </ClInclude>
+    <ClInclude Include="NetMessageOnHit.h">
       <Filter>Messages</Filter>
     </ClInclude>
   </ItemGroup>
