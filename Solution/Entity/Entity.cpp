@@ -56,7 +56,7 @@ Entity::Entity(const EntityData& aEntityData, Prism::Scene* aScene, bool aClient
 			myPhysEntity = new Prism::PhysEntity(aEntityData.myPhysData, myOrientation, aEntityData.myGraphicsData.myModelPath, this);
 		}
 	}
-
+	
 	if (aEntityData.myProjecileData.myExistsInEntity == true)
 	{
 		myComponents[static_cast<int>(eComponentType::PROJECTILE)] = new ProjectileComponent(*this, aEntityData.myProjecileData);
@@ -123,7 +123,7 @@ void Entity::Update(float aDeltaTime)
 		if (myComponents[static_cast<int>(eComponentType::NETWORK)] == nullptr)
 		{
 			myPhysEntity->UpdateOrientation();
-			memcpy(&myOrientation.myMatrix[0], myPhysEntity->GetOrientation(), sizeof(float) * 16);
+		memcpy(&myOrientation.myMatrix[0], myPhysEntity->GetOrientation(), sizeof(float) * 16);
 		}
 	}
 }

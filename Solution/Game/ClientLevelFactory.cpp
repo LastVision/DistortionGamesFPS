@@ -3,12 +3,12 @@
 #include <EntityFactory.h>
 #include "ClientLevel.h"
 #include "ClientLevelFactory.h"
+#include <PhysicsInterface.h>
 #include <PointLight.h>
 #include <Room.h>
 #include <RoomManager.h>
 #include <Scene.h>
 #include <XMLReader.h>
-
 
 ClientLevelFactory::ClientLevelFactory(const std::string& aLevelListPath)
 	: SharedLevelFactory(aLevelListPath)
@@ -27,6 +27,9 @@ SharedLevel* ClientLevelFactory::LoadCurrentLevel()
 {
 	myCurrentLevel = new ClientLevel();
 	ReadLevel(myLevelPaths[myCurrentID].myPath);
+#ifdef THREAD_PHYSICS
+	Prism::PhysicsInterface::GetInstance()->InitThread();
+#endif
 	return myCurrentLevel;
 }
 

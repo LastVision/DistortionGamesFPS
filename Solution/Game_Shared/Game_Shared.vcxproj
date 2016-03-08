@@ -43,14 +43,14 @@
     <IntDir>$(SolutionDir)..\temp\$(ProjectName)\</IntDir>
     <TargetName>$(ProjectName)_$(Configuration)</TargetName>
     <ExecutablePath>$(ExecutablePath)</ExecutablePath>
-    <IncludePath>$(SolutionDir)Physics\;$(SolutionDir)Engine\;$(SolutionDir)Entity\;$(SolutionDir)\Memory;$(SolutionDir)PostMaster\;$(SolutionDir)Network\;$(SolutionDir)CommonUtilities\;$(SolutionDir)DL_Debug\;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)Timer\;$(SolutionDir)Physics\;$(SolutionDir)Engine\;$(SolutionDir)Entity\;$(SolutionDir)\Memory;$(SolutionDir)PostMaster\;$(SolutionDir)Network\;$(SolutionDir)CommonUtilities\;$(SolutionDir)DL_Debug\;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <OutDir>$(SolutionDir)..\Libs\</OutDir>
     <IntDir>$(SolutionDir)..\temp\$(ProjectName)\</IntDir>
     <TargetName>$(ProjectName)_$(Configuration)</TargetName>
     <ExecutablePath>$(ExecutablePath)</ExecutablePath>
-    <IncludePath>$(SolutionDir)Physics\;$(SolutionDir)Engine\;$(SolutionDir)Entity\;$(SolutionDir)\Memory;$(SolutionDir)PostMaster\;$(SolutionDir)Network\;$(SolutionDir)CommonUtilities\;$(SolutionDir)DL_Debug\;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)Timer\;$(SolutionDir)Physics\;$(SolutionDir)Engine\;$(SolutionDir)Entity\;$(SolutionDir)\Memory;$(SolutionDir)PostMaster\;$(SolutionDir)Network\;$(SolutionDir)CommonUtilities\;$(SolutionDir)DL_Debug\;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -120,6 +120,9 @@
     </ProjectReference>
     <ProjectReference Include="..\PostMaster\PostMaster.vcxproj">
       <Project>{ef362edc-8fff-400b-a5ff-05a9bc551d65}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\Timer\Timer.vcxproj">
+      <Project>{62c9b6f1-e90e-49c7-b0c6-3809fca2065d}</Project>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

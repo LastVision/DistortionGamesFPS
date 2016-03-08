@@ -26,20 +26,18 @@ namespace Prism
 		return myManager;
 	}
 
-	void PhysicsInterface::Update()
+#ifdef THREAD_PHYSICS
+	void PhysicsInterface::InitThread()
 	{
-		if (myManager != nullptr)
-		{
-			myManager->Update();
-		}
-		else
-		{
-			DL_ASSERT("No PhysicsManager");
-		}
+		myManager->InitThread();
 	}
+#endif
 
 	void PhysicsInterface::EndFrame()
 	{
+#ifndef THREAD_PHYSICS
+		myManager->Update();
+#endif
 		myManager->SwapOrientations();
 	}
 

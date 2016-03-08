@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "PhysicsManager.h"
+#include <ThreadUtilities.h>
 
 #ifdef _DEBUG
 #pragma comment(lib, "PhysX\\vc12win32\\PhysX3DEBUG_x86.lib")
@@ -24,16 +25,23 @@
 #include "PhysEntity.h"
 #include <pxphysicsapi.h>
 #include <PxQueryReport.h>
+#include <TimerManager.h>
 
 namespace Prism
 {
 	PhysicsManager::PhysicsManager()
 		: myPhysEntities(4096)
+#ifdef THREAD_PHYSICS
+		, myQuit(false)
+		, myTimerManager(new CU::TimerManager())
+#endif
 	{
 		myRaycastJobs[0].Init(64);
 		myRaycastJobs[1].Init(64);
 		myRaycastResults[0].Init(64);
 		myRaycastResults[1].Init(64);
+		myMoveJobs[0].Init(8);
+		myMoveJobs[1].Init(8);
 		myTimestep = 1.f / 60.f;
 		
 		myFoundation = PxCreateFoundation(0x03030300, myDefaultAllocatorCallback, myDefaultErrorCallback);
@@ -131,6 +139,12 @@ namespace Prism
 
 	PhysicsManager::~PhysicsManager()
 	{
+#ifdef THREAD_PHYSICS
+		myQuit = true;
+		myPhysicsThread->join();
+		SAFE_DELETE(myPhysicsThread);
+		SAFE_DELETE(myTimerManager);
+#endif
 		if (myDebugConnection != nullptr)
 		{
 			//myDebugConnection->release();
@@ -143,6 +157,25 @@ namespace Prism
 		myPhysicsSDK->release();
 		myFoundation->release();
 	}
+
+#ifdef THREAD_PHYSICS
+	void PhysicsManager::InitThread()
+	{
+		myPhysicsThread = new std::thread(&PhysicsManager::ThreadUpdate, this);
+
+		CU::SetThreadName(myPhysicsThread->get_id(), "Physics thread");
+	}
+
+	void PhysicsManager::ThreadUpdate()
+	{
+		while (myQuit == false)
+		{
+			myTimerManager->Update();
+			Update();
+			myTimerManager->CapFrameRate(60.f);
+		}
+	}
+#endif
 
 	void PhysicsManager::Add(PhysEntity* aPhysEntity)
 	{
@@ -171,6 +204,29 @@ namespace Prism
 		while (!myScene->fetchResults())
 		{
 			// do something useful..
+		}
+
+		for (int i = 0; i < myMoveJobs[0].Size(); ++i)
+		{
+			Move(myMoveJobs[0][i]);
+		}
+
+		if (myMoveJobs[0].Size() > 0)
+		{
+			const physx::PxExtendedVec3& pos = myControllerManager->getController(myMoveJobs[0][0].myId)->getFootPosition();
+			myPlayerPosition.x = float(pos.x);
+			myPlayerPosition.y = float(pos.y);
+			myPlayerPosition.z = float(pos.z);
+		}
+
+		myMoveJobs[0].RemoveAll();
+
+		for (int i = 0; i < myPhysEntities.Size(); ++i)
+		{
+			if (myPhysEntities[i]->GetPhysicsType() == ePhysics::DYNAMIC)
+			{
+				myPhysEntities[i]->UpdateOrientation();
+			}
 		}
 
 		for (int i = 0; i < myRaycastJobs[0].Size(); ++i)
@@ -236,9 +292,15 @@ namespace Prism
 			{
 				myRaycastResults[0].Add(RaycastResult(nullptr, aRaycastJob.myNormalizedDirection, hitPosition, aRaycastJob.myFunctionToCall));
 			}
-			myRaycastResults[0].Add(RaycastResult(ent->GetEntity(), aRaycastJob.myNormalizedDirection, hitPosition, aRaycastJob.myFunctionToCall));
+			else
+			{
+				myRaycastResults[0].Add(RaycastResult(ent->GetEntity(), aRaycastJob.myNormalizedDirection, hitPosition, aRaycastJob.myFunctionToCall));
+			}
 		}
-		myRaycastResults[0].Add(RaycastResult(nullptr, aRaycastJob.myNormalizedDirection, hitPosition, aRaycastJob.myFunctionToCall));
+		else
+		{
+			myRaycastResults[0].Add(RaycastResult(nullptr, aRaycastJob.myNormalizedDirection, hitPosition, aRaycastJob.myFunctionToCall));
+		}
 	}
 
 	void PhysicsManager::onPvdConnected(physx::debugger::comm::PvdConnection&)
@@ -270,9 +332,15 @@ namespace Prism
 
 	void PhysicsManager::Move(int aId, const CU::Vector3<float>& aDirection, float aMinDisplacement, float aDeltaTime)
 	{
-		physx::PxControllerFilters filter;
-		myControllerManager->getController(aId)->move(physx::PxVec3(aDirection.x, aDirection.y, aDirection.z), aMinDisplacement, aDeltaTime, filter, nullptr);
+		myMoveJobs[0].Add(MoveJob(aId, aDirection, aMinDisplacement, aDeltaTime));
 		
+	}
+	void PhysicsManager::Move(const MoveJob& aMoveJob)
+	{
+		physx::PxControllerFilters filter;
+		myControllerManager->getController(aMoveJob.myId)->move(
+			physx::PxVec3(aMoveJob.myDirection.x, aMoveJob.myDirection.y, aMoveJob.myDirection.z)
+			, aMoveJob.myMinDisplacement, aMoveJob.myDeltaTime, filter, nullptr);
 	}
 
 	bool PhysicsManager::GetAllowedToJump(int aId)
@@ -291,9 +359,6 @@ namespace Prism
 
 	void PhysicsManager::GetPosition(int aId, CU::Vector3<float>& aPositionOut)
 	{
-		const physx::PxExtendedVec3& pos = myControllerManager->getController(aId)->getFootPosition();
-		aPositionOut.x = float(pos.x);
-		aPositionOut.y = float(pos.y);
-		aPositionOut.z = float(pos.z);
+		aPositionOut = myPlayerPosition;
 	}
 }

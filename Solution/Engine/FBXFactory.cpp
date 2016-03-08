@@ -389,7 +389,7 @@ namespace Prism
 			return myModels[aFilePath];
 		}
 #endif
-		CU::TimerManager::GetInstance()->StartTimer("LoadModel");
+		//CU::TimerManager::GetInstance()->StartTimer("LoadModel");
 		FBXData* found = 0;
 		for (FBXData* data : myFBXData)
 		{
@@ -430,17 +430,17 @@ namespace Prism
 		Model* returnModel = CreateModel(modelData);
 		myModels[aFilePath] = returnModel;
 
-		int elapsed = static_cast<int>(
-			CU::TimerManager::GetInstance()->StopTimer("LoadModel").GetMilliseconds());
+		//int elapsed = static_cast<int>(
+		//	CU::TimerManager::GetInstance()->StopTimer("LoadModel").GetMilliseconds());
 
-		if (elapsed > 700)
-		{
-			RESOURCE_LOG("FBX-Model \"%s\" took %d ms to load!!!", aFilePath, elapsed);
-		}
-		else
-		{
-			RESOURCE_LOG("FBX-Model \"%s\" took %d ms to load", aFilePath, elapsed);
-		}
+		//if (elapsed > 700)
+		//{
+		//	RESOURCE_LOG("FBX-Model \"%s\" took %d ms to load!!!", aFilePath, elapsed);
+		//}
+		//else
+		//{
+		//	RESOURCE_LOG("FBX-Model \"%s\" took %d ms to load", aFilePath, elapsed);
+		//}
 
 		return returnModel;
 	}
@@ -454,7 +454,7 @@ namespace Prism
 		}
 #endif
 
-		CU::TimerManager::GetInstance()->StartTimer("LoadModelAnimated");
+		//CU::TimerManager::GetInstance()->StartTimer("LoadModelAnimated");
 		FBXData* found = 0;
 		for (FBXData* data : myFBXData)
 		{
@@ -495,17 +495,17 @@ namespace Prism
 		ModelAnimated* returnModel = CreateModelAnimated(aFilePath, modelData);
 		myModelsAnimated[aFilePath] = returnModel;
 
-		int elapsed = static_cast<int>(
-			CU::TimerManager::GetInstance()->StopTimer("LoadModelAnimated").GetMilliseconds());
+		//int elapsed = static_cast<int>(
+		//	CU::TimerManager::GetInstance()->StopTimer("LoadModelAnimated").GetMilliseconds());
 
-		if (elapsed > 700)
-		{
-			RESOURCE_LOG("Animated FBX-Model \"%s\" took %d ms to load!!!", aFilePath, elapsed);
-		}
-		else
-		{
-			RESOURCE_LOG("Animated FBX-Model \"%s\" took %d ms to load", aFilePath, elapsed);
-		}
+		//if (elapsed > 700)
+		//{
+		//	RESOURCE_LOG("Animated FBX-Model \"%s\" took %d ms to load!!!", aFilePath, elapsed);
+		//}
+		//else
+		//{
+		//	RESOURCE_LOG("Animated FBX-Model \"%s\" took %d ms to load", aFilePath, elapsed);
+		//}
 
 		return returnModel;
 	}
@@ -517,7 +517,7 @@ namespace Prism
 			return myAnimations[aFilePath];
 		}
 
-		CU::TimerManager::GetInstance()->StartTimer("LoadAnimationFBX");
+		//CU::TimerManager::GetInstance()->StartTimer("LoadAnimationFBX");
 		FBXData* found = 0;
 		for (FBXData* data : myFBXData)
 		{
@@ -554,9 +554,9 @@ namespace Prism
 
 		DL_ASSERT_EXP(animation != nullptr, "Failed to load animation, please tell Niklas or Daniel");
 
-		int elapsed = static_cast<int>(
-			CU::TimerManager::GetInstance()->StopTimer("LoadAnimationFBX").GetMilliseconds());
-		RESOURCE_LOG("FBX-Animation \"%s\" took %d ms to load", aFilePath, elapsed);
+		//int elapsed = static_cast<int>(
+		//	CU::TimerManager::GetInstance()->StopTimer("LoadAnimationFBX").GetMilliseconds());
+		//RESOURCE_LOG("FBX-Animation \"%s\" took %d ms to load", aFilePath, elapsed);
 		return animation;
 	}
 
@@ -579,7 +579,7 @@ namespace Prism
 
 	void FBXFactory::ConvertToDGFX(const char* aInputPath, const char* aOutputPath, CU::GrowingArray<std::string>& someOutErrors)
 	{
-		CU::TimerManager::GetInstance()->StartTimer("ConvertDGFX");
+		//CU::TimerManager::GetInstance()->StartTimer("ConvertDGFX");
 
 		FBXData* data = new FBXData();
 		FbxModelData* fbxModelData = myLoader->loadModel(aInputPath, someOutErrors);
@@ -594,9 +594,9 @@ namespace Prism
 		SaveModelToFile(fbxModelData, file);
 		file.close();
 
-		int elapsed = static_cast<int>(
-			CU::TimerManager::GetInstance()->StopTimer("ConvertDGFX").GetMilliseconds());
-		RESOURCE_LOG("Converting FBX->DGFX \"%s\" took %d ms", aOutputPath, elapsed);
+		//int elapsed = static_cast<int>(
+		//	CU::TimerManager::GetInstance()->StopTimer("ConvertDGFX").GetMilliseconds());
+		//RESOURCE_LOG("Converting FBX->DGFX \"%s\" took %d ms", aOutputPath, elapsed);
 
 		delete data;
 	}

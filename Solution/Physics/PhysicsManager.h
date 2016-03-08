@@ -12,6 +12,11 @@
 
 class Entity;
 
+namespace CU
+{
+	class TimerManager;
+}
+
 namespace physx
 {
 	class PxDefaultCpuDispatcher;
@@ -27,6 +32,9 @@ namespace Prism
 		PhysicsManager();
 		~PhysicsManager();
 
+#ifdef THREAD_PHYSICS
+		void InitThread();
+#endif
 		void Add(PhysEntity* aPhysEntity);
 		void SwapOrientations();
 
@@ -45,6 +53,12 @@ namespace Prism
 		void GetPosition(int aId, CU::Vector3<float>& aPositionOut);
 
 	private:
+#ifdef THREAD_PHYSICS
+		CU::TimerManager* myTimerManager;
+		void ThreadUpdate();
+		std::thread* myPhysicsThread;
+		volatile bool myQuit;
+#endif
 		struct RaycastJob
 		{
 			RaycastJob() {}
@@ -78,6 +92,23 @@ namespace Prism
 		};
 		CU::GrowingArray<RaycastResult> myRaycastResults[2];
 
+		struct MoveJob
+		{
+			MoveJob() {}
+			MoveJob(int aId, const CU::Vector3<float>& aDirection, float aMinDisplacement, float aDeltaTime)
+				: myId(aId)
+				, myDirection(aDirection)
+				, myMinDisplacement(aMinDisplacement)
+				, myDeltaTime(aDeltaTime)
+			{}
+			int myId;
+			CU::Vector3<float> myDirection;
+			float myMinDisplacement;
+			float myDeltaTime;
+		};
+		CU::GrowingArray<MoveJob> myMoveJobs[2];
+		void Move(const MoveJob& aMoveJob);
+
 		CU::GrowingArray<PhysEntity*> myPhysEntities;
 
 		void onPvdSendClassDescriptions(physx::debugger::comm::PvdConnection&) override{}
@@ -96,5 +127,7 @@ namespace Prism
 		physx::PxDefaultCpuDispatcher* myCpuDispatcher;
 		physx::debugger::comm::PvdConnection* myDebugConnection;
 		physx::PxCooking* myCooker;
+
+		CU::Vector3<float> myPlayerPosition;
 	};
 }

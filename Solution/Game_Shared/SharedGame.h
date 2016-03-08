@@ -1,4 +1,10 @@
 #pragma once
+
+namespace CU
+{
+	class TimerManager;
+}
+
 class SharedGame
 {
 public:
@@ -10,5 +16,6 @@ public:
 	virtual bool Update() = 0;
 
 protected:
+	CU::TimerManager* myTimerManager;
 };
 

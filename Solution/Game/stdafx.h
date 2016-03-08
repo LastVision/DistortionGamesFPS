@@ -4,6 +4,7 @@
 
 #include <CommonHelper.h>
 #include <DebugDrawer.h>
+#include <Defines.h>
 #include <DL_Debug.h>
 #include <Engine.h>
 #include <GameEnum.h>

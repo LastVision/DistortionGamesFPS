@@ -66,7 +66,6 @@ ClientGame::~ClientGame()
 	Prism::StreakDataContainer::Destroy();
 	Prism::ParticleDataContainer::Destroy();
 	CU::InputWrapper::Destroy();
-	CU::TimerManager::Destroy();
 	Console::Destroy();
 	myStateStack.Clear();
 	Prism::DebugDrawer::Destroy();
@@ -106,9 +105,12 @@ bool ClientGame::Destroy()
 bool ClientGame::Update()
 {
 	CU::InputWrapper::GetInstance()->Update();
-	CU::TimerManager::GetInstance()->Update();
+	myTimerManager->Update();
 	Prism::Audio::AudioInterface::GetInstance()->Update();
-	float deltaTime = CU::TimerManager::GetInstance()->GetMasterTimer().GetTime().GetFrameTime();
+	
+	float deltaTime = myTimerManager->GetMasterTimer().GetTime().GetFrameTime();
+	Prism::Engine::GetInstance()->Update(deltaTime);
+
 	float fps = 1.f / deltaTime;
 	DEBUG_PRINT(fps);
 	float frameTime = deltaTime * 1000;
@@ -141,7 +143,7 @@ bool ClientGame::Update()
 
 	myStateStack.RenderCurrentState();
 
-	CU::TimerManager::GetInstance()->CapFrameRate(60.f);
+	myTimerManager->CapFrameRate(60.f);
 	myCursor->Update();
 	myCursor->Render();
 	
