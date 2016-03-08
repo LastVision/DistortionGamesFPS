@@ -143,8 +143,6 @@ namespace Prism
 	PhysicsManager::~PhysicsManager()
 	{
 #ifdef THREAD_PHYSICS
-		myQuit = true;
-		myPhysicsThread->join();
 		SAFE_DELETE(myPhysicsThread);
 		SAFE_DELETE(myTimerManager);
 #endif
@@ -161,12 +159,21 @@ namespace Prism
 		myFoundation->release();
 	}
 
+
 #ifdef THREAD_PHYSICS
 	void PhysicsManager::InitThread()
 	{
 		myPhysicsThread = new std::thread(&PhysicsManager::ThreadUpdate, this);
 
 		CU::SetThreadName(myPhysicsThread->get_id(), "Physics thread");
+	}
+
+	void PhysicsManager::ShutdownThread()
+	{
+		myQuit = true;
+		myLogicDone = true;
+		mySwapDone = true;
+		myPhysicsThread->join();
 	}
 
 	void PhysicsManager::ThreadUpdate()

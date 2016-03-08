@@ -15,6 +15,7 @@ namespace Prism
 		static PhysicsInterface* GetInstance();
 #ifdef THREAD_PHYSICS
 		void InitThread();
+		void ShutdownThread();
 #endif
 		// Requires PhysX includes!!
 		PhysicsManager* GetManager() const;

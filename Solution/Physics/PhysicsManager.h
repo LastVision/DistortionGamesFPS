@@ -34,6 +34,7 @@ namespace Prism
 
 #ifdef THREAD_PHYSICS
 		void InitThread();
+		void ShutdownThread();
 #endif
 		void Add(PhysEntity* aPhysEntity);
 		void Swap();

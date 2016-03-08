@@ -65,6 +65,10 @@ ClientLevel::ClientLevel()
 
 ClientLevel::~ClientLevel()
 {
+#ifdef THREAD_PHYSICS
+	Prism::PhysicsInterface::GetInstance()->ShutdownThread();
+#endif
+
 	SAFE_DELETE(myEmitterManager);
 	PostMaster::GetInstance()->UnSubscribe(eMessageType::NETWORK_ADD_PLAYER, this);
 	PostMaster::GetInstance()->UnSubscribe(eMessageType::NETWORK_ADD_ENEMY, this);

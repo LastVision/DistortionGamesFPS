@@ -31,6 +31,10 @@ namespace Prism
 	{
 		myManager->InitThread();
 	}
+	void PhysicsInterface::ShutdownThread()
+	{
+		myManager->ShutdownThread();
+	}
 #endif
 
 	void PhysicsInterface::EndFrame()
