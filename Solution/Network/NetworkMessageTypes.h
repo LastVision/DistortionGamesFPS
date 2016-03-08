@@ -13,6 +13,8 @@ enum class eNetMessageType
 	POSITION,
 	ADD_ENEMY,
 	
+	PLAYER_ON_HIT,
+	ENEMY_ON_HIT,
 };
 
 struct Buffer

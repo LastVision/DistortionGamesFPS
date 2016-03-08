@@ -2,6 +2,11 @@
 #include <functional>
 #include <Vector.h>
 
+namespace physx
+{
+	class PxSimulationEventCallback;
+}
+
 class Entity;
 
 namespace Prism
@@ -28,6 +33,8 @@ namespace Prism
 		bool GetAllowedToJump(int aId);
 		void SetPosition(int aId, const CU::Vector3<float>& aPosition);
 		void GetPosition(int aId, CU::Vector3<float>& aPositionOut);
+
+		void SubscribeToTriggers(physx::PxSimulationEventCallback* aSubscriber);
 
 	private:
 		PhysicsInterface();

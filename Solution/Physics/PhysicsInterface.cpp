@@ -74,6 +74,11 @@ namespace Prism
 		myManager->GetPosition(aId, aPositionOut);
 	}
 
+	void PhysicsInterface::SubscribeToTriggers(physx::PxSimulationEventCallback* aSubscriber)
+	{
+		myManager->SubscribeToTriggers(aSubscriber);
+	}
+
 	PhysicsInterface::PhysicsInterface()
 	{
 		myManager = new PhysicsManager();

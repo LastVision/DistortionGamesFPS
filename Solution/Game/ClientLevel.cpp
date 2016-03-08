@@ -27,6 +27,7 @@
 #include <PointLight.h>
 
 #include <PhysEntity.h>
+#include <PhysicsInterface.h>
 #include <PostMaster.h>
 
 #include "EmitterManager.h"
@@ -78,19 +79,6 @@ ClientLevel::~ClientLevel()
 	Prism::Audio::AudioInterface::GetInstance()->PostEvent("StopBackground", 0);
 	Prism::Audio::AudioInterface::GetInstance()->PostEvent("StopFirstLayer", 0);
 	Prism::Audio::AudioInterface::GetInstance()->PostEvent("StopSecondLayer", 0);
-}
-
-void ClientLevel::onTrigger(physx::PxTriggerPair *pairs, physx::PxU32 count)
-{
-	for (physx::PxU32 i = 0; i < count; i++)
-	{
-		const physx::PxTriggerPair& cp = pairs[i];
-
-		//if (pairs->triggerActor == myPlayer
-		//{
-		//
-		//}
-	}
 }
 
 void ClientLevel::Update(const float aDeltaTime)
