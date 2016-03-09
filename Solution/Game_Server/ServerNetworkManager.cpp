@@ -205,6 +205,19 @@ void ServerNetworkManager::HandleMessage(const NetMessageConnectMessage& aMessag
 	CreateConnection(aMessage.myName, aSenderAddress);
 }
 
+void ServerNetworkManager::HandleMessage(const NetMessageDisconnect& aMessage, const sockaddr_in& aSenderAddress)
+{
+	aSenderAddress;
+	for (Connection c : myClients)
+	{
+		if (c.myID == aMessage.myClientID)
+		{
+			DisconnectConnection(c);
+			break;
+		}
+	}
+}
+
 void ServerNetworkManager::HandleMessage(const NetMessagePingReply& aMessage, const sockaddr_in& aSenderAddress)
 {
 	__super::HandleMessage(aMessage, aSenderAddress);

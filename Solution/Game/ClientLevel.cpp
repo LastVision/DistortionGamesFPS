@@ -21,6 +21,7 @@
 
 #include <NetMessageOnJoin.h>
 #include <NetMessageConnectMessage.h>
+#include <NetMessageDisconnect.h>
 #include <NetMessageOnHit.h>
 
 #include <NetworkAddPlayerMessage.h>
@@ -110,7 +111,10 @@ void ClientLevel::Update(const float aDeltaTime)
 	{
 		ClientNetworkManager::GetInstance()->AddMessage(NetMessageOnHit(eNetMessageType::PLAYER_ON_HIT, 5.f, 2));
 	}
-
+	if (CU::InputWrapper::GetInstance()->KeyDown(DIK_I))
+	{
+		ClientNetworkManager::GetInstance()->AddMessage(NetMessageDisconnect(ClientNetworkManager::GetInstance()->GetNetworkID()));
+	}
 
 	unsigned short ms = ClientNetworkManager::GetInstance()->GetResponsTime();
 	float kbs = static_cast<float>(ClientNetworkManager::GetInstance()->GetDataSent());

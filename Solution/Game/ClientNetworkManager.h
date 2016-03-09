@@ -17,6 +17,7 @@ public:
 	const CU::GrowingArray<OtherClients>& GetClients();
 	//void Update(float aDelta) override;
 	void ReceiveMessage(const NetworkSendPositionMessage& aMessage) override;
+	void ReceiveMessage(const NetworkOnDisconnectMessage& aMessage) override;
 
 private:
 	ClientNetworkManager();
