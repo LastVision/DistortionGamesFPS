@@ -87,7 +87,9 @@
     <ClCompile Include="ShootingComponent.cpp">
       <Filter>Component</Filter>
     </ClCompile>
-    <ClCompile Include="FirstPersonRenderComponent.cpp" />
+    <ClCompile Include="FirstPersonRenderComponent.cpp">
+      <Filter>Component</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
@@ -180,9 +182,11 @@
     <ClInclude Include="ShootingComponentData.h">
       <Filter>EntityFactory\EntityData\ComponentData</Filter>
     </ClInclude>
-    <ClInclude Include="FirstPersonRenderComponent.h" />
     <ClInclude Include="FirstPersonRenderComponentData.h">
       <Filter>EntityFactory\EntityData\ComponentData</Filter>
+    </ClInclude>
+    <ClInclude Include="FirstPersonRenderComponent.h">
+      <Filter>Component</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
