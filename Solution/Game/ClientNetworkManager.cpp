@@ -16,16 +16,19 @@
 #include <NetworkRemovePlayer.h>
 #include <NetworkAddEnemyMessage.h>
 #include <NetworkSetPositionMessage.h>
+#include <NetworkSendPositionMessage.h>
 #define BUFFERSIZE 512
 
 ClientNetworkManager* ClientNetworkManager::myInstance = nullptr;
 
 ClientNetworkManager::ClientNetworkManager()
 {
+	PostMaster::GetInstance()->Subscribe(eMessageType::NETWORK_SEND_POSITION, this);
 }
 
 ClientNetworkManager::~ClientNetworkManager()
 {
+	PostMaster::GetInstance()->UnSubscribe(eMessageType::NETWORK_SEND_POSITION, this);
 	myMainIsDone = true;
 	myReceieveIsDone = true;
 	myIsRunning = false;
@@ -140,6 +143,15 @@ const CU::GrowingArray<OtherClients>& ClientNetworkManager::GetClients()
 	return myClients;
 }
 
+void ClientNetworkManager::ReceiveMessage(const NetworkSendPositionMessage& aMessage)
+{
+	NetMessagePosition toSend;
+	toSend.mySenderID = myNetworkID;
+	toSend.myPosition = aMessage.myPosition;
+	toSend.myNetworkID = aMessage.myNetworkID;
+	AddMessage(toSend);
+}
+
 void ClientNetworkManager::HandleMessage(const NetMessagePingRequest& aMessage, const sockaddr_in& aSenderAddress)
 {
 	aMessage;
@@ -158,7 +170,7 @@ void ClientNetworkManager::HandleMessage(const NetMessageDisconnect& aMessage, c
 	{
 		MessageBox(NULL, "You have been disconnected!", "Connection Lost!", MB_ICONERROR | MB_OK);
 	}
-	else 
+	else
 	{
 		PostMaster::GetInstance()->SendMessage(NetworkRemovePlayerMessage(aMessage.myClientID));
 	}
@@ -171,8 +183,8 @@ void ClientNetworkManager::HandleMessage(const NetMessageConnectMessage& aMessag
 	if (aMessage.myOtherClientID != myNetworkID)
 	{
 		myClients.Add(OtherClients(aMessage.myOtherClientID));
-		PostMaster::GetInstance()->SendMessage(NetworkAddPlayerMessage(aMessage.myOtherClientID));
 	}
+	PostMaster::GetInstance()->SendMessage(NetworkAddPlayerMessage(aMessage.myOtherClientID));
 }
 
 void ClientNetworkManager::HandleMessage(const NetMessageOnJoin& aMessage, const sockaddr_in& aSenderAddress)
@@ -196,7 +208,7 @@ void ClientNetworkManager::HandleMessage(const NetMessageOnJoin& aMessage, const
 void ClientNetworkManager::HandleMessage(const NetMessagePosition& aMessage, const sockaddr_in& aSenderAddress)
 {
 	aSenderAddress;
-	PostMaster::GetInstance()->SendMessage(NetworkSetPositionMessage(aMessage.myPosition,aMessage.myNetworkID));
+	PostMaster::GetInstance()->SendMessage(NetworkSetPositionMessage(aMessage.myPosition, aMessage.myNetworkID));
 }
 
 void ClientNetworkManager::HandleMessage(const NetMessageAddEnemy& aMessage, const sockaddr_in& aSenderAddress)

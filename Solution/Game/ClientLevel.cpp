@@ -56,7 +56,7 @@ ClientLevel::ClientLevel()
 	EntityData data;
 	data.myInputData.myExistsInEntity = true;
 	//myPlayer = new Entity(data, myScene, true, CU::Vector3<float>(), CU::Vector3<float>(), CU::Vector3<float>(1.f, 1.f, 1.f));
-	myPlayer = EntityFactory::GetInstance()->CreateEntity(eEntityType::UNIT, "player", myScene, true, CU::Vector3<float>());
+	myPlayer = EntityFactory::GetInstance()->CreateEntity(eEntityType::UNIT, "localplayer", myScene, true, CU::Vector3<float>());
 	myScene->SetCamera(*myPlayer->GetComponent<InputComponent>()->GetCamera());
 
 	//myTempPosition = { 835.f, 0.f, -1000.f };
@@ -144,16 +144,22 @@ void ClientLevel::Render()
 
 void ClientLevel::ReceiveMessage(const NetworkAddPlayerMessage& aMessage)
 {
-	aMessage;
-	bool isRunTime = Prism::MemoryTracker::GetInstance()->GetRunTime();
-	Prism::MemoryTracker::GetInstance()->SetRunTime(false);
-	Entity* newPlayer = EntityFactory::CreateEntity(eEntityType::UNIT, "player", myScene, true, { 0.f, 0.f, 0.f });
-	newPlayer->GetComponent<NetworkComponent>()->SetNetworkID(aMessage.myNetworkID);
-	newPlayer->GetComponent<NetworkComponent>()->SetPlayer(true);
-	newPlayer->AddToScene();
-	newPlayer->Reset();
-	myPlayers.Add(newPlayer);
-	Prism::MemoryTracker::GetInstance()->SetRunTime(isRunTime);
+	if (aMessage.myNetworkID == ClientNetworkManager::GetInstance()->GetNetworkID())
+	{
+		myPlayer->GetComponent<InputComponent>()->SetNetworkID(aMessage.myNetworkID);
+	}
+	else 
+	{
+		bool isRunTime = Prism::MemoryTracker::GetInstance()->GetRunTime();
+		Prism::MemoryTracker::GetInstance()->SetRunTime(false);
+		Entity* newPlayer = EntityFactory::CreateEntity(eEntityType::UNIT, "player", myScene, true, { 0.f, 0.f, 0.f });
+		newPlayer->GetComponent<NetworkComponent>()->SetNetworkID(aMessage.myNetworkID);
+		newPlayer->GetComponent<NetworkComponent>()->SetPlayer(true);
+		newPlayer->AddToScene();
+		newPlayer->Reset();
+		myPlayers.Add(newPlayer);
+		Prism::MemoryTracker::GetInstance()->SetRunTime(isRunTime);
+	}
 }
 
 void ClientLevel::ReceiveMessage(const NetworkRemovePlayerMessage& aMessage)

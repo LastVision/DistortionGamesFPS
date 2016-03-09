@@ -29,6 +29,7 @@ public:
 
 	const CU::Matrix44<float>& GetEyeOrientation() const;
 
+	void SetNetworkID(const unsigned short aNetworkID);
 private:
 	Movement* myMovement;
 	Prism::Camera* myCamera;
@@ -43,6 +44,7 @@ private:
 	bool myAlive;
 	CU::Vector3<float> mySpawnPosition;
 
+	unsigned short myNetworkID;
 };
 
 inline eComponentType InputComponent::GetTypeStatic()
@@ -60,3 +62,7 @@ inline const CU::Matrix44<float>& InputComponent::GetEyeOrientation() const
 	return myEyeOrientation;
 }
 
+inline void InputComponent::SetNetworkID(const unsigned short aNetworkID)
+{
+	myNetworkID = aNetworkID;
+}

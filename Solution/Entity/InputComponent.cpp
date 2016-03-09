@@ -2,18 +2,20 @@
 
 #include <Camera.h>
 #include "DamageNote.h"
-//#include <ClientNetworkManager.h>
 #include "FirstPersonRenderComponent.h"
 #include "InputComponent.h"
 #include <InputWrapper.h>
 #include "Movement.h"
-//#include <NetMessagePosition.h>
+#include "NetworkComponent.h"
+#include <NetworkSendPositionMessage.h>
+#include <PostMaster.h>
 #include "ShootingComponent.h"
 #include <XMLReader.h>
 
 InputComponent::InputComponent(Entity& anEntity)
 	: myAlive(true)
 	, Component(anEntity)
+	, myNetworkID(0)
 {
 	XMLReader reader;
 	reader.OpenDocument("Data/Setting/SET_player.xml");
@@ -30,7 +32,7 @@ InputComponent::InputComponent(Entity& anEntity)
 	myMovement = new Movement(myOrientation, reader, movementElement);
 	mySpawnPosition = myOrientation.GetPos();
 	reader.CloseDocument();
-	
+
 
 	myJumpAcceleration = 0;
 	myJumpOffset = 0;
@@ -77,7 +79,7 @@ void InputComponent::Update(float aDelta)
 	myEyeOrientation.SetPos(position);
 
 	//myShooting->Update(aDelta, myEyeOrientation);
-	
+
 	CU::Vector3<float> playerPos(myOrientation.GetPos());
 	DEBUG_PRINT(playerPos);
 
@@ -85,9 +87,9 @@ void InputComponent::Update(float aDelta)
 	mySendTime -= aDelta;
 	if (mySendTime < 0.f)
 	{
-		if (myOrientation.GetPos().x != prevPos.x || myOrientation.GetPos().y != prevPos.y || myOrientation.GetPos().z != prevPos.z)
+		if (myNetworkID != 0 && (myOrientation.GetPos().x != prevPos.x || myOrientation.GetPos().y != prevPos.y || myOrientation.GetPos().z != prevPos.z))
 		{
-		//	ClientNetworkManager::GetInstance()->AddMessage(NetMessagePosition(myOrientation.GetPos(), ClientNetworkManager::GetInstance()->GetNetworkID()));
+			PostMaster::GetInstance()->SendMessage(NetworkSendPositionMessage(myOrientation.GetPos(), myNetworkID));
 			mySendTime = 1 / 30.f;
 		}
 	}

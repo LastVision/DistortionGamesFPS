@@ -1,7 +1,8 @@
 #pragma once
 #include "../Game_Shared/SharedNetworkManager.h"
+#include <Subscriber.h>
 class ClientNetwork;
-class ClientNetworkManager : public SharedNetworkManager
+class ClientNetworkManager : public SharedNetworkManager, public Subscriber
 {
 public:
 
@@ -15,6 +16,8 @@ public:
 	unsigned int GetNetworkID() const;
 	const CU::GrowingArray<OtherClients>& GetClients();
 	//void Update(float aDelta) override;
+	void ReceiveMessage(const NetworkSendPositionMessage& aMessage) override;
+
 private:
 	ClientNetworkManager();
 	~ClientNetworkManager();
@@ -30,6 +33,7 @@ private:
 	void HandleMessage(const NetMessageAddEnemy& aMessage, const sockaddr_in& aSenderAddress) override;
 	void ReceieveThread() override;
 	void SendThread() override;
+
 
 	CU::GrowingArray<OtherClients> myClients;
 

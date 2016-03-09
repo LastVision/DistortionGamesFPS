@@ -86,12 +86,12 @@ Entity::Entity(const EntityData& aEntityData, Prism::Scene* aScene, bool aClient
 		myComponents[static_cast<int>(eComponentType::SHOOTING)] = new ShootingComponent(*this, aScene);
 	}
 
-	if (aEntityData.myInputData.myExistsInEntity == true)
+	if (aEntityData.myInputData.myExistsInEntity == true && myIsClientSide == true)
 	{
 		myComponents[static_cast<int>(eComponentType::INPUT)] = new InputComponent(*this);
 	}
 
-	if (aEntityData.myFirstPersonRenderData.myExistsInEntity == true)
+	if (aEntityData.myFirstPersonRenderData.myExistsInEntity == true && myIsClientSide == true)
 	{
 		myComponents[static_cast<int>(eComponentType::FIRST_PERSON_RENDER)] = new FirstPersonRenderComponent(*this, aScene);
 	}
