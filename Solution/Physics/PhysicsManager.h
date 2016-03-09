@@ -10,8 +10,10 @@
 #include <characterkinematic\PxControllerManager.h>
 #include <cooking\PxCooking.h>
 #include <Vector.h>
+#include <Matrix44.h>
 
 class Entity;
+struct PhysEntityData;
 
 namespace CU
 {
@@ -22,6 +24,8 @@ namespace physx
 {
 	class PxDefaultCpuDispatcher;
 	class PxRigidDynamic;
+	class PxTriangleMesh;
+	class PxActor;
 }
 
 namespace Prism
@@ -72,6 +76,12 @@ namespace Prism
 		bool GetAllowedToJump(int aId);
 		void SetPosition(int aId, const CU::Vector3<float>& aPosition);
 		void GetPosition(int aId, CU::Vector3<float>& aPositionOut);
+
+		void Create(PhysEntity* aEntity, const PhysEntityData& aPhysData
+			, const CU::Matrix44<float>& aOrientation, const std::string& aFBXPath
+			, physx::PxRigidDynamic** aDynamicBodyOut, physx::PxRigidStatic** aStaticBodyOut
+			, physx::PxShape*** someShapesOut);
+		void Remove(physx::PxActor* aActor);
 
 	private:
 #ifdef THREAD_PHYSICS
@@ -193,6 +203,7 @@ namespace Prism
 
 		CU::GrowingArray<PhysEntity*> myPhysEntities;
 
+		physx::PxTriangleMesh* GetPhysMesh(const std::string& aFBXPath);
 		void onPvdSendClassDescriptions(physx::debugger::comm::PvdConnection&) override{}
 		void onPvdConnected(physx::debugger::comm::PvdConnection& connection) override;
 		void onPvdDisconnected(physx::debugger::comm::PvdConnection& connection) override;

@@ -110,6 +110,19 @@ namespace Prism
 		//myManager->SubscribeToTriggers(aSubscriber);
 	}
 
+	void PhysicsInterface::Create(PhysEntity* aEntity, const PhysEntityData& aPhysData
+		, const CU::Matrix44<float>& aOrientation, const std::string& aFBXPath
+		, physx::PxRigidDynamic** aDynamicBodyOut, physx::PxRigidStatic** aStaticBodyOut
+		, physx::PxShape*** someShapesOut)
+	{
+		myManager->Create(aEntity, aPhysData, aOrientation, aFBXPath, aDynamicBodyOut, aStaticBodyOut, someShapesOut);
+	}
+
+	void PhysicsInterface::Remove(physx::PxActor* aActor)
+	{
+		myManager->Remove(aActor);
+	}
+
 	PhysicsInterface::PhysicsInterface()
 	{
 		myManager = new PhysicsManager();
