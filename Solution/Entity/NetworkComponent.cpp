@@ -60,7 +60,7 @@ void NetworkComponent::Update(float aDelta)
 			//myServerPosition += aDelta * 5.f;
 			if (myIsPlayer == false)
 			{
-				if (myEntity.GetComponent<HealthComponent>()->GetHealth() > 0)
+				if (myEntity.GetComponent<HealthComponent>()->GetCurrentHealth() > 0)
 				{
 					if (myShouldReturn == false)
 					{

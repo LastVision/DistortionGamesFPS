@@ -1,14 +1,17 @@
 #include "stdafx.h"
 
 #include "AnimationComponent.h"
+#include "FirstPersonRenderComponent.h"
 #include "GraphicsComponent.h"
 #include "HealthComponent.h"
+#include "InputComponent.h"
 #include "NetworkComponent.h"
 #include "ProjectileComponent.h"
 #include <Scene.h>
 #include <Instance.h>
 #include <EmitterMessage.h>
 #include <PostMaster.h>
+#include "ShootingComponent.h"
 #include "TriggerComponent.h"
 
 #include <PhysEntity.h>
@@ -76,6 +79,23 @@ Entity::Entity(const EntityData& aEntityData, Prism::Scene* aScene, bool aClient
 	{
 		myComponents[static_cast<int>(eComponentType::TRIGGER)] = new TriggerComponent(*this, aEntityData.myTriggerData);
 	}
+
+
+	if (aEntityData.myShootingData.myExistsInEntity == true)
+	{
+		myComponents[static_cast<int>(eComponentType::SHOOTING)] = new ShootingComponent(*this, aScene);
+	}
+
+	if (aEntityData.myInputData.myExistsInEntity == true)
+	{
+		myComponents[static_cast<int>(eComponentType::INPUT)] = new InputComponent(*this);
+	}
+
+	if (aEntityData.myFirstPersonRenderData.myExistsInEntity == true)
+	{
+		myComponents[static_cast<int>(eComponentType::FIRST_PERSON_RENDER)] = new FirstPersonRenderComponent(*this, aScene);
+	}
+
 	
 
 	//myPhysEntity = new Prism::PhysEntity(&pos.x, aEntityData.myPhysData, myOrientation, aEntityData.myGraphicsData.myModelPath);

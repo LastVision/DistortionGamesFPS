@@ -1,7 +1,7 @@
 #include "stdafx.h"
 
-#include <DamageNote.h>
-#include <Entity.h>
+#include "DamageNote.h"
+#include "Entity.h"
 #include <EmitterMessage.h>
 #include <PostMaster.h>
 #include <PhysEntity.h>

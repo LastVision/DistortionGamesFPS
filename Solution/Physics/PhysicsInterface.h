@@ -1,6 +1,7 @@
 #pragma once
 #include <functional>
 #include <Vector.h>
+#include <Matrix44.h>
 
 namespace physx
 {
@@ -8,28 +9,33 @@ namespace physx
 }
 
 class Entity;
+struct PhysEntityData;
 
 namespace physx
 {
 	class PxRigidDynamic;
+	class PxRigidStatic;
+	class PxShape;
+	class PxActor;
 }
 
 namespace Prism
 {
 	class PhysicsManager;
+	class PhysEntity;
+
 	class PhysicsInterface
 	{
 	public:
 		static void Create();
 		static void Destroy();
 		static PhysicsInterface* GetInstance();
+
 #ifdef THREAD_PHYSICS
 		void InitThread();
 		void ShutdownThread();
 #endif
-		// Requires PhysX includes!!
-		PhysicsManager* GetManager() const;
-
+		
 		void EndFrame();
 
 		void RayCast(const CU::Vector3<float>& aOrigin, const CU::Vector3<float>& aNormalizedDirection, float aMaxRayDistance, std::function<void(Entity*, const CU::Vector3<float>&, const CU::Vector3<float>&)> aFunctionToCall);
@@ -45,7 +51,16 @@ namespace Prism
 
 		void SubscribeToTriggers(physx::PxSimulationEventCallback* aSubscriber);
 
+		void Create(PhysEntity* aEntity, const PhysEntityData& aPhysData
+			, float* aOrientation, const std::string& aFBXPath
+			, physx::PxRigidDynamic** aDynamicBodyOut, physx::PxRigidStatic** aStaticBodyOut
+			, physx::PxShape*** someShapesOut);
+		void Remove(physx::PxActor* aActor);
+
 	private:
+		// Requires PhysX includes!!
+		PhysicsManager* GetManager() const;
+
 		PhysicsInterface();
 		~PhysicsInterface();
 		PhysicsManager* myManager;

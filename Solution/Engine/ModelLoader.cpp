@@ -84,7 +84,7 @@ namespace Prism
 	{
 		std::ifstream file;
 		file.open("GeneratedData/modelcount.bin");
-		DL_ASSERT_EXP(file.is_open(), "Failed to open modelcount.bin, did you run Terrain-Tool?");
+		DL_ASSERT_EXP(file.is_open(), "Failed to open modelcount.bin, did you run the DGFX-Tool?");
 		if (file.is_open())
 		{
 			std::string name;

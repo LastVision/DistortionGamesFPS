@@ -54,9 +54,9 @@ int main(int argC,      // Number of strings in array argv
 	char *argV[],   // Array of command-line argument strings
 	char *envP[])
 {
-	bool convertDGFX = true;
+	bool convertDGFX = false;
 	bool calcCollisionRadius = false;
-	bool createTerrainAndNavMesh = true;
+	bool readLevel = false;
 	for (int i = 0; i < argC; ++i)
 	{
 		std::string command(argV[i]);
@@ -69,16 +69,28 @@ int main(int argC,      // Number of strings in array argv
 		{
 			calcCollisionRadius = true;
 		}
-		else if (command == "-createterrainandnavmesh")
+		else if (command == "-readlevel")
 		{
-			createTerrainAndNavMesh = true;
+			readLevel = true;
 		}
 	}
 
 	DL_Debug::Debug::Create();
-	CU::TimerManager::Create();
+	//CU::TimerManager::Create();
 	
 	IReader* reader;
+
+	if (calcCollisionRadius)
+	{
+		std::cout << "---| Calculating CollisionRadius |---\n" << std::endl;
+
+		reader = new CalcRadiusReader();
+
+		find_directory("Data", *reader);
+		delete reader;
+
+		std::cout << "---| CollisionRadius Done |---\n" << std::endl;
+	}
 
 	if (convertDGFX == true)
 	{
@@ -93,37 +105,19 @@ int main(int argC,      // Number of strings in array argv
 		std::cout << "---| DGFX Converting Done |---\n" << std::endl;
 	}
 
-	if (calcCollisionRadius)
+	if (readLevel)
 	{
-		std::cout << "---| Calculating CollisionRadius |---\n" << std::endl;
-
-		reader = new CalcRadiusReader();
-
-		find_directory("Data", *reader);
-		delete reader;
-
-		std::cout << "---| CollisionRadius Done |---\n" << std::endl;
-	}
-
-	if (createTerrainAndNavMesh)
-	{
-		/*std::cout << "---| Creating Terrain and NavMesh|---\n" << std::endl;
-
-		reader = new TerrainReader();
-
-		reader->ReadFile("Data/Level/LI_level.xml");
-
-		delete reader;*/
+		std::cout << "\n---| Reading Level |---\n" << std::endl;
 
 		reader = new LevelReader();
 		reader->ReadFile("Data/Level/LI_level.xml");
 		delete reader;
 
-		std::cout << "\n---| Terrain and NavMesh Done |---\n" << std::endl;
+		std::cout << "\n---| Level Reading Done |---\n" << std::endl;
 	}
 	
 
-	CU::TimerManager::Destroy();
+	//CU::TimerManager::Destroy();
 	DL_Debug::Debug::Destroy();
 
 	return EXIT_SUCCESS;

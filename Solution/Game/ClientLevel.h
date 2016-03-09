@@ -3,7 +3,7 @@
 #include <Matrix.h>
 #include <NetworkMessageTypes.h>
 #include <SharedLevel.h>
-class Player;
+
 
 namespace Prism
 {
@@ -43,7 +43,7 @@ private:
 	CU::GrowingArray<CU::Matrix44f> myInstanceOrientations;
 	CU::GrowingArray<Prism::PointLight*> myPointLights;
 
-	Player* myPlayer;
+	Entity* myPlayer;
 	EmitterManager* myEmitterManager;
 
 };

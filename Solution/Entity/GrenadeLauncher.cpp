@@ -1,8 +1,8 @@
 #include "stdafx.h"
 
-#include <DamageNote.h>
-#include <Entity.h>
-#include <EntityFactory.h>
+#include "DamageNote.h"
+#include "Entity.h"
+#include "EntityFactory.h"
 #include "GrenadeLauncher.h"
 #include <PhysEntity.h>
 #include <PhysicsInterface.h>

@@ -70,25 +70,25 @@
     <OutDir>$(SolutionDir)..\Libs\</OutDir>
     <IntDir>$(SolutionDir)..\temp\$(ProjectName)\</IntDir>
     <TargetName>$(ProjectName)_$(Configuration)</TargetName>
-    <IncludePath>$(SolutionDir)\Physics;$(SolutionDir)\Memory;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)\Physics;$(SolutionDir)\Memory;$(SolutionDir)\GUI;$(SolutionDir)\InputWrapper;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <OutDir>$(SolutionDir)..\Libs\</OutDir>
     <IntDir>$(SolutionDir)..\temp\$(ProjectName)\</IntDir>
     <TargetName>$(ProjectName)_$(Configuration)</TargetName>
-    <IncludePath>$(SolutionDir)\Physics;$(SolutionDir)\Memory;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)\Physics;$(SolutionDir)\Memory;$(SolutionDir)\GUI;$(SolutionDir)\InputWrapper;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Internal|Win32'">
     <OutDir>$(SolutionDir)..\Libs\</OutDir>
     <IntDir>$(SolutionDir)..\temp\$(ProjectName)\</IntDir>
     <TargetName>$(ProjectName)_$(Configuration)</TargetName>
-    <IncludePath>$(SolutionDir)\Physics;$(SolutionDir)\Memory;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)\Physics;$(SolutionDir)\Memory;$(SolutionDir)\GUI;$(SolutionDir)\InputWrapper;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DataExporter|Win32'">
     <OutDir>$(SolutionDir)..\Libs\</OutDir>
     <IntDir>$(SolutionDir)..\temp\$(ProjectName)\</IntDir>
     <TargetName>$(ProjectName)_$(Configuration)</TargetName>
-    <IncludePath>$(SolutionDir)\Physics;$(SolutionDir)\Memory;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)\Physics;$(SolutionDir)\Memory;$(SolutionDir)\GUI;$(SolutionDir)\InputWrapper;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -168,20 +168,30 @@
     <ClInclude Include="Entity.h" />
     <ClInclude Include="EntityData.h" />
     <ClInclude Include="EntityFactory.h" />
+    <ClInclude Include="FirstPersonRenderComponent.h" />
+    <ClInclude Include="FirstPersonRenderComponentData.h" />
     <ClInclude Include="GraphicsComponent.h" />
     <ClInclude Include="GraphicsComponentData.h" />
+    <ClInclude Include="GrenadeLauncher.h" />
     <ClInclude Include="HealthComponent.h" />
     <ClInclude Include="HealthComponentData.h" />
     <ClInclude Include="InputComponent.h" />
+    <ClInclude Include="InputComponentData.h" />
+    <ClInclude Include="Movement.h" />
     <ClInclude Include="NetworkComponent.h" />
     <ClInclude Include="NetworkComponentData.h" />
+    <ClInclude Include="Pistol.h" />
     <ClInclude Include="PollingStation.h" />
     <ClInclude Include="ProjectileComponent.h" />
     <ClInclude Include="ProjectileComponentData.h" />
+    <ClInclude Include="ShootingComponent.h" />
+    <ClInclude Include="ShootingComponentData.h" />
     <ClInclude Include="ShootNote.h" />
+    <ClInclude Include="Shotgun.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="TriggerComponent.h" />
     <ClInclude Include="TriggerComponentData.h" />
+    <ClInclude Include="Weapon.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AnimationComponent.cpp" />
@@ -190,12 +200,18 @@
     <ClCompile Include="ComponentLoader.cpp" />
     <ClCompile Include="Entity.cpp" />
     <ClCompile Include="EntityFactory.cpp" />
+    <ClCompile Include="FirstPersonRenderComponent.cpp" />
     <ClCompile Include="GraphicsComponent.cpp" />
+    <ClCompile Include="GrenadeLauncher.cpp" />
     <ClCompile Include="HealthComponent.cpp" />
     <ClCompile Include="InputComponent.cpp" />
+    <ClCompile Include="Movement.cpp" />
     <ClCompile Include="NetworkComponent.cpp" />
+    <ClCompile Include="Pistol.cpp" />
     <ClCompile Include="PollingStation.cpp" />
     <ClCompile Include="ProjectileComponent.cpp" />
+    <ClCompile Include="ShootingComponent.cpp" />
+    <ClCompile Include="Shotgun.cpp" />
     <ClCompile Include="stdafx.cpp">
       <MultiProcessorCompilation Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</MultiProcessorCompilation>
       <MultiProcessorCompilation Condition="'$(Configuration)|$(Platform)'=='DataExporter|Win32'">false</MultiProcessorCompilation>
@@ -207,6 +223,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Internal|Win32'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="TriggerComponent.cpp" />
+    <ClCompile Include="Weapon.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Audio\Audio.vcxproj">
@@ -214,6 +231,12 @@
     </ProjectReference>
     <ProjectReference Include="..\CommonUtilities\CommonUtilities.vcxproj">
       <Project>{cf69d483-5bf1-4673-99e2-c04b953ca73c}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\GUI\GUI.vcxproj">
+      <Project>{17cef55e-6aee-4487-ad02-5940167c2fd0}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\InputWrapper\InputWrapper.vcxproj">
+      <Project>{e6bd4153-64be-4109-8d3c-724baadab8af}</Project>
     </ProjectReference>
     <ProjectReference Include="..\Memory\Memory.vcxproj">
       <Project>{25945336-03d1-42a6-8764-7ef11dbc42e6}</Project>
