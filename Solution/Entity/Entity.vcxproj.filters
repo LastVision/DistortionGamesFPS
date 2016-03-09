@@ -192,5 +192,8 @@
     <ClInclude Include="NetworkComponent.h">
       <Filter>Component</Filter>
     </ClInclude>
+    <ClInclude Include="HealthNote.h">
+      <Filter>Notes</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

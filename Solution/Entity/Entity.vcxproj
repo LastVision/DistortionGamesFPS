@@ -175,6 +175,7 @@
     <ClInclude Include="GrenadeLauncher.h" />
     <ClInclude Include="HealthComponent.h" />
     <ClInclude Include="HealthComponentData.h" />
+    <ClInclude Include="HealthNote.h" />
     <ClInclude Include="InputComponent.h" />
     <ClInclude Include="InputComponentData.h" />
     <ClInclude Include="Movement.h" />
