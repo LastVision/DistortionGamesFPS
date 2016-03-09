@@ -559,6 +559,8 @@ namespace Prism
 		cowPath[aFBXPath.size() - 2] = 'o';
 		cowPath[aFBXPath.size() - 1] = 'w';
 
+		cowPath = CU::GetGeneratedDataFolderFilePath(aFBXPath, "cow");
+
 		physx::PxTriangleMesh* mesh = nullptr;
 		WavefrontObj wfo;
 
