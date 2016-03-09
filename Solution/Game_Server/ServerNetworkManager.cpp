@@ -247,16 +247,6 @@ void ServerNetworkManager::HandleMessage(const NetMessagePingRequest&, const soc
 	}
 }
 
-void ServerNetworkManager::HandleMessage(const NetMessagePosition& aMessage, const sockaddr_in&)
-{
-	PostMaster::GetInstance()->SendMessage(NetworkSetPositionMessage(aMessage.myPosition, aMessage.myNetworkID));
-}
-
-void ServerNetworkManager::HandleMessage(const NetMessageOnHit& aMessage, const sockaddr_in&)
-{
-	PostMaster::GetInstance()->SendMessage(NetworkOnHitMessage(aMessage.myDamage, aMessage.myNetworkID));
-}
-
 void ServerNetworkManager::ReceiveMessage(const NetworkAddEnemyMessage& aMessage)
 {
 	NetMessageAddEnemy toSend;

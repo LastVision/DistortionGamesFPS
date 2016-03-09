@@ -216,12 +216,6 @@ void ClientNetworkManager::HandleMessage(const NetMessageOnJoin& aMessage, const
 	}
 }
 
-void ClientNetworkManager::HandleMessage(const NetMessagePosition& aMessage, const sockaddr_in& aSenderAddress)
-{
-	aSenderAddress;
-	PostMaster::GetInstance()->SendMessage(NetworkSetPositionMessage(aMessage.myPosition, aMessage.myNetworkID));
-}
-
 void ClientNetworkManager::HandleMessage(const NetMessageAddEnemy& aMessage, const sockaddr_in& aSenderAddress)
 {
 	aSenderAddress;
