@@ -1690,14 +1690,16 @@ FbxModelData* FBXLoader::loadModel(const char* aFile, CU::GrowingArray<std::stri
 	//DL_PRINT("Success!");
 
 
-	std::string xmlPath(aFile, strlen(aFile) - 4);
-	xmlPath += ".xml";
+	/*std::string xmlPath(aFile, strlen(aFile) - 4);
+	xmlPath += ".xml";*/
 
-	XMLReader reader;
-	reader.OpenDocument(xmlPath);
-	reader.ForceReadAttribute(reader.ForceFindFirstChild(reader.ForceFindFirstChild("root"), "radius"), "value", myLoadingModel->myRadius);
-	reader.CloseDocument();
-	myLoadingModel->myRadius *= 100.f;
-
+	std::string xmlPath = CU::GetGeneratedDataFolderFilePath(aFile, "xml");
+	if (CU::FileExists(xmlPath))
+	{
+		XMLReader reader;
+		reader.OpenDocument(xmlPath);
+		reader.ForceReadAttribute(reader.ForceFindFirstChild(reader.ForceFindFirstChild("root"), "radius"), "value", myLoadingModel->myRadius);
+		reader.CloseDocument();
+	}
 	return myLoadingModel;
 }
