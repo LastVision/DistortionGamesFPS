@@ -42,3 +42,8 @@ void HealthComponent::Reset()
 {
 	myCurrentHealth = myData.myMaxHealth;
 }
+
+int HealthComponent::GetMaxHealth()
+{
+	return myData.myMaxHealth;
+}

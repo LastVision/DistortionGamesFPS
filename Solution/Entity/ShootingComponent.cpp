@@ -1,28 +1,19 @@
 #include "stdafx.h"
 
-#include <DamageNote.h>
-#include <EntityFactory.h>
 #include "GrenadeLauncher.h"
 #include <InputWrapper.h>
-#include <Instance.h>
-#include <ModelLoader.h>
-#include <PhysEntity.h>
-#include <PhysicsInterface.h>
-#include "Player.h"
+#include "InputComponent.h"
 #include "Pistol.h"
-#include <Scene.h>
-#include "Shooting.h"
 #include "Shotgun.h"
+#include "ShootingComponent.h"
 
 
-
-
-Shooting::Shooting(Prism::Scene* aScene, Player* aPlayer)
-	: myCurrentWeapon(nullptr)
+ShootingComponent::ShootingComponent(Entity& anEntity, Prism::Scene* aScene)
+	: Component(anEntity)
+	, myCurrentWeapon(nullptr)
 	, myPistol(nullptr)
 	, myShotgun(nullptr)
 	, myGrenadeLauncher(nullptr)
-	, myPlayer(aPlayer)
 {
 	/*myBullet = EntityFactory::CreateEntity(eEntityType::PROJECTILE, *aScene, myBulletOrientation.GetPos());
 	myBullet->Reset();
@@ -34,7 +25,7 @@ Shooting::Shooting(Prism::Scene* aScene, Player* aPlayer)
 	myCurrentWeapon = myPistol;
 }
 
-Shooting::~Shooting()
+ShootingComponent::~ShootingComponent()
 {
 
 	SAFE_DELETE(myPistol);
@@ -42,8 +33,9 @@ Shooting::~Shooting()
 	SAFE_DELETE(myGrenadeLauncher);
 }
 
-void Shooting::Update(float aDelta, const CU::Matrix44<float>& aOrientation)
+void ShootingComponent::Update(float aDelta)
 {
+	CU::Matrix44<float> aOrientation = myEntity.GetComponent<InputComponent>()->GetEyeOrientation();
 	if (CU::InputWrapper::GetInstance()->KeyDown(DIK_1) == true)
 	{
 		if (myCurrentWeapon != myPistol)
@@ -51,13 +43,13 @@ void Shooting::Update(float aDelta, const CU::Matrix44<float>& aOrientation)
 			switch (myCurrentWeapon->GetWeaponType())
 			{
 			case eWeaponType::SHOTGUN:
-				myPlayer->AddIntention(ePlayerState::SHOTGUN_HOLSTER, true);
+				//myPlayer->AddIntention(ePlayerState::SHOTGUN_HOLSTER, true);
 				break;
 			case eWeaponType::GRENADE_LAUNCHER:
-				myPlayer->AddIntention(ePlayerState::GRENADE_LAUNCHER_HOLSTER, false);
+				//myPlayer->AddIntention(ePlayerState::GRENADE_LAUNCHER_HOLSTER, false);
 				break;
 			}
-			myPlayer->AddIntention(ePlayerState::PISTOL_DRAW, false);
+			//myPlayer->AddIntention(ePlayerState::PISTOL_DRAW, false);
 			myCurrentWeapon = myPistol;
 		}
 	}
@@ -68,13 +60,13 @@ void Shooting::Update(float aDelta, const CU::Matrix44<float>& aOrientation)
 			switch (myCurrentWeapon->GetWeaponType())
 			{
 			case eWeaponType::PISTOL:
-				myPlayer->AddIntention(ePlayerState::PISTOL_HOLSTER, true);
+				//myPlayer->AddIntention(ePlayerState::PISTOL_HOLSTER, true);
 				break;
 			case eWeaponType::GRENADE_LAUNCHER:
-				myPlayer->AddIntention(ePlayerState::GRENADE_LAUNCHER_HOLSTER, false);
+				//myPlayer->AddIntention(ePlayerState::GRENADE_LAUNCHER_HOLSTER, false);
 				break;
 			}
-			myPlayer->AddIntention(ePlayerState::SHOTGUN_DRAW, false);
+			//myPlayer->AddIntention(ePlayerState::SHOTGUN_DRAW, false);
 			myCurrentWeapon = myShotgun;
 		}
 	}
@@ -85,15 +77,15 @@ void Shooting::Update(float aDelta, const CU::Matrix44<float>& aOrientation)
 			switch (myCurrentWeapon->GetWeaponType())
 			{
 			case eWeaponType::PISTOL:
-				myPlayer->AddIntention(ePlayerState::PISTOL_HOLSTER, true);
+				//myPlayer->AddIntention(ePlayerState::PISTOL_HOLSTER, true);
 				break;
 			case eWeaponType::SHOTGUN:
-				myPlayer->AddIntention(ePlayerState::SHOTGUN_HOLSTER, false);
+				//myPlayer->AddIntention(ePlayerState::SHOTGUN_HOLSTER, false);
 				break;
 			}
-			myPlayer->AddIntention(ePlayerState::GRENADE_LAUNCHER_DRAW, false);
+			//myPlayer->AddIntention(ePlayerState::GRENADE_LAUNCHER_DRAW, false);
 			myCurrentWeapon = myGrenadeLauncher;
-		}	
+		}
 	}
 
 	if (CU::InputWrapper::GetInstance()->KeyDown(DIK_R) == true)
@@ -101,13 +93,13 @@ void Shooting::Update(float aDelta, const CU::Matrix44<float>& aOrientation)
 		switch (myCurrentWeapon->GetWeaponType())
 		{
 		case eWeaponType::PISTOL:
-			myPlayer->AddIntention(ePlayerState::PISTOL_RELOAD, true);
+			//myPlayer->AddIntention(ePlayerState::PISTOL_RELOAD, true);
 			break;
 		case eWeaponType::SHOTGUN:
-			myPlayer->AddIntention(ePlayerState::SHOTGUN_RELOAD, true);
+			//myPlayer->AddIntention(ePlayerState::SHOTGUN_RELOAD, true);
 			break;
 		case eWeaponType::GRENADE_LAUNCHER:
-			myPlayer->AddIntention(ePlayerState::GRENADE_LAUNCHER_RELOAD, true);
+			//myPlayer->AddIntention(ePlayerState::GRENADE_LAUNCHER_RELOAD, true);
 			break;
 		default:
 			break;
@@ -122,7 +114,7 @@ void Shooting::Update(float aDelta, const CU::Matrix44<float>& aOrientation)
 			if (myPistol->GetAmmoInClip() > 0)
 			{
 				myPistol->Shoot(aOrientation);
-				myPlayer->AddIntention(ePlayerState::PISTOL_FIRE, true);
+				//myPlayer->AddIntention(ePlayerState::PISTOL_FIRE, true);
 				//ShootAtDirection(aOrientation);
 			}
 		}
@@ -133,7 +125,7 @@ void Shooting::Update(float aDelta, const CU::Matrix44<float>& aOrientation)
 		{
 			//ShootAtDirection(aOrientation);
 			myCurrentWeapon->Shoot(aOrientation);
-			myPlayer->AddIntention(ePlayerState::GRENADE_LAUNCHER_FIRE, true);
+			//myPlayer->AddIntention(ePlayerState::GRENADE_LAUNCHER_FIRE, true);
 		}
 	}
 	else if (myCurrentWeapon == myShotgun)
@@ -143,14 +135,14 @@ void Shooting::Update(float aDelta, const CU::Matrix44<float>& aOrientation)
 			if (myShotgun->GetAmmoInClip() > 0)
 			{
 				myCurrentWeapon->Shoot(aOrientation);
-				myPlayer->AddIntention(ePlayerState::SHOTGUN_FIRE, true);
+				//myPlayer->AddIntention(ePlayerState::SHOTGUN_FIRE, true);
 			}
 		}
 	}
 	myGrenadeLauncher->Update(aDelta);
 }
 
-Weapon* Shooting::GetWeapon(eWeaponType aWeaponType)
+Weapon* ShootingComponent::GetWeapon(eWeaponType aWeaponType)
 {
 	switch (aWeaponType)
 	{

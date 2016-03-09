@@ -28,6 +28,9 @@
     <Filter Include="EntityFactory\Component">
       <UniqueIdentifier>{d78471a9-14e8-41c7-8352-3d64f1f6778b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="player">
+      <UniqueIdentifier>{bb49f49e-fabb-452b-8e46-c4a02fac7e1d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -64,6 +67,24 @@
     </ClCompile>
     <ClCompile Include="NetworkComponent.cpp" />
     <ClCompile Include="InputComponent.cpp">
+      <Filter>Component</Filter>
+    </ClCompile>
+    <ClCompile Include="GrenadeLauncher.cpp">
+      <Filter>player</Filter>
+    </ClCompile>
+    <ClCompile Include="Movement.cpp">
+      <Filter>player</Filter>
+    </ClCompile>
+    <ClCompile Include="Pistol.cpp">
+      <Filter>player</Filter>
+    </ClCompile>
+    <ClCompile Include="Shotgun.cpp">
+      <Filter>player</Filter>
+    </ClCompile>
+    <ClCompile Include="Weapon.cpp">
+      <Filter>player</Filter>
+    </ClCompile>
+    <ClCompile Include="ShootingComponent.cpp">
       <Filter>Component</Filter>
     </ClCompile>
   </ItemGroup>
@@ -133,6 +154,30 @@
     </ClInclude>
     <ClInclude Include="InputComponent.h">
       <Filter>Component</Filter>
+    </ClInclude>
+    <ClInclude Include="GrenadeLauncher.h">
+      <Filter>player</Filter>
+    </ClInclude>
+    <ClInclude Include="Movement.h">
+      <Filter>player</Filter>
+    </ClInclude>
+    <ClInclude Include="Pistol.h">
+      <Filter>player</Filter>
+    </ClInclude>
+    <ClInclude Include="Shotgun.h">
+      <Filter>player</Filter>
+    </ClInclude>
+    <ClInclude Include="Weapon.h">
+      <Filter>player</Filter>
+    </ClInclude>
+    <ClInclude Include="InputComponentData.h">
+      <Filter>EntityFactory\EntityData\ComponentData</Filter>
+    </ClInclude>
+    <ClInclude Include="ShootingComponent.h">
+      <Filter>Component</Filter>
+    </ClInclude>
+    <ClInclude Include="ShootingComponentData.h">
+      <Filter>EntityFactory\EntityData\ComponentData</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

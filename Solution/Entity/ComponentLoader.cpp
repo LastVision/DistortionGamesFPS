@@ -5,8 +5,9 @@
 #include "EntityEnumConverter.h"
 #include "HealthComponentData.h"
 #include "NetworkComponentData.h"
-#include "XMLReader.h"
+#include "ShootingComponentData.h"
 #include "TriggerComponentData.h"
+#include "XMLReader.h"
 
 void ComponentLoader::LoadAnimationComponent(XMLReader& aDocument, tinyxml2::XMLElement* aSourceElement, AnimationComponentData& aOutputData)
 {
@@ -97,4 +98,14 @@ void ComponentLoader::LoadTriggerComponent(XMLReader& aDocument, tinyxml2::XMLEl
 			aDocument.ForceReadAttribute(e, "type", aOutputData.myTriggerType);
 		}
 	}
+}
+
+void ComponentLoader::LoadInputComponent(XMLReader& aDocument, tinyxml2::XMLElement* aSourceElement, InputComponentData& aOutputData)
+{
+	aOutputData.myExistsInEntity = true;
+}
+
+void ComponentLoader::LoadShootingComponent(XMLReader& aDocument, tinyxml2::XMLElement* aSourceElement, ShootingComponentData& aOutputData)
+{
+	aOutputData.myExistsInEntity = true;
 }

@@ -7,12 +7,14 @@
 #include "Player.h"
 #include <Scene.h>
 #include <InputWrapper.h>
+#include <InputComponent.h>
 #include "NetworkMessageTypes.h"
 
 #include "DebugDrawer.h"
 
 #include "EntityFactory.h"
 #include "Entity.h"
+#include <EntityData.h>
 #include "GameEnum.h"
 #include <PhysicsInterface.h>
 
@@ -48,15 +50,18 @@ ClientLevel::ClientLevel()
 	PostMaster::GetInstance()->Subscribe(eMessageType::NETWORK_ADD_ENEMY, this);
 
 	myScene = new Prism::Scene();
-	myPlayer = new Player(myScene);
-	myScene->SetCamera(*myPlayer->GetCamera());
+	EntityData data;
+	data.myInputData.myExistsInEntity = true;
+	//myPlayer = new Entity(data, myScene, true, CU::Vector3<float>(), CU::Vector3<float>(), CU::Vector3<float>(1.f, 1.f, 1.f));
+	myPlayer = EntityFactory::GetInstance()->CreateEntity(eEntityType::UNIT, "player", myScene, true, CU::Vector3<float>());
+	myScene->SetCamera(*myPlayer->GetComponent<InputComponent>()->GetCamera());
 
 	//myTempPosition = { 835.f, 0.f, -1000.f };
 
 	myDeferredRenderer = new Prism::DeferredRenderer();
 
 
-	myEmitterManager = new EmitterManager(*myPlayer->GetCamera());
+	myEmitterManager = new EmitterManager(*myPlayer->GetComponent<InputComponent>()->GetCamera());
 	CU::Matrix44f orientation;
 	myInstanceOrientations.Add(orientation);
 
@@ -104,7 +109,7 @@ void ClientLevel::Update(const float aDeltaTime)
 
 	DEBUG_PRINT(ms);
 	DEBUG_PRINT(kbs);
-	Prism::DebugDrawer::GetInstance()->RenderLinesToScreen(*myPlayer->GetCamera());
+	Prism::DebugDrawer::GetInstance()->RenderLinesToScreen(*myPlayer->GetComponent<InputComponent>()->GetCamera());
 
 	//for (int i = 0; i < myPlayers.Size(); ++i)
 	//{
@@ -124,8 +129,8 @@ void ClientLevel::Render()
 	myDeferredRenderer->Render(myScene);
 	//myScene->Render();
 	//myDeferredRenderer->Render(myScene);
+	myPlayer->GetComponent<InputComponent>()->Render();
 	myEmitterManager->RenderEmitters();
-	myPlayer->Render();
 }
 
 void ClientLevel::ReceiveMessage(const NetworkAddPlayerMessage& aMessage)

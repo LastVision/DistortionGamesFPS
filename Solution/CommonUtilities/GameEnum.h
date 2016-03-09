@@ -123,6 +123,8 @@ enum class eComponentType
 	NETWORK,
 	PROJECTILE,
 	TRIGGER,
+	INPUT,
+	SHOOTING,
 	_COUNT,
 };
 
