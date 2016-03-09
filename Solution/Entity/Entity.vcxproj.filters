@@ -65,7 +65,6 @@
     <ClCompile Include="TriggerComponent.cpp">
       <Filter>Component</Filter>
     </ClCompile>
-    <ClCompile Include="NetworkComponent.cpp" />
     <ClCompile Include="InputComponent.cpp">
       <Filter>Component</Filter>
     </ClCompile>
@@ -87,7 +86,12 @@
     <ClCompile Include="ShootingComponent.cpp">
       <Filter>Component</Filter>
     </ClCompile>
-    <ClCompile Include="FirstPersonRenderComponent.cpp" />
+    <ClCompile Include="FirstPersonRenderComponent.cpp">
+      <Filter>Component</Filter>
+    </ClCompile>
+    <ClCompile Include="NetworkComponent.cpp">
+      <Filter>Component</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
@@ -149,7 +153,6 @@
     <ClInclude Include="TriggerComponentData.h">
       <Filter>EntityFactory\EntityData\ComponentData</Filter>
     </ClInclude>
-    <ClInclude Include="NetworkComponent.h" />
     <ClInclude Include="NetworkComponentData.h">
       <Filter>EntityFactory\EntityData\ComponentData</Filter>
     </ClInclude>
@@ -180,9 +183,14 @@
     <ClInclude Include="ShootingComponentData.h">
       <Filter>EntityFactory\EntityData\ComponentData</Filter>
     </ClInclude>
-    <ClInclude Include="FirstPersonRenderComponent.h" />
     <ClInclude Include="FirstPersonRenderComponentData.h">
       <Filter>EntityFactory\EntityData\ComponentData</Filter>
+    </ClInclude>
+    <ClInclude Include="FirstPersonRenderComponent.h">
+      <Filter>Component</Filter>
+    </ClInclude>
+    <ClInclude Include="NetworkComponent.h">
+      <Filter>Component</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
