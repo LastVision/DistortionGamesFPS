@@ -118,7 +118,8 @@ Entity::~Entity()
 
 void Entity::Reset()
 {
-	myAlive = false;
+	myAlive = true;
+
 	for (int i = 0; i < static_cast<int>(eComponentType::_COUNT); ++i)
 	{
 		if (myComponents[i] != nullptr)
@@ -145,6 +146,8 @@ void Entity::Update(float aDeltaTime)
 			memcpy(&myOrientation.myMatrix[0], myPhysEntity->GetOrientation(), sizeof(float) * 16);
 		}
 	}
+
+
 }
 
 void Entity::AddComponent(Component* aComponent)
