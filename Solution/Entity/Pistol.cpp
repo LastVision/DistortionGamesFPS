@@ -24,6 +24,9 @@ Pistol::Pistol()
 	myAmmoInClip = myClipSize;
 	myAmmoTotal = INT_MAX;
 
+	myShootTime = 0.5f;
+	myShootTimer = myShootTime;
+
 	reader.CloseDocument();
 
 	myRaycastHandler = [=](Entity* anEntity, const CU::Vector3<float>& aDirection, const CU::Vector3<float>& aHitPosition)
@@ -37,19 +40,27 @@ Pistol::~Pistol()
 }
 
 
-void Pistol::Shoot(const CU::Matrix44<float>& aOrientation)
+bool Pistol::Shoot(const CU::Matrix44<float>& aOrientation)
 {
-	if (myAmmoInClip > 0)
+	if (myAmmoInClip > 0 && myShootTimer <= 0.f)
 	{
 		Prism::PhysicsInterface::GetInstance()->RayCast(aOrientation.GetPos()
 			, aOrientation.GetForward(), 500.f, myRaycastHandler);
 		myAmmoInClip -= 1;
+		myShootTimer = myShootTime;
+		return true;
 	}
+	return false;
 }
 
 void Pistol::Reload()
 {
 	myAmmoInClip = myClipSize;
+}
+
+void Pistol::Update(float aDelta)
+{
+	myShootTimer -= aDelta;
 }
 
 void Pistol::HandleRaycast(Entity* anEntity, const CU::Vector3<float>& aDirection, const CU::Vector3<float>& aHitPosition)

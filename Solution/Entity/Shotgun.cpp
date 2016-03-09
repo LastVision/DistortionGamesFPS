@@ -25,6 +25,9 @@ Shotgun::Shotgun()
 	reader.ForceReadAttribute(reader.ForceFindFirstChild(shotgunElement, "maxspreadrotation"), "value", myMaxSpreadRotation);
 	myAmmoInClip = myClipSize;
 
+	myShootTime = 2.f;
+	myShootTimer = myShootTime;
+
 	reader.CloseDocument();
 
 	myRaycastHandler = [=](Entity* anEntity, const CU::Vector3<float>& aDirection, const CU::Vector3<float>& aHitPosition)
@@ -39,15 +42,18 @@ Shotgun::~Shotgun()
 }
 
 
-void Shotgun::Shoot(const CU::Matrix44<float>& aOrientation)
+bool Shotgun::Shoot(const CU::Matrix44<float>& aOrientation)
 {
-	if (myAmmoInClip > 0)
+	if (myAmmoInClip > 0 && myShootTimer <= 0.f)
 	{
 		ShootRowAround(aOrientation, aOrientation.GetForward() * CU::Matrix44<float>::CreateRotateAroundX(CU::Math::RandomRange(-myMaxSpreadRotation, -myMinSpreadRotation)));
 		ShootRowAround(aOrientation, aOrientation.GetForward());
 		ShootRowAround(aOrientation, aOrientation.GetForward() * CU::Matrix44<float>::CreateRotateAroundX(CU::Math::RandomRange(myMinSpreadRotation, myMaxSpreadRotation)));
 		myAmmoInClip -= 1;
+		myShootTimer = myShootTime;
+		return true;
 	}
+	return false;
 }
 
 void Shotgun::Reload()
@@ -55,6 +61,11 @@ void Shotgun::Reload()
 	int ammoLeft = myAmmoTotal;
 	myAmmoTotal -= min(ammoLeft, myClipSize - myAmmoInClip);
 	myAmmoInClip = myClipSize;
+}
+
+void Shotgun::Update(float aDelta)
+{
+	myShootTimer -= aDelta;
 }
 
 void Shotgun::HandleRaycast(Entity* anEntity, const CU::Vector3<float>& aDirection, const CU::Vector3<float>& aHitPosition)
