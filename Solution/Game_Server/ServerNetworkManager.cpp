@@ -20,7 +20,7 @@
 #include <NetworkSetPositionMessage.h>
 #include <NetworkOnHitMessage.h>
 #define BUFFERSIZE 512
-#define NUM_TRY_BEFORE_DISCONNECT 10
+#define RECONNECT_ATTEMPTS 100
 
 ServerNetworkManager* ServerNetworkManager::myInstance = nullptr;
 
@@ -240,7 +240,7 @@ void ServerNetworkManager::HandleMessage(const NetMessagePingRequest&, const soc
 	for (Connection& c : myClients)
 	{
 		c.myPingCount++;
-		if (c.myPingCount > NUM_TRY_BEFORE_DISCONNECT)
+		if (c.myPingCount > RECONNECT_ATTEMPTS)
 		{
 			DisconnectConnection(c);
 		}
