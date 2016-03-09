@@ -18,10 +18,6 @@ public:
 
 	void Update(float aDelta) override;
 
-	void Render();
-
-	void Respawn();
-
 	Prism::Camera* GetCamera() const;
 
 	static eComponentType GetTypeStatic();
@@ -41,8 +37,6 @@ private:
 	float myJumpAcceleration;
 	float myJumpOffset;
 	float mySendTime;
-	bool myAlive;
-	CU::Vector3<float> mySpawnPosition;
 
 	unsigned short myNetworkID;
 };

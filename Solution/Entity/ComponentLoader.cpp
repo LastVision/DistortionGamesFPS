@@ -109,16 +109,25 @@ void ComponentLoader::LoadTriggerComponent(XMLReader& aDocument, tinyxml2::XMLEl
 
 void ComponentLoader::LoadInputComponent(XMLReader& aDocument, tinyxml2::XMLElement* aSourceElement, InputComponentData& aOutputData)
 {
+	aDocument;
+	aSourceElement;
+
 	aOutputData.myExistsInEntity = true;
 }
 
 void ComponentLoader::LoadShootingComponent(XMLReader& aDocument, tinyxml2::XMLElement* aSourceElement, ShootingComponentData& aOutputData)
 {
+	aDocument;
+	aSourceElement;
+
 	aOutputData.myExistsInEntity = true;
 }
 
 void ComponentLoader::LoadFirstPersonRenderComponent(XMLReader& aDocument, tinyxml2::XMLElement* aSourceElement, FirstPersonRenderComponentData& aOutputData)
 {
+	aDocument;
+	aSourceElement;
+
 	aOutputData.myExistsInEntity = true;
 }
 
