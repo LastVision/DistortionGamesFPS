@@ -23,9 +23,9 @@ Shotgun::Shotgun()
 	reader.ForceReadAttribute(reader.ForceFindFirstChild(shotgunElement, "startammo"), "value", myAmmoTotal);
 	reader.ForceReadAttribute(reader.ForceFindFirstChild(shotgunElement, "minspreadrotation"), "value", myMinSpreadRotation);
 	reader.ForceReadAttribute(reader.ForceFindFirstChild(shotgunElement, "maxspreadrotation"), "value", myMaxSpreadRotation);
-	myAmmoInClip = myClipSize;
+	reader.ForceReadAttribute(reader.ForceFindFirstChild(shotgunElement, "shoottime"), "value", myShootTime);
 
-	myShootTime = 2.f;
+	myAmmoInClip = myClipSize;
 	myShootTimer = myShootTime;
 
 	reader.CloseDocument();

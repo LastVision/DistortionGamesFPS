@@ -20,11 +20,10 @@ Pistol::Pistol()
 
 	reader.ForceReadAttribute(reader.ForceFindFirstChild(pistolElement, "clipsize"), "value", myClipSize);
 	reader.ForceReadAttribute(reader.ForceFindFirstChild(pistolElement, "damage"), "value", myDamage);
+	reader.ForceReadAttribute(reader.ForceFindFirstChild(pistolElement, "shoottime"), "value", myShootTime);
 
 	myAmmoInClip = myClipSize;
 	myAmmoTotal = INT_MAX;
-
-	myShootTime = 0.5f;
 	myShootTimer = myShootTime;
 
 	reader.CloseDocument();

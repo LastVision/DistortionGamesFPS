@@ -22,9 +22,9 @@ GrenadeLauncher::GrenadeLauncher(Prism::Scene* aScene)
 	reader.ForceReadAttribute(reader.ForceFindFirstChild(grenadeLauncherElement, "clipsize"), "value", myClipSize);
 	reader.ForceReadAttribute(reader.ForceFindFirstChild(grenadeLauncherElement, "damage"), "value", myDamage);
 	reader.ForceReadAttribute(reader.ForceFindFirstChild(grenadeLauncherElement, "startammo"), "value", myAmmoTotal);
-	myAmmoInClip = myClipSize;
+	reader.ForceReadAttribute(reader.ForceFindFirstChild(grenadeLauncherElement, "shoottime"), "value", myShootTime);
 
-	myShootTime = 0.1f;
+	myAmmoInClip = myClipSize;
 	myShootTimer = myShootTime;
 
 	reader.CloseDocument();
