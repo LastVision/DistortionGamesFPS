@@ -17,6 +17,7 @@
 #include <NetworkAddEnemyMessage.h>
 #include <NetworkSetPositionMessage.h>
 #include <NetworkSendPositionMessage.h>
+#include <NetworkOnDisconnectMessage.h>
 #define BUFFERSIZE 512
 
 ClientNetworkManager* ClientNetworkManager::myInstance = nullptr;
@@ -24,11 +25,13 @@ ClientNetworkManager* ClientNetworkManager::myInstance = nullptr;
 ClientNetworkManager::ClientNetworkManager()
 {
 	PostMaster::GetInstance()->Subscribe(eMessageType::NETWORK_SEND_POSITION, this);
+	PostMaster::GetInstance()->Subscribe(eMessageType::NETWORK_ON_DISCONNECT, this);
 }
 
 ClientNetworkManager::~ClientNetworkManager()
 {
 	PostMaster::GetInstance()->UnSubscribe(eMessageType::NETWORK_SEND_POSITION, this);
+	PostMaster::GetInstance()->UnSubscribe(eMessageType::NETWORK_ON_DISCONNECT, this);
 	myMainIsDone = true;
 	myReceieveIsDone = true;
 	myIsRunning = false;
@@ -149,6 +152,14 @@ void ClientNetworkManager::ReceiveMessage(const NetworkSendPositionMessage& aMes
 	toSend.mySenderID = myNetworkID;
 	toSend.myPosition = aMessage.myPosition;
 	toSend.myNetworkID = aMessage.myNetworkID;
+	AddMessage(toSend);
+}
+
+void ClientNetworkManager::ReceiveMessage(const NetworkOnDisconnectMessage&)
+{
+	NetMessageDisconnect toSend;
+	toSend.mySenderID = myNetworkID;
+	toSend.myClientID = myNetworkID;
 	AddMessage(toSend);
 }
 

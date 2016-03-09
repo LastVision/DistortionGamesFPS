@@ -18,3 +18,4 @@ void Subscriber::ReceiveMessage(const NetworkAddEnemyMessage&){}
 void Subscriber::ReceiveMessage(const NetworkSetPositionMessage&){}
 void Subscriber::ReceiveMessage(const NetworkSendPositionMessage&){}
 void Subscriber::ReceiveMessage(const NetworkOnHitMessage&){}
+void Subscriber::ReceiveMessage(const NetworkOnDisconnectMessage&) {}

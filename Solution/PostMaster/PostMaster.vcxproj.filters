@@ -69,5 +69,8 @@
     <ClInclude Include="NetworkRemovePlayer.h">
       <Filter>Message\NetworkMessages</Filter>
     </ClInclude>
+    <ClInclude Include="NetworkOnDisconnectMessage.h">
+      <Filter>Message\NetworkMessages</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
