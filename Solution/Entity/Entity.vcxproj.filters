@@ -195,5 +195,8 @@
     <ClInclude Include="HealthNote.h">
       <Filter>Notes</Filter>
     </ClInclude>
+    <ClInclude Include="CollisionNote.h">
+      <Filter>Notes</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

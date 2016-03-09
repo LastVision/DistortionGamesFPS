@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include "CollisionNote.h"
 #include "TriggerComponent.h"
 #include "TriggerComponentData.h"
 #include <PhysEntity.h>
@@ -17,7 +18,10 @@ TriggerComponent::~TriggerComponent()
 void TriggerComponent::Update(float aDelta)
 {
 	aDelta;
+}
 
+void TriggerComponent::ReceiveNote(const CollisionNote& aNote)
+{
 
 
 }

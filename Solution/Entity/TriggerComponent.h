@@ -12,6 +12,8 @@ public:
 
 	void Update(float aDelta) override;
 
+	void ReceiveNote(const CollisionNote& aNote) override;
+
 	static eComponentType GetTypeStatic();
 	eComponentType GetType() override;
 

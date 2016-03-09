@@ -11,6 +11,8 @@ public:
 	~HealthComponent();
 
 	void ReceiveNote(const DamageNote& aNote) override;
+	void ReceiveNote(const HealthNote& aNote) override;
+	void ReceiveNote(const CollisionNote& aNote) override;
 
 	void TakeDamage(int aDamage);
 	void Heal(int anAmount);

@@ -1,7 +1,9 @@
 #include "stdafx.h"
+#include "CollisionNote.h"
 #include "DamageNote.h"
 #include "HealthComponent.h"
 #include "HealthComponentData.h"
+#include "HealthNote.h"
 
 HealthComponent::HealthComponent(Entity& anEntity, const HealthComponentData& someData)
 	: Component(anEntity)
@@ -17,6 +19,19 @@ HealthComponent::~HealthComponent()
 void HealthComponent::ReceiveNote(const DamageNote& aNote)
 {
 	TakeDamage(aNote.myDamage);
+}
+
+void HealthComponent::ReceiveNote(const HealthNote& aNote)
+{
+	Heal(aNote.myAmount);
+}
+
+void HealthComponent::ReceiveNote(const CollisionNote& aNote)
+{
+
+
+	// do stuff
+
 }
 
 void HealthComponent::TakeDamage(int aDamage)

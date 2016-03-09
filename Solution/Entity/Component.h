@@ -7,6 +7,7 @@ struct BehaviorNote;
 struct ShootNote;
 struct DamageNote;
 struct HealthNote;
+struct CollisionNote;
 
 class Component
 {
@@ -21,6 +22,7 @@ public:
 	virtual void ReceiveNote(const ShootNote&) {}
 	virtual void ReceiveNote(const DamageNote&) {}
 	virtual void ReceiveNote(const HealthNote&) {}
+	virtual void ReceiveNote(const CollisionNote&) {}
 
 	//TODO: remove?
 	virtual void Init();
