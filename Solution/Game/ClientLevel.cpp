@@ -138,7 +138,6 @@ void ClientLevel::Render()
 	//myScene->Render();
 	//myDeferredRenderer->Render(myScene);
 	myEmitterManager->RenderEmitters();
-	myPlayer->GetComponent<InputComponent>()->Render();
 	myPlayer->GetComponent<FirstPersonRenderComponent>()->Render();
 }
 

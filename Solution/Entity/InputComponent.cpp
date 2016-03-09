@@ -13,8 +13,7 @@
 #include <XMLReader.h>
 
 InputComponent::InputComponent(Entity& anEntity)
-	: myAlive(true)
-	, Component(anEntity)
+	: Component(anEntity)
 	, myNetworkID(0)
 {
 	XMLReader reader;
@@ -30,16 +29,13 @@ InputComponent::InputComponent(Entity& anEntity)
 	myOrientation.SetPos(CU::Vector3<float>(0, 1.5f, 0));
 	myCamera = new Prism::Camera(myEyeOrientation);
 	myMovement = new Movement(myOrientation, reader, movementElement);
-	mySpawnPosition = myOrientation.GetPos();
 	reader.CloseDocument();
-
 
 	myJumpAcceleration = 0;
 	myJumpOffset = 0;
 
 	mySendTime = 3;
 }
-
 
 InputComponent::~InputComponent()
 {
@@ -52,13 +48,7 @@ void InputComponent::Update(float aDelta)
 	if (CU::InputWrapper::GetInstance()->KeyDown(DIK_H) == true)
 	{
 		myEntity.SendNote<DamageNote>(DamageNote(1));
-		//myAlive = myHealth->TakeDamage(5);
 	}
-
-	//if (myAlive == false)
-	//{
-	//	Respawn();
-	//}
 
 	CU::Vector3<float> prevPos(myOrientation.GetPos());
 
@@ -78,8 +68,6 @@ void InputComponent::Update(float aDelta)
 
 	myEyeOrientation.SetPos(position);
 
-	//myShooting->Update(aDelta, myEyeOrientation);
-
 	CU::Vector3<float> playerPos(myOrientation.GetPos());
 	DEBUG_PRINT(playerPos);
 
@@ -95,17 +83,6 @@ void InputComponent::Update(float aDelta)
 	}
 
 	myCamera->Update(aDelta);
-}
-
-void InputComponent::Render()
-{
-
-}
-
-void InputComponent::Respawn()
-{
-	myMovement->SetPosition(mySpawnPosition);
-	myAlive = true;
 }
 
 Prism::Camera* InputComponent::GetCamera() const

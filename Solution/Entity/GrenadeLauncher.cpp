@@ -60,7 +60,7 @@ void GrenadeLauncher::Update(float aDelta)
 
 void GrenadeLauncher::ShootAtDirection(const CU::Matrix44<float>& aOrientation)
 {
-	bool newingInRunTimeHere = true;
+	//bool newingInRunTimeHere = true;
 	SET_RUNTIME(false);
 	Entity* bullet = EntityFactory::CreateEntity(eEntityType::PROJECTILE, myScene, true, aOrientation.GetPos());
 	RESET_RUNTIME;
