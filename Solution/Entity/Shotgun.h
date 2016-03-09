@@ -11,8 +11,9 @@ public:
 	Shotgun();
 	~Shotgun();
 
-	void Shoot(const CU::Matrix44<float>& aOrientation) override;
+	bool Shoot(const CU::Matrix44<float>& aOrientation) override;
 	void Reload() override;
+	void Update(float aDelta) override;
 
 	void HandleRaycast(Entity* anEntity, const CU::Vector3<float>& aDirection, const CU::Vector3<float>& aHitPosition);
 

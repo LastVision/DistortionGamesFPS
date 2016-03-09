@@ -108,39 +108,34 @@ void ShootingComponent::Update(float aDelta)
 		myCurrentWeapon->Reload();
 	}
 
-	if (myCurrentWeapon == myPistol)
+	if (CU::InputWrapper::GetInstance()->MouseIsPressed(0) == true)
 	{
-		if (CU::InputWrapper::GetInstance()->MouseDown(0) == true)
+		if (myCurrentWeapon == myPistol)
 		{
-			if (myPistol->GetAmmoInClip() > 0)
+			if (myCurrentWeapon->Shoot(aOrientation) == true)
 			{
-				myPistol->Shoot(aOrientation);
 				myEntity.GetComponent<FirstPersonRenderComponent>()->AddIntention(ePlayerState::PISTOL_FIRE, true);
-				//ShootAtDirection(aOrientation);
 			}
 		}
-	}
-	else if (myCurrentWeapon == myGrenadeLauncher)
-	{
-		if (CU::InputWrapper::GetInstance()->MouseDown(0) == true)
+		else if (myCurrentWeapon == myShotgun)
 		{
-			//ShootAtDirection(aOrientation);
-			myCurrentWeapon->Shoot(aOrientation);
-			myEntity.GetComponent<FirstPersonRenderComponent>()->AddIntention(ePlayerState::GRENADE_LAUNCHER_FIRE, true);
-		}
-	}
-	else if (myCurrentWeapon == myShotgun)
-	{
-		if (CU::InputWrapper::GetInstance()->MouseDown(0) == true)
-		{
-			if (myShotgun->GetAmmoInClip() > 0)
+			if (myCurrentWeapon->Shoot(aOrientation) == true)
 			{
-				myCurrentWeapon->Shoot(aOrientation);
 				myEntity.GetComponent<FirstPersonRenderComponent>()->AddIntention(ePlayerState::SHOTGUN_FIRE, true);
 			}
 		}
+		else if (myCurrentWeapon == myGrenadeLauncher)
+		{
+			//ShootAtDirection(aOrientation);
+			if (myCurrentWeapon->Shoot(aOrientation) == true)
+			{
+				myEntity.GetComponent<FirstPersonRenderComponent>()->AddIntention(ePlayerState::GRENADE_LAUNCHER_FIRE, true);
+			}
+		}
 	}
+	myPistol->Update(aDelta);
 	myGrenadeLauncher->Update(aDelta);
+	myShotgun->Update(aDelta);
 }
 
 Weapon* ShootingComponent::GetWeapon(eWeaponType aWeaponType)

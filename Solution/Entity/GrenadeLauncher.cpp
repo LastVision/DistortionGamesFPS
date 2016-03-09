@@ -24,6 +24,9 @@ GrenadeLauncher::GrenadeLauncher(Prism::Scene* aScene)
 	reader.ForceReadAttribute(reader.ForceFindFirstChild(grenadeLauncherElement, "startammo"), "value", myAmmoTotal);
 	myAmmoInClip = myClipSize;
 
+	myShootTime = 0.1f;
+	myShootTimer = myShootTime;
+
 	reader.CloseDocument();
 }
 
@@ -34,14 +37,17 @@ GrenadeLauncher::~GrenadeLauncher()
 }
 
 
-void GrenadeLauncher::Shoot(const CU::Matrix44<float>& aOrientation)
+bool GrenadeLauncher::Shoot(const CU::Matrix44<float>& aOrientation)
 {
 	aOrientation;
-	if (myAmmoInClip > 0 && myBullets.Size() < 1024)
+	if (myAmmoInClip > 0 && myShootTimer <= 0.f && myBullets.Size() < 1024)
 	{
 		ShootAtDirection(aOrientation);
 		myAmmoInClip -= 1;
+		myShootTimer = myShootTime;
+		return true;
 	}
+	return false;
 }
 void GrenadeLauncher::Reload()
 {
@@ -56,6 +62,7 @@ void GrenadeLauncher::Update(float aDelta)
 	{
 		myBullets[i]->Update(aDelta);
 	}
+	myShootTimer -= aDelta;
 }
 
 void GrenadeLauncher::ShootAtDirection(const CU::Matrix44<float>& aOrientation)

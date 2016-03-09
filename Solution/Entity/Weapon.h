@@ -13,8 +13,9 @@ public:
 	Weapon(eWeaponType aWeaponType);
 	virtual ~Weapon();
 
-	virtual void Shoot(const CU::Matrix44<float>& aOrientation) = 0;
+	virtual bool Shoot(const CU::Matrix44<float>& aOrientation) = 0;
 	virtual void Reload() = 0;
+	virtual void Update(float) {};
 	const int& GetAmmoInClip() const;
 	const int& GetClipSize() const;
 	eWeaponType GetWeaponType();
@@ -25,6 +26,9 @@ protected:
 	int myClipSize;
 	int myAmmoTotal;
 	int myDamage;
+
+	float myShootTime;
+	float myShootTimer;
 
 
 
