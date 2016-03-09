@@ -72,6 +72,10 @@ ClientLevel::ClientLevel()
 
 ClientLevel::~ClientLevel()
 {
+#ifdef THREAD_PHYSICS
+	Prism::PhysicsInterface::GetInstance()->ShutdownThread();
+#endif
+
 	SAFE_DELETE(myEmitterManager);
 	PostMaster::GetInstance()->UnSubscribe(eMessageType::NETWORK_ADD_PLAYER, this);
 	PostMaster::GetInstance()->UnSubscribe(eMessageType::NETWORK_ADD_ENEMY, this);
@@ -100,7 +104,7 @@ void ClientLevel::Update(const float aDeltaTime)
 
 	if (CU::InputWrapper::GetInstance()->KeyDown(DIK_J))
 	{
-		ClientNetworkManager::GetInstance()->AddMessage(NetMessageOnHit(eNetMessageType::PLAYER_ON_HIT, 5.f, 1));
+		ClientNetworkManager::GetInstance()->AddMessage(NetMessageOnHit(eNetMessageType::PLAYER_ON_HIT, 5.f, 2));
 	}
 
 

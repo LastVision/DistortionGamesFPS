@@ -136,8 +136,7 @@ void Entity::Update(float aDeltaTime)
 	{
 		if (myComponents[static_cast<int>(eComponentType::NETWORK)] == nullptr)
 		{
-			myPhysEntity->UpdateOrientation();
-		memcpy(&myOrientation.myMatrix[0], myPhysEntity->GetOrientation(), sizeof(float) * 16);
+			memcpy(&myOrientation.myMatrix[0], myPhysEntity->GetOrientation(), sizeof(float) * 16);
 		}
 	}
 }

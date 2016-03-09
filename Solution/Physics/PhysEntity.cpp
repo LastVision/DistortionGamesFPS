@@ -159,8 +159,23 @@ namespace Prism
 
 		DL_ASSERT_EXP(myPhysicsType == ePhysics::DYNAMIC, "Cant add Force to STATIC objects");
 
-		myDynamicBody->setLinearVelocity(physx::PxVec3(0, 0, 0));
-		myDynamicBody->addForce(physx::PxVec3(aDirection.x, aDirection.y, aDirection.z) * aMagnitude, physx::PxForceMode::eVELOCITY_CHANGE);
+		//myDynamicBody->setLinearVelocity(physx::PxVec3(0, 0, 0));
+		//myDynamicBody->addForce(physx::PxVec3(aDirection.x, aDirection.y, aDirection.z) * aMagnitude, physx::PxForceMode::eVELOCITY_CHANGE);
+		PhysicsInterface::GetInstance()->AddForce(myDynamicBody, aDirection, aMagnitude);
+	}
+
+	void PhysEntity::SetVelocity(const CU::Vector3<float>& aVelocity)
+	{
+		DL_ASSERT_EXP(myPhysicsType == ePhysics::DYNAMIC, "Cant add Force to STATIC objects");
+
+		PhysicsInterface::GetInstance()->SetVelocity(myDynamicBody, aVelocity);
+	}
+
+	void PhysEntity::SetPosition(const CU::Vector3<float>& aPosition)
+	{
+		DL_ASSERT_EXP(myPhysicsType == ePhysics::DYNAMIC, "Cant add Force to STATIC objects");
+
+		PhysicsInterface::GetInstance()->SetPosition(myDynamicBody, aPosition);
 	}
 
 	physx::PxTriangleMesh* PhysEntity::GetPhysMesh(const std::string& aFBXPath)

@@ -31,6 +31,10 @@ namespace Prism
 	{
 		myManager->InitThread();
 	}
+	void PhysicsInterface::ShutdownThread()
+	{
+		myManager->ShutdownThread();
+	}
 #endif
 
 	void PhysicsInterface::EndFrame()
@@ -38,7 +42,19 @@ namespace Prism
 #ifndef THREAD_PHYSICS
 		myManager->Update();
 #endif
-		myManager->SwapOrientations();
+
+#ifdef THREAD_PHYSICS
+		myManager->SetLogicDone();
+		myManager->WaitForPhysics();
+#endif
+
+		myManager->Swap();
+
+#ifdef THREAD_PHYSICS
+		myManager->SetSwapDone();
+#endif
+
+		myManager->EndFrame();
 	}
 
 	void PhysicsInterface::RayCast(const CU::Vector3<float>& aOrigin, const CU::Vector3<float>& aNormalizedDirection, float aMaxRayDistance, std::function<void(Entity*, const CU::Vector3<float>&, const CU::Vector3<float>&)> aFunctionToCall)
@@ -47,6 +63,21 @@ namespace Prism
 		{
 			myManager->RayCast(aOrigin, aNormalizedDirection, aMaxRayDistance, aFunctionToCall);
 		}
+	}
+
+	void PhysicsInterface::AddForce(physx::PxRigidDynamic* aDynamicBody, const CU::Vector3<float>& aDirection, float aMagnitude)
+	{
+		myManager->AddForce(aDynamicBody, aDirection, aMagnitude);
+	}
+
+	void PhysicsInterface::SetVelocity(physx::PxRigidDynamic* aDynamicBody, const CU::Vector3<float>& aVelocity)
+	{
+		myManager->SetVelocity(aDynamicBody, aVelocity);
+	}
+
+	void PhysicsInterface::SetPosition(physx::PxRigidDynamic* aDynamicBody, const CU::Vector3<float>& aPosition)
+	{
+		myManager->SetPosition(aDynamicBody, aPosition);
 	}
 
 	int PhysicsInterface::CreatePlayerController(const CU::Vector3<float>& aStartPosition)
@@ -76,7 +107,7 @@ namespace Prism
 
 	void PhysicsInterface::SubscribeToTriggers(physx::PxSimulationEventCallback* aSubscriber)
 	{
-		myManager->SubscribeToTriggers(aSubscriber);
+		//myManager->SubscribeToTriggers(aSubscriber);
 	}
 
 	PhysicsInterface::PhysicsInterface()
