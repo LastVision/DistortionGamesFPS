@@ -28,6 +28,7 @@ public:
 	bool connected;
 	Prism::Scene* GetScene();
 	void ReceiveMessage(const NetworkAddPlayerMessage& aMessage) override;
+	void ReceiveMessage(const NetworkRemovePlayerMessage& aMessage) override;
 	void ReceiveMessage(const NetworkAddEnemyMessage& aMessage) override;
 
 	void AddLight(Prism::PointLight* aLight);

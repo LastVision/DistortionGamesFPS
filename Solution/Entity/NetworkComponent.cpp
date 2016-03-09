@@ -91,10 +91,6 @@ void NetworkComponent::Update(float aDelta)
 					}
 				}
 			}
-			else
-			{
-				int apa = 0;
-			}
 
 
 			mySendTime = 1 * 0.033f;
@@ -117,7 +113,7 @@ void NetworkComponent::ReceiveMessage(const NetworkOnHitMessage& aMessage)
 {
 	if (myNetworkID == aMessage.myNetworkID)
 	{
-		myEntity.SendNote(DamageNote(aMessage.myDamage));
+		myEntity.SendNote(DamageNote(static_cast<int>(aMessage.myDamage)));
 	}
 }
 

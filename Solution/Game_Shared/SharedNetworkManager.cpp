@@ -3,6 +3,7 @@
 
 #include <NetMessageConnectMessage.h>
 #include <NetMessageOnJoin.h>
+#include <NetMessageDisconnect.h>
 #include <NetMessagePingRequest.h>
 #include <NetMessagePingReply.h>
 #include <NetMessagePosition.h>
@@ -147,6 +148,9 @@ void SharedNetworkManager::HandleMessage()
 		case eNetMessageType::ON_JOIN:
 			UnpackAndHandle(NetMessageOnJoin(), buffer);
 			break;
+		case eNetMessageType::ON_DISCONNECT:
+			UnpackAndHandle(NetMessageDisconnect(), buffer);
+			break;
 		case eNetMessageType::PING_REQUEST:
 			UnpackAndHandle(NetMessagePingRequest(), buffer);
 			break;
@@ -175,6 +179,7 @@ void SharedNetworkManager::HandleMessage(const NetMessagePingReply&, const socka
 
 void SharedNetworkManager::HandleMessage(const NetMessageConnectMessage&, const sockaddr_in&) {}
 void SharedNetworkManager::HandleMessage(const NetMessagePingRequest&, const sockaddr_in&) {}
+void SharedNetworkManager::HandleMessage(const NetMessageDisconnect&, const sockaddr_in&) {}
 void SharedNetworkManager::HandleMessage(const NetMessageOnJoin&, const sockaddr_in&) {}
 void SharedNetworkManager::HandleMessage(const NetMessagePosition&, const sockaddr_in&) {}
 void SharedNetworkManager::HandleMessage(const NetMessageAddEnemy&, const sockaddr_in&){}

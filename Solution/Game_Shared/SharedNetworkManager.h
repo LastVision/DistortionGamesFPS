@@ -14,6 +14,7 @@ struct ImportantMessage
 
 class NetMessageConnectMessage;
 class NetMessageOnJoin;
+class NetMessageDisconnect;
 class NetMessagePingRequest;
 class NetMessagePingReply;
 class NetMessagePosition;
@@ -64,6 +65,7 @@ protected:
 
 	virtual void HandleMessage(const NetMessageConnectMessage& aMessage, const sockaddr_in& aSenderAddress);
 	virtual void HandleMessage(const NetMessageOnJoin& aMessage, const sockaddr_in& aSenderAddress);
+	virtual void HandleMessage(const NetMessageDisconnect& aMessage, const sockaddr_in& aSenderAddress);
 	virtual void HandleMessage(const NetMessagePingRequest& aMessage, const sockaddr_in& aSenderAddress);
 	virtual void HandleMessage(const NetMessagePingReply& aMessage, const sockaddr_in& aSenderAddress);
 	virtual void HandleMessage(const NetMessagePosition& aMessage, const sockaddr_in& aSenderAddress);

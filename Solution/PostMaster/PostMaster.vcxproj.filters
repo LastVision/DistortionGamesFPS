@@ -66,5 +66,8 @@
     <ClInclude Include="NetworkOnHitMessage.h">
       <Filter>Message\NetworkMessages</Filter>
     </ClInclude>
+    <ClInclude Include="NetworkRemovePlayer.h">
+      <Filter>Message\NetworkMessages</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

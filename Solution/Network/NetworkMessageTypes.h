@@ -6,6 +6,7 @@ enum class eNetMessageType
 	
 	ON_CONNECT,
 	ON_JOIN,
+	ON_DISCONNECT,
 
 	PING_REQUEST,
 	PING_REPLY,

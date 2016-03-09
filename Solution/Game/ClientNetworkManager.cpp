@@ -6,12 +6,14 @@
 
 #include <NetMessageConnectMessage.h>
 #include <NetMessageOnJoin.h>
+#include <NetMessageDisconnect.h>
 #include <NetMessagePingRequest.h>
 #include <NetMessagePingReply.h>
 #include <NetMessagePosition.h>
 #include <NetMessageAddEnemy.h>
 
 #include <NetworkAddPlayerMessage.h>
+#include <NetworkRemovePlayer.h>
 #include <NetworkAddEnemyMessage.h>
 #include <NetworkSetPositionMessage.h>
 #define BUFFERSIZE 512
@@ -143,9 +145,23 @@ void ClientNetworkManager::HandleMessage(const NetMessagePingRequest& aMessage, 
 	aMessage;
 	aSenderAddress;
 	NetMessagePingReply reply;
+	reply.mySenderID = myNetworkID;
 	reply.PackMessage();
 	myDataSent += reply.myStream.size() * sizeof(char);
 	myNetwork->Send(reply.myStream);
+}
+
+void ClientNetworkManager::HandleMessage(const NetMessageDisconnect& aMessage, const sockaddr_in& aSenderAddress)
+{
+	aSenderAddress;
+	if (aMessage.myClientID == myNetworkID)
+	{
+		MessageBox(NULL, "You have been disconnected!", "Connection Lost!", MB_ICONERROR | MB_OK);
+	}
+	else 
+	{
+		PostMaster::GetInstance()->SendMessage(NetworkRemovePlayerMessage(aMessage.myClientID));
+	}
 }
 
 void ClientNetworkManager::HandleMessage(const NetMessageConnectMessage& aMessage, const sockaddr_in& aSenderAddress)
@@ -185,5 +201,6 @@ void ClientNetworkManager::HandleMessage(const NetMessagePosition& aMessage, con
 
 void ClientNetworkManager::HandleMessage(const NetMessageAddEnemy& aMessage, const sockaddr_in& aSenderAddress)
 {
+	aSenderAddress;
 	PostMaster::GetInstance()->SendMessage(NetworkAddEnemyMessage(aMessage.myPosition, aMessage.myNetworkID));
 }

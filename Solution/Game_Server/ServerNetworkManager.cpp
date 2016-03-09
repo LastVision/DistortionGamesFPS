@@ -7,6 +7,7 @@
 
 #include <NetMessageConnectMessage.h>
 #include <NetMessageOnJoin.h>
+#include <NetMessageDisconnect.h>
 #include <NetMessagePingRequest.h>
 #include <NetMessagePingReply.h>
 #include <NetMessagePosition.h>
@@ -19,6 +20,7 @@
 #include <NetworkSetPositionMessage.h>
 #include <NetworkOnHitMessage.h>
 #define BUFFERSIZE 512
+#define NUM_TRY_BEFORE_DISCONNECT 10
 
 ServerNetworkManager* ServerNetworkManager::myInstance = nullptr;
 
@@ -144,14 +146,14 @@ void ServerNetworkManager::SendThread()
 
 void ServerNetworkManager::CreateConnection(const std::string& aName, const sockaddr_in& aSender)
 {
-	for (Connection& connection : myClients)
-	{
-		if (connection.myAddress.sin_addr.S_un.S_addr == aSender.sin_addr.S_un.S_addr) //._.
-		{
-			Utility::PrintEndl("User already connected!", (DARK_RED_BACK | WHITE_TEXT));
-			return;
-		}
-	}
+	//for (Connection& connection : myClients)
+	//{
+	//	if (connection.myAddress.sin_addr.S_un.S_addr == aSender.sin_addr.S_un.S_addr) //._.
+	//	{
+	//		Utility::PrintEndl("User already connected!", (DARK_RED_BACK | WHITE_TEXT));
+	//		return;
+	//	}
+	//}
 	myIDCount++;
 	Connection newConnection;
 	newConnection.myAddress = aSender;
@@ -178,9 +180,42 @@ void ServerNetworkManager::CreateConnection(const std::string& aName, const sock
 	PostMaster::GetInstance()->SendMessage(NetworkAddPlayerMessage(myIDCount, newConnection.myAddress));
 }
 
+void ServerNetworkManager::DisconnectConnection(const Connection& aConnection)
+{
+	//send disconnect message to the client
+	NetMessageDisconnect disconnect(aConnection.myID);
+	disconnect.PackMessage();
+	myNetwork->Send(disconnect.myStream, aConnection.myAddress);
+	AddMessage(disconnect);
+	//remove the disconnected client from server
+	std::string msg(aConnection.myName + " disconnected from server!");
+	Utility::PrintEndl(msg, LIGHT_BLUE_TEXT);
+	for (int i = 0; i < myClients.Size(); ++i)
+	{
+		if (aConnection.myID == myClients[i].myID)
+		{
+			myClients.RemoveCyclicAtIndex(i);
+			break;
+		}
+	}
+}
+
 void ServerNetworkManager::HandleMessage(const NetMessageConnectMessage& aMessage, const sockaddr_in& aSenderAddress)
 {
 	CreateConnection(aMessage.myName, aSenderAddress);
+}
+
+void ServerNetworkManager::HandleMessage(const NetMessagePingReply& aMessage, const sockaddr_in& aSenderAddress)
+{
+	__super::HandleMessage(aMessage, aSenderAddress);
+	for (Connection& c : myClients)
+	{
+		if (c.myID == aMessage.mySenderID)
+		{
+			c.myPingCount = 0;
+			break;
+		}
+	}
 }
 
 void ServerNetworkManager::HandleMessage(const NetMessagePingRequest&, const sockaddr_in& aSenderAddress)
@@ -189,6 +224,14 @@ void ServerNetworkManager::HandleMessage(const NetMessagePingRequest&, const soc
 	reply.PackMessage();
 
 	myNetwork->Send(reply.myStream, aSenderAddress);
+	for (Connection& c : myClients)
+	{
+		c.myPingCount++;
+		if (c.myPingCount > NUM_TRY_BEFORE_DISCONNECT)
+		{
+			DisconnectConnection(c);
+		}
+	}
 }
 
 void ServerNetworkManager::HandleMessage(const NetMessagePosition& aMessage, const sockaddr_in&)

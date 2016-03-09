@@ -21,6 +21,7 @@
 #include <NetMessageOnHit.h>
 
 #include <NetworkAddPlayerMessage.h>
+#include <NetworkRemovePlayer.h>
 #include <NetworkAddEnemyMessage.h>
 
 #include "ClientNetworkManager.h"
@@ -45,6 +46,7 @@ ClientLevel::ClientLevel()
 	//Prism::PhysicsInterface::GetInstance()->RayCast({ 0, 0, 0 }, { 0, 1, 0 }, 10.f);
 	//Prism::PhysicsInterface::GetInstance()->Update();
 	PostMaster::GetInstance()->Subscribe(eMessageType::NETWORK_ADD_PLAYER, this);
+	PostMaster::GetInstance()->Subscribe(eMessageType::NETWORK_REMOVE_PLAYER, this);
 	PostMaster::GetInstance()->Subscribe(eMessageType::NETWORK_ADD_ENEMY, this);
 
 	myScene = new Prism::Scene();
@@ -73,6 +75,7 @@ ClientLevel::~ClientLevel()
 
 	SAFE_DELETE(myEmitterManager);
 	PostMaster::GetInstance()->UnSubscribe(eMessageType::NETWORK_ADD_PLAYER, this);
+	PostMaster::GetInstance()->UnSubscribe(eMessageType::NETWORK_REMOVE_PLAYER, this);
 	PostMaster::GetInstance()->UnSubscribe(eMessageType::NETWORK_ADD_ENEMY, this);
 
 	myInstances.DeleteAll();
@@ -144,6 +147,18 @@ void ClientLevel::ReceiveMessage(const NetworkAddPlayerMessage& aMessage)
 	newPlayer->Reset();
 	myPlayers.Add(newPlayer);
 	Prism::MemoryTracker::GetInstance()->SetRunTime(isRunTime);
+}
+
+void ClientLevel::ReceiveMessage(const NetworkRemovePlayerMessage& aMessage)
+{
+	for (Entity* e : myPlayers)
+	{
+		if (e->GetComponent<NetworkComponent>() != nullptr 
+			&& e->GetComponent<NetworkComponent>()->GetNetworkID() == aMessage.myNetworkID)
+		{
+			e->RemoveFromScene();
+		}
+	}
 }
 
 void ClientLevel::ReceiveMessage(const NetworkAddEnemyMessage& aMessage)
