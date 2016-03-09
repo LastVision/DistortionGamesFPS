@@ -1,6 +1,7 @@
 #include "stdafx.h"
 
 #include "AnimationComponent.h"
+#include "FirstPersonRenderComponent.h"
 #include "GraphicsComponent.h"
 #include "HealthComponent.h"
 #include "InputComponent.h"
@@ -87,7 +88,12 @@ Entity::Entity(const EntityData& aEntityData, Prism::Scene* aScene, bool aClient
 
 	if (aEntityData.myInputData.myExistsInEntity == true)
 	{
-		myComponents[static_cast<int>(eComponentType::INPUT)] = new InputComponent(*this, aScene);
+		myComponents[static_cast<int>(eComponentType::INPUT)] = new InputComponent(*this);
+	}
+
+	if (aEntityData.myFirstPersonRenderData.myExistsInEntity == true)
+	{
+		myComponents[static_cast<int>(eComponentType::FIRST_PERSON_RENDER)] = new FirstPersonRenderComponent(*this, aScene);
 	}
 
 	

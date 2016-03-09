@@ -15,6 +15,7 @@
 #include "EntityFactory.h"
 #include "Entity.h"
 #include <EntityData.h>
+#include <FirstPersonRenderComponent.h>
 #include "GameEnum.h"
 #include <PhysicsInterface.h>
 
@@ -133,8 +134,9 @@ void ClientLevel::Render()
 	myDeferredRenderer->Render(myScene);
 	//myScene->Render();
 	//myDeferredRenderer->Render(myScene);
-	myPlayer->GetComponent<InputComponent>()->Render();
 	myEmitterManager->RenderEmitters();
+	myPlayer->GetComponent<InputComponent>()->Render();
+	myPlayer->GetComponent<FirstPersonRenderComponent>()->Render();
 }
 
 void ClientLevel::ReceiveMessage(const NetworkAddPlayerMessage& aMessage)

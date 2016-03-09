@@ -109,3 +109,8 @@ void ComponentLoader::LoadShootingComponent(XMLReader& aDocument, tinyxml2::XMLE
 {
 	aOutputData.myExistsInEntity = true;
 }
+
+void ComponentLoader::LoadFirstPersonRenderComponent(XMLReader& aDocument, tinyxml2::XMLElement* aSourceElement, FirstPersonRenderComponentData& aOutputData)
+{
+	aOutputData.myExistsInEntity = true;
+}

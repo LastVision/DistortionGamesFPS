@@ -1,5 +1,6 @@
 #include "stdafx.h"
 
+#include "FirstPersonRenderComponent.h"
 #include "GrenadeLauncher.h"
 #include <InputWrapper.h>
 #include "InputComponent.h"
@@ -43,13 +44,13 @@ void ShootingComponent::Update(float aDelta)
 			switch (myCurrentWeapon->GetWeaponType())
 			{
 			case eWeaponType::SHOTGUN:
-				//myPlayer->AddIntention(ePlayerState::SHOTGUN_HOLSTER, true);
+				myEntity.GetComponent<FirstPersonRenderComponent>()->AddIntention(ePlayerState::SHOTGUN_HOLSTER, true);
 				break;
 			case eWeaponType::GRENADE_LAUNCHER:
-				//myPlayer->AddIntention(ePlayerState::GRENADE_LAUNCHER_HOLSTER, false);
+				myEntity.GetComponent<FirstPersonRenderComponent>()->AddIntention(ePlayerState::GRENADE_LAUNCHER_HOLSTER, false);
 				break;
 			}
-			//myPlayer->AddIntention(ePlayerState::PISTOL_DRAW, false);
+			myEntity.GetComponent<FirstPersonRenderComponent>()->AddIntention(ePlayerState::PISTOL_DRAW, false);
 			myCurrentWeapon = myPistol;
 		}
 	}
@@ -60,13 +61,13 @@ void ShootingComponent::Update(float aDelta)
 			switch (myCurrentWeapon->GetWeaponType())
 			{
 			case eWeaponType::PISTOL:
-				//myPlayer->AddIntention(ePlayerState::PISTOL_HOLSTER, true);
+				myEntity.GetComponent<FirstPersonRenderComponent>()->AddIntention(ePlayerState::PISTOL_HOLSTER, true);
 				break;
 			case eWeaponType::GRENADE_LAUNCHER:
-				//myPlayer->AddIntention(ePlayerState::GRENADE_LAUNCHER_HOLSTER, false);
+				myEntity.GetComponent<FirstPersonRenderComponent>()->AddIntention(ePlayerState::GRENADE_LAUNCHER_HOLSTER, false);
 				break;
 			}
-			//myPlayer->AddIntention(ePlayerState::SHOTGUN_DRAW, false);
+			myEntity.GetComponent<FirstPersonRenderComponent>()->AddIntention(ePlayerState::SHOTGUN_DRAW, false);
 			myCurrentWeapon = myShotgun;
 		}
 	}
@@ -77,13 +78,13 @@ void ShootingComponent::Update(float aDelta)
 			switch (myCurrentWeapon->GetWeaponType())
 			{
 			case eWeaponType::PISTOL:
-				//myPlayer->AddIntention(ePlayerState::PISTOL_HOLSTER, true);
+				myEntity.GetComponent<FirstPersonRenderComponent>()->AddIntention(ePlayerState::PISTOL_HOLSTER, true);
 				break;
 			case eWeaponType::SHOTGUN:
-				//myPlayer->AddIntention(ePlayerState::SHOTGUN_HOLSTER, false);
+				myEntity.GetComponent<FirstPersonRenderComponent>()->AddIntention(ePlayerState::SHOTGUN_HOLSTER, false);
 				break;
 			}
-			//myPlayer->AddIntention(ePlayerState::GRENADE_LAUNCHER_DRAW, false);
+			myEntity.GetComponent<FirstPersonRenderComponent>()->AddIntention(ePlayerState::GRENADE_LAUNCHER_DRAW, false);
 			myCurrentWeapon = myGrenadeLauncher;
 		}
 	}
@@ -93,13 +94,13 @@ void ShootingComponent::Update(float aDelta)
 		switch (myCurrentWeapon->GetWeaponType())
 		{
 		case eWeaponType::PISTOL:
-			//myPlayer->AddIntention(ePlayerState::PISTOL_RELOAD, true);
+			myEntity.GetComponent<FirstPersonRenderComponent>()->AddIntention(ePlayerState::PISTOL_RELOAD, true);
 			break;
 		case eWeaponType::SHOTGUN:
-			//myPlayer->AddIntention(ePlayerState::SHOTGUN_RELOAD, true);
+			myEntity.GetComponent<FirstPersonRenderComponent>()->AddIntention(ePlayerState::SHOTGUN_RELOAD, true);
 			break;
 		case eWeaponType::GRENADE_LAUNCHER:
-			//myPlayer->AddIntention(ePlayerState::GRENADE_LAUNCHER_RELOAD, true);
+			myEntity.GetComponent<FirstPersonRenderComponent>()->AddIntention(ePlayerState::GRENADE_LAUNCHER_RELOAD, true);
 			break;
 		default:
 			break;
@@ -114,7 +115,7 @@ void ShootingComponent::Update(float aDelta)
 			if (myPistol->GetAmmoInClip() > 0)
 			{
 				myPistol->Shoot(aOrientation);
-				//myPlayer->AddIntention(ePlayerState::PISTOL_FIRE, true);
+				myEntity.GetComponent<FirstPersonRenderComponent>()->AddIntention(ePlayerState::PISTOL_FIRE, true);
 				//ShootAtDirection(aOrientation);
 			}
 		}
@@ -125,7 +126,7 @@ void ShootingComponent::Update(float aDelta)
 		{
 			//ShootAtDirection(aOrientation);
 			myCurrentWeapon->Shoot(aOrientation);
-			//myPlayer->AddIntention(ePlayerState::GRENADE_LAUNCHER_FIRE, true);
+			myEntity.GetComponent<FirstPersonRenderComponent>()->AddIntention(ePlayerState::GRENADE_LAUNCHER_FIRE, true);
 		}
 	}
 	else if (myCurrentWeapon == myShotgun)
@@ -135,7 +136,7 @@ void ShootingComponent::Update(float aDelta)
 			if (myShotgun->GetAmmoInClip() > 0)
 			{
 				myCurrentWeapon->Shoot(aOrientation);
-				//myPlayer->AddIntention(ePlayerState::SHOTGUN_FIRE, true);
+				myEntity.GetComponent<FirstPersonRenderComponent>()->AddIntention(ePlayerState::SHOTGUN_FIRE, true);
 			}
 		}
 	}

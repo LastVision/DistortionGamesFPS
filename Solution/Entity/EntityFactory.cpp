@@ -171,6 +171,10 @@ void EntityFactory::LoadEntity(const char* aEntityPath)
 		{
 			myComponentLoader->LoadShootingComponent(entityDocument, e, newData.myShootingData);
 		}
+		else if (elementName == CU::ToLower("FirstPersonRenderComponent"))
+		{
+			myComponentLoader->LoadFirstPersonRenderComponent(entityDocument, e, newData.myFirstPersonRenderData);
+		}
 		else
 		{
 			std::string errorMessage = "The component " + elementName +
