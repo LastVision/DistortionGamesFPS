@@ -190,6 +190,7 @@ void ServerNetworkManager::DisconnectConnection(const Connection& aConnection)
 	//remove the disconnected client from server
 	std::string msg(aConnection.myName + " disconnected from server!");
 	Utility::PrintEndl(msg, LIGHT_BLUE_TEXT);
+
 	for (int i = 0; i < myClients.Size(); ++i)
 	{
 		if (aConnection.myID == myClients[i].myID)
@@ -243,6 +244,25 @@ void ServerNetworkManager::HandleMessage(const NetMessagePingRequest&, const soc
 		if (c.myPingCount > RECONNECT_ATTEMPTS)
 		{
 			DisconnectConnection(c);
+		}
+	}
+}
+
+void ServerNetworkManager::HandleMessage(const NetMessageOnHit& aMessage, const sockaddr_in& aSenderAddress)
+{
+	__super::HandleMessage(aMessage, aSenderAddress);
+	for (Connection& connection : myClients)
+	{
+		if (aMessage.myNetworkID == static_cast<unsigned int>(connection.myID))
+		{
+			NetMessageOnHit toSend;
+			toSend.myID = aMessage.myID;
+			toSend.myDamage = aMessage.myDamage;
+			toSend.myNetworkID = aMessage.myNetworkID;
+			toSend.mySenderID = aMessage.mySenderID;
+			toSend.PackMessage();
+			myNetwork->Send(toSend.myStream, connection.myAddress);
+			break;
 		}
 	}
 }

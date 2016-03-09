@@ -109,7 +109,10 @@ void ClientLevel::Update(const float aDeltaTime)
 
 	if (CU::InputWrapper::GetInstance()->KeyDown(DIK_J))
 	{
-		ClientNetworkManager::GetInstance()->AddMessage(NetMessageOnHit(eNetMessageType::PLAYER_ON_HIT, 5.f, 2));
+		for (unsigned int i = 0; i < 8; ++i)
+		{
+			ClientNetworkManager::GetInstance()->AddMessage(NetMessageOnHit(eNetMessageType::PLAYER_ON_HIT, 5.f, i));
+		}
 	}
 	if (CU::InputWrapper::GetInstance()->KeyDown(DIK_I))
 	{
@@ -149,9 +152,9 @@ void ClientLevel::ReceiveMessage(const NetworkAddPlayerMessage& aMessage)
 {
 	if (aMessage.myNetworkID == ClientNetworkManager::GetInstance()->GetNetworkID())
 	{
-		myPlayer->GetComponent<InputComponent>()->SetNetworkID(aMessage.myNetworkID);
+		myPlayer->GetComponent<NetworkComponent>()->SetNetworkID(aMessage.myNetworkID);
 	}
-	else 
+	else
 	{
 		bool isRunTime = Prism::MemoryTracker::GetInstance()->GetRunTime();
 		Prism::MemoryTracker::GetInstance()->SetRunTime(false);
@@ -169,7 +172,7 @@ void ClientLevel::ReceiveMessage(const NetworkRemovePlayerMessage& aMessage)
 {
 	for (Entity* e : myPlayers)
 	{
-		if (e->GetComponent<NetworkComponent>() != nullptr 
+		if (e->GetComponent<NetworkComponent>() != nullptr
 			&& e->GetComponent<NetworkComponent>()->GetNetworkID() == aMessage.myNetworkID)
 		{
 			e->RemoveFromScene();
