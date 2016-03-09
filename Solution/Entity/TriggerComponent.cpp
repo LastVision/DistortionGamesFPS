@@ -16,7 +16,7 @@ TriggerComponent::~TriggerComponent()
 
 void TriggerComponent::Update(float aDelta)
 {
-
+	aDelta;
 
 
 

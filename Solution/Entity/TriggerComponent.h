@@ -15,7 +15,9 @@ public:
 	static eComponentType GetTypeStatic();
 	eComponentType GetType() override;
 
-	eTriggerType GetTriggerType();
+	eTriggerType GetTriggerType() const;
+	int GetValue() const;
+	const std::string& GetID() const;
 
 private:
 
@@ -34,7 +36,17 @@ inline eComponentType TriggerComponent::GetType()
 	return GetTypeStatic();
 }
 
-inline eTriggerType TriggerComponent::GetTriggerType()
+inline eTriggerType TriggerComponent::GetTriggerType() const
 {
 	return myTriggerType;
+}
+
+inline int TriggerComponent::GetValue() const
+{
+	return myData.myValue;
+}
+
+inline const std::string& TriggerComponent::GetID() const
+{
+	return myData.myID;
 }

@@ -8,6 +8,7 @@
 #include "ShootingComponentData.h"
 #include "TriggerComponentData.h"
 #include "XMLReader.h"
+#include "GameEnum.h"
 
 void ComponentLoader::LoadAnimationComponent(XMLReader& aDocument, tinyxml2::XMLElement* aSourceElement, AnimationComponentData& aOutputData)
 {
@@ -95,7 +96,13 @@ void ComponentLoader::LoadTriggerComponent(XMLReader& aDocument, tinyxml2::XMLEl
 		std::string elementName = CU::ToLower(e->Name());
 		if (elementName == CU::ToLower("Trigger"))
 		{
-			aDocument.ForceReadAttribute(e, "type", aOutputData.myTriggerType);
+			std::string name = "";
+
+			aDocument.ForceReadAttribute(e, "type", name);
+			aDocument.ReadAttribute(e, "value", aOutputData.myValue);
+			aDocument.ReadAttribute(e, "ID", aOutputData.myID);
+
+			aOutputData.myTriggerType = ConvertToTriggerEnum(name);
 		}
 	}
 }
@@ -113,4 +120,20 @@ void ComponentLoader::LoadShootingComponent(XMLReader& aDocument, tinyxml2::XMLE
 void ComponentLoader::LoadFirstPersonRenderComponent(XMLReader& aDocument, tinyxml2::XMLElement* aSourceElement, FirstPersonRenderComponentData& aOutputData)
 {
 	aOutputData.myExistsInEntity = true;
+}
+
+int ComponentLoader::ConvertToTriggerEnum(std::string aName)
+{
+	if (aName == "healthPack")
+	{
+		return static_cast<int>(eTriggerType::HEALTH_PACK);
+	}
+	else if (aName == "changeLevel")
+	{
+		return static_cast<int>(eTriggerType::LEVEL_CHANGE);
+	}
+
+
+	DL_ASSERT("[ComponentLoader] No trigger type in trigger component named " + aName);
+	return static_cast<int>(eTriggerType::_COUNT);
 }
