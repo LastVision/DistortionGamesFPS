@@ -472,7 +472,7 @@ namespace Prism
 	}
 
 	void PhysicsManager::Create(PhysEntity* aEntity, const PhysEntityData& aPhysData
-		, const CU::Matrix44<float>& aOrientation, const std::string& aFBXPath
+		, float* aOrientation, const std::string& aFBXPath
 		, physx::PxRigidDynamic** aDynamicBodyOut, physx::PxRigidStatic** aStaticBodyOut
 		, physx::PxShape*** someShapesOut)
 	{
@@ -482,7 +482,7 @@ namespace Prism
 		physx::PxReal density = 1.f;
 
 		//Use 4x4float here instead of orientation
-		physx::PxMat44 matrix(aOrientation.myMatrix[0]);
+		physx::PxMat44 matrix(aOrientation);
 		physx::PxTransform transform(matrix);
 
 		*aStaticBodyOut = nullptr;
@@ -495,7 +495,7 @@ namespace Prism
 			*aStaticBodyOut = core->createRigidStatic(transform);
 			(*aStaticBodyOut)->createShape(physx::PxTriangleMeshGeometry(mesh), *material);
 			(*aStaticBodyOut)->setName("Tjohej");
-			(*aStaticBodyOut)->userData = this;
+			(*aStaticBodyOut)->userData = aEntity;
 			GetScene()->addActor(*(*aStaticBodyOut));
 		}
 		else if (aPhysData.myPhysics == ePhysics::DYNAMIC)
@@ -508,7 +508,7 @@ namespace Prism
 			*aDynamicBodyOut = physx::PxCreateDynamic(*core, transform, geometry, *material, density);
 			(*aDynamicBodyOut)->setAngularDamping(0.75);
 			(*aDynamicBodyOut)->setLinearVelocity(physx::PxVec3(0, 0, 0));
-			(*aDynamicBodyOut)->userData = this;
+			(*aDynamicBodyOut)->userData = aEntity;
 			GetScene()->addActor(*(*aDynamicBodyOut));
 
 			physx::PxU32 nShapes = (*aDynamicBodyOut)->getNbShapes();
@@ -523,7 +523,7 @@ namespace Prism
 				, aPhysData.myPhysicsMax.z - aPhysData.myPhysicsMin.z);
 			physx::PxBoxGeometry geometry(dimensions / 2.f);
 			*aStaticBodyOut = physx::PxCreateStatic(*core, transform, geometry, *material);
-			(*aStaticBodyOut)->userData = this;
+			(*aStaticBodyOut)->userData = aEntity;
 			(*aStaticBodyOut)->setName("Phantom");
 
 			physx::PxU32 nShapes = (*aStaticBodyOut)->getNbShapes();
@@ -536,11 +536,14 @@ namespace Prism
 			treasureShape->setFlag(physx::PxShapeFlag::eTRIGGER_SHAPE, true);
 			GetScene()->addActor(*(*aStaticBodyOut));
 		}
+
+		myPhysEntities.Add(aEntity);
 	}
 
 	void PhysicsManager::Remove(physx::PxActor* aActor)
 	{
 		GetScene()->removeActor(*aActor);
+		myPhysEntities.RemoveCyclic(static_cast<PhysEntity*>(aActor->userData));
 	}
 
 	physx::PxTriangleMesh* PhysicsManager::GetPhysMesh(const std::string& aFBXPath)

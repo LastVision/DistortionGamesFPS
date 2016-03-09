@@ -29,7 +29,7 @@ namespace Prism
 
 		myPhysicsType = aPhysData.myPhysics;
 
-		PhysicsInterface::GetInstance()->Create(this, aPhysData, aOrientation, aFBXPath, &myDynamicBody, &myStaticBody, &myShapes);
+		PhysicsInterface::GetInstance()->Create(this, aPhysData, my4x4Float, aFBXPath, &myDynamicBody, &myStaticBody, &myShapes);
 	}
 
 
@@ -87,9 +87,9 @@ namespace Prism
 		myThread4x4Float[15] = 1;
 
 
-		//myPosition[0] = graphicsTransform.p.x;
-		//myPosition[1] = graphicsTransform.p.y;
-		//myPosition[2] = graphicsTransform.p.z;
+		myPosition[0] = graphicsTransform.p.x;
+		myPosition[1] = graphicsTransform.p.y;
+		myPosition[2] = graphicsTransform.p.z;
 	}
 
 	void PhysEntity::AddForce(const CU::Vector3<float>& aDirection, float aMagnitude)
