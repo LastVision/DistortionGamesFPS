@@ -10,6 +10,7 @@
 #include <NetworkSendPositionMessage.h>
 #include <PostMaster.h>
 #include <PhysicsInterface.h>
+#include "PhysicsComponent.h"
 #include "ShootingComponent.h"
 #include <XMLReader.h>
 
@@ -37,7 +38,7 @@ InputComponent::InputComponent(Entity& anEntity, const InputComponentData& aData
 
 	mySendTime = 3;
 
-	myCapsuleControllerId = Prism::PhysicsInterface::GetInstance()->CreatePlayerController(myOrientation.GetPos());
+	//myCapsuleControllerId = Prism::PhysicsInterface::GetInstance()->CreatePlayerController(myOrientation.GetPos());
 }
 
 InputComponent::~InputComponent()
@@ -162,10 +163,10 @@ void InputComponent::UpdateMovement(float aDelta)
 	}
 	movement.y = myVerticalSpeed;
 
-	Prism::PhysicsInterface::GetInstance()->Move(myCapsuleControllerId, movement, 0.05f, aDelta);
+	Prism::PhysicsInterface::GetInstance()->Move(myEntity.GetComponent<PhysicsComponent>()->GetCapsuleControllerId(), movement, 0.05f, aDelta);
 
 	CU::Vector3<float> pos;
-	Prism::PhysicsInterface::GetInstance()->GetPosition(myCapsuleControllerId, pos);
+	Prism::PhysicsInterface::GetInstance()->GetPosition(myEntity.GetComponent<PhysicsComponent>()->GetCapsuleControllerId(), pos);
 
 	myOrientation.SetPos(pos);
 	CU::Vector3<float> forward = CU::Cross(myOrientation.GetRight(), CU::Vector3<float>(0.f, 1.f, 0.f));

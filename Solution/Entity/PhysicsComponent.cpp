@@ -22,9 +22,15 @@ PhysicsComponent::PhysicsComponent(Entity& aEntity, const PhysicsComponentData& 
 
 	myPhysicsType = aPhysicsComponentData.myPhysicsType;
 
-	myCallbackStruct = Prism::PhysicsCallbackStruct(myData, std::bind(&PhysicsComponent::SwapOrientations, this), std::bind(&PhysicsComponent::UpdateOrientation, this));
-
-	Prism::PhysicsInterface::GetInstance()->Create(this, myCallbackStruct, my4x4Float, aFBXPath, &myDynamicBody, &myStaticBody, &myShapes);
+	if (myPhysicsType != ePhysics::CAPSULE)
+	{
+		myCallbackStruct = Prism::PhysicsCallbackStruct(myData, std::bind(&PhysicsComponent::SwapOrientations, this), std::bind(&PhysicsComponent::UpdateOrientation, this));
+		Prism::PhysicsInterface::GetInstance()->Create(this, myCallbackStruct, my4x4Float, aFBXPath, &myDynamicBody, &myStaticBody, &myShapes);
+	}
+	else if (myPhysicsType == ePhysics::CAPSULE)
+	{
+		myCapsuleControllerId = Prism::PhysicsInterface::GetInstance()->CreatePlayerController(myEntity.GetOrientation().GetPos(), this);
+	}
 }
 
 
@@ -32,11 +38,6 @@ PhysicsComponent::~PhysicsComponent()
 {
 	delete[] myShapes;
 	myShapes = nullptr;
-}
-
-void PhysicsComponent::Update(float aDelta)
-{
-
 }
 
 void PhysicsComponent::SwapOrientations()
@@ -92,11 +93,11 @@ void PhysicsComponent::RemoveFromScene()
 {
 	if (myPhysicsType == ePhysics::DYNAMIC)
 	{
-		//PhysicsInterface::GetInstance()->Remove(myDynamicBody);
+		Prism::PhysicsInterface::GetInstance()->Remove(myDynamicBody, myData);
 	}
 	else
 	{
-		//PhysicsInterface::GetInstance()->Remove(myStaticBody);
+		Prism::PhysicsInterface::GetInstance()->Remove(myStaticBody, myData);
 	}
 
 }

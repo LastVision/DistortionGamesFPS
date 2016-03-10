@@ -4,6 +4,7 @@
 #include "HealthComponent.h"
 #include "HealthComponentData.h"
 #include "HealthNote.h"
+#include "TriggerComponent.h"
 
 HealthComponent::HealthComponent(Entity& anEntity, const HealthComponentData& someData)
 	: Component(anEntity)
@@ -28,10 +29,11 @@ void HealthComponent::ReceiveNote(const HealthNote& aNote)
 
 void HealthComponent::ReceiveNote(const CollisionNote& aNote)
 {
-
-
-	// do stuff
-
+	if (aNote.myOther->GetComponent<TriggerComponent>()->GetTriggerType() == eTriggerType::HEALTH_PACK)
+	{
+		Heal(aNote.myOther->GetComponent<TriggerComponent>()->GetValue());
+		//aNote.myOther->Kill();
+	}
 }
 
 void HealthComponent::TakeDamage(int aDamage)

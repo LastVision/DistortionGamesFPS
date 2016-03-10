@@ -82,6 +82,7 @@ int main(int argC,      // Number of strings in array argv
 
 	if (calcCollisionRadius)
 	{
+		system("CLS");
 		std::cout << "---| Calculating CollisionRadius |---\n" << std::endl;
 
 		reader = new CalcRadiusReader();
@@ -90,10 +91,12 @@ int main(int argC,      // Number of strings in array argv
 		delete reader;
 
 		std::cout << "---| CollisionRadius Done |---\n" << std::endl;
+		system("CLS");
 	}
 
 	if (convertDGFX == true)
 	{
+		system("CLS");
 		std::cout << "---| Converting FBX to DGFX |---\n" << std::endl;
 
 		reader = new DGFXReader();
@@ -103,10 +106,12 @@ int main(int argC,      // Number of strings in array argv
 		find_directory("Data", *reader);
 		delete reader;
 		std::cout << "---| DGFX Converting Done |---\n" << std::endl;
+		system("CLS");
 	}
 
 	if (readLevel)
 	{
+		system("CLS");
 		std::cout << "\n---| Reading Level |---\n" << std::endl;
 
 		reader = new LevelReader();
@@ -114,6 +119,7 @@ int main(int argC,      // Number of strings in array argv
 		delete reader;
 
 		std::cout << "\n---| Level Reading Done |---\n" << std::endl;
+		system("CLS");
 	}
 	
 

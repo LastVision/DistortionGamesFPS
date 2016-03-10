@@ -197,25 +197,23 @@ void ClientNetworkManager::HandleMessage(const NetMessageDisconnect& aMessage, c
 
 void ClientNetworkManager::HandleMessage(const NetMessageConnectMessage& aMessage, const sockaddr_in& aSenderAddress)
 {
-	if (CheckIfImportantMessage(aMessage) == true)
-	{
-		AddMessage(NetMessageImportantReply(aMessage.GetImportantID()));
-	}
+	
 	aSenderAddress;
 	myNetworkID = aMessage.myServerID;
 	if (aMessage.myOtherClientID != myNetworkID)
 	{
 		myClients.Add(OtherClients(aMessage.myOtherClientID));
+		
+	}
+	if (CheckIfImportantMessage(aMessage) == true)
+	{
+		AddMessage(NetMessageImportantReply(aMessage.GetImportantID()));
 	}
 	PostMaster::GetInstance()->SendMessage(NetworkAddPlayerMessage(aMessage.myOtherClientID));
 }
 
 void ClientNetworkManager::HandleMessage(const NetMessageOnJoin& aMessage, const sockaddr_in& aSenderAddress)
 {
-	if (CheckIfImportantMessage(aMessage) == true)
-	{
-		AddMessage(NetMessageImportantReply(aMessage.GetImportantID()));
-	}
 	aSenderAddress;
 	for (OtherClients& client : myClients)
 	{
@@ -224,11 +222,16 @@ void ClientNetworkManager::HandleMessage(const NetMessageOnJoin& aMessage, const
 			return;
 		}
 	}
-
+	
 	if (aMessage.mySenderID != myNetworkID)
 	{
 		myClients.Add(OtherClients(aMessage.mySenderID));
 		PostMaster::GetInstance()->SendMessage(NetworkAddPlayerMessage(static_cast<unsigned short>(aMessage.mySenderID)));
+		
+	}
+	if (CheckIfImportantMessage(aMessage) == true)
+	{
+		AddMessage(NetMessageImportantReply(aMessage.GetImportantID()));
 	}
 }
 

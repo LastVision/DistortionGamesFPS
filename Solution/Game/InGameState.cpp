@@ -1,6 +1,7 @@
 #include "stdafx.h"
 
 #include "Console.h"
+#include <GameStateMessage.h>
 #include <EffectContainer.h>
 #include <FadeMessage.h>
 #include "InGameState.h"
@@ -24,6 +25,7 @@ InGameState::InGameState()
 
 InGameState::~InGameState()
 {
+	PostMaster::GetInstance()->UnSubscribe(eMessageType::GAME_STATE, this);
 	Console::Destroy();
 	SAFE_DELETE(myLevel);
 	SAFE_DELETE(myLevelFactory);
@@ -31,6 +33,7 @@ InGameState::~InGameState()
 
 void InGameState::InitState(StateStackProxy* aStateStackProxy, GUI::Cursor* aCursor)
 {
+	myLevelToLoad = -1;
 	myIsLetThrough = false;
 	myStateStack = aStateStackProxy;
 	myStateStatus = eStateStatus::eKeepState;
@@ -41,6 +44,8 @@ void InGameState::InitState(StateStackProxy* aStateStackProxy, GUI::Cursor* aCur
 	myLevel = static_cast<ClientLevel*>(myLevelFactory->LoadCurrentLevel());
 
 	myIsActiveState = true;
+
+	PostMaster::GetInstance()->Subscribe(eMessageType::GAME_STATE, this);
 }
 
 void InGameState::EndState()
@@ -80,6 +85,14 @@ const eStateStatus InGameState::Update(const float& aDeltaTime)
 		myLevel = static_cast<ClientLevel*>(myLevelFactory->LoadLevel(3));
 	}
 
+	if (myLevelToLoad != -1)
+	{
+		SET_RUNTIME(false);
+		SAFE_DELETE(myLevel);
+		myLevel = static_cast<ClientLevel*>(myLevelFactory->LoadLevel(myLevelToLoad));
+		myLevelToLoad = -1;
+	}
+
 	myLevel->Update(aDeltaTime);
 
 	//LUA::ScriptSystem::GetInstance()->CallFunction("Update", { aDeltaTime });
@@ -103,6 +116,17 @@ void InGameState::ResumeState()
 {
 	myIsActiveState = true;
 	PostMaster::GetInstance()->SendMessage(FadeMessage(1.f / 3.f));
+	myLevelToLoad = -1;
+}
+
+void InGameState::ReceiveMessage(const GameStateMessage& aMessage)
+{
+	switch (aMessage.myGameState)
+	{
+	case eGameState::LOAD_LEVEL:
+		myLevelToLoad = aMessage.myID;
+		break;
+	}
 }
 
 void InGameState::OnResize(int, int)

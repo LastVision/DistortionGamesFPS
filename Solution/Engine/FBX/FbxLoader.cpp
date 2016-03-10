@@ -1701,5 +1701,6 @@ FbxModelData* FBXLoader::loadModel(const char* aFile, CU::GrowingArray<std::stri
 		reader.ForceReadAttribute(reader.ForceFindFirstChild(reader.ForceFindFirstChild("root"), "radius"), "value", myLoadingModel->myRadius);
 		reader.CloseDocument();
 	}
+
 	return myLoadingModel;
 }
