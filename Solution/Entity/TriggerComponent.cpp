@@ -2,7 +2,6 @@
 #include "CollisionNote.h"
 #include "TriggerComponent.h"
 #include "TriggerComponentData.h"
-#include <PhysEntity.h>
 
 TriggerComponent::TriggerComponent(Entity& anEntity, const TriggerComponentData& someData)
 	: Component(anEntity)

@@ -126,6 +126,7 @@ enum class eComponentType
 	INPUT,
 	SHOOTING,
 	FIRST_PERSON_RENDER,
+	PHYSICS,
 	_COUNT,
 };
 

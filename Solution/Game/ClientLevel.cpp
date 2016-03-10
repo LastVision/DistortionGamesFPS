@@ -32,7 +32,6 @@
 #include "DeferredRenderer.h"
 #include <PointLight.h>
 
-#include <PhysEntity.h>
 #include <PhysicsInterface.h>
 #include <PostMaster.h>
 

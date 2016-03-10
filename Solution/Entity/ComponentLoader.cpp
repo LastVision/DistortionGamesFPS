@@ -5,6 +5,7 @@
 #include "EntityEnumConverter.h"
 #include "HealthComponentData.h"
 #include "NetworkComponentData.h"
+#include "PhysicsComponentData.h"
 #include "ShootingComponentData.h"
 #include "TriggerComponentData.h"
 #include "XMLReader.h"
@@ -77,6 +78,52 @@ void ComponentLoader::LoadNetworkComponent(XMLReader& aDocument, tinyxml2::XMLEl
 	aDocument;
 	aSourceElement;
 	aOutputData.myExistsInEntity = true;
+}
+
+void ComponentLoader::LoadPhysicsComponent(XMLReader& aDocument, tinyxml2::XMLElement* aSourceElement, PhysicsComponentData& aOutputData)
+{
+	std::string physicsType;
+	aDocument.ForceReadAttribute(aDocument.ForceFindFirstChild(aSourceElement, "type"), "value", physicsType);
+
+	aOutputData.myExistsInEntity = true;
+
+	if (CU::ToLower(physicsType) == "static")
+	{
+		aOutputData.myPhysicsType = ePhysics::STATIC;
+	}
+	else if (CU::ToLower(physicsType) == "dynamic")
+	{
+		aOutputData.myPhysicsType = ePhysics::DYNAMIC;
+
+		aDocument.ForceReadAttribute(aDocument.ForceFindFirstChild(aSourceElement, "min"), "x", aOutputData.myPhysicsMin.x);
+		aDocument.ForceReadAttribute(aDocument.ForceFindFirstChild(aSourceElement, "min"), "y", aOutputData.myPhysicsMin.y);
+		aDocument.ForceReadAttribute(aDocument.ForceFindFirstChild(aSourceElement, "min"), "z", aOutputData.myPhysicsMin.z);
+
+		aDocument.ForceReadAttribute(aDocument.ForceFindFirstChild(aSourceElement, "max"), "x", aOutputData.myPhysicsMax.x);
+		aDocument.ForceReadAttribute(aDocument.ForceFindFirstChild(aSourceElement, "max"), "y", aOutputData.myPhysicsMax.y);
+		aDocument.ForceReadAttribute(aDocument.ForceFindFirstChild(aSourceElement, "max"), "z", aOutputData.myPhysicsMax.z);
+	}
+	else if (CU::ToLower(physicsType) == "phantom")
+	{
+		aOutputData.myPhysicsType = ePhysics::PHANTOM;
+
+		aDocument.ForceReadAttribute(aDocument.ForceFindFirstChild(aSourceElement, "min"), "x", aOutputData.myPhysicsMin.x);
+		aDocument.ForceReadAttribute(aDocument.ForceFindFirstChild(aSourceElement, "min"), "y", aOutputData.myPhysicsMin.y);
+		aDocument.ForceReadAttribute(aDocument.ForceFindFirstChild(aSourceElement, "min"), "z", aOutputData.myPhysicsMin.z);
+
+		aDocument.ForceReadAttribute(aDocument.ForceFindFirstChild(aSourceElement, "max"), "x", aOutputData.myPhysicsMax.x);
+		aDocument.ForceReadAttribute(aDocument.ForceFindFirstChild(aSourceElement, "max"), "y", aOutputData.myPhysicsMax.y);
+		aDocument.ForceReadAttribute(aDocument.ForceFindFirstChild(aSourceElement, "max"), "z", aOutputData.myPhysicsMax.z);
+	}
+	else if (CU::ToLower(physicsType) == "capsule")
+	{
+		aOutputData.myPhysicsType = ePhysics::CAPSULE;
+	}
+	else
+	{
+		//DL_ASSERT(CU::Concatenate("Invalid phyics-type on %s %s", entityType.c_str(), entitySubType.c_str()));
+		DL_ASSERT("Failed to load PhysicsComponent");
+	}
 }
 
 void ComponentLoader::LoadProjectileComponent(XMLReader& aDocument, tinyxml2::XMLElement* aSourceElement, ProjectileComponentData& aOutputData)
