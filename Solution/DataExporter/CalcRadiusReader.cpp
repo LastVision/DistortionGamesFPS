@@ -5,6 +5,29 @@
 #include <iostream>
 #include <CommonHelper.h>
 
+
+CalcRadiusReader::CalcRadiusReader()
+{
+	myErrors.Init(16);
+}
+
+CalcRadiusReader::~CalcRadiusReader()
+{
+	if (myErrors.Size() > 0)
+	{
+		system("CLS");
+		std::cout << "\n--- RADIUS ERRORS ---\n" << std::endl;
+
+		for (int i = 0; i < myErrors.Size(); ++i)
+		{
+			std::string error(myErrors[i].begin() + 20, myErrors[i].end());
+			std::cout << error << std::endl << std::endl;;
+		}
+
+		system("PAUSE");
+	}
+}
+
 void CalcRadiusReader::ReadFile(const std::string& aFilePath)
 {
 	if (aFilePath.compare(aFilePath.size() - 4, 4, ".fbx") == 0
@@ -16,9 +39,12 @@ void CalcRadiusReader::ReadFile(const std::string& aFilePath)
 		myFactory.LoadModelForRadiusCalc(aFilePath.c_str(), vertices);
 		float distance = CalcMaxDistance(vertices);
 
-		auto planetPos = aFilePath.find("planet");
-
-		DL_ASSERT_EXP(distance < 1000 || planetPos != std::string::npos, " FBX too huge (vertex position failed).");
+		if (distance > 1000)
+		{
+			std::stringstream ss;
+			ss << aFilePath << " is too large " << std::endl << "Radius: " << distance;
+			myErrors.Add(ss.str());
+		}
 
 		WriteXml(aFilePath, distance);
 	}

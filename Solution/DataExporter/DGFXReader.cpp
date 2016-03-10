@@ -61,9 +61,8 @@ DGFXReader::~DGFXReader()
 
 	if (myErrors.Size() > 0)
 	{
-		std::cout << "\n-----------------" << std::endl;
-		std::cout << "ERRORS !!!" << std::endl;
-		std::cout << "-----------------\n" << std::endl;
+		system("CLS");
+		std::cout << "\n--- DGFX ERRORS ---\n" << std::endl;
 
 		for (int i = 0; i < myErrors.Size(); ++i)
 		{
