@@ -17,6 +17,9 @@ private:
 	~ServerNetworkManager();
 	static ServerNetworkManager* myInstance;
 	ServerNetwork* myNetwork;
+	void UpdateImporantMessages(float aDeltaTime) override;
+
+	void AddImportantMessage(std::vector<char> aBuffer, unsigned int aImportantID) override;
 
 	void HandleMessage(const NetMessageConnectMessage& aMessage, const sockaddr_in& aSender) override;
 	void HandleMessage(const NetMessageDisconnect& aMessage, const sockaddr_in& aSenderAddress) override;

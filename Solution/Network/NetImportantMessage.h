@@ -7,7 +7,7 @@ public:
 	~NetImportantMessage();
 
 	bool GetIsImportant() override;
-	virtual unsigned int GetImportantID();
+	const unsigned int GetImportantID() const override;
 	virtual void SetImportantID(unsigned int anImportantID);
 protected:
 	void DoSerialize(StreamType& aStream);

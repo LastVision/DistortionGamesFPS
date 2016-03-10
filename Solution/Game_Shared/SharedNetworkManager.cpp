@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "SharedNetworkManager.h"
 
+#include <NetMessageImportantReply.h>
 #include <NetMessageConnectMessage.h>
 #include <NetMessageOnJoin.h>
 #include <NetMessageDisconnect.h>
@@ -22,6 +23,8 @@ void SharedNetworkManager::Initiate()
 	myReceieveBuffer[1].Init(16384);
 	mySendBuffer[0].Init(16384);
 	mySendBuffer[1].Init(16384);
+	myImportantMessagesBuffer.Init(16384);
+	myImportantID = 0;
 	myPingTime = 0.f;
 	myReceieveIsDone = true;
 	myMainIsDone = true;
@@ -64,6 +67,7 @@ SharedNetworkManager::~SharedNetworkManager()
 void SharedNetworkManager::Update(float aDelta)
 {
 	SwapBuffer();
+	UpdateImporantMessages(aDelta);
 	myPingTime -= aDelta;
 	myResponsTime += aDelta;
 	if (myPingTime <= 0.f)
@@ -146,6 +150,9 @@ void SharedNetworkManager::HandleMessage()
 		eNetMessageType type = ReadType(buffer.myData);
 		switch (type)
 		{
+		case eNetMessageType::IMPORTANT_REPLY:
+			UnpackAndHandle(NetMessageImportantReply(), buffer);
+			break;
 		case eNetMessageType::ON_CONNECT:
 			UnpackAndHandle(NetMessageConnectMessage(), buffer);
 			break;
@@ -181,6 +188,23 @@ void SharedNetworkManager::HandleMessage(const NetMessagePingReply&, const socka
 	myMS = myResponsTime * 1000.f;
 }
 
+void SharedNetworkManager::HandleMessage(const NetMessageImportantReply& aMessage, const sockaddr_in&)
+{
+	for (ImportantMessage& msg : myImportantMessagesBuffer)
+	{
+		if (aMessage.myImportantID == msg.myImportantID)
+		{
+			for (ImportantClient& client : msg.mySenders)
+			{
+				if (aMessage.mySenderID == client.myNetworkID)
+				{
+					client.myHasReplied = true;
+					return;
+				}
+			}
+		}
+	}
+}
 void SharedNetworkManager::HandleMessage(const NetMessageConnectMessage&, const sockaddr_in&) {}
 void SharedNetworkManager::HandleMessage(const NetMessagePingRequest&, const sockaddr_in&) {}
 void SharedNetworkManager::HandleMessage(const NetMessageDisconnect&, const sockaddr_in&) {}

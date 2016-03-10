@@ -80,9 +80,9 @@ namespace Prism
 		myManager->SetPosition(aDynamicBody, aPosition);
 	}
 
-	int PhysicsInterface::CreatePlayerController(const CU::Vector3<float>& aStartPosition)
+	int PhysicsInterface::CreatePlayerController(const CU::Vector3<float>& aStartPosition, PhysicsComponent* aComponent)
 	{
-		return myManager->CreatePlayerController(aStartPosition);
+		return myManager->CreatePlayerController(aStartPosition, aComponent);
 	}
 
 	void PhysicsInterface::Move(int aId, const CU::Vector3<float>& aDirection, float aMinDisplacement, float aDeltaTime)

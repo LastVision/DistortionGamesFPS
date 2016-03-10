@@ -4,6 +4,7 @@
 #include <thread>
 #include <PostMaster.h>
 
+#include <NetMessageImportantReply.h>
 #include <NetMessageConnectMessage.h>
 #include <NetMessageOnJoin.h>
 #include <NetMessageDisconnect.h>
@@ -133,7 +134,10 @@ void ClientNetworkManager::ConnectToServer(const char* aServerIP)
 	char username[256 + 1];
 	DWORD username_len = 256 + 1;
 	GetUserNameA(username, &username_len);
-	AddMessage(NetMessageConnectMessage(username, -1));
+	NetMessageConnectMessage connect = CreateMessage<NetMessageConnectMessage>();
+	connect.myName = username;
+	connect.myServerID = -1;
+	AddMessage(connect);
 }
 
 unsigned int ClientNetworkManager::GetNetworkID() const
@@ -157,7 +161,7 @@ void ClientNetworkManager::ReceiveMessage(const NetworkSendPositionMessage& aMes
 
 void ClientNetworkManager::ReceiveMessage(const NetworkOnDisconnectMessage&)
 {
-	NetMessageDisconnect toSend;
+	NetMessageDisconnect toSend = CreateMessage<NetMessageDisconnect>();
 	toSend.mySenderID = myNetworkID;
 	toSend.myClientID = myNetworkID;
 	AddMessage(toSend);
@@ -176,6 +180,10 @@ void ClientNetworkManager::HandleMessage(const NetMessagePingRequest& aMessage, 
 
 void ClientNetworkManager::HandleMessage(const NetMessageDisconnect& aMessage, const sockaddr_in& aSenderAddress)
 {
+	if (CheckIfImportantMessage(aMessage) == true)
+	{
+		AddMessage(NetMessageImportantReply(aMessage.GetImportantID()));
+	}
 	aSenderAddress;
 	if (aMessage.myClientID == myNetworkID)
 	{
@@ -189,6 +197,10 @@ void ClientNetworkManager::HandleMessage(const NetMessageDisconnect& aMessage, c
 
 void ClientNetworkManager::HandleMessage(const NetMessageConnectMessage& aMessage, const sockaddr_in& aSenderAddress)
 {
+	if (CheckIfImportantMessage(aMessage) == true)
+	{
+		AddMessage(NetMessageImportantReply(aMessage.GetImportantID()));
+	}
 	aSenderAddress;
 	myNetworkID = aMessage.myServerID;
 	if (aMessage.myOtherClientID != myNetworkID)
@@ -200,6 +212,10 @@ void ClientNetworkManager::HandleMessage(const NetMessageConnectMessage& aMessag
 
 void ClientNetworkManager::HandleMessage(const NetMessageOnJoin& aMessage, const sockaddr_in& aSenderAddress)
 {
+	if (CheckIfImportantMessage(aMessage) == true)
+	{
+		AddMessage(NetMessageImportantReply(aMessage.GetImportantID()));
+	}
 	aSenderAddress;
 	for (OtherClients& client : myClients)
 	{
@@ -218,6 +234,50 @@ void ClientNetworkManager::HandleMessage(const NetMessageOnJoin& aMessage, const
 
 void ClientNetworkManager::HandleMessage(const NetMessageAddEnemy& aMessage, const sockaddr_in& aSenderAddress)
 {
+	if (CheckIfImportantMessage(aMessage) == true)
+	{
+		AddMessage(NetMessageImportantReply(aMessage.GetImportantID()));
+	}
 	aSenderAddress;
 	PostMaster::GetInstance()->SendMessage(NetworkAddEnemyMessage(aMessage.myPosition, aMessage.myNetworkID));
+}
+
+void ClientNetworkManager::UpdateImporantMessages(float aDeltaTime)
+{
+	for (ImportantMessage& msg : myImportantMessagesBuffer)
+	{
+		bool finished = true;
+		for (ImportantClient& client : msg.mySenders)
+		{
+			if (client.myHasReplied == false)
+			{
+				finished = false;
+				client.myTimer += aDeltaTime;
+				if (client.myTimer >= 1.f)
+				{
+					client.myTimer = 0.f;
+					myNetwork->Send(msg.myData);
+				}
+			}
+		}
+		if (finished == true)
+		{
+			myImportantMessagesBuffer.RemoveCyclic(msg);
+		}
+	}
+}
+
+void ClientNetworkManager::AddImportantMessage(std::vector<char> aBuffer, unsigned int aImportantID)
+{
+	ImportantMessage msg;
+	msg.myData = aBuffer;
+	msg.myImportantID = aImportantID;
+	msg.mySenders.Init(1);
+	ImportantClient server;
+	server.myNetworkID = 0;
+	server.myNetworkAddress = myNetwork->GetServerAddress();
+	server.myTimer = 0.f;
+	server.myHasReplied = false;
+	msg.mySenders.Add(server);
+	myImportantMessagesBuffer.Add(msg);
 }
