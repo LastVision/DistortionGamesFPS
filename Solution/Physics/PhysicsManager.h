@@ -241,6 +241,8 @@ namespace Prism
 		physx::PxCooking* myCooker;
 
 		CU::Vector3<float> myPlayerPosition;
+
+		CU::GrowingArray<physx::PxActor*> myActorsToRemove[2];
 	};
 
 #ifdef THREAD_PHYSICS

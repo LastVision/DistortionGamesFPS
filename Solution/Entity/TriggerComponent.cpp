@@ -22,5 +22,5 @@ void TriggerComponent::Update(float aDelta)
 void TriggerComponent::ReceiveNote(const CollisionNote& aNote)
 {
 
-
+	// should remove itself?
 }

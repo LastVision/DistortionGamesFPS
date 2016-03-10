@@ -58,6 +58,8 @@ namespace Prism
 		myPositionJobs[1].Init(64);
 		myOnTriggerResults[0].Init(64);
 		myOnTriggerResults[1].Init(64);
+		myActorsToRemove[0].Init(64);
+		myActorsToRemove[1].Init(64);
 		myTimestep = 1.f / 60.f;
 		
 		myFoundation = PxCreateFoundation(0x03030300, myDefaultAllocatorCallback, myDefaultErrorCallback);
@@ -225,6 +227,7 @@ namespace Prism
 		std::swap(myVelocityJobs[0], myVelocityJobs[1]);
 		std::swap(myPositionJobs[0], myPositionJobs[1]);
 		std::swap(myOnTriggerResults[0], myOnTriggerResults[1]);
+		std::swap(myActorsToRemove[0], myActorsToRemove[1]);
 	}
 
 	void PhysicsManager::Update()
@@ -305,6 +308,13 @@ namespace Prism
 		}
 
 		myOnTriggerResults[1].RemoveAll();
+
+		for (int i = 0; i < myActorsToRemove[1].Size(); ++i)
+		{
+			GetScene()->removeActor(*myActorsToRemove[1][i]);
+		}
+
+		myActorsToRemove[1].RemoveAll();
 
 
 		//Sleep(16);
@@ -569,24 +579,28 @@ namespace Prism
 
 	void PhysicsManager::Remove(physx::PxRigidDynamic* aDynamic, const PhysicsComponentData& aData)
 	{
-		GetScene()->removeActor(*aDynamic);
+		//GetScene()->removeActor(*aDynamic);
+		myActorsToRemove[0].Add(aDynamic);
 		for (int i = 0; i < myPhysicsComponentCallbacks.Size(); ++i)
 		{
 			if (myPhysicsComponentCallbacks[i].myData == &aData)
 			{
 				myPhysicsComponentCallbacks.RemoveCyclicAtIndex(i);
+				break;
 			}
 		}
 	}
 
 	void PhysicsManager::Remove(physx::PxRigidStatic* aStatic, const PhysicsComponentData& aData)
 	{
-		GetScene()->removeActor(*aStatic);
+		//GetScene()->removeActor(*aStatic);
+		myActorsToRemove[0].Add(aStatic);
 		for (int i = 0; i < myPhysicsComponentCallbacks.Size(); ++i)
 		{
 			if (myPhysicsComponentCallbacks[i].myData == &aData)
 			{
 				myPhysicsComponentCallbacks.RemoveCyclicAtIndex(i);
+				break;
 			}
 		}
 	}
