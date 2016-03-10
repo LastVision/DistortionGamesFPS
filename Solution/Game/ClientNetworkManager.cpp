@@ -12,6 +12,7 @@
 #include <NetMessagePingReply.h>
 #include <NetMessagePosition.h>
 #include <NetMessageAddEnemy.h>
+#include <NetMessageOnDeath.h>
 
 #include <NetworkAddPlayerMessage.h>
 #include <NetworkRemovePlayer.h>
@@ -19,6 +20,7 @@
 #include <NetworkSetPositionMessage.h>
 #include <NetworkSendPositionMessage.h>
 #include <NetworkOnDisconnectMessage.h>
+#include <NetworkOnDeathMessage.h>
 #define BUFFERSIZE 512
 
 ClientNetworkManager* ClientNetworkManager::myInstance = nullptr;
@@ -243,6 +245,16 @@ void ClientNetworkManager::HandleMessage(const NetMessageAddEnemy& aMessage, con
 	}
 	aSenderAddress;
 	PostMaster::GetInstance()->SendMessage(NetworkAddEnemyMessage(aMessage.myPosition, aMessage.myNetworkID));
+}
+
+void ClientNetworkManager::HandleMessage(const NetMessageOnDeath& aMessage, const sockaddr_in& aSenderAddress)
+{
+	aSenderAddress;
+	if (CheckIfImportantMessage(aMessage) == true)
+	{
+		AddMessage(NetMessageImportantReply(aMessage.GetImportantID()));
+	}
+	PostMaster::GetInstance()->SendMessage(NetworkOnDeathMessage(aMessage.myNetworkID));
 }
 
 void ClientNetworkManager::UpdateImporantMessages(float aDeltaTime)
