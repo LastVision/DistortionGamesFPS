@@ -452,6 +452,36 @@ namespace Prism
 			ConvertVector(aMoveJob.myDirection), aMoveJob.myMinDisplacement, aMoveJob.myDeltaTime, filter, nullptr);
 	}
 
+	void PhysicsManager::UpdateOrientation(physx::PxRigidDynamic* aDynamicBody, physx::PxShape** aShape, float* aThread4x4)
+	{
+		physx::PxU32 nShapes = aDynamicBody->getNbShapes();
+		aDynamicBody->getShapes(aShape, nShapes);
+
+		physx::PxTransform pT = physx::PxShapeExt::getGlobalPose(*aShape[0], *aDynamicBody);
+		physx::PxTransform graphicsTransform(pT.p, pT.q);
+		physx::PxMat33 m = physx::PxMat33(graphicsTransform.q);
+
+		aThread4x4[0] = m(0, 0);
+		aThread4x4[1] = m(1, 0);
+		aThread4x4[2] = m(2, 0);
+		aThread4x4[3] = 0;
+
+		aThread4x4[4] = m(0, 1);
+		aThread4x4[5] = m(1, 1);
+		aThread4x4[6] = m(2, 1);
+		aThread4x4[7] = 0;
+
+		aThread4x4[8] = m(0, 2);
+		aThread4x4[9] = m(1, 2);
+		aThread4x4[10] = m(2, 2);
+		aThread4x4[11] = 0;
+
+		aThread4x4[12] = graphicsTransform.p.x;
+		aThread4x4[13] = graphicsTransform.p.y;
+		aThread4x4[14] = graphicsTransform.p.z;
+		aThread4x4[15] = 1;
+	}
+
 	bool PhysicsManager::GetAllowedToJump(int aId)
 	{
 		physx::PxControllerState state;
@@ -540,10 +570,16 @@ namespace Prism
 		myPhysEntities.Add(aEntity);
 	}
 
-	void PhysicsManager::Remove(physx::PxActor* aActor)
+	void PhysicsManager::Remove(physx::PxRigidDynamic* aDynamic)
 	{
-		GetScene()->removeActor(*aActor);
-		myPhysEntities.RemoveCyclic(static_cast<PhysEntity*>(aActor->userData));
+		GetScene()->removeActor(*aDynamic);
+		myPhysEntities.RemoveCyclic(static_cast<PhysEntity*>(aDynamic->userData));
+	}
+
+	void PhysicsManager::Remove(physx::PxRigidStatic* aStatic)
+	{
+		GetScene()->removeActor(*aStatic);
+		myPhysEntities.RemoveCyclic(static_cast<PhysEntity*>(aStatic->userData));
 	}
 
 	physx::PxTriangleMesh* PhysicsManager::GetPhysMesh(const std::string& aFBXPath)

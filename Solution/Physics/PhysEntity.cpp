@@ -3,8 +3,8 @@
 
 
 #include "PhysEntity.h"
-#include <PxPhysics.h>
-#include <pxphysicsapi.h>
+//#include <PxPhysics.h>
+//#include <pxphysicsapi.h>
 
 #include "PhysicsInterface.h"
 #include "PhysicsManager.h"
@@ -59,37 +59,14 @@ namespace Prism
 	{
 		DL_ASSERT_EXP(myPhysicsType == ePhysics::DYNAMIC, "Cant update Orientation on STATIC PhysEntities");
 
-		physx::PxU32 nShapes = myDynamicBody->getNbShapes();
-		myDynamicBody->getShapes(myShapes, nShapes);
-
-		physx::PxTransform pT = physx::PxShapeExt::getGlobalPose(*myShapes[0], *myDynamicBody);
-		physx::PxTransform graphicsTransform(pT.p, pT.q);
-		physx::PxMat33 m = physx::PxMat33(graphicsTransform.q);
-
-		myThread4x4Float[0] = m(0, 0);
-		myThread4x4Float[1] = m(1, 0);
-		myThread4x4Float[2] = m(2, 0);
-		myThread4x4Float[3] = 0;
-
-		myThread4x4Float[4] = m(0, 1);
-		myThread4x4Float[5] = m(1, 1);
-		myThread4x4Float[6] = m(2, 1);
-		myThread4x4Float[7] = 0;
-
-		myThread4x4Float[8] = m(0, 2);
-		myThread4x4Float[9] = m(1, 2);
-		myThread4x4Float[10] = m(2, 2);
-		myThread4x4Float[11] = 0;
-
-		myThread4x4Float[12] = graphicsTransform.p.x;
-		myThread4x4Float[13] = graphicsTransform.p.y;
-		myThread4x4Float[14] = graphicsTransform.p.z;
-		myThread4x4Float[15] = 1;
+		PhysicsInterface::GetInstance()->UpdateOrientation(myDynamicBody, myShapes, myThread4x4Float);
 
 
-		myPosition[0] = graphicsTransform.p.x;
-		myPosition[1] = graphicsTransform.p.y;
-		myPosition[2] = graphicsTransform.p.z;
+
+
+		myPosition[0] = myThread4x4Float[12];
+		myPosition[1] = myThread4x4Float[13];
+		myPosition[2] = myThread4x4Float[14];
 	}
 
 	void PhysEntity::AddForce(const CU::Vector3<float>& aDirection, float aMagnitude)

@@ -45,6 +45,7 @@ namespace Prism
 
 		int CreatePlayerController(const CU::Vector3<float>& aStartPosition);
 		void Move(int aId, const CU::Vector3<float>& aDirection, float aMinDisplacement, float aDeltaTime);
+		void UpdateOrientation(physx::PxRigidDynamic* aDynamicBody, physx::PxShape** aShape, float* aThread4x4);
 		bool GetAllowedToJump(int aId);
 		void SetPosition(int aId, const CU::Vector3<float>& aPosition);
 		void GetPosition(int aId, CU::Vector3<float>& aPositionOut);
@@ -55,7 +56,8 @@ namespace Prism
 			, float* aOrientation, const std::string& aFBXPath
 			, physx::PxRigidDynamic** aDynamicBodyOut, physx::PxRigidStatic** aStaticBodyOut
 			, physx::PxShape*** someShapesOut);
-		void Remove(physx::PxActor* aActor);
+		void Remove(physx::PxRigidDynamic* aDynamic);
+		void Remove(physx::PxRigidStatic* aStatic);
 
 	private:
 		// Requires PhysX includes!!
