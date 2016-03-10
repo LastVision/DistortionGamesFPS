@@ -364,8 +364,9 @@ void ServerNetworkManager::ReceiveMessage(const NetworkAddEnemyMessage& aMessage
 void ServerNetworkManager::ReceiveMessage(const NetworkSendPositionMessage& aMessage)
 {
 	NetMessagePosition toSend;
-	toSend.mySenderID = (short)aMessage.myNetworkID;
+	toSend.mySenderID = static_cast<short>(aMessage.myNetworkID);
 	toSend.myPosition = aMessage.myPosition;
+	toSend.myRotationY = aMessage.myRotationY;
 	toSend.myNetworkID = aMessage.myNetworkID;
 	AddMessage(toSend);
 }

@@ -80,7 +80,7 @@ void InputComponent::Update(float aDelta)
 	{
 		if (myNetworkID != 0 && (myOrientation.GetPos().x != prevPos.x || myOrientation.GetPos().y != prevPos.y || myOrientation.GetPos().z != prevPos.z))
 		{
-			PostMaster::GetInstance()->SendMessage(NetworkSendPositionMessage(myOrientation.GetPos(), myNetworkID));
+			PostMaster::GetInstance()->SendMessage(NetworkSendPositionMessage(myOrientation.GetPos(), myCursorPosition.x, myNetworkID));
 			mySendTime = 1 / 30.f;
 		}
 	}

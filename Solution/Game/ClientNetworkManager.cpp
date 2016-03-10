@@ -157,6 +157,7 @@ void ClientNetworkManager::ReceiveMessage(const NetworkSendPositionMessage& aMes
 	NetMessagePosition toSend;
 	toSend.mySenderID = myNetworkID;
 	toSend.myPosition = aMessage.myPosition;
+	toSend.myRotationY = aMessage.myRotationY;
 	toSend.myNetworkID = aMessage.myNetworkID;
 	AddMessage(toSend);
 }

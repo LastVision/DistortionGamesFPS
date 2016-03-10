@@ -217,7 +217,7 @@ void SharedNetworkManager::HandleMessage(const NetMessageDisconnect&, const sock
 void SharedNetworkManager::HandleMessage(const NetMessageOnJoin&, const sockaddr_in&) {}
 void SharedNetworkManager::HandleMessage(const NetMessagePosition& aMessage, const sockaddr_in&) 
 {
-	PostMaster::GetInstance()->SendMessage(NetworkSetPositionMessage(aMessage.myPosition, aMessage.myNetworkID)); 
+	PostMaster::GetInstance()->SendMessage(NetworkSetPositionMessage(aMessage.myPosition, aMessage.myRotationY, aMessage.myNetworkID)); 
 }
 void SharedNetworkManager::HandleMessage(const NetMessageAddEnemy&, const sockaddr_in&){}
 void SharedNetworkManager::HandleMessage(const NetMessageOnHit& aMessage, const sockaddr_in&)

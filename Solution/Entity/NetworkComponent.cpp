@@ -11,6 +11,7 @@
 
 #include <PostMaster.h>
 #include "HealthComponent.h"
+#include <Quaternion.h>
 
 NetworkComponent::NetworkComponent(Entity& anEntity, CU::Matrix44<float>& anOrientation)
 	: Component(anEntity)
@@ -57,6 +58,30 @@ void NetworkComponent::Update(float aDelta)
 	if (myEntity.GetIsClient() == true)
 	{
 		CU::Vector3<float> newPos = CU::Math::Lerp(myPrevPosition, myServerPosition, myAlpha);
+		myCurrentRotationY = CU::Math::Lerp(myPrevRotationY, myServerRotationY, myAlpha);
+
+
+		CU::Quaternion pitch = CU::Quaternion(CU::Vector3<float>(1.f, 0, 0), 0);
+		CU::Quaternion yaw = CU::Quaternion(CU::Vector3<float>(0, 1.f, 0), myCurrentRotationY);
+
+		CU::Vector3<float> axisX(1.f, 0, 0);
+		CU::Vector3<float> axisY(0, 1.f, 0);
+		CU::Vector3<float> axisZ(0, 0, 1.f);
+
+		axisX = yaw * pitch * axisX;
+		axisY = yaw * pitch * axisY;
+		axisZ = yaw * pitch * axisZ;
+
+		myOrientation.myMatrix[0] = axisX.x;
+		myOrientation.myMatrix[1] = axisX.y;
+		myOrientation.myMatrix[2] = axisX.z;
+		myOrientation.myMatrix[4] = axisY.x;
+		myOrientation.myMatrix[5] = axisY.y;
+		myOrientation.myMatrix[6] = axisY.z;
+		myOrientation.myMatrix[8] = axisZ.x;
+		myOrientation.myMatrix[9] = axisZ.y;
+		myOrientation.myMatrix[10] = axisZ.z;
+
 		myOrientation.SetPos(newPos);
 	}
 	else
@@ -110,7 +135,7 @@ void NetworkComponent::Update(float aDelta)
 			}
 
 			mySendTime = 1 * 0.033f;
-			PostMaster::GetInstance()->SendMessage(NetworkSendPositionMessage(myServerPosition, myNetworkID));
+			PostMaster::GetInstance()->SendMessage(NetworkSendPositionMessage(myServerPosition, 0.f, myNetworkID));
 		}
 	}
 }
@@ -121,6 +146,8 @@ void NetworkComponent::ReceiveMessage(const NetworkSetPositionMessage& aMessage)
 	{
 		myPrevPosition = myServerPosition;
 		myServerPosition = aMessage.myPosition;
+		myPrevRotationY = myServerRotationY;
+		myServerRotationY = aMessage.myRotationY;
 		myAlpha = 0.f;
 	}
 }

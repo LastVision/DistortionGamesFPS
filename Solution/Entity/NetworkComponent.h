@@ -28,6 +28,10 @@ private:
 	CU::Vector3<float> myServerPosition;
 	CU::Vector3<float> myPrevPosition;
 
+	float myCurrentRotationY;
+	float myServerRotationY;
+	float myPrevRotationY;
+
 	CU::Vector3<float> myFirstPosition;
 	CU::Vector3<float> mySecondPosition;
 	CU::Vector3<float> mySecondPosition2;
