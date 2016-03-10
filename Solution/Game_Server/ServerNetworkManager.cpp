@@ -198,6 +198,19 @@ void ServerNetworkManager::DisconnectConnection(const Connection& aConnection)
 	std::string msg(aConnection.myName + " disconnected from server!");
 	Utility::PrintEndl(msg, LIGHT_BLUE_TEXT);
 
+	//auto reply on all important messages
+	for (ImportantMessage& impMsg : myImportantMessagesBuffer)
+	{
+		for (ImportantClient& client : impMsg.mySenders)
+		{
+			if (client.myNetworkID == aConnection.myID)
+			{
+				client.myHasReplied = true;
+				break;
+			}
+		}
+	}
+
 	for (int i = 0; i < myClients.Size(); ++i)
 	{
 		if (aConnection.myID == myClients[i].myID)
@@ -222,12 +235,16 @@ void ServerNetworkManager::UpdateImporantMessages(float aDeltaTime)
 				if (client.myTimer >= 1.f)
 				{
 					client.myTimer = 0.f;
+					std::string resend = "Sending important message " + std::to_string(msg.myImportantID) + " to client id " + std::to_string(client.myNetworkID);
+					Utility::PrintEndl(resend, AQUA_TEXT);
 					myNetwork->Send(msg.myData, client.myNetworkAddress);
 				}
 			}
 		}
 		if (finished == true)
 		{
+			std::string resend = "All client has replied to the message id " + std::to_string(msg.myImportantID);
+			Utility::PrintEndl(resend, YELLOW_TEXT);
 			myImportantMessagesBuffer.RemoveCyclic(msg);
 		}
 	}

@@ -75,6 +75,10 @@ ClientLevel::ClientLevel()
 
 ClientLevel::~ClientLevel()
 {
+	if (ClientNetworkManager::GetInstance()->GetNetworkID() > 0)
+	{
+		ClientNetworkManager::GetInstance()->AddMessage(NetMessageDisconnect(ClientNetworkManager::GetInstance()->GetNetworkID()));
+	}
 #ifdef THREAD_PHYSICS
 	Prism::PhysicsInterface::GetInstance()->ShutdownThread();
 #endif
@@ -152,6 +156,7 @@ void ClientLevel::ReceiveMessage(const NetworkAddPlayerMessage& aMessage)
 	if (aMessage.myNetworkID == ClientNetworkManager::GetInstance()->GetNetworkID())
 	{
 		myPlayer->GetComponent<NetworkComponent>()->SetNetworkID(aMessage.myNetworkID);
+		myPlayer->GetComponent<InputComponent>()->SetNetworkID(aMessage.myNetworkID);
 	}
 	else
 	{

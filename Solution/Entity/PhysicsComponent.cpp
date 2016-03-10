@@ -36,7 +36,7 @@ PhysicsComponent::~PhysicsComponent()
 
 void PhysicsComponent::Update(float aDelta)
 {
-
+	aDelta;
 }
 
 void PhysicsComponent::SwapOrientations()
