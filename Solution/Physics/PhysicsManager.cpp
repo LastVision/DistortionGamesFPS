@@ -423,7 +423,7 @@ namespace Prism
 		myDebugConnection->release();
 	}
 
-	int PhysicsManager::CreatePlayerController(const CU::Vector3<float>& aStartPosition)
+	int PhysicsManager::CreatePlayerController(const CU::Vector3<float>& aStartPosition, PhysicsComponent* aComponent)
 	{
 		physx::PxCapsuleControllerDesc controllerDesc;
 
@@ -432,7 +432,7 @@ namespace Prism
 		controllerDesc.radius = 0.25f;
 		controllerDesc.material = myDefaultMaterial;
 		controllerDesc.position = physx::PxExtendedVec3(aStartPosition.x, aStartPosition.y, aStartPosition.z);//fix
-		//controllerDesc.userData = that;
+		controllerDesc.userData = aComponent;
 
 		myControllerManager->createController(controllerDesc);
 
