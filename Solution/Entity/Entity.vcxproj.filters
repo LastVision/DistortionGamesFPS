@@ -89,6 +89,7 @@
     <ClCompile Include="NetworkComponent.cpp">
       <Filter>Component</Filter>
     </ClCompile>
+    <ClCompile Include="PhysicsComponent.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
@@ -192,5 +193,6 @@
     <ClInclude Include="CollisionNote.h">
       <Filter>Notes</Filter>
     </ClInclude>
+    <ClInclude Include="PhysicsComponent.h" />
   </ItemGroup>
 </Project>
