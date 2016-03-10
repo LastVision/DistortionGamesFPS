@@ -15,6 +15,8 @@ public:
 
 	bool ConnectToServer(const char* anIP);
 	const CU::GrowingArray<OtherClients>& GetClientList();
+
+	const sockaddr_in& GetServerAddress() const;
 private:
 
 	//CleintInterface * myInstance;
@@ -34,3 +36,7 @@ private:
 
 };
 
+inline const sockaddr_in& ClientNetwork::GetServerAddress() const
+{
+	return myServerAddress;
+}

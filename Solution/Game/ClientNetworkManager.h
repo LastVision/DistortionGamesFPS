@@ -24,6 +24,9 @@ private:
 	~ClientNetworkManager();
 	static ClientNetworkManager* myInstance;
 	//void AddNetworkMessage(std::vector<char> aBuffer) override;
+	void UpdateImporantMessages(float aDeltaTime) override;
+
+	void AddImportantMessage(std::vector<char> aBuffer, unsigned int aImportantID) override;
 
 	ClientNetwork* myNetwork;
 	void HandleMessage(const NetMessageConnectMessage& aMessage, const sockaddr_in& aSenderAddress) override;

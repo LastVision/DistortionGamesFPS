@@ -1,7 +1,7 @@
 #pragma once
-#include "NetMessage.h"
+#include "NetImportantMessage.h"
 #include <Vector3.h>
-class NetMessageAddEnemy : public NetMessage
+class NetMessageAddEnemy : public NetImportantMessage
 {
 public:
 	NetMessageAddEnemy(const CU::Vector3<float> &aPosition, unsigned int aNetworkID);

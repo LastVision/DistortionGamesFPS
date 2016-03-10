@@ -3,6 +3,7 @@
 enum class eNetMessageType
 {
 	NONE,
+	IMPORTANT_REPLY,
 	
 	ON_CONNECT,
 	ON_JOIN,

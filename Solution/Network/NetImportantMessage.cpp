@@ -16,7 +16,7 @@ bool NetImportantMessage::GetIsImportant()
 	return true;
 }
 
-unsigned int NetImportantMessage::GetImportantID()
+const unsigned int NetImportantMessage::GetImportantID() const
 {
 	return myImportantID;
 }
