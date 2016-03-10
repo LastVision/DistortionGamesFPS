@@ -123,7 +123,6 @@ void ClientLevel::Update(const float aDeltaTime)
 
 	DEBUG_PRINT(ms);
 	DEBUG_PRINT(kbs);
-	Prism::DebugDrawer::GetInstance()->RenderLinesToScreen(*myPlayer->GetComponent<InputComponent>()->GetCamera());
 
 	//for (int i = 0; i < myPlayers.Size(); ++i)
 	//{
@@ -141,6 +140,7 @@ void ClientLevel::Update(const float aDeltaTime)
 void ClientLevel::Render()
 {
 	myDeferredRenderer->Render(myScene);
+	Prism::DebugDrawer::GetInstance()->RenderLinesToScreen(*myPlayer->GetComponent<InputComponent>()->GetCamera());
 	//myScene->Render();
 	//myDeferredRenderer->Render(myScene);
 	myEmitterManager->RenderEmitters();
@@ -155,16 +155,16 @@ void ClientLevel::ReceiveMessage(const NetworkAddPlayerMessage& aMessage)
 	}
 	else
 	{
-		bool isRunTime = Prism::MemoryTracker::GetInstance()->GetRunTime();
-		Prism::MemoryTracker::GetInstance()->SetRunTime(false);
-		Entity* newPlayer = EntityFactory::CreateEntity(eEntityType::UNIT, "player", myScene, true, { 0.f, 0.f, 0.f });
-		newPlayer->GetComponent<NetworkComponent>()->SetNetworkID(aMessage.myNetworkID);
-		newPlayer->GetComponent<NetworkComponent>()->SetPlayer(true);
-		newPlayer->AddToScene();
-		newPlayer->Reset();
-		myPlayers.Add(newPlayer);
-		Prism::MemoryTracker::GetInstance()->SetRunTime(isRunTime);
-	}
+	bool isRunTime = Prism::MemoryTracker::GetInstance()->GetRunTime();
+	Prism::MemoryTracker::GetInstance()->SetRunTime(false);
+	Entity* newPlayer = EntityFactory::CreateEntity(eEntityType::UNIT, "player", myScene, true, { 0.f, 0.f, 0.f });
+	newPlayer->GetComponent<NetworkComponent>()->SetNetworkID(aMessage.myNetworkID);
+	newPlayer->GetComponent<NetworkComponent>()->SetPlayer(true);
+	newPlayer->AddToScene();
+	newPlayer->Reset();
+	myPlayers.Add(newPlayer);
+	Prism::MemoryTracker::GetInstance()->SetRunTime(isRunTime);
+}
 }
 
 void ClientLevel::ReceiveMessage(const NetworkRemovePlayerMessage& aMessage)

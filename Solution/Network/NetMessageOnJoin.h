@@ -1,6 +1,6 @@
 #pragma once
-#include "NetMessage.h"
-class NetMessageOnJoin : public NetMessage
+#include "NetImportantMessage.h"
+class NetMessageOnJoin : public NetImportantMessage
 {
 public:
 	NetMessageOnJoin();

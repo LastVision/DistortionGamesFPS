@@ -14,13 +14,14 @@ namespace Prism
 	class Room
 	{
 	public:
-		Room(const CU::Vector3<float>& aPosition, const CU::Vector3<float>& aScale, int aRoomId, const std::string& aName, eRoomType aType);
+		Room(const CU::Vector3<float>& aPosition, const CU::Vector3<float>& aScale, const std::string& aName, eRoomType aType);
 		~Room();
 
 		bool Inside(const CU::Vector3<float>& aPosition) const;
 		bool Collide(const Room& aRoom) const;
 
 		const CU::Intersection::AABB& GetAABB() const;
+		void SetRoomId(int aId);
 		int GetRoomId() const;
 
 		void AddPortal(Portal* aPortal);
@@ -29,9 +30,11 @@ namespace Prism
 		const std::string& GetName() const;
 		eRoomType GetType() const;
 
+		bool operator<(Room& aRoom);
+
 	private:
 		void operator=(Room&) = delete;
-		const int myRoomId;
+		int myRoomId;
 		CU::Intersection::AABB myAABB;
 		CU::GrowingArray<Portal*> myPortals;
 		const std::string myName;
@@ -41,6 +44,11 @@ namespace Prism
 	inline const CU::Intersection::AABB& Room::GetAABB() const
 	{
 		return myAABB;
+	}
+
+	inline void Room::SetRoomId(int aId)
+	{
+		myRoomId = aId;
 	}
 
 	inline int Room::GetRoomId() const
@@ -61,5 +69,10 @@ namespace Prism
 	inline eRoomType Room::GetType() const
 	{
 		return myType;
+	}
+
+	inline bool Room::operator<(Room& aRoom)
+	{
+		return int(myType) < int(aRoom.myType);
 	}
 }
