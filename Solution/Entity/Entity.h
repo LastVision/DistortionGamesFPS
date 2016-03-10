@@ -8,7 +8,6 @@ namespace Prism
 	class Camera;
 	class Scene;
 	class ParticleEmitterInstance;
-	class PhysEntity;
 }
 
 class Component;
@@ -52,7 +51,6 @@ public:
 	void AddEmitter(Prism::ParticleEmitterInstance* anEmitterConnection);
 	Prism::ParticleEmitterInstance* GetEmitter();
 
-	Prism::PhysEntity* GetPhysEntity() const;
 	void Kill();
 
 	bool GetIsClient();
@@ -76,7 +74,6 @@ private:
 	Prism::Scene* myScene;
 
 	CU::Matrix44<float> myOrientation;
-	Prism::PhysEntity* myPhysEntity;
 };
 
 template <typename T>

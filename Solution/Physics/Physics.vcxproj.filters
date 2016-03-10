@@ -6,10 +6,10 @@
       <Filter>Precompile</Filter>
     </ClInclude>
     <ClInclude Include="PhysicsManager.h" />
-    <ClInclude Include="PhysEntity.h" />
-    <ClInclude Include="PhysEntityData.h" />
     <ClInclude Include="wavefront.h" />
     <ClInclude Include="PhysicsHelperFunc.h" />
+    <ClInclude Include="..\Entity\PhysicsComponentData.h" />
+    <ClInclude Include="PhysicsCallbackStruct.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="PhysicsInterface.cpp" />
@@ -17,7 +17,6 @@
       <Filter>Precompile</Filter>
     </ClCompile>
     <ClCompile Include="PhysicsManager.cpp" />
-    <ClCompile Include="PhysEntity.cpp" />
     <ClCompile Include="wavefront.cpp" />
   </ItemGroup>
   <ItemGroup>

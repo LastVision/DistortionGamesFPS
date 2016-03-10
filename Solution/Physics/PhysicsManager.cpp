@@ -24,11 +24,10 @@
 #endif
 
 #include <CommonHelper.h>
-#include "PhysEntity.h"
 #include <pxphysicsapi.h>
 #include <PxQueryReport.h>
 #include <TimerManager.h>
-#include "PhysEntityData.h"
+#include "PhysicsComponentData.h"
 
 #include "wavefront.h"
 
@@ -37,7 +36,7 @@
 namespace Prism
 {
 	PhysicsManager::PhysicsManager()
-		: myPhysEntities(4096)
+		: myPhysicsComponentCallbacks(4096)
 #ifdef THREAD_PHYSICS
 		, myQuit(false)
 		, myLogicDone(false)
@@ -204,16 +203,16 @@ namespace Prism
 	}
 #endif
 
-	void PhysicsManager::Add(PhysEntity* aPhysEntity)
+	void PhysicsManager::Add(const PhysicsCallbackStruct& aCallbackStruct)
 	{
-		myPhysEntities.Add(aPhysEntity);
+		myPhysicsComponentCallbacks.Add(aCallbackStruct);
 	}
 
 	void PhysicsManager::Swap()
 	{
-		for (int i = 0; i < myPhysEntities.Size(); ++i)
+		for (int i = 0; i < myPhysicsComponentCallbacks.Size(); ++i)
 		{
-			myPhysEntities[i]->SwapOrientations();
+			myPhysicsComponentCallbacks[i].mySwapOrientationCallback();
 		}
 
 		std::swap(myRaycastJobs[0], myRaycastJobs[1]);
@@ -280,11 +279,11 @@ namespace Prism
 		}
 		myPositionJobs[1].RemoveAll();
 
-		for (int i = 0; i < myPhysEntities.Size(); ++i)
+		for (int i = 0; i < myPhysicsComponentCallbacks.Size(); ++i)
 		{
-			if (myPhysEntities[i]->GetPhysicsType() == ePhysics::DYNAMIC)
+			if (myPhysicsComponentCallbacks[i].myData->myPhysicsType == ePhysics::DYNAMIC)
 			{
-				myPhysEntities[i]->UpdateOrientation();
+				myPhysicsComponentCallbacks[i].myUpdateCallback();
 			}
 		}
 
@@ -299,7 +298,7 @@ namespace Prism
 		//Sleep(16);
 	}
 
-	void PhysicsManager::RayCast(const CU::Vector3<float>& aOrigin, const CU::Vector3<float>& aNormalizedDirection, float aMaxRayDistance, std::function<void(Entity*, const CU::Vector3<float>&, const CU::Vector3<float>&)> aFunctionToCall)
+	void PhysicsManager::RayCast(const CU::Vector3<float>& aOrigin, const CU::Vector3<float>& aNormalizedDirection, float aMaxRayDistance, std::function<void(PhysicsComponent*, const CU::Vector3<float>&, const CU::Vector3<float>&)> aFunctionToCall)
 	{
 		myRaycastJobs[0].Add(RaycastJob(aOrigin, aNormalizedDirection, aMaxRayDistance, aFunctionToCall));
 	}
@@ -347,7 +346,7 @@ namespace Prism
 		CU::Vector3<float> hitPosition;
 		if (returnValue == true)
 		{
-			Prism::PhysEntity* ent = nullptr;//static_cast<PhysEntity*>(buffer.touches[0].actor->userData);
+			PhysicsComponent* ent = nullptr;//static_cast<PhysEntity*>(buffer.touches[0].actor->userData);
 			float closestDist = FLT_MAX;
 			for (int i = 0; i < int(buffer.nbTouches); ++i)
 			{
@@ -358,7 +357,7 @@ namespace Prism
 						continue;
 					}
 					closestDist = buffer.touches[i].distance;
-					ent = static_cast<PhysEntity*>(buffer.touches[i].actor->userData);
+					ent = static_cast<PhysicsComponent*>(buffer.touches[i].actor->userData);
 					hitPosition.x = buffer.touches[i].position.x;
 					hitPosition.y = buffer.touches[i].position.y;
 					hitPosition.z = buffer.touches[i].position.z;
@@ -371,7 +370,7 @@ namespace Prism
 			}
 			else
 			{
-				myRaycastResults[1].Add(RaycastResult(ent->GetEntity(), aRaycastJob.myNormalizedDirection, hitPosition, aRaycastJob.myFunctionToCall));
+				myRaycastResults[1].Add(RaycastResult(ent, aRaycastJob.myNormalizedDirection, hitPosition, aRaycastJob.myFunctionToCall));
 			}
 		}
 		else
@@ -501,7 +500,7 @@ namespace Prism
 		aPositionOut = myPlayerPosition;
 	}
 
-	void PhysicsManager::Create(PhysEntity* aEntity, const PhysEntityData& aPhysData
+	void PhysicsManager::Create(PhysicsComponent* aComponent, const PhysicsCallbackStruct& aPhysData
 		, float* aOrientation, const std::string& aFBXPath
 		, physx::PxRigidDynamic** aDynamicBodyOut, physx::PxRigidStatic** aStaticBodyOut
 		, physx::PxShape*** someShapesOut)
@@ -518,42 +517,42 @@ namespace Prism
 		*aStaticBodyOut = nullptr;
 		*aDynamicBodyOut = nullptr;
 
-		if (aPhysData.myPhysics == ePhysics::STATIC)
+		if (aPhysData.myData->myPhysicsType == ePhysics::STATIC)
 		{
 			physx::PxTriangleMesh* mesh = GetPhysMesh(aFBXPath);
 
 			*aStaticBodyOut = core->createRigidStatic(transform);
 			(*aStaticBodyOut)->createShape(physx::PxTriangleMeshGeometry(mesh), *material);
 			(*aStaticBodyOut)->setName("Tjohej");
-			(*aStaticBodyOut)->userData = aEntity;
+			(*aStaticBodyOut)->userData = aComponent;
 			GetScene()->addActor(*(*aStaticBodyOut));
 		}
-		else if (aPhysData.myPhysics == ePhysics::DYNAMIC)
+		else if (aPhysData.myData->myPhysicsType == ePhysics::DYNAMIC)
 		{
 			physx::PxVec3 dimensions(
-				aPhysData.myPhysicsMax.x - aPhysData.myPhysicsMin.x
-				, aPhysData.myPhysicsMax.y - aPhysData.myPhysicsMin.y
-				, aPhysData.myPhysicsMax.z - aPhysData.myPhysicsMin.z);
+				aPhysData.myData->myPhysicsMax.x - aPhysData.myData->myPhysicsMin.x
+				, aPhysData.myData->myPhysicsMax.y - aPhysData.myData->myPhysicsMin.y
+				, aPhysData.myData->myPhysicsMax.z - aPhysData.myData->myPhysicsMin.z);
 			physx::PxBoxGeometry geometry(dimensions / 2.f);
 			*aDynamicBodyOut = physx::PxCreateDynamic(*core, transform, geometry, *material, density);
 			(*aDynamicBodyOut)->setAngularDamping(0.75);
 			(*aDynamicBodyOut)->setLinearVelocity(physx::PxVec3(0, 0, 0));
-			(*aDynamicBodyOut)->userData = aEntity;
+			(*aDynamicBodyOut)->userData = aComponent;
 			GetScene()->addActor(*(*aDynamicBodyOut));
 
 			physx::PxU32 nShapes = (*aDynamicBodyOut)->getNbShapes();
 			
 			*someShapesOut = new physx::PxShape*[nShapes];
 		}
-		else if (aPhysData.myPhysics == ePhysics::PHANTOM)
+		else if (aPhysData.myData->myPhysicsType == ePhysics::PHANTOM)
 		{
 			physx::PxVec3 dimensions(
-				aPhysData.myPhysicsMax.x - aPhysData.myPhysicsMin.x
-				, aPhysData.myPhysicsMax.y - aPhysData.myPhysicsMin.y
-				, aPhysData.myPhysicsMax.z - aPhysData.myPhysicsMin.z);
+				aPhysData.myData->myPhysicsMax.x - aPhysData.myData->myPhysicsMin.x
+				, aPhysData.myData->myPhysicsMax.y - aPhysData.myData->myPhysicsMin.y
+				, aPhysData.myData->myPhysicsMax.z - aPhysData.myData->myPhysicsMin.z);
 			physx::PxBoxGeometry geometry(dimensions / 2.f);
 			*aStaticBodyOut = physx::PxCreateStatic(*core, transform, geometry, *material);
-			(*aStaticBodyOut)->userData = aEntity;
+			(*aStaticBodyOut)->userData = aComponent;
 			(*aStaticBodyOut)->setName("Phantom");
 
 			physx::PxU32 nShapes = (*aStaticBodyOut)->getNbShapes();
@@ -567,19 +566,31 @@ namespace Prism
 			GetScene()->addActor(*(*aStaticBodyOut));
 		}
 
-		myPhysEntities.Add(aEntity);
+		myPhysicsComponentCallbacks.Add(aPhysData);
 	}
 
-	void PhysicsManager::Remove(physx::PxRigidDynamic* aDynamic)
+	void PhysicsManager::Remove(physx::PxRigidDynamic* aDynamic, const PhysicsComponentData& aData)
 	{
 		GetScene()->removeActor(*aDynamic);
-		myPhysEntities.RemoveCyclic(static_cast<PhysEntity*>(aDynamic->userData));
+		for (int i = 0; i < myPhysicsComponentCallbacks.Size(); ++i)
+		{
+			if (myPhysicsComponentCallbacks[i].myData == &aData)
+			{
+				myPhysicsComponentCallbacks.RemoveCyclicAtIndex(i);
+			}
+		}
 	}
 
-	void PhysicsManager::Remove(physx::PxRigidStatic* aStatic)
+	void PhysicsManager::Remove(physx::PxRigidStatic* aStatic, const PhysicsComponentData& aData)
 	{
 		GetScene()->removeActor(*aStatic);
-		myPhysEntities.RemoveCyclic(static_cast<PhysEntity*>(aStatic->userData));
+		for (int i = 0; i < myPhysicsComponentCallbacks.Size(); ++i)
+		{
+			if (myPhysicsComponentCallbacks[i].myData == &aData)
+			{
+				myPhysicsComponentCallbacks.RemoveCyclicAtIndex(i);
+			}
+		}
 	}
 
 	physx::PxTriangleMesh* PhysicsManager::GetPhysMesh(const std::string& aFBXPath)
@@ -640,7 +651,7 @@ namespace Prism
 	{
 		for (int i = 0; i < myRaycastResults[0].Size(); ++i)
 		{
-			myRaycastResults[0][i].myFunctionToCall(myRaycastResults[0][i].myEntity, myRaycastResults[0][i].myDirection, myRaycastResults[0][i].myHitPosition);
+			myRaycastResults[0][i].myFunctionToCall(myRaycastResults[0][i].myPhysicsComponent, myRaycastResults[0][i].myDirection, myRaycastResults[0][i].myHitPosition);
 		}
 
 		myRaycastResults[0].RemoveAll();

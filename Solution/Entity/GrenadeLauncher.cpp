@@ -4,7 +4,7 @@
 #include "Entity.h"
 #include "EntityFactory.h"
 #include "GrenadeLauncher.h"
-#include <PhysEntity.h>
+#include "PhysicsComponent.h"
 #include <PhysicsInterface.h>
 #include <XMLReader.h>
 
@@ -73,8 +73,7 @@ void GrenadeLauncher::ShootAtDirection(const CU::Matrix44<float>& aOrientation)
 	RESET_RUNTIME;
 	bullet->Reset();
 	bullet->AddToScene();
-	//bullet->GetPhysEntity()->SetPosition(aOrientation.GetPos());
-	bullet->GetPhysEntity()->AddForce(aOrientation.GetForward(), 20.f);
+	bullet->GetComponent<PhysicsComponent>()->AddForce(aOrientation.GetForward(), 20.f);
 
 	myBullets.Add(bullet);
 }

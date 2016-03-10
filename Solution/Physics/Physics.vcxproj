@@ -74,8 +74,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="PhysEntity.h" />
-    <ClInclude Include="PhysEntityData.h" />
+    <ClInclude Include="..\Entity\PhysicsComponentData.h" />
+    <ClInclude Include="PhysicsCallbackStruct.h" />
     <ClInclude Include="PhysicsHelperFunc.h" />
     <ClInclude Include="PhysicsInterface.h" />
     <ClInclude Include="PhysicsManager.h" />
@@ -83,7 +83,6 @@
     <ClInclude Include="wavefront.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="PhysEntity.cpp" />
     <ClCompile Include="PhysicsInterface.cpp" />
     <ClCompile Include="PhysicsManager.cpp" />
     <ClCompile Include="stdafx.cpp">

@@ -57,7 +57,7 @@ namespace Prism
 		myManager->EndFrame();
 	}
 
-	void PhysicsInterface::RayCast(const CU::Vector3<float>& aOrigin, const CU::Vector3<float>& aNormalizedDirection, float aMaxRayDistance, std::function<void(Entity*, const CU::Vector3<float>&, const CU::Vector3<float>&)> aFunctionToCall)
+	void PhysicsInterface::RayCast(const CU::Vector3<float>& aOrigin, const CU::Vector3<float>& aNormalizedDirection, float aMaxRayDistance, std::function<void(PhysicsComponent*, const CU::Vector3<float>&, const CU::Vector3<float>&)> aFunctionToCall)
 	{
 		if (myManager != nullptr)
 		{
@@ -115,22 +115,22 @@ namespace Prism
 		//myManager->SubscribeToTriggers(aSubscriber);
 	}
 
-	void PhysicsInterface::Create(PhysEntity* aEntity, const PhysEntityData& aPhysData
+	void PhysicsInterface::Create(PhysicsComponent* aComponent, const PhysicsCallbackStruct& aPhysData
 		, float* aOrientation, const std::string& aFBXPath
 		, physx::PxRigidDynamic** aDynamicBodyOut, physx::PxRigidStatic** aStaticBodyOut
 		, physx::PxShape*** someShapesOut)
 	{
-		myManager->Create(aEntity, aPhysData, aOrientation, aFBXPath, aDynamicBodyOut, aStaticBodyOut, someShapesOut);
+		myManager->Create(aComponent, aPhysData, aOrientation, aFBXPath, aDynamicBodyOut, aStaticBodyOut, someShapesOut);
 	}
 
-	void PhysicsInterface::Remove(physx::PxRigidDynamic* aDynamic)
+	void PhysicsInterface::Remove(physx::PxRigidDynamic* aDynamic, const PhysicsComponentData& aData)
 	{
-		myManager->Remove(aDynamic);
+		myManager->Remove(aDynamic, aData);
 	}
 	
-	void PhysicsInterface::Remove(physx::PxRigidStatic* aStatic)
+	void PhysicsInterface::Remove(physx::PxRigidStatic* aStatic, const PhysicsComponentData& aData)
 	{
-		myManager->Remove(aStatic);
+		myManager->Remove(aStatic, aData);
 	}
 
 	PhysicsInterface::PhysicsInterface()

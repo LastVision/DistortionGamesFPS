@@ -181,6 +181,7 @@
     <ClInclude Include="InputComponentData.h" />
     <ClInclude Include="NetworkComponent.h" />
     <ClInclude Include="NetworkComponentData.h" />
+    <ClInclude Include="PhysicsComponent.h" />
     <ClInclude Include="Pistol.h" />
     <ClInclude Include="PollingStation.h" />
     <ClInclude Include="ProjectileComponent.h" />
@@ -207,6 +208,7 @@
     <ClCompile Include="HealthComponent.cpp" />
     <ClCompile Include="InputComponent.cpp" />
     <ClCompile Include="NetworkComponent.cpp" />
+    <ClCompile Include="PhysicsComponent.cpp" />
     <ClCompile Include="Pistol.cpp" />
     <ClCompile Include="PollingStation.cpp" />
     <ClCompile Include="ProjectileComponent.cpp" />
