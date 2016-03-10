@@ -1,6 +1,6 @@
 #pragma once
-#include "NetMessage.h"
-class NetMessageDisconnect : public NetMessage
+#include "NetImportantMessage.h"
+class NetMessageDisconnect : public NetImportantMessage
 {
 public:
 	NetMessageDisconnect(const unsigned short aClientID);

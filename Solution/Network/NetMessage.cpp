@@ -34,6 +34,11 @@ bool NetMessage::GetIsImportant()
 	return false;
 }
 
+const unsigned int NetMessage::GetImportantID() const
+{
+	return 0;
+}
+
 void NetMessage::DoSerialize(StreamType& aStream)
 {
 	SERIALIZE(aStream, myID);

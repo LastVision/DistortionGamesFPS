@@ -5,6 +5,7 @@
 #include <Utility.h>
 #include <PostMaster.h>
 
+#include <NetMessageImportantReply.h>
 #include <NetMessageConnectMessage.h>
 #include <NetMessageOnJoin.h>
 #include <NetMessageDisconnect.h>
@@ -172,18 +173,24 @@ void ServerNetworkManager::CreateConnection(const std::string& aName, const sock
 
 	for (Connection& connection : myClients)
 	{
-		NetMessageConnectMessage onConnect(aName, myIDCount, connection.myID);
+		NetMessageConnectMessage onConnect = CreateMessage<NetMessageConnectMessage>();
+		onConnect.myName = aName;
+		onConnect.myServerID = myIDCount;
+		onConnect.myOtherClientID = connection.myID;
 		onConnect.PackMessage();
 		myNetwork->Send(onConnect.myStream, newConnection.myAddress);
 	}
-	AddMessage(NetMessageOnJoin(newConnection.myID));
+	NetMessageOnJoin onJoin = CreateMessage<NetMessageOnJoin>();
+	onJoin.mySenderID = newConnection.myID;
+	AddMessage(onJoin);
 	PostMaster::GetInstance()->SendMessage(NetworkAddPlayerMessage(myIDCount, newConnection.myAddress));
 }
 
 void ServerNetworkManager::DisconnectConnection(const Connection& aConnection)
 {
 	//send disconnect message to the client
-	NetMessageDisconnect disconnect(aConnection.myID);
+	NetMessageDisconnect disconnect = CreateMessage<NetMessageDisconnect>();
+	disconnect.myClientID = aConnection.myID;
 	disconnect.PackMessage();
 	myNetwork->Send(disconnect.myStream, aConnection.myAddress);
 	AddMessage(disconnect);
@@ -201,14 +208,70 @@ void ServerNetworkManager::DisconnectConnection(const Connection& aConnection)
 	}
 }
 
+void ServerNetworkManager::UpdateImporantMessages(float aDeltaTime)
+{
+	for (ImportantMessage& msg : myImportantMessagesBuffer)
+	{
+		bool finished = true;
+		for (ImportantClient& client : msg.mySenders)
+		{
+			if (client.myHasReplied == false)
+			{
+				finished = false;
+				client.myTimer += aDeltaTime;
+				if (client.myTimer >= 1.f)
+				{
+					client.myTimer = 0.f;
+					myNetwork->Send(msg.myData, client.myNetworkAddress);
+				}
+			}
+		}
+		if (finished == true)
+		{
+			myImportantMessagesBuffer.RemoveCyclic(msg);
+		}
+	}
+}
+
+void ServerNetworkManager::AddImportantMessage(std::vector<char> aBuffer, unsigned int aImportantID)
+{
+	ImportantMessage msg;
+	msg.myData = aBuffer;
+	msg.myImportantID = aImportantID;
+	msg.mySenders.Init(myClients.Size());
+	for (Connection c : myClients)
+	{
+		ImportantClient client;
+		client.myNetworkID = c.myID;
+		client.myNetworkAddress = c.myAddress;
+		client.myTimer = 0.f;
+		client.myHasReplied = false;
+		msg.mySenders.Add(client);
+	}
+	myImportantMessagesBuffer.Add(msg);
+}
+
 void ServerNetworkManager::HandleMessage(const NetMessageConnectMessage& aMessage, const sockaddr_in& aSenderAddress)
 {
+	if (CheckIfImportantMessage(aMessage) == true)
+	{
+		NetMessageImportantReply toReply(aMessage.GetImportantID());
+		toReply.PackMessage();
+		
+		myNetwork->Send(toReply.myStream, aSenderAddress);
+	}
 	CreateConnection(aMessage.myName, aSenderAddress);
 }
 
 void ServerNetworkManager::HandleMessage(const NetMessageDisconnect& aMessage, const sockaddr_in& aSenderAddress)
 {
-	aSenderAddress;
+	if (CheckIfImportantMessage(aMessage) == true)
+	{
+		NetMessageImportantReply toReply(aMessage.GetImportantID());
+		toReply.PackMessage();
+
+		myNetwork->Send(toReply.myStream, aSenderAddress);
+	}
 	for (Connection c : myClients)
 	{
 		if (c.myID == aMessage.myClientID)
@@ -269,7 +332,7 @@ void ServerNetworkManager::HandleMessage(const NetMessageOnHit& aMessage, const 
 
 void ServerNetworkManager::ReceiveMessage(const NetworkAddEnemyMessage& aMessage)
 {
-	NetMessageAddEnemy toSend;
+	NetMessageAddEnemy toSend = CreateMessage<NetMessageAddEnemy>();
 	toSend.myPosition = aMessage.myPosition;
 	toSend.myNetworkID = aMessage.myNetworkID;
 	toSend.PackMessage();

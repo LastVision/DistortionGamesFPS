@@ -35,6 +35,8 @@ public:
 
 	void RemoveFromScene();
 
+	const int GetCapsuleControllerId() const;
+
 	static eComponentType GetTypeStatic();
 	eComponentType GetType() override;
 
@@ -51,7 +53,14 @@ private:
 	physx::PxRigidStatic* myStaticBody;
 	physx::PxShape** myShapes;
 	ePhysics myPhysicsType;
+
+	int myCapsuleControllerId;
 };
+
+inline const int PhysicsComponent::GetCapsuleControllerId() const
+{
+	return myCapsuleControllerId;
+}
 
 inline eComponentType PhysicsComponent::GetTypeStatic()
 {

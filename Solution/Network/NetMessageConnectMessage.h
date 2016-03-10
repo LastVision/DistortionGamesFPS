@@ -1,8 +1,8 @@
 #pragma once
-#include "NetMessage.h"
+#include "NetImportantMessage.h"
 #include <GrowingArray.h>
 
-class NetMessageConnectMessage : public NetMessage
+class NetMessageConnectMessage : public NetImportantMessage
 {
 public:
 	NetMessageConnectMessage(const std::string& aName, short aServerID);
