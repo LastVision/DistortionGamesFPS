@@ -71,9 +71,6 @@
     <ClCompile Include="GrenadeLauncher.cpp">
       <Filter>Weapon</Filter>
     </ClCompile>
-    <ClCompile Include="Movement.cpp">
-      <Filter>Weapon</Filter>
-    </ClCompile>
     <ClCompile Include="Pistol.cpp">
       <Filter>Weapon</Filter>
     </ClCompile>
@@ -160,9 +157,6 @@
       <Filter>Component</Filter>
     </ClInclude>
     <ClInclude Include="GrenadeLauncher.h">
-      <Filter>Weapon</Filter>
-    </ClInclude>
-    <ClInclude Include="Movement.h">
       <Filter>Weapon</Filter>
     </ClInclude>
     <ClInclude Include="Pistol.h">

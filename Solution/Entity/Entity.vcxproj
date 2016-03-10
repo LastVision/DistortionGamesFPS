@@ -179,7 +179,6 @@
     <ClInclude Include="HealthNote.h" />
     <ClInclude Include="InputComponent.h" />
     <ClInclude Include="InputComponentData.h" />
-    <ClInclude Include="Movement.h" />
     <ClInclude Include="NetworkComponent.h" />
     <ClInclude Include="NetworkComponentData.h" />
     <ClInclude Include="Pistol.h" />
@@ -207,7 +206,6 @@
     <ClCompile Include="GrenadeLauncher.cpp" />
     <ClCompile Include="HealthComponent.cpp" />
     <ClCompile Include="InputComponent.cpp" />
-    <ClCompile Include="Movement.cpp" />
     <ClCompile Include="NetworkComponent.cpp" />
     <ClCompile Include="Pistol.cpp" />
     <ClCompile Include="PollingStation.cpp" />

@@ -7,7 +7,7 @@
 //#include <pxphysicsapi.h>
 
 #include "PhysicsInterface.h"
-#include "PhysicsManager.h"
+//#include "PhysicsManager.h"
 
 namespace Prism
 {

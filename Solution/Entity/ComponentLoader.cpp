@@ -109,8 +109,22 @@ void ComponentLoader::LoadTriggerComponent(XMLReader& aDocument, tinyxml2::XMLEl
 
 void ComponentLoader::LoadInputComponent(XMLReader& aDocument, tinyxml2::XMLElement* aSourceElement, InputComponentData& aOutputData)
 {
-	aDocument;
-	aSourceElement;
+	for (tinyxml2::XMLElement* e = aDocument.FindFirstChild(aSourceElement); e != nullptr; e = aDocument.FindNextElement(e))
+	{
+		std::string elementName = CU::ToLower(e->Name());
+		if (elementName == CU::ToLower("Speed"))
+		{
+			aDocument.ForceReadAttribute(e, "value", aOutputData.mySpeed);
+		}
+		else if (elementName == CU::ToLower("rotationSpeed"))
+		{
+			aDocument.ForceReadAttribute(e, "value", aOutputData.myRotationSpeed);
+		}
+		else if (elementName == CU::ToLower("sprintMultiplier"))
+		{
+			aDocument.ForceReadAttribute(e, "value", aOutputData.mySprintMultiplier);
+		}
+	}
 
 	aOutputData.myExistsInEntity = true;
 }

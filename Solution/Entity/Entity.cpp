@@ -88,7 +88,7 @@ Entity::Entity(const EntityData& aEntityData, Prism::Scene* aScene, bool aClient
 
 	if (aEntityData.myInputData.myExistsInEntity == true && myIsClientSide == true)
 	{
-		myComponents[static_cast<int>(eComponentType::INPUT)] = new InputComponent(*this);
+		myComponents[static_cast<int>(eComponentType::INPUT)] = new InputComponent(*this, aEntityData.myInputData);
 	}
 
 	if (aEntityData.myFirstPersonRenderData.myExistsInEntity == true && myIsClientSide == true)
