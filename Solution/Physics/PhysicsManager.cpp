@@ -55,6 +55,8 @@ namespace Prism
 		myVelocityJobs[1].Init(64);
 		myPositionJobs[0].Init(64);
 		myPositionJobs[1].Init(64);
+		myOnTriggerResults[0].Init(64);
+		myOnTriggerResults[1].Init(64);
 		myTimestep = 1.f / 60.f;
 		
 		myFoundation = PxCreateFoundation(0x03030300, myDefaultAllocatorCallback, myDefaultErrorCallback);
@@ -221,6 +223,7 @@ namespace Prism
 		std::swap(myForceJobs[0], myForceJobs[1]);
 		std::swap(myVelocityJobs[0], myVelocityJobs[1]);
 		std::swap(myPositionJobs[0], myPositionJobs[1]);
+		std::swap(myOnTriggerResults[0], myOnTriggerResults[1]);
 	}
 
 	void PhysicsManager::Update()
@@ -307,10 +310,12 @@ namespace Prism
 	{
 		for (physx::PxU32 i = 0; i < aCount; i++)
 		{
-			const physx::PxTriggerPair& cp = somePairs[i];
+			const physx::PxTriggerPair& pairs = somePairs[i];
 
-			if (somePairs->status == physx::PxPairFlag::Enum::eNOTIFY_TOUCH_FOUND)
+			if (pairs.status == physx::PxPairFlag::Enum::eNOTIFY_TOUCH_FOUND)
 			{
+				myOnTriggerResults[0].Add(OnTriggerResult(static_cast<PhysicsComponent*>(pairs.triggerActor->userData)
+					, static_cast<PhysicsComponent*>(pairs.triggerActor->userData)));
 				//myTriggerManager.OnTrigger(somePairs->triggerActor->userData, stat_cast<PhysEntity*>(somePairs->triggerActor->userData));
 				//if (pairs->triggerActor == myPlayer)
 				//{
@@ -328,6 +333,7 @@ namespace Prism
 				//ent->Collide(somePairs->otherActor->userData);
 				//ent->Collide(static_cast<PhysEntity*>(somePairs->otherActor->userData));
 				//myTriggerManager.Add(TriggerJob(static_cast<PhysEntity*>(somePairs->triggerActor->userData), static_cast<PhysEntity*>(somePairs->otherActor->userData)));
+
 			}
 		}
 	}
