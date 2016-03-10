@@ -1,13 +1,13 @@
 #pragma once
 
-class PhysicComponent;
+class Entity;
 
 struct CollisionNote
 {
-	CollisionNote(PhysicComponent* anOther)
+	CollisionNote(Entity* anOther)
 		: myOther(anOther) {}
 	void operator=(CollisionNote&) = delete;
 
 
-	PhysicComponent* myOther;
+	Entity* myOther;
 };

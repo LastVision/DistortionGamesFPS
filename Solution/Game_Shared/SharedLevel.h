@@ -16,7 +16,7 @@ public:
 
 	virtual void Update(const float aDeltaTime);
 
-	virtual void CollisionCallback(PhysicsComponent* aFirst, PhysicsComponent* aSecond) = 0;
+	void CollisionCallback(PhysicsComponent* aFirst, PhysicsComponent* aSecond);
 
 protected:
 	CU::GrowingArray<Entity*> myEntities;

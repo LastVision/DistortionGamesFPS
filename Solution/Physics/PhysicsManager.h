@@ -37,7 +37,7 @@ namespace Prism
 	class PhysicsManager : public physx::debugger::comm::PvdConnectionHandler, public physx::PxSimulationEventCallback
 	{
 	public:
-		PhysicsManager();
+		PhysicsManager(std::function<void(PhysicsComponent*, PhysicsComponent*)> anOnTriggerCallback);
 		~PhysicsManager();
 
 #ifdef THREAD_PHYSICS

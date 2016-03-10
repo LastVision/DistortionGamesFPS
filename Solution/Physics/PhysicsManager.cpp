@@ -35,8 +35,9 @@
 
 namespace Prism
 {
-	PhysicsManager::PhysicsManager()
+	PhysicsManager::PhysicsManager(std::function<void(PhysicsComponent*, PhysicsComponent*)> anOnTriggerCallback)
 		: myPhysicsComponentCallbacks(4096)
+		, myOnTriggerCallback(anOnTriggerCallback)
 #ifdef THREAD_PHYSICS
 		, myQuit(false)
 		, myLogicDone(false)
@@ -297,6 +298,14 @@ namespace Prism
 
 		myRaycastJobs[1].RemoveAll();
 
+		for (int i = 0; i < myOnTriggerResults[1].Size(); ++i)
+		{
+			
+			myOnTriggerCallback(myOnTriggerResults[1][i].myFirstPhysicsComponent, myOnTriggerResults[1][i].mySecondPhysicsComponent);
+		}
+
+		myOnTriggerResults[1].RemoveAll();
+
 
 		//Sleep(16);
 	}
@@ -315,25 +324,7 @@ namespace Prism
 			if (pairs.status == physx::PxPairFlag::Enum::eNOTIFY_TOUCH_FOUND)
 			{
 				myOnTriggerResults[0].Add(OnTriggerResult(static_cast<PhysicsComponent*>(pairs.triggerActor->userData)
-					, static_cast<PhysicsComponent*>(pairs.triggerActor->userData)));
-				//myTriggerManager.OnTrigger(somePairs->triggerActor->userData, stat_cast<PhysEntity*>(somePairs->triggerActor->userData));
-				//if (pairs->triggerActor == myPlayer)
-				//{
-				//
-				//}
-				//PhysEntity* ent = static_cast<PhysEntity*>(somePairs->triggerActor->userData);
-				//
-				//if (ent->myOnTriggerCallBack)
-				//{
-				//	ent->myOnTriggerCallBack();
-				//}
-				//TriggerEntity* ent = static_cast<TriggerEntity*>(somePairs->triggerActor->userData);
-				//ent;
-				//int apa = 5;
-				//ent->Collide(somePairs->otherActor->userData);
-				//ent->Collide(static_cast<PhysEntity*>(somePairs->otherActor->userData));
-				//myTriggerManager.Add(TriggerJob(static_cast<PhysEntity*>(somePairs->triggerActor->userData), static_cast<PhysEntity*>(somePairs->otherActor->userData)));
-
+					, static_cast<PhysicsComponent*>(pairs.otherActor->userData)));
 			}
 		}
 	}
@@ -441,6 +432,7 @@ namespace Prism
 		controllerDesc.userData = aComponent;
 
 		myControllerManager->createController(controllerDesc);
+		myControllerManager->getController(myControllerManager->getNbControllers() - 1)->getActor()->userData = aComponent;
 
 		return myControllerManager->getNbControllers() - 1;
 	}
