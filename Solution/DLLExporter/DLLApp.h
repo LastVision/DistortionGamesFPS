@@ -24,6 +24,7 @@ namespace Prism
 namespace CU
 {
 	class InputWrapper;
+	class TimerManager;
 }
 
 class DLLApp
@@ -65,6 +66,8 @@ private:
 	DLLCamera* myCamera;
 	DLLModel* myModel;
 	DLLParticle* myParticle;
+
+	CU::TimerManager* myTimeManager;
 
 	Prism::DirectionalLight* myDirectionalLight;
 	CU::Vector3f myDirectionalLightRotation;
