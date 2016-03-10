@@ -6,6 +6,7 @@
 #include <GrowingArray.h>
 #include <pvd/PxVisualDebugger.h>
 #include <physxvisualdebuggersdk/PvdConnection.h>
+#include "PhysicsCallbackStruct.h"
 #include <PxSimulationEventCallback.h>
 #include <characterkinematic\PxControllerManager.h>
 #include <cooking\PxCooking.h>
@@ -15,7 +16,6 @@
 class Entity;
 class PhysicsComponent;
 struct PhysicsComponentData;
-#include "PhysicsCallbackStruct.h"
 namespace CU
 {
 	class TimerManager;
@@ -37,7 +37,7 @@ namespace Prism
 	class PhysicsManager : public physx::debugger::comm::PvdConnectionHandler, public physx::PxSimulationEventCallback
 	{
 	public:
-		PhysicsManager();
+		PhysicsManager(std::function<void(PhysicsComponent*, PhysicsComponent*)> anOnTriggerCallback);
 		~PhysicsManager();
 
 #ifdef THREAD_PHYSICS
@@ -129,6 +129,21 @@ namespace Prism
 			std::function<void(PhysicsComponent*, const CU::Vector3<float>&, const CU::Vector3<float>&)> myFunctionToCall;
 		};
 		CU::GrowingArray<RaycastResult> myRaycastResults[2];
+
+		struct OnTriggerResult
+		{
+			OnTriggerResult() {}
+			OnTriggerResult(PhysicsComponent* aFirstPhysicsComponent, PhysicsComponent* aSecondPhysicsComponent)
+				: myFirstPhysicsComponent(aFirstPhysicsComponent)
+				, mySecondPhysicsComponent(aSecondPhysicsComponent)
+			{}
+			PhysicsComponent* myFirstPhysicsComponent;
+			PhysicsComponent* mySecondPhysicsComponent;
+			//std::function<void(PhysicsComponent*, const CU::Vector3<float>&, const CU::Vector3<float>&)> myFunctionToCall;
+		};
+		CU::GrowingArray<OnTriggerResult> myOnTriggerResults[2];
+
+		std::function<void(PhysicsComponent*, PhysicsComponent*)> myOnTriggerCallback;
 
 		struct MoveJob
 		{
@@ -226,6 +241,8 @@ namespace Prism
 		physx::PxCooking* myCooker;
 
 		CU::Vector3<float> myPlayerPosition;
+
+		CU::GrowingArray<physx::PxActor*> myActorsToRemove[2];
 	};
 
 #ifdef THREAD_PHYSICS

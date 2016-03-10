@@ -38,10 +38,14 @@ public:
 	void Render() override;
 	void ResumeState() override;
 
+	void ReceiveMessage(const GameStateMessage& aMessage) override;
+
 	void OnResize(int aWidth, int aHeight) override;
 
 private:
 	GUI::GUIManager* myGUIManager;
 	ClientLevel* myLevel;
 	ClientLevelFactory* myLevelFactory;
+
+	int myLevelToLoad;
 };

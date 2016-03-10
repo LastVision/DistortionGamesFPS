@@ -18,8 +18,6 @@ public:
 	PhysicsComponent(Entity& aEntity, const PhysicsComponentData& aPhysicsComponentData, const std::string& aFBXPath);
 	~PhysicsComponent();
 
-	void Update(float aDelta) override;
-
 	void SwapOrientations();
 
 	float* GetPosition();

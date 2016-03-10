@@ -26,6 +26,8 @@ private:
 	const TriggerComponentData& myData;
 
 	eTriggerType myTriggerType;
+
+	bool myHasTriggered;
 };
 
 inline eComponentType TriggerComponent::GetTypeStatic()
@@ -41,14 +43,4 @@ inline eComponentType TriggerComponent::GetType()
 inline eTriggerType TriggerComponent::GetTriggerType() const
 {
 	return myTriggerType;
-}
-
-inline int TriggerComponent::GetValue() const
-{
-	return myData.myValue;
-}
-
-inline const std::string& TriggerComponent::GetID() const
-{
-	return myData.myID;
 }

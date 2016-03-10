@@ -229,7 +229,6 @@ void Entity::Kill()
 		if (myEntityData.myPhysicsData.myExistsInEntity == true)
 		{
 			GetComponent<PhysicsComponent>()->RemoveFromScene();
-
 		}
 	}
 }

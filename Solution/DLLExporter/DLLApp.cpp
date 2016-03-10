@@ -23,7 +23,7 @@
 DLLApp::DLLApp(int* aHwnd, Prism::SetupInfo& aWindowSetup, WNDPROC aWindowProc)
 {
 	DL_Debug::Debug::Create();
-	CU::TimerManager::Create();
+	myTimeManager = new CU::TimerManager();
 	DL_DEBUG("Startup!");
 
 	myPanelWindowHandler = (HWND)aHwnd;
@@ -45,6 +45,9 @@ DLLApp::DLLApp(int* aHwnd, Prism::SetupInfo& aWindowSetup, WNDPROC aWindowProc)
 
 DLLApp::~DLLApp()
 {
+	delete myTimeManager;
+	myTimeManager = nullptr;
+
 	delete myCamera;
 	myCamera = nullptr;
 
@@ -64,8 +67,8 @@ void DLLApp::Render()
 
 void DLLApp::Update()
 {
-	CU::TimerManager::GetInstance()->Update();
-	float deltaTime = CU::TimerManager::GetInstance()->GetMasterTimer().GetTime().GetFrameTime();
+	myTimeManager->Update();
+	float deltaTime = myTimeManager->GetMasterTimer().GetTime().GetFrameTime();
 	myCamera->Update(deltaTime);
 	CU::InputWrapper::GetInstance()->Update();
 	LogicUpdate(deltaTime);
