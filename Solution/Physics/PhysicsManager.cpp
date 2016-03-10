@@ -23,10 +23,16 @@
 #pragma comment(lib, "PhysX\\vc12win32\\PhysX3CharacterKinematic_x86.lib")
 #endif
 
+#include <CommonHelper.h>
 #include "PhysEntity.h"
 #include <pxphysicsapi.h>
 #include <PxQueryReport.h>
 #include <TimerManager.h>
+#include "PhysEntityData.h"
+
+#include "wavefront.h"
+
+#define MATERIAL_ID			0x01
 
 namespace Prism
 {
@@ -446,6 +452,36 @@ namespace Prism
 			ConvertVector(aMoveJob.myDirection), aMoveJob.myMinDisplacement, aMoveJob.myDeltaTime, filter, nullptr);
 	}
 
+	void PhysicsManager::UpdateOrientation(physx::PxRigidDynamic* aDynamicBody, physx::PxShape** aShape, float* aThread4x4)
+	{
+		physx::PxU32 nShapes = aDynamicBody->getNbShapes();
+		aDynamicBody->getShapes(aShape, nShapes);
+
+		physx::PxTransform pT = physx::PxShapeExt::getGlobalPose(*aShape[0], *aDynamicBody);
+		physx::PxTransform graphicsTransform(pT.p, pT.q);
+		physx::PxMat33 m = physx::PxMat33(graphicsTransform.q);
+
+		aThread4x4[0] = m(0, 0);
+		aThread4x4[1] = m(1, 0);
+		aThread4x4[2] = m(2, 0);
+		aThread4x4[3] = 0;
+
+		aThread4x4[4] = m(0, 1);
+		aThread4x4[5] = m(1, 1);
+		aThread4x4[6] = m(2, 1);
+		aThread4x4[7] = 0;
+
+		aThread4x4[8] = m(0, 2);
+		aThread4x4[9] = m(1, 2);
+		aThread4x4[10] = m(2, 2);
+		aThread4x4[11] = 0;
+
+		aThread4x4[12] = graphicsTransform.p.x;
+		aThread4x4[13] = graphicsTransform.p.y;
+		aThread4x4[14] = graphicsTransform.p.z;
+		aThread4x4[15] = 1;
+	}
+
 	bool PhysicsManager::GetAllowedToJump(int aId)
 	{
 		physx::PxControllerState state;
@@ -463,6 +499,141 @@ namespace Prism
 	void PhysicsManager::GetPosition(int aId, CU::Vector3<float>& aPositionOut)
 	{
 		aPositionOut = myPlayerPosition;
+	}
+
+	void PhysicsManager::Create(PhysEntity* aEntity, const PhysEntityData& aPhysData
+		, float* aOrientation, const std::string& aFBXPath
+		, physx::PxRigidDynamic** aDynamicBodyOut, physx::PxRigidStatic** aStaticBodyOut
+		, physx::PxShape*** someShapesOut)
+	{
+		physx::PxPhysics* core = GetCore();
+		physx::PxMaterial* material = core->createMaterial(0.5, 0.5, 0.5);
+
+		physx::PxReal density = 1.f;
+
+		//Use 4x4float here instead of orientation
+		physx::PxMat44 matrix(aOrientation);
+		physx::PxTransform transform(matrix);
+
+		*aStaticBodyOut = nullptr;
+		*aDynamicBodyOut = nullptr;
+
+		if (aPhysData.myPhysics == ePhysics::STATIC)
+		{
+			physx::PxTriangleMesh* mesh = GetPhysMesh(aFBXPath);
+
+			*aStaticBodyOut = core->createRigidStatic(transform);
+			(*aStaticBodyOut)->createShape(physx::PxTriangleMeshGeometry(mesh), *material);
+			(*aStaticBodyOut)->setName("Tjohej");
+			(*aStaticBodyOut)->userData = aEntity;
+			GetScene()->addActor(*(*aStaticBodyOut));
+		}
+		else if (aPhysData.myPhysics == ePhysics::DYNAMIC)
+		{
+			physx::PxVec3 dimensions(
+				aPhysData.myPhysicsMax.x - aPhysData.myPhysicsMin.x
+				, aPhysData.myPhysicsMax.y - aPhysData.myPhysicsMin.y
+				, aPhysData.myPhysicsMax.z - aPhysData.myPhysicsMin.z);
+			physx::PxBoxGeometry geometry(dimensions / 2.f);
+			*aDynamicBodyOut = physx::PxCreateDynamic(*core, transform, geometry, *material, density);
+			(*aDynamicBodyOut)->setAngularDamping(0.75);
+			(*aDynamicBodyOut)->setLinearVelocity(physx::PxVec3(0, 0, 0));
+			(*aDynamicBodyOut)->userData = aEntity;
+			GetScene()->addActor(*(*aDynamicBodyOut));
+
+			physx::PxU32 nShapes = (*aDynamicBodyOut)->getNbShapes();
+			
+			*someShapesOut = new physx::PxShape*[nShapes];
+		}
+		else if (aPhysData.myPhysics == ePhysics::PHANTOM)
+		{
+			physx::PxVec3 dimensions(
+				aPhysData.myPhysicsMax.x - aPhysData.myPhysicsMin.x
+				, aPhysData.myPhysicsMax.y - aPhysData.myPhysicsMin.y
+				, aPhysData.myPhysicsMax.z - aPhysData.myPhysicsMin.z);
+			physx::PxBoxGeometry geometry(dimensions / 2.f);
+			*aStaticBodyOut = physx::PxCreateStatic(*core, transform, geometry, *material);
+			(*aStaticBodyOut)->userData = aEntity;
+			(*aStaticBodyOut)->setName("Phantom");
+
+			physx::PxU32 nShapes = (*aStaticBodyOut)->getNbShapes();
+			*someShapesOut = new physx::PxShape*[nShapes];
+
+			physx::PxShape* treasureShape;
+			(*aStaticBodyOut)->getShapes(&treasureShape, 1.f);
+
+			treasureShape->setFlag(physx::PxShapeFlag::eSIMULATION_SHAPE, false);
+			treasureShape->setFlag(physx::PxShapeFlag::eTRIGGER_SHAPE, true);
+			GetScene()->addActor(*(*aStaticBodyOut));
+		}
+
+		myPhysEntities.Add(aEntity);
+	}
+
+	void PhysicsManager::Remove(physx::PxRigidDynamic* aDynamic)
+	{
+		GetScene()->removeActor(*aDynamic);
+		myPhysEntities.RemoveCyclic(static_cast<PhysEntity*>(aDynamic->userData));
+	}
+
+	void PhysicsManager::Remove(physx::PxRigidStatic* aStatic)
+	{
+		GetScene()->removeActor(*aStatic);
+		myPhysEntities.RemoveCyclic(static_cast<PhysEntity*>(aStatic->userData));
+	}
+
+	physx::PxTriangleMesh* PhysicsManager::GetPhysMesh(const std::string& aFBXPath)
+	{
+		std::string objPath(aFBXPath);
+		std::string cowPath(aFBXPath);
+
+		objPath[aFBXPath.size() - 3] = 'o';
+		objPath[aFBXPath.size() - 2] = 'b';
+		objPath[aFBXPath.size() - 1] = 'j';
+
+		cowPath[aFBXPath.size() - 3] = 'c';
+		cowPath[aFBXPath.size() - 2] = 'o';
+		cowPath[aFBXPath.size() - 1] = 'w';
+
+		cowPath = CU::GetGeneratedDataFolderFilePath(aFBXPath, "cow");
+
+		physx::PxTriangleMesh* mesh = nullptr;
+		WavefrontObj wfo;
+
+		bool ok;
+
+		if (CU::FileExists(cowPath) == false)
+		{
+
+			if (!wfo.loadObj(objPath.c_str(), false))
+			{
+				DL_ASSERT(CU::Concatenate("Error loading file: %s", objPath.c_str()));
+			}
+
+			physx::PxTriangleMeshDesc meshDesc;
+			meshDesc.points.count = wfo.mVertexCount;
+			meshDesc.triangles.count = wfo.mTriCount;
+			meshDesc.points.stride = sizeof(float) * 3;
+			meshDesc.triangles.stride = sizeof(int) * 3;
+			meshDesc.points.data = wfo.mVertices;
+			meshDesc.triangles.data = wfo.mIndices;
+
+			{
+				physx::PxDefaultFileOutputStream stream(cowPath.c_str());
+				ok = GetCooker()->cookTriangleMesh(meshDesc, stream);
+			}
+		}
+		else
+		{
+			ok = true;
+		}
+		if (ok)
+		{
+			physx::PxDefaultFileInputData stream(cowPath.c_str());
+			mesh = GetCore()->createTriangleMesh(stream);
+		}
+
+		return mesh;
 	}
 
 	void PhysicsManager::EndFrame()

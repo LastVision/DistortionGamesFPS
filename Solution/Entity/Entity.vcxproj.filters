@@ -28,6 +28,9 @@
     <Filter Include="EntityFactory\Component">
       <UniqueIdentifier>{d78471a9-14e8-41c7-8352-3d64f1f6778b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Weapon">
+      <UniqueIdentifier>{bb49f49e-fabb-452b-8e46-c4a02fac7e1d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -62,8 +65,28 @@
     <ClCompile Include="TriggerComponent.cpp">
       <Filter>Component</Filter>
     </ClCompile>
-    <ClCompile Include="NetworkComponent.cpp" />
     <ClCompile Include="InputComponent.cpp">
+      <Filter>Component</Filter>
+    </ClCompile>
+    <ClCompile Include="GrenadeLauncher.cpp">
+      <Filter>Weapon</Filter>
+    </ClCompile>
+    <ClCompile Include="Pistol.cpp">
+      <Filter>Weapon</Filter>
+    </ClCompile>
+    <ClCompile Include="Shotgun.cpp">
+      <Filter>Weapon</Filter>
+    </ClCompile>
+    <ClCompile Include="Weapon.cpp">
+      <Filter>Weapon</Filter>
+    </ClCompile>
+    <ClCompile Include="ShootingComponent.cpp">
+      <Filter>Component</Filter>
+    </ClCompile>
+    <ClCompile Include="FirstPersonRenderComponent.cpp">
+      <Filter>Component</Filter>
+    </ClCompile>
+    <ClCompile Include="NetworkComponent.cpp">
       <Filter>Component</Filter>
     </ClCompile>
   </ItemGroup>
@@ -127,12 +150,47 @@
     <ClInclude Include="TriggerComponentData.h">
       <Filter>EntityFactory\EntityData\ComponentData</Filter>
     </ClInclude>
-    <ClInclude Include="NetworkComponent.h" />
     <ClInclude Include="NetworkComponentData.h">
       <Filter>EntityFactory\EntityData\ComponentData</Filter>
     </ClInclude>
     <ClInclude Include="InputComponent.h">
       <Filter>Component</Filter>
+    </ClInclude>
+    <ClInclude Include="GrenadeLauncher.h">
+      <Filter>Weapon</Filter>
+    </ClInclude>
+    <ClInclude Include="Pistol.h">
+      <Filter>Weapon</Filter>
+    </ClInclude>
+    <ClInclude Include="Shotgun.h">
+      <Filter>Weapon</Filter>
+    </ClInclude>
+    <ClInclude Include="Weapon.h">
+      <Filter>Weapon</Filter>
+    </ClInclude>
+    <ClInclude Include="InputComponentData.h">
+      <Filter>EntityFactory\EntityData\ComponentData</Filter>
+    </ClInclude>
+    <ClInclude Include="ShootingComponent.h">
+      <Filter>Component</Filter>
+    </ClInclude>
+    <ClInclude Include="ShootingComponentData.h">
+      <Filter>EntityFactory\EntityData\ComponentData</Filter>
+    </ClInclude>
+    <ClInclude Include="FirstPersonRenderComponentData.h">
+      <Filter>EntityFactory\EntityData\ComponentData</Filter>
+    </ClInclude>
+    <ClInclude Include="FirstPersonRenderComponent.h">
+      <Filter>Component</Filter>
+    </ClInclude>
+    <ClInclude Include="NetworkComponent.h">
+      <Filter>Component</Filter>
+    </ClInclude>
+    <ClInclude Include="HealthNote.h">
+      <Filter>Notes</Filter>
+    </ClInclude>
+    <ClInclude Include="CollisionNote.h">
+      <Filter>Notes</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

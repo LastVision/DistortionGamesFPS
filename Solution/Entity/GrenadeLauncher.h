@@ -14,10 +14,10 @@ public:
 	GrenadeLauncher(Prism::Scene* aScene);
 	~GrenadeLauncher();
 
-	void Shoot(const CU::Matrix44<float>& aOrientation) override;
+	bool Shoot(const CU::Matrix44<float>& aOrientation) override;
 	void Reload() override;
 
-	void Update(float aDelta);
+	void Update(float aDelta) override;
 
 private:
 	void ShootAtDirection(const CU::Matrix44<float>& aOrientation);

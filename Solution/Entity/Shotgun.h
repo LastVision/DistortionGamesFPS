@@ -1,21 +1,27 @@
 #pragma once
 
+
 #include "Weapon.h"
 
 
-class Pistol : public Weapon
+
+class Shotgun : public Weapon
 {
 public:
-	Pistol();
-	~Pistol();
+	Shotgun();
+	~Shotgun();
 
-	void Shoot(const CU::Matrix44<float>& aOrientation) override;
+	bool Shoot(const CU::Matrix44<float>& aOrientation) override;
 	void Reload() override;
+	void Update(float aDelta) override;
 
 	void HandleRaycast(Entity* anEntity, const CU::Vector3<float>& aDirection, const CU::Vector3<float>& aHitPosition);
 
 private:
 	std::function<void(Entity*, const CU::Vector3<float>&, const CU::Vector3<float>&)> myRaycastHandler;
+	void ShootRowAround(const CU::Matrix44<float>& aOrientation, const CU::Vector3<float>& aForward);
 
+	float myMinSpreadRotation;
+	float myMaxSpreadRotation;
 };
 

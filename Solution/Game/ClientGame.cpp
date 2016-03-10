@@ -42,9 +42,9 @@ ClientGame::ClientGame()
 	, myShowSystemInfo(true)
 #endif
 {
+	PostMaster::Create();
 	ClientNetworkManager::Create();
 	ClientNetworkManager::GetInstance()->StartNetwork();
-	PostMaster::Create();
 	Prism::Audio::AudioInterface::CreateInstance();
 
 	Prism::Audio::AudioInterface::GetInstance()->Init("Data/Resource/Sound/Init.bnk");

@@ -57,6 +57,8 @@ public:
 
 	bool GetIsClient();
 
+	bool IsAlive() const;
+
 private:
 	void operator=(Entity&) = delete;
 
@@ -130,4 +132,9 @@ inline eEntityState Entity::GetState() const
 inline void Entity::SetState(eEntityState aState)
 {
 	myState = aState;
+}
+
+inline bool Entity::IsAlive() const
+{
+	return myAlive;
 }

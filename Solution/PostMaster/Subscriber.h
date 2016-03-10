@@ -9,10 +9,12 @@ struct ResizeMessage;
 struct Message;
 
 struct NetworkAddPlayerMessage;
+struct NetworkRemovePlayerMessage;
 struct NetworkAddEnemyMessage;
 struct NetworkSetPositionMessage;
 struct NetworkSendPositionMessage;
 struct NetworkOnHitMessage;
+struct NetworkOnDisconnectMessage;
 
 class Subscriber
 {
@@ -29,10 +31,12 @@ public:
 
 	/* Network Based Messages below*/
 	virtual void ReceiveMessage(const NetworkAddPlayerMessage& aMessage);
+	virtual void ReceiveMessage(const NetworkRemovePlayerMessage& aMessage);
 	virtual void ReceiveMessage(const NetworkAddEnemyMessage& aMessage);
 	virtual void ReceiveMessage(const NetworkSetPositionMessage& aMessage);
 	virtual void ReceiveMessage(const NetworkSendPositionMessage& aMessage);
 	virtual void ReceiveMessage(const NetworkOnHitMessage& aMessage);
+	virtual void ReceiveMessage(const NetworkOnDisconnectMessage& aMessage);
 
 };
 

@@ -26,20 +26,11 @@
     <ClCompile Include="EmitterManager.cpp">
       <Filter>Managers</Filter>
     </ClCompile>
-    <ClCompile Include="Movement.cpp">
-      <Filter>Player</Filter>
-    </ClCompile>
-    <ClCompile Include="Shooting.cpp">
-      <Filter>Player</Filter>
-    </ClCompile>
     <ClCompile Include="ClientNetworkManager.cpp">
       <Filter>Network</Filter>
     </ClCompile>
     <ClCompile Include="LobbyState.cpp">
       <Filter>StateStack</Filter>
-    </ClCompile>
-    <ClCompile Include="Health.cpp">
-      <Filter>Player</Filter>
     </ClCompile>
     <ClCompile Include="ClientGame.cpp" />
     <ClCompile Include="StateStack.cpp">
@@ -53,21 +44,6 @@
     </ClCompile>
     <ClCompile Include="ClientLevelFactory.cpp">
       <Filter>Level\Factory</Filter>
-    </ClCompile>
-    <ClCompile Include="GrenadeLauncher.cpp">
-      <Filter>Player\Weapon</Filter>
-    </ClCompile>
-    <ClCompile Include="Pistol.cpp">
-      <Filter>Player\Weapon</Filter>
-    </ClCompile>
-    <ClCompile Include="Player.cpp">
-      <Filter>Player\Weapon</Filter>
-    </ClCompile>
-    <ClCompile Include="Shotgun.cpp">
-      <Filter>Player\Weapon</Filter>
-    </ClCompile>
-    <ClCompile Include="Weapon.cpp">
-      <Filter>Player\Weapon</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -102,20 +78,11 @@
     <ClInclude Include="EmitterManager.h">
       <Filter>Managers</Filter>
     </ClInclude>
-    <ClInclude Include="Movement.h">
-      <Filter>Player</Filter>
-    </ClInclude>
-    <ClInclude Include="Shooting.h">
-      <Filter>Player</Filter>
-    </ClInclude>
     <ClInclude Include="ClientNetworkManager.h">
       <Filter>Network</Filter>
     </ClInclude>
     <ClInclude Include="LobbyState.h">
       <Filter>StateStack</Filter>
-    </ClInclude>
-    <ClInclude Include="Health.h">
-      <Filter>Player</Filter>
     </ClInclude>
     <ClInclude Include="ClientGame.h" />
     <ClInclude Include="StateStack.h">
@@ -129,21 +96,6 @@
     </ClInclude>
     <ClInclude Include="ClientLevelFactory.h">
       <Filter>Level\Factory</Filter>
-    </ClInclude>
-    <ClInclude Include="GrenadeLauncher.h">
-      <Filter>Player\Weapon</Filter>
-    </ClInclude>
-    <ClInclude Include="Pistol.h">
-      <Filter>Player\Weapon</Filter>
-    </ClInclude>
-    <ClInclude Include="Player.h">
-      <Filter>Player\Weapon</Filter>
-    </ClInclude>
-    <ClInclude Include="Shotgun.h">
-      <Filter>Player\Weapon</Filter>
-    </ClInclude>
-    <ClInclude Include="Weapon.h">
-      <Filter>Player\Weapon</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -165,14 +117,8 @@
     <Filter Include="Level\Factory">
       <UniqueIdentifier>{62d6a342-7532-4a12-8a2f-ac9ffe791a6e}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Player">
-      <UniqueIdentifier>{0a33fc89-a207-4aff-8e4c-9033f0803efc}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Network">
       <UniqueIdentifier>{77469d31-ca40-4971-8815-63f0a0a2d348}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Player\Weapon">
-      <UniqueIdentifier>{f07330e5-bdd5-4fff-8ab6-838750584984}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

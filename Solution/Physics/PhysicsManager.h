@@ -10,8 +10,10 @@
 #include <characterkinematic\PxControllerManager.h>
 #include <cooking\PxCooking.h>
 #include <Vector.h>
+#include <Matrix44.h>
 
 class Entity;
+struct PhysEntityData;
 
 namespace CU
 {
@@ -22,6 +24,8 @@ namespace physx
 {
 	class PxDefaultCpuDispatcher;
 	class PxRigidDynamic;
+	class PxTriangleMesh;
+	class PxActor;
 }
 
 namespace Prism
@@ -69,9 +73,17 @@ namespace Prism
 
 		int CreatePlayerController(const CU::Vector3<float>& aStartPosition);
 		void Move(int aId, const CU::Vector3<float>& aDirection, float aMinDisplacement, float aDeltaTime);
+		void UpdateOrientation(physx::PxRigidDynamic* aDynamicBody, physx::PxShape** aShape, float* aThread4x4);
 		bool GetAllowedToJump(int aId);
 		void SetPosition(int aId, const CU::Vector3<float>& aPosition);
 		void GetPosition(int aId, CU::Vector3<float>& aPositionOut);
+
+		void Create(PhysEntity* aEntity, const PhysEntityData& aPhysData
+			, float* aOrientation, const std::string& aFBXPath
+			, physx::PxRigidDynamic** aDynamicBodyOut, physx::PxRigidStatic** aStaticBodyOut
+			, physx::PxShape*** someShapesOut);
+		void Remove(physx::PxRigidDynamic* aDynamic);
+		void Remove(physx::PxRigidStatic* aStatic);
 
 	private:
 #ifdef THREAD_PHYSICS
@@ -193,6 +205,7 @@ namespace Prism
 
 		CU::GrowingArray<PhysEntity*> myPhysEntities;
 
+		physx::PxTriangleMesh* GetPhysMesh(const std::string& aFBXPath);
 		void onPvdSendClassDescriptions(physx::debugger::comm::PvdConnection&) override{}
 		void onPvdConnected(physx::debugger::comm::PvdConnection& connection) override;
 		void onPvdDisconnected(physx::debugger::comm::PvdConnection& connection) override;

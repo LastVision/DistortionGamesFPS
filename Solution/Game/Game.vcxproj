@@ -210,23 +210,15 @@
     <ClInclude Include="EmitterManager.h" />
     <ClInclude Include="ClientGame.h" />
     <ClInclude Include="GameState.h" />
-    <ClInclude Include="GrenadeLauncher.h" />
-    <ClInclude Include="Health.h" />
     <ClInclude Include="InGameState.h" />
     <ClInclude Include="ClientLevel.h" />
     <ClInclude Include="ClientLevelFactory.h" />
     <ClInclude Include="LobbyState.h" />
-    <ClInclude Include="Movement.h" />
-    <ClInclude Include="Pistol.h" />
-    <ClInclude Include="Player.h" />
     <ClInclude Include="ScriptInterface.h" />
-    <ClInclude Include="Shooting.h" />
-    <ClInclude Include="Shotgun.h" />
     <ClInclude Include="StateEnums.h" />
     <ClInclude Include="StateStack.h" />
     <ClInclude Include="StateStackProxy.h" />
     <ClInclude Include="stdafx.h" />
-    <ClInclude Include="Weapon.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ClientNetworkManager.cpp" />
@@ -237,18 +229,11 @@
     <ClCompile Include="Console.cpp" />
     <ClCompile Include="EmitterManager.cpp" />
     <ClCompile Include="ClientGame.cpp" />
-    <ClCompile Include="GrenadeLauncher.cpp" />
-    <ClCompile Include="Health.cpp" />
     <ClCompile Include="InGameState.cpp" />
     <ClCompile Include="ClientLevel.cpp" />
     <ClCompile Include="ClientLevelFactory.cpp" />
     <ClCompile Include="LobbyState.cpp" />
-    <ClCompile Include="Movement.cpp" />
-    <ClCompile Include="Pistol.cpp" />
-    <ClCompile Include="Player.cpp" />
     <ClCompile Include="ScriptInterface.cpp" />
-    <ClCompile Include="Shooting.cpp" />
-    <ClCompile Include="Shotgun.cpp" />
     <ClCompile Include="StateStack.cpp" />
     <ClCompile Include="StateStackProxy.cpp" />
     <ClCompile Include="stdafx.cpp">
@@ -263,7 +248,6 @@
       <MultiProcessorCompilation Condition="'$(Configuration)|$(Platform)'=='DataExporter|Win32'">false</MultiProcessorCompilation>
       <MultiProcessorCompilation Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</MultiProcessorCompilation>
     </ClCompile>
-    <ClCompile Include="Weapon.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Audio\Audio.vcxproj">

@@ -3,6 +3,7 @@
 #include <DL_Debug.h>
 #include <fstream>
 #include <iostream>
+#include <CommonHelper.h>
 
 void CalcRadiusReader::ReadFile(const std::string& aFilePath)
 {
@@ -14,7 +15,6 @@ void CalcRadiusReader::ReadFile(const std::string& aFilePath)
 		CU::GrowingArray<CU::Vector3<float>> vertices(524288);
 		myFactory.LoadModelForRadiusCalc(aFilePath.c_str(), vertices);
 		float distance = CalcMaxDistance(vertices);
-		distance /= 100;
 
 		auto planetPos = aFilePath.find("planet");
 
@@ -43,10 +43,12 @@ float CalcRadiusReader::CalcMaxDistance(const CU::GrowingArray<CU::Vector3<float
 
 void CalcRadiusReader::WriteXml(const std::string& aFbxPath, float aRadius) const
 {
-	std::ofstream file;
-	std::string xmlPath(aFbxPath.begin(), aFbxPath.end() - 4);
-	xmlPath += ".xml";
-	file.open(xmlPath);
+	std::fstream file;
+	std::string xmlPath = CU::GetGeneratedDataFolderFilePath(aFbxPath, "xml");
+	CU::BuildFoldersInPath(xmlPath);
+	//std::string xmlPath(aFbxPath.begin(), aFbxPath.end() - 4);
+	//xmlPath += ".xml";
+	file.open(xmlPath, std::ios::out);
 
 	file << "<root>\n\t<radius value=\"" << aRadius << "\"/>\n</root>";
 

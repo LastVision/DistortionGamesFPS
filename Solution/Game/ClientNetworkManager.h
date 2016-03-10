@@ -1,7 +1,8 @@
 #pragma once
 #include "../Game_Shared/SharedNetworkManager.h"
+#include <Subscriber.h>
 class ClientNetwork;
-class ClientNetworkManager : public SharedNetworkManager
+class ClientNetworkManager : public SharedNetworkManager, public Subscriber
 {
 public:
 
@@ -15,6 +16,9 @@ public:
 	unsigned int GetNetworkID() const;
 	const CU::GrowingArray<OtherClients>& GetClients();
 	//void Update(float aDelta) override;
+	void ReceiveMessage(const NetworkSendPositionMessage& aMessage) override;
+	void ReceiveMessage(const NetworkOnDisconnectMessage& aMessage) override;
+
 private:
 	ClientNetworkManager();
 	~ClientNetworkManager();
@@ -24,11 +28,12 @@ private:
 	ClientNetwork* myNetwork;
 	void HandleMessage(const NetMessageConnectMessage& aMessage, const sockaddr_in& aSenderAddress) override;
 	void HandleMessage(const NetMessagePingRequest& aMessage, const sockaddr_in& aSenderAddress) override;
+	void HandleMessage(const NetMessageDisconnect& aMessage, const sockaddr_in& aSenderAddress) override;
 	void HandleMessage(const NetMessageOnJoin& aMessage, const sockaddr_in& aSenderAddress) override;
-	void HandleMessage(const NetMessagePosition& aMessage, const sockaddr_in& aSenderAddress) override;
 	void HandleMessage(const NetMessageAddEnemy& aMessage, const sockaddr_in& aSenderAddress) override;
 	void ReceieveThread() override;
 	void SendThread() override;
+
 
 	CU::GrowingArray<OtherClients> myClients;
 

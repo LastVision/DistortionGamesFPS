@@ -7,20 +7,25 @@
 #include "Player.h"
 #include <Scene.h>
 #include <InputWrapper.h>
+#include <InputComponent.h>
 #include "NetworkMessageTypes.h"
 
 #include "DebugDrawer.h"
 
 #include "EntityFactory.h"
 #include "Entity.h"
+#include <EntityData.h>
+#include <FirstPersonRenderComponent.h>
 #include "GameEnum.h"
 #include <PhysicsInterface.h>
 
 #include <NetMessageOnJoin.h>
 #include <NetMessageConnectMessage.h>
+#include <NetMessageDisconnect.h>
 #include <NetMessageOnHit.h>
 
 #include <NetworkAddPlayerMessage.h>
+#include <NetworkRemovePlayer.h>
 #include <NetworkAddEnemyMessage.h>
 
 #include "ClientNetworkManager.h"
@@ -45,18 +50,22 @@ ClientLevel::ClientLevel()
 	//Prism::PhysicsInterface::GetInstance()->RayCast({ 0, 0, 0 }, { 0, 1, 0 }, 10.f);
 	//Prism::PhysicsInterface::GetInstance()->Update();
 	PostMaster::GetInstance()->Subscribe(eMessageType::NETWORK_ADD_PLAYER, this);
+	PostMaster::GetInstance()->Subscribe(eMessageType::NETWORK_REMOVE_PLAYER, this);
 	PostMaster::GetInstance()->Subscribe(eMessageType::NETWORK_ADD_ENEMY, this);
 
 	myScene = new Prism::Scene();
-	myPlayer = new Player(myScene);
-	myScene->SetCamera(*myPlayer->GetCamera());
+	EntityData data;
+	data.myInputData.myExistsInEntity = true;
+	//myPlayer = new Entity(data, myScene, true, CU::Vector3<float>(), CU::Vector3<float>(), CU::Vector3<float>(1.f, 1.f, 1.f));
+	myPlayer = EntityFactory::GetInstance()->CreateEntity(eEntityType::UNIT, "localplayer", myScene, true, CU::Vector3<float>());
+	myScene->SetCamera(*myPlayer->GetComponent<InputComponent>()->GetCamera());
 
 	//myTempPosition = { 835.f, 0.f, -1000.f };
 
 	myDeferredRenderer = new Prism::DeferredRenderer();
 
 
-	myEmitterManager = new EmitterManager(*myPlayer->GetCamera());
+	myEmitterManager = new EmitterManager(*myPlayer->GetComponent<InputComponent>()->GetCamera());
 	CU::Matrix44f orientation;
 	myInstanceOrientations.Add(orientation);
 
@@ -73,6 +82,7 @@ ClientLevel::~ClientLevel()
 
 	SAFE_DELETE(myEmitterManager);
 	PostMaster::GetInstance()->UnSubscribe(eMessageType::NETWORK_ADD_PLAYER, this);
+	PostMaster::GetInstance()->UnSubscribe(eMessageType::NETWORK_REMOVE_PLAYER, this);
 	PostMaster::GetInstance()->UnSubscribe(eMessageType::NETWORK_ADD_ENEMY, this);
 
 	myInstances.DeleteAll();
@@ -99,9 +109,15 @@ void ClientLevel::Update(const float aDeltaTime)
 
 	if (CU::InputWrapper::GetInstance()->KeyDown(DIK_J))
 	{
-		ClientNetworkManager::GetInstance()->AddMessage(NetMessageOnHit(eNetMessageType::PLAYER_ON_HIT, 5.f, 1));
+		for (unsigned int i = 0; i < 8; ++i)
+		{
+			ClientNetworkManager::GetInstance()->AddMessage(NetMessageOnHit(eNetMessageType::PLAYER_ON_HIT, 5.f, i));
+		}
 	}
-
+	if (CU::InputWrapper::GetInstance()->KeyDown(DIK_I))
+	{
+		ClientNetworkManager::GetInstance()->AddMessage(NetMessageDisconnect(ClientNetworkManager::GetInstance()->GetNetworkID()));
+	}
 
 	unsigned short ms = ClientNetworkManager::GetInstance()->GetResponsTime();
 	float kbs = static_cast<float>(ClientNetworkManager::GetInstance()->GetDataSent());
@@ -125,16 +141,21 @@ void ClientLevel::Update(const float aDeltaTime)
 void ClientLevel::Render()
 {
 	myDeferredRenderer->Render(myScene);
-	Prism::DebugDrawer::GetInstance()->RenderLinesToScreen(*myPlayer->GetCamera());
+	Prism::DebugDrawer::GetInstance()->RenderLinesToScreen(*myPlayer->GetComponent<InputComponent>()->GetCamera());
 	//myScene->Render();
 	//myDeferredRenderer->Render(myScene);
 	myEmitterManager->RenderEmitters();
-	myPlayer->Render();
+	myPlayer->GetComponent<FirstPersonRenderComponent>()->Render();
 }
 
 void ClientLevel::ReceiveMessage(const NetworkAddPlayerMessage& aMessage)
 {
-	aMessage;
+	if (aMessage.myNetworkID == ClientNetworkManager::GetInstance()->GetNetworkID())
+	{
+		myPlayer->GetComponent<NetworkComponent>()->SetNetworkID(aMessage.myNetworkID);
+	}
+	else
+	{
 	bool isRunTime = Prism::MemoryTracker::GetInstance()->GetRunTime();
 	Prism::MemoryTracker::GetInstance()->SetRunTime(false);
 	Entity* newPlayer = EntityFactory::CreateEntity(eEntityType::UNIT, "player", myScene, true, { 0.f, 0.f, 0.f });
@@ -144,6 +165,19 @@ void ClientLevel::ReceiveMessage(const NetworkAddPlayerMessage& aMessage)
 	newPlayer->Reset();
 	myPlayers.Add(newPlayer);
 	Prism::MemoryTracker::GetInstance()->SetRunTime(isRunTime);
+}
+}
+
+void ClientLevel::ReceiveMessage(const NetworkRemovePlayerMessage& aMessage)
+{
+	for (Entity* e : myPlayers)
+	{
+		if (e->GetComponent<NetworkComponent>() != nullptr
+			&& e->GetComponent<NetworkComponent>()->GetNetworkID() == aMessage.myNetworkID)
+		{
+			e->RemoveFromScene();
+		}
+	}
 }
 
 void ClientLevel::ReceiveMessage(const NetworkAddEnemyMessage& aMessage)

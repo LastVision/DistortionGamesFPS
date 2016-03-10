@@ -90,6 +90,11 @@ namespace Prism
 		myManager->Move(aId, aDirection, aMinDisplacement, aDeltaTime);
 	}
 
+	void PhysicsInterface::UpdateOrientation(physx::PxRigidDynamic* aDynamicBody, physx::PxShape** aShape, float* aThread4x4)
+	{
+		myManager->UpdateOrientation(aDynamicBody, aShape, aThread4x4);
+	}
+
 	bool PhysicsInterface::GetAllowedToJump(int aId)
 	{
 		return myManager->GetAllowedToJump(aId);
@@ -108,6 +113,24 @@ namespace Prism
 	void PhysicsInterface::SubscribeToTriggers(physx::PxSimulationEventCallback* aSubscriber)
 	{
 		//myManager->SubscribeToTriggers(aSubscriber);
+	}
+
+	void PhysicsInterface::Create(PhysEntity* aEntity, const PhysEntityData& aPhysData
+		, float* aOrientation, const std::string& aFBXPath
+		, physx::PxRigidDynamic** aDynamicBodyOut, physx::PxRigidStatic** aStaticBodyOut
+		, physx::PxShape*** someShapesOut)
+	{
+		myManager->Create(aEntity, aPhysData, aOrientation, aFBXPath, aDynamicBodyOut, aStaticBodyOut, someShapesOut);
+	}
+
+	void PhysicsInterface::Remove(physx::PxRigidDynamic* aDynamic)
+	{
+		myManager->Remove(aDynamic);
+	}
+	
+	void PhysicsInterface::Remove(physx::PxRigidStatic* aStatic)
+	{
+		myManager->Remove(aStatic);
 	}
 
 	PhysicsInterface::PhysicsInterface()

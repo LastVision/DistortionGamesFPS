@@ -164,7 +164,9 @@
     <ClInclude Include="GameStateMessage.h" />
     <ClInclude Include="Message.h" />
     <ClInclude Include="MessageEnum.h" />
+    <ClInclude Include="NetworkOnDisconnectMessage.h" />
     <ClInclude Include="NetworkOnHitMessage.h" />
+    <ClInclude Include="NetworkRemovePlayer.h" />
     <ClInclude Include="NetworkSendPositionMessage.h" />
     <ClInclude Include="NetworkSetPositionMessage.h" />
     <ClInclude Include="OnClickMessage.h" />

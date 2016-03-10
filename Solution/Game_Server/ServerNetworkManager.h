@@ -19,8 +19,9 @@ private:
 	ServerNetwork* myNetwork;
 
 	void HandleMessage(const NetMessageConnectMessage& aMessage, const sockaddr_in& aSender) override;
+	void HandleMessage(const NetMessageDisconnect& aMessage, const sockaddr_in& aSenderAddress) override;
+	void HandleMessage(const NetMessagePingReply& aMessage, const sockaddr_in& aSenderAddress) override;
 	void HandleMessage(const NetMessagePingRequest& aMessage, const sockaddr_in& aSenderAddress) override;
-	void HandleMessage(const NetMessagePosition& aMessage, const sockaddr_in& aSenderAddress) override;
 	void HandleMessage(const NetMessageOnHit& aMessage, const sockaddr_in& aSenderAddress) override;
 
 
@@ -32,6 +33,7 @@ private:
 
 	short myIDCount;
 	void CreateConnection(const std::string& aName, const sockaddr_in& aSender);
+	void DisconnectConnection(const Connection& aConnection);
 
 	CU::GrowingArray<Connection> myClients;
 	std::unordered_map<std::string, int> myNames;

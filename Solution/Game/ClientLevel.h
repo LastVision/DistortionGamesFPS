@@ -3,7 +3,7 @@
 #include <Matrix.h>
 #include <NetworkMessageTypes.h>
 #include <SharedLevel.h>
-class Player;
+
 
 namespace Prism
 {
@@ -28,6 +28,7 @@ public:
 	bool connected;
 	Prism::Scene* GetScene();
 	void ReceiveMessage(const NetworkAddPlayerMessage& aMessage) override;
+	void ReceiveMessage(const NetworkRemovePlayerMessage& aMessage) override;
 	void ReceiveMessage(const NetworkAddEnemyMessage& aMessage) override;
 
 	void AddLight(Prism::PointLight* aLight);
@@ -42,7 +43,7 @@ private:
 	CU::GrowingArray<CU::Matrix44f> myInstanceOrientations;
 	CU::GrowingArray<Prism::PointLight*> myPointLights;
 
-	Player* myPlayer;
+	Entity* myPlayer;
 	EmitterManager* myEmitterManager;
 
 };

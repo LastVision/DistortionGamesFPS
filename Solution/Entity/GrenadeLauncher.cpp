@@ -1,8 +1,8 @@
 #include "stdafx.h"
 
-#include <DamageNote.h>
-#include <Entity.h>
-#include <EntityFactory.h>
+#include "DamageNote.h"
+#include "Entity.h"
+#include "EntityFactory.h"
 #include "GrenadeLauncher.h"
 #include <PhysEntity.h>
 #include <PhysicsInterface.h>
@@ -22,7 +22,10 @@ GrenadeLauncher::GrenadeLauncher(Prism::Scene* aScene)
 	reader.ForceReadAttribute(reader.ForceFindFirstChild(grenadeLauncherElement, "clipsize"), "value", myClipSize);
 	reader.ForceReadAttribute(reader.ForceFindFirstChild(grenadeLauncherElement, "damage"), "value", myDamage);
 	reader.ForceReadAttribute(reader.ForceFindFirstChild(grenadeLauncherElement, "startammo"), "value", myAmmoTotal);
+	reader.ForceReadAttribute(reader.ForceFindFirstChild(grenadeLauncherElement, "shoottime"), "value", myShootTime);
+
 	myAmmoInClip = myClipSize;
+	myShootTimer = myShootTime;
 
 	reader.CloseDocument();
 }
@@ -34,14 +37,17 @@ GrenadeLauncher::~GrenadeLauncher()
 }
 
 
-void GrenadeLauncher::Shoot(const CU::Matrix44<float>& aOrientation)
+bool GrenadeLauncher::Shoot(const CU::Matrix44<float>& aOrientation)
 {
 	aOrientation;
-	if (myAmmoInClip > 0 && myBullets.Size() < 1024)
+	if (myAmmoInClip > 0 && myShootTimer <= 0.f && myBullets.Size() < 1024)
 	{
 		ShootAtDirection(aOrientation);
 		myAmmoInClip -= 1;
+		myShootTimer = myShootTime;
+		return true;
 	}
+	return false;
 }
 void GrenadeLauncher::Reload()
 {
@@ -56,11 +62,12 @@ void GrenadeLauncher::Update(float aDelta)
 	{
 		myBullets[i]->Update(aDelta);
 	}
+	myShootTimer -= aDelta;
 }
 
 void GrenadeLauncher::ShootAtDirection(const CU::Matrix44<float>& aOrientation)
 {
-	bool newingInRunTimeHere = true;
+	//bool newingInRunTimeHere = true;
 	SET_RUNTIME(false);
 	Entity* bullet = EntityFactory::CreateEntity(eEntityType::PROJECTILE, myScene, true, aOrientation.GetPos());
 	RESET_RUNTIME;

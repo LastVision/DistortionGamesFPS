@@ -11,13 +11,16 @@ public:
 	~HealthComponent();
 
 	void ReceiveNote(const DamageNote& aNote) override;
+	void ReceiveNote(const HealthNote& aNote) override;
+	void ReceiveNote(const CollisionNote& aNote) override;
 
 	void TakeDamage(int aDamage);
 	void Heal(int anAmount);
 
 	void Reset() override;
 
-	int GetHealth();
+	int GetCurrentHealth();
+	int GetMaxHealth();
 
 	static eComponentType GetTypeStatic();
 	eComponentType GetType() override;
@@ -37,7 +40,7 @@ inline eComponentType HealthComponent::GetType()
 	return GetTypeStatic();
 }
 
-inline int HealthComponent::GetHealth()
+inline int HealthComponent::GetCurrentHealth()
 {
 	return myCurrentHealth;
 }
