@@ -87,7 +87,7 @@ namespace Prism
 		physx::PxSceneDesc sceneDesc(myPhysicsSDK->getTolerancesScale());
 		sceneDesc.gravity = physx::PxVec3(0.f, -9.82f, 0.f);
 		
-		myCpuDispatcher = physx::PxDefaultCpuDispatcherCreate(0);
+		myCpuDispatcher = physx::PxDefaultCpuDispatcherCreate(1);
 
 		if (!sceneDesc.cpuDispatcher)
 		{
@@ -215,9 +215,9 @@ namespace Prism
 
 	void PhysicsManager::Swap()
 	{
-		for (int i = 0; i < myPhysicsComponentCallbacks.Size(); ++i)
+		for each (const PhysicsCallbackStruct& obj in myPhysicsComponentCallbacks)
 		{
-			myPhysicsComponentCallbacks[i].mySwapOrientationCallback();
+			obj.mySwapOrientationCallback();
 		}
 
 		std::swap(myRaycastJobs[0], myRaycastJobs[1]);
@@ -285,6 +285,7 @@ namespace Prism
 			SetPosition(myPositionJobs[1][i]);
 		}
 		myPositionJobs[1].RemoveAll();
+
 
 		for (int i = 0; i < myPhysicsComponentCallbacks.Size(); ++i)
 		{
@@ -498,9 +499,9 @@ namespace Prism
 
 	void PhysicsManager::SetPosition(int aId, const CU::Vector3<float>& aPosition)
 	{
-		DL_ASSERT("Not impl. yet");
-		//physx::PxControllerFilters filter;
-		//myControllerManager->getController(aId)->setFootPosition(physx::PxExtendedVec3(aPosition.x, aPosition.y, aPosition.z));
+		//DL_ASSERT("Not impl. yet");
+		physx::PxControllerFilters filter;
+		myControllerManager->getController(aId)->setFootPosition(physx::PxExtendedVec3(aPosition.x, aPosition.y, aPosition.z));
 	}
 
 	void PhysicsManager::GetPosition(int aId, CU::Vector3<float>& aPositionOut)
@@ -531,7 +532,7 @@ namespace Prism
 
 			*aStaticBodyOut = core->createRigidStatic(transform);
 			(*aStaticBodyOut)->createShape(physx::PxTriangleMeshGeometry(mesh), *material);
-			(*aStaticBodyOut)->setName("Tjohej");
+			(*aStaticBodyOut)->setName(aFBXPath.c_str());
 			(*aStaticBodyOut)->userData = aComponent;
 			GetScene()->addActor(*(*aStaticBodyOut));
 		}
@@ -545,6 +546,7 @@ namespace Prism
 			*aDynamicBodyOut = physx::PxCreateDynamic(*core, transform, geometry, *material, density);
 			(*aDynamicBodyOut)->setAngularDamping(0.75);
 			(*aDynamicBodyOut)->setLinearVelocity(physx::PxVec3(0, 0, 0));
+			(*aDynamicBodyOut)->setName(aFBXPath.c_str());
 			(*aDynamicBodyOut)->userData = aComponent;
 			GetScene()->addActor(*(*aDynamicBodyOut));
 
@@ -574,7 +576,10 @@ namespace Prism
 			GetScene()->addActor(*(*aStaticBodyOut));
 		}
 
-		myPhysicsComponentCallbacks.Add(aPhysData);
+		if (aPhysData.myData->myPhysicsType != ePhysics::STATIC)
+		{
+			myPhysicsComponentCallbacks.Add(aPhysData);
+		}
 	}
 
 	void PhysicsManager::Remove(physx::PxRigidDynamic* aDynamic, const PhysicsComponentData& aData)

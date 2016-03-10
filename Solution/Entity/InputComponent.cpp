@@ -3,6 +3,8 @@
 #include <Camera.h>
 #include "DamageNote.h"
 #include "FirstPersonRenderComponent.h"
+#include "HealthNote.h"
+#include "HealthComponent.h"
 #include "InputComponent.h"
 #include "InputComponentData.h"
 #include <InputWrapper.h>
@@ -51,6 +53,12 @@ void InputComponent::Update(float aDelta)
 	if (CU::InputWrapper::GetInstance()->KeyDown(DIK_H) == true)
 	{
 		myEntity.SendNote<DamageNote>(DamageNote(1));
+	}
+
+	if (myEntity.GetComponent<HealthComponent>()->GetCurrentHealth() <= 0.f)
+	{
+		myEntity.GetComponent<PhysicsComponent>()->SetPlayerCapsulePosition({ 0.f, 1.5f, 0.f });
+		myEntity.SendNote<HealthNote>(HealthNote(myEntity.GetComponent<HealthComponent>()->GetMaxHealth()));
 	}
 
 	CU::Vector3<float> prevPos(myOrientation.GetPos());

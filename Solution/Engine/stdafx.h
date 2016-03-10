@@ -1,6 +1,7 @@
 #pragma once
 #pragma warning( disable : 4005 )
 
+#include <Defines.h>
 #include <DL_Debug.h>
 #include "Engine.h"
 #include "Effect.h"

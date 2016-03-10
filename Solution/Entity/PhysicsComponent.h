@@ -28,6 +28,7 @@ public:
 	void AddForce(const CU::Vector3<float>& aDirection, float aMagnitude);
 	void SetVelocity(const CU::Vector3<float>& aVelocity);
 	void SetPosition(const CU::Vector3<float>& aPosition);
+	void SetPlayerCapsulePosition(const CU::Vector3<float>& aPosition);
 
 	ePhysics GetPhysicsType() const;
 

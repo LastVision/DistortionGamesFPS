@@ -84,9 +84,14 @@ void PhysicsComponent::SetVelocity(const CU::Vector3<float>& aVelocity)
 
 void PhysicsComponent::SetPosition(const CU::Vector3<float>& aPosition)
 {
-	DL_ASSERT_EXP(myPhysicsType == ePhysics::DYNAMIC, "Cant add Force to STATIC objects");
+	DL_ASSERT_EXP(myPhysicsType != ePhysics::STATIC, "Cant add Force to STATIC objects");
 
 	Prism::PhysicsInterface::GetInstance()->SetPosition(myDynamicBody, aPosition);
+}
+
+void PhysicsComponent::SetPlayerCapsulePosition(const CU::Vector3<float>& aPosition)
+{
+	Prism::PhysicsInterface::GetInstance()->SetPosition(myCapsuleControllerId, aPosition);
 }
 
 void PhysicsComponent::RemoveFromScene()
