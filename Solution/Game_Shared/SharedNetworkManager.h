@@ -33,6 +33,7 @@ class NetMessagePingReply;
 class NetMessagePosition;
 class NetMessageAddEnemy;
 class NetMessageOnHit;
+class NetMessageOnDeath;
 
 class SharedNetworkManager
 {
@@ -89,6 +90,7 @@ protected:
 	virtual void HandleMessage(const NetMessagePosition& aMessage, const sockaddr_in& aSenderAddress);
 	virtual void HandleMessage(const NetMessageAddEnemy& aMessage, const sockaddr_in& aSenderAddress);
 	virtual void HandleMessage(const NetMessageOnHit& aMessage, const sockaddr_in& aSenderAddress);
+	virtual void HandleMessage(const NetMessageOnDeath& aMessage, const sockaddr_in& aSenderAddress);
 
 
 	std::thread* myReceieveThread;

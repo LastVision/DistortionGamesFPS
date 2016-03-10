@@ -14,12 +14,15 @@
 #include <NetMessagePosition.h>
 #include <NetMessageAddEnemy.h>
 #include <NetMessageOnHit.h>
+#include <NetMessageOnDeath.h>
 
 #include <NetworkAddPlayerMessage.h>
 #include <NetworkAddEnemyMessage.h>
 #include <NetworkSendPositionMessage.h>
 #include <NetworkSetPositionMessage.h>
 #include <NetworkOnHitMessage.h>
+#include <NetworkOnDeathMessage.h>
+
 #define BUFFERSIZE 512
 #define RECONNECT_ATTEMPTS 100
 
@@ -29,12 +32,14 @@ ServerNetworkManager::ServerNetworkManager()
 {
 	PostMaster::GetInstance()->Subscribe(eMessageType::NETWORK_ADD_ENEMY, this);
 	PostMaster::GetInstance()->Subscribe(eMessageType::NETWORK_SEND_POSITION, this);
+	PostMaster::GetInstance()->Subscribe(eMessageType::NETWORK_ON_DEATH, this);
 }
 
 ServerNetworkManager::~ServerNetworkManager()
 {
 	PostMaster::GetInstance()->UnSubscribe(eMessageType::NETWORK_ADD_ENEMY, this);
 	PostMaster::GetInstance()->UnSubscribe(eMessageType::NETWORK_SEND_POSITION, this);
+	PostMaster::GetInstance()->UnSubscribe(eMessageType::NETWORK_ON_DEATH, this);
 
 	myMainIsDone = true;
 	myReceieveIsDone = true;
@@ -365,3 +370,10 @@ void ServerNetworkManager::ReceiveMessage(const NetworkSendPositionMessage& aMes
 	AddMessage(toSend);
 }
 
+void ServerNetworkManager::ReceiveMessage(const NetworkOnDeathMessage& aMessage)
+{
+	NetMessageOnDeath toSend = CreateMessage<NetMessageOnDeath>();
+	toSend.mySenderID = 0;
+	toSend.myNetworkID = aMessage.myNetworkID;
+	AddMessage(toSend);
+}
