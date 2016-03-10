@@ -6,6 +6,7 @@
 #include <NetworkSetPositionMessage.h>
 #include <NetworkSendPositionMessage.h>
 #include <NetworkOnHitMessage.h>
+#include <NetworkOnDeathMessage.h>
 #include "DamageNote.h"
 
 #include <PostMaster.h>
@@ -16,6 +17,7 @@ NetworkComponent::NetworkComponent(Entity& anEntity, CU::Matrix44<float>& anOrie
 	, myOrientation(anOrientation)
 	, myAlpha(0.f)
 	, myIsPlayer(false)
+	, myShouldUpdate(true)
 {
 	mySendTime = 1 * 0.033f;
 	myFirstPosition = myOrientation.GetPos();
@@ -32,6 +34,11 @@ NetworkComponent::~NetworkComponent()
 	PostMaster::GetInstance()->UnSubscribe(eMessageType::NETWORK_SET_POSITION, this);
 	PostMaster::GetInstance()->UnSubscribe(eMessageType::NETWORK_ON_HIT, this);
 
+}
+
+void NetworkComponent::Reset()
+{
+	myShouldUpdate = true;
 }
 
 const unsigned int NetworkComponent::GetNetworkID() const
@@ -54,6 +61,10 @@ void NetworkComponent::Update(float aDelta)
 	}
 	else
 	{
+		if (myShouldUpdate == false)
+		{
+			return;
+		}
 		mySendTime -= aDelta;
 		if (mySendTime < 0.f)
 		{
@@ -90,8 +101,13 @@ void NetworkComponent::Update(float aDelta)
 						myAlpha = 0;
 					}
 				}
+				else 
+				{
+					PostMaster::GetInstance()->SendMessage(NetworkOnDeathMessage(myNetworkID));
+					myShouldUpdate = false;
+					return;
+				}
 			}
-
 
 			mySendTime = 1 * 0.033f;
 			PostMaster::GetInstance()->SendMessage(NetworkSendPositionMessage(myServerPosition, myNetworkID));
@@ -114,6 +130,7 @@ void NetworkComponent::ReceiveMessage(const NetworkOnHitMessage& aMessage)
 	if (myNetworkID == aMessage.myNetworkID)
 	{
 		myEntity.SendNote(DamageNote(static_cast<int>(aMessage.myDamage)));
+		
 	}
 }
 

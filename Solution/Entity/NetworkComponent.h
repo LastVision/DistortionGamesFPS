@@ -6,6 +6,7 @@ class NetworkComponent : public Component, public Subscriber
 public:
 	NetworkComponent(Entity& anEntity, CU::Matrix44<float>& anOrientation);
 	~NetworkComponent();
+	void Reset() override;
 
 	const unsigned int GetNetworkID() const;
 	void SetNetworkID(unsigned int anID);
@@ -33,6 +34,8 @@ private:
 
 	bool myIsPlayer;
 	bool myShouldReturn;
+	bool myShouldUpdate;
+
 	float mySendTime;
 	float myAlpha;
 };

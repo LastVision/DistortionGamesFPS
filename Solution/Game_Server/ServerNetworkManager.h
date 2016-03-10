@@ -30,6 +30,7 @@ private:
 
 	void ReceiveMessage(const NetworkAddEnemyMessage& aMessage) override;
 	void ReceiveMessage(const NetworkSendPositionMessage& aMessage) override;
+	void ReceiveMessage(const NetworkOnDeathMessage& aMessage) override;
 
 	void ReceieveThread() override;
 	void SendThread() override;

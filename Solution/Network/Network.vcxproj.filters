@@ -57,6 +57,9 @@
     <ClCompile Include="NetMessageImportantReply.cpp">
       <Filter>Messages</Filter>
     </ClCompile>
+    <ClCompile Include="NetMessageOnDeath.cpp">
+      <Filter>Messages</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
@@ -108,6 +111,9 @@
       <Filter>Messages</Filter>
     </ClInclude>
     <ClInclude Include="NetMessageImportantReply.h">
+      <Filter>Messages</Filter>
+    </ClInclude>
+    <ClInclude Include="NetMessageOnDeath.h">
       <Filter>Messages</Filter>
     </ClInclude>
   </ItemGroup>

@@ -27,6 +27,7 @@
 #include <NetworkAddPlayerMessage.h>
 #include <NetworkRemovePlayer.h>
 #include <NetworkAddEnemyMessage.h>
+#include <NetworkOnDeathMessage.h>
 
 #include "ClientNetworkManager.h"
 #include "DeferredRenderer.h"
@@ -51,6 +52,7 @@ ClientLevel::ClientLevel()
 	PostMaster::GetInstance()->Subscribe(eMessageType::NETWORK_ADD_PLAYER, this);
 	PostMaster::GetInstance()->Subscribe(eMessageType::NETWORK_REMOVE_PLAYER, this);
 	PostMaster::GetInstance()->Subscribe(eMessageType::NETWORK_ADD_ENEMY, this);
+	PostMaster::GetInstance()->Subscribe(eMessageType::NETWORK_ON_DEATH, this);
 
 	myScene = new Prism::Scene();
 	EntityData data;
@@ -87,6 +89,7 @@ ClientLevel::~ClientLevel()
 	PostMaster::GetInstance()->UnSubscribe(eMessageType::NETWORK_ADD_PLAYER, this);
 	PostMaster::GetInstance()->UnSubscribe(eMessageType::NETWORK_REMOVE_PLAYER, this);
 	PostMaster::GetInstance()->UnSubscribe(eMessageType::NETWORK_ADD_ENEMY, this);
+	PostMaster::GetInstance()->UnSubscribe(eMessageType::NETWORK_ON_DEATH, this);
 
 	myInstances.DeleteAll();
 	myPointLights.DeleteAll();
@@ -198,6 +201,19 @@ void ClientLevel::ReceiveMessage(const NetworkAddEnemyMessage& aMessage)
 
 	myEnemies.Add(newEnemy);
 	Prism::MemoryTracker::GetInstance()->SetRunTime(isRunTime);
+}
+
+void ClientLevel::ReceiveMessage(const NetworkOnDeathMessage& aMessage)
+{
+	for (Entity* e : myEnemies)
+	{
+		if (e->GetComponent<NetworkComponent>() != nullptr 
+			&& e->GetComponent<NetworkComponent>()->GetNetworkID() == aMessage.myNetworkID
+			&& e->IsAlive() == true)
+		{
+			e->Kill();
+		}
+	}
 }
 
 void ClientLevel::AddLight(Prism::PointLight* aLight)

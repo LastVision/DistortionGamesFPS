@@ -30,6 +30,7 @@ public:
 	void ReceiveMessage(const NetworkAddPlayerMessage& aMessage) override;
 	void ReceiveMessage(const NetworkRemovePlayerMessage& aMessage) override;
 	void ReceiveMessage(const NetworkAddEnemyMessage& aMessage) override;
+	void ReceiveMessage(const NetworkOnDeathMessage& aMessage) override;
 
 	void AddLight(Prism::PointLight* aLight);
 

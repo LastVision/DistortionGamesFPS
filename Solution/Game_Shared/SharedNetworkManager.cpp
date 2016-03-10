@@ -10,6 +10,7 @@
 #include <NetMessagePosition.h>
 #include <NetMessageAddEnemy.h>
 #include <NetMessageOnHit.h>
+#include <NetMessageOnDeath.h>
 
 #include <PostMaster.h>
 #include <NetworkOnHitMessage.h>
@@ -175,7 +176,12 @@ void SharedNetworkManager::HandleMessage()
 			UnpackAndHandle(NetMessageAddEnemy(), buffer);
 			break;
 		case eNetMessageType::PLAYER_ON_HIT:
+		case eNetMessageType::ENEMY_ON_HIT:
 			UnpackAndHandle(NetMessageOnHit(), buffer);
+			break;
+		case eNetMessageType::PLAYER_ON_DEATH:
+		case eNetMessageType::ENEMY_ON_DEATH:
+			UnpackAndHandle(NetMessageOnDeath(), buffer);
 			break;
 		default:
 			break;
@@ -218,3 +224,4 @@ void SharedNetworkManager::HandleMessage(const NetMessageOnHit& aMessage, const 
 { 
 	PostMaster::GetInstance()->SendMessage(NetworkOnHitMessage(aMessage.myDamage, aMessage.myNetworkID)); 
 }
+void SharedNetworkManager::HandleMessage(const NetMessageOnDeath&, const sockaddr_in&) {}
