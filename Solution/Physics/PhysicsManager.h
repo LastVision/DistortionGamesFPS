@@ -6,6 +6,7 @@
 #include <GrowingArray.h>
 #include <pvd/PxVisualDebugger.h>
 #include <physxvisualdebuggersdk/PvdConnection.h>
+#include "PhysicsCallbackStruct.h"
 #include <PxSimulationEventCallback.h>
 #include <characterkinematic\PxControllerManager.h>
 #include <cooking\PxCooking.h>
@@ -15,7 +16,6 @@
 class Entity;
 class PhysicsComponent;
 struct PhysicsComponentData;
-#include "PhysicsCallbackStruct.h"
 namespace CU
 {
 	class TimerManager;
@@ -37,7 +37,7 @@ namespace Prism
 	class PhysicsManager : public physx::debugger::comm::PvdConnectionHandler, public physx::PxSimulationEventCallback
 	{
 	public:
-		PhysicsManager();
+		PhysicsManager(std::function<void(PhysicsComponent*, PhysicsComponent*)> anOnTriggerCallback);
 		~PhysicsManager();
 
 #ifdef THREAD_PHYSICS
@@ -73,7 +73,7 @@ namespace Prism
 		physx::PxScene* GetScene(){ return myScene; }
 		physx::PxCooking* GetCooker(){ return myCooker; }
 
-		int CreatePlayerController(const CU::Vector3<float>& aStartPosition);
+		int CreatePlayerController(const CU::Vector3<float>& aStartPosition, PhysicsComponent* aComponent);
 		void Move(int aId, const CU::Vector3<float>& aDirection, float aMinDisplacement, float aDeltaTime);
 		void UpdateOrientation(physx::PxRigidDynamic* aDynamicBody, physx::PxShape** aShape, float* aThread4x4);
 		bool GetAllowedToJump(int aId);
@@ -129,6 +129,21 @@ namespace Prism
 			std::function<void(PhysicsComponent*, const CU::Vector3<float>&, const CU::Vector3<float>&)> myFunctionToCall;
 		};
 		CU::GrowingArray<RaycastResult> myRaycastResults[2];
+
+		struct OnTriggerResult
+		{
+			OnTriggerResult() {}
+			OnTriggerResult(PhysicsComponent* aFirstPhysicsComponent, PhysicsComponent* aSecondPhysicsComponent)
+				: myFirstPhysicsComponent(aFirstPhysicsComponent)
+				, mySecondPhysicsComponent(aSecondPhysicsComponent)
+			{}
+			PhysicsComponent* myFirstPhysicsComponent;
+			PhysicsComponent* mySecondPhysicsComponent;
+			//std::function<void(PhysicsComponent*, const CU::Vector3<float>&, const CU::Vector3<float>&)> myFunctionToCall;
+		};
+		CU::GrowingArray<OnTriggerResult> myOnTriggerResults[2];
+
+		std::function<void(PhysicsComponent*, PhysicsComponent*)> myOnTriggerCallback;
 
 		struct MoveJob
 		{

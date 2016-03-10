@@ -3,6 +3,7 @@
 #include <Subscriber.h>
 
 class Entity;
+class PhysicsComponent;
 
 class SharedLevel : public Subscriber
 {
@@ -14,6 +15,8 @@ public:
 	void AddEnemy(Entity* anEntity);
 
 	virtual void Update(const float aDeltaTime);
+
+	void CollisionCallback(PhysicsComponent* aFirst, PhysicsComponent* aSecond);
 
 protected:
 	CU::GrowingArray<Entity*> myEntities;

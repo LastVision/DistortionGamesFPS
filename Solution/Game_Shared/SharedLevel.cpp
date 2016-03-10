@@ -1,14 +1,17 @@
 #include "stdafx.h"
-#include "SharedLevel.h"
+#include <CollisionNote.h>
 #include <Entity.h>
 #include <EntityFactory.h>
 #include <PhysicsInterface.h>
+#include <PhysicsComponent.h>
+#include "SharedLevel.h"
+
 SharedLevel::SharedLevel()
 	: myEntities(256)
 	, myEnemies(512)
 	, myPlayers(16)
 {
-	Prism::PhysicsInterface::Create();
+	Prism::PhysicsInterface::Create(std::bind(&SharedLevel::CollisionCallback, this, std::placeholders::_1, std::placeholders::_2));
 }
 
 SharedLevel::~SharedLevel()
@@ -43,7 +46,10 @@ void SharedLevel::Update(const float aDeltaTime)
 	{
 		entity->Update(aDeltaTime);
 	}
+}
 
-
-
+void SharedLevel::CollisionCallback(PhysicsComponent* aFirst, PhysicsComponent* aSecond)
+{
+	aFirst->GetEntity().SendNote<CollisionNote>(CollisionNote(&aSecond->GetEntity()));
+	aSecond->GetEntity().SendNote<CollisionNote>(CollisionNote(&aFirst->GetEntity()));
 }

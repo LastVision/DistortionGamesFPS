@@ -29,7 +29,7 @@ namespace Prism
 	class PhysicsInterface
 	{
 	public:
-		static void Create();
+		static void Create(std::function<void(PhysicsComponent*, PhysicsComponent*)> anOnTriggerCallback);
 		static void Destroy();
 		static PhysicsInterface* GetInstance();
 
@@ -45,7 +45,7 @@ namespace Prism
 		void SetVelocity(physx::PxRigidDynamic* aDynamicBody, const CU::Vector3<float>& aVelocity);
 		void SetPosition(physx::PxRigidDynamic* aDynamicBody, const CU::Vector3<float>& aPosition);
 
-		int CreatePlayerController(const CU::Vector3<float>& aStartPosition);
+		int CreatePlayerController(const CU::Vector3<float>& aStartPosition, PhysicsComponent* aComponent);
 		void Move(int aId, const CU::Vector3<float>& aDirection, float aMinDisplacement, float aDeltaTime);
 		void UpdateOrientation(physx::PxRigidDynamic* aDynamicBody, physx::PxShape** aShape, float* aThread4x4);
 		bool GetAllowedToJump(int aId);
@@ -65,7 +65,7 @@ namespace Prism
 		// Requires PhysX includes!!
 		PhysicsManager* GetManager() const;
 
-		PhysicsInterface();
+		PhysicsInterface(std::function<void(PhysicsComponent*, PhysicsComponent*)> anOnTriggerCallback);
 		~PhysicsInterface();
 		PhysicsManager* myManager;
 		static PhysicsInterface* myInstance;
