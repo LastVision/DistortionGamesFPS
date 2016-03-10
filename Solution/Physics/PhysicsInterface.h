@@ -9,7 +9,8 @@ namespace physx
 }
 
 class Entity;
-struct PhysEntityData;
+class PhysicsComponent;
+struct PhysicsComponentData;
 
 namespace physx
 {
@@ -21,8 +22,9 @@ namespace physx
 
 namespace Prism
 {
+	struct PhysicsCallbackStruct;
 	class PhysicsManager;
-	class PhysEntity;
+
 
 	class PhysicsInterface
 	{
@@ -38,24 +40,26 @@ namespace Prism
 		
 		void EndFrame();
 
-		void RayCast(const CU::Vector3<float>& aOrigin, const CU::Vector3<float>& aNormalizedDirection, float aMaxRayDistance, std::function<void(Entity*, const CU::Vector3<float>&, const CU::Vector3<float>&)> aFunctionToCall);
+		void RayCast(const CU::Vector3<float>& aOrigin, const CU::Vector3<float>& aNormalizedDirection, float aMaxRayDistance, std::function<void(PhysicsComponent*, const CU::Vector3<float>&, const CU::Vector3<float>&)> aFunctionToCall);
 		void AddForce(physx::PxRigidDynamic* aDynamicBody, const CU::Vector3<float>& aDirection, float aMagnitude);
 		void SetVelocity(physx::PxRigidDynamic* aDynamicBody, const CU::Vector3<float>& aVelocity);
 		void SetPosition(physx::PxRigidDynamic* aDynamicBody, const CU::Vector3<float>& aPosition);
 
 		int CreatePlayerController(const CU::Vector3<float>& aStartPosition);
 		void Move(int aId, const CU::Vector3<float>& aDirection, float aMinDisplacement, float aDeltaTime);
+		void UpdateOrientation(physx::PxRigidDynamic* aDynamicBody, physx::PxShape** aShape, float* aThread4x4);
 		bool GetAllowedToJump(int aId);
 		void SetPosition(int aId, const CU::Vector3<float>& aPosition);
 		void GetPosition(int aId, CU::Vector3<float>& aPositionOut);
 
 		void SubscribeToTriggers(physx::PxSimulationEventCallback* aSubscriber);
 
-		void Create(PhysEntity* aEntity, const PhysEntityData& aPhysData
+		void Create(PhysicsComponent* aComponent, const PhysicsCallbackStruct& aPhysData
 			, float* aOrientation, const std::string& aFBXPath
 			, physx::PxRigidDynamic** aDynamicBodyOut, physx::PxRigidStatic** aStaticBodyOut
 			, physx::PxShape*** someShapesOut);
-		void Remove(physx::PxActor* aActor);
+		void Remove(physx::PxRigidDynamic* aDynamic, const PhysicsComponentData& aData);
+		void Remove(physx::PxRigidStatic* aStatic, const PhysicsComponentData& aData);
 
 	private:
 		// Requires PhysX includes!!

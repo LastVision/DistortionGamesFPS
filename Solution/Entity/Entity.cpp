@@ -6,6 +6,7 @@
 #include "HealthComponent.h"
 #include "InputComponent.h"
 #include "NetworkComponent.h"
+#include "PhysicsComponent.h"
 #include "ProjectileComponent.h"
 #include <Scene.h>
 #include <Instance.h>
@@ -14,14 +15,11 @@
 #include "ShootingComponent.h"
 #include "TriggerComponent.h"
 
-#include <PhysEntity.h>
-
 Entity::Entity(const EntityData& aEntityData, Prism::Scene* aScene, bool aClientSide, const CU::Vector3<float>& aStartPosition,
 		const CU::Vector3f& aRotation, const CU::Vector3f& aScale)
 	: myScene(aScene)
 	, myEntityData(aEntityData)
 	, myEmitterConnection(nullptr)
-	, myPhysEntity(nullptr)
 	, myIsClientSide(aClientSide)
 {
 	for (int i = 0; i < static_cast<int>(eComponentType::_COUNT); ++i)
@@ -38,25 +36,30 @@ Entity::Entity(const EntityData& aEntityData, Prism::Scene* aScene, bool aClient
 			myComponents[static_cast<int>(eComponentType::ANIMATION)] = new AnimationComponent(*this, aEntityData.myAnimationData);
 			GetComponent<AnimationComponent>()->SetRotation(aRotation);
 			GetComponent<AnimationComponent>()->SetScale(aScale);
-			myPhysEntity = new Prism::PhysEntity(aEntityData.myPhysData, myOrientation, aEntityData.myAnimationData.myModelPath, this);
 		}
 		else if (aEntityData.myGraphicsData.myExistsInEntity == true)
 		{
 			myComponents[static_cast<int>(eComponentType::GRAPHICS)] = new GraphicsComponent(*this, aEntityData.myGraphicsData);
 			GetComponent<GraphicsComponent>()->SetRotation(aRotation);
 			GetComponent<GraphicsComponent>()->SetScale(aScale);
-			myPhysEntity = new Prism::PhysEntity(aEntityData.myPhysData, myOrientation, aEntityData.myGraphicsData.myModelPath, this);
 		}
 	}
-	else
+
+	if (aEntityData.myPhysicsData.myExistsInEntity == true)
 	{
 		if (aEntityData.myAnimationData.myExistsInEntity == true)
 		{
-			myPhysEntity = new Prism::PhysEntity(aEntityData.myPhysData, myOrientation, aEntityData.myAnimationData.myModelPath, this);
+			myComponents[static_cast<int>(eComponentType::PHYSICS)] = new PhysicsComponent(*this, aEntityData.myPhysicsData
+				, aEntityData.myAnimationData.myModelPath);
 		}
 		else if (aEntityData.myGraphicsData.myExistsInEntity == true)
 		{
-			myPhysEntity = new Prism::PhysEntity(aEntityData.myPhysData, myOrientation, aEntityData.myGraphicsData.myModelPath, this);
+			myComponents[static_cast<int>(eComponentType::PHYSICS)] = new PhysicsComponent(*this, aEntityData.myPhysicsData
+				, aEntityData.myGraphicsData.myModelPath);
+		}
+		else
+		{
+			DL_ASSERT("Failed to load PhysicsComponent in EntityConstructor");
 		}
 	}
 	
@@ -88,7 +91,7 @@ Entity::Entity(const EntityData& aEntityData, Prism::Scene* aScene, bool aClient
 
 	if (aEntityData.myInputData.myExistsInEntity == true && myIsClientSide == true)
 	{
-		myComponents[static_cast<int>(eComponentType::INPUT)] = new InputComponent(*this);
+		myComponents[static_cast<int>(eComponentType::INPUT)] = new InputComponent(*this, aEntityData.myInputData);
 	}
 
 	if (aEntityData.myFirstPersonRenderData.myExistsInEntity == true && myIsClientSide == true)
@@ -98,9 +101,8 @@ Entity::Entity(const EntityData& aEntityData, Prism::Scene* aScene, bool aClient
 
 	
 
-	//myPhysEntity = new Prism::PhysEntity(&pos.x, aEntityData.myPhysData, myOrientation, aEntityData.myGraphicsData.myModelPath);
 	Reset();
-}
+};
 
 Entity::~Entity()
 {
@@ -113,7 +115,6 @@ Entity::~Entity()
 		delete myComponents[i];
 		myComponents[i] = nullptr;
 	}
-	SAFE_DELETE(myPhysEntity);
 }
 
 void Entity::Reset()
@@ -139,11 +140,11 @@ void Entity::Update(float aDeltaTime)
 		}
 	}
 
-	if (myEntityData.myPhysData.myPhysics == ePhysics::DYNAMIC)
+	if (myEntityData.myPhysicsData.myPhysicsType == ePhysics::DYNAMIC)
 	{
 		if (myComponents[static_cast<int>(eComponentType::NETWORK)] == nullptr)
 		{
-			memcpy(&myOrientation.myMatrix[0], myPhysEntity->GetOrientation(), sizeof(float) * 16);
+			memcpy(&myOrientation.myMatrix[0], GetComponent<PhysicsComponent>()->GetOrientation(), sizeof(float) * 16);
 		}
 	}
 
@@ -218,11 +219,6 @@ Prism::ParticleEmitterInstance* Entity::GetEmitter()
 	return myEmitterConnection;
 }
 
-Prism::PhysEntity* Entity::GetPhysEntity() const
-{
-	return myPhysEntity;
-}
-
 void Entity::Kill()
 {
 	myAlive = false;
@@ -230,7 +226,11 @@ void Entity::Kill()
 	if (myIsInScene == true)
 	{
 		RemoveFromScene();
-		myPhysEntity->RemoveFromScene();
+		if (myEntityData.myPhysicsData.myExistsInEntity == true)
+		{
+			GetComponent<PhysicsComponent>()->RemoveFromScene();
+
+		}
 	}
 }
 

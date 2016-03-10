@@ -2,6 +2,7 @@
 #include "Camera.h"
 #include <CommonHelper.h>
 #include "Frustum.h"
+#include <InputWrapper.h>
 #include "Instance.h"
 #include <Intersection.h>
 #include "Portal.h"
@@ -17,6 +18,7 @@ namespace Prism
 		, myInstances(4096)
 		, myAlwaysRenderInstances(128)
 		, myActiveInstances(4096)
+		, myDebugDraw(false)
 	{
 	}
 
@@ -32,8 +34,21 @@ namespace Prism
 		myRooms.Add(aRoom);
 	}
 
+	static bool cmp(Room* a, Room* b)
+	{
+		return int(a->GetType())< int(b->GetType());
+	}
+
+
 	void RoomManager::CalcPortals()
 	{
+		std::sort(myRooms.begin(), myRooms.end(), cmp);
+
+		for (int i = 0; i < myRooms.Size(); ++i)
+		{
+			myRooms[i]->SetRoomId(i);
+		}
+
 		for (int i = 0; i < myRooms.Size(); ++i)
 		{
 			for (int j = i + 1; j < myRooms.Size(); ++j)
@@ -44,6 +59,20 @@ namespace Prism
 				}
 			}
 		}
+
+		//bool success = false;
+		//while (success == false)
+		//{
+		//	success = true;
+		//	for (int i = 0; i < myRooms.Size() - 1; ++i)
+		//	{
+		//		if (myRooms[i + 1] < myRooms[i])
+		//		{
+		//			std::swap(myRooms[i], myRooms[i + 1]);
+		//			success = false;
+		//		}
+		//	}
+		//}
 	}
 
 	void RoomManager::Add(Instance* anInstance, bool anAlwaysRender)
@@ -88,6 +117,12 @@ namespace Prism
 
 	const CU::GrowingArray<Instance*>& RoomManager::GetActiveInstances(const Camera& aCamera)
 	{
+#ifndef RELEASE_BUILD
+		if (CU::InputWrapper::GetInstance()->KeyDown(DIK_P) == true)
+		{
+			myDebugDraw = !myDebugDraw;
+		}
+#endif
 		myActiveInstances.RemoveAll();
 		myCurrentRoomIds.RemoveAll();
 
@@ -101,21 +136,21 @@ namespace Prism
 
 		FindActiveRooms(aCamera.GetFrustum(), playerRoom);
 
-		for (int i = 0; i < myCurrentRoomIds.Size(); ++i)
-		{
-			const Room* current(myRooms[myCurrentRoomIds[i]]);
-			if (current->GetType() == eRoomType::ROOM)
-			{
-				for (int j = 0; j < current->GetPortals().Size(); ++j)
-				{
-					const Room* other(current->GetPortals()[j]->GetOther(current));
-					if (myCurrentRoomIds.Find(other->GetRoomId()) == myCurrentRoomIds.FoundNone)
-					{
-						myCurrentRoomIds.Add(other->GetRoomId());
-					}
-				}
-			}
-		}
+		//for (int i = 0; i < myCurrentRoomIds.Size(); ++i)
+		//{
+		//	const Room* current(myRooms[myCurrentRoomIds[i]]);
+		//	if (current->GetType() == eRoomType::ROOM)
+		//	{
+		//		for (int j = 0; j < current->GetPortals().Size(); ++j)
+		//		{
+		//			const Room* other(current->GetPortals()[j]->GetOther(current));
+		//			if (myCurrentRoomIds.Find(other->GetRoomId()) == myCurrentRoomIds.FoundNone)
+		//			{
+		//				myCurrentRoomIds.Add(other->GetRoomId());
+		//			}
+		//		}
+		//	}
+		//}
 
 		for (int i = 0; i < myAlwaysRenderInstances.Size(); ++i)
 		{
@@ -132,6 +167,8 @@ namespace Prism
 				}
 			}
 		}
+
+		
 
 #ifndef RELEASE_BUILD
 #ifdef SHOW_PORTAL_CULLING_DEBUG_TEXT
@@ -182,16 +219,50 @@ namespace Prism
 	{
 		if (anArrivePortal != nullptr)
 		{
-			aFrustum.Resize(anArrivePortal);
+			aFrustum.Resize(anArrivePortal, myDebugDraw);
+
 		}
+
+
+
+		if (aFrustum.GetBottomLeft() != CU::Vector3<float>(0, 0, 0))
+		{
+			//Prism::DebugDrawer::GetInstance()->RenderLine3D(aFrustum.GetOrientation().GetPos(), aFrustum.GetBottomLeft(), eColorDebug::RED);
+			//Prism::DebugDrawer::GetInstance()->RenderLine3D(aFrustum.GetOrientation().GetPos(), aFrustum.GetTopRight(), eColorDebug::BLUE);
+		}
+
 		const CU::GrowingArray<Portal*>& portals = myRooms[aRoomId]->GetPortals();
 
 		for (int i = 0; i < portals.Size(); ++i)
 		{
 			Portal* current = portals[i];
+			int planeOutside[4];
+			bool pointBehind[4];
+
+
+
+
 			if (current->GetAlreadyPassed() == false
-				&& aFrustum.Inside(current->GetCenterPosition(), current->GetRadius()) == true)
+				&& (aFrustum.Inside(current->GetPoint(0), 0, planeOutside[0], pointBehind[0]) == true
+				|| aFrustum.Inside(current->GetPoint(1), 0, planeOutside[1], pointBehind[1]) == true
+				|| aFrustum.Inside(current->GetPoint(2), 0, planeOutside[2], pointBehind[2]) == true
+				|| aFrustum.Inside(current->GetPoint(3), 0, planeOutside[3], pointBehind[3]) == true
+
+				//|| AllPointsBehind(pointBehind) == false // fancy solution, still not 100% working
+				//&& (AnyOutsidePlane(planeOutside, 0) == true && AnyOutsidePlane(planeOutside, 1)
+				//|| AnyOutsidePlane(planeOutside, 2) == true && AnyOutsidePlane(planeOutside, 3))))
+				
+				|| AllPointsBehind(pointBehind) == false && !(planeOutside[0] == planeOutside[1] && planeOutside[0] == planeOutside[2] && planeOutside[0] == planeOutside[3]))) //naive solution
+				
+				//|| aFrustum.Inside(current->GetCenterPosition(), current->GetRadius() * 0.1f) == true)) // needs to be tweaked for portal size
 			{
+				if (myDebugDraw == true)
+				{
+					Prism::DebugDrawer::GetInstance()->RenderLine3D(current->GetPoint(0), current->GetPoint(1), eColorDebug::RED, eColorDebug::BLUE);
+					Prism::DebugDrawer::GetInstance()->RenderLine3D(current->GetPoint(1), current->GetPoint(3), eColorDebug::BLUE, eColorDebug::GREEN);
+					Prism::DebugDrawer::GetInstance()->RenderLine3D(current->GetPoint(3), current->GetPoint(2), eColorDebug::GREEN, eColorDebug::YELLOW);
+					Prism::DebugDrawer::GetInstance()->RenderLine3D(current->GetPoint(2), current->GetPoint(0), eColorDebug::YELLOW, eColorDebug::RED);
+				}
 				current->SetAlreadyPassed(true);
 
 				int otherRoomId = current->GetOther(myRooms[aRoomId])->GetRoomId();
@@ -203,5 +274,21 @@ namespace Prism
 				}
 			}
 		}
+	}
+
+	bool RoomManager::AnyOutsidePlane(int somePlaneIndices[4], int aPlaneIndex) const
+	{
+		return somePlaneIndices[0] == aPlaneIndex
+			|| somePlaneIndices[1] == aPlaneIndex
+			|| somePlaneIndices[2] == aPlaneIndex
+			|| somePlaneIndices[3] == aPlaneIndex;
+	}
+
+	bool RoomManager::AllPointsBehind(bool somePoints[4]) const
+	{
+		return somePoints[0] == true
+			&& somePoints[1] == true
+			&& somePoints[2] == true
+			&& somePoints[3] == true;
 	}
 }

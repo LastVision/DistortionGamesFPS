@@ -3,8 +3,8 @@
 #include "DamageNote.h"
 #include "Entity.h"
 #include <EmitterMessage.h>
+#include "PhysicsComponent.h"
 #include <PostMaster.h>
-#include <PhysEntity.h>
 #include <PhysicsInterface.h>
 #include "Pistol.h"
 #include <XMLReader.h>
@@ -28,9 +28,9 @@ Pistol::Pistol()
 
 	reader.CloseDocument();
 
-	myRaycastHandler = [=](Entity* anEntity, const CU::Vector3<float>& aDirection, const CU::Vector3<float>& aHitPosition)
+	myRaycastHandler = [=](PhysicsComponent* aComponent, const CU::Vector3<float>& aDirection, const CU::Vector3<float>& aHitPosition)
 	{
-		this->HandleRaycast(anEntity, aDirection, aHitPosition);
+		this->HandleRaycast(aComponent, aDirection, aHitPosition);
 	};
 }
 
@@ -62,16 +62,16 @@ void Pistol::Update(float aDelta)
 	myShootTimer -= aDelta;
 }
 
-void Pistol::HandleRaycast(Entity* anEntity, const CU::Vector3<float>& aDirection, const CU::Vector3<float>& aHitPosition)
+void Pistol::HandleRaycast(PhysicsComponent* aComponent, const CU::Vector3<float>& aDirection, const CU::Vector3<float>& aHitPosition)
 {
-	if (anEntity != nullptr)
+	if (aComponent != nullptr)
 	{
-		if (anEntity->GetPhysEntity()->GetPhysicsType() == ePhysics::DYNAMIC)
+		if (aComponent->GetPhysicsType() == ePhysics::DYNAMIC)
 		{
-			anEntity->GetPhysEntity()->AddForce(aDirection, 25.f);
+			aComponent->AddForce(aDirection, 25.f);
 		}
 		PostMaster::GetInstance()->SendMessage(EmitterMessage("Shotgun", aHitPosition));
-		anEntity->SendNote<DamageNote>(DamageNote(myDamage));
+		aComponent->GetEntity().SendNote<DamageNote>(DamageNote(myDamage));
 
 	}
 }

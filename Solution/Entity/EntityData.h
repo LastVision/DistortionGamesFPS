@@ -1,15 +1,16 @@
 #pragma once
 
 #include "AnimationComponentData.h"
-#include "FirstPersonRenderComponentData.h"
 #include "GraphicsComponentData.h"
+#include "FirstPersonRenderComponentData.h"
+#include "PhysicsComponentData.h"
 #include "HealthComponentData.h"
 #include "InputComponentData.h"
 #include "NetworkComponentData.h"
 #include "ProjectileComponentData.h"
 #include "ShootingComponentData.h"
 #include "TriggerComponentData.h"
-#include <PhysEntityData.h>
+
 
 struct EntityData
 {
@@ -21,7 +22,7 @@ struct EntityData
 	InputComponentData myInputData;
 	NetworkComponentData myNetworkData;
 	ProjectileComponentData myProjecileData;
-	PhysEntityData myPhysData;
+	PhysicsComponentData myPhysicsData;
 	ShootingComponentData myShootingData;
 	TriggerComponentData myTriggerData;
 

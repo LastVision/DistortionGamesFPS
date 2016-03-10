@@ -13,8 +13,9 @@
 #include <Matrix44.h>
 
 class Entity;
-struct PhysEntityData;
-
+class PhysicsComponent;
+struct PhysicsComponentData;
+#include "PhysicsCallbackStruct.h"
 namespace CU
 {
 	class TimerManager;
@@ -28,9 +29,10 @@ namespace physx
 	class PxActor;
 }
 
+class PhysicsComponent;
+
 namespace Prism
 {
-	class PhysEntity;
 
 	class PhysicsManager : public physx::debugger::comm::PvdConnectionHandler, public physx::PxSimulationEventCallback
 	{
@@ -51,12 +53,12 @@ namespace Prism
 #endif
 
 		void EndFrame();
-		void Add(PhysEntity* aPhysEntity);
+		void Add(const PhysicsCallbackStruct& aCallbackStruct);
 		void Swap();
 
 		void Update();
 
-		void RayCast(const CU::Vector3<float>& aOrigin, const CU::Vector3<float>& aNormalizedDirection, float aMaxRayDistance, std::function<void(Entity*, const CU::Vector3<float>&, const CU::Vector3<float>&)> aFunctionToCall);
+		void RayCast(const CU::Vector3<float>& aOrigin, const CU::Vector3<float>& aNormalizedDirection, float aMaxRayDistance, std::function<void(PhysicsComponent*, const CU::Vector3<float>&, const CU::Vector3<float>&)> aFunctionToCall);
 		void AddForce(physx::PxRigidDynamic* aDynamicBody, const CU::Vector3<float>& aDirection, float aMagnitude);
 		void SetVelocity(physx::PxRigidDynamic* aDynamicBody, const CU::Vector3<float>& aVelocity);
 		void SetPosition(physx::PxRigidDynamic* aDynamicBody, const CU::Vector3<float>& aPosition);
@@ -73,15 +75,17 @@ namespace Prism
 
 		int CreatePlayerController(const CU::Vector3<float>& aStartPosition);
 		void Move(int aId, const CU::Vector3<float>& aDirection, float aMinDisplacement, float aDeltaTime);
+		void UpdateOrientation(physx::PxRigidDynamic* aDynamicBody, physx::PxShape** aShape, float* aThread4x4);
 		bool GetAllowedToJump(int aId);
 		void SetPosition(int aId, const CU::Vector3<float>& aPosition);
 		void GetPosition(int aId, CU::Vector3<float>& aPositionOut);
 
-		void Create(PhysEntity* aEntity, const PhysEntityData& aPhysData
+		void Create(PhysicsComponent* aComponent, const PhysicsCallbackStruct& aCallbackStruct
 			, float* aOrientation, const std::string& aFBXPath
 			, physx::PxRigidDynamic** aDynamicBodyOut, physx::PxRigidStatic** aStaticBodyOut
 			, physx::PxShape*** someShapesOut);
-		void Remove(physx::PxActor* aActor);
+		void Remove(physx::PxRigidDynamic* aDynamic, const PhysicsComponentData& aData);
+		void Remove(physx::PxRigidStatic* aStatic, const PhysicsComponentData& aData);
 
 	private:
 #ifdef THREAD_PHYSICS
@@ -96,7 +100,7 @@ namespace Prism
 		struct RaycastJob
 		{
 			RaycastJob() {}
-			RaycastJob(const CU::Vector3<float>& aOrigin, const CU::Vector3<float>& aNormalizedDirection, float aMaxRayDistance, std::function<void(Entity*, const CU::Vector3<float>&, const CU::Vector3<float>&)> aFunctionToCall)
+			RaycastJob(const CU::Vector3<float>& aOrigin, const CU::Vector3<float>& aNormalizedDirection, float aMaxRayDistance, std::function<void(PhysicsComponent*, const CU::Vector3<float>&, const CU::Vector3<float>&)> aFunctionToCall)
 				: myOrigin(aOrigin)
 				, myNormalizedDirection(aNormalizedDirection)
 				, myMaxRayDistance(aMaxRayDistance)
@@ -105,7 +109,7 @@ namespace Prism
 			CU::Vector3<float> myOrigin;
 			CU::Vector3<float> myNormalizedDirection;
 			float myMaxRayDistance;
-			std::function<void(Entity*, const CU::Vector3<float>&, const CU::Vector3<float>&)> myFunctionToCall;
+			std::function<void(PhysicsComponent*, const CU::Vector3<float>&, const CU::Vector3<float>&)> myFunctionToCall;
 		};
 		void RayCast(const RaycastJob& aRaycastJob);
 		CU::GrowingArray<RaycastJob> myRaycastJobs[2];
@@ -113,16 +117,16 @@ namespace Prism
 		struct RaycastResult
 		{
 			RaycastResult() {}
-			RaycastResult(Entity* anEntity, const CU::Vector3<float>& aDirection, const CU::Vector3<float>& aHitPosition, std::function<void(Entity*, const CU::Vector3<float>&, const CU::Vector3<float>&)> aFunctionToCall)
-				: myEntity(anEntity)
+			RaycastResult(PhysicsComponent* aPhysicsComponent, const CU::Vector3<float>& aDirection, const CU::Vector3<float>& aHitPosition, std::function<void(PhysicsComponent*, const CU::Vector3<float>&, const CU::Vector3<float>&)> aFunctionToCall)
+				: myPhysicsComponent(aPhysicsComponent)
 				, myDirection(aDirection)
 				, myHitPosition(aHitPosition)
 				, myFunctionToCall(aFunctionToCall)
 			{}
-			Entity* myEntity;
+			PhysicsComponent* myPhysicsComponent;
 			CU::Vector3<float> myDirection;
 			CU::Vector3<float> myHitPosition;
-			std::function<void(Entity*, const CU::Vector3<float>&, const CU::Vector3<float>&)> myFunctionToCall;
+			std::function<void(PhysicsComponent*, const CU::Vector3<float>&, const CU::Vector3<float>&)> myFunctionToCall;
 		};
 		CU::GrowingArray<RaycastResult> myRaycastResults[2];
 
@@ -201,7 +205,7 @@ namespace Prism
 		CU::GrowingArray<PositionJob> myPositionJobs[2];
 		void SetPosition(const PositionJob& aPositionJob);
 
-		CU::GrowingArray<PhysEntity*> myPhysEntities;
+		CU::GrowingArray<PhysicsCallbackStruct> myPhysicsComponentCallbacks;
 
 		physx::PxTriangleMesh* GetPhysMesh(const std::string& aFBXPath);
 		void onPvdSendClassDescriptions(physx::debugger::comm::PvdConnection&) override{}

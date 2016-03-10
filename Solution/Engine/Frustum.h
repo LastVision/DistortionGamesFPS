@@ -16,11 +16,16 @@ namespace Prism
 		const CU::Vector3<float>& GetCornerMax() const;
 
 		void Update();
-		void Resize(Portal* aPortal);
+		void Resize(Portal* aPortal, bool aDebugDraw);
 
 		bool Inside(const CU::Vector3<float>& aPosition, float aRadius) const;
+		bool Inside(const CU::Vector3<float>& aPosition, float aRadius, int& aFailPlaneOut, bool& aPointBehind) const;
 
 		void OnResize(float aNearPlane, float aFarPlane);
+
+		const CU::Matrix44<float>& GetOrientation() const;
+		CU::Vector3<float> GetBottomLeft() const;
+		CU::Vector3<float> GetTopRight() const;
 
 	private:
 		void operator=(Frustum&) = delete;
@@ -29,5 +34,23 @@ namespace Prism
 		CU::Matrix44<float> myOrientationInverted;
 
 		CU::Intersection::Fov90Frustum myIntersectionFrustum;
+
+		CU::Vector3<float> myBottomLeft;
+		CU::Vector3<float> myTopRight;
 	};
+
+	inline const CU::Matrix44<float>& Frustum::GetOrientation() const
+	{
+		return myOrientation;
+	}
+
+	inline CU::Vector3<float> Frustum::GetBottomLeft() const
+	{
+		return myBottomLeft * myOrientation;
+	}
+
+	inline CU::Vector3<float> Frustum::GetTopRight() const
+	{
+		return myTopRight * myOrientation;
+	}
 }
