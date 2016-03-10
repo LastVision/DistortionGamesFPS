@@ -23,7 +23,7 @@ namespace Prism
 		myCubemap = myEffect->GetEffect()->GetVariableByName("CubeMap")->AsShaderResource();
 		myAmbientMultiplier = myEffect->GetEffect()->GetVariableByName("AmbientMultiplier")->AsScalar();
 
-#ifdef USE_LIGHTS
+#ifdef USE_LIGHT
 		myAmbientMultiplier->SetFloat(0.05f);
 #else
 		myAmbientMultiplier->SetFloat(1.f);
@@ -221,8 +221,8 @@ namespace Prism
 
 		context->OMSetRenderTargets(1, &backbuffer
 			, myDepthStencilTexture->GetDepthStencilView());
-#ifdef USE_LIGHTS
 
+#ifdef USE_LIGHT
 		aScene->UpdateLights();
 		RenderPointLights(aScene);
 #endif
@@ -283,7 +283,7 @@ namespace Prism
 		myAmbientPass.myAmbientMultiplier
 			= myAmbientPass.myEffect->GetEffect()->GetVariableByName("AmbientMultiplier")->AsScalar();
 
-#ifdef USE_LIGHTS
+#ifdef USE_LIGHT
 		myAmbientPass.myAmbientMultiplier->SetFloat(0.05f);
 #else
 		myAmbientPass.myAmbientMultiplier->SetFloat(1.f);
