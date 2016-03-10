@@ -55,11 +55,11 @@ namespace Prism
 				, &myVertexBuffer->myByteOffset);
 
 			D3DX11_TECHNIQUE_DESC techDesc;
-			myEffect->GetTechnique(false)->GetDesc(&techDesc);
+			myEffect->GetTechnique()->GetDesc(&techDesc);
 
 			for (UINT i = 0; i < techDesc.Passes; ++i)
 			{
-				myEffect->GetTechnique(false)->GetPassByIndex(i)->Apply(0, Engine::GetInstance()->GetContex());
+				myEffect->GetTechnique()->GetPassByIndex(i)->Apply(0, Engine::GetInstance()->GetContex());
 				Engine::GetInstance()->GetContex()->Draw(someLines.Size() * 2, 0);
 			}
 		}

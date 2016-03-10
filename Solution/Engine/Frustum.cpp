@@ -14,24 +14,75 @@ void Prism::Frustum::Update()
 	myOrientationInverted = CU::InverseSimple(myOrientation);
 }
 
-void Prism::Frustum::Resize(Portal* aPortal)
+void Prism::Frustum::Resize(Portal* aPortal, bool aDebugDraw)
 {
-	CU::Vector4<float> bottomLeft(CU::Vector4<float>(aPortal->GetBottomLeft(), 1.f) * myOrientationInverted);
-	CU::Vector4<float> topRight(CU::Vector4<float>(aPortal->GetTopRight(), 1.f) * myOrientationInverted);
+	//bool resize(true);
+	//for (int i = 0; i < 4; ++i)
+	//{
+	//	if (Inside(aPortal->GetPoint(i), 0) == false)
+	//	{
+	//		resize = false;
+	//	}
+	//}
 
-	if (bottomLeft.x > topRight.x)
+	//if (resize == true)
 	{
-		float temp = bottomLeft.x;
-		bottomLeft.x = topRight.x;
-		topRight.x = temp;
-	}
+		//CU::Vector4<float> bottomLeft(CU::Vector4<float>(aPortal->GetBottomLeft(), 1.f) * myOrientationInverted);
+		//CU::Vector4<float> topRight(CU::Vector4<float>(aPortal->GetTopRight(), 1.f) * myOrientationInverted);
 
-	if (bottomLeft.z > 0 && topRight.z > 0)
-	{
-		CU::Vector3<float> bottomLeft3(bottomLeft.x, bottomLeft.y, bottomLeft.z);
-		CU::Vector3<float> topRight3(topRight.x, topRight.y, topRight.z);
+		//if (bottomLeft.x > topRight.x)
+		//{
+		//	float temp = bottomLeft.x;
+		//	bottomLeft.x = topRight.x;
+		//	topRight.x = temp;
+		//}
 
-		myIntersectionFrustum.Resize(bottomLeft3, topRight3);
+
+		int leftId(0);
+		int rightId(0);
+
+		CU::Vector4<float> left(CU::Vector4<float>(aPortal->GetPoint(0), 1.f) * myOrientationInverted);
+		CU::Vector4<float> right(CU::Vector4<float>(aPortal->GetPoint(0), 1.f) * myOrientationInverted);
+
+		for (int i = 1; i < 4; ++i)
+		{
+			CU::Vector4<float> current(CU::Vector4<float>(aPortal->GetPoint(i), 1.f) * myOrientationInverted);
+			if (current.x < left.x)
+			{
+				leftId = i;
+				left = current;
+			}
+			if (current.x > right.x)
+			{
+				rightId = i;
+				right = current;
+			}
+		}
+
+		if (aDebugDraw == true)
+		{
+			Prism::DebugDrawer::GetInstance()->RenderLine3D(myOrientation.GetPos() + myOrientation.GetForward(), aPortal->GetPoint(0), eColorDebug::GREEN);
+			Prism::DebugDrawer::GetInstance()->RenderLine3D(myOrientation.GetPos() + myOrientation.GetForward(), aPortal->GetPoint(1), eColorDebug::GREEN);
+			Prism::DebugDrawer::GetInstance()->RenderLine3D(myOrientation.GetPos() + myOrientation.GetForward(), aPortal->GetPoint(2), eColorDebug::GREEN);
+			Prism::DebugDrawer::GetInstance()->RenderLine3D(myOrientation.GetPos() + myOrientation.GetForward(), aPortal->GetPoint(3), eColorDebug::GREEN);
+		}
+
+		if (Inside(aPortal->GetPoint(leftId), 0) == true)
+		{
+			if (aDebugDraw == true)
+			{
+				Prism::DebugDrawer::GetInstance()->RenderLine3D(myOrientation.GetPos() + myOrientation.GetForward(), aPortal->GetPoint(leftId), eColorDebug::RED);
+			}
+			myIntersectionFrustum.ResizeLeft(left.GetVector3());
+		}
+		if (Inside(aPortal->GetPoint(rightId), 0) == true)
+		{
+			if (aDebugDraw == true)
+			{
+				Prism::DebugDrawer::GetInstance()->RenderLine3D(myOrientation.GetPos() + myOrientation.GetForward(), aPortal->GetPoint(rightId), eColorDebug::BLUE);
+			}
+			myIntersectionFrustum.ResizeRight(right.GetVector3());
+		}
 	}
 }
 
@@ -39,6 +90,20 @@ bool Prism::Frustum::Inside(const CU::Vector3<float>& aPosition, float aRadius) 
 {
 	CU::Vector4<float> position = CU::Vector4<float>(aPosition.x, aPosition.y, aPosition.z, 1.f) * myOrientationInverted;
 	return myIntersectionFrustum.Inside({ position.x, position.y, position.z }, aRadius);
+}
+
+bool Prism::Frustum::Inside(const CU::Vector3<float>& aPosition, float aRadius, int& aFailPlaneOut, bool& aPointBehind) const
+{
+	CU::Vector4<float> position = CU::Vector4<float>(aPosition.x, aPosition.y, aPosition.z, 1.f) * myOrientationInverted;
+	if (position.z < 0)
+	{
+		aPointBehind = true;
+	}
+	else
+	{
+		aPointBehind = false;
+	}
+	return myIntersectionFrustum.Inside({ position.x, position.y, position.z }, aRadius, aFailPlaneOut);
 }
 
 void Prism::Frustum::OnResize(float aNearPlane, float aFarPlane)

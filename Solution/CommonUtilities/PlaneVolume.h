@@ -16,6 +16,7 @@ namespace CU
 		void RemovePlane(Plane<T> aPlane);
 		bool Inside(Vector3<T> aPosition) const;
 		bool Inside(Vector3<T> aPosition, T aRadius) const;
+		bool Inside(Vector3<T> aPosition, T aRadius, int& aFailPlaneOut) const;
 
 		GrowingArray<Plane<T>> myPlanes;
 	};
@@ -76,6 +77,20 @@ namespace CU
 		{
 			if (myPlanes[i].ClassifySpherePlane(aPosition, aRadius) > 0)
 			{
+				return false;
+			}
+		}
+		return true;
+	}
+
+	template <typename T>
+	bool PlaneVolume<T>::Inside(Vector3<T> aPosition, T aRadius, int& aFailPlaneOut) const
+	{
+		for (unsigned short i = 0; i < myPlanes.Size(); ++i)
+		{
+			if (myPlanes[i].ClassifySpherePlane(aPosition, aRadius) > 0)
+			{
+				aFailPlaneOut = i;
 				return false;
 			}
 		}
