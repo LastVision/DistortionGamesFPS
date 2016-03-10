@@ -24,6 +24,8 @@ namespace Prism
 	private:
 		int GetRoomId(const CU::Vector3<float>& aPosition) const;
 		void FindActiveRooms(Frustum aFrustum, int aRoomId, Portal* anArrivePortal = nullptr);
+		bool AnyOutsidePlane(int somePlaneIndices[4], int aPlaneIndex) const;
+		bool AllPointsBehind(bool somePoints[4]) const;
 
 		struct InstanceInRoom
 		{
@@ -43,5 +45,7 @@ namespace Prism
 		CU::GrowingArray<InstanceInRoom> myInstances;
 		CU::GrowingArray<Instance*> myAlwaysRenderInstances;
 		CU::GrowingArray<Instance*> myActiveInstances;
+
+		bool myDebugDraw;
 	};
 }

@@ -5,11 +5,10 @@
 
 namespace Prism
 {
-	Room::Room(const CU::Vector3<float>& aPosition, const CU::Vector3<float>& aScale, int aRoomId
+	Room::Room(const CU::Vector3<float>& aPosition, const CU::Vector3<float>& aScale
 			, const std::string& aName, eRoomType aType)
 		: myAABB(aPosition, aScale)
 		, myPortals(8)
-		, myRoomId(aRoomId)
 		, myName(aName)
 		, myType(aType)
 	{

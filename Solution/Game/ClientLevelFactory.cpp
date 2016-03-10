@@ -51,7 +51,6 @@ void ClientLevelFactory::ReadLevel(const std::string& aLevelPath)
 
 void ClientLevelFactory::LoadRooms(XMLReader& aReader, tinyxml2::XMLElement* aElement)
 {
-	int i = 0;
 	for (tinyxml2::XMLElement* entityElement = aReader.ForceFindFirstChild(aElement, "room"); entityElement != nullptr;
 		entityElement = aReader.FindNextElement(entityElement, "room"))
 	{
@@ -77,8 +76,7 @@ void ClientLevelFactory::LoadRooms(XMLReader& aReader, tinyxml2::XMLElement* aEl
 			typeEnum = Prism::eRoomType::CONNECTOR;
 		}
 
-		static_cast<ClientLevel*>(myCurrentLevel)->GetScene()->AddRoom(new Prism::Room(position, scale, i, name, typeEnum));
-		++i;
+		static_cast<ClientLevel*>(myCurrentLevel)->GetScene()->AddRoom(new Prism::Room(position, scale, name, typeEnum));
 	}
 
 	static_cast<ClientLevel*>(myCurrentLevel)->GetScene()->GetRoomManager()->CalcPortals();

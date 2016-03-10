@@ -108,7 +108,6 @@ void ClientLevel::Update(const float aDeltaTime)
 
 	DEBUG_PRINT(ms);
 	DEBUG_PRINT(kbs);
-	Prism::DebugDrawer::GetInstance()->RenderLinesToScreen(*myPlayer->GetCamera());
 
 	//for (int i = 0; i < myPlayers.Size(); ++i)
 	//{
@@ -126,6 +125,7 @@ void ClientLevel::Update(const float aDeltaTime)
 void ClientLevel::Render()
 {
 	myDeferredRenderer->Render(myScene);
+	Prism::DebugDrawer::GetInstance()->RenderLinesToScreen(*myPlayer->GetCamera());
 	//myScene->Render();
 	//myDeferredRenderer->Render(myScene);
 	myEmitterManager->RenderEmitters();
