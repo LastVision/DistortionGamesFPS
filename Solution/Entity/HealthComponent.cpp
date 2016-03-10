@@ -32,7 +32,7 @@ void HealthComponent::ReceiveNote(const CollisionNote& aNote)
 	if (aNote.myOther->GetComponent<TriggerComponent>()->GetTriggerType() == eTriggerType::HEALTH_PACK)
 	{
 		Heal(aNote.myOther->GetComponent<TriggerComponent>()->GetValue());
-		aNote.myOther->Kill();
+		//aNote.myOther->Kill();
 	}
 }
 

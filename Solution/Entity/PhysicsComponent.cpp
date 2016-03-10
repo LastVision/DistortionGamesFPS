@@ -40,11 +40,6 @@ PhysicsComponent::~PhysicsComponent()
 	myShapes = nullptr;
 }
 
-void PhysicsComponent::Update(float aDelta)
-{
-	aDelta;
-}
-
 void PhysicsComponent::SwapOrientations()
 {
 	std::swap(my4x4Float, myThread4x4Float);
@@ -98,11 +93,11 @@ void PhysicsComponent::RemoveFromScene()
 {
 	if (myPhysicsType == ePhysics::DYNAMIC)
 	{
-		//PhysicsInterface::GetInstance()->Remove(myDynamicBody);
+		Prism::PhysicsInterface::GetInstance()->Remove(myDynamicBody, myData);
 	}
 	else
 	{
-		//PhysicsInterface::GetInstance()->Remove(myStaticBody);
+		Prism::PhysicsInterface::GetInstance()->Remove(myStaticBody, myData);
 	}
 
 }

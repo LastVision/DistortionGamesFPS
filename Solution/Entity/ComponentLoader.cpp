@@ -103,7 +103,7 @@ void ComponentLoader::LoadPhysicsComponent(XMLReader& aDocument, tinyxml2::XMLEl
 		aDocument.ForceReadAttribute(aDocument.ForceFindFirstChild(aSourceElement, "max"), "y", aOutputData.myPhysicsMax.y);
 		aDocument.ForceReadAttribute(aDocument.ForceFindFirstChild(aSourceElement, "max"), "z", aOutputData.myPhysicsMax.z);
 	}
-	else if (CU::ToLower(physicsType) == "phantom")
+	else if (CU::ToLower(physicsType) == "phantom" || CU::ToLower(physicsType) == "trigger")
 	{
 		aOutputData.myPhysicsType = ePhysics::PHANTOM;
 
