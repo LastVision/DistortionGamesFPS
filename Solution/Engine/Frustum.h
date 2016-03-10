@@ -16,7 +16,7 @@ namespace Prism
 		const CU::Vector3<float>& GetCornerMax() const;
 
 		void Update();
-		void Resize(Portal* aPortal, bool aDebugDraw);
+		void Resize(Portal* aPortal, const CU::Matrix44<float>& aProjection, bool aDebugDraw);
 
 		bool Inside(const CU::Vector3<float>& aPosition, float aRadius) const;
 		bool Inside(const CU::Vector3<float>& aPosition, float aRadius, int& aFailPlaneOut, bool& aPointBehind) const;

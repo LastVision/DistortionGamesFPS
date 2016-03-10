@@ -134,7 +134,7 @@ namespace Prism
 		int playerRoom = GetRoomId(aCamera.GetOrientation().GetPos());
 		myCurrentRoomIds.Add(playerRoom);
 
-		FindActiveRooms(aCamera.GetFrustum(), playerRoom);
+		FindActiveRooms(aCamera.GetFrustum(), aCamera.GetProjection(), playerRoom);
 
 		//for (int i = 0; i < myCurrentRoomIds.Size(); ++i)
 		//{
@@ -215,11 +215,11 @@ namespace Prism
 		return 0;
 	}
 
-	void RoomManager::FindActiveRooms(Frustum aFrustum, int aRoomId, Portal* anArrivePortal)
+	void RoomManager::FindActiveRooms(Frustum aFrustum, const CU::Matrix44<float>& aProjection, int aRoomId, Portal* anArrivePortal)
 	{
 		if (anArrivePortal != nullptr)
 		{
-			aFrustum.Resize(anArrivePortal, myDebugDraw);
+			aFrustum.Resize(anArrivePortal, aProjection, myDebugDraw);
 
 		}
 
@@ -270,7 +270,7 @@ namespace Prism
 				{
 					myCurrentRoomIds.Add(otherRoomId);
 
-					FindActiveRooms(aFrustum, otherRoomId, current);
+					FindActiveRooms(aFrustum, aProjection, otherRoomId, current);
 				}
 			}
 		}
