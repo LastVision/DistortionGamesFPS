@@ -208,8 +208,7 @@ void ClientLevel::ReceiveMessage(const NetworkOnDeathMessage& aMessage)
 	for (Entity* e : myEnemies)
 	{
 		if (e->GetComponent<NetworkComponent>() != nullptr 
-			&& e->GetComponent<NetworkComponent>()->GetNetworkID() == aMessage.myNetworkID
-			&& e->IsAlive() == true)
+			&& e->GetComponent<NetworkComponent>()->GetNetworkID() == aMessage.myNetworkID)
 		{
 			e->Kill();
 		}

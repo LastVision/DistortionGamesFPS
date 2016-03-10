@@ -230,6 +230,7 @@ void Entity::Kill()
 		{
 			GetComponent<PhysicsComponent>()->RemoveFromScene();
 		}
+		myIsInScene = false;
 	}
 }
 
