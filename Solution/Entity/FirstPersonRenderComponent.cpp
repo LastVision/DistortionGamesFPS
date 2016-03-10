@@ -23,27 +23,27 @@ FirstPersonRenderComponent::FirstPersonRenderComponent(Entity& aEntity, Prism::S
 	CU::Vector2<float> size(128.f, 128.f);
 	myCrosshair = Prism::ModelLoader::GetInstance()->LoadSprite("Data/Resource/Texture/UI/T_crosshair.dds", size, size * 0.5f);
 
-	Prism::ModelProxy* model = Prism::ModelLoader::GetInstance()->LoadModelAnimated("Data/Resource/Model/First_person/SK_38Bone_animationTest.fbx", "Data/Resource/Shader/S_effect_pbl_animated.fx");
+	Prism::ModelProxy* model = Prism::ModelLoader::GetInstance()->LoadModelAnimated("Data/Resource/Model/First_person/Pistol/SK_arm_pistol_idle.fbx", "Data/Resource/Shader/S_effect_pbl_animated.fx");
 	myModel = new Prism::Instance(*model, myInputComponentEyeOrientation);
 	aScene->AddInstance(myModel, true);
 
-	AddAnimation(ePlayerState::PISTOL_IDLE, "Data/Resource/Model/First_person/SK_38Bone_animationTest.fbx", true, true);
-	AddAnimation(ePlayerState::PISTOL_HOLSTER, "Data/Resource/Model/First_person/SK_38Bone_animationTest.fbx", false, true);
-	AddAnimation(ePlayerState::PISTOL_DRAW, "Data/Resource/Model/First_person/SK_38Bone_animationTest.fbx", false, true);
-	AddAnimation(ePlayerState::PISTOL_RELOAD, "Data/Resource/Model/First_person/SK_38Bone_animationTest.fbx", false, true);
-	AddAnimation(ePlayerState::PISTOL_FIRE, "Data/Resource/Model/First_person/SK_38Bone_animationTest.fbx", false, true);
+	AddAnimation(ePlayerState::PISTOL_IDLE, "Data/Resource/Model/First_person/Pistol/SK_arm_pistol_idle.fbx", true, true);
+	AddAnimation(ePlayerState::PISTOL_HOLSTER, "Data/Resource/Model/First_person/Pistol/SK_arm_pistol_holster.fbx", false, true);
+	AddAnimation(ePlayerState::PISTOL_DRAW, "Data/Resource/Model/First_person/Pistol/SK_arm_pistol_draw.fbx", false, true);
+	AddAnimation(ePlayerState::PISTOL_RELOAD, "Data/Resource/Model/First_person/Pistol/SK_arm_pistol_reload.fbx", false, true);
+	AddAnimation(ePlayerState::PISTOL_FIRE, "Data/Resource/Model/First_person/Pistol/SK_arm_pistol_fire.fbx", false, true);
 
-	AddAnimation(ePlayerState::SHOTGUN_IDLE, "Data/Resource/Model/First_person/SK_38Bone_animationTest.fbx", true, true);
-	AddAnimation(ePlayerState::SHOTGUN_HOLSTER, "Data/Resource/Model/First_person/SK_38Bone_animationTest.fbx", false, true);
-	AddAnimation(ePlayerState::SHOTGUN_DRAW, "Data/Resource/Model/First_person/SK_38Bone_animationTest.fbx", false, true);
-	AddAnimation(ePlayerState::SHOTGUN_RELOAD, "Data/Resource/Model/First_person/SK_38Bone_animationTest.fbx", false, true);
-	AddAnimation(ePlayerState::SHOTGUN_FIRE, "Data/Resource/Model/First_person/SK_38Bone_animationTest.fbx", false, true);
+	AddAnimation(ePlayerState::SHOTGUN_IDLE, "Data/Resource/Model/First_person/Shotgun/SK_arm_shotgun_idle.fbx", true, true);
+	AddAnimation(ePlayerState::SHOTGUN_HOLSTER, "Data/Resource/Model/First_person/Shotgun/SK_arm_shotgun_holster.fbx", false, true);
+	AddAnimation(ePlayerState::SHOTGUN_DRAW, "Data/Resource/Model/First_person/Shotgun/SK_arm_shotgun_draw.fbx", false, true);
+	AddAnimation(ePlayerState::SHOTGUN_RELOAD, "Data/Resource/Model/First_person/Shotgun/SK_arm_shotgun_reload.fbx", false, true);
+	AddAnimation(ePlayerState::SHOTGUN_FIRE, "Data/Resource/Model/First_person/Shotgun/SK_arm_shotgun_fire.fbx", false, true);
 
-	AddAnimation(ePlayerState::GRENADE_LAUNCHER_IDLE, "Data/Resource/Model/First_person/SK_38Bone_animationTest.fbx", true, true);
-	AddAnimation(ePlayerState::GRENADE_LAUNCHER_HOLSTER, "Data/Resource/Model/First_person/SK_38Bone_animationTest.fbx", false, true);
-	AddAnimation(ePlayerState::GRENADE_LAUNCHER_DRAW, "Data/Resource/Model/First_person/SK_38Bone_animationTest.fbx", false, true);
-	AddAnimation(ePlayerState::GRENADE_LAUNCHER_RELOAD, "Data/Resource/Model/First_person/SK_38Bone_animationTest.fbx", false, true);
-	AddAnimation(ePlayerState::GRENADE_LAUNCHER_FIRE, "Data/Resource/Model/First_person/SK_38Bone_animationTest.fbx", false, true);
+	AddAnimation(ePlayerState::GRENADE_LAUNCHER_IDLE, "Data/Resource/Model/First_person/GrenadeLauncher/SK_arm_grenade_launcher_idle.fbx", true, true);
+	AddAnimation(ePlayerState::GRENADE_LAUNCHER_HOLSTER, "Data/Resource/Model/First_person/GrenadeLauncher/SK_arm_grenade_launcher_holster.fbx", false, true);
+	AddAnimation(ePlayerState::GRENADE_LAUNCHER_DRAW, "Data/Resource/Model/First_person/GrenadeLauncher/SK_arm_grenade_launcher_draw.fbx", false, true);
+	AddAnimation(ePlayerState::GRENADE_LAUNCHER_RELOAD, "Data/Resource/Model/First_person/GrenadeLauncher/SK_arm_grenade_launcher_reload.fbx", false, true);
+	AddAnimation(ePlayerState::GRENADE_LAUNCHER_FIRE, "Data/Resource/Model/First_person/GrenadeLauncher/SK_arm_grenade_launcher_fire.fbx", false, true);
 
 	myModel->Update(1.f / 30.f);
 
@@ -55,8 +55,8 @@ FirstPersonRenderComponent::FirstPersonRenderComponent(Entity& aEntity, Prism::S
 
 	for (int i = 0; i < static_cast<int>(ePlayerState::_COUNT); ++i)
 	{
-		myAnimations[i].myUIBone = Prism::AnimationSystem::GetInstance()->GetAnimation(myAnimations[i].myData.myFile.c_str())->GetHiearchyToBone("ui_jnt2");
-		myAnimations[i].myHealthBone = Prism::AnimationSystem::GetInstance()->GetAnimation(myAnimations[i].myData.myFile.c_str())->GetHiearchyToBone("health_jnt2");
+		myAnimations[i].myUIBone = Prism::AnimationSystem::GetInstance()->GetAnimation(myAnimations[i].myData.myFile.c_str())->GetHiearchyToBone("ui_jnt3");
+		myAnimations[i].myHealthBone = Prism::AnimationSystem::GetInstance()->GetAnimation(myAnimations[i].myData.myFile.c_str())->GetHiearchyToBone("health_jnt3");
 	}
 
 	ShootingComponent* shooting = myEntity.GetComponent<ShootingComponent>();
