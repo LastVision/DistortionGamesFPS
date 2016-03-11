@@ -204,5 +204,8 @@
     <ClInclude Include="UpgradeComponent.h">
       <Filter>Component</Filter>
     </ClInclude>
+    <ClInclude Include="UpgradeComponentData.h">
+      <Filter>EntityFactory\EntityData\ComponentData</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

@@ -1,8 +1,14 @@
 #pragma once
-class UpgradeComponent
+#include "Component.h"
+
+class UpgradeComponent : public Component
 {
 public:
 	UpgradeComponent();
 	~UpgradeComponent();
+
+private:
+
+
 };
 

@@ -194,6 +194,7 @@
     <ClInclude Include="TriggerComponent.h" />
     <ClInclude Include="TriggerComponentData.h" />
     <ClInclude Include="UpgradeComponent.h" />
+    <ClInclude Include="UpgradeComponentData.h" />
     <ClInclude Include="Weapon.h" />
   </ItemGroup>
   <ItemGroup>
