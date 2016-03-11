@@ -14,6 +14,7 @@
 #include <PostMaster.h>
 #include "ShootingComponent.h"
 #include "TriggerComponent.h"
+#include "UpgradeComponent.h"
 
 Entity::Entity(const EntityData& aEntityData, Prism::Scene* aScene, bool aClientSide, const CU::Vector3<float>& aStartPosition,
 		const CU::Vector3f& aRotation, const CU::Vector3f& aScale)
@@ -83,6 +84,10 @@ Entity::Entity(const EntityData& aEntityData, Prism::Scene* aScene, bool aClient
 		myComponents[static_cast<int>(eComponentType::TRIGGER)] = new TriggerComponent(*this, aEntityData.myTriggerData);
 	}
 
+	if (aEntityData.myUpgradeData.myExistsInEntity == true)
+	{
+		myComponents[static_cast<int>(eComponentType::UPGRADE)] = new UpgradeComponent(*this, aEntityData.myUpgradeData);
+	}
 
 	if (aEntityData.myShootingData.myExistsInEntity == true)
 	{

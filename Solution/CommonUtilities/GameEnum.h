@@ -23,6 +23,7 @@ enum class eTriggerType : int
 	EMPTY = -1,
 	LEVEL_CHANGE,
 	HEALTH_PACK,
+	UPGRADE,
 	_COUNT,
 };
 
@@ -127,6 +128,7 @@ enum class eComponentType
 	SHOOTING,
 	FIRST_PERSON_RENDER,
 	PHYSICS,
+	UPGRADE,
 	_COUNT,
 };
 
