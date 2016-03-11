@@ -12,6 +12,7 @@ class NetMessageImportantReply;
 class NetMessageConnectMessage;
 class NetMessageOnJoin;
 class NetMessageDisconnect;
+class NetMessageRequestLevel;
 class NetMessagePingRequest;
 class NetMessagePingReply;
 class NetMessagePosition;
@@ -78,7 +79,7 @@ protected:
 	SharedNetworkManager();
 	virtual ~SharedNetworkManager();
 
-	virtual void UpdateImporantMessages(float aDeltaTime) = 0;
+	virtual void UpdateImportantMessages(float aDeltaTime) = 0;
 
 	void AddNetworkMessage(std::vector<char> aBuffer);
 	virtual void AddImportantMessage(std::vector<char> aBuffer, unsigned int aImportantID) = 0;
@@ -100,6 +101,7 @@ protected:
 	virtual void HandleMessage(const NetMessageConnectMessage& aMessage, const sockaddr_in& aSenderAddress);
 	virtual void HandleMessage(const NetMessageOnJoin& aMessage, const sockaddr_in& aSenderAddress);
 	virtual void HandleMessage(const NetMessageDisconnect& aMessage, const sockaddr_in& aSenderAddress);
+	virtual void HandleMessage(const NetMessageRequestLevel& aMessage, const sockaddr_in& aSenderAddress);
 	virtual void HandleMessage(const NetMessagePingRequest& aMessage, const sockaddr_in& aSenderAddress);
 	virtual void HandleMessage(const NetMessagePingReply& aMessage, const sockaddr_in& aSenderAddress);
 	virtual void HandleMessage(const NetMessagePosition& aMessage, const sockaddr_in& aSenderAddress);

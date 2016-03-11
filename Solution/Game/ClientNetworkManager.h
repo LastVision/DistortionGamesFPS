@@ -25,7 +25,7 @@ private:
 	~ClientNetworkManager();
 	static ClientNetworkManager* myInstance;
 	//void AddNetworkMessage(std::vector<char> aBuffer) override;
-	void UpdateImporantMessages(float aDeltaTime) override;
+	void UpdateImportantMessages(float aDeltaTime) override;
 
 	void AddImportantMessage(std::vector<char> aBuffer, unsigned int aImportantID) override;
 

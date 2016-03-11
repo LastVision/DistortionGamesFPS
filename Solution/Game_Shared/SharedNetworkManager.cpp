@@ -6,6 +6,7 @@
 #include <NetMessageConnectMessage.h>
 #include <NetMessageOnJoin.h>
 #include <NetMessageDisconnect.h>
+#include <NetMessageRequestLevel.h>
 #include <NetMessagePingRequest.h>
 #include <NetMessagePingReply.h>
 #include <NetMessagePosition.h>
@@ -70,7 +71,7 @@ SharedNetworkManager::~SharedNetworkManager()
 void SharedNetworkManager::Update(float aDelta)
 {
 	SwapBuffer();
-	UpdateImporantMessages(aDelta);
+	UpdateImportantMessages(aDelta);
 	UpdateImportantReceivedMessages(aDelta);
 	myPingTime -= aDelta;
 	myResponsTime += aDelta;
@@ -166,6 +167,9 @@ void SharedNetworkManager::HandleMessage()
 		case eNetMessageType::ON_DISCONNECT:
 			UnpackAndHandle(NetMessageDisconnect(), buffer);
 			break;
+		case eNetMessageType::REQUEST_LEVEL:
+			UnpackAndHandle(NetMessageRequestLevel(), buffer);
+			break;
 		case eNetMessageType::PING_REQUEST:
 			UnpackAndHandle(NetMessagePingRequest(), buffer);
 			break;
@@ -215,8 +219,9 @@ void SharedNetworkManager::HandleMessage(const NetMessageImportantReply& aMessag
 	}
 }
 void SharedNetworkManager::HandleMessage(const NetMessageConnectMessage&, const sockaddr_in&) {}
-void SharedNetworkManager::HandleMessage(const NetMessagePingRequest&, const sockaddr_in&) {}
 void SharedNetworkManager::HandleMessage(const NetMessageDisconnect&, const sockaddr_in&) {}
+void SharedNetworkManager::HandleMessage(const NetMessageRequestLevel&, const sockaddr_in&) {}
+void SharedNetworkManager::HandleMessage(const NetMessagePingRequest&, const sockaddr_in&) {}
 void SharedNetworkManager::HandleMessage(const NetMessageOnJoin&, const sockaddr_in&) {}
 void SharedNetworkManager::HandleMessage(const NetMessagePosition& aMessage, const sockaddr_in&) 
 {
