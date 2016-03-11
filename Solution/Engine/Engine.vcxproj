@@ -284,6 +284,7 @@
     <ClCompile Include="DebugFontContainer.cpp" />
     <ClCompile Include="Font.cpp" />
     <ClCompile Include="FontFile.cpp" />
+    <ClCompile Include="FontProxy.cpp" />
     <ClCompile Include="Frustum.cpp" />
     <ClCompile Include="FullScreenHelper.cpp" />
     <ClCompile Include="HierarchyBone.cpp" />
@@ -363,6 +364,7 @@
     <ClInclude Include="DebugFontContainer.h" />
     <ClInclude Include="Font.h" />
     <ClInclude Include="FontFile.h" />
+    <ClInclude Include="FontProxy.h" />
     <ClInclude Include="Frustum.h" />
     <ClInclude Include="FullScreenHelper.h" />
     <ClInclude Include="HierarchyBone.h" />
