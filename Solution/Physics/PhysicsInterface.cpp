@@ -45,10 +45,10 @@ namespace Prism
 
 #ifdef THREAD_PHYSICS
 		myManager->SetLogicDone();
-		myManager->WaitForPhysics();
+		//myManager->WaitForPhysics();
 #endif
 
-		myManager->Swap();
+		//myManager->Swap();
 
 #ifdef THREAD_PHYSICS
 		myManager->SetSwapDone();

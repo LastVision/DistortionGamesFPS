@@ -198,10 +198,11 @@ namespace Prism
 			myTimerManager->Update();
 			Update();
 
+			Swap();
 			if (myLogicDone == true)
 			{
 				SetPhysicsDone();
-				WaitForSwap();
+				//WaitForSwap();
 			}
 			myTimerManager->CapFrameRate(60.f);
 		}
@@ -210,7 +211,10 @@ namespace Prism
 
 	void PhysicsManager::Add(const PhysicsCallbackStruct& aCallbackStruct)
 	{
-		myPhysicsComponentCallbacks.Add(aCallbackStruct);
+		if (aCallbackStruct.myData->myPhysicsType == ePhysics::DYNAMIC)
+		{
+			myPhysicsComponentCallbacks.Add(aCallbackStruct);
+		}
 	}
 
 	void PhysicsManager::Swap()
@@ -237,6 +241,7 @@ namespace Prism
 			DL_ASSERT("no scene in PhysicsManager");
 		}
 
+
 		myScene->simulate(myTimestep);
 
 		while (!myScene->fetchResults())
@@ -250,23 +255,6 @@ namespace Prism
 		myPlayerPosition.x = float(pos.x);
 		myPlayerPosition.y = float(pos.y);
 		myPlayerPosition.z = float(pos.z);
-
-		/*
-		for (int i = 0; i < myMoveJobs[0].Size(); ++i)
-		{
-			Move(myMoveJobs[0][i]);
-		}
-
-		if (myMoveJobs[0].Size() > 0)
-		{
-			const physx::PxExtendedVec3& pos = myControllerManager->getController(myMoveJobs[0][0].myId)->getFootPosition();
-			myPlayerPosition.x = float(pos.x);
-			myPlayerPosition.y = float(pos.y);
-			myPlayerPosition.z = float(pos.z);
-		}
-
-		myMoveJobs[0].RemoveAll();
-		*/
 
 		for (int i = 0; i < myForceJobs[1].Size(); ++i)
 		{
@@ -316,9 +304,6 @@ namespace Prism
 		}
 
 		myActorsToRemove[1].RemoveAll();
-
-
-		//Sleep(16);
 	}
 
 	void PhysicsManager::RayCast(const CU::Vector3<float>& aOrigin, const CU::Vector3<float>& aNormalizedDirection, float aMaxRayDistance, std::function<void(PhysicsComponent*, const CU::Vector3<float>&, const CU::Vector3<float>&)> aFunctionToCall)
@@ -610,10 +595,11 @@ namespace Prism
 
 			treasureShape->setFlag(physx::PxShapeFlag::eSIMULATION_SHAPE, false);
 			treasureShape->setFlag(physx::PxShapeFlag::eTRIGGER_SHAPE, true);
+	
 			GetScene()->addActor(*(*aStaticBodyOut));
 		}
 
-		if (aPhysData.myData->myPhysicsType != ePhysics::STATIC)
+		if (aPhysData.myData->myPhysicsType == ePhysics::DYNAMIC)
 		{
 			myPhysicsComponentCallbacks.Add(aPhysData);
 		}
