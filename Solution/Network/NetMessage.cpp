@@ -29,7 +29,7 @@ void NetMessage::UnPackMessage(char* aMessage, int aSize)
 	}
 }
 
-bool NetMessage::GetIsImportant()
+bool NetMessage::GetIsImportant() const
 {
 	return false;
 }

@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "SharedNetworkManager.h"
 
+#include <NetMessage.h>
 #include <NetMessageImportantReply.h>
 #include <NetMessageConnectMessage.h>
 #include <NetMessageOnJoin.h>
@@ -57,6 +58,7 @@ SharedNetworkManager::SharedNetworkManager()
 	, myIsRunning(false)
 	, myCurrentBuffer(0)
 	, myCurrentSendBuffer(0)
+	, myImportantReceivedMessages(64)
 {
 }
 
@@ -69,6 +71,7 @@ void SharedNetworkManager::Update(float aDelta)
 {
 	SwapBuffer();
 	UpdateImporantMessages(aDelta);
+	UpdateImportantReceivedMessages(aDelta);
 	myPingTime -= aDelta;
 	myResponsTime += aDelta;
 	if (myPingTime <= 0.f)
@@ -225,3 +228,37 @@ void SharedNetworkManager::HandleMessage(const NetMessageOnHit& aMessage, const 
 	PostMaster::GetInstance()->SendMessage(NetworkOnHitMessage(aMessage.myDamage, aMessage.myNetworkID)); 
 }
 void SharedNetworkManager::HandleMessage(const NetMessageOnDeath&, const sockaddr_in&) {}
+
+bool SharedNetworkManager::AlreadyReceived(const NetMessage& aMessage)
+{
+	if (aMessage.GetIsImportant() == false)
+	{
+		return false;
+	}
+
+	for (int i = 0; i < myImportantReceivedMessages.Size(); ++i)
+	{
+		if (aMessage.GetImportantID() == myImportantReceivedMessages[i].myImportantID
+			&& aMessage.mySenderID == myImportantReceivedMessages[i].myUserID)
+		{
+			return true;
+		}
+	}
+
+	myImportantReceivedMessages.Add(ImportantReceivedMessage(aMessage.GetImportantID(), aMessage.mySenderID));
+	
+	return false;
+}
+
+void SharedNetworkManager::UpdateImportantReceivedMessages(float aDelta)
+{
+	for (int i = myImportantReceivedMessages.Size() - 1; i >= 0; --i)
+	{
+		myImportantReceivedMessages[i].myTimer += aDelta;
+
+		if (myImportantReceivedMessages[i].myTimer > 5.f)
+		{
+			myImportantReceivedMessages.RemoveCyclicAtIndex(i);
+		}
+	}
+}

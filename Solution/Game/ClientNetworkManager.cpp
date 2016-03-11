@@ -252,13 +252,8 @@ void ClientNetworkManager::HandleMessage(const NetMessageOnJoin& aMessage, const
 	}
 }
 
-void ClientNetworkManager::HandleMessage(const NetMessageAddEnemy& aMessage, const sockaddr_in& aSenderAddress)
+void ClientNetworkManager::HandleMessage(const NetMessageAddEnemy& aMessage, const sockaddr_in&)
 {
-	if (CheckIfImportantMessage(aMessage) == true)
-	{
-		AddMessage(NetMessageImportantReply(aMessage.GetImportantID()));
-	}
-	aSenderAddress;
 	PostMaster::GetInstance()->SendMessage(NetworkAddEnemyMessage(aMessage.myPosition, aMessage.myNetworkID));
 }
 

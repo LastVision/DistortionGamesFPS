@@ -38,15 +38,24 @@ void SharedLevel::Update(const float aDeltaTime)
 {
 	for (Entity* entity : myPlayers)
 	{
-		entity->Update(aDeltaTime);
+		//if (entity->IsAlive() == true)
+		{
+			entity->Update(aDeltaTime);
+		}
 	}
 	for (Entity* entity : myEnemies)
 	{
-		entity->Update(aDeltaTime);
+		//if (entity->IsAlive() == true)
+		{
+			entity->Update(aDeltaTime);
+		}
 	}
 	for (Entity* entity : myEntities)
 	{
-		entity->Update(aDeltaTime);
+		//if (entity->IsAlive() == true)
+		{
+			entity->Update(aDeltaTime);
+		}
 	}
 }
 

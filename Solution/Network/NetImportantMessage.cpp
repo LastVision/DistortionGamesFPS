@@ -11,7 +11,7 @@ NetImportantMessage::~NetImportantMessage()
 {
 }
 
-bool NetImportantMessage::GetIsImportant()
+bool NetImportantMessage::GetIsImportant() const
 {
 	return true;
 }
