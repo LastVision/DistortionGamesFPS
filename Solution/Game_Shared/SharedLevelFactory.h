@@ -1,5 +1,6 @@
 #pragma once
 #include <GrowingArray.h>
+#include <unordered_map>
 
 class SharedLevel;
 class XMLReader;
@@ -25,9 +26,9 @@ public:
 
 	SharedLevel* LoadLevel(const int& aID);
 	virtual SharedLevel* LoadCurrentLevel() = 0;
-	SharedLevel* LoadNextLevel();
+	//SharedLevel* LoadNextLevel();
 
-	bool IsLastLevel();
+	//bool IsLastLevel();
 
 protected:
 	void ReadLeveList(const std::string& aLevelListPath);
@@ -44,10 +45,10 @@ protected:
 	SharedLevel* myCurrentLevel;
 	int myCurrentID;
 
-	CU::GrowingArray<LevelPathInformation> myLevelPaths;
+	std::unordered_map<int, std::string> myLevelPaths;
 };
 
-inline bool SharedLevelFactory::IsLastLevel()
-{
-	return myCurrentID >= myLevelPaths.Size();
-}
+//inline bool SharedLevelFactory::IsLastLevel()
+//{
+//	return myCurrentID >= myLevelPaths.Size();
+//}

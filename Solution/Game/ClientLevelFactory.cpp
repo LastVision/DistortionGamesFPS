@@ -26,7 +26,7 @@ ClientLevelFactory::~ClientLevelFactory()
 SharedLevel* ClientLevelFactory::LoadCurrentLevel()
 {
 	myCurrentLevel = new ClientLevel();
-	ReadLevel(myLevelPaths[myCurrentID].myPath);
+	ReadLevel(myLevelPaths[myCurrentID]);
 #ifdef THREAD_PHYSICS
 	Prism::PhysicsInterface::GetInstance()->InitThread();
 #endif
