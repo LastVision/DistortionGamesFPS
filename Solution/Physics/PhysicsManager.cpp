@@ -258,16 +258,16 @@ namespace Prism
 			// do something useful..
 		}
 
-
+		
 		Move(myMoveJobs[1]);
+		
 		const physx::PxExtendedVec3& pos = myControllerManager->getController(myMoveJobs[1].myId)->getFootPosition();
 		myPlayerPosition.x = float(pos.x);
 		myPlayerPosition.y = float(pos.y);
 		myPlayerPosition.z = float(pos.z);
-
-		myMoveJobs[0].RemoveAll();
-		*/
-
+		
+		//myMoveJobs[0].RemoveAll();
+		
 		for (int i = 0; i < myActorsToWakeUp[1].Size(); ++i)
 		{
 			myActorsToWakeUp[1][i]->setActorFlag(physx::PxActorFlag::Enum::eDISABLE_SIMULATION, false);
@@ -632,7 +632,7 @@ namespace Prism
 			GetScene()->addActor(*(*aStaticBodyOut));
 		}
 
-		if (aPhysData.myData->myPhysicsType == ePhysics::DYNAMIC)
+		if (aPhysData.myData->myPhysicsType != ePhysics::STATIC)
 		{
 			myPhysicsComponentCallbacks.Add(aPhysData);
 		}
