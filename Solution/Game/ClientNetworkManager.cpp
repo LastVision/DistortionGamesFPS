@@ -184,10 +184,8 @@ void ClientNetworkManager::ReceiveMessage(const NetworkOnHitMessage& aMessage)
 	AddMessage(toSend);
 }
 
-void ClientNetworkManager::HandleMessage(const NetMessagePingRequest& aMessage, const sockaddr_in& aSenderAddress)
+void ClientNetworkManager::HandleMessage(const NetMessagePingRequest&, const sockaddr_in&)
 {
-	aMessage;
-	aSenderAddress;
 	NetMessagePingReply reply;
 	reply.mySenderID = myNetworkID;
 	reply.PackMessage();
@@ -195,13 +193,8 @@ void ClientNetworkManager::HandleMessage(const NetMessagePingRequest& aMessage, 
 	myNetwork->Send(reply.myStream);
 }
 
-void ClientNetworkManager::HandleMessage(const NetMessageDisconnect& aMessage, const sockaddr_in& aSenderAddress)
+void ClientNetworkManager::HandleMessage(const NetMessageDisconnect& aMessage, const sockaddr_in&)
 {
-	if (CheckIfImportantMessage(aMessage) == true)
-	{
-		AddMessage(NetMessageImportantReply(aMessage.GetImportantID()));
-	}
-	aSenderAddress;
 	if (aMessage.myClientID == myNetworkID)
 	{
 		MessageBox(NULL, "You have been disconnected!", "Connection Lost!", MB_ICONERROR | MB_OK);
@@ -212,43 +205,22 @@ void ClientNetworkManager::HandleMessage(const NetMessageDisconnect& aMessage, c
 	}
 }
 
-void ClientNetworkManager::HandleMessage(const NetMessageConnectMessage& aMessage, const sockaddr_in& aSenderAddress)
+void ClientNetworkManager::HandleMessage(const NetMessageConnectMessage& aMessage, const sockaddr_in&)
 {
-	
-	aSenderAddress;
 	myNetworkID = aMessage.myServerID;
 	if (aMessage.myOtherClientID != myNetworkID)
 	{
 		myClients.Add(OtherClients(aMessage.myOtherClientID));
-		
-	}
-	if (CheckIfImportantMessage(aMessage) == true)
-	{
-		AddMessage(NetMessageImportantReply(aMessage.GetImportantID()));
 	}
 	PostMaster::GetInstance()->SendMessage(NetworkAddPlayerMessage(aMessage.myOtherClientID));
 }
 
-void ClientNetworkManager::HandleMessage(const NetMessageOnJoin& aMessage, const sockaddr_in& aSenderAddress)
+void ClientNetworkManager::HandleMessage(const NetMessageOnJoin& aMessage, const sockaddr_in&)
 {
-	aSenderAddress;
-	for (OtherClients& client : myClients)
-	{
-		if (client.myID == aMessage.mySenderID)
-		{
-			return;
-		}
-	}
-	
 	if (aMessage.mySenderID != myNetworkID)
 	{
 		myClients.Add(OtherClients(aMessage.mySenderID));
 		PostMaster::GetInstance()->SendMessage(NetworkAddPlayerMessage(static_cast<unsigned short>(aMessage.mySenderID)));
-		
-	}
-	if (CheckIfImportantMessage(aMessage) == true)
-	{
-		AddMessage(NetMessageImportantReply(aMessage.GetImportantID()));
 	}
 }
 
@@ -257,17 +229,12 @@ void ClientNetworkManager::HandleMessage(const NetMessageAddEnemy& aMessage, con
 	PostMaster::GetInstance()->SendMessage(NetworkAddEnemyMessage(aMessage.myPosition, aMessage.myNetworkID));
 }
 
-void ClientNetworkManager::HandleMessage(const NetMessageOnDeath& aMessage, const sockaddr_in& aSenderAddress)
+void ClientNetworkManager::HandleMessage(const NetMessageOnDeath& aMessage, const sockaddr_in&)
 {
-	aSenderAddress;
-	if (CheckIfImportantMessage(aMessage) == true)
-	{
-		AddMessage(NetMessageImportantReply(aMessage.GetImportantID()));
-	}
 	PostMaster::GetInstance()->SendMessage(NetworkOnDeathMessage(aMessage.myNetworkID));
 }
 
-void ClientNetworkManager::UpdateImporantMessages(float aDeltaTime)
+void ClientNetworkManager::UpdateImportantMessages(float aDeltaTime)
 {
 	for (ImportantMessage& msg : myImportantMessagesBuffer)
 	{

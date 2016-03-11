@@ -9,6 +9,7 @@ namespace Prism
 {
 	InstancingHelper::InstancingHelper()
 		: myCamera(nullptr)
+		, myModels(128)
 	{
 	}
 
@@ -20,16 +21,14 @@ namespace Prism
 	void InstancingHelper::AddModel(Model* aModel, const CU::Matrix44<float>& aWorldMatrix
 		, const CU::Vector3<float>& aScale, float aHeight)
 	{
-		if (myRenderInfo.find(aModel) == myRenderInfo.end())
+		if (myModels.Find(aModel) == myModels.FoundNone)
 		{
-			myRenderInfo[aModel].myMatrices.Init(128);
-			myRenderInfo[aModel].myScales.Init(128);
-			myRenderInfo[aModel].myHeights.Init(128);
+			myModels.Add(aModel);
 		}
 
-		myRenderInfo[aModel].myMatrices.Add(aWorldMatrix);
-		myRenderInfo[aModel].myScales.Add(aScale);
-		myRenderInfo[aModel].myHeights.Add(aHeight);
+		aModel->myMatrices.Add(aWorldMatrix);
+		aModel->myScales.Add(aScale);
+		aModel->myHeights.Add(aHeight);
 	}
 
 	void InstancingHelper::Render(CU::StaticArray<DirectionalLightData, NUMBER_OF_DIRECTIONAL_LIGHTS>& someLights)
@@ -38,15 +37,13 @@ namespace Prism
 
 		Effect* oldEffect = nullptr;
 
-		for (auto it = myRenderInfo.begin(); it != myRenderInfo.end(); ++it)
+		for each (Model* model in myModels)
 		{
-			
-			Model* currModel = it->first;
-			CU::GrowingArray<CU::Matrix44<float>>& matrices = it->second.myMatrices;
-			CU::GrowingArray<CU::Vector3<float>>& scales = it->second.myScales;
-			CU::GrowingArray<float>& heights = it->second.myHeights;
+			CU::GrowingArray<CU::Matrix44<float>>& matrices = model->myMatrices;
+			CU::GrowingArray<CU::Vector3<float>>& scales = model->myScales;
+			CU::GrowingArray<float>& heights = model->myHeights;
 
-			Effect* currEffect = currModel->GetEffect();
+			Effect* currEffect = model->GetEffect();
 			if (currEffect != oldEffect)
 			{
 				oldEffect = currEffect;
@@ -57,18 +54,18 @@ namespace Prism
 				currEffect->UpdateDirectionalLights(someLights);
 			}
 
-			RenderModel(currModel, it->second, currEffect);
-			
-				
+			RenderModel(model, currEffect);
+
+
 			matrices.RemoveAll();
 			scales.RemoveAll();
 			heights.RemoveAll();
 		}
 	}
 
-	void InstancingHelper::RenderModel(Model* aModel, ModelData& aModelData, Effect* aEffect)
+	void InstancingHelper::RenderModel(Model* aModel, Effect* aEffect)
 	{
-		if (aModel->SetGPUState(aModelData.myMatrices, aModelData.myScales, aModelData.myHeights))
+		if (aModel->SetGPUState(aModel->myMatrices, aModel->myScales, aModel->myHeights))
 		{
 			D3DX11_TECHNIQUE_DESC techDesc;
 			ID3DX11EffectTechnique* tech;
@@ -85,7 +82,7 @@ namespace Prism
 			{
 				ID3D11DeviceContext* context = Engine::GetInstance()->GetContex();
 				tech->GetPassByIndex(j)->Apply(0, context);
-				context->DrawIndexedInstanced(aModel->GetIndexCount(), aModelData.myMatrices.Size()
+				context->DrawIndexedInstanced(aModel->GetIndexCount(), aModel->myMatrices.Size()
 					, 0, aModel->GetVertexStart(), 0);
 
 			}
@@ -94,7 +91,7 @@ namespace Prism
 
 		for (int i = 0; i < aModel->GetChildren().Size(); ++i)
 		{
-			RenderModel(aModel->GetChildren()[i], aModelData, aEffect);
+			RenderModel(aModel->GetChildren()[i], aEffect);
 		}
 	}
 }

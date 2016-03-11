@@ -63,10 +63,11 @@ ClientLevel::ClientLevel()
 
 	//myTempPosition = { 835.f, 0.f, -1000.f };
 
+	Prism::ModelLoader::GetInstance()->Pause();
 	myDeferredRenderer = new Prism::DeferredRenderer();
 
-
 	myEmitterManager = new EmitterManager(*myPlayer->GetComponent<InputComponent>()->GetCamera());
+	Prism::ModelLoader::GetInstance()->UnPause();
 	CU::Matrix44f orientation;
 	myInstanceOrientations.Add(orientation);
 

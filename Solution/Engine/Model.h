@@ -57,6 +57,10 @@ namespace Prism
 		float GetRadius() const;
 		bool IsNullObject();
 
+		CU::GrowingArray<CU::Matrix44<float>> myMatrices;
+		CU::GrowingArray<CU::Vector3<float>> myScales;
+		CU::GrowingArray<float> myHeights;
+
 	private:
 		void operator=(Model&) = delete;
 		void InitInstancingBuffers();

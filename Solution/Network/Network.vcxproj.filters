@@ -60,6 +60,7 @@
     <ClCompile Include="NetMessageOnDeath.cpp">
       <Filter>Messages</Filter>
     </ClCompile>
+    <ClCompile Include="NetMessageRequestLevel.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
@@ -116,5 +117,6 @@
     <ClInclude Include="NetMessageOnDeath.h">
       <Filter>Messages</Filter>
     </ClInclude>
+    <ClInclude Include="NetMessageRequestLevel.h" />
   </ItemGroup>
 </Project>

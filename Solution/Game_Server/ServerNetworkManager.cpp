@@ -9,6 +9,7 @@
 #include <NetMessageConnectMessage.h>
 #include <NetMessageOnJoin.h>
 #include <NetMessageDisconnect.h>
+#include <NetMessageRequestLevel.h>
 #include <NetMessagePingRequest.h>
 #include <NetMessagePingReply.h>
 #include <NetMessagePosition.h>
@@ -226,7 +227,7 @@ void ServerNetworkManager::DisconnectConnection(const Connection& aConnection)
 	}
 }
 
-void ServerNetworkManager::UpdateImporantMessages(float aDeltaTime)
+void ServerNetworkManager::UpdateImportantMessages(float aDeltaTime)
 {
 	for (ImportantMessage& msg : myImportantMessagesBuffer)
 	{
@@ -302,6 +303,15 @@ void ServerNetworkManager::HandleMessage(const NetMessageDisconnect& aMessage, c
 			break;
 		}
 	}
+}
+
+void ServerNetworkManager::HandleMessage(const NetMessageRequestLevel& aMessage, const sockaddr_in&)
+{
+	aMessage;
+	// change level on server
+	//send to all change level
+	int apa = 5;
+	++apa;
 }
 
 void ServerNetworkManager::HandleMessage(const NetMessagePingReply& aMessage, const sockaddr_in& aSenderAddress)
