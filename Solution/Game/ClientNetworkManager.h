@@ -18,6 +18,7 @@ public:
 	//void Update(float aDelta) override;
 	void ReceiveMessage(const NetworkSendPositionMessage& aMessage) override;
 	void ReceiveMessage(const NetworkOnDisconnectMessage& aMessage) override;
+	void ReceiveMessage(const NetworkOnHitMessage& aMessage) override;
 
 private:
 	ClientNetworkManager();

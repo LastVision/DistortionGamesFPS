@@ -25,7 +25,6 @@ public:
 
 	const CU::Matrix44<float>& GetEyeOrientation() const;
 
-	void SetNetworkID(const unsigned short aNetworkID);
 private:
 	void UpdateMovement(float aDelta);
 
@@ -39,8 +38,6 @@ private:
 	float myJumpAcceleration;
 	float myJumpOffset;
 	float mySendTime;
-
-	unsigned short myNetworkID;
 
 	void Move(float aDelta);
 	void Rotate();
@@ -67,9 +64,4 @@ inline eComponentType InputComponent::GetType()
 inline const CU::Matrix44<float>& InputComponent::GetEyeOrientation() const
 {
 	return myEyeOrientation;
-}
-
-inline void InputComponent::SetNetworkID(const unsigned short aNetworkID)
-{
-	myNetworkID = aNetworkID;
 }

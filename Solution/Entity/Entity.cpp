@@ -71,7 +71,7 @@ Entity::Entity(const EntityData& aEntityData, Prism::Scene* aScene, bool aClient
 
 	if (aEntityData.myNetworkData.myExistsInEntity == true)
 	{
-		myComponents[static_cast<int>(eComponentType::NETWORK)] = new NetworkComponent(*this, myOrientation);
+		myComponents[static_cast<int>(eComponentType::NETWORK)] = new NetworkComponent(*this, myOrientation, myNetworkID);
 	}
 
 	if (aEntityData.myHealthData.myExistsInEntity == true)

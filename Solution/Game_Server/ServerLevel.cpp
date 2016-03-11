@@ -38,10 +38,7 @@ void ServerLevel::ReceiveMessage(const NetworkAddPlayerMessage& aMessage)
 	{
 		if (e->GetComponent<NetworkComponent>() != nullptr)
 		{
-			PostMaster::GetInstance()->SendMessage(NetworkAddEnemyMessage({ 0.f, 0.f, 0.f }, e->
-					GetComponent<NetworkComponent>()->GetNetworkID(), aMessage.myAddress));
+			PostMaster::GetInstance()->SendMessage(NetworkAddEnemyMessage({ 0.f, 0.f, 0.f }, e->GetNetworkID(), aMessage.myAddress));
 		}
 	}
-
-
 }

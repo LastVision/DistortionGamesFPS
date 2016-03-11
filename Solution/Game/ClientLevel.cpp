@@ -159,7 +159,6 @@ void ClientLevel::ReceiveMessage(const NetworkAddPlayerMessage& aMessage)
 	if (aMessage.myNetworkID == ClientNetworkManager::GetInstance()->GetNetworkID())
 	{
 		myPlayer->GetComponent<NetworkComponent>()->SetNetworkID(aMessage.myNetworkID);
-		myPlayer->GetComponent<InputComponent>()->SetNetworkID(aMessage.myNetworkID);
 	}
 	else
 	{
@@ -177,10 +176,10 @@ void ClientLevel::ReceiveMessage(const NetworkAddPlayerMessage& aMessage)
 
 void ClientLevel::ReceiveMessage(const NetworkRemovePlayerMessage& aMessage)
 {
+	DL_ASSERT_EXP(aMessage.myNetworkID != 0, "Can't remove server (id 0).");
 	for (Entity* e : myPlayers)
 	{
-		if (e->GetComponent<NetworkComponent>() != nullptr
-			&& e->GetComponent<NetworkComponent>()->GetNetworkID() == aMessage.myNetworkID)
+		if (e->GetNetworkID() == aMessage.myNetworkID)
 		{
 			e->RemoveFromScene();
 		}
@@ -205,10 +204,11 @@ void ClientLevel::ReceiveMessage(const NetworkAddEnemyMessage& aMessage)
 
 void ClientLevel::ReceiveMessage(const NetworkOnDeathMessage& aMessage)
 {
+	DL_ASSERT_EXP(aMessage.myNetworkID != 0, "Can't kill server (id 0).");
+
 	for (Entity* e : myEnemies)
 	{
-		if (e->GetComponent<NetworkComponent>() != nullptr 
-			&& e->GetComponent<NetworkComponent>()->GetNetworkID() == aMessage.myNetworkID)
+		if (e->GetNetworkID() == aMessage.myNetworkID)
 		{
 			e->Kill();
 		}

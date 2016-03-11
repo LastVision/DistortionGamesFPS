@@ -18,7 +18,6 @@
 
 InputComponent::InputComponent(Entity& anEntity, const InputComponentData& aData)
 	: Component(anEntity)
-	, myNetworkID(0)
 	, myPitch(CU::Vector3<float>(0, 1.f, 0), 0)
 	, myYaw(CU::Vector3<float>(1.f, 0, 0), 0)
 	, myData(aData)
@@ -86,9 +85,9 @@ void InputComponent::Update(float aDelta)
 	mySendTime -= aDelta;
 	if (mySendTime < 0.f)
 	{
-		if (myNetworkID != 0 && (myOrientation != myPrevOrientation))
+		if (myEntity.GetNetworkID() != 0 && (myOrientation != myPrevOrientation))
 		{
-			PostMaster::GetInstance()->SendMessage(NetworkSendPositionMessage(myOrientation.GetPos(), myCursorPosition.x, myNetworkID));
+			PostMaster::GetInstance()->SendMessage(NetworkSendPositionMessage(myOrientation.GetPos(), myCursorPosition.x, myEntity.GetNetworkID()));
 			mySendTime = NETWORK_UPDATE_INTERVAL;
 		}
 	}

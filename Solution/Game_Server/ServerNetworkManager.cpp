@@ -336,20 +336,6 @@ void ServerNetworkManager::HandleMessage(const NetMessagePingRequest&, const soc
 void ServerNetworkManager::HandleMessage(const NetMessageOnHit& aMessage, const sockaddr_in& aSenderAddress)
 {
 	__super::HandleMessage(aMessage, aSenderAddress);
-	for (Connection& connection : myClients)
-	{
-		if (aMessage.myNetworkID == static_cast<unsigned int>(connection.myID))
-		{
-			NetMessageOnHit toSend;
-			toSend.myID = aMessage.myID;
-			toSend.myDamage = aMessage.myDamage;
-			toSend.myNetworkID = aMessage.myNetworkID;
-			toSend.mySenderID = aMessage.mySenderID;
-			toSend.PackMessage();
-			myNetwork->Send(toSend.myStream, connection.myAddress);
-			break;
-		}
-	}
 }
 
 void ServerNetworkManager::ReceiveMessage(const NetworkAddEnemyMessage& aMessage)
