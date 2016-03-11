@@ -24,7 +24,9 @@ namespace GUI
 		, myGrenadeLauncherClipSize(aGrenadeLauncherClipSize)
 		, myGrenadeLauncherAmmoInClip(aGrenadeLauncherAmmoInClip)
 	{
+		Prism::ModelLoader::GetInstance()->Pause();
 		myEffect = Prism::EffectContainer::GetInstance()->GetEffect("Data/Resource/Shader/S_effect_3dgui.fx");
+
 		myEffect->SetTexture(Prism::TextureContainer::GetInstance()->GetTexture("Data/Resource/Texture/UI/T_ammo_pistol.dds"));
 
 		//myGUIBone = aModel->GetCurrentAnimation()->GetHiearchyToBone("ui_jnt3");
@@ -36,6 +38,7 @@ namespace GUI
 
 		myTopAmmoLeft = new Prism::Bar3D({ 0.05f, 0.025f }, 1, myEffect, eBarPosition::TOP_AMMOLEFT);
 		myTopAmmoLeft->SetValue(1.f);
+		Prism::ModelLoader::GetInstance()->UnPause();
 	}
 
 

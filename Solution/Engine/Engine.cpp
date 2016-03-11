@@ -75,6 +75,11 @@ namespace Prism
 			myInstance->myDirectX->SetFullscreen(true);
 		}
 
+
+		ModelLoader::GetInstance()->Pause();
+		DebugDrawer::GetInstance();
+		ModelLoader::GetInstance()->UnPause();
+
 		myInstance->Render();
 
 		return result;

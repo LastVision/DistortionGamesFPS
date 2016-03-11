@@ -17,11 +17,9 @@ namespace Prism
 		, myIndexBufferDesc(nullptr)
 	{
 		myPrimitiveTopology = D3D11_PRIMITIVE_TOPOLOGY_LINELIST;
-		ModelLoader::GetInstance()->Pause();
 		InitVertexBuffer();
 		myEffect = EffectContainer::GetInstance()->GetEffect("Data/Resource/Shader/S_effect_line3d.fx");
 		CreateInputLayout();
-		ModelLoader::GetInstance()->UnPause();
 	}
 
 	Line3DRenderer::~Line3DRenderer()
