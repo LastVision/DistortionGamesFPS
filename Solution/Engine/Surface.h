@@ -33,8 +33,6 @@ namespace Prism{
 		bool SetTexture(const std::string& aResourceName, const std::string& aFileName, bool aUseSRGB);
 		bool SetTexture(const std::string& aResourceName, ID3D11ShaderResourceView* aResource);
 
-		void ActivateAlbedo(eOwnerType aOwner);
-
 		void Activate();
 		void DeActivate();
 		void ReloadSurface();
