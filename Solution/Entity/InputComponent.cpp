@@ -166,6 +166,8 @@ void InputComponent::UpdateMovement(float aDelta)
 	movement.y = 0;
 	CU::Normalize(movement);
 	movement *= myData.mySpeed;
+
+#ifdef RELEASE_BUILD
 	bool shouldDecreaseEnergy = true;
 	if (CU::InputWrapper::GetInstance()->KeyIsPressed(DIK_LSHIFT))
 	{
@@ -191,6 +193,12 @@ void InputComponent::UpdateMovement(float aDelta)
 	{
 		myEnergyOverheat = false;
 	}
+#else
+	if (CU::InputWrapper::GetInstance()->KeyIsPressed(DIK_LSHIFT))
+	{
+		movement *= 10.f;
+	}
+#endif
 
 	movement.y = myVerticalSpeed;
 
