@@ -6,15 +6,19 @@
 
 struct ID3D11Texture2D;
 
+#undef CreateFont
+
 namespace Prism
 {
 	class AnimationProxy;
+	class DGFXLoader;
+	class FBXFactory;
+	class FontProxy;
 	class Model;
 	class ModelProxy;
-	class FBXFactory;
-	class DGFXLoader;
 	class SpriteProxy;
 	class Sprite;
+	class TextProxy;
 
 	class IModelFactory;
 
@@ -45,6 +49,9 @@ namespace Prism
 		SpriteProxy* LoadSprite(ID3D11Texture2D* aD3D11Texture, const CU::Vector2<float>& aSize
 			, const CU::Vector2<float>& aHotSpot = { 0.f, 0.f });
 
+		FontProxy* LoadFont(const std::string& aFilePath, const CU::Vector2<int>& aTextureSize);
+		TextProxy* LoadText(FontProxy* aFontProxy);
+
 		void GetHierarchyToBone(const std::string& aAnimationPath, const std::string& aBoneName, GUIBone& aBoneOut);
 
 	private:
@@ -56,6 +63,7 @@ namespace Prism
 			CUBE,
 			SPRITE,
 			GUI_BONE,
+			FONT,
 		};
 
 		struct LoadData
@@ -66,15 +74,18 @@ namespace Prism
 				AnimationProxy* myAnimationProxy;
 				SpriteProxy* mySpriteProxy;
 				GUIBone* myGUIBone;
+				FontProxy* myFontProxy;
+				TextProxy* myTextProxy;
 			};
 
 			eLoadType myLoadType;
-			std::string myModelPath = "";
+			std::string myResourcePath = "";
 			std::string myEffectPath = "";
 			std::string myBoneName = "";
 			CU::Vector4<float> mySize; //Cube uses X/Y/Z, Sprite uses X/Y as size and Z/W as hotspot
 			CU::Vector4<float> myColor;
 			ID3D11Texture2D* myD3D11Texture = nullptr;
+			FontProxy* myFontProxyToUse;
 		};
 
 		ModelLoader();
@@ -93,6 +104,7 @@ namespace Prism
 		void CreateAnimation(LoadData& someData);
 		void CreateCube(LoadData& someData);
 		void CreateSprite(LoadData& someData);
+		void CreateFont(LoadData& someData);
 		void GetHierarchyToBone(LoadData& someData);
 
 		CU::GrowingArray<LoadData> myBuffers[2];
@@ -110,6 +122,8 @@ namespace Prism
 		CU::GrowingArray<Model*> myNonFXBModels;
 		std::unordered_map<std::string, ModelProxy*> myModelProxies;
 		std::unordered_map<std::string, Sprite*> mySprites;
+		std::unordered_map<std::string, FontProxy*> myFontProxies;
+		CU::GrowingArray<TextProxy*> myTextProxies;
 		std::unordered_map<std::string, int> myInstancedCount;
 
 		static ModelLoader* myInstance;

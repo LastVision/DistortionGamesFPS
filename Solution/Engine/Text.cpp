@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include "FontProxy.h"
 #include "Font.h"
 #include "Surface.h"
 #include "Text.h"
@@ -110,7 +111,7 @@ void Prism::Text::ConstructBuffers()
 			++row;
 			continue;
 		}
-		Font::CharacterData charData = myFont.GetCharData(myText[i]);
+		CharacterData charData = myFont.GetCharData(myText[i]);
 
 		float left = drawX + charData.myOffset.x;
 		float right = left + charData.mySize.x;

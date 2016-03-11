@@ -4,11 +4,15 @@
 #include <CommonHelper.h>
 #include "Engine.h"
 #include "EffectContainer.h"
+#include "Font.h"
+#include "FontProxy.h"
 #include "Model.h"
 #include "ModelAnimated.h"
 #include "ModelLoader.h"
 #include "ModelProxy.h"
 #include "FBXFactory.h"
+#include "Text.h"
+#include "TextProxy.h"
 #include <TimerManager.h>
 #include "SpriteProxy.h"
 #include "Sprite.h"
@@ -78,6 +82,14 @@ namespace Prism
 			SAFE_DELETE(it->second);
 		}
 		mySprites.clear();
+
+		for (auto it = myFontProxies.begin(); it != myFontProxies.end(); ++it)
+		{
+			SAFE_DELETE(it->second);
+		}
+		myFontProxies.clear();
+
+		//myTextProxies.DeleteAll();
 	}
 
 	void ModelLoader::LoadInstancedCount()
@@ -180,6 +192,11 @@ namespace Prism
 					GetHierarchyToBone(myLoadArray[i]);
 					break;
 				}
+				case eLoadType::FONT:
+				{
+					CreateFont(myLoadArray[i]);
+					break;
+				}
 				default:
 					DL_ASSERT("ModelLoader tried to load something that dint have a specified LoadType!!!");
 					break;
@@ -261,7 +278,7 @@ namespace Prism
 		LoadData newData;
 		newData.myModelProxy = proxy;
 		newData.myLoadType = eLoadType::MODEL;
-		newData.myModelPath = aModelPath;
+		newData.myResourcePath = aModelPath;
 		newData.myEffectPath = aEffectPath;
 
 		myBuffers[myInactiveBuffer].Add(newData);
@@ -301,7 +318,7 @@ namespace Prism
 		LoadData newData;
 		newData.myModelProxy = proxy;
 		newData.myLoadType = eLoadType::MODEL_ANIMATED;
-		newData.myModelPath = aModelPath;
+		newData.myResourcePath = aModelPath;
 		newData.myEffectPath = aEffectPath;
 
 		myBuffers[myInactiveBuffer].Add(newData);
@@ -364,7 +381,7 @@ namespace Prism
 
 		LoadData animData;
 		animData.myLoadType = eLoadType::ANIMATION;
-		animData.myModelPath = aPath;
+		animData.myResourcePath = aPath;
 		animData.myAnimationProxy = anim;
 
 		myBuffers[myInactiveBuffer].Add(animData);
@@ -395,7 +412,7 @@ namespace Prism
 		myCanCopyArray = false;
 		
 		LoadData newData;
-		newData.myModelPath = aPath;
+		newData.myResourcePath = aPath;
 		newData.mySpriteProxy = proxy;
 		newData.myLoadType = eLoadType::SPRITE;
 		newData.mySize = { aSize.x, aSize.y, aHotSpot.x, aHotSpot.y};
@@ -435,6 +452,41 @@ namespace Prism
 		return proxy;
 	}
 
+	FontProxy* ModelLoader::LoadFont(const std::string& aFilePath, const CU::Vector2<int>& aTextureSize)
+	{
+		if (myFontProxies.find(aFilePath) != myFontProxies.end())
+		{
+			return myFontProxies[aFilePath];
+		}
+
+		FontProxy* proxy = new FontProxy(aFilePath);
+
+#ifdef THREADED_LOADING
+		WaitUntilAddIsAllowed();
+		myCanCopyArray = false;
+
+		LoadData newData;
+		newData.myResourcePath = aFilePath;
+		newData.myFontProxy = proxy;
+		newData.mySize = CU::Vector4<float>(float(aTextureSize.x), float(aTextureSize.y), 0.f, 0.f);
+		newData.myLoadType = eLoadType::FONT;
+
+		myBuffers[myInactiveBuffer].Add(newData);
+		myCanCopyArray = true;
+#else
+		proxy->SetFont(new Font(aFilePath, aTextureSize);
+		myFontProxies[aFilePath] = proxy;
+#endif	
+
+		return proxy;
+	}
+
+	TextProxy* ModelLoader::LoadText(FontProxy* aFontProxy)
+	{
+		TextProxy* proxy = new TextProxy();
+		return proxy;
+	}
+
 	void ModelLoader::GetHierarchyToBone(const std::string& aAnimationPath, const std::string& aBoneName, GUIBone& aBoneOut)
 	{
 #ifdef THREADED_LOADING
@@ -442,7 +494,7 @@ namespace Prism
 		myCanCopyArray = false;
 
 		LoadData newData;
-		newData.myModelPath = aAnimationPath;
+		newData.myResourcePath = aAnimationPath;
 		newData.myBoneName = aBoneName;
 		newData.myGUIBone = &aBoneOut;
 		newData.myLoadType = eLoadType::GUI_BONE;
@@ -504,21 +556,21 @@ namespace Prism
 
 	void ModelLoader::CreateModel(LoadData& someData)
 	{
-		Model* model = myModelFactory->LoadModel(someData.myModelPath);
+		Model* model = myModelFactory->LoadModel(someData.myResourcePath);
 		model->SetEffect(EffectContainer::GetInstance()->GetEffect(someData.myEffectPath));
-		model->myFileName = someData.myModelPath;
+		model->myFileName = someData.myResourcePath;
 
 		bool lightMesh = someData.myEffectPath.find("light_mesh") != std::string::npos;
-		model->Init(GetInstancedCount(someData.myModelPath), lightMesh);
+		model->Init(GetInstancedCount(someData.myResourcePath), lightMesh);
 
 		someData.myModelProxy->SetModel(model);
 	}
 
 	void ModelLoader::CreateModelAnimated(LoadData& someData)
 	{
-		ModelAnimated* model = myModelFactory->LoadAnimatedModel(someData.myModelPath);
+		ModelAnimated* model = myModelFactory->LoadAnimatedModel(someData.myResourcePath);
 		model->SetEffect(EffectContainer::GetInstance()->GetEffect(someData.myEffectPath));
-		model->myFileName = someData.myModelPath;
+		model->myFileName = someData.myResourcePath;
 		model->Init();
 
 		someData.myModelProxy->SetModelAnimated(model);
@@ -526,7 +578,7 @@ namespace Prism
 
 	void ModelLoader::CreateAnimation(LoadData& someData)
 	{
-		someData.myAnimationProxy->myAnimation = myModelFactory->LoadAnimation(someData.myModelPath);
+		someData.myAnimationProxy->myAnimation = myModelFactory->LoadAnimation(someData.myResourcePath);
 	}
 
 	void ModelLoader::CreateCube(LoadData& someData)
@@ -548,24 +600,30 @@ namespace Prism
 
 			someData.mySpriteProxy->mySprite = new Sprite(someData.myD3D11Texture, size, hotSpot);
 		}
-		else if (mySprites.find(someData.myModelPath) != mySprites.end())
+		else if (mySprites.find(someData.myResourcePath) != mySprites.end())
 		{
-			someData.mySpriteProxy->mySprite = mySprites[someData.myModelPath];
+			someData.mySpriteProxy->mySprite = mySprites[someData.myResourcePath];
 		}
 		else
 		{
 			CU::Vector2<float> size(someData.mySize.x, someData.mySize.y);
 			CU::Vector2<float> hotSpot(someData.mySize.z, someData.mySize.w);
 
-			mySprites[someData.myModelPath] = new Sprite(someData.myModelPath, size, hotSpot);
+			mySprites[someData.myResourcePath] = new Sprite(someData.myResourcePath, size, hotSpot);
 
-			someData.mySpriteProxy->mySprite = mySprites[someData.myModelPath];
+			someData.mySpriteProxy->mySprite = mySprites[someData.myResourcePath];
 		}
+	}
+
+	void ModelLoader::CreateFont(LoadData& someData)
+	{
+		CU::Vector2<int> size(int(someData.mySize.x), int(someData.mySize.y));
+		someData.myFontProxy->SetFont(new Font(someData.myResourcePath, size));
 	}
 
 	void ModelLoader::GetHierarchyToBone(LoadData& someData)
 	{
-		myModelFactory->GetHierarchyToBone(someData.myModelPath, someData.myBoneName, *someData.myGUIBone);
+		myModelFactory->GetHierarchyToBone(someData.myResourcePath, someData.myBoneName, *someData.myGUIBone);
 		someData.myGUIBone->myIsValid = true;
 	}
 }

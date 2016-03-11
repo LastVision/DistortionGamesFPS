@@ -1,4 +1,6 @@
 #pragma once
+
+#include "CharacterData.h"
 #include <Vector.h>
 #include <vector>
 #include "FontFile.h"
@@ -10,15 +12,6 @@ namespace Prism
 	class Font
 	{
 	public:
-		struct CharacterData
-		{
-			CU::Vector2<float> myTopLeftUV;
-			CU::Vector2<float> myBottomRightUV;
-			CU::Vector2<float> mySize;
-			CU::Vector2<float> myOffset;
-			float myAdvanceX;
-		};
-
 		Font(const std::string& aFilePath, const CU::Vector2<int>& aTextureSize);
 		Texture* GetTexture() const;
 		CharacterData GetCharData(unsigned char aChar) const;

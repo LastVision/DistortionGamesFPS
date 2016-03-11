@@ -57,6 +57,8 @@ public:
 
 	bool IsAlive() const;
 
+	unsigned int GetNetworkID() const;
+
 private:
 	void operator=(Entity&) = delete;
 
@@ -74,6 +76,8 @@ private:
 	Prism::Scene* myScene;
 
 	CU::Matrix44<float> myOrientation;
+
+	unsigned int myNetworkID;
 };
 
 template <typename T>
@@ -134,4 +138,9 @@ inline void Entity::SetState(eEntityState aState)
 inline bool Entity::IsAlive() const
 {
 	return myAlive;
+}
+
+inline unsigned int Entity::GetNetworkID() const
+{
+	return myNetworkID;
 }

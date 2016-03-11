@@ -12,7 +12,7 @@ Prism::Font::Font(const std::string& aFilePath, const CU::Vector2<int>& aTexture
 	myTexture = TextureContainer::GetInstance()->GetTexture(texturePath);
 }
 
-Prism::Font::CharacterData Prism::Font::GetCharData(unsigned char aChar) const
+Prism::CharacterData Prism::Font::GetCharData(unsigned char aChar) const
 {
 	fontChar theChar = myChars[aChar];
 	CharacterData data;

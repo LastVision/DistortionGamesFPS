@@ -6,6 +6,7 @@
 
 #include <NetMessageImportantReply.h>
 #include <NetMessageConnectMessage.h>
+#include <NetMessageOnHit.h>
 #include <NetMessageOnJoin.h>
 #include <NetMessageDisconnect.h>
 #include <NetMessagePingRequest.h>
@@ -15,6 +16,7 @@
 #include <NetMessageOnDeath.h>
 
 #include <NetworkAddPlayerMessage.h>
+#include <NetworkOnHitMessage.h>
 #include <NetworkRemovePlayer.h>
 #include <NetworkAddEnemyMessage.h>
 #include <NetworkSetPositionMessage.h>
@@ -29,12 +31,15 @@ ClientNetworkManager::ClientNetworkManager()
 {
 	PostMaster::GetInstance()->Subscribe(eMessageType::NETWORK_SEND_POSITION, this);
 	PostMaster::GetInstance()->Subscribe(eMessageType::NETWORK_ON_DISCONNECT, this);
+	PostMaster::GetInstance()->Subscribe(eMessageType::NETWORK_ON_HIT, this);
 }
 
 ClientNetworkManager::~ClientNetworkManager()
 {
 	PostMaster::GetInstance()->UnSubscribe(eMessageType::NETWORK_SEND_POSITION, this);
 	PostMaster::GetInstance()->UnSubscribe(eMessageType::NETWORK_ON_DISCONNECT, this);
+	PostMaster::GetInstance()->UnSubscribe(eMessageType::NETWORK_ON_HIT, this);
+
 	myMainIsDone = true;
 	myReceieveIsDone = true;
 	myIsRunning = false;
@@ -167,6 +172,15 @@ void ClientNetworkManager::ReceiveMessage(const NetworkOnDisconnectMessage&)
 	NetMessageDisconnect toSend = CreateMessage<NetMessageDisconnect>();
 	toSend.mySenderID = myNetworkID;
 	toSend.myClientID = myNetworkID;
+	AddMessage(toSend);
+}
+
+void ClientNetworkManager::ReceiveMessage(const NetworkOnHitMessage& aMessage)
+{
+	NetMessageOnHit toSend;
+	toSend.mySenderID = myNetworkID;
+	toSend.myDamage = aMessage.myDamage;
+	toSend.myNetworkID = aMessage.myNetworkID;
 	AddMessage(toSend);
 }
 

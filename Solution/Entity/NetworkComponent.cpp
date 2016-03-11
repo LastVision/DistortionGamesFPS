@@ -13,9 +13,10 @@
 #include "HealthComponent.h"
 #include <Quaternion.h>
 
-NetworkComponent::NetworkComponent(Entity& anEntity, CU::Matrix44<float>& anOrientation)
+NetworkComponent::NetworkComponent(Entity& anEntity, CU::Matrix44<float>& anOrientation, unsigned int& aNetworkID)
 	: Component(anEntity)
 	, myOrientation(anOrientation)
+	, myNetworkID(aNetworkID)
 	, myAlpha(0.f)
 	, myIsPlayer(false)
 	, myShouldUpdate(true)
@@ -26,7 +27,6 @@ NetworkComponent::NetworkComponent(Entity& anEntity, CU::Matrix44<float>& anOrie
 	mySecondPosition2 = { 0.f, 0.f, 0.f };
 	PostMaster::GetInstance()->Subscribe(eMessageType::NETWORK_SET_POSITION, this);
 	PostMaster::GetInstance()->Subscribe(eMessageType::NETWORK_ON_HIT, this);
-
 }
 
 
@@ -40,11 +40,6 @@ NetworkComponent::~NetworkComponent()
 void NetworkComponent::Reset()
 {
 	myShouldUpdate = true;
-}
-
-const unsigned int NetworkComponent::GetNetworkID() const
-{
-	return myNetworkID;
 }
 
 void NetworkComponent::SetNetworkID(unsigned int anID)
@@ -78,7 +73,7 @@ void NetworkComponent::ReceiveMessage(const NetworkSetPositionMessage& aMessage)
 
 void NetworkComponent::ReceiveMessage(const NetworkOnHitMessage& aMessage)
 {
-	if (myNetworkID == aMessage.myNetworkID)
+	if (myEntity.GetIsClient() == false && myNetworkID == aMessage.myNetworkID)
 	{
 		myEntity.SendNote(DamageNote(static_cast<int>(aMessage.myDamage)));
 	}

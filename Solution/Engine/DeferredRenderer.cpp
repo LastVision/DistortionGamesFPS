@@ -230,7 +230,6 @@ namespace Prism
 
 	void DeferredRenderer::RenderPointLights(Scene* aScene)
 	{
-		ID3D11DeviceContext* context = Engine::GetInstance()->GetContex();
 		const Camera& camera = *aScene->GetCamera();
 
 		myLightPass.myAlbedo->SetResource(myGBufferData.myAlbedoTexture->GetShaderView());

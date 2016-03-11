@@ -1683,10 +1683,6 @@ FbxModelData* FBXLoader::loadModel(const char* aFile, CU::GrowingArray<std::stri
 	LoadNodeRecursive(myLoadingModel, *myLoadingModel->myAnimation, scene->GetRootNode(), FbxAMatrix(), pose, lCurrentAnimLayer, -1
 		, someOutErrors);
 
-	if (someOutErrors.Size() > 0)
-	{
-		int apa = 5;
-	}
 	//DL_PRINT("Success!");
 
 
