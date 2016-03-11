@@ -58,8 +58,14 @@ namespace Prism
 		myPositionJobs[1].Init(64);
 		myOnTriggerResults[0].Init(64);
 		myOnTriggerResults[1].Init(64);
+		myActorsToAdd[0].Init(64);
+		myActorsToAdd[1].Init(64);
 		myActorsToRemove[0].Init(64);
 		myActorsToRemove[1].Init(64);
+		myActorsToSleep[0].Init(64);
+		myActorsToSleep[1].Init(64);
+		myActorsToWakeUp[0].Init(64);
+		myActorsToWakeUp[1].Init(64);
 		myTimestep = 1.f / 60.f;
 		
 		myFoundation = PxCreateFoundation(0x03030300, myDefaultAllocatorCallback, myDefaultErrorCallback);
@@ -227,7 +233,10 @@ namespace Prism
 		std::swap(myVelocityJobs[0], myVelocityJobs[1]);
 		std::swap(myPositionJobs[0], myPositionJobs[1]);
 		std::swap(myOnTriggerResults[0], myOnTriggerResults[1]);
+		std::swap(myActorsToAdd[0], myActorsToAdd[1]);
 		std::swap(myActorsToRemove[0], myActorsToRemove[1]);
+		std::swap(myActorsToSleep[0], myActorsToSleep[1]);
+		std::swap(myActorsToWakeUp[0], myActorsToWakeUp[1]);
 	}
 
 	void PhysicsManager::Update()
@@ -268,6 +277,12 @@ namespace Prism
 		myMoveJobs[0].RemoveAll();
 		*/
 
+		for (int i = 0; i < myActorsToWakeUp[1].Size(); ++i)
+		{
+			myActorsToWakeUp[1][i]->setActorFlag(physx::PxActorFlag::Enum::eDISABLE_SIMULATION, false);
+		}
+		myActorsToWakeUp[1].RemoveAll();
+
 		for (int i = 0; i < myForceJobs[1].Size(); ++i)
 		{
 			AddForce(myForceJobs[1][i]);
@@ -299,7 +314,6 @@ namespace Prism
 		{
 			RayCast(myRaycastJobs[1][i]);
 		}
-
 		myRaycastJobs[1].RemoveAll();
 
 		for (int i = 0; i < myOnTriggerResults[1].Size(); ++i)
@@ -307,15 +321,30 @@ namespace Prism
 			
 			myOnTriggerCallback(myOnTriggerResults[1][i].myFirstPhysicsComponent, myOnTriggerResults[1][i].mySecondPhysicsComponent);
 		}
-
 		myOnTriggerResults[1].RemoveAll();
 
+		for (int i = 0; i < myActorsToSleep[1].Size(); ++i)
+		{ 
+			physx::PxTransform pose = physx::PxTransform(
+				ConvertVector({ 0.f, -10.f, 0.f }), physx::PxQuat(physx::PxHalfPi, physx::PxVec3(0.f, 0.f, 1.f)));
+			static_cast<physx::PxRigidDynamic*>(myActorsToSleep[1][i])->setGlobalPose(pose);
+			myActorsToSleep[1][i]->setActorFlag(physx::PxActorFlag::Enum::eDISABLE_SIMULATION, true);
+		}
+		myActorsToSleep[1].RemoveAll();
+
+		for (int i = 0; i < myActorsToAdd[1].Size(); ++i)
+		{
+			GetScene()->addActor(*myActorsToAdd[1][i]);
+		}
+		myActorsToAdd[1].RemoveAll();
+		
 		for (int i = 0; i < myActorsToRemove[1].Size(); ++i)
 		{
 			GetScene()->removeActor(*myActorsToRemove[1][i]);
 		}
-
 		myActorsToRemove[1].RemoveAll();
+
+
 
 
 		//Sleep(16);
@@ -619,6 +648,16 @@ namespace Prism
 		}
 	}
 
+	void PhysicsManager::Add(physx::PxRigidDynamic* aDynamic)
+	{
+		myActorsToAdd[0].Add(aDynamic);
+	}
+
+	void PhysicsManager::Add(physx::PxRigidStatic* aStatic)
+	{
+		myActorsToAdd[0].Add(aStatic);
+	}
+
 	void PhysicsManager::Remove(physx::PxRigidDynamic* aDynamic, const PhysicsComponentData& aData)
 	{
 		//GetScene()->removeActor(*aDynamic);
@@ -645,6 +684,16 @@ namespace Prism
 				break;
 			}
 		}
+	}
+
+	void PhysicsManager::Sleep(physx::PxRigidDynamic* aDynamic)
+	{
+		myActorsToSleep[0].Add(aDynamic);
+	}
+
+	void PhysicsManager::Wake(physx::PxRigidDynamic* aDynamic)
+	{
+		myActorsToWakeUp[0].Add(aDynamic);
 	}
 
 	physx::PxTriangleMesh* PhysicsManager::GetPhysMesh(const std::string& aFBXPath)

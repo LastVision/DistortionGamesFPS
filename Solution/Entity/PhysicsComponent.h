@@ -21,6 +21,9 @@ public:
 	void Update(float aDeltaTime) override;
 	void Reset() override;
 
+	void Sleep();
+	void Wake();
+
 	void SwapOrientations();
 
 	float* GetPosition();
@@ -36,6 +39,7 @@ public:
 
 	ePhysics GetPhysicsType() const;
 
+	void AddToScene();
 	void RemoveFromScene();
 
 	const int GetCapsuleControllerId() const;

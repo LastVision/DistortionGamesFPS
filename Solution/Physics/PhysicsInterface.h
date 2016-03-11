@@ -59,8 +59,12 @@ namespace Prism
 			, float* aOrientation, const std::string& aFBXPath
 			, physx::PxRigidDynamic** aDynamicBodyOut, physx::PxRigidStatic** aStaticBodyOut
 			, physx::PxShape*** someShapesOut);
+		void Add(physx::PxRigidDynamic* aDynamic);
+		void Add(physx::PxRigidStatic* aStatic);
 		void Remove(physx::PxRigidDynamic* aDynamic, const PhysicsComponentData& aData);
 		void Remove(physx::PxRigidStatic* aStatic, const PhysicsComponentData& aData);
+		void Sleep(physx::PxRigidDynamic* aDynamic);
+		void Wake(physx::PxRigidDynamic* aDynamic);
 
 	private:
 		// Requires PhysX includes!!
