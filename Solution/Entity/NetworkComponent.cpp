@@ -133,9 +133,9 @@ void NetworkComponent::Update(float aDelta)
 					return;
 				}
 			}
-
 			mySendTime = 1 * 0.033f;
-			PostMaster::GetInstance()->SendMessage(NetworkSendPositionMessage(myServerPosition, 0.f, myNetworkID));
+			PostMaster::GetInstance()->SendMessage(NetworkSendPositionMessage(myServerPosition, myServerRotationY, myNetworkID));
+
 		}
 	}
 }
@@ -157,7 +157,6 @@ void NetworkComponent::ReceiveMessage(const NetworkOnHitMessage& aMessage)
 	if (myNetworkID == aMessage.myNetworkID)
 	{
 		myEntity.SendNote(DamageNote(static_cast<int>(aMessage.myDamage)));
-		
 	}
 }
 
