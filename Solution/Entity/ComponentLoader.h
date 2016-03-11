@@ -10,6 +10,7 @@ struct PhysicsComponentData;
 struct ProjectileComponentData;
 struct ShootingComponentData;
 struct TriggerComponentData;
+struct UpgradeComponentData;
 
 class XMLReader;
 
@@ -31,6 +32,7 @@ public:
 	void LoadTriggerComponent(XMLReader& aDocument, tinyxml2::XMLElement* aSourceElement, TriggerComponentData& aOutputData);
 	void LoadInputComponent(XMLReader& aDocument, tinyxml2::XMLElement* aSourceElement, InputComponentData& aOutputData);
 	void LoadShootingComponent(XMLReader& aDocument, tinyxml2::XMLElement* aSourceElement, ShootingComponentData& aOutputData);
+	void LoadUpgradeComponent(XMLReader& aDocument, tinyxml2::XMLElement* aSourceElement, UpgradeComponentData& aOutputData);
 
 private:
 

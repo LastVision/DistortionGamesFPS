@@ -22,6 +22,8 @@ public:
 	void SetPlayer(bool aBool);
 
 private:
+	void ClientUpdate(float aDelta);
+	void ServerUpdate(float aDelta);
 	unsigned int myNetworkID;
 
 	CU::Matrix44<float>& myOrientation;

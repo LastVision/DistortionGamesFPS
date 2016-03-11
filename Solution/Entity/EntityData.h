@@ -10,7 +10,7 @@
 #include "ProjectileComponentData.h"
 #include "ShootingComponentData.h"
 #include "TriggerComponentData.h"
-
+#include "UpgradeComponentData.h"
 
 struct EntityData
 {
@@ -25,6 +25,7 @@ struct EntityData
 	PhysicsComponentData myPhysicsData;
 	ShootingComponentData myShootingData;
 	TriggerComponentData myTriggerData;
+	UpgradeComponentData myUpgradeData;
 
 	std::string mySubType;
 };

@@ -8,6 +8,7 @@
 #include "PhysicsComponentData.h"
 #include "ShootingComponentData.h"
 #include "TriggerComponentData.h"
+#include "UpgradeComponentData.h"
 #include "XMLReader.h"
 #include "GameEnum.h"
 
@@ -184,6 +185,32 @@ void ComponentLoader::LoadShootingComponent(XMLReader& aDocument, tinyxml2::XMLE
 	aOutputData.myExistsInEntity = true;
 }
 
+void ComponentLoader::LoadUpgradeComponent(XMLReader& aDocument, tinyxml2::XMLElement* aSourceElement, UpgradeComponentData& aOutputData)
+{
+	for (tinyxml2::XMLElement* e = aDocument.FindFirstChild(aSourceElement); e != nullptr; e = aDocument.FindNextElement(e))
+	{
+		std::string elementName = CU::ToLower(e->Name());
+		if (elementName == CU::ToLower("ClipSizeModifier"))
+		{
+			aDocument.ForceReadAttribute(e, "value", aOutputData.myClipSizeModifier);
+		}
+		else if (elementName == CU::ToLower("AmmoTotalModifier"))
+		{
+			aDocument.ForceReadAttribute(e, "value", aOutputData.myAmmoTotalModifier);
+		}
+		else if (elementName == CU::ToLower("DamageModifier"))
+		{
+			aDocument.ForceReadAttribute(e, "value", aOutputData.myDamageModifier);
+		}
+		else if (elementName == CU::ToLower("ShootTimeModifier"))
+		{
+			aDocument.ForceReadAttribute(e, "value", aOutputData.myShootTimeModifier);
+		}
+	}
+
+	aOutputData.myExistsInEntity = true;
+}
+
 void ComponentLoader::LoadFirstPersonRenderComponent(XMLReader& aDocument, tinyxml2::XMLElement* aSourceElement, FirstPersonRenderComponentData& aOutputData)
 {
 	aDocument;
@@ -202,7 +229,10 @@ int ComponentLoader::ConvertToTriggerEnum(std::string aName)
 	{
 		return static_cast<int>(eTriggerType::LEVEL_CHANGE);
 	}
-
+	else if (aName == "upgrade")
+	{
+		return static_cast<int>(eTriggerType::UPGRADE);
+	}
 
 	DL_ASSERT("[ComponentLoader] No trigger type in trigger component named " + aName);
 	return static_cast<int>(eTriggerType::_COUNT);
