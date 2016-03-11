@@ -22,6 +22,8 @@ InputComponent::InputComponent(Entity& anEntity, const InputComponentData& aData
 	, myPitch(CU::Vector3<float>(0, 1.f, 0), 0)
 	, myYaw(CU::Vector3<float>(1.f, 0, 0), 0)
 	, myData(aData)
+	, mySprintEnergy(0.f)
+	, myEnergyOverheat(false)
 {
 	XMLReader reader;
 	reader.OpenDocument("Data/Setting/SET_player.xml");
@@ -167,8 +169,24 @@ void InputComponent::UpdateMovement(float aDelta)
 	movement *= myData.mySpeed;
 	if (CU::InputWrapper::GetInstance()->KeyIsPressed(DIK_LSHIFT))
 	{
-		movement *= myData.mySprintMultiplier;
+		if (mySprintEnergy < myData.myMaxSprintEnergy && myEnergyOverheat == false)
+		{
+			mySprintEnergy += myData.mySprintIncrease * aDelta;
+			if (mySprintEnergy >= myData.myMaxSprintEnergy)
+			{
+				myEnergyOverheat = true;
+			}
+			movement *= myData.mySprintMultiplier;
+		}
 	}
+	
+
+	mySprintEnergy -= myData.mySprintDecrease * aDelta;
+	if (myEnergyOverheat == true && mySprintEnergy <= 0.f)
+	{
+		myEnergyOverheat = false;
+	}
+
 	movement.y = myVerticalSpeed;
 
 	Prism::PhysicsInterface::GetInstance()->Move(myEntity.GetComponent<PhysicsComponent>()->GetCapsuleControllerId(), movement, 0.05f, aDelta);

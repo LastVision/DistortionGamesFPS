@@ -26,43 +26,47 @@ SharedLevelFactory::~SharedLevelFactory()
 
 SharedLevel* SharedLevelFactory::LoadLevel(const int& aID)
 {
-	DL_ASSERT_EXP(aID <= myLevelPaths.Size(), "[LevelFactory] Trying to load a non-existing level! Check so the ID: "
-		+ std::to_string(aID) + " are a valid id in LI_level.xml");
+	if (myLevelPaths.find(aID) == myLevelPaths.end())
+	{
+		DL_ASSERT("[LevelFactory] Trying to load a non-existing level! Check so the ID: "
+			+ std::to_string(aID) + " is a valid id in LI_level.xml");
+	}
+	
 	myCurrentID = aID;
 
 	return LoadCurrentLevel();
 }
 
 
-SharedLevel* SharedLevelFactory::LoadNextLevel()
-{
-	if (IsLastLevel() == true)
-	{
-		return myCurrentLevel;
-	}
-	return LoadLevel(myCurrentID + 1);
-}
+//SharedLevel* SharedLevelFactory::LoadNextLevel()
+//{
+//	if (IsLastLevel() == true)
+//	{
+//		return myCurrentLevel;
+//	}
+//	return LoadLevel(myCurrentID + 1);
+//}
 
 void SharedLevelFactory::ReadLeveList(const std::string& aLevelListPath)
 {
-	myLevelPaths.RemoveAll();
+	myLevelPaths.clear();
 	XMLReader reader;
 	reader.OpenDocument(aLevelListPath);
 	std::string levelPath;
 
 	int ID = -1;
-	int lastID = ID - 1;
+	//int lastID = ID - 1;
 
 	tinyxml2::XMLElement* rootElement = reader.ForceFindFirstChild("root");
 	for (tinyxml2::XMLElement* element = reader.FindFirstChild(rootElement); element != nullptr; element = reader.FindNextElement(element))
 	{
-		lastID = ID;
+		//lastID = ID;
 		reader.ForceReadAttribute(element, "ID", ID);
 		reader.ForceReadAttribute(element, "path", levelPath);
-		myLevelPaths.Add(LevelPathInformation(ID, levelPath));
+		myLevelPaths[ID] = levelPath;
 
-		DL_ASSERT_EXP(ID > lastID, "[LevelFactory] Wrong ID-number in LI_level.xml! The numbers should be counting up, in order.");
-		DL_ASSERT_EXP(myCurrentID < 10, "[LevelFactory] Can't handle level ID with two digits.");
+		//DL_ASSERT_EXP(ID > lastID, "[LevelFactory] Wrong ID-number in LI_level.xml! The numbers should be counting up, in order.");
+		//DL_ASSERT_EXP(myCurrentID < 10, "[LevelFactory] Can't handle level ID with two digits.");
 	}
 	reader.CloseDocument();
 }
