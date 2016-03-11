@@ -284,6 +284,7 @@
     <ClCompile Include="DebugFontContainer.cpp" />
     <ClCompile Include="Font.cpp" />
     <ClCompile Include="FontFile.cpp" />
+    <ClCompile Include="FontProxy.cpp" />
     <ClCompile Include="Frustum.cpp" />
     <ClCompile Include="FullScreenHelper.cpp" />
     <ClCompile Include="HierarchyBone.cpp" />
@@ -325,6 +326,7 @@
     <ClCompile Include="Text.cpp" />
     <ClCompile Include="TextFile.cpp" />
     <ClCompile Include="TextParser.cpp" />
+    <ClCompile Include="TextProxy.cpp" />
     <ClCompile Include="Texture.cpp" />
     <ClCompile Include="TextureContainer.cpp" />
     <ClCompile Include="Tga32.cpp" />
@@ -345,6 +347,7 @@
     <ClInclude Include="BaseModel.h" />
     <ClInclude Include="BoneName.h" />
     <ClInclude Include="Camera.h" />
+    <ClInclude Include="CharacterData.h" />
     <ClInclude Include="Cube3D.h" />
     <ClInclude Include="Cube3DRenderer.h" />
     <ClInclude Include="DebugDrawer.h" />
@@ -363,6 +366,7 @@
     <ClInclude Include="DebugFontContainer.h" />
     <ClInclude Include="Font.h" />
     <ClInclude Include="FontFile.h" />
+    <ClInclude Include="FontProxy.h" />
     <ClInclude Include="Frustum.h" />
     <ClInclude Include="FullScreenHelper.h" />
     <ClInclude Include="HierarchyBone.h" />
@@ -399,6 +403,7 @@
     <ClInclude Include="Text.h" />
     <ClInclude Include="TextFile.h" />
     <ClInclude Include="TextParser.h" />
+    <ClInclude Include="TextProxy.h" />
     <ClInclude Include="Texture.h" />
     <ClInclude Include="TextureContainer.h" />
     <ClInclude Include="TextureHelper.h" />

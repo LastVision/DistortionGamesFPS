@@ -49,6 +49,9 @@ private:
 
 	CU::Quaternion myPitch;
 	CU::Quaternion myYaw;
+
+	float mySprintEnergy;
+	bool myEnergyOverheat;
 };
 
 inline eComponentType InputComponent::GetTypeStatic()
