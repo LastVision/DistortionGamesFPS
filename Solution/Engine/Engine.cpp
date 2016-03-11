@@ -47,8 +47,6 @@ namespace Prism
 
 		SAFE_DELETE(myText);
 		SAFE_DELETE(myDebugText);
-		SAFE_DELETE(myDialogueFont);
-		SAFE_DELETE(myConsoleFont);
 
 		TextureContainer::Destroy();
 		EffectContainer::Destroy();
@@ -290,6 +288,9 @@ namespace Prism
 			return false;
 		}
 
+		myModelLoaderThread = new std::thread(&ModelLoader::Run, ModelLoader::GetInstance());
+		myModelLoaderThreadID = myModelLoaderThread->get_id();
+
 		myFadeData.mySprite = new Sprite(myDirectX->GetBackbufferTexture(), { float(myWindowSize.x), float(myWindowSize.y) }, { 0.f, 0.f });
 
 		ShowWindow(aHwnd, 10);
@@ -298,6 +299,9 @@ namespace Prism
 		myOrthogonalMatrix = CU::Matrix44<float>::CreateOrthogonalMatrixLH(static_cast<float>(myWindowSize.x)
 			, static_cast<float>(myWindowSize.y), 0.1f, 1000.f);
 
+
+		//myDialogueFont = ModelLoader::GetInstance()->LoadFont("Data/Resource/Font/debugText.txt", { 256, 256 });
+		//myConsoleFont = ModelLoader::GetInstance()->LoadFont("Data/Resource/Font/consolab.ttf_sdf.txt", { 256, 256 });
 
 		myDialogueFont = new Font("Data/Resource/Font/debugText.txt", { 256, 256 });
 		myConsoleFont = new Font("Data/Resource/Font/consolab.ttf_sdf.txt", { 256, 256 });
@@ -316,8 +320,6 @@ namespace Prism
 		myIsLoading = false;
 
 		myMainThreadID = std::this_thread::get_id();
-		myModelLoaderThread = new std::thread(&ModelLoader::Run, ModelLoader::GetInstance());
-		myModelLoaderThreadID = myModelLoaderThread->get_id();
 
 		ENGINE_LOG("Engine Init Successful");
 		return true;

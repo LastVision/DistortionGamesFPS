@@ -5,7 +5,7 @@
 
 namespace Prism
 {
-	class Font;
+	class FontProxy;
 
 	class Text : public BaseModel
 	{
