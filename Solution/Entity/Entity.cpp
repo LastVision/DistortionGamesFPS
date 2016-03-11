@@ -137,11 +137,11 @@ void Entity::Reset()
 
 void Entity::Update(float aDeltaTime)
 {
-	for (int i = 0; i < static_cast<int>(eComponentType::_COUNT); ++i)
+	for each (Component* component in myComponents)
 	{
-		if (myComponents[i] != nullptr)
+		if (component != nullptr)
 		{
-			myComponents[i]->Update(aDeltaTime);
+			component->Update(aDeltaTime);
 		}
 	}
 
