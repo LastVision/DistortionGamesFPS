@@ -166,6 +166,7 @@ void InputComponent::UpdateMovement(float aDelta)
 	movement.y = 0;
 	CU::Normalize(movement);
 	movement *= myData.mySpeed;
+	bool shouldDecreaseEnergy = true;
 	if (CU::InputWrapper::GetInstance()->KeyIsPressed(DIK_LSHIFT))
 	{
 		if (mySprintEnergy < myData.myMaxSprintEnergy && myEnergyOverheat == false)
@@ -176,11 +177,16 @@ void InputComponent::UpdateMovement(float aDelta)
 				myEnergyOverheat = true;
 			}
 			movement *= myData.mySprintMultiplier;
+			shouldDecreaseEnergy = false;
 		}
 	}
 	
+	if (shouldDecreaseEnergy == true)
+	{
+		mySprintEnergy -= myData.mySprintDecrease * aDelta;
+		mySprintEnergy = fmaxf(mySprintEnergy, 0.f);
+	}
 
-	mySprintEnergy -= myData.mySprintDecrease * aDelta;
 	if (myEnergyOverheat == true && mySprintEnergy <= 0.f)
 	{
 		myEnergyOverheat = false;
