@@ -4,7 +4,7 @@
 class UpgradeComponent : public Component
 {
 public:
-	UpgradeComponent();
+	UpgradeComponent(Entity& aEntity);
 	~UpgradeComponent();
 
 private:

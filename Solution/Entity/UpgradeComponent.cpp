@@ -2,7 +2,8 @@
 #include "UpgradeComponent.h"
 
 
-UpgradeComponent::UpgradeComponent()
+UpgradeComponent::UpgradeComponent(Entity& aEntity)
+	: Component(aEntity)
 {
 }
 
