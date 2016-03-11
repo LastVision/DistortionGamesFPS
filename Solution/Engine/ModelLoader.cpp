@@ -524,6 +524,7 @@ namespace Prism
 		myCanCopyArray = true;
 #else
 		myModelFactory->GetHierarchyToBone(aAnimationPath, aBoneName, aBoneOut);
+		aBoneOut.myIsValid = true;
 #endif	
 	}
 
