@@ -22,7 +22,7 @@ ServerLevelFactory::~ServerLevelFactory()
 SharedLevel* ServerLevelFactory::LoadCurrentLevel()
 {
 	myCurrentLevel = new ServerLevel();
-	ReadLevel(myLevelPaths[myCurrentID].myPath);
+	ReadLevel(myLevelPaths[myCurrentID]);
 	return myCurrentLevel;
 }
 
