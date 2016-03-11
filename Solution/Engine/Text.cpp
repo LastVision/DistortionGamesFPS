@@ -1,13 +1,12 @@
 #include "stdafx.h"
 #include "FontProxy.h"
-#include "Font.h"
 #include "Surface.h"
 #include "Text.h"
 #include "Texture.h"
 
 #include "Engine.h"
 
-Prism::Text::Text(const Font& aFont)
+Prism::Text::Text(const FontProxy& aFont)
 	: myFont(aFont)
 	, myColor(1.f, 1.f, 1.f, 1.f)
 {
@@ -23,7 +22,7 @@ Prism::Text::Text(const Font& aFont)
 	InitInputLayout(vertexDesc, ARRAYSIZE(vertexDesc), "Text::InputLayout");
 	InitVertexBuffer(sizeof(VertexPosUV), D3D11_USAGE_DYNAMIC, D3D11_CPU_ACCESS_WRITE);
 	InitIndexBuffer();
-	InitSurface("DiffuseTexture", myFont.GetTexture()->GetFileName());
+	InitSurface("DiffuseTexture", myFont.GetFilePath());
 	InitBlendState("Text::BlendState");
 
 	ZeroMemory(myInitData, sizeof(*myInitData));
@@ -61,7 +60,7 @@ void Prism::Text::SetText(const std::string& aText)
 	ConstructBuffers();
 }
 
-void Prism::Text::Render()
+void Prism::Text::Render(const CU::Vector2<float>& aPosition, const CU::Vector2<float>& aScale, const CU::Vector4<float>& aColor)
 {
 	Engine::GetInstance()->SetDepthBufferState(eDepthStencil::Z_DISABLED);
 	
@@ -73,8 +72,8 @@ void Prism::Text::Render()
 
 	myEffect->SetBlendState(myBlendState, blendFactor);
 	myEffect->SetProjectionMatrix(Engine::GetInstance()->GetOrthogonalMatrix());
-	myEffect->SetPosAndScale(myPosition, myScale);
-	myEffect->SetColor(myColor);
+	myEffect->SetPosAndScale(aPosition, aScale);
+	myEffect->SetColor(aColor);
 
 	BaseModel::Render();
 
@@ -152,20 +151,20 @@ void Prism::Text::ConstructBuffers()
 
 
 	ModelLoader* loader = ModelLoader::GetInstance();
-	bool wePaused = false;
+	/*bool wePaused = false;
 	if (loader->IsPaused() == false)
 	{
-		loader->Pause();
-		wePaused = true;
-	}
+	loader->Pause();
+	wePaused = true;
+	}*/
 
 	SetupVertexBuffer(myVertices.Size(), sizeof(VertexPosUV), reinterpret_cast<char*>(&myVertices[0]), "Text::VertexBuffer");
 	SetupIndexBuffer(myIndices.Size(), reinterpret_cast<char*>(&myIndices[0]), "Text::IndexBuffer");
 
-	if (wePaused == true)
+	/*if (wePaused == true)
 	{
 		loader->UnPause();
-	}
+	}*/
 
 	mySurfaces[0]->SetVertexCount(myVertices.Size());
 	mySurfaces[0]->SetIndexCount(myIndices.Size());

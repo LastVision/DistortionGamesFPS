@@ -10,18 +10,18 @@ namespace Prism
 	class Text : public BaseModel
 	{
 	public:
-		Text(const Font& aFont);
+		Text(const FontProxy& aFont);
 		void SetPosition(const CU::Vector2<float>& aPosition);
 		void SetText(const std::string& aText);
 		void SetColor(const CU::Vector4<float>& aColor);
-		void Render();
+		void Render(const CU::Vector2<float>& aPosition, const CU::Vector2<float>& aScale, const CU::Vector4<float>& aColor);
 		void SetScale(const CU::Vector2<float>& aScale);
 		float GetWidth() const;
 
 	private:
 		void operator=(Text&) = delete;
 		void ConstructBuffers();
-		const Font& myFont;
+		const FontProxy& myFont;
 
 		CU::GrowingArray<VertexPosUV> myVertices;
 		CU::GrowingArray<int> myIndices;

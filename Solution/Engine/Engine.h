@@ -37,12 +37,11 @@ namespace Prism
 	class DirectX;
 	class Effect;
 	class FBXFactory;
-	class Font;
 	class FontProxy;
 	class Model;
 	class ModelProxy;
 	class Sprite;
-	class Text;
+	class TextProxy;
 
 	struct SetupInfo;
 
@@ -64,7 +63,7 @@ namespace Prism
 		ID3D11RenderTargetView* GetBackbuffer();
 		ID3D11ShaderResourceView* GetBackbufferView();
 		ID3D11Texture2D* GetDepthBufferTexture();
-		Font* GetFont(eFont aFont);
+		FontProxy* GetFont(eFont aFont);
 		void SetDebugName(ID3D11DeviceChild* aChild, const std::string& aName);
 
 		Model* DLLLoadModel(const std::string& aModelPath, Effect* aEffect);
@@ -77,7 +76,7 @@ namespace Prism
 		void PrintText(float aNumber, const CU::Vector2<float>& aPosition, eTextType aTextType, float aScale = 1.f, CU::Vector4<float> aColor = { 1.f, 1.f, 1.f, 1.f });
 		void PrintText(int aNumber, const CU::Vector2<float>& aPosition, eTextType aTextType, float aScale = 1.f, CU::Vector4<float> aColor = { 1.f, 1.f, 1.f, 1.f });
 
-		void RenderText(Text* aText);
+		void RenderText(TextProxy* aText);
 
 		void RestoreViewPort();
 		void SetBackBufferAsTarget();
@@ -123,12 +122,10 @@ namespace Prism
 		DirectX* myDirectX;
 		SetupInfo* mySetupInfo;
 		FBXFactory* myModelFactory;
-		/*FontProxy* myDialogueFont;
-		FontProxy* myConsoleFont;*/
-		Font* myDialogueFont;
-		Font* myConsoleFont;
-		Text* myText;
-		Text* myDebugText;
+		FontProxy* myDialogueFont;
+		FontProxy* myConsoleFont;
+		TextProxy* myText;
+		TextProxy* myDebugText;
 		FadeData myFadeData;
 
 		CU::Vector4<float> myClearColor;
@@ -146,7 +143,7 @@ namespace Prism
 		CU::GrowingArray<TextCommand> myTexts;
 		CU::GrowingArray<TextCommand> myDebugTexts;
 		bool myShowDebugText;
-		CU::GrowingArray<Text*> myTextsNew;
+		CU::GrowingArray<TextProxy*> myTextsNew;
 	};
 }
 

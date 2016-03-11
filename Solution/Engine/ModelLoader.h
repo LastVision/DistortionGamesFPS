@@ -64,6 +64,7 @@ namespace Prism
 			SPRITE,
 			GUI_BONE,
 			FONT,
+			TEXT,
 		};
 
 		struct LoadData
@@ -105,6 +106,7 @@ namespace Prism
 		void CreateCube(LoadData& someData);
 		void CreateSprite(LoadData& someData);
 		void CreateFont(LoadData& someData);
+		void CreateText(LoadData& someData);
 		void GetHierarchyToBone(LoadData& someData);
 
 		CU::GrowingArray<LoadData> myBuffers[2];

@@ -8,6 +8,8 @@ namespace Prism
 {
 	TextProxy::TextProxy()
 		: myText(nullptr)
+		, myScale(1.f, 1.f)
+		, myColor(1.f, 1.f, 1.f, 1.f)
 	{
 	}
 
@@ -47,7 +49,7 @@ namespace Prism
 	{
 		if (IsLoaded() == true)
 		{
-			myText->Render();
+			myText->Render(myPosition, myScale, myColor);
 		}
 	}
 
