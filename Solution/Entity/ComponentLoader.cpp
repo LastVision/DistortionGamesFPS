@@ -185,6 +185,18 @@ void ComponentLoader::LoadInputComponent(XMLReader& aDocument, tinyxml2::XMLElem
 		{
 			aDocument.ForceReadAttribute(e, "value", aOutputData.mySprintMultiplier);
 		}
+		else if (elementName == CU::ToLower("maxSprintEnergy"))
+		{
+			aDocument.ForceReadAttribute(e, "value", aOutputData.myMaxSprintEnergy);
+		}
+		else if (elementName == CU::ToLower("sprintIncreasePerSecond"))
+		{
+			aDocument.ForceReadAttribute(e, "value", aOutputData.mySprintIncrease);
+		}
+		else if (elementName == CU::ToLower("sprintDecreasePerSecond"))
+		{
+			aDocument.ForceReadAttribute(e, "value", aOutputData.mySprintDecrease);
+		}
 	}
 
 	aOutputData.myExistsInEntity = true;

@@ -6,4 +6,7 @@ struct InputComponentData
 	float mySpeed;
 	float myRotationSpeed;
 	float mySprintMultiplier;
+	float myMaxSprintEnergy;
+	float mySprintIncrease;
+	float mySprintDecrease;
 };
