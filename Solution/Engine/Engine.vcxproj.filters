@@ -177,6 +177,9 @@
     <ClCompile Include="FontProxy.cpp">
       <Filter>Rendering\Text</Filter>
     </ClCompile>
+    <ClCompile Include="TextProxy.cpp">
+      <Filter>Rendering\Text</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Engine.h" />
@@ -400,6 +403,12 @@
       <Filter>Rendering\Animation</Filter>
     </ClInclude>
     <ClInclude Include="FontProxy.h">
+      <Filter>Rendering\Text</Filter>
+    </ClInclude>
+    <ClInclude Include="CharacterData.h">
+      <Filter>Rendering\Text</Filter>
+    </ClInclude>
+    <ClInclude Include="TextProxy.h">
       <Filter>Rendering\Text</Filter>
     </ClInclude>
   </ItemGroup>
