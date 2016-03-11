@@ -3,6 +3,7 @@
 #include "DamageNote.h"
 #include "Entity.h"
 #include <EmitterMessage.h>
+#include <NetworkOnHitMessage.h>
 #include "PhysicsComponent.h"
 #include <PostMaster.h>
 #include <PhysicsInterface.h>
@@ -71,7 +72,8 @@ void Pistol::HandleRaycast(PhysicsComponent* aComponent, const CU::Vector3<float
 			aComponent->AddForce(aDirection, 25.f);
 		}
 		PostMaster::GetInstance()->SendMessage(EmitterMessage("Shotgun", aHitPosition));
-		aComponent->GetEntity().SendNote<DamageNote>(DamageNote(myDamage));
+		//aComponent->GetEntity().SendNote<DamageNote>(DamageNote(myDamage));
 
+		PostMaster::GetInstance()->SendMessage(NetworkOnHitMessage(myDamage, aComponent->GetEntity().GetNetworkID()));
 	}
 }
