@@ -2,6 +2,7 @@
 
 #include "Component.h"
 #include <DebugDrawer.h>
+#include <Defines.h>
 #include <DL_Debug.h>
 #include "Entity.h"
 #include "EntityData.h"
