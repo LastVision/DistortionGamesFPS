@@ -23,7 +23,9 @@ namespace Prism
 		Model* LoadModel(const std::string& aFilePath) override;
 		ModelAnimated* LoadAnimatedModel(const std::string& aFilePath) override;
 		Animation* LoadAnimation(const std::string& aFilePath) override;
-		
+		void GetHierarchyToBone(const std::string& aAnimationPath, const std::string& aBoneName, GUIBone& aBoneOut) override;
+
+
 		bool CheckIfFbxIsNewer(const std::string& aDGFXPath);
 	private:
 		enum eVertexLayout

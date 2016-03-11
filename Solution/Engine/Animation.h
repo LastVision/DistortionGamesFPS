@@ -26,7 +26,7 @@ namespace Prism
 		float GetAnimationLenght() const;
 		void SetAnimationLenght(float aLenght);
 
-		GUIBone GetHiearchyToBone(const std::string& aBoneName);
+		void GetHiearchyToBone(const std::string& aBoneName, GUIBone& aBoneOut);
 
 	private:
 		void SetBoneData(HierarchyBone& aBone);

@@ -191,6 +191,12 @@ namespace Prism
 		return animation;
 	}
 
+	void DGFXLoader::GetHierarchyToBone(const std::string& aAnimationPath, const std::string& aBoneName, GUIBone& aBoneOut)
+	{
+		Animation* anim = LoadAnimation(aAnimationPath);
+		anim->GetHiearchyToBone(aBoneName, aBoneOut);
+	}
+
 	Model* DGFXLoader::CreateModelHeader(std::fstream& aStream)
 	{
 		Model* tempModel = new Model();
