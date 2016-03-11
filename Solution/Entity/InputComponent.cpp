@@ -61,7 +61,7 @@ void InputComponent::Update(float aDelta)
 		myEntity.SendNote<HealthNote>(HealthNote(myEntity.GetComponent<HealthComponent>()->GetMaxHealth()));
 	}
 
-	CU::Vector3<float> prevPos(myOrientation.GetPos());
+	myPrevOrientation = myOrientation;
 
 	UpdateMovement(aDelta);
 	myEyeOrientation = myOrientation;
@@ -86,7 +86,7 @@ void InputComponent::Update(float aDelta)
 	mySendTime -= aDelta;
 	if (mySendTime < 0.f)
 	{
-		if (myNetworkID != 0 && (myOrientation.GetPos().x != prevPos.x || myOrientation.GetPos().y != prevPos.y || myOrientation.GetPos().z != prevPos.z))
+		if (myNetworkID != 0 && (myOrientation != myPrevOrientation))
 		{
 			PostMaster::GetInstance()->SendMessage(NetworkSendPositionMessage(myOrientation.GetPos(), myCursorPosition.x, myNetworkID));
 			mySendTime = 1 / 30.f;
