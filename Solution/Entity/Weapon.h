@@ -19,7 +19,6 @@ public:
 	const int& GetAmmoInClip() const;
 	const int& GetClipSize() const;
 	eWeaponType GetWeaponType();
-	//virtual void HandleRaycast(Entity* anEntity, const CU::Vector3<float>& aDirection) {};
 
 protected:	
 	int myAmmoInClip;
@@ -29,8 +28,6 @@ protected:
 
 	float myShootTime;
 	float myShootTimer;
-
-
 
 	eWeaponType myWeaponType;
 };

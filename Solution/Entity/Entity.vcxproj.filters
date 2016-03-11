@@ -92,6 +92,9 @@
     <ClCompile Include="PhysicsComponent.cpp">
       <Filter>Component</Filter>
     </ClCompile>
+    <ClCompile Include="UpgradeComponent.cpp">
+      <Filter>Component</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
@@ -196,6 +199,9 @@
       <Filter>Notes</Filter>
     </ClInclude>
     <ClInclude Include="PhysicsComponent.h">
+      <Filter>Component</Filter>
+    </ClInclude>
+    <ClInclude Include="UpgradeComponent.h">
       <Filter>Component</Filter>
     </ClInclude>
   </ItemGroup>
