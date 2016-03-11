@@ -8,6 +8,7 @@ enum class eNetMessageType
 	ON_CONNECT,
 	ON_JOIN,
 	ON_DISCONNECT,
+	REQUEST_LEVEL,
 
 	PING_REQUEST,
 	PING_REPLY,

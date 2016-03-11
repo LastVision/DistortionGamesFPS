@@ -1,14 +1,15 @@
 #include "stdafx.h"
 
+#include "ClientLevel.h"
+#include "ClientLevelFactory.h"
 #include "Console.h"
 #include <GameStateMessage.h>
 #include <EffectContainer.h>
 #include <FadeMessage.h>
 #include "InGameState.h"
 #include <InputWrapper.h>
-#include "ClientLevel.h"
-#include "ClientLevelFactory.h"
 #include "LobbyState.h"
+#include <NetMessageRequestLevel.h>
 #include <PostMaster.h>
 #include <ScriptSystem.h>
 #include <VTuneApi.h>
@@ -68,21 +69,24 @@ const eStateStatus InGameState::Update(const float& aDeltaTime)
 
 	if (CU::InputWrapper::GetInstance()->KeyDown(DIK_NUMPAD1))
 	{
-		SET_RUNTIME(false);
-		SAFE_DELETE(myLevel);
-		myLevel = static_cast<ClientLevel*>(myLevelFactory->LoadLevel(0));
+		ClientNetworkManager::GetInstance()->AddMessage(NetMessageRequestLevel(0));
+		//SET_RUNTIME(false);
+		//SAFE_DELETE(myLevel);
+		//myLevel = static_cast<ClientLevel*>(myLevelFactory->LoadLevel(0));
 	}
 	else if (CU::InputWrapper::GetInstance()->KeyDown(DIK_NUMPAD2))
 	{
-		SET_RUNTIME(false);
-		SAFE_DELETE(myLevel);
-		myLevel = static_cast<ClientLevel*>(myLevelFactory->LoadLevel(1));
+		ClientNetworkManager::GetInstance()->AddMessage(NetMessageRequestLevel(1));
+		//SET_RUNTIME(false);
+		//SAFE_DELETE(myLevel);
+		//myLevel = static_cast<ClientLevel*>(myLevelFactory->LoadLevel(1));
 	}
 	else if (CU::InputWrapper::GetInstance()->KeyDown(DIK_NUMPAD3))
 	{
-		SET_RUNTIME(false);
-		SAFE_DELETE(myLevel);
-		myLevel = static_cast<ClientLevel*>(myLevelFactory->LoadLevel(3));
+		ClientNetworkManager::GetInstance()->AddMessage(NetMessageRequestLevel(2));
+		//SET_RUNTIME(false);
+		//SAFE_DELETE(myLevel);
+		//myLevel = static_cast<ClientLevel*>(myLevelFactory->LoadLevel(2));
 	}
 
 	if (myLevelToLoad != -1)

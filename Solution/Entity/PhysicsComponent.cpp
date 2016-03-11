@@ -48,6 +48,14 @@ void PhysicsComponent::Update(float aDeltaTime)
 	}
 }
 
+void PhysicsComponent::Reset()
+{
+	if (myDynamicBody != nullptr)
+	{
+		Prism::PhysicsInterface::GetInstance()->SetVelocity(myDynamicBody, CU::Vector3<float>(0, 0, 0));
+	}
+}
+
 void PhysicsComponent::SwapOrientations()
 {
 	std::swap(my4x4Float, myThread4x4Float);

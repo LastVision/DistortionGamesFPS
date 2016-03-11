@@ -479,7 +479,7 @@ namespace Prism
 		myBuffers[myInactiveBuffer].Add(newData);
 		myCanCopyArray = true;
 #else
-		proxy->SetFont(new Font(aFilePath, aTextureSize);
+		proxy->SetFont(new Font(aFilePath, aTextureSize));
 		myFontProxies[aFilePath] = proxy;
 #endif	
 

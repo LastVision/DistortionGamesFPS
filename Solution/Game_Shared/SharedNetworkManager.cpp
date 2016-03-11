@@ -1,10 +1,12 @@
 #include "stdafx.h"
 #include "SharedNetworkManager.h"
 
+#include <NetMessage.h>
 #include <NetMessageImportantReply.h>
 #include <NetMessageConnectMessage.h>
 #include <NetMessageOnJoin.h>
 #include <NetMessageDisconnect.h>
+#include <NetMessageRequestLevel.h>
 #include <NetMessagePingRequest.h>
 #include <NetMessagePingReply.h>
 #include <NetMessagePosition.h>
@@ -57,6 +59,7 @@ SharedNetworkManager::SharedNetworkManager()
 	, myIsRunning(false)
 	, myCurrentBuffer(0)
 	, myCurrentSendBuffer(0)
+	, myImportantReceivedMessages(64)
 {
 }
 
@@ -68,7 +71,8 @@ SharedNetworkManager::~SharedNetworkManager()
 void SharedNetworkManager::Update(float aDelta)
 {
 	SwapBuffer();
-	UpdateImporantMessages(aDelta);
+	UpdateImportantMessages(aDelta);
+	UpdateImportantReceivedMessages(aDelta);
 	myPingTime -= aDelta;
 	myResponsTime += aDelta;
 	if (myPingTime <= 0.f)
@@ -163,6 +167,9 @@ void SharedNetworkManager::HandleMessage()
 		case eNetMessageType::ON_DISCONNECT:
 			UnpackAndHandle(NetMessageDisconnect(), buffer);
 			break;
+		case eNetMessageType::REQUEST_LEVEL:
+			UnpackAndHandle(NetMessageRequestLevel(), buffer);
+			break;
 		case eNetMessageType::PING_REQUEST:
 			UnpackAndHandle(NetMessagePingRequest(), buffer);
 			break;
@@ -212,8 +219,9 @@ void SharedNetworkManager::HandleMessage(const NetMessageImportantReply& aMessag
 	}
 }
 void SharedNetworkManager::HandleMessage(const NetMessageConnectMessage&, const sockaddr_in&) {}
-void SharedNetworkManager::HandleMessage(const NetMessagePingRequest&, const sockaddr_in&) {}
 void SharedNetworkManager::HandleMessage(const NetMessageDisconnect&, const sockaddr_in&) {}
+void SharedNetworkManager::HandleMessage(const NetMessageRequestLevel&, const sockaddr_in&) {}
+void SharedNetworkManager::HandleMessage(const NetMessagePingRequest&, const sockaddr_in&) {}
 void SharedNetworkManager::HandleMessage(const NetMessageOnJoin&, const sockaddr_in&) {}
 void SharedNetworkManager::HandleMessage(const NetMessagePosition& aMessage, const sockaddr_in&) 
 {
@@ -225,3 +233,37 @@ void SharedNetworkManager::HandleMessage(const NetMessageOnHit& aMessage, const 
 	PostMaster::GetInstance()->SendMessage(NetworkOnHitMessage(aMessage.myDamage, aMessage.myNetworkID)); 
 }
 void SharedNetworkManager::HandleMessage(const NetMessageOnDeath&, const sockaddr_in&) {}
+
+bool SharedNetworkManager::AlreadyReceived(const NetMessage& aMessage)
+{
+	if (aMessage.GetIsImportant() == false)
+	{
+		return false;
+	}
+
+	for (int i = 0; i < myImportantReceivedMessages.Size(); ++i)
+	{
+		if (aMessage.GetImportantID() == myImportantReceivedMessages[i].myImportantID
+			&& aMessage.mySenderID == myImportantReceivedMessages[i].myUserID)
+		{
+			return true;
+		}
+	}
+
+	myImportantReceivedMessages.Add(ImportantReceivedMessage(aMessage.GetImportantID(), aMessage.mySenderID));
+	
+	return false;
+}
+
+void SharedNetworkManager::UpdateImportantReceivedMessages(float aDelta)
+{
+	for (int i = myImportantReceivedMessages.Size() - 1; i >= 0; --i)
+	{
+		myImportantReceivedMessages[i].myTimer += aDelta;
+
+		if (myImportantReceivedMessages[i].myTimer > 5.f)
+		{
+			myImportantReceivedMessages.RemoveCyclicAtIndex(i);
+		}
+	}
+}

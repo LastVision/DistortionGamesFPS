@@ -19,6 +19,7 @@ public:
 	~PhysicsComponent();
 
 	void Update(float aDeltaTime) override;
+	void Reset() override;
 
 	void SwapOrientations();
 

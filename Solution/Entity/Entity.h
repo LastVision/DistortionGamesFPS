@@ -59,6 +59,8 @@ public:
 
 	unsigned int GetNetworkID() const;
 
+	bool IsInScene() const;
+
 private:
 	void operator=(Entity&) = delete;
 
@@ -143,4 +145,9 @@ inline bool Entity::IsAlive() const
 inline unsigned int Entity::GetNetworkID() const
 {
 	return myNetworkID;
+}
+
+inline bool Entity::IsInScene() const
+{
+	return myIsInScene;
 }
