@@ -407,16 +407,33 @@ namespace Prism
 		aVelocityJob.myDynamicBody->setLinearVelocity(ConvertVector(aVelocityJob.myVelocity));
 	}
 
-	void PhysicsManager::SetPosition(physx::PxRigidDynamic* aDynamicBody, const CU::Vector3<float>& aPosition)
+	void PhysicsManager::TeleportToPosition(physx::PxRigidDynamic* aDynamicBody, const CU::Vector3<float>& aPosition)
 	{
-		myPositionJobs[0].Add(PositionJob(aDynamicBody, aPosition));
-		}
+		myPositionJobs[0].Add(PositionJob(aDynamicBody, aPosition, PositionJobType::TELEPORT));
+	}
+
+	void PhysicsManager::MoveToPosition(physx::PxRigidDynamic* aDynamicBody, const CU::Vector3<float>& aPosition)
+	{
+		myPositionJobs[0].Add(PositionJob(aDynamicBody, aPosition, PositionJobType::MOVE));
+	}
 
 	void PhysicsManager::SetPosition(const PositionJob& aPositionJob)
 	{
 		physx::PxTransform pose = physx::PxTransform(
 			ConvertVector(aPositionJob.myPosition), physx::PxQuat(physx::PxHalfPi, physx::PxVec3(0.f, 0.f, 1.f)));
-		aPositionJob.myDynamicBody->setGlobalPose(pose);
+		
+		if (aPositionJob.myType == PositionJobType::TELEPORT)
+		{
+			aPositionJob.myDynamicBody->setGlobalPose(pose);
+		}
+		else if (aPositionJob.myType == PositionJobType::MOVE)
+		{
+			aPositionJob.myDynamicBody->setKinematicTarget(pose);
+		}
+		else
+		{
+			DL_ASSERT("Unknown position job type.");
+		}
 	}
 
 	void PhysicsManager::onPvdConnected(physx::debugger::comm::PvdConnection&)
@@ -551,7 +568,27 @@ namespace Prism
 			GetScene()->addActor(*(*aDynamicBodyOut));
 
 			physx::PxU32 nShapes = (*aDynamicBodyOut)->getNbShapes();
-			
+
+			*someShapesOut = new physx::PxShape*[nShapes];
+		}
+		else if (aPhysData.myData->myPhysicsType == ePhysics::KINEMATIC)
+		{
+			physx::PxVec3 dimensions(
+				aPhysData.myData->myPhysicsMax.x - aPhysData.myData->myPhysicsMin.x
+				, aPhysData.myData->myPhysicsMax.y - aPhysData.myData->myPhysicsMin.y
+				, aPhysData.myData->myPhysicsMax.z - aPhysData.myData->myPhysicsMin.z);
+			physx::PxBoxGeometry geometry(dimensions / 2.f);
+			*aDynamicBodyOut = physx::PxCreateDynamic(*core, transform, geometry, *material, density);
+			(*aDynamicBodyOut)->setRigidBodyFlag(physx::PxRigidBodyFlag::eKINEMATIC, true);
+			(*aDynamicBodyOut)->setGlobalPose(transform);
+			//(*aDynamicBodyOut)->setAngularDamping(0.75);
+			//(*aDynamicBodyOut)->setLinearVelocity(physx::PxVec3(0, 0, 0));
+			(*aDynamicBodyOut)->setName(aFBXPath.c_str());
+			(*aDynamicBodyOut)->userData = aComponent;
+			GetScene()->addActor(*(*aDynamicBodyOut));
+
+			physx::PxU32 nShapes = (*aDynamicBodyOut)->getNbShapes();
+
 			*someShapesOut = new physx::PxShape*[nShapes];
 		}
 		else if (aPhysData.myData->myPhysicsType == ePhysics::PHANTOM)

@@ -119,6 +119,8 @@ void NetworkComponent::ClientUpdate(float aDelta)
 	myOrientation.myMatrix[10] = axisZ.z;
 
 	myOrientation.SetPos(newPos);
+
+	
 }
 
 void NetworkComponent::ServerUpdate(float aDelta)
