@@ -560,6 +560,12 @@ namespace Prism
 		return animation;
 	}
 
+	void FBXFactory::GetHierarchyToBone(const std::string& aAnimationPath, const std::string& aBoneName, GUIBone& aBoneOut)
+	{
+		Animation* anim = LoadAnimation(aAnimationPath);
+		anim->GetHiearchyToBone(aBoneName, aBoneOut);
+	}
+
 	void FBXFactory::LoadModelForRadiusCalc(const char* aFilePath
 		, CU::GrowingArray<CU::Vector3<float>>& someVerticesOut)
 	{

@@ -5,6 +5,8 @@
 #include <PhysicsInterface.h>
 #include <PhysicsComponent.h>
 #include "SharedLevel.h"
+#include <UpgradeComponent.h>
+#include <UpgradeNote.h>
 
 SharedLevel::SharedLevel()
 	: myEntities(256)
@@ -50,6 +52,18 @@ void SharedLevel::Update(const float aDeltaTime)
 
 void SharedLevel::CollisionCallback(PhysicsComponent* aFirst, PhysicsComponent* aSecond)
 {
-	aFirst->GetEntity().SendNote<CollisionNote>(CollisionNote(&aSecond->GetEntity()));
-	aSecond->GetEntity().SendNote<CollisionNote>(CollisionNote(&aFirst->GetEntity()));
+	if (aSecond->GetEntity().GetType() == eEntityType::PLAYER)
+	{
+		if (aFirst->GetEntity().GetComponent<UpgradeComponent>() != nullptr)
+		{
+			aSecond->GetEntity().SendNote<UpgradeNote>(aFirst->GetEntity().GetComponent<UpgradeComponent>()->GetData());
+		}
+		else
+		{
+			aSecond->GetEntity().SendNote<CollisionNote>(CollisionNote(&aFirst->GetEntity()));
+		}
+		aFirst->GetEntity().SendNote<CollisionNote>(CollisionNote(&aSecond->GetEntity()));
+	}
+
+
 }

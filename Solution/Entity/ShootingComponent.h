@@ -17,6 +17,8 @@ public:
 	Weapon* GetWeapon(eWeaponType aWeaponType);
 	Weapon* GetCurrentWeapon();
 
+	void ReceiveNote(const UpgradeNote&) override;
+
 	static eComponentType GetTypeStatic();
 	eComponentType GetType() override;
 

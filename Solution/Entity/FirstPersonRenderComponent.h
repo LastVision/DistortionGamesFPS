@@ -34,6 +34,8 @@ public:
 	eComponentType GetType() override;
 
 private:
+	void UpdateJoints();
+
 	const CU::Matrix44<float>& myInputComponentEyeOrientation;
 	Prism::Instance* myModel;
 	GUI::GUIManager3D* my3DGUIManager;
@@ -44,13 +46,20 @@ private:
 		Prism::AnimationData myData;
 		GUIBone myUIBone;
 		GUIBone myHealthBone;
+
+		bool IsValid()
+		{
+			return myUIBone.IsValid() && myHealthBone.IsValid();
+		}
 	};
 
 	void AddAnimation(ePlayerState aState, const std::string& aAnimationPath, bool aLoopFlag, bool aResetTimeOnRestart);
 	CU::StaticArray<PlayerAnimationData, int(ePlayerState::_COUNT)> myAnimations;
 
 	ePlayerState myCurrentState;
-
+	CU::Matrix44<float> myUIJoint;
+	CU::Matrix44<float> myHealthJoint;
+	bool myFirstTimeActivateAnimation;
 
 	CU::GrowingArray<ePlayerState> myIntentions;
 };

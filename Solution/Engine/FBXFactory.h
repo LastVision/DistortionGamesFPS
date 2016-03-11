@@ -37,6 +37,7 @@ namespace Prism
 		Model* LoadModel(const std::string& aFilePath) override;
 		ModelAnimated* LoadAnimatedModel(const std::string& aFilePath) override;
 		Animation* LoadAnimation(const std::string& aFilePath) override;
+		void GetHierarchyToBone(const std::string& aAnimationPath, const std::string& aBoneName, GUIBone& aBoneOut) override;
 		void LoadModelForRadiusCalc(const char* aFilePath, CU::GrowingArray<CU::Vector3<float>>& someVerticesOut);
 
 		void ConvertToDGFX(const char* aInputPath, const char* aOutputPath);

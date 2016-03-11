@@ -77,20 +77,11 @@ namespace Prism
 		SetBoneData(myHierarchy);
 	}
 	
-	GUIBone Animation::GetHiearchyToBone(const std::string& aBoneName)
+	void Animation::GetHiearchyToBone(const std::string& aBoneName, GUIBone& aBoneOut)
 	{
-		GUIBone bone;
-		
-		myHierarchy.GetBoneHiearchyByName(aBoneName, bone);
-		bone.myJoint = &myCalculatedBones[bone.myJointID];
-		bone.myBind = &myBindPoses[bone.myJointID];
-		//CU::Matrix44<float> returnMatrix;
-		//for (int i = bones.Size() - 1; i >= 0; --i)
-		//{
-		//	returnMatrix *= *(bones[i].myBone);
-		//}
-
-		return bone;
+		myHierarchy.GetBoneHiearchyByName(aBoneName, aBoneOut);
+		aBoneOut.myJoint = &myCalculatedBones[aBoneOut.myJointID];
+		aBoneOut.myBind = &myBindPoses[aBoneOut.myJointID];
 	}
 
 	void Animation::SetBoneData(HierarchyBone& aBone)

@@ -7,7 +7,8 @@
 #include "Pistol.h"
 #include "Shotgun.h"
 #include "ShootingComponent.h"
-
+#include "UpgradeComponentData.h"
+#include "UpgradeNote.h"
 
 ShootingComponent::ShootingComponent(Entity& anEntity, Prism::Scene* aScene)
 	: Component(anEntity)
@@ -16,10 +17,6 @@ ShootingComponent::ShootingComponent(Entity& anEntity, Prism::Scene* aScene)
 	, myShotgun(nullptr)
 	, myGrenadeLauncher(nullptr)
 {
-	/*myBullet = EntityFactory::CreateEntity(eEntityType::PROJECTILE, *aScene, myBulletOrientation.GetPos());
-	myBullet->Reset();
-	myBullet->AddToScene();*/
-
 	myPistol = new Pistol();
 	myShotgun = new Shotgun();
 	myGrenadeLauncher = new GrenadeLauncher(aScene);
@@ -28,7 +25,6 @@ ShootingComponent::ShootingComponent(Entity& anEntity, Prism::Scene* aScene)
 
 ShootingComponent::~ShootingComponent()
 {
-
 	SAFE_DELETE(myPistol);
 	SAFE_DELETE(myShotgun);
 	SAFE_DELETE(myGrenadeLauncher);
@@ -156,4 +152,20 @@ Weapon* ShootingComponent::GetWeapon(eWeaponType aWeaponType)
 	}
 	DL_ASSERT("Get Weapon crash!");
 	return myPistol;
+}
+
+void ShootingComponent::ReceiveNote(const UpgradeNote& aNote)
+{
+	if (aNote.myData.myWeaponType == eWeaponType::PISTOL)
+	{
+		myPistol->Upgrade(aNote.myData);
+	}
+	else if (aNote.myData.myWeaponType == eWeaponType::SHOTGUN)
+	{
+		myShotgun->Upgrade(aNote.myData);
+	}
+	else if (aNote.myData.myWeaponType == eWeaponType::GRENADE_LAUNCHER)
+	{
+		myGrenadeLauncher->Upgrade(aNote.myData);
+	}
 }

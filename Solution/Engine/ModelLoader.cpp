@@ -150,29 +150,34 @@ namespace Prism
 
 				switch (loadType)
 				{
-				case Prism::ModelLoader::eLoadType::MODEL:
+				case eLoadType::MODEL:
 				{
 					CreateModel(myLoadArray[i]);
 					break;
 				}
-				case Prism::ModelLoader::eLoadType::MODEL_ANIMATED:
+				case eLoadType::MODEL_ANIMATED:
 				{
 					CreateModelAnimated(myLoadArray[i]);
 					break;
 				}
-				case Prism::ModelLoader::eLoadType::ANIMATION:
+				case eLoadType::ANIMATION:
 				{
 					CreateAnimation(myLoadArray[i]);
 					break;
 				}
-				case Prism::ModelLoader::eLoadType::CUBE:
+				case eLoadType::CUBE:
 				{
 					CreateCube(myLoadArray[i]);
 					break;
 				}
-				case Prism::ModelLoader::eLoadType::SPRITE:
+				case eLoadType::SPRITE:
 				{
 					CreateSprite(myLoadArray[i]);
+					break;
+				}
+				case eLoadType::GUI_BONE:
+				{
+					GetHierarchyToBone(myLoadArray[i]);
 					break;
 				}
 				default:
@@ -263,10 +268,6 @@ namespace Prism
 		myCanCopyArray = true;
 #else
 		bool lightMesh = aEffectPath.find("light_mesh") != std::string::npos;
-		if (lightMesh == true)
-		{
-			int apa = 5;
-		}
 		Model* model = nullptr;
 		model = myModelFactory->LoadModel(aModelPath);
 		model->SetEffect(EffectContainer::GetInstance()->GetEffect(aEffectPath));
@@ -434,6 +435,25 @@ namespace Prism
 		return proxy;
 	}
 
+	void ModelLoader::GetHierarchyToBone(const std::string& aAnimationPath, const std::string& aBoneName, GUIBone& aBoneOut)
+	{
+#ifdef THREADED_LOADING
+		WaitUntilAddIsAllowed();
+		myCanCopyArray = false;
+
+		LoadData newData;
+		newData.myModelPath = aAnimationPath;
+		newData.myBoneName = aBoneName;
+		newData.myGUIBone = &aBoneOut;
+		newData.myLoadType = eLoadType::GUI_BONE;
+
+		myBuffers[myInactiveBuffer].Add(newData);
+		myCanCopyArray = true;
+#else
+		myModelFactory->GetHierarchyToBone(aAnimationPath, aBoneName, aBoneOut);
+#endif	
+	}
+
 	bool ModelLoader::CheckIfWorking()
 	{
 		if (myIsPaused == true || (myBuffers[myInactiveBuffer].Size() == 0
@@ -487,7 +507,9 @@ namespace Prism
 		Model* model = myModelFactory->LoadModel(someData.myModelPath);
 		model->SetEffect(EffectContainer::GetInstance()->GetEffect(someData.myEffectPath));
 		model->myFileName = someData.myModelPath;
-		model->Init(GetInstancedCount(someData.myModelPath));
+
+		bool lightMesh = someData.myEffectPath.find("light_mesh") != std::string::npos;
+		model->Init(GetInstancedCount(someData.myModelPath), lightMesh);
 
 		someData.myModelProxy->SetModel(model);
 	}
@@ -539,5 +561,11 @@ namespace Prism
 
 			someData.mySpriteProxy->mySprite = mySprites[someData.myModelPath];
 		}
+	}
+
+	void ModelLoader::GetHierarchyToBone(LoadData& someData)
+	{
+		myModelFactory->GetHierarchyToBone(someData.myModelPath, someData.myBoneName, *someData.myGUIBone);
+		someData.myGUIBone->myIsValid = true;
 	}
 }

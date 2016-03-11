@@ -19,6 +19,7 @@ FirstPersonRenderComponent::FirstPersonRenderComponent(Entity& aEntity, Prism::S
 	, myInputComponentEyeOrientation(myEntity.GetComponent<InputComponent>()->GetEyeOrientation())
 	, myCurrentState(ePlayerState::PISTOL_IDLE)
 	, myIntentions(8)
+	, myFirstTimeActivateAnimation(false)
 {
 	CU::Vector2<float> size(128.f, 128.f);
 	myCrosshair = Prism::ModelLoader::GetInstance()->LoadSprite("Data/Resource/Texture/UI/T_crosshair.dds", size, size * 0.5f);
@@ -47,16 +48,16 @@ FirstPersonRenderComponent::FirstPersonRenderComponent(Entity& aEntity, Prism::S
 
 	myModel->Update(1.f / 30.f);
 
-	PlayAnimation(ePlayerState::PISTOL_IDLE);
-	while (myModel->GetCurrentAnimation() == nullptr)
+	
+	/*while (myModel->GetCurrentAnimation() == nullptr)
 	{
 
-	}
+	}*/
 
 	for (int i = 0; i < static_cast<int>(ePlayerState::_COUNT); ++i)
 	{
-		myAnimations[i].myUIBone = Prism::AnimationSystem::GetInstance()->GetAnimation(myAnimations[i].myData.myFile.c_str())->GetHiearchyToBone("ui_jnt3");
-		myAnimations[i].myHealthBone = Prism::AnimationSystem::GetInstance()->GetAnimation(myAnimations[i].myData.myFile.c_str())->GetHiearchyToBone("health_jnt3");
+		Prism::ModelLoader::GetInstance()->GetHierarchyToBone(myAnimations[i].myData.myFile, "ui_jnt3", myAnimations[i].myUIBone);
+		Prism::ModelLoader::GetInstance()->GetHierarchyToBone(myAnimations[i].myData.myFile, "health_jnt3", myAnimations[i].myHealthBone);
 	}
 
 	ShootingComponent* shooting = myEntity.GetComponent<ShootingComponent>();
@@ -65,6 +66,7 @@ FirstPersonRenderComponent::FirstPersonRenderComponent(Entity& aEntity, Prism::S
 		, shooting->GetWeapon(eWeaponType::SHOTGUN)->GetClipSize(), shooting->GetWeapon(eWeaponType::SHOTGUN)->GetAmmoInClip()
 		, shooting->GetWeapon(eWeaponType::GRENADE_LAUNCHER)->GetClipSize(), shooting->GetWeapon(eWeaponType::GRENADE_LAUNCHER)->GetAmmoInClip());
 
+	
 }
 
 
@@ -78,13 +80,9 @@ FirstPersonRenderComponent::~FirstPersonRenderComponent()
 
 void FirstPersonRenderComponent::Update(float aDelta)
 {
-	CU::Matrix44<float> uiJoint = CU::InverseSimple(*myAnimations[static_cast<int>(myCurrentState)].myUIBone.myBind)
-		* (*myAnimations[static_cast<int>(myCurrentState)].myUIBone.myJoint) * myInputComponentEyeOrientation;
+	UpdateJoints();
 
-	CU::Matrix44<float> healthJoint = CU::InverseSimple(*myAnimations[static_cast<int>(myCurrentState)].myHealthBone.myBind)
-		* (*myAnimations[static_cast<int>(myCurrentState)].myHealthBone.myJoint) * myInputComponentEyeOrientation;
-
-	my3DGUIManager->Update(uiJoint, healthJoint, myEntity.GetComponent<HealthComponent>()->GetCurrentHealth()
+	my3DGUIManager->Update(myUIJoint, myHealthJoint, myEntity.GetComponent<HealthComponent>()->GetCurrentHealth()
 		, myEntity.GetComponent<HealthComponent>()->GetMaxHealth(), aDelta);
 
 
@@ -195,4 +193,21 @@ void FirstPersonRenderComponent::AddIntention(ePlayerState aPlayerState, bool aC
 		}
 	}
 	myIntentions.Add(aPlayerState);
+}
+
+void FirstPersonRenderComponent::UpdateJoints()
+{
+	PlayerAnimationData& currentAnimation = myAnimations[static_cast<int>(myCurrentState)];
+	if (currentAnimation.IsValid() == true)
+	{
+		if (myFirstTimeActivateAnimation == false)
+		{
+			myFirstTimeActivateAnimation = true;
+			//PlayAnimation(ePlayerState::PISTOL_IDLE);
+			AddIntention(ePlayerState::PISTOL_FIRE, true);
+		}
+
+		myUIJoint = CU::InverseSimple(*currentAnimation.myUIBone.myBind) * (*currentAnimation.myUIBone.myJoint) * myInputComponentEyeOrientation;
+		myHealthJoint = CU::InverseSimple(*currentAnimation.myHealthBone.myBind) * (*currentAnimation.myHealthBone.myJoint) * myInputComponentEyeOrientation;
+	}
 }

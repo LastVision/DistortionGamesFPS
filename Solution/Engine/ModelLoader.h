@@ -1,5 +1,6 @@
 #pragma once
 
+#include "BoneName.h"
 #include <GrowingArray.h>
 #include <atomic>
 
@@ -44,6 +45,8 @@ namespace Prism
 		SpriteProxy* LoadSprite(ID3D11Texture2D* aD3D11Texture, const CU::Vector2<float>& aSize
 			, const CU::Vector2<float>& aHotSpot = { 0.f, 0.f });
 
+		void GetHierarchyToBone(const std::string& aAnimationPath, const std::string& aBoneName, GUIBone& aBoneOut);
+
 	private:
 		enum class eLoadType
 		{
@@ -52,6 +55,7 @@ namespace Prism
 			ANIMATION,
 			CUBE,
 			SPRITE,
+			GUI_BONE,
 		};
 
 		struct LoadData
@@ -61,11 +65,13 @@ namespace Prism
 				ModelProxy* myModelProxy;
 				AnimationProxy* myAnimationProxy;
 				SpriteProxy* mySpriteProxy;
+				GUIBone* myGUIBone;
 			};
 
 			eLoadType myLoadType;
 			std::string myModelPath = "";
 			std::string myEffectPath = "";
+			std::string myBoneName = "";
 			CU::Vector4<float> mySize; //Cube uses X/Y/Z, Sprite uses X/Y as size and Z/W as hotspot
 			CU::Vector4<float> myColor;
 			ID3D11Texture2D* myD3D11Texture = nullptr;
@@ -87,6 +93,7 @@ namespace Prism
 		void CreateAnimation(LoadData& someData);
 		void CreateCube(LoadData& someData);
 		void CreateSprite(LoadData& someData);
+		void GetHierarchyToBone(LoadData& someData);
 
 		CU::GrowingArray<LoadData> myBuffers[2];
 		CU::GrowingArray<LoadData> myLoadArray;
@@ -99,8 +106,6 @@ namespace Prism
 		volatile bool myClearLoadJobs;
 		volatile bool myIsPaused;
 
-		//FBXFactory* myModelFactory;
-		//DGFXLoader* myDGFXLoader;
 		IModelFactory* myModelFactory;
 		CU::GrowingArray<Model*> myNonFXBModels;
 		std::unordered_map<std::string, ModelProxy*> myModelProxies;
