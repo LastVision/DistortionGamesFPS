@@ -61,7 +61,8 @@ namespace Prism
 		void RayCast(const CU::Vector3<float>& aOrigin, const CU::Vector3<float>& aNormalizedDirection, float aMaxRayDistance, std::function<void(PhysicsComponent*, const CU::Vector3<float>&, const CU::Vector3<float>&)> aFunctionToCall);
 		void AddForce(physx::PxRigidDynamic* aDynamicBody, const CU::Vector3<float>& aDirection, float aMagnitude);
 		void SetVelocity(physx::PxRigidDynamic* aDynamicBody, const CU::Vector3<float>& aVelocity);
-		void SetPosition(physx::PxRigidDynamic* aDynamicBody, const CU::Vector3<float>& aPosition);
+		void TeleportToPosition(physx::PxRigidDynamic* aDynamicBody, const CU::Vector3<float>& aPosition);
+		void MoveToPosition(physx::PxRigidDynamic* aDynamicBody, const CU::Vector3<float>& aPosition);
 
 		void onConstraintBreak(physx::PxConstraintInfo*, physx::PxU32) override {};
 		void onWake(physx::PxActor**, physx::PxU32) override {};
@@ -203,19 +204,28 @@ namespace Prism
 		CU::GrowingArray<VelocityJob> myVelocityJobs[2];
 		void SetVelocity(const VelocityJob& aVelocityJob);
 
+		enum class PositionJobType
+		{
+			NONE,
+			TELEPORT,
+			MOVE,
+		};
 		struct PositionJob
 		{
 			PositionJob()
 				: myDynamicBody(nullptr)
+				, myType(PositionJobType::NONE)
 			{}
 
-			PositionJob(physx::PxRigidDynamic* aDynamicBody, const CU::Vector3<float>& aPosition)
+			PositionJob(physx::PxRigidDynamic* aDynamicBody, const CU::Vector3<float>& aPosition, PositionJobType aType)
 				: myDynamicBody(aDynamicBody)
 				, myPosition(aPosition)
+				, myType(aType)
 			{}
 
 			physx::PxRigidDynamic* myDynamicBody;
 			CU::Vector3<float> myPosition;
+			PositionJobType myType;
 		};
 		CU::GrowingArray<PositionJob> myPositionJobs[2];
 		void SetPosition(const PositionJob& aPositionJob);

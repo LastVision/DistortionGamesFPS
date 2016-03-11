@@ -40,6 +40,7 @@ enum class ePhysics
 	DYNAMIC,
 	PHANTOM,
 	CAPSULE,
+	KINEMATIC,
 };
 
 enum class ePropType
