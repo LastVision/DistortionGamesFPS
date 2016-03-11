@@ -1,4 +1,5 @@
 #pragma once
+#include "GameEnum.h"
 
 struct UpgradeComponentData
 {
@@ -8,5 +9,6 @@ struct UpgradeComponentData
 	int myClipSizeModifier;
 	int myAmmoTotalModifier;
 	int myDamageModifier;
-
+	
+	eWeaponType myWeaponType;
 };

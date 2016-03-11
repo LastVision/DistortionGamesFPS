@@ -1,11 +1,6 @@
 #pragma once
 
-enum class eWeaponType
-{
-	PISTOL,
-	SHOTGUN,
-	GRENADE_LAUNCHER
-};
+struct UpgradeComponentData;
 
 class Weapon
 {
@@ -19,6 +14,8 @@ public:
 	const int& GetAmmoInClip() const;
 	const int& GetClipSize() const;
 	eWeaponType GetWeaponType();
+
+	virtual void Upgrade(const UpgradeComponentData& aData);
 
 protected:	
 	int myAmmoInClip;

@@ -1,11 +1,17 @@
 #pragma once
 
+enum class eWeaponType
+{
+	PISTOL,
+	SHOTGUN,
+	GRENADE_LAUNCHER
+};
+
 enum eOwnerType
 {
 	NOT_USED = -1,
-	PLAYER = 1,
-	ENEMY = 2,
-	NEUTRAL = 4
+	ENEMY = 1,
+	NEUTRAL = 2
 };
 
 enum eEntityType
@@ -15,6 +21,7 @@ enum eEntityType
 	PROP = 2,
 	PROJECTILE = 4,
 	TRIGGER = 8,
+	PLAYER = 16,
 	_COUNT,
 };
 

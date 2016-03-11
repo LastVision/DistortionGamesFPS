@@ -149,6 +149,7 @@ void ComponentLoader::LoadTriggerComponent(XMLReader& aDocument, tinyxml2::XMLEl
 			aDocument.ForceReadAttribute(e, "type", name);
 			aDocument.ReadAttribute(e, "value", aOutputData.myValue);
 			aDocument.ReadAttribute(e, "ID", aOutputData.myID);
+			aDocument.ReadAttribute(e, "oneTimeTrigger", aOutputData.myIsOneTime);
 
 			aOutputData.myTriggerType = ConvertToTriggerEnum(name);
 		}
@@ -190,7 +191,13 @@ void ComponentLoader::LoadUpgradeComponent(XMLReader& aDocument, tinyxml2::XMLEl
 	for (tinyxml2::XMLElement* e = aDocument.FindFirstChild(aSourceElement); e != nullptr; e = aDocument.FindNextElement(e))
 	{
 		std::string elementName = CU::ToLower(e->Name());
-		if (elementName == CU::ToLower("ClipSizeModifier"))
+		if (elementName == CU::ToLower("Weapon"))
+		{
+			std::string type = "";
+			aDocument.ForceReadAttribute(e, "type", type);
+			aOutputData.myWeaponType = EntityEnumConverter::ConvertStringToWeaponType(type);
+		}
+		else if (elementName == CU::ToLower("ClipSizeModifier"))
 		{
 			aDocument.ForceReadAttribute(e, "value", aOutputData.myClipSizeModifier);
 		}

@@ -22,6 +22,10 @@ namespace EntityEnumConverter
 		{
 			return eEntityType::TRIGGER;
 		}
+		else if (aType == "player")
+		{
+			return eEntityType::PLAYER;
+		}
 
 		DL_ASSERT("The " + aType + " entity type is not supported, please tell Daniel about it.");
 		return eEntityType::_COUNT;
@@ -230,11 +234,11 @@ namespace EntityEnumConverter
 
 	const eOwnerType ConvertStringToOwnerType(const std::string& aType)
 	{
-		if (aType == "player")
-		{
-			return eOwnerType::PLAYER;
-		}
-		else if (aType == "enemy")
+		//if (aType == "player")
+		//{
+		//	return eOwnerType::PLAYER;
+		//}
+		if (aType == "enemy")
 		{
 			return eOwnerType::ENEMY;
 		}
@@ -244,5 +248,24 @@ namespace EntityEnumConverter
 		}
 		DL_ASSERT("The " + aType + " owner type is not supported, please tell Daniel about it.");
 		return eOwnerType::NOT_USED;
+	}
+
+	const eWeaponType ConvertStringToWeaponType(const std::string& aType)
+	{
+		if (aType == "pistol")
+		{
+			return eWeaponType::PISTOL;
+		}
+		else if (aType == "shotgun")
+		{
+			return eWeaponType::SHOTGUN;
+		}
+		else if (aType == "grenade_launcher")
+		{
+			return eWeaponType::GRENADE_LAUNCHER;
+		}
+
+		DL_ASSERT("The " + aType + " weapon type is not supported.");
+		return eWeaponType::PISTOL;
 	}
 }
