@@ -31,6 +31,9 @@ namespace Prism
 		, myInstancingMatrixBuffer(nullptr)
 		, myInstancingScaleBuffer(nullptr)
 		, myInstancingHeightBuffer(nullptr)
+		, myMatrices(128)
+		, myScales(128)
+		, myHeights(128)
 	{
 		myInstancingBufferDesc = new D3D11_BUFFER_DESC();
 	}

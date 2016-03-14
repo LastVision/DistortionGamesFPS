@@ -36,6 +36,7 @@ GrenadeLauncher::GrenadeLauncher(Prism::Scene* aScene)
 	//{
 	//	Entity* bullet = EntityFactory::CreateEntity(eEntityType::PROJECTILE, myScene, true, CU::Vector3<float>());
 	//	myBullets.Add(bullet);
+	//	bullet->GetComponent<PhysicsComponent>()->Sleep();
 	//}
 }
 
@@ -80,10 +81,12 @@ void GrenadeLauncher::Update(float aDelta)
 void GrenadeLauncher::ShootAtDirection(const CU::Matrix44<float>& aOrientation)
 {
 	myBullets[myCurrentBulletToUse]->Reset();
-	if (myBullets[myCurrentBulletToUse]->IsInScene() == false)
-	{
-		myBullets[myCurrentBulletToUse]->AddToScene();
-	}
+	//if (myBullets[myCurrentBulletToUse]->IsInScene() == false)
+	//{
+	//	myBullets[myCurrentBulletToUse]->GetComponent<PhysicsComponent>()->AddToScene();
+	//	myBullets[myCurrentBulletToUse]->AddToScene();
+	//}
+
 	myBullets[myCurrentBulletToUse]->GetComponent<ProjectileComponent>()->Activate();
 	myBullets[myCurrentBulletToUse]->GetComponent<PhysicsComponent>()->TeleportToPosition(aOrientation.GetPos());
 	myBullets[myCurrentBulletToUse]->GetComponent<PhysicsComponent>()->AddForce(aOrientation.GetForward(), 20.f);
@@ -93,4 +96,5 @@ void GrenadeLauncher::ShootAtDirection(const CU::Matrix44<float>& aOrientation)
 	{
 		myCurrentBulletToUse = 0;
 	}
+	//myBullets.Add(bullet);
 }

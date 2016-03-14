@@ -63,10 +63,11 @@ ClientLevel::ClientLevel()
 
 	//myTempPosition = { 835.f, 0.f, -1000.f };
 
+	Prism::ModelLoader::GetInstance()->Pause();
 	myDeferredRenderer = new Prism::DeferredRenderer();
 
-
 	myEmitterManager = new EmitterManager(*myPlayer->GetComponent<InputComponent>()->GetCamera());
+	Prism::ModelLoader::GetInstance()->UnPause();
 	CU::Matrix44f orientation;
 	myInstanceOrientations.Add(orientation);
 
@@ -105,6 +106,7 @@ ClientLevel::~ClientLevel()
 void ClientLevel::Update(const float aDeltaTime)
 {
 	SharedLevel::Update(aDeltaTime);
+	myPlayer->GetComponent<FirstPersonRenderComponent>()->UpdateCoOpPositions(myPlayers);
 	myPlayer->Update(aDeltaTime);
 	myEmitterManager->UpdateEmitters(aDeltaTime, CU::Matrix44f());
 
@@ -194,7 +196,7 @@ void ClientLevel::ReceiveMessage(const NetworkAddEnemyMessage& aMessage)
 	newEnemy->AddToScene();
 	newEnemy->Reset();
 
-	myEnemies.Add(newEnemy);
+	myActiveEnemies.Add(newEnemy);
 	Prism::MemoryTracker::GetInstance()->SetRunTime(isRunTime);
 }
 
@@ -202,7 +204,7 @@ void ClientLevel::ReceiveMessage(const NetworkOnDeathMessage& aMessage)
 {
 	DL_ASSERT_EXP(aMessage.myGID != 0, "Can't kill server (id 0).");
 
-	for (Entity* e : myEnemies)
+	for (Entity* e : myActiveEnemies)
 	{
 		if (e->GetGID() == aMessage.myGID)
 		{

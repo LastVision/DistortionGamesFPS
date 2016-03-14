@@ -45,10 +45,10 @@ namespace Prism
 
 #ifdef THREAD_PHYSICS
 		myManager->SetLogicDone();
-		myManager->WaitForPhysics();
+		//myManager->WaitForPhysics();
 #endif
 
-		myManager->Swap();
+		//myManager->Swap();
 
 #ifdef THREAD_PHYSICS
 		myManager->SetSwapDone();
@@ -128,6 +128,16 @@ namespace Prism
 		myManager->Create(aComponent, aPhysData, aOrientation, aFBXPath, aDynamicBodyOut, aStaticBodyOut, someShapesOut);
 	}
 
+	void PhysicsInterface::Add(physx::PxRigidDynamic* aDynamic)
+	{
+		myManager->Add(aDynamic);
+	}
+
+	void PhysicsInterface::Add(physx::PxRigidStatic* aStatic)
+	{
+		myManager->Add(aStatic);
+	}
+
 	void PhysicsInterface::Remove(physx::PxRigidDynamic* aDynamic, const PhysicsComponentData& aData)
 	{
 		myManager->Remove(aDynamic, aData);
@@ -136,6 +146,16 @@ namespace Prism
 	void PhysicsInterface::Remove(physx::PxRigidStatic* aStatic, const PhysicsComponentData& aData)
 	{
 		myManager->Remove(aStatic, aData);
+	}
+
+	void PhysicsInterface::Sleep(physx::PxRigidDynamic* aDynamic)
+	{
+		myManager->Sleep(aDynamic);
+	}
+
+	void PhysicsInterface::Wake(physx::PxRigidDynamic* aDynamic)
+	{
+		myManager->Wake(aDynamic);
 	}
 
 	PhysicsInterface::PhysicsInterface(std::function<void(PhysicsComponent*, PhysicsComponent*)> anOnTriggerCallback)

@@ -66,7 +66,7 @@ DGFXReader::~DGFXReader()
 
 		for (int i = 0; i < myErrors.Size(); ++i)
 		{
-			std::cout << myErrors[i] << std::endl;
+			std::cout << myErrors[i] << std::endl << std::endl;
 		}
 
 		system("PAUSE");
