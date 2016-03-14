@@ -24,6 +24,7 @@ private:
 	void HandleMessage(const NetMessageConnectMessage& aMessage, const sockaddr_in& aSender) override;
 	void HandleMessage(const NetMessageDisconnect& aMessage, const sockaddr_in& aSenderAddress) override;
 	void HandleMessage(const NetMessageRequestLevel& aMessage, const sockaddr_in& aSenderAddress) override;
+	void HandleMessage(const NetMessageRequestStartGame& aMessage, const sockaddr_in& aSenderAddress) override;
 	void HandleMessage(const NetMessagePingReply& aMessage, const sockaddr_in& aSenderAddress) override;
 	void HandleMessage(const NetMessagePingRequest& aMessage, const sockaddr_in& aSenderAddress) override;
 	void HandleMessage(const NetMessageOnHit& aMessage, const sockaddr_in& aSenderAddress) override;

@@ -1,18 +1,19 @@
 #include "stdafx.h"
-#include "LobbyState.h"
+
+#include "ClientNetworkManager.h"
 #include <Cursor.h>
 #include <fstream>
 #include <GUIManager.h>
+#include "InGameState.h"
 #include <InputWrapper.h>
-#include "ClientNetworkManager.h"
-#include <PostMaster.h>
+#include "LobbyState.h"
+#include <NetMessageRequestStartGame.h>
 #include <OnClickMessage.h>
+#include <PostMaster.h>
 
 
 LobbyState::LobbyState()
 	: myGUIManager(nullptr)
-	, myServer(nullptr)
-	, myServers(16)
 {
 }
 
@@ -29,7 +30,7 @@ void LobbyState::InitState(StateStackProxy* aStateStackProxy, GUI::Cursor* aCurs
 	PostMaster::GetInstance()->Subscribe(eMessageType::ON_CLICK, this);
 	myCursor = aCursor;
 	myIsActiveState = true;
-	myIsLetThrough = true;
+	myIsLetThrough = false;
 	myStateStatus = eStateStatus::eKeepState;
 	myStateStack = aStateStackProxy;
 
@@ -38,24 +39,6 @@ void LobbyState::InitState(StateStackProxy* aStateStackProxy, GUI::Cursor* aCurs
 	const CU::Vector2<int>& windowSize = Prism::Engine::GetInstance()->GetWindowSizeInt();
 	OnResize(windowSize.x, windowSize.y);
 
-	std::ifstream stream;
-	stream.open("Data/Setting/ip.txt");
-
-	int i = 0;
-	Server server;
-	while (stream >> server.myIp && i < 9)
-	{
-		++i;
-		stream >> server.myName;
-
-		myServers.Add(server);
-	}
-
-	for (int i = 0; i < myServers.Size(); ++i)
-	{
-		std::string text(myServers[i].myName + ": " + myServers[i].myIp);
-		myGUIManager->SetButtonText(i, text);
-	}
 	myCursor->SetShouldRender(true);
 }
 
@@ -75,13 +58,7 @@ const eStateStatus LobbyState::Update(const float& aDeltaTime)
 	if (CU::InputWrapper::GetInstance()->KeyDown(DIK_ESCAPE) == true
 		|| CU::InputWrapper::GetInstance()->KeyDown(DIK_N) == true)
 	{
-		return eStateStatus::ePopSubState;
-	}
-
-	if (myServer != nullptr)
-	{
-		ClientNetworkManager::GetInstance()->ConnectToServer(myServer->myIp.c_str());
-
+		bool ShouldDisconnectFromServerHere = true;
 		return eStateStatus::ePopSubState;
 	}
 
@@ -106,8 +83,9 @@ void LobbyState::ReceiveMessage(const OnClickMessage& aMessage)
 	{
 		switch (aMessage.myEvent)
 		{
-		case eOnClickEvent::CONNECT:
-			myServer = &myServers[aMessage.myID];
+		case eOnClickEvent::START_GAME:
+			//myStateStack->PushSubGameState(new InGameState());
+			ClientNetworkManager::GetInstance()->AddMessage(NetMessageRequestStartGame());
 			break;
 		default:
 			DL_ASSERT("Unknown event.");

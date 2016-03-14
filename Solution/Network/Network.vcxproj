@@ -99,6 +99,7 @@
     <ClInclude Include="NetMessagePingRequest.h" />
     <ClInclude Include="NetMessagePosition.h" />
     <ClInclude Include="NetMessageRequestLevel.h" />
+    <ClInclude Include="NetMessageRequestStartGame.h" />
     <ClInclude Include="NetworkMessageTypes.h" />
     <ClInclude Include="SerializeHelper.h" />
     <ClInclude Include="ServerNetwork.h" />
@@ -120,6 +121,7 @@
     <ClCompile Include="NetMessagePingRequest.cpp" />
     <ClCompile Include="NetMessagePosition.cpp" />
     <ClCompile Include="NetMessageRequestLevel.cpp" />
+    <ClCompile Include="NetMessageRequestStartGame.cpp" />
     <ClCompile Include="ServerNetwork.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>

@@ -8,7 +8,7 @@
 #include <FadeMessage.h>
 #include "InGameState.h"
 #include <InputWrapper.h>
-#include "LobbyState.h"
+#include "ServerSelectState.h"
 #include <NetMessageRequestLevel.h>
 #include <PostMaster.h>
 #include <ScriptSystem.h>
@@ -64,7 +64,7 @@ const eStateStatus InGameState::Update(const float& aDeltaTime)
 	else if (CU::InputWrapper::GetInstance()->KeyDown(DIK_N))
 	{
 		SET_RUNTIME(false);
-		myStateStack->PushSubGameState(new LobbyState());
+		myStateStack->PushSubGameState(new ServerSelectState());
 	}
 
 	if (CU::InputWrapper::GetInstance()->KeyDown(DIK_NUMPAD1))
@@ -102,8 +102,6 @@ const eStateStatus InGameState::Update(const float& aDeltaTime)
 	//LUA::ScriptSystem::GetInstance()->CallFunction("Update", { aDeltaTime });
 	//LUA::ScriptSystem::GetInstance()->Update();
 
-	ClientNetworkManager::GetInstance()->MainIsDone();
-	ClientNetworkManager::GetInstance()->WaitForReceieve();
 	return myStateStatus;
 }
 

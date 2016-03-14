@@ -10,6 +10,7 @@
 #include <NetMessageOnJoin.h>
 #include <NetMessageDisconnect.h>
 #include <NetMessageRequestLevel.h>
+#include <NetMessageRequestStartGame.h>
 #include <NetMessagePingRequest.h>
 #include <NetMessagePingReply.h>
 #include <NetMessagePosition.h>
@@ -312,6 +313,11 @@ void ServerNetworkManager::HandleMessage(const NetMessageRequestLevel& aMessage,
 	//send to all change level
 	int apa = 5;
 	++apa;
+}
+
+void ServerNetworkManager::HandleMessage(const NetMessageRequestStartGame& aMessage, const sockaddr_in& aSenderAddress)
+{
+	
 }
 
 void ServerNetworkManager::HandleMessage(const NetMessagePingReply& aMessage, const sockaddr_in& aSenderAddress)

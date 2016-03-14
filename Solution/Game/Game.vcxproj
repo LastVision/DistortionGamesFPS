@@ -214,6 +214,7 @@
     <ClInclude Include="ClientLevel.h" />
     <ClInclude Include="ClientLevelFactory.h" />
     <ClInclude Include="LobbyState.h" />
+    <ClInclude Include="ServerSelectState.h" />
     <ClInclude Include="ScriptInterface.h" />
     <ClInclude Include="StateEnums.h" />
     <ClInclude Include="StateStack.h" />
@@ -233,6 +234,7 @@
     <ClCompile Include="ClientLevel.cpp" />
     <ClCompile Include="ClientLevelFactory.cpp" />
     <ClCompile Include="LobbyState.cpp" />
+    <ClCompile Include="ServerSelectState.cpp" />
     <ClCompile Include="ScriptInterface.cpp" />
     <ClCompile Include="StateStack.cpp" />
     <ClCompile Include="StateStackProxy.cpp" />

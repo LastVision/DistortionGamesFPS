@@ -1,7 +1,9 @@
 #include "stdafx.h"
 
+#include <AnimationSystem.h>
 #include <AudioInterface.h>
 #include <Camera.h>
+#include "ClientNetworkManager.h"
 #include <ColoursForBG.h>
 #include <CommonHelper.h>
 #include "Console.h"
@@ -19,18 +21,16 @@
 #include "PollingStation.h"
 #include <PostMaster.h>
 #include <ResizeMessage.h>
+#include "ScriptInterface.h"
+#include <ScriptSystem.h>
+#include "ServerSelectState.h"
 #include <SystemMonitor.h>
 #include <TimerManager.h>
 #include <VTuneApi.h>
 #include <Vector.h>
 #include <XMLReader.h>
 
-#include <AnimationSystem.h>
-#include "ScriptInterface.h"
-#include <ScriptSystem.h>
-#include "InGameState.h"
 
-#include "ClientNetworkManager.h"
 
 ClientGame::ClientGame()
 	: myLockMouse(true)
@@ -90,7 +90,7 @@ bool ClientGame::Init(HWND& aHwnd)
 
 
 	//Console::GetInstance(); // needed to create console here
-	myStateStack.PushMainGameState(new InGameState());
+	myStateStack.PushMainGameState(new ServerSelectState());
 
 	//PostMaster::GetInstance()->SendMessage(GameStateMessage(eGameState::LOAD_GAME, 1));
 	GAME_LOG("Init Successful");
