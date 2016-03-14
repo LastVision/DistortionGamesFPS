@@ -711,9 +711,9 @@ namespace Prism
 		if (CU::FileExists(cowPath) == false)
 		{
 
-			if (!wfo.loadObj(cowPath.c_str(), false))
+			if (!wfo.loadObj(objPath.c_str(), false))
 			{
-				DL_ASSERT(CU::Concatenate("Error loading file: %s", cowPath.c_str()));
+				DL_ASSERT(CU::Concatenate("Error loading file: %s", objPath.c_str()));
 			}
 
 			physx::PxTriangleMeshDesc meshDesc;
