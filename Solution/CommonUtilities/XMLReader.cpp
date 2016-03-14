@@ -386,8 +386,23 @@ bool XMLReader::ForceReadAttribute(const tinyxml2::XMLElement* aElementToReadFro
 
 	DL_ASSERT_EXP(aElementToReadFrom != nullptr, "[XMLReader]: Tried to ForceRead from nullptr");
 
-	if (aElementToReadFrom != nullptr 
+	if (aElementToReadFrom != nullptr
 		&& aElementToReadFrom->QueryIntAttribute(aAttributeToRead.c_str(), &aTargetVariable) == tinyxml2::XML_NO_ERROR)
+		return true;
+
+	DL_ASSERT(CU::Concatenate("Failed to read Attribute: [ %s ], from Element: [ %s ], in Document: [ %s ]", aAttributeToRead.c_str(), aElementToReadFrom->Name(), myFilePath.c_str()));
+	return false;
+}
+
+bool XMLReader::ForceReadAttribute(const tinyxml2::XMLElement* aElementToReadFrom, const std::string& aAttributeToRead, unsigned int& aTargetVariable)
+{
+	if (myHasOpenedDoc == false)
+		DL_ASSERT("[XMLReader]: Tried to [ForceReadAttribute(int)] before Opening the document");
+
+	DL_ASSERT_EXP(aElementToReadFrom != nullptr, "[XMLReader]: Tried to ForceRead from nullptr");
+
+	if (aElementToReadFrom != nullptr
+		&& aElementToReadFrom->QueryUnsignedAttribute(aAttributeToRead.c_str(), &aTargetVariable) == tinyxml2::XML_NO_ERROR)
 		return true;
 
 	DL_ASSERT(CU::Concatenate("Failed to read Attribute: [ %s ], from Element: [ %s ], in Document: [ %s ]", aAttributeToRead.c_str(), aElementToReadFrom->Name(), myFilePath.c_str()));

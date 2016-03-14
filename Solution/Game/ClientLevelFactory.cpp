@@ -93,14 +93,17 @@ void ClientLevelFactory::LoadProps(XMLReader& aReader, tinyxml2::XMLElement* aEl
 		CU::Vector3f propPosition;
 		CU::Vector3f propRotation;
 		CU::Vector3f propScale;
-
+		
+		unsigned int gid(UINT32_MAX);
+		
+		ReadGID(aReader, entityElement, gid);
 		ReadOrientation(aReader, entityElement, propPosition, propRotation, propScale);
 
 		propRotation.x = CU::Math::DegreeToRad(propRotation.x);
 		propRotation.y = CU::Math::DegreeToRad(propRotation.y);
 		propRotation.z = CU::Math::DegreeToRad(propRotation.z);
 		
-		Entity* newEntity = EntityFactory::CreateEntity(eEntityType::PROP, propType, static_cast<ClientLevel*>(myCurrentLevel)->GetScene()
+		Entity* newEntity = EntityFactory::CreateEntity(gid, eEntityType::PROP, propType, static_cast<ClientLevel*>(myCurrentLevel)->GetScene()
 			, true, propPosition, propRotation, propScale);
 		newEntity->AddToScene();
 		newEntity->Reset();
@@ -152,13 +155,17 @@ void ClientLevelFactory::LoadTriggers(XMLReader& aReader, tinyxml2::XMLElement* 
 		CU::Vector3f triggerRotation;
 		CU::Vector3f triggerScale;
 
+		unsigned int gid(UINT32_MAX);
+
+		ReadGID(aReader, entityElement, gid);
+
 		ReadOrientation(aReader, entityElement, triggerPosition, triggerRotation, triggerScale);
 
 		triggerRotation.x = CU::Math::DegreeToRad(triggerRotation.x);
 		triggerRotation.y = CU::Math::DegreeToRad(triggerRotation.y);
 		triggerRotation.z = CU::Math::DegreeToRad(triggerRotation.z);
 
-		Entity* newEntity = EntityFactory::CreateEntity(eEntityType::UNIT, triggerType, static_cast<ClientLevel*>(myCurrentLevel)->GetScene()
+		Entity* newEntity = EntityFactory::CreateEntity(gid, eEntityType::UNIT, triggerType, static_cast<ClientLevel*>(myCurrentLevel)->GetScene()
 			, true, triggerPosition, triggerRotation, triggerScale);
 
 		if (newEntity->GetComponent<TriggerComponent>()->IsClientSide() == true)
@@ -194,8 +201,11 @@ void ClientLevelFactory::LoadLights(XMLReader& aReader, tinyxml2::XMLElement* aE
 
 		aReader.ForceReadAttribute(aReader.ForceFindFirstChild(lightElement, "range"), "value", range);
 
+		unsigned int gid(UINT32_MAX);
 
-		Prism::PointLight* light = new Prism::PointLight();
+		ReadGID(aReader, lightElement, gid);
+
+		Prism::PointLight* light = new Prism::PointLight(gid);
 		light->SetPosition(position);
 		light->SetColor(color);
 		light->SetRange(range);

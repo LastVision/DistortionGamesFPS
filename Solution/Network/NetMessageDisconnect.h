@@ -3,11 +3,11 @@
 class NetMessageDisconnect : public NetImportantMessage
 {
 public:
-	NetMessageDisconnect(const unsigned short aClientID);
+	NetMessageDisconnect(unsigned int aClientID);
 	NetMessageDisconnect();
 	~NetMessageDisconnect();
 
-	unsigned short myClientID;
+	unsigned int myClientID;
 private:
 	void DoSerialize(StreamType& aStream) override;
 	void DoDeSerialize(StreamType& aStream) override;

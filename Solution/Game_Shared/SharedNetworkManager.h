@@ -49,7 +49,7 @@ protected:
 	{
 		float myTimer;
 		bool myHasReplied;
-		unsigned short myNetworkID;
+		unsigned int myGID;
 		sockaddr_in myNetworkAddress;
 	};
 
@@ -65,14 +65,14 @@ protected:
 	struct ImportantReceivedMessage
 	{
 		ImportantReceivedMessage() {}
-		ImportantReceivedMessage(unsigned int anImportantID, int aUserID)
+		ImportantReceivedMessage(unsigned int anImportantID, unsigned int aSenderGID)
 			: myImportantID(anImportantID)
-			, myUserID(aUserID)
+			, mySenderGID(aSenderGID)
 			, myTimer(0.f)
 		{}
 
 		unsigned int myImportantID;
-		int myUserID;
+		unsigned int mySenderGID;
 		float myTimer;
 	};
 
@@ -123,7 +123,8 @@ protected:
 
 	unsigned short myCurrentBuffer;
 	unsigned short myCurrentSendBuffer;
-	unsigned short myNetworkID;
+	
+	unsigned int myGID;
 
 	volatile bool myIsRunning;
 	volatile bool myReceieveIsDone;
@@ -149,7 +150,7 @@ inline void SharedNetworkManager::AddMessage(T aMessage)
 	
 	if (myIsServer == false)
 	{
-		aMessage.mySenderID = myNetworkID;
+		aMessage.mySenderID = myGID;
 	}
 	bool isImportant = aMessage.GetIsImportant();
 	unsigned int importantID = 0;

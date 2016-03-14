@@ -9,8 +9,9 @@
 
 namespace Prism
 {
-	PointLight::PointLight()
-		: myRange(0)
+	PointLight::PointLight(unsigned int aGID)
+		: myGID(aGID)
+		, myRange(0)
 		, myLightMesh(nullptr)
 	{
 		ModelProxy* model = ModelLoader::GetInstance()->LoadModel("Data/Resource/Model/Light_mesh/SM_sphere.fbx"

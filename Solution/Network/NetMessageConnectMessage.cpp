@@ -4,26 +4,25 @@
 #include <MemoryTracker.h>
 NetMessageConnectMessage::NetMessageConnectMessage(const std::string& aName, short aServerID)
 {
-	myID = int(eNetMessageType::ON_CONNECT);
+	myID = static_cast<uint8_t>(eNetMessageType::ON_CONNECT);
 	myName = aName;
 	myServerID = aServerID;
 }
 
 NetMessageConnectMessage::NetMessageConnectMessage()
 {
-	myClientsOnServer.Init(8);
-	myID = int(eNetMessageType::ON_CONNECT);
+	myID = static_cast<uint8_t>(eNetMessageType::ON_CONNECT);
 }
 
 NetMessageConnectMessage::NetMessageConnectMessage(sockaddr_in anAddress)
 {
 	anAddress;
-	myID = int(eNetMessageType::ON_CONNECT);
+	myID = static_cast<uint8_t>(eNetMessageType::ON_CONNECT);
 }
 
 NetMessageConnectMessage::NetMessageConnectMessage(const std::string& aName, short aServerID, short aOtherClientID)
 {
-	myID = int(eNetMessageType::ON_CONNECT);
+	myID = static_cast<uint8_t>(eNetMessageType::ON_CONNECT);
 	myName = aName;
 	myServerID = aServerID;
 	myOtherClientID = aOtherClientID;
