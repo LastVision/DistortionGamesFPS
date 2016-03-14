@@ -18,9 +18,13 @@ public:
 
 	void CollisionCallback(PhysicsComponent* aFirst, PhysicsComponent* aSecond);
 
+	void CleanUp();
+
 protected:
-	CU::GrowingArray<Entity*> myEntities;
-	CU::GrowingArray<Entity*> myEnemies;
+	CU::GrowingArray<Entity*> myActiveEntities;
+	CU::GrowingArray<Entity*> myInactiveEntities;
+	CU::GrowingArray<Entity*> myActiveEnemies;
+	CU::GrowingArray<Entity*> myInactiveEnemies;
 	CU::GrowingArray<Entity*> myPlayers;
 };
 

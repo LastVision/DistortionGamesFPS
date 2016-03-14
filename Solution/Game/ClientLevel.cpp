@@ -199,7 +199,7 @@ void ClientLevel::ReceiveMessage(const NetworkAddEnemyMessage& aMessage)
 	//PostMaster::GetInstance()->SendMessage(EmitterMessage("Example", aMessage.myPosition));
 	newEnemy->GetComponent<NetworkComponent>()->SetNetworkID(aMessage.myNetworkID);
 
-	myEnemies.Add(newEnemy);
+	myActiveEnemies.Add(newEnemy);
 	Prism::MemoryTracker::GetInstance()->SetRunTime(isRunTime);
 }
 
@@ -207,7 +207,7 @@ void ClientLevel::ReceiveMessage(const NetworkOnDeathMessage& aMessage)
 {
 	DL_ASSERT_EXP(aMessage.myNetworkID != 0, "Can't kill server (id 0).");
 
-	for (Entity* e : myEnemies)
+	for (Entity* e : myActiveEnemies)
 	{
 		if (e->GetNetworkID() == aMessage.myNetworkID)
 		{
