@@ -5,6 +5,7 @@
 #include <MathHelper.h>
 #include "ServerLevel.h"
 #include "ServerLevelFactory.h"
+#include <PhysicsInterface.h>
 #include <XMLReader.h>
 #include <TriggerComponent.h>
 #include <NetworkComponent.h>
@@ -22,6 +23,9 @@ SharedLevel* ServerLevelFactory::LoadCurrentLevel()
 {
 	myCurrentLevel = new ServerLevel();
 	ReadLevel(myLevelPaths[myCurrentID]);
+#ifdef THREAD_PHYSICS
+	Prism::PhysicsInterface::GetInstance()->InitThread();
+#endif
 	return myCurrentLevel;
 }
 
