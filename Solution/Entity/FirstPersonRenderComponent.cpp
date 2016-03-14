@@ -154,8 +154,13 @@ void FirstPersonRenderComponent::Render()
 		CU::Matrix44<float> renderPos;
 		CU::Vector3<float> tempPos(myCoOpPositions[i]);
 		tempPos.y += 2.f;
+		float toBuddy = CU::Dot(tempPos, myInputComponentEyeOrientation.GetForward());
+		if (toBuddy < 0.f)
+		{
+			continue;
+		}
 		renderPos.SetPos(tempPos);
-		renderPos = renderPos * CU::InverseSimple(myEntity.GetComponent<InputComponent>()->GetEyeOrientation());
+		renderPos = renderPos * CU::InverseSimple(myInputComponentEyeOrientation);
 		renderPos = renderPos * myEntity.GetComponent<InputComponent>()->GetCamera()->GetProjection();
 
 		CU::Vector3<float> newRenderPos = renderPos.GetPos();
