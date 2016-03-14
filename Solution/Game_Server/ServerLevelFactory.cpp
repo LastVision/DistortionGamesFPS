@@ -134,13 +134,13 @@ void ServerLevelFactory::LoadTriggers(XMLReader& aReader, tinyxml2::XMLElement* 
 
 		if (newEntity->GetComponent<TriggerComponent>()->IsClientSide() == false)
 		{
-		newEntity->Reset();
+			newEntity->Reset();
 			myCurrentLevel->AddEntity(newEntity);
-			if (newEntity->GetComponent<NetworkComponent>() != nullptr)
-			{
-				myIDCount++;
-				newEntity->GetComponent<NetworkComponent>()->SetNetworkID(myIDCount);
-			}
+			//if (newEntity->GetComponent<NetworkComponent>() != nullptr)
+			//{
+			//	myIDCount++;
+			//	newEntity->GetComponent<NetworkComponent>()->SetNetworkID(myIDCount);
+			//}
 		}
 		else
 		{
