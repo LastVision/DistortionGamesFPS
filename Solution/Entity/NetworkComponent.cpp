@@ -13,10 +13,9 @@
 #include "HealthComponent.h"
 #include <Quaternion.h>
 
-NetworkComponent::NetworkComponent(Entity& anEntity, CU::Matrix44<float>& anOrientation, unsigned int& aNetworkID)
+NetworkComponent::NetworkComponent(Entity& anEntity, CU::Matrix44<float>& anOrientation)
 	: Component(anEntity)
 	, myOrientation(anOrientation)
-	, myNetworkID(aNetworkID)
 	, myAlpha(0.f)
 	, myIsPlayer(false)
 	, myShouldUpdate(true)
@@ -42,11 +41,6 @@ void NetworkComponent::Reset()
 	myShouldUpdate = true;
 }
 
-void NetworkComponent::SetNetworkID(unsigned int anID)
-{
-	myNetworkID = anID;
-}
-
 void NetworkComponent::Update(float aDelta)
 {
 	if (myEntity.GetIsClient() == true)
@@ -61,7 +55,7 @@ void NetworkComponent::Update(float aDelta)
 
 void NetworkComponent::ReceiveMessage(const NetworkSetPositionMessage& aMessage)
 {
-	if (aMessage.myNetworkID == myNetworkID)
+	if (aMessage.myGID == myEntity.GetGID())
 	{
 		myPrevPosition = myServerPosition;
 		myServerPosition = aMessage.myPosition;
@@ -73,7 +67,7 @@ void NetworkComponent::ReceiveMessage(const NetworkSetPositionMessage& aMessage)
 
 void NetworkComponent::ReceiveMessage(const NetworkOnHitMessage& aMessage)
 {
-	if (myEntity.GetIsClient() == false && myNetworkID == aMessage.myNetworkID)
+	if (myEntity.GetIsClient() == false && myEntity.GetGID() == aMessage.myGID)
 	{
 		myEntity.SendNote(DamageNote(static_cast<int>(aMessage.myDamage)));
 	}
@@ -163,13 +157,13 @@ void NetworkComponent::ServerUpdate(float aDelta)
 			}
 			else
 			{
-				PostMaster::GetInstance()->SendMessage(NetworkOnDeathMessage(myNetworkID));
+				PostMaster::GetInstance()->SendMessage(NetworkOnDeathMessage(myEntity.GetGID()));
 				myShouldUpdate = false;
 				return;
 			}
 		}
 		mySendTime = NETWORK_UPDATE_INTERVAL;
-		PostMaster::GetInstance()->SendMessage(NetworkSendPositionMessage(myServerPosition, myServerRotationY, myNetworkID));
+		PostMaster::GetInstance()->SendMessage(NetworkSendPositionMessage(myServerPosition, myServerRotationY, myEntity.GetGID()));
 
 	}
 }

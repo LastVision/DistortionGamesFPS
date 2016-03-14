@@ -8,11 +8,11 @@ NetMessageAddEnemy::NetMessageAddEnemy()
 }
 
 
-NetMessageAddEnemy::NetMessageAddEnemy(const CU::Vector3<float> &aPosition, unsigned int aNetworkID)
+NetMessageAddEnemy::NetMessageAddEnemy(const CU::Vector3<float> &aPosition, unsigned int aGID)
 {
 	myPosition = aPosition;
 	myID = int(eNetMessageType::ADD_ENEMY);
-	myNetworkID = aNetworkID;
+	myGID = aGID;
 }
 
 NetMessageAddEnemy::~NetMessageAddEnemy()
@@ -23,12 +23,12 @@ void NetMessageAddEnemy::DoSerialize(StreamType& aStream)
 {
 	__super::DoSerialize(aStream);
 	SERIALIZE(aStream, myPosition);
-	SERIALIZE(aStream, myNetworkID);
+	SERIALIZE(aStream, myGID);
 }
 
 void NetMessageAddEnemy::DoDeSerialize(StreamType& aStream)
 {
 	__super::DoDeSerialize(aStream);
 	DESERIALIZE(aStream, myPosition);
-	DESERIALIZE(aStream, myNetworkID);
+	DESERIALIZE(aStream, myGID);
 }

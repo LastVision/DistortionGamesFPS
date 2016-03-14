@@ -13,7 +13,7 @@ public:
 
 	void StartNetwork(unsigned int aPortNum = 13397) override;
 	void ConnectToServer(const char* aServerIP = "127.0.0.1");
-	unsigned int GetNetworkID() const;
+	unsigned int GetGID() const;
 	const CU::GrowingArray<OtherClients>& GetClients();
 	//void Update(float aDelta) override;
 	void ReceiveMessage(const NetworkSendPositionMessage& aMessage) override;

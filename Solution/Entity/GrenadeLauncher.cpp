@@ -32,11 +32,11 @@ GrenadeLauncher::GrenadeLauncher(Prism::Scene* aScene)
 	reader.CloseDocument();
 
 
-	for (int i = 0; i < 8; ++i)
-	{
-		Entity* bullet = EntityFactory::CreateEntity(eEntityType::PROJECTILE, myScene, true, CU::Vector3<float>());
-		myBullets.Add(bullet);
-	}
+	//for (int i = 0; i < 8; ++i)
+	//{
+	//	Entity* bullet = EntityFactory::CreateEntity(eEntityType::PROJECTILE, myScene, true, CU::Vector3<float>());
+	//	myBullets.Add(bullet);
+	//}
 }
 
 

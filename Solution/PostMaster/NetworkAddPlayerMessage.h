@@ -3,23 +3,23 @@
 
 struct NetworkAddPlayerMessage : public Message
 {
-	NetworkAddPlayerMessage(unsigned short aNetworkID, const sockaddr_in& anAddress);
-	NetworkAddPlayerMessage(unsigned short aNetworkID);
+	NetworkAddPlayerMessage(unsigned int aGID, const sockaddr_in& anAddress);
+	NetworkAddPlayerMessage(unsigned int aGID);
 
-	unsigned short myNetworkID;
+	unsigned int myGID;
 	sockaddr_in myAddress;
 
 };
 
-inline NetworkAddPlayerMessage::NetworkAddPlayerMessage(unsigned short aNetworkID, const sockaddr_in& anAddress)
+inline NetworkAddPlayerMessage::NetworkAddPlayerMessage(unsigned int aGID, const sockaddr_in& anAddress)
 	: Message(eMessageType::NETWORK_ADD_PLAYER)
-	, myNetworkID(aNetworkID)
+	, myGID(aGID)
 	, myAddress(anAddress)
 {
 }
 
-inline NetworkAddPlayerMessage::NetworkAddPlayerMessage(unsigned short aNetworkID)
+inline NetworkAddPlayerMessage::NetworkAddPlayerMessage(unsigned int aGID)
 	: Message(eMessageType::NETWORK_ADD_PLAYER)
-	, myNetworkID(aNetworkID)
+	, myGID(aGID)
 {
 }

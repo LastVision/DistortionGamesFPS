@@ -209,7 +209,7 @@ void SharedNetworkManager::HandleMessage(const NetMessageImportantReply& aMessag
 		{
 			for (ImportantClient& client : msg.mySenders)
 			{
-				if (aMessage.mySenderID == client.myNetworkID)
+				if (aMessage.mySenderID == client.myGID)
 				{
 					client.myHasReplied = true;
 					return;
@@ -225,12 +225,12 @@ void SharedNetworkManager::HandleMessage(const NetMessagePingRequest&, const soc
 void SharedNetworkManager::HandleMessage(const NetMessageOnJoin&, const sockaddr_in&) {}
 void SharedNetworkManager::HandleMessage(const NetMessagePosition& aMessage, const sockaddr_in&) 
 {
-	PostMaster::GetInstance()->SendMessage(NetworkSetPositionMessage(aMessage.myPosition, aMessage.myRotationY, aMessage.myNetworkID)); 
+	PostMaster::GetInstance()->SendMessage(NetworkSetPositionMessage(aMessage.myPosition, aMessage.myRotationY, aMessage.myGID)); 
 }
 void SharedNetworkManager::HandleMessage(const NetMessageAddEnemy&, const sockaddr_in&){}
 void SharedNetworkManager::HandleMessage(const NetMessageOnHit& aMessage, const sockaddr_in&)
 { 
-	PostMaster::GetInstance()->SendMessage(NetworkOnHitMessage(aMessage.myDamage, aMessage.myNetworkID)); 
+	PostMaster::GetInstance()->SendMessage(NetworkOnHitMessage(aMessage.myDamage, aMessage.myGID)); 
 }
 void SharedNetworkManager::HandleMessage(const NetMessageOnDeath&, const sockaddr_in&) {}
 
@@ -244,7 +244,7 @@ bool SharedNetworkManager::AlreadyReceived(const NetMessage& aMessage)
 	for (int i = 0; i < myImportantReceivedMessages.Size(); ++i)
 	{
 		if (aMessage.GetImportantID() == myImportantReceivedMessages[i].myImportantID
-			&& aMessage.mySenderID == myImportantReceivedMessages[i].myUserID)
+			&& aMessage.mySenderID == myImportantReceivedMessages[i].mySenderGID)
 		{
 			return true;
 		}

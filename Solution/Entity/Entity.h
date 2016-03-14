@@ -21,7 +21,7 @@ class Entity
 	friend class EntityFactory;
 
 public:
-	Entity(const EntityData& aEntityData, Prism::Scene* aScene, bool aClientSide, const CU::Vector3<float>& aStartPosition, 
+	Entity(unsigned int aGID, const EntityData& aEntityData, Prism::Scene* aScene, bool aClientSide, const CU::Vector3<float>& aStartPosition, 
 		const CU::Vector3f& aRotation, const CU::Vector3f& aScale);
 	~Entity();
 
@@ -57,7 +57,8 @@ public:
 
 	bool IsAlive() const;
 
-	unsigned int GetNetworkID() const;
+	void SetGID(unsigned int aGID);
+	unsigned int GetGID() const;
 
 	bool IsInScene() const;
 
@@ -79,7 +80,7 @@ private:
 
 	CU::Matrix44<float> myOrientation;
 
-	unsigned int myNetworkID;
+	unsigned int myGID;
 };
 
 template <typename T>
@@ -142,9 +143,14 @@ inline bool Entity::IsAlive() const
 	return myAlive;
 }
 
-inline unsigned int Entity::GetNetworkID() const
+inline void Entity::SetGID(unsigned int aGID)
 {
-	return myNetworkID;
+	myGID = aGID;
+}
+
+inline unsigned int Entity::GetGID() const
+{
+	return myGID;
 }
 
 inline bool Entity::IsInScene() const

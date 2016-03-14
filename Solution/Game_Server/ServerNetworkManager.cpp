@@ -68,7 +68,7 @@ void ServerNetworkManager::Initiate()
 	myClients.Init(16);
 	myIsServer = true;
 	myNetwork = new ServerNetwork();
-	myNetworkID = 0;
+	myGID = 0;
 	myIDCount = 0;
 	__super::Initiate();
 }
@@ -139,7 +139,7 @@ void ServerNetworkManager::SendThread()
 		{
 			for (Connection& connection : myClients)
 			{
-				if (connection.myID != short(arr[5]))
+				if (connection.myID != static_cast<unsigned int>(arr[5]))
 				{
 					myNetwork->Send(arr, connection.myAddress);
 				}
@@ -209,7 +209,7 @@ void ServerNetworkManager::DisconnectConnection(const Connection& aConnection)
 	{
 		for (ImportantClient& client : impMsg.mySenders)
 		{
-			if (client.myNetworkID == aConnection.myID)
+			if (client.myGID == aConnection.myID)
 			{
 				client.myHasReplied = true;
 				break;
@@ -241,7 +241,7 @@ void ServerNetworkManager::UpdateImportantMessages(float aDeltaTime)
 				if (client.myTimer >= 1.f)
 				{
 					client.myTimer = 0.f;
-					std::string resend = "Sending important message " + std::to_string(msg.myImportantID) + " to client id " + std::to_string(client.myNetworkID);
+					std::string resend = "Sending important message " + std::to_string(msg.myImportantID) + " to client id " + std::to_string(client.myGID);
 					Utility::PrintEndl(resend, AQUA_TEXT);
 					myNetwork->Send(msg.myData, client.myNetworkAddress);
 				}
@@ -265,7 +265,7 @@ void ServerNetworkManager::AddImportantMessage(std::vector<char> aBuffer, unsign
 	for (Connection c : myClients)
 	{
 		ImportantClient client;
-		client.myNetworkID = c.myID;
+		client.myGID = c.myID;
 		client.myNetworkAddress = c.myAddress;
 		client.myTimer = 0.f;
 		client.myHasReplied = false;
@@ -352,7 +352,7 @@ void ServerNetworkManager::ReceiveMessage(const NetworkAddEnemyMessage& aMessage
 {
 	NetMessageAddEnemy toSend = CreateMessage<NetMessageAddEnemy>();
 	toSend.myPosition = aMessage.myPosition;
-	toSend.myNetworkID = aMessage.myNetworkID;
+	toSend.myGID = aMessage.myGID;
 	toSend.PackMessage();
 	myNetwork->Send(toSend.myStream, aMessage.myAddress);
 }
@@ -360,10 +360,10 @@ void ServerNetworkManager::ReceiveMessage(const NetworkAddEnemyMessage& aMessage
 void ServerNetworkManager::ReceiveMessage(const NetworkSendPositionMessage& aMessage)
 {
 	NetMessagePosition toSend;
-	toSend.mySenderID = static_cast<short>(aMessage.myNetworkID);
+	toSend.mySenderID = static_cast<short>(aMessage.myGID);
 	toSend.myPosition = aMessage.myPosition;
 	toSend.myRotationY = aMessage.myRotationY;
-	toSend.myNetworkID = aMessage.myNetworkID;
+	toSend.myGID = aMessage.myGID;
 	AddMessage(toSend);
 }
 
@@ -371,6 +371,6 @@ void ServerNetworkManager::ReceiveMessage(const NetworkOnDeathMessage& aMessage)
 {
 	NetMessageOnDeath toSend = CreateMessage<NetMessageOnDeath>();
 	toSend.mySenderID = 0;
-	toSend.myNetworkID = aMessage.myNetworkID;
+	toSend.myGID = aMessage.myGID;
 	AddMessage(toSend);
 }

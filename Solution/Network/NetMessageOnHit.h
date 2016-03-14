@@ -6,11 +6,11 @@ class NetMessageOnHit :
 {
 public:
 	NetMessageOnHit();
-	NetMessageOnHit(eNetMessageType aType, float aDamage, unsigned int aNetworkID);
+	NetMessageOnHit(eNetMessageType aType, float aDamage, unsigned int aGID);
 	~NetMessageOnHit();
 
 	float myDamage;
-	unsigned int myNetworkID;
+	unsigned int myGID;
 private:
 	void DoSerialize(StreamType& aStream) override;
 	void DoDeSerialize(StreamType& aStream) override;

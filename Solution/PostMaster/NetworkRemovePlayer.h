@@ -3,14 +3,14 @@
 
 struct NetworkRemovePlayerMessage : public Message
 {
-	NetworkRemovePlayerMessage(unsigned short aNetworkID);
+	NetworkRemovePlayerMessage(unsigned int aGID);
 
-	unsigned short myNetworkID;
+	unsigned int myGID;
 
 };
 
-inline NetworkRemovePlayerMessage::NetworkRemovePlayerMessage(unsigned short aNetworkID)
+inline NetworkRemovePlayerMessage::NetworkRemovePlayerMessage(unsigned int aGID)
 	: Message(eMessageType::NETWORK_REMOVE_PLAYER)
-	, myNetworkID(aNetworkID)
+	, myGID(aGID)
 {
 }

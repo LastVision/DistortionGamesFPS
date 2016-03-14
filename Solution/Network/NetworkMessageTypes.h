@@ -34,15 +34,15 @@ struct Connection
 	sockaddr_in myAddress;
 	std::string myName;
 	int myPingCount;
-	short myID;
+	unsigned int myID;
 	bool myIsConnected;
 };
 
 struct OtherClients
 {
 	OtherClients();
-	OtherClients(unsigned short anID);
-	unsigned short myID;
+	OtherClients(unsigned int anID);
+	unsigned int myID;
 	CU::Vector3<float> myPosition;
 };
 
@@ -50,7 +50,7 @@ inline OtherClients::OtherClients()
 {
 }
 
-inline OtherClients::OtherClients(unsigned short anID)
+inline OtherClients::OtherClients(unsigned int anID)
 {
 	myID = anID;
 }

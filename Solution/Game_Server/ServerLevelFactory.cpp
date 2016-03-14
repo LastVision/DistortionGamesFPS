@@ -11,7 +11,6 @@
 
 ServerLevelFactory::ServerLevelFactory(const std::string& aLevelListPath)
 	: SharedLevelFactory(aLevelListPath)
-	, myIDCount(16)
 {
 }
 
@@ -60,22 +59,18 @@ void ServerLevelFactory::LoadProps(XMLReader& aReader, tinyxml2::XMLElement* aEl
 		CU::Vector3f propPosition;
 		CU::Vector3f propRotation;
 		CU::Vector3f propScale;
+		unsigned int gid(UINT32_MAX);
 
+		ReadGID(aReader, entityElement, gid);
 		ReadOrientation(aReader, entityElement, propPosition, propRotation, propScale);
 
 		propRotation.x = CU::Math::DegreeToRad(propRotation.x);
 		propRotation.y = CU::Math::DegreeToRad(propRotation.y);
 		propRotation.z = CU::Math::DegreeToRad(propRotation.z);
 
-		Entity* newEntity = EntityFactory::CreateEntity(eEntityType::PROP, propType, nullptr, false
+		Entity* newEntity = EntityFactory::CreateEntity(gid, eEntityType::PROP, propType, nullptr, false
 			, propPosition, propRotation, propScale);
 		newEntity->Reset();
-
-		if (newEntity->GetComponent<NetworkComponent>() != nullptr)
-		{
-			myIDCount++;
-			newEntity->GetComponent<NetworkComponent>()->SetNetworkID(myIDCount);
-		}
 
 		myCurrentLevel->AddEntity(newEntity);
 	}
@@ -94,22 +89,19 @@ void ServerLevelFactory::LoadUnits(XMLReader& aReader, tinyxml2::XMLElement* aEl
 		CU::Vector3f unitRotation;
 		CU::Vector3f unitScale;
 
+		unsigned int gid(UINT32_MAX);
+
+		ReadGID(aReader, entityElement, gid);
+
 		ReadOrientation(aReader, entityElement, unitPosition, unitRotation, unitScale);
 
 		unitRotation.x = CU::Math::DegreeToRad(unitRotation.x);
 		unitRotation.y = CU::Math::DegreeToRad(unitRotation.y);
 		unitRotation.z = CU::Math::DegreeToRad(unitRotation.z);
 
-		Entity* newEntity = EntityFactory::CreateEntity(eEntityType::UNIT, unitType, nullptr, false
+		Entity* newEntity = EntityFactory::CreateEntity(gid, eEntityType::UNIT, unitType, nullptr, false
 			, unitPosition, unitRotation, unitScale);
 		newEntity->Reset();
-
-		if (newEntity->GetComponent<NetworkComponent>() != nullptr)
-		{
-			myIDCount++;
-			newEntity->GetComponent<NetworkComponent>()->SetNetworkID(myIDCount);
-		}
-
 
 		myCurrentLevel->AddEnemy(newEntity);
 	}
@@ -128,20 +120,18 @@ void ServerLevelFactory::LoadTriggers(XMLReader& aReader, tinyxml2::XMLElement* 
 		CU::Vector3f triggerRotation;
 		CU::Vector3f triggerScale;
 
+		unsigned int gid(UINT32_MAX);
+
+		ReadGID(aReader, entityElement, gid);
+
 		ReadOrientation(aReader, entityElement, triggerPosition, triggerRotation, triggerScale);
 
 		triggerRotation.x = CU::Math::DegreeToRad(triggerRotation.x);
 		triggerRotation.y = CU::Math::DegreeToRad(triggerRotation.y);
 		triggerRotation.z = CU::Math::DegreeToRad(triggerRotation.z);
 
-		Entity* newEntity = EntityFactory::CreateEntity(eEntityType::UNIT, triggerType, nullptr, false, triggerPosition, triggerRotation, triggerScale);
+		Entity* newEntity = EntityFactory::CreateEntity(gid, eEntityType::UNIT, triggerType, nullptr, false, triggerPosition, triggerRotation, triggerScale);
 		newEntity->Reset();
-
-		if (newEntity->GetComponent<NetworkComponent>() != nullptr)
-		{
-			myIDCount++;
-			newEntity->GetComponent<NetworkComponent>()->SetNetworkID(myIDCount);
-		}
 
 		myCurrentLevel->AddEntity(newEntity);
 	}

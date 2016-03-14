@@ -58,7 +58,7 @@ ClientLevel::ClientLevel()
 	EntityData data;
 	data.myInputData.myExistsInEntity = true;
 	//myPlayer = new Entity(data, myScene, true, CU::Vector3<float>(), CU::Vector3<float>(), CU::Vector3<float>(1.f, 1.f, 1.f));
-	myPlayer = EntityFactory::GetInstance()->CreateEntity(eEntityType::UNIT, "localplayer", myScene, true, CU::Vector3<float>());
+	myPlayer = EntityFactory::GetInstance()->CreateEntity(UINT32_MAX, eEntityType::UNIT, "localplayer", myScene, true, CU::Vector3<float>());
 	myScene->SetCamera(*myPlayer->GetComponent<InputComponent>()->GetCamera());
 
 	//myTempPosition = { 835.f, 0.f, -1000.f };
@@ -77,9 +77,9 @@ ClientLevel::ClientLevel()
 
 ClientLevel::~ClientLevel()
 {
-	if (ClientNetworkManager::GetInstance()->GetNetworkID() > 0)
+	if (ClientNetworkManager::GetInstance()->GetGID() > 0)
 	{
-		ClientNetworkManager::GetInstance()->AddMessage(NetMessageDisconnect(ClientNetworkManager::GetInstance()->GetNetworkID()));
+		ClientNetworkManager::GetInstance()->AddMessage(NetMessageDisconnect(ClientNetworkManager::GetInstance()->GetGID()));
 	}
 #ifdef THREAD_PHYSICS
 	Prism::PhysicsInterface::GetInstance()->ShutdownThread();
@@ -122,7 +122,7 @@ void ClientLevel::Update(const float aDeltaTime)
 	}
 	if (CU::InputWrapper::GetInstance()->KeyDown(DIK_I))
 	{
-		ClientNetworkManager::GetInstance()->AddMessage(NetMessageDisconnect(ClientNetworkManager::GetInstance()->GetNetworkID()));
+		ClientNetworkManager::GetInstance()->AddMessage(NetMessageDisconnect(ClientNetworkManager::GetInstance()->GetGID()));
 	}
 
 	unsigned short ms = ClientNetworkManager::GetInstance()->GetResponsTime();
@@ -156,16 +156,15 @@ void ClientLevel::Render()
 
 void ClientLevel::ReceiveMessage(const NetworkAddPlayerMessage& aMessage)
 {
-	if (aMessage.myNetworkID == ClientNetworkManager::GetInstance()->GetNetworkID())
+	if (aMessage.myGID == ClientNetworkManager::GetInstance()->GetGID())
 	{
-		myPlayer->GetComponent<NetworkComponent>()->SetNetworkID(aMessage.myNetworkID);
+		myPlayer->SetGID(aMessage.myGID);
 	}
 	else
 	{
 	bool isRunTime = Prism::MemoryTracker::GetInstance()->GetRunTime();
 	Prism::MemoryTracker::GetInstance()->SetRunTime(false);
-	Entity* newPlayer = EntityFactory::CreateEntity(eEntityType::UNIT, "player", myScene, true, { 0.f, 0.f, 0.f });
-	newPlayer->GetComponent<NetworkComponent>()->SetNetworkID(aMessage.myNetworkID);
+	Entity* newPlayer = EntityFactory::CreateEntity(aMessage.myGID, eEntityType::UNIT, "player", myScene, true, { 0.f, 0.f, 0.f });
 	newPlayer->GetComponent<NetworkComponent>()->SetPlayer(true);
 	newPlayer->AddToScene();
 	newPlayer->Reset();
@@ -176,10 +175,10 @@ void ClientLevel::ReceiveMessage(const NetworkAddPlayerMessage& aMessage)
 
 void ClientLevel::ReceiveMessage(const NetworkRemovePlayerMessage& aMessage)
 {
-	DL_ASSERT_EXP(aMessage.myNetworkID != 0, "Can't remove server (id 0).");
+	DL_ASSERT_EXP(aMessage.myGID != 0, "Can't remove server (id 0).");
 	for (Entity* e : myPlayers)
 	{
-		if (e->GetNetworkID() == aMessage.myNetworkID)
+		if (e->GetGID() == aMessage.myGID)
 		{
 			e->RemoveFromScene();
 		}
@@ -190,13 +189,10 @@ void ClientLevel::ReceiveMessage(const NetworkAddEnemyMessage& aMessage)
 {
 	bool isRunTime = Prism::MemoryTracker::GetInstance()->GetRunTime();
 	Prism::MemoryTracker::GetInstance()->SetRunTime(false);
-	Entity* newEnemy = EntityFactory::CreateEntity(eEntityType::UNIT, "gundroid", myScene, true, aMessage.myPosition);
+	Entity* newEnemy = EntityFactory::CreateEntity(aMessage.myGID, eEntityType::UNIT, "gundroid", myScene, true, aMessage.myPosition);
 
 	newEnemy->AddToScene();
 	newEnemy->Reset();
-
-	//PostMaster::GetInstance()->SendMessage(EmitterMessage("Example", aMessage.myPosition));
-	newEnemy->GetComponent<NetworkComponent>()->SetNetworkID(aMessage.myNetworkID);
 
 	myEnemies.Add(newEnemy);
 	Prism::MemoryTracker::GetInstance()->SetRunTime(isRunTime);
@@ -204,11 +200,11 @@ void ClientLevel::ReceiveMessage(const NetworkAddEnemyMessage& aMessage)
 
 void ClientLevel::ReceiveMessage(const NetworkOnDeathMessage& aMessage)
 {
-	DL_ASSERT_EXP(aMessage.myNetworkID != 0, "Can't kill server (id 0).");
+	DL_ASSERT_EXP(aMessage.myGID != 0, "Can't kill server (id 0).");
 
 	for (Entity* e : myEnemies)
 	{
-		if (e->GetNetworkID() == aMessage.myNetworkID)
+		if (e->GetGID() == aMessage.myGID)
 		{
 			e->Kill();
 		}
