@@ -16,9 +16,9 @@ public:
 	unsigned int GetGID() const;
 	const CU::GrowingArray<OtherClients>& GetClients();
 	//void Update(float aDelta) override;
-	void ReceiveMessage(const NetworkSendPositionMessage& aMessage) override;
-	void ReceiveMessage(const NetworkOnDisconnectMessage& aMessage) override;
-	void ReceiveMessage(const NetworkOnHitMessage& aMessage) override;
+	void ReceiveMessage(const PostMasterNetSendPositionMessage& aMessage) override;
+	void ReceiveMessage(const PostMasterNetOnDisconnectMessage& aMessage) override;
+	void ReceiveMessage(const PostMasterNetOnHitMessage& aMessage) override;
 
 private:
 	ClientNetworkManager();

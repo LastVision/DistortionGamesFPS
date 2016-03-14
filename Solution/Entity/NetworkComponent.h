@@ -13,8 +13,8 @@ public:
 
 	void Update(float aDelta) override;
 
-	void ReceiveMessage(const NetworkSetPositionMessage& aMessage) override;
-	void ReceiveMessage(const NetworkOnHitMessage& aMessage) override;
+	void ReceiveMessage(const PostMasterNetSetPositionMessage& aMessage) override;
+	void ReceiveMessage(const PostMasterNetOnHitMessage& aMessage) override;
 
 	void SetPlayer(bool aBool);
 

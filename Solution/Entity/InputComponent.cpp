@@ -9,7 +9,7 @@
 #include "InputComponentData.h"
 #include <InputWrapper.h>
 #include "NetworkComponent.h"
-#include <NetworkSendPositionMessage.h>
+#include <PostMasterNetSendPositionMessage.h>
 #include <PostMaster.h>
 #include <PhysicsInterface.h>
 #include "PhysicsComponent.h"
@@ -89,7 +89,7 @@ void InputComponent::Update(float aDelta)
 	{
 		if (myEntity.GetGID() != 0 && (myOrientation != myPrevOrientation))
 		{
-			PostMaster::GetInstance()->SendMessage(NetworkSendPositionMessage(myOrientation.GetPos(), myCursorPosition.x, myEntity.GetGID()));
+			PostMaster::GetInstance()->SendMessage(PostMasterNetSendPositionMessage(myOrientation.GetPos(), myCursorPosition.x, myEntity.GetGID()));
 			mySendTime = NETWORK_UPDATE_INTERVAL;
 		}
 	}

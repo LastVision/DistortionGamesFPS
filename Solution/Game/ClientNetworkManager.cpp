@@ -15,14 +15,14 @@
 #include <NetMessageAddEnemy.h>
 #include <NetMessageOnDeath.h>
 
-#include <NetworkAddPlayerMessage.h>
-#include <NetworkOnHitMessage.h>
-#include <NetworkRemovePlayer.h>
-#include <NetworkAddEnemyMessage.h>
-#include <NetworkSetPositionMessage.h>
-#include <NetworkSendPositionMessage.h>
-#include <NetworkOnDisconnectMessage.h>
-#include <NetworkOnDeathMessage.h>
+#include <PostMasterNetAddPlayerMessage.h>
+#include <PostMasterNetOnHitMessage.h>
+#include <PostMasterNetRemovePlayer.h>
+#include <PostMasterNetAddEnemyMessage.h>
+#include <PostMasterNetSetPositionMessage.h>
+#include <PostMasterNetSendPositionMessage.h>
+#include <PostMasterNetOnDisconnectMessage.h>
+#include <PostMasterNetOnDeathMessage.h>
 #define BUFFERSIZE 512
 
 ClientNetworkManager* ClientNetworkManager::myInstance = nullptr;
@@ -157,7 +157,7 @@ const CU::GrowingArray<OtherClients>& ClientNetworkManager::GetClients()
 	return myClients;
 }
 
-void ClientNetworkManager::ReceiveMessage(const NetworkSendPositionMessage& aMessage)
+void ClientNetworkManager::ReceiveMessage(const PostMasterNetSendPositionMessage& aMessage)
 {
 	NetMessagePosition toSend;
 	toSend.mySenderID = myGID;
@@ -167,7 +167,7 @@ void ClientNetworkManager::ReceiveMessage(const NetworkSendPositionMessage& aMes
 	AddMessage(toSend);
 }
 
-void ClientNetworkManager::ReceiveMessage(const NetworkOnDisconnectMessage&)
+void ClientNetworkManager::ReceiveMessage(const PostMasterNetOnDisconnectMessage&)
 {
 	NetMessageDisconnect toSend = CreateMessage<NetMessageDisconnect>();
 	toSend.mySenderID = myGID;
@@ -175,7 +175,7 @@ void ClientNetworkManager::ReceiveMessage(const NetworkOnDisconnectMessage&)
 	AddMessage(toSend);
 }
 
-void ClientNetworkManager::ReceiveMessage(const NetworkOnHitMessage& aMessage)
+void ClientNetworkManager::ReceiveMessage(const PostMasterNetOnHitMessage& aMessage)
 {
 	NetMessageOnHit toSend;
 	toSend.mySenderID = myGID;
@@ -201,7 +201,7 @@ void ClientNetworkManager::HandleMessage(const NetMessageDisconnect& aMessage, c
 	}
 	else
 	{
-		PostMaster::GetInstance()->SendMessage(NetworkRemovePlayerMessage(aMessage.myClientID));
+		PostMaster::GetInstance()->SendMessage(PostMasterNetRemovePlayerMessage(aMessage.myClientID));
 	}
 }
 
@@ -212,7 +212,7 @@ void ClientNetworkManager::HandleMessage(const NetMessageConnectMessage& aMessag
 	{
 		myClients.Add(OtherClients(aMessage.myOtherClientID));
 	}
-	PostMaster::GetInstance()->SendMessage(NetworkAddPlayerMessage(aMessage.myOtherClientID));
+	PostMaster::GetInstance()->SendMessage(PostMasterNetAddPlayerMessage(aMessage.myOtherClientID));
 }
 
 void ClientNetworkManager::HandleMessage(const NetMessageOnJoin& aMessage, const sockaddr_in&)
@@ -220,18 +220,18 @@ void ClientNetworkManager::HandleMessage(const NetMessageOnJoin& aMessage, const
 	if (aMessage.mySenderID != myGID)
 	{
 		myClients.Add(OtherClients(aMessage.mySenderID));
-		PostMaster::GetInstance()->SendMessage(NetworkAddPlayerMessage(static_cast<unsigned short>(aMessage.mySenderID)));
+		PostMaster::GetInstance()->SendMessage(PostMasterNetAddPlayerMessage(static_cast<unsigned short>(aMessage.mySenderID)));
 	}
 }
 
 void ClientNetworkManager::HandleMessage(const NetMessageAddEnemy& aMessage, const sockaddr_in&)
 {
-	PostMaster::GetInstance()->SendMessage(NetworkAddEnemyMessage(aMessage.myPosition, aMessage.myGID));
+	PostMaster::GetInstance()->SendMessage(PostMasterNetAddEnemyMessage(aMessage.myPosition, aMessage.myGID));
 }
 
 void ClientNetworkManager::HandleMessage(const NetMessageOnDeath& aMessage, const sockaddr_in&)
 {
-	PostMaster::GetInstance()->SendMessage(NetworkOnDeathMessage(aMessage.myGID));
+	PostMaster::GetInstance()->SendMessage(PostMasterNetOnDeathMessage(aMessage.myGID));
 }
 
 void ClientNetworkManager::UpdateImportantMessages(float aDeltaTime)

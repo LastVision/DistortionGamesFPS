@@ -159,17 +159,17 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="EmitterMessage.h" />
-    <ClInclude Include="NetworkAddEnemyMessage.h" />
-    <ClInclude Include="NetworkAddPlayerMessage.h" />
+    <ClInclude Include="PostMasterNetAddEnemyMessage.h" />
+    <ClInclude Include="PostMasterNetAddPlayerMessage.h" />
     <ClInclude Include="GameStateMessage.h" />
     <ClInclude Include="Message.h" />
     <ClInclude Include="MessageEnum.h" />
-    <ClInclude Include="NetworkOnDeathMessage.h" />
-    <ClInclude Include="NetworkOnDisconnectMessage.h" />
-    <ClInclude Include="NetworkOnHitMessage.h" />
-    <ClInclude Include="NetworkRemovePlayer.h" />
-    <ClInclude Include="NetworkSendPositionMessage.h" />
-    <ClInclude Include="NetworkSetPositionMessage.h" />
+    <ClInclude Include="PostMasterNetOnDeathMessage.h" />
+    <ClInclude Include="PostMasterNetOnDisconnectMessage.h" />
+    <ClInclude Include="PostMasterNetOnHitMessage.h" />
+    <ClInclude Include="PostMasterNetRemovePlayer.h" />
+    <ClInclude Include="PostMasterNetSendPositionMessage.h" />
+    <ClInclude Include="PostMasterNetSetPositionMessage.h" />
     <ClInclude Include="OnClickMessage.h" />
     <ClInclude Include="PostMaster.h" />
     <ClInclude Include="ResizeMessage.h" />

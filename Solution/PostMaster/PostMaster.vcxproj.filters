@@ -51,28 +51,28 @@
     <ClInclude Include="EmitterMessage.h">
       <Filter>Message</Filter>
     </ClInclude>
-    <ClInclude Include="NetworkAddPlayerMessage.h">
+    <ClInclude Include="PostMasterNetAddEnemyMessage.h">
       <Filter>Message\NetworkMessages</Filter>
     </ClInclude>
-    <ClInclude Include="NetworkAddEnemyMessage.h">
+    <ClInclude Include="PostMasterNetAddPlayerMessage.h">
       <Filter>Message\NetworkMessages</Filter>
     </ClInclude>
-    <ClInclude Include="NetworkSetPositionMessage.h">
+    <ClInclude Include="PostMasterNetOnDeathMessage.h">
       <Filter>Message\NetworkMessages</Filter>
     </ClInclude>
-    <ClInclude Include="NetworkSendPositionMessage.h">
+    <ClInclude Include="PostMasterNetOnDisconnectMessage.h">
       <Filter>Message\NetworkMessages</Filter>
     </ClInclude>
-    <ClInclude Include="NetworkOnHitMessage.h">
+    <ClInclude Include="PostMasterNetOnHitMessage.h">
       <Filter>Message\NetworkMessages</Filter>
     </ClInclude>
-    <ClInclude Include="NetworkRemovePlayer.h">
+    <ClInclude Include="PostMasterNetRemovePlayer.h">
       <Filter>Message\NetworkMessages</Filter>
     </ClInclude>
-    <ClInclude Include="NetworkOnDisconnectMessage.h">
+    <ClInclude Include="PostMasterNetSendPositionMessage.h">
       <Filter>Message\NetworkMessages</Filter>
     </ClInclude>
-    <ClInclude Include="NetworkOnDeathMessage.h">
+    <ClInclude Include="PostMasterNetSetPositionMessage.h">
       <Filter>Message\NetworkMessages</Filter>
     </ClInclude>
   </ItemGroup>

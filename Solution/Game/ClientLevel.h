@@ -27,10 +27,10 @@ public:
 	void Render();
 	bool connected;
 	Prism::Scene* GetScene();
-	void ReceiveMessage(const NetworkAddPlayerMessage& aMessage) override;
-	void ReceiveMessage(const NetworkRemovePlayerMessage& aMessage) override;
-	void ReceiveMessage(const NetworkAddEnemyMessage& aMessage) override;
-	void ReceiveMessage(const NetworkOnDeathMessage& aMessage) override;
+	void ReceiveMessage(const PostMasterNetAddPlayerMessage& aMessage) override;
+	void ReceiveMessage(const PostMasterNetRemovePlayerMessage& aMessage) override;
+	void ReceiveMessage(const PostMasterNetAddEnemyMessage& aMessage) override;
+	void ReceiveMessage(const PostMasterNetOnDeathMessage& aMessage) override;
 
 	void AddLight(Prism::PointLight* aLight);
 
