@@ -38,7 +38,7 @@ void ServerLevel::ReceiveMessage(const NetworkAddPlayerMessage& aMessage)
 	myPlayers.Add(newPlayer);
 	Prism::MemoryTracker::GetInstance()->SetRunTime(isRunTime);
 
-	for (Entity* e : myEnemies)
+	for (Entity* e : myActiveEnemies)
 	{
 		if (e->GetComponent<NetworkComponent>() != nullptr)
 		{

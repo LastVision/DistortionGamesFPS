@@ -40,7 +40,7 @@ PhysicsComponent::~PhysicsComponent()
 	myShapes = nullptr;
 }
 
-void PhysicsComponent::Update(float aDeltaTime)
+void PhysicsComponent::Update(float)
 {
 	if (myPhysicsType == ePhysics::KINEMATIC)
 	{

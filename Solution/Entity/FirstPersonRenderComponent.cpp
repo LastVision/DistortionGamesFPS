@@ -2,6 +2,7 @@
 
 #include <Animation.h>
 #include <AnimationSystem.h>
+#include <Camera.h>
 #include <Engine.h>
 #include "Entity.h"
 #include "FirstPersonRenderComponent.h"
@@ -20,9 +21,13 @@ FirstPersonRenderComponent::FirstPersonRenderComponent(Entity& aEntity, Prism::S
 	, myCurrentState(ePlayerState::PISTOL_IDLE)
 	, myIntentions(8)
 	, myFirstTimeActivateAnimation(false)
+	, myCoOpPositions(8)
 {
 	CU::Vector2<float> size(128.f, 128.f);
 	myCrosshair = Prism::ModelLoader::GetInstance()->LoadSprite("Data/Resource/Texture/UI/T_crosshair.dds", size, size * 0.5f);
+
+	myCoOpSprite = Prism::ModelLoader::GetInstance()->LoadSprite("Data/Resource/Texture/UI/T_coopmarker.dds", size, size * 0.5f);
+
 
 	Prism::ModelProxy* model = Prism::ModelLoader::GetInstance()->LoadModelAnimated("Data/Resource/Model/First_person/Pistol/SK_arm_pistol_idle.fbx", "Data/Resource/Shader/S_effect_pbl_animated.fx");
 	myModel = new Prism::Instance(*model, myInputComponentEyeOrientation);
@@ -75,6 +80,8 @@ FirstPersonRenderComponent::~FirstPersonRenderComponent()
 	SAFE_DELETE(myCrosshair);
 	SAFE_DELETE(my3DGUIManager);
 	SAFE_DELETE(myModel);
+	SAFE_DELETE(myCoOpSprite);
+	myCoOpPositions.RemoveAll();
 }
 
 
@@ -126,11 +133,51 @@ void FirstPersonRenderComponent::Update(float aDelta)
 	data.myElapsedTime += aDelta;
 }
 
+void FirstPersonRenderComponent::UpdateCoOpPositions(const CU::GrowingArray<Entity*>& somePlayers)
+{
+	myCoOpPositions.RemoveAll();
+	for (int i = 0; i < somePlayers.Size(); ++i)
+	{
+		myCoOpPositions.Add(somePlayers[i]->GetOrientation().GetPos());
+	}
+}
+
 void FirstPersonRenderComponent::Render()
 {
 	const CU::Vector2<float>& windowSize = Prism::Engine::GetInstance()->GetWindowSize();
 	myCrosshair->Render(windowSize * 0.5f);
 	my3DGUIManager->Render();
+
+	
+	for (int i = 0; i < myCoOpPositions.Size(); ++i)
+	{
+		CU::Matrix44<float> renderPos;
+		CU::Vector3<float> tempPos(myCoOpPositions[i]);
+		tempPos.y += 2.f;
+		float toBuddy = CU::Dot(tempPos - myInputComponentEyeOrientation.GetPos(), myInputComponentEyeOrientation.GetForward());
+		if (toBuddy < 0.f)
+		{
+			continue;
+		}
+		renderPos.SetPos(tempPos);
+		renderPos = renderPos * CU::InverseSimple(myInputComponentEyeOrientation);
+		renderPos = renderPos * myEntity.GetComponent<InputComponent>()->GetCamera()->GetProjection();
+
+		CU::Vector3<float> newRenderPos = renderPos.GetPos();
+		newRenderPos /= renderPos.GetPos4().w;
+
+		newRenderPos += 1.f;
+		newRenderPos *= 0.5f;
+		newRenderPos.x *= windowSize.x;
+		newRenderPos.y *= windowSize.y;
+		newRenderPos.y -= windowSize.y;
+
+		newRenderPos.x = fmaxf(0.f, fminf(newRenderPos.x, windowSize.x));
+		newRenderPos.y += windowSize.y;
+		newRenderPos.y = fmaxf(0.f, fminf(newRenderPos.y, windowSize.y));
+
+		myCoOpSprite->Render({ newRenderPos.x, newRenderPos.y });
+	}
 }
 
 bool FirstPersonRenderComponent::IsCurrentAnimationDone() const

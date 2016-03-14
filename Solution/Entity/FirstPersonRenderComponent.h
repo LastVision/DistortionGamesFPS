@@ -22,9 +22,11 @@ public:
 	~FirstPersonRenderComponent();
 
 	void Update(float aDelta) override;
+	void UpdateCoOpPositions(const CU::GrowingArray<Entity*>& somePlayers);
 	void Render();
 	bool IsCurrentAnimationDone() const;
 	void RestartCurrentAnimation();
+
 
 	void PlayAnimation(ePlayerState aAnimationState);
 
@@ -40,6 +42,9 @@ private:
 	Prism::Instance* myModel;
 	GUI::GUIManager3D* my3DGUIManager;
 	Prism::SpriteProxy* myCrosshair;
+
+	Prism::SpriteProxy* myCoOpSprite;
+	CU::GrowingArray<CU::Vector3<float>> myCoOpPositions;
 
 	struct PlayerAnimationData
 	{
