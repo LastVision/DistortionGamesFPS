@@ -40,7 +40,7 @@ int TriggerComponent::GetValue() const
 	return myData.myValue;
 }
 
-const std::string& TriggerComponent::GetID() const
+bool TriggerComponent::IsClientSide() const
 {
-	return myData.myID;
+	return myData.myIsClientSide;
 }

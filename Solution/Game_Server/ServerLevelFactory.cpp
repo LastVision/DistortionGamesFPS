@@ -6,7 +6,7 @@
 #include "ServerLevel.h"
 #include "ServerLevelFactory.h"
 #include <XMLReader.h>
-
+#include <TriggerComponent.h>
 #include <NetworkComponent.h>
 
 ServerLevelFactory::ServerLevelFactory(const std::string& aLevelListPath)
@@ -135,14 +135,20 @@ void ServerLevelFactory::LoadTriggers(XMLReader& aReader, tinyxml2::XMLElement* 
 		triggerRotation.z = CU::Math::DegreeToRad(triggerRotation.z);
 
 		Entity* newEntity = EntityFactory::CreateEntity(eEntityType::UNIT, triggerType, nullptr, false, triggerPosition, triggerRotation, triggerScale);
-		newEntity->Reset();
 
-		if (newEntity->GetComponent<NetworkComponent>() != nullptr)
+		if (newEntity->GetComponent<TriggerComponent>()->IsClientSide() == false)
 		{
-			myIDCount++;
-			newEntity->GetComponent<NetworkComponent>()->SetNetworkID(myIDCount);
+			newEntity->Reset();	
+			myCurrentLevel->AddEntity(newEntity);
+			if (newEntity->GetComponent<NetworkComponent>() != nullptr)
+			{
+				myIDCount++;
+				newEntity->GetComponent<NetworkComponent>()->SetNetworkID(myIDCount);
+			}
 		}
-
-		myCurrentLevel->AddEntity(newEntity);
+		else
+		{
+			SAFE_DELETE(newEntity);
+		}
 	}
 }
