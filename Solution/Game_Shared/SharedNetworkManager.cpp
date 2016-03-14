@@ -16,8 +16,8 @@
 #include <NetMessageOnDeath.h>
 
 #include <PostMaster.h>
-#include <NetworkOnHitMessage.h>
-#include <NetworkSetPositionMessage.h>
+#include <PostMasterNetOnHitMessage.h>
+#include <PostMasterNetSetPositionMessage.h>
 
 #define BUFFERSIZE 512
 
@@ -141,11 +141,11 @@ double SharedNetworkManager::GetDataSent() const
 	return myDataToPrint / 1024;
 }
 
-void SharedNetworkManager::AddNetworkMessage(std::vector<char> aBuffer)
+void SharedNetworkManager::AddNetworkMessage(std::vector<char> aBuffer, unsigned int aTargetID)
 {
 	if (myIsOnline == true)
 	{
-		mySendBuffer[myCurrentSendBuffer ^ 1].Add(aBuffer);
+		mySendBuffer[myCurrentSendBuffer ^ 1].Add({ aBuffer, aTargetID });
 	}
 }
 
@@ -229,12 +229,12 @@ void SharedNetworkManager::HandleMessage(const NetMessagePingRequest&, const soc
 void SharedNetworkManager::HandleMessage(const NetMessageOnJoin&, const sockaddr_in&) {}
 void SharedNetworkManager::HandleMessage(const NetMessagePosition& aMessage, const sockaddr_in&) 
 {
-	PostMaster::GetInstance()->SendMessage(NetworkSetPositionMessage(aMessage.myPosition, aMessage.myRotationY, aMessage.myGID)); 
+	PostMaster::GetInstance()->SendMessage(PostMasterNetSetPositionMessage(aMessage.myPosition, aMessage.myRotationY, aMessage.myGID)); 
 }
 void SharedNetworkManager::HandleMessage(const NetMessageAddEnemy&, const sockaddr_in&){}
 void SharedNetworkManager::HandleMessage(const NetMessageOnHit& aMessage, const sockaddr_in&)
 { 
-	PostMaster::GetInstance()->SendMessage(NetworkOnHitMessage(aMessage.myDamage, aMessage.myGID)); 
+	PostMaster::GetInstance()->SendMessage(PostMasterNetOnHitMessage(aMessage.myDamage, aMessage.myGID)); 
 }
 void SharedNetworkManager::HandleMessage(const NetMessageOnDeath&, const sockaddr_in&) {}
 

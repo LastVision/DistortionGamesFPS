@@ -117,7 +117,11 @@ Entity::~Entity()
 {
 	if (myIsInScene == true)
 	{
-		RemoveFromScene();
+		RemoveFromScene();		
+	}
+	if (GetComponent<PhysicsComponent>() != nullptr)
+	{
+		GetComponent<PhysicsComponent>()->RemoveFromScene();
 	}
 	for (int i = 0; i < static_cast<int>(eComponentType::_COUNT); ++i)
 	{

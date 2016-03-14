@@ -19,7 +19,7 @@ public:
 
 	eTriggerType GetTriggerType() const;
 	int GetValue() const;
-	const std::string& GetID() const;
+	bool IsClientSide() const;
 
 private:
 

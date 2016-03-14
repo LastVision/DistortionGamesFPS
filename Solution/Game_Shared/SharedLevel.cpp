@@ -85,8 +85,6 @@ void SharedLevel::CollisionCallback(PhysicsComponent* aFirst, PhysicsComponent* 
 		}
 		aFirst->GetEntity().SendNote<CollisionNote>(CollisionNote(&aSecond->GetEntity()));
 	}
-
-
 }
 
 void SharedLevel::CleanUp()

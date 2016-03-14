@@ -3,10 +3,10 @@
 #include "Entity.h"
 #include <MathHelper.h>
 
-#include <NetworkSetPositionMessage.h>
-#include <NetworkSendPositionMessage.h>
-#include <NetworkOnHitMessage.h>
-#include <NetworkOnDeathMessage.h>
+#include <PostMasterNetSetPositionMessage.h>
+#include <PostMasterNetSendPositionMessage.h>
+#include <PostMasterNetOnHitMessage.h>
+#include <PostMasterNetOnDeathMessage.h>
 #include "DamageNote.h"
 
 #include <PostMaster.h>
@@ -53,7 +53,7 @@ void NetworkComponent::Update(float aDelta)
 	}
 }
 
-void NetworkComponent::ReceiveMessage(const NetworkSetPositionMessage& aMessage)
+void NetworkComponent::ReceiveMessage(const PostMasterNetSetPositionMessage& aMessage)
 {
 	if (aMessage.myGID == myEntity.GetGID())
 	{
@@ -65,7 +65,7 @@ void NetworkComponent::ReceiveMessage(const NetworkSetPositionMessage& aMessage)
 	}
 }
 
-void NetworkComponent::ReceiveMessage(const NetworkOnHitMessage& aMessage)
+void NetworkComponent::ReceiveMessage(const PostMasterNetOnHitMessage& aMessage)
 {
 	if (myEntity.GetIsClient() == false && myEntity.GetGID() == aMessage.myGID)
 	{
@@ -157,13 +157,13 @@ void NetworkComponent::ServerUpdate(float aDelta)
 			}
 			else
 			{
-				PostMaster::GetInstance()->SendMessage(NetworkOnDeathMessage(myEntity.GetGID()));
+				PostMaster::GetInstance()->SendMessage(PostMasterNetOnDeathMessage(myEntity.GetGID()));
 				myShouldUpdate = false;
 				return;
 			}
 		}
 		mySendTime = NETWORK_UPDATE_INTERVAL;
-		PostMaster::GetInstance()->SendMessage(NetworkSendPositionMessage(myServerPosition, myServerRotationY, myEntity.GetGID()));
+		PostMaster::GetInstance()->SendMessage(PostMasterNetSendPositionMessage(myServerPosition, myServerRotationY, myEntity.GetGID()));
 
 	}
 }

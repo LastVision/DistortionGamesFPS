@@ -3,11 +3,13 @@
 #include <EntityFactory.h>
 #include "ClientLevel.h"
 #include "ClientLevelFactory.h"
+#include <PhysicsComponent.h>
 #include <PhysicsInterface.h>
 #include <PointLight.h>
 #include <Room.h>
 #include <RoomManager.h>
 #include <Scene.h>
+#include <TriggerComponent.h>
 #include <XMLReader.h>
 
 ClientLevelFactory::ClientLevelFactory(const std::string& aLevelListPath)
@@ -16,12 +18,9 @@ ClientLevelFactory::ClientLevelFactory(const std::string& aLevelListPath)
 
 }
 
-
 ClientLevelFactory::~ClientLevelFactory()
 {
 }
-
-
 
 SharedLevel* ClientLevelFactory::LoadCurrentLevel()
 {
@@ -168,10 +167,17 @@ void ClientLevelFactory::LoadTriggers(XMLReader& aReader, tinyxml2::XMLElement* 
 
 		Entity* newEntity = EntityFactory::CreateEntity(gid, eEntityType::UNIT, triggerType, static_cast<ClientLevel*>(myCurrentLevel)->GetScene()
 			, true, triggerPosition, triggerRotation, triggerScale);
-		newEntity->AddToScene();
-		newEntity->Reset();
 
-		myCurrentLevel->AddEntity(newEntity);
+		if (newEntity->GetComponent<TriggerComponent>()->IsClientSide() == true)
+		{
+			newEntity->Reset();
+			newEntity->AddToScene();
+			myCurrentLevel->AddEntity(newEntity);
+		}
+		else
+		{
+			SAFE_DELETE(newEntity);
+		}
 	}
 }
 

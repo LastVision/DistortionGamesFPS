@@ -3,8 +3,8 @@
 
 #include <Entity.h>
 #include <EntityFactory.h>
-#include <NetworkAddPlayerMessage.h>
-#include <NetworkAddEnemyMessage.h>
+#include <PostMasterNetAddPlayerMessage.h>
+#include <PostMasterNetAddEnemyMessage.h>
 #include <PostMaster.h>
 #include <NetworkComponent.h>
 #include <PhysicsInterface.h>
@@ -26,7 +26,7 @@ void ServerLevel::Update(const float aDeltaTime)
 	Prism::PhysicsInterface::GetInstance()->EndFrame();
 }
 
-void ServerLevel::ReceiveMessage(const NetworkAddPlayerMessage& aMessage)
+void ServerLevel::ReceiveMessage(const PostMasterNetAddPlayerMessage& aMessage)
 {
 	aMessage;
 	bool isRunTime = Prism::MemoryTracker::GetInstance()->GetRunTime();
@@ -41,7 +41,7 @@ void ServerLevel::ReceiveMessage(const NetworkAddPlayerMessage& aMessage)
 	{
 		if (e->GetComponent<NetworkComponent>() != nullptr)
 		{
-			PostMaster::GetInstance()->SendMessage(NetworkAddEnemyMessage({ 0.f, 0.f, 0.f }, e->GetGID(), aMessage.myAddress));
+			PostMaster::GetInstance()->SendMessage(PostMasterNetAddEnemyMessage({ 0.f, 0.f, 0.f }, e->GetGID(), aMessage.myAddress));
 		}
 	}
 }
