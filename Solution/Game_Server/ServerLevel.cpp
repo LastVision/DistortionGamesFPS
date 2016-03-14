@@ -7,6 +7,8 @@
 #include <NetworkAddEnemyMessage.h>
 #include <PostMaster.h>
 #include <NetworkComponent.h>
+#include <PhysicsInterface.h>
+
 ServerLevel::ServerLevel()
 {
 	PostMaster::GetInstance()->Subscribe(eMessageType::NETWORK_ADD_PLAYER, this);
@@ -20,6 +22,8 @@ ServerLevel::~ServerLevel()
 void ServerLevel::Update(const float aDeltaTime)
 {
 	__super::Update(aDeltaTime);
+
+	Prism::PhysicsInterface::GetInstance()->EndFrame();
 }
 
 void ServerLevel::ReceiveMessage(const NetworkAddPlayerMessage& aMessage)

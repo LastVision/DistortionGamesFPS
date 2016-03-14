@@ -41,6 +41,7 @@ public:
 	const CU::Matrix44<float>& GetOrientation() const;
 	void SetOrientation(const CU::Matrix44<float>& aOrientation);
 	float* GetOrientationAsFloatPtr();
+	void SetRotation(const CU::Vector3<float>& aRotation);
 
 	Prism::Scene* GetScene();
 	eEntityType GetType() const;
@@ -119,6 +120,18 @@ inline void Entity::SetOrientation(const CU::Matrix44<float>& aOrientation)
 inline float* Entity::GetOrientationAsFloatPtr()
 {
 	return &myOrientation.myMatrix[0];
+}
+
+inline void Entity::SetRotation(const CU::Vector3<float>& aRotation)
+{
+	CU::Vector3f position(myOrientation.GetPos());
+	myOrientation.SetPos(CU::Vector3f());
+
+	myOrientation = CU::Matrix44f::CreateRotateAroundX(aRotation.x) * myOrientation;
+	myOrientation = CU::Matrix44f::CreateRotateAroundY(aRotation.y) * myOrientation;
+	myOrientation = CU::Matrix44f::CreateRotateAroundZ(aRotation.z) * myOrientation;
+
+	myOrientation.SetPos(position);
 }
 
 inline Prism::Scene* Entity::GetScene()

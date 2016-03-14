@@ -27,6 +27,7 @@ namespace physx
 	class PxRigidDynamic;
 	class PxTriangleMesh;
 	class PxActor;
+	class PxMaterial;
 }
 
 class PhysicsComponent;

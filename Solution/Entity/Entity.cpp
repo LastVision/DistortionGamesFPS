@@ -30,18 +30,21 @@ Entity::Entity(const EntityData& aEntityData, Prism::Scene* aScene, bool aClient
 
 	myOrientation.SetPos(aStartPosition);
 
+	SetRotation(aRotation);
+	
+
 	if (myScene != nullptr)
 	{
 		if (aEntityData.myAnimationData.myExistsInEntity == true)
 		{
 			myComponents[static_cast<int>(eComponentType::ANIMATION)] = new AnimationComponent(*this, aEntityData.myAnimationData);
-			GetComponent<AnimationComponent>()->SetRotation(aRotation);
+			//GetComponent<AnimationComponent>()->SetRotation(aRotation);
 			GetComponent<AnimationComponent>()->SetScale(aScale);
 		}
 		else if (aEntityData.myGraphicsData.myExistsInEntity == true)
 		{
 			myComponents[static_cast<int>(eComponentType::GRAPHICS)] = new GraphicsComponent(*this, aEntityData.myGraphicsData);
-			GetComponent<GraphicsComponent>()->SetRotation(aRotation);
+			//GetComponent<GraphicsComponent>()->SetRotation(aRotation);
 			GetComponent<GraphicsComponent>()->SetScale(aScale);
 		}
 	}
@@ -152,8 +155,6 @@ void Entity::Update(float aDeltaTime)
 			memcpy(&myOrientation.myMatrix[0], GetComponent<PhysicsComponent>()->GetOrientation(), sizeof(float) * 16);
 		}
 	}
-
-
 }
 
 void Entity::AddComponent(Component* aComponent)

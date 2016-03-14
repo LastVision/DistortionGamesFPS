@@ -66,6 +66,8 @@ namespace Prism
 		myActorsToSleep[1].Init(64);
 		myActorsToWakeUp[0].Init(64);
 		myActorsToWakeUp[1].Init(64);
+		myMoveJobs[0].myId = -1;
+		myMoveJobs[1].myId = -1;
 		myTimestep = 1.f / 60.f;
 		
 		myFoundation = PxCreateFoundation(0x03030300, myDefaultAllocatorCallback, myDefaultErrorCallback);
@@ -219,13 +221,13 @@ namespace Prism
 	{
 		if (aCallbackStruct.myData->myPhysicsType == ePhysics::DYNAMIC)
 		{
-		myPhysicsComponentCallbacks.Add(aCallbackStruct);
-	}
+			myPhysicsComponentCallbacks.Add(aCallbackStruct);
+		}
 	}
 
 	void PhysicsManager::Swap()
 	{
-		for each (const PhysicsCallbackStruct& obj in myPhysicsComponentCallbacks)
+ 		for each (const PhysicsCallbackStruct& obj in myPhysicsComponentCallbacks)
 		{
 			obj.mySwapOrientationCallback();
 		}
@@ -241,6 +243,8 @@ namespace Prism
 		std::swap(myActorsToRemove[0], myActorsToRemove[1]);
 		std::swap(myActorsToSleep[0], myActorsToSleep[1]);
 		std::swap(myActorsToWakeUp[0], myActorsToWakeUp[1]);
+
+		myMoveJobs[0].myId = -1;
 	}
 
 	void PhysicsManager::Update()
@@ -259,13 +263,15 @@ namespace Prism
 		}
 
 		
-		Move(myMoveJobs[1]);
-		
-		const physx::PxExtendedVec3& pos = myControllerManager->getController(myMoveJobs[1].myId)->getFootPosition();
-		myPlayerPosition.x = float(pos.x);
-		myPlayerPosition.y = float(pos.y);
-		myPlayerPosition.z = float(pos.z);
-		
+		if (myMoveJobs[1].myId > -1)
+		{
+			Move(myMoveJobs[1]);
+
+			const physx::PxExtendedVec3& pos = myControllerManager->getController(myMoveJobs[1].myId)->getFootPosition();
+			myPlayerPosition.x = float(pos.x);
+			myPlayerPosition.y = float(pos.y);
+			myPlayerPosition.z = float(pos.z);
+		}
 		//myMoveJobs[0].RemoveAll();
 		
 		for (int i = 0; i < myActorsToWakeUp[1].Size(); ++i)
@@ -333,9 +339,6 @@ namespace Prism
 		{
 			GetScene()->removeActor(*myActorsToRemove[1][i]);
 		}
-		myActorsToRemove[1].RemoveAll();
-
-
 		myActorsToRemove[1].RemoveAll();
 	}
 
@@ -550,7 +553,6 @@ namespace Prism
 		, physx::PxShape*** someShapesOut)
 	{
 		physx::PxPhysics* core = GetCore();
-		physx::PxMaterial* material = core->createMaterial(0.5, 0.5, 0.5);
 
 		physx::PxReal density = 1.f;
 
@@ -566,7 +568,7 @@ namespace Prism
 			physx::PxTriangleMesh* mesh = GetPhysMesh(aFBXPath);
 
 			*aStaticBodyOut = core->createRigidStatic(transform);
-			(*aStaticBodyOut)->createShape(physx::PxTriangleMeshGeometry(mesh), *material);
+			(*aStaticBodyOut)->createShape(physx::PxTriangleMeshGeometry(mesh), *myDefaultMaterial);
 			(*aStaticBodyOut)->setName(aFBXPath.c_str());
 			(*aStaticBodyOut)->userData = aComponent;
 			GetScene()->addActor(*(*aStaticBodyOut));
@@ -578,7 +580,7 @@ namespace Prism
 				, aPhysData.myData->myPhysicsMax.y - aPhysData.myData->myPhysicsMin.y
 				, aPhysData.myData->myPhysicsMax.z - aPhysData.myData->myPhysicsMin.z);
 			physx::PxBoxGeometry geometry(dimensions / 2.f);
-			*aDynamicBodyOut = physx::PxCreateDynamic(*core, transform, geometry, *material, density);
+			*aDynamicBodyOut = physx::PxCreateDynamic(*core, transform, geometry, *myDefaultMaterial, density);
 			(*aDynamicBodyOut)->setAngularDamping(0.75);
 			(*aDynamicBodyOut)->setLinearVelocity(physx::PxVec3(0, 0, 0));
 			(*aDynamicBodyOut)->setName(aFBXPath.c_str());
@@ -596,7 +598,7 @@ namespace Prism
 				, aPhysData.myData->myPhysicsMax.y - aPhysData.myData->myPhysicsMin.y
 				, aPhysData.myData->myPhysicsMax.z - aPhysData.myData->myPhysicsMin.z);
 			physx::PxBoxGeometry geometry(dimensions / 2.f);
-			*aDynamicBodyOut = physx::PxCreateDynamic(*core, transform, geometry, *material, density);
+			*aDynamicBodyOut = physx::PxCreateDynamic(*core, transform, geometry, *myDefaultMaterial, density);
 			(*aDynamicBodyOut)->setRigidBodyFlag(physx::PxRigidBodyFlag::eKINEMATIC, true);
 			(*aDynamicBodyOut)->setGlobalPose(transform);
 			//(*aDynamicBodyOut)->setAngularDamping(0.75);
@@ -616,7 +618,7 @@ namespace Prism
 				, aPhysData.myData->myPhysicsMax.y - aPhysData.myData->myPhysicsMin.y
 				, aPhysData.myData->myPhysicsMax.z - aPhysData.myData->myPhysicsMin.z);
 			physx::PxBoxGeometry geometry(dimensions / 2.f);
-			*aStaticBodyOut = physx::PxCreateStatic(*core, transform, geometry, *material);
+			*aStaticBodyOut = physx::PxCreateStatic(*core, transform, geometry, *myDefaultMaterial);
 			(*aStaticBodyOut)->userData = aComponent;
 			(*aStaticBodyOut)->setName("Phantom");
 
@@ -709,9 +711,9 @@ namespace Prism
 		if (CU::FileExists(cowPath) == false)
 		{
 
-			if (!wfo.loadObj(objPath.c_str(), false))
+			if (!wfo.loadObj(cowPath.c_str(), false))
 			{
-				DL_ASSERT(CU::Concatenate("Error loading file: %s", objPath.c_str()));
+				DL_ASSERT(CU::Concatenate("Error loading file: %s", cowPath.c_str()));
 			}
 
 			physx::PxTriangleMeshDesc meshDesc;
