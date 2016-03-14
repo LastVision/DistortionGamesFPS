@@ -123,9 +123,9 @@ void ClientNetworkManager::SendThread()
 {
 	while (myIsRunning == true)
 	{
-		for (std::vector<char> arr : mySendBuffer[myCurrentSendBuffer])
+		for (SendBufferMessage arr : mySendBuffer[myCurrentSendBuffer])
 		{
-			myNetwork->Send(arr);
+			myNetwork->Send(arr.myBuffer);
 		}
 
 		mySendBuffer[myCurrentSendBuffer].RemoveAll();

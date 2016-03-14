@@ -30,6 +30,8 @@ public:
 
 	template<typename T>
 	void AddMessage(T aMessage);
+	template<typename T>
+	void AddMessage(T aMessage, unsigned int aTargetID);
 	
 	eNetMessageType ReadType(const char* aBuffer);
 	eNetMessageType ReadType(const std::vector<char>& aBuffer);
@@ -76,12 +78,21 @@ protected:
 		float myTimer;
 	};
 
+	struct SendBufferMessage
+	{
+		SendBufferMessage() {}
+		SendBufferMessage(std::vector<char> aBuffer, unsigned int aTargetID) : myBuffer(aBuffer), myTargetID(aTargetID) {}
+
+		std::vector<char> myBuffer;
+		unsigned int myTargetID;
+	};
+
 	SharedNetworkManager();
 	virtual ~SharedNetworkManager();
 
 	virtual void UpdateImportantMessages(float aDeltaTime) = 0;
 
-	void AddNetworkMessage(std::vector<char> aBuffer);
+	void AddNetworkMessage(std::vector<char> aBuffer, unsigned int aTargetID);
 	virtual void AddImportantMessage(std::vector<char> aBuffer, unsigned int aImportantID) = 0;
 
 	virtual void SendThread() = 0;
@@ -114,7 +125,7 @@ protected:
 	std::thread* mySendThread;
 
 	CU::StaticArray<CU::GrowingArray<Buffer>, 2> myReceieveBuffer;
-	CU::StaticArray<CU::GrowingArray<std::vector<char>>, 2> mySendBuffer;
+	CU::StaticArray<CU::GrowingArray<SendBufferMessage>, 2> mySendBuffer;
 	CU::GrowingArray<ImportantMessage> myImportantMessagesBuffer;
 	CU::GrowingArray<ImportantReceivedMessage> myImportantReceivedMessages;
 
@@ -147,7 +158,13 @@ private:
 template<typename T>
 inline void SharedNetworkManager::AddMessage(T aMessage)
 {
-	
+	AddMessage(aMessage, 0);
+}
+
+template<typename T>
+inline void SharedNetworkManager::AddMessage(T aMessage, unsigned int aTargetID)
+{
+	aMessage.myTargetID = aTargetID;
 	if (myIsServer == false)
 	{
 		aMessage.mySenderID = myGID;
@@ -165,7 +182,7 @@ inline void SharedNetworkManager::AddMessage(T aMessage)
 		AddImportantMessage(aMessage.myStream, importantID);
 	}
 	myDataSent += aMessage.myStream.size() * sizeof(char);
-	AddNetworkMessage(aMessage.myStream);
+	AddNetworkMessage(aMessage.myStream, aTargetID);
 }
 
 template<typename T>
@@ -182,7 +199,7 @@ void SharedNetworkManager::UnpackAndHandle(T aMessage, Buffer& aBuffer)
 	aMessage.UnPackMessage(aBuffer.myData, aBuffer.myLength);
 	if (CheckIfImportantMessage(aMessage) == true)
 	{
-		AddMessage(NetMessageImportantReply(aMessage.GetImportantID()));
+		AddMessage(NetMessageImportantReply(aMessage.GetImportantID()), aMessage.mySenderID);
 	}
 	if (AlreadyReceived(aMessage) == false)
 	{

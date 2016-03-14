@@ -135,13 +135,27 @@ void ServerNetworkManager::SendThread()
 {
 	while (myIsRunning == true)
 	{
-		for (std::vector<char> arr : mySendBuffer[myCurrentSendBuffer])
+		for (SendBufferMessage arr : mySendBuffer[myCurrentSendBuffer])
 		{
-			for (Connection& connection : myClients)
+			if (arr.myTargetID == 0)
 			{
-				if (connection.myID != static_cast<unsigned int>(arr[5]))
+				for (Connection& connection : myClients)
 				{
-					myNetwork->Send(arr, connection.myAddress);
+					if (connection.myID != static_cast<unsigned int>(arr.myBuffer[5]))
+					{
+						myNetwork->Send(arr.myBuffer, connection.myAddress);
+					}
+				}
+			}
+			else 
+			{
+				for (Connection& connection : myClients)
+				{
+					if (connection.myID == arr.myTargetID && connection.myID != static_cast<unsigned int>(arr.myBuffer[5]))
+					{
+						myNetwork->Send(arr.myBuffer, connection.myAddress);
+						break;
+					}
 				}
 			}
 		}
@@ -286,15 +300,15 @@ void ServerNetworkManager::HandleMessage(const NetMessageConnectMessage& aMessag
 	CreateConnection(aMessage.myName, aSenderAddress);
 }
 
-void ServerNetworkManager::HandleMessage(const NetMessageDisconnect& aMessage, const sockaddr_in& aSenderAddress)
+void ServerNetworkManager::HandleMessage(const NetMessageDisconnect& aMessage, const sockaddr_in& )
 {
-	if (CheckIfImportantMessage(aMessage) == true)
+	/*if (CheckIfImportantMessage(aMessage) == true)
 	{
 		NetMessageImportantReply toReply(aMessage.GetImportantID());
 		toReply.PackMessage();
 
 		myNetwork->Send(toReply.myStream, aSenderAddress);
-	}
+	}*/
 	for (Connection c : myClients)
 	{
 		if (c.myID == aMessage.myClientID)

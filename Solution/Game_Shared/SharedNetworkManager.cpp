@@ -140,11 +140,11 @@ double SharedNetworkManager::GetDataSent() const
 	return myDataToPrint / 1024;
 }
 
-void SharedNetworkManager::AddNetworkMessage(std::vector<char> aBuffer)
+void SharedNetworkManager::AddNetworkMessage(std::vector<char> aBuffer, unsigned int aTargetID)
 {
 	if (myIsOnline == true)
 	{
-		mySendBuffer[myCurrentSendBuffer ^ 1].Add(aBuffer);
+		mySendBuffer[myCurrentSendBuffer ^ 1].Add({ aBuffer, aTargetID });
 	}
 }
 
