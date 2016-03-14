@@ -22,6 +22,7 @@ Pistol::Pistol()
 	reader.ForceReadAttribute(reader.ForceFindFirstChild(pistolElement, "clipsize"), "value", myClipSize);
 	reader.ForceReadAttribute(reader.ForceFindFirstChild(pistolElement, "damage"), "value", myDamage);
 	reader.ForceReadAttribute(reader.ForceFindFirstChild(pistolElement, "shoottime"), "value", myShootTime);
+	reader.ForceReadAttribute(reader.ForceFindFirstChild(pistolElement, "forceStrength"), "value", myForceStrength);
 
 	myAmmoInClip = myClipSize;
 	myAmmoTotal = INT_MAX;
@@ -69,7 +70,7 @@ void Pistol::HandleRaycast(PhysicsComponent* aComponent, const CU::Vector3<float
 	{
 		if (aComponent->GetPhysicsType() == ePhysics::DYNAMIC)
 		{
-			aComponent->AddForce(aDirection, 25.f);
+			aComponent->AddForce(aDirection, myForceStrength);
 		}
 		PostMaster::GetInstance()->SendMessage(EmitterMessage("Shotgun", aHitPosition));
 		//aComponent->GetEntity().SendNote<DamageNote>(DamageNote(myDamage));

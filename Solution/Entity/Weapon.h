@@ -26,6 +26,8 @@ protected:
 	float myShootTime;
 	float myShootTimer;
 
+	float myForceStrength;
+
 	eWeaponType myWeaponType;
 };
 

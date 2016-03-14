@@ -25,6 +25,7 @@ GrenadeLauncher::GrenadeLauncher(Prism::Scene* aScene)
 	reader.ForceReadAttribute(reader.ForceFindFirstChild(grenadeLauncherElement, "damage"), "value", myDamage);
 	reader.ForceReadAttribute(reader.ForceFindFirstChild(grenadeLauncherElement, "startammo"), "value", myAmmoTotal);
 	reader.ForceReadAttribute(reader.ForceFindFirstChild(grenadeLauncherElement, "shoottime"), "value", myShootTime);
+	reader.ForceReadAttribute(reader.ForceFindFirstChild(grenadeLauncherElement, "forceStrength"), "value", myForceStrength);
 
 	myAmmoInClip = myClipSize;
 	myShootTimer = myShootTime;
@@ -89,7 +90,7 @@ void GrenadeLauncher::ShootAtDirection(const CU::Matrix44<float>& aOrientation)
 
 	myBullets[myCurrentBulletToUse]->GetComponent<ProjectileComponent>()->Activate();
 	myBullets[myCurrentBulletToUse]->GetComponent<PhysicsComponent>()->TeleportToPosition(aOrientation.GetPos());
-	myBullets[myCurrentBulletToUse]->GetComponent<PhysicsComponent>()->AddForce(aOrientation.GetForward(), 20.f);
+	myBullets[myCurrentBulletToUse]->GetComponent<PhysicsComponent>()->AddForce(aOrientation.GetForward(), myForceStrength);
 	++myCurrentBulletToUse;
 
 	if (myCurrentBulletToUse > 7)
