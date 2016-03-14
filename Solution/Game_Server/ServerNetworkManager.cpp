@@ -17,12 +17,12 @@
 #include <NetMessageOnHit.h>
 #include <NetMessageOnDeath.h>
 
-#include <NetworkAddPlayerMessage.h>
-#include <NetworkAddEnemyMessage.h>
-#include <NetworkSendPositionMessage.h>
-#include <NetworkSetPositionMessage.h>
-#include <NetworkOnHitMessage.h>
-#include <NetworkOnDeathMessage.h>
+#include <PostMasterNetAddPlayerMessage.h>
+#include <PostMasterNetAddEnemyMessage.h>
+#include <PostMasterNetSendPositionMessage.h>
+#include <PostMasterNetSetPositionMessage.h>
+#include <PostMasterNetOnHitMessage.h>
+#include <PostMasterNetOnDeathMessage.h>
 
 #define BUFFERSIZE 512
 #define RECONNECT_ATTEMPTS 100
@@ -203,7 +203,7 @@ void ServerNetworkManager::CreateConnection(const std::string& aName, const sock
 	NetMessageOnJoin onJoin = CreateMessage<NetMessageOnJoin>();
 	onJoin.mySenderID = newConnection.myID;
 	AddMessage(onJoin);
-	PostMaster::GetInstance()->SendMessage(NetworkAddPlayerMessage(myIDCount, newConnection.myAddress));
+	PostMaster::GetInstance()->SendMessage(PostMasterNetAddPlayerMessage(myIDCount, newConnection.myAddress));
 }
 
 void ServerNetworkManager::DisconnectConnection(const Connection& aConnection)
@@ -362,7 +362,7 @@ void ServerNetworkManager::HandleMessage(const NetMessageOnHit& aMessage, const 
 	__super::HandleMessage(aMessage, aSenderAddress);
 }
 
-void ServerNetworkManager::ReceiveMessage(const NetworkAddEnemyMessage& aMessage)
+void ServerNetworkManager::ReceiveMessage(const PostMasterNetAddEnemyMessage& aMessage)
 {
 	NetMessageAddEnemy toSend = CreateMessage<NetMessageAddEnemy>();
 	toSend.myPosition = aMessage.myPosition;
@@ -371,7 +371,7 @@ void ServerNetworkManager::ReceiveMessage(const NetworkAddEnemyMessage& aMessage
 	myNetwork->Send(toSend.myStream, aMessage.myAddress);
 }
 
-void ServerNetworkManager::ReceiveMessage(const NetworkSendPositionMessage& aMessage)
+void ServerNetworkManager::ReceiveMessage(const PostMasterNetSendPositionMessage& aMessage)
 {
 	NetMessagePosition toSend;
 	toSend.mySenderID = static_cast<short>(aMessage.myGID);
@@ -381,7 +381,7 @@ void ServerNetworkManager::ReceiveMessage(const NetworkSendPositionMessage& aMes
 	AddMessage(toSend);
 }
 
-void ServerNetworkManager::ReceiveMessage(const NetworkOnDeathMessage& aMessage)
+void ServerNetworkManager::ReceiveMessage(const PostMasterNetOnDeathMessage& aMessage)
 {
 	NetMessageOnDeath toSend = CreateMessage<NetMessageOnDeath>();
 	toSend.mySenderID = 0;

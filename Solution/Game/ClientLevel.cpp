@@ -24,10 +24,10 @@
 #include <NetMessageDisconnect.h>
 #include <NetMessageOnHit.h>
 
-#include <NetworkAddPlayerMessage.h>
-#include <NetworkRemovePlayer.h>
-#include <NetworkAddEnemyMessage.h>
-#include <NetworkOnDeathMessage.h>
+#include <PostMasterNetAddPlayerMessage.h>
+#include <PostMasterNetRemovePlayer.h>
+#include <PostMasterNetAddEnemyMessage.h>
+#include <PostMasterNetOnDeathMessage.h>
 
 #include "ClientNetworkManager.h"
 #include "DeferredRenderer.h"
@@ -156,7 +156,7 @@ void ClientLevel::Render()
 	myPlayer->GetComponent<FirstPersonRenderComponent>()->Render();
 }
 
-void ClientLevel::ReceiveMessage(const NetworkAddPlayerMessage& aMessage)
+void ClientLevel::ReceiveMessage(const PostMasterNetAddPlayerMessage& aMessage)
 {
 	if (aMessage.myGID == ClientNetworkManager::GetInstance()->GetGID())
 	{
@@ -175,7 +175,7 @@ void ClientLevel::ReceiveMessage(const NetworkAddPlayerMessage& aMessage)
 }
 }
 
-void ClientLevel::ReceiveMessage(const NetworkRemovePlayerMessage& aMessage)
+void ClientLevel::ReceiveMessage(const PostMasterNetRemovePlayerMessage& aMessage)
 {
 	DL_ASSERT_EXP(aMessage.myGID != 0, "Can't remove server (id 0).");
 	for (Entity* e : myPlayers)
@@ -187,7 +187,7 @@ void ClientLevel::ReceiveMessage(const NetworkRemovePlayerMessage& aMessage)
 	}
 }
 
-void ClientLevel::ReceiveMessage(const NetworkAddEnemyMessage& aMessage)
+void ClientLevel::ReceiveMessage(const PostMasterNetAddEnemyMessage& aMessage)
 {
 	bool isRunTime = Prism::MemoryTracker::GetInstance()->GetRunTime();
 	Prism::MemoryTracker::GetInstance()->SetRunTime(false);
@@ -200,7 +200,7 @@ void ClientLevel::ReceiveMessage(const NetworkAddEnemyMessage& aMessage)
 	Prism::MemoryTracker::GetInstance()->SetRunTime(isRunTime);
 }
 
-void ClientLevel::ReceiveMessage(const NetworkOnDeathMessage& aMessage)
+void ClientLevel::ReceiveMessage(const PostMasterNetOnDeathMessage& aMessage)
 {
 	DL_ASSERT_EXP(aMessage.myGID != 0, "Can't kill server (id 0).");
 

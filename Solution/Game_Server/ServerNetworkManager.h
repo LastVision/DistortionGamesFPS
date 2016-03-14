@@ -29,9 +29,9 @@ private:
 	void HandleMessage(const NetMessageOnHit& aMessage, const sockaddr_in& aSenderAddress) override;
 
 
-	void ReceiveMessage(const NetworkAddEnemyMessage& aMessage) override;
-	void ReceiveMessage(const NetworkSendPositionMessage& aMessage) override;
-	void ReceiveMessage(const NetworkOnDeathMessage& aMessage) override;
+	void ReceiveMessage(const PostMasterNetAddEnemyMessage& aMessage) override;
+	void ReceiveMessage(const PostMasterNetSendPositionMessage& aMessage) override;
+	void ReceiveMessage(const PostMasterNetOnDeathMessage& aMessage) override;
 
 	void ReceieveThread() override;
 	void SendThread() override;
