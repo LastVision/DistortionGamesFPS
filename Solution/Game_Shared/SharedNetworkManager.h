@@ -51,6 +51,7 @@ protected:
 	{
 		float myTimer;
 		bool myHasReplied;
+		std::string myName;
 		unsigned int myGID;
 		sockaddr_in myNetworkAddress;
 	};
@@ -61,6 +62,7 @@ protected:
 		//Add Data
 		std::vector<char> myData;
 		unsigned int myImportantID;
+		unsigned char myMessageType;
 		CU::GrowingArray<ImportantClient> mySenders;
 	};
 

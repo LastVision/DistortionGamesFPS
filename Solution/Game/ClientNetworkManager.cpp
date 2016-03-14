@@ -264,10 +264,12 @@ void ClientNetworkManager::AddImportantMessage(std::vector<char> aBuffer, unsign
 	ImportantMessage msg;
 	msg.myData = aBuffer;
 	msg.myImportantID = aImportantID;
+	msg.myMessageType = aBuffer[0];
 	msg.mySenders.Init(1);
 	ImportantClient server;
 	server.myGID = 0;
 	server.myNetworkAddress = myNetwork->GetServerAddress();
+	server.myName = "server";
 	server.myTimer = 0.f;
 	server.myHasReplied = false;
 	msg.mySenders.Add(server);

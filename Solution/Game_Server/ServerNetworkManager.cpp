@@ -101,6 +101,7 @@ ServerNetworkManager* ServerNetworkManager::GetInstance()
 void ServerNetworkManager::StartNetwork(unsigned int aPortNum)
 {
 	myNetwork->StartServer(aPortNum);
+	myNetwork->PrintStatus();
 	__super::StartNetwork(aPortNum);
 	myIsOnline = true;
 }
@@ -255,7 +256,9 @@ void ServerNetworkManager::UpdateImportantMessages(float aDeltaTime)
 				if (client.myTimer >= 1.f)
 				{
 					client.myTimer = 0.f;
-					std::string resend = "Sending important message " + std::to_string(msg.myImportantID) + " to client id " + std::to_string(client.myGID);
+					
+					std::string resend = "Sending important message " + std::to_string(msg.myImportantID) + " of message type id " 
+						+ std::to_string(msg.myMessageType) + " to client id " + std::to_string(client.myGID) + " - " + client.myName;
 					Utility::PrintEndl(resend, AQUA_TEXT);
 					myNetwork->Send(msg.myData, client.myNetworkAddress);
 				}
@@ -263,7 +266,8 @@ void ServerNetworkManager::UpdateImportantMessages(float aDeltaTime)
 		}
 		if (finished == true)
 		{
-			std::string resend = "All client has replied to the message id " + std::to_string(msg.myImportantID);
+			std::string resend = "All client has replied to the message id " + std::to_string(msg.myImportantID) 
+				+ " of message type id " + std::to_string(msg.myMessageType);
 			Utility::PrintEndl(resend, YELLOW_TEXT);
 			myImportantMessagesBuffer.RemoveCyclic(msg);
 		}
@@ -275,12 +279,14 @@ void ServerNetworkManager::AddImportantMessage(std::vector<char> aBuffer, unsign
 	ImportantMessage msg;
 	msg.myData = aBuffer;
 	msg.myImportantID = aImportantID;
+	msg.myMessageType = aBuffer[0];
 	msg.mySenders.Init(myClients.Size());
 	for (Connection c : myClients)
 	{
 		ImportantClient client;
 		client.myGID = c.myID;
 		client.myNetworkAddress = c.myAddress;
+		client.myName = c.myName;
 		client.myTimer = 0.f;
 		client.myHasReplied = false;
 		msg.mySenders.Add(client);
