@@ -5,8 +5,9 @@
 #include <MathHelper.h>
 #include "ServerLevel.h"
 #include "ServerLevelFactory.h"
+#include <PhysicsInterface.h>
 #include <XMLReader.h>
-
+#include <TriggerComponent.h>
 #include <NetworkComponent.h>
 
 ServerLevelFactory::ServerLevelFactory(const std::string& aLevelListPath)
@@ -22,6 +23,9 @@ SharedLevel* ServerLevelFactory::LoadCurrentLevel()
 {
 	myCurrentLevel = new ServerLevel();
 	ReadLevel(myLevelPaths[myCurrentID]);
+#ifdef THREAD_PHYSICS
+	Prism::PhysicsInterface::GetInstance()->InitThread();
+#endif
 	return myCurrentLevel;
 }
 
@@ -131,8 +135,20 @@ void ServerLevelFactory::LoadTriggers(XMLReader& aReader, tinyxml2::XMLElement* 
 		triggerRotation.z = CU::Math::DegreeToRad(triggerRotation.z);
 
 		Entity* newEntity = EntityFactory::CreateEntity(gid, eEntityType::UNIT, triggerType, nullptr, false, triggerPosition, triggerRotation, triggerScale);
-		newEntity->Reset();
 
-		myCurrentLevel->AddEntity(newEntity);
+		if (newEntity->GetComponent<TriggerComponent>()->IsClientSide() == false)
+		{
+			newEntity->Reset();
+			myCurrentLevel->AddEntity(newEntity);
+			//if (newEntity->GetComponent<NetworkComponent>() != nullptr)
+			//{
+			//	myIDCount++;
+			//	newEntity->GetComponent<NetworkComponent>()->SetNetworkID(myIDCount);
+			//}
+		}
+		else
+		{
+			SAFE_DELETE(newEntity);
+		}
 	}
 }

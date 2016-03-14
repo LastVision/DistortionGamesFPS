@@ -50,7 +50,7 @@ void PhysicsComponent::Update(float)
 
 void PhysicsComponent::Reset()
 {
-	if (myDynamicBody != nullptr)
+	if (myDynamicBody != nullptr && myPhysicsType != ePhysics::KINEMATIC)
 	{
 		Prism::PhysicsInterface::GetInstance()->SetVelocity(myDynamicBody, CU::Vector3<float>(0, 0, 0));
 	}
