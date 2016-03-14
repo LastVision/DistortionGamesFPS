@@ -2,14 +2,14 @@
 #include "Message.h"
 struct NetworkOnDeathMessage : public Message
 {
-	NetworkOnDeathMessage(unsigned int aNetworkID);
+	NetworkOnDeathMessage(unsigned int aGID);
 
-	unsigned int myNetworkID;
+	unsigned int myGID;
 };
 
-inline NetworkOnDeathMessage::NetworkOnDeathMessage(unsigned int aNetworkID)
+inline NetworkOnDeathMessage::NetworkOnDeathMessage(unsigned int aGID)
 	: Message(eMessageType::NETWORK_ON_DEATH)
-	, myNetworkID(aNetworkID)
+	, myGID(aGID)
 {
 }
 

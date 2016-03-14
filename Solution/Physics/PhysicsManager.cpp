@@ -124,7 +124,7 @@ namespace Prism
 		myScene->setFlag(physx::PxSceneFlag::eENABLE_KINEMATIC_STATIC_PAIRS, true);
 		myScene->setSimulationEventCallback(this);
 
-#ifdef _DEBUG
+#ifndef RELEASE_BUILD
 		if (myPhysicsSDK->getPvdConnectionManager())
 		{
 			myPhysicsSDK->getPvdConnectionManager()->addHandler(*this);

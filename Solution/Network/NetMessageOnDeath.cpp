@@ -1,10 +1,10 @@
 #include "stdafx.h"
 #include "NetMessageOnDeath.h"
 
-NetMessageOnDeath::NetMessageOnDeath(eNetMessageType aType, const unsigned int aNetworkID)
+NetMessageOnDeath::NetMessageOnDeath(eNetMessageType aType, const unsigned int aGID)
 {
 	myID = static_cast<uint8_t>(aType);
-	myNetworkID = aNetworkID;
+	myGID = aGID;
 }
 
 NetMessageOnDeath::NetMessageOnDeath()
@@ -19,11 +19,11 @@ NetMessageOnDeath::~NetMessageOnDeath()
 void NetMessageOnDeath::DoSerialize(StreamType& aStream)
 {
 	__super::DoSerialize(aStream);
-	SERIALIZE(aStream, myNetworkID);
+	SERIALIZE(aStream, myGID);
 }
 
 void NetMessageOnDeath::DoDeSerialize(StreamType& aStream)
 {
 	__super::DoDeSerialize(aStream);
-	DESERIALIZE(aStream, myNetworkID);
+	DESERIALIZE(aStream, myGID);
 }

@@ -87,9 +87,9 @@ void InputComponent::Update(float aDelta)
 	mySendTime -= aDelta;
 	if (mySendTime < 0.f)
 	{
-		if (myEntity.GetNetworkID() != 0 && (myOrientation != myPrevOrientation))
+		if (myEntity.GetGID() != 0 && (myOrientation != myPrevOrientation))
 		{
-			PostMaster::GetInstance()->SendMessage(NetworkSendPositionMessage(myOrientation.GetPos(), myCursorPosition.x, myEntity.GetNetworkID()));
+			PostMaster::GetInstance()->SendMessage(NetworkSendPositionMessage(myOrientation.GetPos(), myCursorPosition.x, myEntity.GetGID()));
 			mySendTime = NETWORK_UPDATE_INTERVAL;
 		}
 	}

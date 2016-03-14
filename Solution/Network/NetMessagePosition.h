@@ -5,14 +5,14 @@ class NetMessagePosition : public NetMessage
 {
 public:
 	NetMessagePosition();
-	NetMessagePosition(const CU::Vector3<float>& aPos, float aRotationY, unsigned int aNetworkID);
+	NetMessagePosition(const CU::Vector3<float>& aPos, float aRotationY, unsigned int aGID);
 
 	~NetMessagePosition();
 
 
 	CU::Vector3<float> myPosition;
 	float myRotationY;
-	unsigned int myNetworkID;
+	unsigned int myGID;
 protected:
 	void DoSerialize(StreamType& aStream) override;
 	void DoDeSerialize(StreamType& aStream) override;

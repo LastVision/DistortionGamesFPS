@@ -16,9 +16,10 @@
 #include "TriggerComponent.h"
 #include "UpgradeComponent.h"
 
-Entity::Entity(const EntityData& aEntityData, Prism::Scene* aScene, bool aClientSide, const CU::Vector3<float>& aStartPosition,
+Entity::Entity(unsigned int aGID, const EntityData& aEntityData, Prism::Scene* aScene, bool aClientSide, const CU::Vector3<float>& aStartPosition,
 		const CU::Vector3f& aRotation, const CU::Vector3f& aScale)
-	: myScene(aScene)
+	: myGID(aGID)
+	, myScene(aScene)
 	, myEntityData(aEntityData)
 	, myEmitterConnection(nullptr)
 	, myIsClientSide(aClientSide)
@@ -74,7 +75,7 @@ Entity::Entity(const EntityData& aEntityData, Prism::Scene* aScene, bool aClient
 
 	if (aEntityData.myNetworkData.myExistsInEntity == true)
 	{
-		myComponents[static_cast<int>(eComponentType::NETWORK)] = new NetworkComponent(*this, myOrientation, myNetworkID);
+		myComponents[static_cast<int>(eComponentType::NETWORK)] = new NetworkComponent(*this, myOrientation);
 	}
 
 	if (aEntityData.myHealthData.myExistsInEntity == true)

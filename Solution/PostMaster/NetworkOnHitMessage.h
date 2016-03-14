@@ -2,16 +2,16 @@
 #include "Message.h"
 struct NetworkOnHitMessage : public Message
 {
-	NetworkOnHitMessage(float aDamage, unsigned int aNetworkID);
+	NetworkOnHitMessage(float aDamage, unsigned int aGID);
 
 	float myDamage;
-	unsigned int myNetworkID;
+	unsigned int myGID;
 };
 
-inline NetworkOnHitMessage::NetworkOnHitMessage(float aDamage, unsigned int aNetworkID)
+inline NetworkOnHitMessage::NetworkOnHitMessage(float aDamage, unsigned int aGID)
 	: Message(eMessageType::NETWORK_ON_HIT)
 	, myDamage(aDamage)
-	, myNetworkID(aNetworkID)
+	, myGID(aGID)
 {
 }
 

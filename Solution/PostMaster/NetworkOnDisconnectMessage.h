@@ -2,14 +2,14 @@
 #include "Message.h"
 struct NetworkOnDisconnectMessage : public Message
 {
-	NetworkOnDisconnectMessage(unsigned int aNetworkID);
+	NetworkOnDisconnectMessage(unsigned int aGID);
 
-	unsigned int myNetworkID;
+	unsigned int myGID;
 };
 
-inline NetworkOnDisconnectMessage::NetworkOnDisconnectMessage(unsigned int aNetworkID)
+inline NetworkOnDisconnectMessage::NetworkOnDisconnectMessage(unsigned int aGID)
 	: Message(eMessageType::NETWORK_ON_DISCONNECT)
-	, myNetworkID(aNetworkID)
+	, myGID(aGID)
 {
 }
 
