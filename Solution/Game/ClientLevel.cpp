@@ -106,6 +106,7 @@ ClientLevel::~ClientLevel()
 void ClientLevel::Update(const float aDeltaTime)
 {
 	SharedLevel::Update(aDeltaTime);
+	myPlayer->GetComponent<FirstPersonRenderComponent>()->UpdateCoOpPositions(myPlayers);
 	myPlayer->Update(aDeltaTime);
 	myEmitterManager->UpdateEmitters(aDeltaTime, CU::Matrix44f());
 
