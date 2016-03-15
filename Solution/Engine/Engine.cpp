@@ -11,6 +11,7 @@
 #include "ModelProxy.h"
 #include "Sprite.h"
 #include "Text.h"
+#include "TextProxy.h"
 #include <TimerManager.h>
 #include "TextureContainer.h"
 #include <Vector.h>
@@ -73,6 +74,11 @@ namespace Prism
 		{
 			myInstance->myDirectX->SetFullscreen(true);
 		}
+
+
+		ModelLoader::GetInstance()->Pause();
+		DebugDrawer::GetInstance();
+		ModelLoader::GetInstance()->UnPause();
 
 		myInstance->Render();
 
@@ -245,7 +251,7 @@ namespace Prism
 		return myDirectX->GetDepthbufferTexture();
 	}
 
-	Font* Engine::GetFont(eFont aFont)
+	FontProxy* Engine::GetFont(eFont aFont)
 	{
 		switch (aFont)
 		{
@@ -300,17 +306,20 @@ namespace Prism
 			, static_cast<float>(myWindowSize.y), 0.1f, 1000.f);
 
 
-		//myDialogueFont = ModelLoader::GetInstance()->LoadFont("Data/Resource/Font/debugText.txt", { 256, 256 });
-		//myConsoleFont = ModelLoader::GetInstance()->LoadFont("Data/Resource/Font/consolab.ttf_sdf.txt", { 256, 256 });
+		myDialogueFont = ModelLoader::GetInstance()->LoadFont("Data/Resource/Font/debugText.txt", { 256, 256 });
+		myConsoleFont = ModelLoader::GetInstance()->LoadFont("Data/Resource/Font/consolab.ttf_sdf.txt", { 256, 256 });
 
-		myDialogueFont = new Font("Data/Resource/Font/debugText.txt", { 256, 256 });
-		myConsoleFont = new Font("Data/Resource/Font/consolab.ttf_sdf.txt", { 256, 256 });
-		myText = new Text(*myDialogueFont);
+		//myDialogueFont = new Font("Data/Resource/Font/debugText.txt", { 256, 256 });
+		//myConsoleFont = new Font("Data/Resource/Font/consolab.ttf_sdf.txt", { 256, 256 });
+		//myText = new Text(*myDialogueFont);
+
+		myText = ModelLoader::GetInstance()->LoadText(myDialogueFont);
 		myText->SetPosition({ 800.f, -300.f });
 		myText->SetText("едц");
 		myText->SetScale({ 1.f, 1.f });
 
-		myDebugText = new Text(*myDialogueFont);
+		//myDebugText = new Text(*myDialogueFont);
+		myDebugText = ModelLoader::GetInstance()->LoadText(myDialogueFont);
 		myDebugText->SetPosition({ 800.f, -300.f });
 		myDebugText->SetText("едц");
 		myDebugText->SetScale({ 1.f, 1.f });
@@ -362,7 +371,7 @@ namespace Prism
 		PrintText(ss.str(), aPosition, aTextType, aScale, aColor);
 	}
 
-	void Engine::RenderText(Text* aText)
+	void Engine::RenderText(TextProxy* aText)
 	{
 		myTextsNew.Add(aText);
 	}

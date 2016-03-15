@@ -5,6 +5,7 @@
 
 Weapon::Weapon(eWeaponType aWeaponType)
 	: myWeaponType(aWeaponType)
+	, myForceStrength(0.f)
 {
 }
 

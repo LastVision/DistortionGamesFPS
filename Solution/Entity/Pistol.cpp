@@ -3,7 +3,7 @@
 #include "DamageNote.h"
 #include "Entity.h"
 #include <EmitterMessage.h>
-#include <NetworkOnHitMessage.h>
+#include <PostMasterNetOnHitMessage.h>
 #include "PhysicsComponent.h"
 #include <PostMaster.h>
 #include <PhysicsInterface.h>
@@ -22,6 +22,7 @@ Pistol::Pistol()
 	reader.ForceReadAttribute(reader.ForceFindFirstChild(pistolElement, "clipsize"), "value", myClipSize);
 	reader.ForceReadAttribute(reader.ForceFindFirstChild(pistolElement, "damage"), "value", myDamage);
 	reader.ForceReadAttribute(reader.ForceFindFirstChild(pistolElement, "shoottime"), "value", myShootTime);
+	reader.ForceReadAttribute(reader.ForceFindFirstChild(pistolElement, "forceStrength"), "value", myForceStrength);
 
 	myAmmoInClip = myClipSize;
 	myAmmoTotal = INT_MAX;
@@ -69,11 +70,11 @@ void Pistol::HandleRaycast(PhysicsComponent* aComponent, const CU::Vector3<float
 	{
 		if (aComponent->GetPhysicsType() == ePhysics::DYNAMIC)
 		{
-			aComponent->AddForce(aDirection, 25.f);
+			aComponent->AddForce(aDirection, myForceStrength);
 		}
 		PostMaster::GetInstance()->SendMessage(EmitterMessage("Shotgun", aHitPosition));
 		//aComponent->GetEntity().SendNote<DamageNote>(DamageNote(myDamage));
 
-		PostMaster::GetInstance()->SendMessage(NetworkOnHitMessage(myDamage, aComponent->GetEntity().GetNetworkID()));
+		PostMaster::GetInstance()->SendMessage(PostMasterNetOnHitMessage(static_cast<float>(myDamage), aComponent->GetEntity().GetGID()));
 	}
 }

@@ -16,9 +16,10 @@
 #include "TriggerComponent.h"
 #include "UpgradeComponent.h"
 
-Entity::Entity(const EntityData& aEntityData, Prism::Scene* aScene, bool aClientSide, const CU::Vector3<float>& aStartPosition,
+Entity::Entity(unsigned int aGID, const EntityData& aEntityData, Prism::Scene* aScene, bool aClientSide, const CU::Vector3<float>& aStartPosition,
 		const CU::Vector3f& aRotation, const CU::Vector3f& aScale)
-	: myScene(aScene)
+	: myGID(aGID)
+	, myScene(aScene)
 	, myEntityData(aEntityData)
 	, myEmitterConnection(nullptr)
 	, myIsClientSide(aClientSide)
@@ -30,18 +31,21 @@ Entity::Entity(const EntityData& aEntityData, Prism::Scene* aScene, bool aClient
 
 	myOrientation.SetPos(aStartPosition);
 
+	SetRotation(aRotation);
+	
+
 	if (myScene != nullptr)
 	{
 		if (aEntityData.myAnimationData.myExistsInEntity == true)
 		{
 			myComponents[static_cast<int>(eComponentType::ANIMATION)] = new AnimationComponent(*this, aEntityData.myAnimationData);
-			GetComponent<AnimationComponent>()->SetRotation(aRotation);
+			//GetComponent<AnimationComponent>()->SetRotation(aRotation);
 			GetComponent<AnimationComponent>()->SetScale(aScale);
 		}
 		else if (aEntityData.myGraphicsData.myExistsInEntity == true)
 		{
 			myComponents[static_cast<int>(eComponentType::GRAPHICS)] = new GraphicsComponent(*this, aEntityData.myGraphicsData);
-			GetComponent<GraphicsComponent>()->SetRotation(aRotation);
+			//GetComponent<GraphicsComponent>()->SetRotation(aRotation);
 			GetComponent<GraphicsComponent>()->SetScale(aScale);
 		}
 	}
@@ -71,7 +75,7 @@ Entity::Entity(const EntityData& aEntityData, Prism::Scene* aScene, bool aClient
 
 	if (aEntityData.myNetworkData.myExistsInEntity == true)
 	{
-		myComponents[static_cast<int>(eComponentType::NETWORK)] = new NetworkComponent(*this, myOrientation, myNetworkID);
+		myComponents[static_cast<int>(eComponentType::NETWORK)] = new NetworkComponent(*this, myOrientation);
 	}
 
 	if (aEntityData.myHealthData.myExistsInEntity == true)
@@ -113,7 +117,11 @@ Entity::~Entity()
 {
 	if (myIsInScene == true)
 	{
-		RemoveFromScene();
+		RemoveFromScene();		
+	}
+	if (GetComponent<PhysicsComponent>() != nullptr)
+	{
+		GetComponent<PhysicsComponent>()->RemoveFromScene();
 	}
 	for (int i = 0; i < static_cast<int>(eComponentType::_COUNT); ++i)
 	{
@@ -137,11 +145,11 @@ void Entity::Reset()
 
 void Entity::Update(float aDeltaTime)
 {
-	for (int i = 0; i < static_cast<int>(eComponentType::_COUNT); ++i)
+	for each (Component* component in myComponents)
 	{
-		if (myComponents[i] != nullptr)
+		if (component != nullptr)
 		{
-			myComponents[i]->Update(aDeltaTime);
+			component->Update(aDeltaTime);
 		}
 	}
 
@@ -152,8 +160,6 @@ void Entity::Update(float aDeltaTime)
 			memcpy(&myOrientation.myMatrix[0], GetComponent<PhysicsComponent>()->GetOrientation(), sizeof(float) * 16);
 		}
 	}
-
-
 }
 
 void Entity::AddComponent(Component* aComponent)

@@ -104,39 +104,6 @@ namespace Prism
 		return true;
 	}
 
-	void Surface::ActivateAlbedo(eOwnerType aOwner)
-	{
-		if (myOwnerAlbedoTextures[0] == nullptr || myOwnerAlbedoTextures[1] == nullptr
-			|| myOwnerAlbedoTextures[2] == nullptr)
-		{
-			return;
-		}
-
-		DL_ASSERT_EXP(aOwner != eOwnerType::NOT_USED, "NOT_USED cannot be used to ActivateAlbedo");
-
-		for (int i = 0; i < myShaderResourceNames.Size(); ++i)
-		{
-			if (myShaderResourceNames[i] == "AlbedoTexture")
-			{
-				switch (aOwner)
-				{
-				case NEUTRAL:
-					myResourceViews[i] = myOwnerAlbedoTextures[0]->GetShaderView();
-					break;
-				case PLAYER:
-					myResourceViews[i] = myOwnerAlbedoTextures[1]->GetShaderView();
-					break;
-				case ENEMY:
-					myResourceViews[i] = myOwnerAlbedoTextures[2]->GetShaderView();
-					break;
-				default:
-					myResourceViews[i] = myOwnerAlbedoTextures[0]->GetShaderView();
-					break;
-				}
-			}
-		}
-	}
-
 	void Surface::ReloadSurface()
 	{
 		myResourceViews.RemoveAll();

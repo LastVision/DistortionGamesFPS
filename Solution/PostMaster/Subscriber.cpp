@@ -12,11 +12,11 @@ void Subscriber::ReceiveMessage(const Message&){}
 void Subscriber::ReceiveMessage(const OnClickMessage&){}
 void Subscriber::ReceiveMessage(const ResizeMessage&){}
 
-void Subscriber::ReceiveMessage(const NetworkAddPlayerMessage&){}
-void Subscriber::ReceiveMessage(const NetworkRemovePlayerMessage&){}
-void Subscriber::ReceiveMessage(const NetworkAddEnemyMessage&){}
-void Subscriber::ReceiveMessage(const NetworkSetPositionMessage&){}
-void Subscriber::ReceiveMessage(const NetworkSendPositionMessage&){}
-void Subscriber::ReceiveMessage(const NetworkOnHitMessage&){}
-void Subscriber::ReceiveMessage(const NetworkOnDeathMessage&){}
-void Subscriber::ReceiveMessage(const NetworkOnDisconnectMessage&) {}
+void Subscriber::ReceiveMessage(const PostMasterNetAddPlayerMessage&){}
+void Subscriber::ReceiveMessage(const PostMasterNetRemovePlayerMessage&){}
+void Subscriber::ReceiveMessage(const PostMasterNetAddEnemyMessage&){}
+void Subscriber::ReceiveMessage(const PostMasterNetSetPositionMessage&){}
+void Subscriber::ReceiveMessage(const PostMasterNetSendPositionMessage&){}
+void Subscriber::ReceiveMessage(const PostMasterNetOnHitMessage&){}
+void Subscriber::ReceiveMessage(const PostMasterNetOnDeathMessage&){}
+void Subscriber::ReceiveMessage(const PostMasterNetOnDisconnectMessage&) {}

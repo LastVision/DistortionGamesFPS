@@ -4,9 +4,9 @@ class NetImportantMessage : public NetMessage
 {
 public:
 	NetImportantMessage();
-	~NetImportantMessage();
+	virtual ~NetImportantMessage();
 
-	bool GetIsImportant() override;
+	bool GetIsImportant() const override;
 	const unsigned int GetImportantID() const override;
 	virtual void SetImportantID(unsigned int anImportantID);
 protected:

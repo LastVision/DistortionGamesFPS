@@ -17,20 +17,21 @@ private:
 	~ServerNetworkManager();
 	static ServerNetworkManager* myInstance;
 	ServerNetwork* myNetwork;
-	void UpdateImporantMessages(float aDeltaTime) override;
+	void UpdateImportantMessages(float aDeltaTime) override;
 
 	void AddImportantMessage(std::vector<char> aBuffer, unsigned int aImportantID) override;
 
 	void HandleMessage(const NetMessageConnectMessage& aMessage, const sockaddr_in& aSender) override;
 	void HandleMessage(const NetMessageDisconnect& aMessage, const sockaddr_in& aSenderAddress) override;
+	void HandleMessage(const NetMessageRequestLevel& aMessage, const sockaddr_in& aSenderAddress) override;
 	void HandleMessage(const NetMessagePingReply& aMessage, const sockaddr_in& aSenderAddress) override;
 	void HandleMessage(const NetMessagePingRequest& aMessage, const sockaddr_in& aSenderAddress) override;
 	void HandleMessage(const NetMessageOnHit& aMessage, const sockaddr_in& aSenderAddress) override;
 
 
-	void ReceiveMessage(const NetworkAddEnemyMessage& aMessage) override;
-	void ReceiveMessage(const NetworkSendPositionMessage& aMessage) override;
-	void ReceiveMessage(const NetworkOnDeathMessage& aMessage) override;
+	void ReceiveMessage(const PostMasterNetAddEnemyMessage& aMessage) override;
+	void ReceiveMessage(const PostMasterNetSendPositionMessage& aMessage) override;
+	void ReceiveMessage(const PostMasterNetOnDeathMessage& aMessage) override;
 
 	void ReceieveThread() override;
 	void SendThread() override;

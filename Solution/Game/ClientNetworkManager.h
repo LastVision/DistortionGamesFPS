@@ -13,19 +13,19 @@ public:
 
 	void StartNetwork(unsigned int aPortNum = 13397) override;
 	void ConnectToServer(const char* aServerIP = "127.0.0.1");
-	unsigned int GetNetworkID() const;
+	unsigned int GetGID() const;
 	const CU::GrowingArray<OtherClients>& GetClients();
 	//void Update(float aDelta) override;
-	void ReceiveMessage(const NetworkSendPositionMessage& aMessage) override;
-	void ReceiveMessage(const NetworkOnDisconnectMessage& aMessage) override;
-	void ReceiveMessage(const NetworkOnHitMessage& aMessage) override;
+	void ReceiveMessage(const PostMasterNetSendPositionMessage& aMessage) override;
+	void ReceiveMessage(const PostMasterNetOnDisconnectMessage& aMessage) override;
+	void ReceiveMessage(const PostMasterNetOnHitMessage& aMessage) override;
 
 private:
 	ClientNetworkManager();
 	~ClientNetworkManager();
 	static ClientNetworkManager* myInstance;
 	//void AddNetworkMessage(std::vector<char> aBuffer) override;
-	void UpdateImporantMessages(float aDeltaTime) override;
+	void UpdateImportantMessages(float aDeltaTime) override;
 
 	void AddImportantMessage(std::vector<char> aBuffer, unsigned int aImportantID) override;
 

@@ -8,14 +8,14 @@ struct OnClickMessage;
 struct ResizeMessage;
 struct Message;
 
-struct NetworkAddPlayerMessage;
-struct NetworkRemovePlayerMessage;
-struct NetworkAddEnemyMessage;
-struct NetworkSetPositionMessage;
-struct NetworkSendPositionMessage;
-struct NetworkOnHitMessage;
-struct NetworkOnDeathMessage;
-struct NetworkOnDisconnectMessage;
+struct PostMasterNetAddPlayerMessage;
+struct PostMasterNetRemovePlayerMessage;
+struct PostMasterNetAddEnemyMessage;
+struct PostMasterNetSetPositionMessage;
+struct PostMasterNetSendPositionMessage;
+struct PostMasterNetOnHitMessage;
+struct PostMasterNetOnDeathMessage;
+struct PostMasterNetOnDisconnectMessage;
 
 class Subscriber
 {
@@ -31,14 +31,14 @@ public:
 	virtual void ReceiveMessage(const ResizeMessage& aMessage);
 
 	/* Network Based Messages below*/
-	virtual void ReceiveMessage(const NetworkAddPlayerMessage& aMessage);
-	virtual void ReceiveMessage(const NetworkRemovePlayerMessage& aMessage);
-	virtual void ReceiveMessage(const NetworkAddEnemyMessage& aMessage);
-	virtual void ReceiveMessage(const NetworkSetPositionMessage& aMessage);
-	virtual void ReceiveMessage(const NetworkSendPositionMessage& aMessage);
-	virtual void ReceiveMessage(const NetworkOnHitMessage& aMessage);
-	virtual void ReceiveMessage(const NetworkOnDeathMessage& aMessage);
-	virtual void ReceiveMessage(const NetworkOnDisconnectMessage& aMessage);
+	virtual void ReceiveMessage(const PostMasterNetAddPlayerMessage& aMessage);
+	virtual void ReceiveMessage(const PostMasterNetRemovePlayerMessage& aMessage);
+	virtual void ReceiveMessage(const PostMasterNetAddEnemyMessage& aMessage);
+	virtual void ReceiveMessage(const PostMasterNetSetPositionMessage& aMessage);
+	virtual void ReceiveMessage(const PostMasterNetSendPositionMessage& aMessage);
+	virtual void ReceiveMessage(const PostMasterNetOnHitMessage& aMessage);
+	virtual void ReceiveMessage(const PostMasterNetOnDeathMessage& aMessage);
+	virtual void ReceiveMessage(const PostMasterNetOnDisconnectMessage& aMessage);
 
 };
 

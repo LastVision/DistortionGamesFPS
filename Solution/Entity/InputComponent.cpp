@@ -9,7 +9,7 @@
 #include "InputComponentData.h"
 #include <InputWrapper.h>
 #include "NetworkComponent.h"
-#include <NetworkSendPositionMessage.h>
+#include <PostMasterNetSendPositionMessage.h>
 #include <PostMaster.h>
 #include <PhysicsInterface.h>
 #include "PhysicsComponent.h"
@@ -87,9 +87,9 @@ void InputComponent::Update(float aDelta)
 	mySendTime -= aDelta;
 	if (mySendTime < 0.f)
 	{
-		if (myEntity.GetNetworkID() != 0 && (myOrientation != myPrevOrientation))
+		if (myEntity.GetGID() != 0 && (myOrientation != myPrevOrientation))
 		{
-			PostMaster::GetInstance()->SendMessage(NetworkSendPositionMessage(myOrientation.GetPos(), myCursorPosition.x, myEntity.GetNetworkID()));
+			PostMaster::GetInstance()->SendMessage(PostMasterNetSendPositionMessage(myOrientation.GetPos(), myCursorPosition.x, myEntity.GetGID()));
 			mySendTime = NETWORK_UPDATE_INTERVAL;
 		}
 	}
@@ -166,6 +166,8 @@ void InputComponent::UpdateMovement(float aDelta)
 	movement.y = 0;
 	CU::Normalize(movement);
 	movement *= myData.mySpeed;
+
+#ifdef RELEASE_BUILD
 	bool shouldDecreaseEnergy = true;
 	if (CU::InputWrapper::GetInstance()->KeyIsPressed(DIK_LSHIFT))
 	{
@@ -191,6 +193,12 @@ void InputComponent::UpdateMovement(float aDelta)
 	{
 		myEnergyOverheat = false;
 	}
+#else
+	if (CU::InputWrapper::GetInstance()->KeyIsPressed(DIK_LSHIFT))
+	{
+		movement *= 10.f;
+	}
+#endif
 
 	movement.y = myVerticalSpeed;
 

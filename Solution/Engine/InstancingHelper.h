@@ -31,10 +31,11 @@ namespace Prism
 		void Render(CU::StaticArray<DirectionalLightData, NUMBER_OF_DIRECTIONAL_LIGHTS>& someLights);
 
 	private:
-		void RenderModel(Model* aModel, ModelData& aModelData, Effect* aEffect);
+		void RenderModel(Model* aModel, Effect* aEffect);
 
 		const Camera* myCamera;
 
 		ModelMap myRenderInfo;
+		CU::GrowingArray<Model*> myModels;
 	};
 }

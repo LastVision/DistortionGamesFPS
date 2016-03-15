@@ -4,19 +4,17 @@
 class NetworkComponent : public Component, public Subscriber
 {
 public:
-	NetworkComponent(Entity& anEntity, CU::Matrix44<float>& anOrientation, unsigned int& aNetworkID);
+	NetworkComponent(Entity& anEntity, CU::Matrix44<float>& anOrientation);
 	~NetworkComponent();
 	void Reset() override;
 
-	void SetNetworkID(unsigned int anID);
 	static eComponentType GetTypeStatic();
 	eComponentType GetType() override;
 
-
 	void Update(float aDelta) override;
 
-	void ReceiveMessage(const NetworkSetPositionMessage& aMessage) override;
-	void ReceiveMessage(const NetworkOnHitMessage& aMessage) override;
+	void ReceiveMessage(const PostMasterNetSetPositionMessage& aMessage) override;
+	void ReceiveMessage(const PostMasterNetOnHitMessage& aMessage) override;
 
 	void SetPlayer(bool aBool);
 
@@ -31,8 +29,6 @@ private:
 	float myCurrentRotationY;
 	float myServerRotationY;
 	float myPrevRotationY;
-
-	unsigned int& myNetworkID;
 
 	CU::Vector3<float> myFirstPosition;
 	CU::Vector3<float> mySecondPosition;

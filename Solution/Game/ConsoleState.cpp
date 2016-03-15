@@ -197,11 +197,11 @@ void ConsoleState::Render()
 	{
 		myText->SetColor({ 1.f, 1.f, 1.f, 0.2f });
 		myText->SetText(mySuggestionString);
-		myText->Render();
+		//myText->Render();
 	}
 	myText->SetText(Console::GetInstance()->GetInput());
 	myText->SetColor({ 1.f, 1.f, 1.f, 1.f });
-	myText->Render();
+	//myText->Render();
 
 
 
@@ -222,7 +222,7 @@ void ConsoleState::Render()
 		{
 			mySuggestionText->SetText(myLuaSuggestions[i]);
 			mySuggestionText->SetPosition({ myLowerLeftCorner.x + 25.f, myLowerLeftCorner.y - (20.f * (i + 1)) });
-			mySuggestionText->Render();
+			//mySuggestionText->Render();
 		}
 
 	}
@@ -241,7 +241,7 @@ void ConsoleState::Render()
 			}
 			position.y += 30.f;
 			history[i]->myRenderText->SetPosition(position);
-			history[i]->myRenderText->Render();
+			//history[i]->myRenderText->Render();
 		}
 	}
 	myLuaSuggestions.RemoveAll();

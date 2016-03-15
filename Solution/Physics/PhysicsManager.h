@@ -27,6 +27,7 @@ namespace physx
 	class PxRigidDynamic;
 	class PxTriangleMesh;
 	class PxActor;
+	class PxMaterial;
 }
 
 class PhysicsComponent;
@@ -85,8 +86,12 @@ namespace Prism
 			, float* aOrientation, const std::string& aFBXPath
 			, physx::PxRigidDynamic** aDynamicBodyOut, physx::PxRigidStatic** aStaticBodyOut
 			, physx::PxShape*** someShapesOut);
+		void Add(physx::PxRigidDynamic* aDynamic);
+		void Add(physx::PxRigidStatic* aStatic);
 		void Remove(physx::PxRigidDynamic* aDynamic, const PhysicsComponentData& aData);
 		void Remove(physx::PxRigidStatic* aStatic, const PhysicsComponentData& aData);
+		void Sleep(physx::PxRigidDynamic* aDynamic);
+		void Wake(physx::PxRigidDynamic* aDynamic);
 
 	private:
 #ifdef THREAD_PHYSICS
@@ -252,6 +257,10 @@ namespace Prism
 
 		CU::Vector3<float> myPlayerPosition;
 
+		CU::GrowingArray<physx::PxActor*> myActorsToSleep[2];
+		CU::GrowingArray<physx::PxActor*> myActorsToWakeUp[2];
+
+		CU::GrowingArray<physx::PxActor*> myActorsToAdd[2];
 		CU::GrowingArray<physx::PxActor*> myActorsToRemove[2];
 	};
 

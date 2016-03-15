@@ -8,7 +8,7 @@ public:
 	~ServerLevel();
 
 	void Update(const float aDeltaTime) override;
-	void ReceiveMessage(const NetworkAddPlayerMessage& aMessage);
+	void ReceiveMessage(const PostMasterNetAddPlayerMessage& aMessage);
 private:
 	unsigned int myEntityIDCount;
 	

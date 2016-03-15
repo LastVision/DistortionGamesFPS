@@ -40,11 +40,35 @@ PhysicsComponent::~PhysicsComponent()
 	myShapes = nullptr;
 }
 
-void PhysicsComponent::Update(float aDeltaTime)
+void PhysicsComponent::Update(float)
 {
 	if (myPhysicsType == ePhysics::KINEMATIC)
 	{
 		Prism::PhysicsInterface::GetInstance()->MoveToPosition(myDynamicBody, myEntity.GetOrientation().GetPos());
+	}
+}
+
+void PhysicsComponent::Reset()
+{
+	if (myDynamicBody != nullptr && myPhysicsType != ePhysics::KINEMATIC)
+	{
+		Prism::PhysicsInterface::GetInstance()->SetVelocity(myDynamicBody, CU::Vector3<float>(0, 0, 0));
+	}
+}
+
+void PhysicsComponent::Sleep()
+{
+	if (myDynamicBody != nullptr)
+	{
+		Prism::PhysicsInterface::GetInstance()->Sleep(myDynamicBody);
+	}
+}
+
+void PhysicsComponent::Wake()
+{
+	if (myDynamicBody != nullptr)
+	{
+		Prism::PhysicsInterface::GetInstance()->Wake(myDynamicBody);
 	}
 }
 
@@ -109,6 +133,18 @@ void PhysicsComponent::SetPlayerCapsulePosition(const CU::Vector3<float>& aPosit
 	Prism::PhysicsInterface::GetInstance()->SetPosition(myCapsuleControllerId, aPosition);
 }
 
+void PhysicsComponent::AddToScene()
+{
+	if (myPhysicsType == ePhysics::DYNAMIC || myPhysicsType == ePhysics::KINEMATIC)
+	{
+		Prism::PhysicsInterface::GetInstance()->Add(myDynamicBody);
+	}
+	else
+	{
+		Prism::PhysicsInterface::GetInstance()->Add(myStaticBody);
+	}
+}
+
 void PhysicsComponent::RemoveFromScene()
 {
 	if (myPhysicsType == ePhysics::DYNAMIC || myPhysicsType == ePhysics::KINEMATIC)
@@ -117,7 +153,7 @@ void PhysicsComponent::RemoveFromScene()
 	}
 	else
 	{
-		DL_ASSERT("Can't remove static objects");
+		//DL_ASSERT("Can't remove static objects");
 		Prism::PhysicsInterface::GetInstance()->Remove(myStaticBody, myData);
 	}
 

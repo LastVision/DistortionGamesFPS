@@ -25,5 +25,6 @@ private:
 	CU::GrowingArray<Entity*> myBullets;
 	float myBulletSpeed;
 	Prism::Scene* myScene;
+	int myCurrentBulletToUse;
 };
 

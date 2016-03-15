@@ -11,13 +11,13 @@ public:
 
 	void PackMessage();
 	void UnPackMessage(char* aMessage, int aSize);
-	virtual bool GetIsImportant();
+	virtual bool GetIsImportant() const;
 	virtual const unsigned int GetImportantID() const;
 
 	StreamType myStream;
 	uint32_t myTimeStamp;
-	uint16_t mySenderID;
-	uint16_t myTargetID;
+	uint32_t mySenderID;
+	uint32_t myTargetID;
 	uint8_t myID;
 protected:
 

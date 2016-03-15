@@ -7,27 +7,12 @@ namespace std
 	class thread;
 }
 
-struct ImportantClient
-{
-	float myTimer;
-	bool myHasReplied;
-	unsigned short myNetworkID;
-	sockaddr_in myNetworkAddress;
-};
-
-struct ImportantMessage
-{
-	bool operator==(const ImportantMessage& aMessage) { return myImportantID == aMessage.myImportantID; };
-	//Add Data
-	std::vector<char> myData;
-	unsigned int myImportantID;
-	CU::GrowingArray<ImportantClient> mySenders;
-};
-
+class NetMessage;
 class NetMessageImportantReply;
 class NetMessageConnectMessage;
 class NetMessageOnJoin;
 class NetMessageDisconnect;
+class NetMessageRequestLevel;
 class NetMessagePingRequest;
 class NetMessagePingReply;
 class NetMessagePosition;
@@ -45,6 +30,8 @@ public:
 
 	template<typename T>
 	void AddMessage(T aMessage);
+	template<typename T>
+	void AddMessage(T aMessage, unsigned int aTargetID);
 	
 	eNetMessageType ReadType(const char* aBuffer);
 	eNetMessageType ReadType(const std::vector<char>& aBuffer);
@@ -60,12 +47,54 @@ public:
 	void WaitForReceieve();
 
 protected:
+	struct ImportantClient
+	{
+		float myTimer;
+		bool myHasReplied;
+		std::string myName;
+		unsigned int myGID;
+		sockaddr_in myNetworkAddress;
+	};
+
+	struct ImportantMessage
+	{
+		bool operator==(const ImportantMessage& aMessage) { return myImportantID == aMessage.myImportantID; };
+		//Add Data
+		std::vector<char> myData;
+		unsigned int myImportantID;
+		unsigned char myMessageType;
+		CU::GrowingArray<ImportantClient> mySenders;
+	};
+
+	struct ImportantReceivedMessage
+	{
+		ImportantReceivedMessage() {}
+		ImportantReceivedMessage(unsigned int anImportantID, unsigned int aSenderGID)
+			: myImportantID(anImportantID)
+			, mySenderGID(aSenderGID)
+			, myTimer(0.f)
+		{}
+
+		unsigned int myImportantID;
+		unsigned int mySenderGID;
+		float myTimer;
+	};
+
+	struct SendBufferMessage
+	{
+		SendBufferMessage() {}
+		SendBufferMessage(std::vector<char> aBuffer, unsigned int aTargetID) : myBuffer(aBuffer), myTargetID(aTargetID) {}
+
+		std::vector<char> myBuffer;
+		unsigned int myTargetID;
+	};
+
 	SharedNetworkManager();
 	virtual ~SharedNetworkManager();
 
-	virtual void UpdateImporantMessages(float aDeltaTime) = 0;
+	virtual void UpdateImportantMessages(float aDeltaTime) = 0;
 
-	void AddNetworkMessage(std::vector<char> aBuffer);
+	void AddNetworkMessage(std::vector<char> aBuffer, unsigned int aTargetID);
 	virtual void AddImportantMessage(std::vector<char> aBuffer, unsigned int aImportantID) = 0;
 
 	virtual void SendThread() = 0;
@@ -85,6 +114,7 @@ protected:
 	virtual void HandleMessage(const NetMessageConnectMessage& aMessage, const sockaddr_in& aSenderAddress);
 	virtual void HandleMessage(const NetMessageOnJoin& aMessage, const sockaddr_in& aSenderAddress);
 	virtual void HandleMessage(const NetMessageDisconnect& aMessage, const sockaddr_in& aSenderAddress);
+	virtual void HandleMessage(const NetMessageRequestLevel& aMessage, const sockaddr_in& aSenderAddress);
 	virtual void HandleMessage(const NetMessagePingRequest& aMessage, const sockaddr_in& aSenderAddress);
 	virtual void HandleMessage(const NetMessagePingReply& aMessage, const sockaddr_in& aSenderAddress);
 	virtual void HandleMessage(const NetMessagePosition& aMessage, const sockaddr_in& aSenderAddress);
@@ -97,15 +127,17 @@ protected:
 	std::thread* mySendThread;
 
 	CU::StaticArray<CU::GrowingArray<Buffer>, 2> myReceieveBuffer;
-	CU::StaticArray<CU::GrowingArray<std::vector<char>>, 2> mySendBuffer;
+	CU::StaticArray<CU::GrowingArray<SendBufferMessage>, 2> mySendBuffer;
 	CU::GrowingArray<ImportantMessage> myImportantMessagesBuffer;
+	CU::GrowingArray<ImportantReceivedMessage> myImportantReceivedMessages;
 
 	bool myIsServer;
 	bool myIsOnline;
 
 	unsigned short myCurrentBuffer;
 	unsigned short myCurrentSendBuffer;
-	unsigned short myNetworkID;
+	
+	unsigned int myGID;
 
 	volatile bool myIsRunning;
 	volatile bool myReceieveIsDone;
@@ -119,15 +151,25 @@ protected:
 	double myDataToPrint;
 
 	unsigned int myImportantID;
+
+private:
+	bool AlreadyReceived(const NetMessage& aMessage);
+	void UpdateImportantReceivedMessages(float aDelta);
 };
 
 template<typename T>
 inline void SharedNetworkManager::AddMessage(T aMessage)
 {
-	
+	AddMessage(aMessage, 0);
+}
+
+template<typename T>
+inline void SharedNetworkManager::AddMessage(T aMessage, unsigned int aTargetID)
+{
+	aMessage.myTargetID = aTargetID;
 	if (myIsServer == false)
 	{
-		aMessage.mySenderID = myNetworkID;
+		aMessage.mySenderID = myGID;
 	}
 	bool isImportant = aMessage.GetIsImportant();
 	unsigned int importantID = 0;
@@ -142,7 +184,7 @@ inline void SharedNetworkManager::AddMessage(T aMessage)
 		AddImportantMessage(aMessage.myStream, importantID);
 	}
 	myDataSent += aMessage.myStream.size() * sizeof(char);
-	AddNetworkMessage(aMessage.myStream);
+	AddNetworkMessage(aMessage.myStream, aTargetID);
 }
 
 template<typename T>
@@ -157,7 +199,14 @@ template<typename T>
 void SharedNetworkManager::UnpackAndHandle(T aMessage, Buffer& aBuffer)
 {
 	aMessage.UnPackMessage(aBuffer.myData, aBuffer.myLength);
-	HandleMessage(aMessage, aBuffer.mySenderAddress);
+	if (CheckIfImportantMessage(aMessage) == true)
+	{
+		AddMessage(NetMessageImportantReply(aMessage.GetImportantID()), aMessage.mySenderID);
+	}
+	if (AlreadyReceived(aMessage) == false)
+	{
+		HandleMessage(aMessage, aBuffer.mySenderAddress);
+	}
 }
 
 template<typename T>

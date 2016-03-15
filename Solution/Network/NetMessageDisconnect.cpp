@@ -2,7 +2,7 @@
 #include "NetMessageDisconnect.h"
 #include "NetworkMessageTypes.h"
 
-NetMessageDisconnect::NetMessageDisconnect(const unsigned short aClientID)
+NetMessageDisconnect::NetMessageDisconnect(unsigned int aClientID)
 {
 	myID = static_cast<int>(eNetMessageType::ON_DISCONNECT);
 	myClientID = aClientID;

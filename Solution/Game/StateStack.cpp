@@ -65,9 +65,9 @@ void StateStack::PushSubGameState(GameState* aSubGameState)
 	DL_ASSERT_EXP(myMainIndex < 20 && mySubIndex < 20, "Can't add more than 20 states, it's unreasonable!");
 
 	myGameStates[myMainIndex].Add(aSubGameState);
-	Prism::ModelLoader::GetInstance()->Pause();
+	//Prism::ModelLoader::GetInstance()->Pause();
 	aSubGameState->InitState(myStateStackProxy, myCursor);
-	Prism::ModelLoader::GetInstance()->UnPause();
+	//Prism::ModelLoader::GetInstance()->UnPause();
 	
 	SET_RUNTIME(true);
 

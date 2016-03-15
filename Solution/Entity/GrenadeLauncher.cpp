@@ -6,13 +6,15 @@
 #include "GrenadeLauncher.h"
 #include "PhysicsComponent.h"
 #include <PhysicsInterface.h>
+#include "ProjectileComponent.h"
 #include <XMLReader.h>
 
 
 GrenadeLauncher::GrenadeLauncher(Prism::Scene* aScene)
 	: Weapon(eWeaponType::GRENADE_LAUNCHER)
 	, myScene(aScene)
-	, myBullets(1024)
+	, myBullets(16)
+	, myCurrentBulletToUse(0)
 {
 	XMLReader reader;
 	reader.OpenDocument("Data/Setting/SET_weapons.xml");
@@ -23,11 +25,20 @@ GrenadeLauncher::GrenadeLauncher(Prism::Scene* aScene)
 	reader.ForceReadAttribute(reader.ForceFindFirstChild(grenadeLauncherElement, "damage"), "value", myDamage);
 	reader.ForceReadAttribute(reader.ForceFindFirstChild(grenadeLauncherElement, "startammo"), "value", myAmmoTotal);
 	reader.ForceReadAttribute(reader.ForceFindFirstChild(grenadeLauncherElement, "shoottime"), "value", myShootTime);
+	reader.ForceReadAttribute(reader.ForceFindFirstChild(grenadeLauncherElement, "forceStrength"), "value", myForceStrength);
 
 	myAmmoInClip = myClipSize;
 	myShootTimer = myShootTime;
 
 	reader.CloseDocument();
+
+
+	//for (int i = 0; i < 8; ++i)
+	//{
+	//	Entity* bullet = EntityFactory::CreateEntity(eEntityType::PROJECTILE, myScene, true, CU::Vector3<float>());
+	//	myBullets.Add(bullet);
+	//	bullet->GetComponent<PhysicsComponent>()->Sleep();
+	//}
 }
 
 
@@ -60,20 +71,31 @@ void GrenadeLauncher::Update(float aDelta)
 {
 	for (int i = 0; i < myBullets.Size(); ++i)
 	{
-		myBullets[i]->Update(aDelta);
+		if (myBullets[i]->GetComponent<ProjectileComponent>()->GetShouldBeUpdated() == true)
+		{
+			myBullets[i]->Update(aDelta);
+		}
 	}
 	myShootTimer -= aDelta;
 }
 
 void GrenadeLauncher::ShootAtDirection(const CU::Matrix44<float>& aOrientation)
 {
-	//bool newingInRunTimeHere = true;
-	SET_RUNTIME(false);
-	Entity* bullet = EntityFactory::CreateEntity(eEntityType::PROJECTILE, myScene, true, aOrientation.GetPos());
-	RESET_RUNTIME;
-	bullet->Reset();
-	bullet->AddToScene();
-	bullet->GetComponent<PhysicsComponent>()->AddForce(aOrientation.GetForward(), 20.f);
+	myBullets[myCurrentBulletToUse]->Reset();
+	//if (myBullets[myCurrentBulletToUse]->IsInScene() == false)
+	//{
+	//	myBullets[myCurrentBulletToUse]->GetComponent<PhysicsComponent>()->AddToScene();
+	//	myBullets[myCurrentBulletToUse]->AddToScene();
+	//}
 
-	myBullets.Add(bullet);
+	myBullets[myCurrentBulletToUse]->GetComponent<ProjectileComponent>()->Activate();
+	myBullets[myCurrentBulletToUse]->GetComponent<PhysicsComponent>()->TeleportToPosition(aOrientation.GetPos());
+	myBullets[myCurrentBulletToUse]->GetComponent<PhysicsComponent>()->AddForce(aOrientation.GetForward(), myForceStrength);
+	++myCurrentBulletToUse;
+
+	if (myCurrentBulletToUse > 7)
+	{
+		myCurrentBulletToUse = 0;
+	}
+	//myBullets.Add(bullet);
 }

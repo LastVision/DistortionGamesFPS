@@ -18,8 +18,7 @@ ServerNetwork::~ServerNetwork()
 void ServerNetwork::StartServer(unsigned int aPortNum)
 {
 	//myClients.Init(8);
-	std::string ab(std::to_string(aPortNum).c_str());
-	myPort = ab.c_str();
+	myPort = std::to_string(aPortNum);
 	addrinfo* addrResult;
 	addrinfo  hints;
 
@@ -41,7 +40,7 @@ void ServerNetwork::StartServer(unsigned int aPortNum)
 		std::cout << "WSAStartup succeeded!\n";
 	}
 
-	result = getaddrinfo(nullptr, myPort, &hints, &addrResult);
+	result = getaddrinfo(nullptr, myPort.c_str(), &hints, &addrResult);
 	if (result != 0)
 	{
 		freeaddrinfo(addrResult);
@@ -132,3 +131,12 @@ void ServerNetwork::Receieve(std::vector<Buffer>& someBuffers)
 	}
 }
 
+void ServerNetwork::PrintStatus()
+{
+	hostent* localHosy = gethostbyname("");
+	char* localIP = inet_ntoa(*(struct in_addr*)*localHosy->h_addr_list);
+
+	std::string toPrint = "------ SERVER ONLINE ------\n------- SERVER INFO -------\n";
+	toPrint += "Server IP: " + std::string(localIP) + "\nServer Port: " + myPort + "\n---------------------------\n";
+	Utility::PrintEndl(toPrint, eConsoleColor::LIGHT_BLUE_TEXT);
+}

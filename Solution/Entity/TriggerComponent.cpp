@@ -22,7 +22,7 @@ void TriggerComponent::Update(float aDelta)
 	aDelta;
 }
 
-void TriggerComponent::ReceiveNote(const CollisionNote& aNote)
+void TriggerComponent::ReceiveNote(const CollisionNote&)
 {
 	if (myTriggerType == eTriggerType::LEVEL_CHANGE)
 	{
@@ -40,7 +40,7 @@ int TriggerComponent::GetValue() const
 	return myData.myValue;
 }
 
-const std::string& TriggerComponent::GetID() const
+bool TriggerComponent::IsClientSide() const
 {
-	return myData.myID;
+	return myData.myIsClientSide;
 }

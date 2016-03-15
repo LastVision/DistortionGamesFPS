@@ -152,23 +152,24 @@ namespace Prism
 		//	}
 		//}
 
-		for (int i = 0; i < myAlwaysRenderInstances.Size(); ++i)
+		for each (Instance* instance in myAlwaysRenderInstances)
 		{
-			myActiveInstances.Add(myAlwaysRenderInstances[i]);
+			myActiveInstances.Add(instance);
 		}
-		for (int i = 0; i < myInstances.Size(); ++i)
+
+		for each (const InstanceInRoom& instance in myInstances)
 		{
-			for (int j = 0; j < myCurrentRoomIds.Size(); ++j)
+			for each (int id in myCurrentRoomIds)
 			{
-				if (myCurrentRoomIds[j] == myInstances[i].myRoomId)
+				if (instance.myRoomId == id)
 				{
-					myActiveInstances.Add(myInstances[i].myInstance);
+					myActiveInstances.Add(instance.myInstance);
 					break;
 				}
 			}
 		}
-
 		
+
 
 #ifndef RELEASE_BUILD
 #ifdef SHOW_PORTAL_CULLING_DEBUG_TEXT

@@ -197,6 +197,11 @@ namespace Prism
 					CreateFont(myLoadArray[i]);
 					break;
 				}
+				case eLoadType::TEXT:
+				{
+					CreateText(myLoadArray[i]);
+					break;
+				}
 				default:
 					DL_ASSERT("ModelLoader tried to load something that dint have a specified LoadType!!!");
 					break;
@@ -230,7 +235,7 @@ namespace Prism
 
 	void ModelLoader::Pause()
 	{
-		DL_ASSERT_EXP(myIsPaused == false, "Can't pause when already paused.");
+		//DL_ASSERT_EXP(myIsPaused == false, "Can't pause when already paused.");
 		myIsPaused = true;
 
 		while (myIsLoading == true)
@@ -240,7 +245,7 @@ namespace Prism
 
 	void ModelLoader::UnPause()
 	{
-		DL_ASSERT_EXP(myIsPaused == true, "Can't unpause when already unpaused.");
+		//DL_ASSERT_EXP(myIsPaused == true, "Can't unpause when already unpaused.");
 		myIsPaused = false;
 		if (myBuffers[myInactiveBuffer].Size() == 0)
 		{
@@ -474,7 +479,7 @@ namespace Prism
 		myBuffers[myInactiveBuffer].Add(newData);
 		myCanCopyArray = true;
 #else
-		proxy->SetFont(new Font(aFilePath, aTextureSize);
+		proxy->SetFont(new Font(aFilePath, aTextureSize));
 		myFontProxies[aFilePath] = proxy;
 #endif	
 
@@ -484,6 +489,22 @@ namespace Prism
 	TextProxy* ModelLoader::LoadText(FontProxy* aFontProxy)
 	{
 		TextProxy* proxy = new TextProxy();
+
+#ifdef THREADED_LOADING
+		WaitUntilAddIsAllowed();
+		myCanCopyArray = false;
+
+		LoadData newData;
+		newData.myTextProxy = proxy;
+		newData.myFontProxyToUse = aFontProxy;
+		newData.myLoadType = eLoadType::TEXT;
+
+		myBuffers[myInactiveBuffer].Add(newData);
+		myCanCopyArray = true;
+#else
+		proxy->SetText(new Text(*aFontProxy));
+#endif	
+
 		return proxy;
 	}
 
@@ -503,6 +524,7 @@ namespace Prism
 		myCanCopyArray = true;
 #else
 		myModelFactory->GetHierarchyToBone(aAnimationPath, aBoneName, aBoneOut);
+		aBoneOut.myIsValid = true;
 #endif	
 	}
 
@@ -619,6 +641,11 @@ namespace Prism
 	{
 		CU::Vector2<int> size(int(someData.mySize.x), int(someData.mySize.y));
 		someData.myFontProxy->SetFont(new Font(someData.myResourcePath, size));
+	}
+
+	void ModelLoader::CreateText(LoadData& someData)
+	{
+		someData.myTextProxy->SetText(new Text(*someData.myFontProxyToUse));
 	}
 
 	void ModelLoader::GetHierarchyToBone(LoadData& someData)

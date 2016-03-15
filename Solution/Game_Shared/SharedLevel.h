@@ -1,5 +1,6 @@
 #pragma once
 #include <GrowingArray.h>
+#include <unordered_map>
 #include <Subscriber.h>
 
 class Entity;
@@ -18,9 +19,15 @@ public:
 
 	void CollisionCallback(PhysicsComponent* aFirst, PhysicsComponent* aSecond);
 
+	void CleanUp();
+
 protected:
-	CU::GrowingArray<Entity*> myEntities;
-	CU::GrowingArray<Entity*> myEnemies;
+	CU::GrowingArray<Entity*> myActiveEntities;
+	CU::GrowingArray<Entity*> myInactiveEntities;
+	CU::GrowingArray<Entity*> myActiveEnemies;
+	CU::GrowingArray<Entity*> myInactiveEnemies;
 	CU::GrowingArray<Entity*> myPlayers;
+
+	std::unordered_map<unsigned int, Entity*> myActiveEntitiesMap;
 };
 
