@@ -106,8 +106,11 @@ Entity::Entity(unsigned int aGID, const EntityData& aEntityData, Prism::Scene* a
 	if (aEntityData.myFirstPersonRenderData.myExistsInEntity == true && myIsClientSide == true)
 	{
 		myComponents[static_cast<int>(eComponentType::FIRST_PERSON_RENDER)] = new FirstPersonRenderComponent(*this, aScene);
+		if (aEntityData.myShootingData.myExistsInEntity == true)
+		{
+			GetComponent<ShootingComponent>()->Init(aScene);
+		}
 	}
-
 	
 
 	Reset();

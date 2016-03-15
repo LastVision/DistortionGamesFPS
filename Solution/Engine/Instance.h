@@ -45,6 +45,8 @@ namespace Prism
 		ModelProxy& GetModel();
 		const CU::Matrix44f& GetOrientation() const;
 
+		void SetShouldRender(bool aValue);
+
 	private:
 		void operator=(Instance&) = delete;
 
@@ -63,10 +65,17 @@ namespace Prism
 		Animation* myAnimation;
 		float myTotalTime;
 		CU::StaticArray<CU::Matrix44<float>, MAX_NR_OF_BONES> myBones;
+
+		bool myShouldRender;
 	};
 
 	inline const CU::Matrix44f& Instance::GetOrientation() const
 	{
 		return myOrientation;
+	}
+
+	inline void Instance::SetShouldRender(bool aValue)
+	{
+		myShouldRender = aValue;
 	}
 }
