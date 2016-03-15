@@ -25,7 +25,7 @@ namespace Prism
 		myParticleEmitterData = someData;
 		myEmitterPath = myParticleEmitterData->myFileName;
 
-		int particleCount = static_cast<int>(myParticleEmitterData->myParticlesPerEmitt * myParticleEmitterData->myParticlesLifeTime / myParticleEmitterData->myEmissionRate) + 1;
+		int particleCount = static_cast<int>(myParticleEmitterData->myParticlesPerEmitt * myParticleEmitterData->myData.myParticleLifeTime / myParticleEmitterData->myEmissionRate) + 1;
 
 
 		DL_DEBUG(("Loading :" + myEmitterPath).c_str());
@@ -34,7 +34,7 @@ namespace Prism
 		myGraphicalParticles.Init(particleCount);
 		myLogicalParticles.Init(particleCount);
 
-		
+
 
 		for (int i = 0; i < particleCount; ++i)
 		{
@@ -68,7 +68,6 @@ namespace Prism
 	{
 		/*int toGraphicsCard =*/ UpdateVertexBuffer();
 		myParticleEmitterData->myEffect->SetTexture(TextureContainer::GetInstance()->GetTexture(myParticleEmitterData->myTextureName));
-		//myParticleEmitterData->myEffect->SetWorldMatrix(myOrientation);
 
 		ID3D11DeviceContext* context = Engine::GetInstance()->GetContex();
 		context->IASetVertexBuffers(
@@ -91,7 +90,6 @@ namespace Prism
 		UpdateEmitter(aDeltaTime, aWorldMatrix);
 	}
 
-
 	void ParticleEmitterInstance::Reset()
 	{
 
@@ -101,21 +99,12 @@ namespace Prism
 			myLogicalParticles[i] = LogicalParticle();
 		}
 
-		
+
 		myLiveParticleCount = 0;
 
 		myEmissionTime = myParticleEmitterData->myEmissionRate;
 		myDiffColor = (myParticleEmitterData->myData.myEndColor - myParticleEmitterData->myData.myStartColor)
-			/ myParticleEmitterData->myParticlesLifeTime;
-
-		if (myParticleEmitterData->myUseAlphaDelta == true)
-		{
-			myStates[ALPHADELTA] = TRUE;
-		}
-		else
-		{
-			myStates[ALPHADELTA] = FALSE;
-		}
+			/ myParticleEmitterData->myData.myParticleLifeTime;
 
 		if (myParticleEmitterData->myIsActiveAtStart == true)
 		{
@@ -154,6 +143,16 @@ namespace Prism
 		}
 
 		myEmitterLife = myParticleEmitterData->myEmitterLifeTime;
+	}
+
+	CU::Vector3f ParticleEmitterInstance::CalculateDirection(float anAngle)
+	{
+		CU::Vector3f toReturn;
+		toReturn.x = myParticleEmitterData->myEmitterSize.x * cosf(anAngle);
+		toReturn.y = myParticleEmitterData->myEmitterSize.y * sinf(anAngle);
+		toReturn.z = 0.f;
+
+		return toReturn;
 	}
 
 	void ParticleEmitterInstance::CreateVertexBuffer()
@@ -255,17 +254,12 @@ namespace Prism
 		{
 			myGraphicalParticles[i].myLifeTime -= aDeltaTime;
 
-			myGraphicalParticles[i].myPosition += myLogicalParticles[i].myVelocity * aDeltaTime;
+			myGraphicalParticles[i].myPosition += myLogicalParticles[i].myDirection * aDeltaTime;
 
-			if (myStates[ALPHADELTA] == TRUE)
-			{
-				myGraphicalParticles[i].myAlpha += myParticleEmitterData->myData.myAlphaDelta * aDeltaTime;
-			}
-			else
-			{
-
-				myGraphicalParticles[i].myAlpha = myGraphicalParticles[i].myLifeTime / myParticleEmitterData->myParticlesLifeTime;
-			}
+			//if (myGraphicalParticles[i].myAlpha < myParticleEmitterData->myData.myMidAlpha)
+			//{
+			//	//myGraphicalParticles[i].myAlpha = ;/*myGraphicalParticles[i].myLifeTime / myParticleEmitterData->myData.myParticleLifeTime;*/
+			//}
 
 			if (myGraphicalParticles[i].mySize >= 0.f)
 			{
@@ -300,32 +294,34 @@ namespace Prism
 
 			myGraphicalParticles[myParticleIndex].myColor = myParticleEmitterData->myData.myStartColor;
 
+			myLogicalParticles[myParticleIndex].myDirection = CalculateDirection(myParticleEmitterData->myEmissionAngle);
+
 #pragma	region		Shape
-			if (myStates[CIRCLE] == TRUE && myStates[HOLLOW] == TRUE)
-			{
-				CU::Vector3<float> pos = CreateCirclePositions();
-				myGraphicalParticles[myParticleIndex].myPosition = aWorldMatrix.GetPos() + pos;
-			}
-			else if (myStates[CIRCLE] == TRUE)
-			{
-				CU::Vector3<float> pos = CreateCirclePositions();
-				myGraphicalParticles[myParticleIndex].myPosition = CU::Math::RandomVector(aWorldMatrix.GetPos() - pos
-					, aWorldMatrix.GetPos() + pos);
-			}
-			else if (myStates[HOLLOW] == TRUE)
-			{
-				CU::Vector3<float> pos = CreateHollowSquare();
-				myGraphicalParticles[myParticleIndex].myPosition = aWorldMatrix.GetPos() + pos;
-			}
-			else
-			{
+			//if (myStates[CIRCLE] == TRUE && myStates[HOLLOW] == TRUE)
+			//{
+			//	CU::Vector3<float> pos = CreateCirclePositions();
+			//	myGraphicalParticles[myParticleIndex].myPosition = aWorldMatrix.GetPos() + pos;
+			//}
+			//else if (myStates[CIRCLE] == TRUE)
+			//{
+			//	CU::Vector3<float> pos = CreateCirclePositions();
+			//	myGraphicalParticles[myParticleIndex].myPosition = CU::Math::RandomVector(aWorldMatrix.GetPos() - pos
+			//		, aWorldMatrix.GetPos() + pos);
+			//}
+			//else if (myStates[HOLLOW] == TRUE)
+			//{
+			//	CU::Vector3<float> pos = CreateHollowSquare();
+			//	myGraphicalParticles[myParticleIndex].myPosition = aWorldMatrix.GetPos() + pos;
+			//}
+			//else
+			//{
 				myGraphicalParticles[myParticleIndex].myPosition =
 					CU::Math::RandomVector(aWorldMatrix.GetPos() - myParticleEmitterData->myEmitterSize
-					, aWorldMatrix.GetPos() + myParticleEmitterData->myEmitterSize);
-			}
+						, aWorldMatrix.GetPos() + myParticleEmitterData->myEmitterSize);
+		//	}
 #pragma endregion
 
-			myGraphicalParticles[myParticleIndex].myLifeTime = myParticleEmitterData->myParticlesLifeTime;
+			myGraphicalParticles[myParticleIndex].myLifeTime = myParticleEmitterData->myData.myParticleLifeTime;
 
 			myGraphicalParticles[myParticleIndex].myAlpha = myParticleEmitterData->myData.myStartAlpha;
 
@@ -336,17 +332,12 @@ namespace Prism
 
 			myLogicalParticles[myParticleIndex].myIsAlive = true;
 
-			myLogicalParticles[myParticleIndex].myVelocity = CU::Math::RandomVector(myParticleEmitterData->myData.myMinVelocity
-				, myParticleEmitterData->myData.myMaxVelocity);
-
-			myLogicalParticles[myParticleIndex].myRotation = CU::Math::RandomRange(myParticleEmitterData->myMinRotation
-				, myParticleEmitterData->myMaxRotation);
+			myLogicalParticles[myParticleIndex].myRotation = CU::Math::RandomRange(-360.f, 360.f);
 
 			myGraphicalParticles[myParticleIndex].myRotation = myLogicalParticles[myParticleIndex].myRotation;
 
-			myLogicalParticles[myParticleIndex].mySpeed = myParticleEmitterData->mySpeedMultiplier;
-
 			myLogicalParticles[myParticleIndex].myRotationDelta = myParticleEmitterData->myRotationDelta;
+
 
 			myParticleIndex += 1;
 		}
@@ -458,18 +449,15 @@ namespace Prism
 		myEntity = anEntity;
 	}
 
-
 	Entity* ParticleEmitterInstance::GetEntity()
 	{
 		return myEntity;
 	}
 
-
 	CU::Vector2<float> ParticleEmitterInstance::GetPosition()
 	{
 		return CU::Vector2<float>(myOrientation.GetPos().x, myOrientation.GetPos().z);
 	}
-
 
 	bool ParticleEmitterInstance::GetShouldAlwaysShow()
 	{
@@ -493,7 +481,6 @@ namespace Prism
 		myParticleEmitterData->myEmitterSize = aSize;
 	}
 
-
 	void ParticleEmitterInstance::KillEmitter(float aKillTime)
 	{
 		myEmitterLife = aKillTime;
@@ -504,12 +491,10 @@ namespace Prism
 		}
 	}
 
-
 	void ParticleEmitterInstance::SetCamera(Camera* aCamera)
 	{
 		myCamera = aCamera;
 	}
-
 
 	Camera* ParticleEmitterInstance::GetCamera()
 	{

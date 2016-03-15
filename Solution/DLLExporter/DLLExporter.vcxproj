@@ -215,6 +215,7 @@
     <ClInclude Include="DLLExport.h" />
     <ClInclude Include="DLLModel.h" />
     <ClInclude Include="DLLParticle.h" />
+    <ClInclude Include="DLLParticleData.h" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\CommonUtilities\CommonUtilities.vcxproj">

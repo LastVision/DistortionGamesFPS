@@ -40,7 +40,7 @@ namespace Prism
 		Camera* GetCamera();
 	private:
 		void Reset();
-
+		CU::Vector3f CalculateDirection(float anAngle);
 		void CreateVertexBuffer();
 		int UpdateVertexBuffer();
 
@@ -81,7 +81,6 @@ namespace Prism
 
 		enum eEmitterStates
 		{
-			ALPHADELTA,
 			HOLLOW,
 			ACTIVE,
 			CIRCLE,

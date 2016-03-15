@@ -11,7 +11,7 @@
 DLLParticle::DLLParticle()
 	: myIsLoaded(false)
 {
-	myOrientation.SetPos({0.f, 0.f, 80.f});
+	myOrientation.SetPos({0.f, 0.f, 0.f});
 }
 
 DLLParticle::~DLLParticle()
@@ -46,9 +46,32 @@ void DLLParticle::LoadParticle(std::string& aParticleFile)
 	myParticleData = new Prism::ParticleEmitterData();
 	
 	myCurrentParticle = new Prism::ParticleEmitterInstance(Prism::ParticleDataContainer::GetInstance()
-		->GetParticleData(aParticleFile), false); //Man bör inte ha över 200 partiklar, ska vara satt till false
+		->GetParticleData(aParticleFile), true); //Man bör inte ha över 200 partiklar, ska vara satt till false
 	myIsLoaded = true;
 	myParticleFile = aParticleFile;
+}
+
+void DLLParticle::LoadParticle(const ToolParticleData& aParticleDataStruct)
+{
+	myIsLoaded = false;
+
+	if (myCurrentParticle != nullptr)
+	{
+		myCurrentParticle->ReleaseData();
+		delete myCurrentParticle;
+		myCurrentParticle = nullptr;
+	}
+
+	if (myParticleData != nullptr)
+	{
+		delete myParticleData;
+		myParticleData = nullptr;
+	}
+	CU::Matrix44f currentOrientation = myOrientation;
+	myParticleData = new Prism::ParticleEmitterData();
+	//myParticleData->
+//	myCurrentParticle = new Prism::ParticleEmitterInstance(true); //Man bör inte ha över 200 partiklar, ska vara satt till false
+	myIsLoaded = true;
 }
 
 void DLLParticle::Update(float aDeltaTime)
@@ -61,6 +84,7 @@ void DLLParticle::Update(float aDeltaTime)
 void DLLParticle::Render(Prism::Camera* aCamera)
 {
 	if (myIsLoaded == false) return;
+	DL_DEBUG("Rendering");
 	Prism::ParticleDataContainer::GetInstance()->SetGPUData(*aCamera);
 	myCurrentParticle->Render();
 }
