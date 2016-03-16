@@ -36,6 +36,7 @@ ServerLevel* ServerLevelFactory::LoadCurrentLevel()
 {
 	myCurrentLevel = new ServerLevel();
 	ReadLevel(myLevelPaths[myCurrentID]);
+	myCurrentLevel->Init();
 #ifdef THREAD_PHYSICS
 	Prism::PhysicsInterface::GetInstance()->InitThread();
 #endif

@@ -23,7 +23,7 @@ public:
 	ClientLevel();
 	~ClientLevel();
 
-	void Init();
+	void Init() override;
 
 	void Update(const float aDeltaTime) override;
 	void Render();

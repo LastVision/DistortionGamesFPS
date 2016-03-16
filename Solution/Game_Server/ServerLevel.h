@@ -7,6 +7,8 @@ public:
 	ServerLevel();
 	~ServerLevel();
 
+	void Init() override;
+
 	void Update(const float aDeltaTime) override;
 	void ReceiveMessage(const PostMasterNetAddPlayerMessage& aMessage);
 	void ReceiveMessage(const PostMasterNetLevelLoadedMessage& aMessage);

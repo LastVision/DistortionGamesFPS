@@ -18,6 +18,8 @@ public:
 
 	void CreateConnection(const std::string& aName, const sockaddr_in& aSender);
 
+	const CU::GrowingArray<Connection>& GetClients() const;
+
 private:
 	ServerNetworkManager();
 	~ServerNetworkManager();
@@ -58,3 +60,7 @@ inline void ServerNetworkManager::AllowNewConnections(bool aValue)
 	myAllowNewConnections = aValue;
 }
 
+inline const CU::GrowingArray<Connection>& ServerNetworkManager::GetClients() const
+{
+	return myClients;
+}
