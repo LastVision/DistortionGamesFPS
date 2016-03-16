@@ -15,6 +15,7 @@ public:
 	void ResumeState() override;
 
 	void ReceiveMessage(const PostMasterNetRequestStartGameMessage& aMessage) override;
+	void ReceiveMessage(const PostMasterNetAddPlayerMessage& aMessage) override;
 
 private:
 	int myCurrentLevelID;

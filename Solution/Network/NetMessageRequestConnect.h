@@ -2,15 +2,15 @@
 #include "NetImportantMessage.h"
 #include <GrowingArray.h>
 
-class NetMessageConnectMessage : public NetImportantMessage
+class NetMessageRequestConnect : public NetImportantMessage
 {
 public:
-	NetMessageConnectMessage(const std::string& aName, short aServerID);
-	NetMessageConnectMessage(const std::string& aName, short aServerID, short aOtherClientID);
-	NetMessageConnectMessage();
+	NetMessageRequestConnect(const std::string& aName, short aServerID);
+	NetMessageRequestConnect(const std::string& aName, short aServerID, short aOtherClientID);
+	NetMessageRequestConnect();
 
-	NetMessageConnectMessage(sockaddr_in anAddress);
-	~NetMessageConnectMessage();
+	NetMessageRequestConnect(sockaddr_in anAddress);
+	~NetMessageRequestConnect();
 
 	//void Init(const std::string& aName, short aServerID);
 

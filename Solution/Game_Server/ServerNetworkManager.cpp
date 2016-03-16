@@ -6,7 +6,8 @@
 #include <PostMaster.h>
 
 #include <NetMessageImportantReply.h>
-#include <NetMessageConnectMessage.h>
+#include <NetMessageConnectReply.h>
+#include <NetMessageRequestConnect.h>
 #include <NetMessageOnJoin.h>
 #include <NetMessageDisconnect.h>
 #include <NetMessageRequestLevel.h>
@@ -34,6 +35,7 @@
 ServerNetworkManager* ServerNetworkManager::myInstance = nullptr;
 
 ServerNetworkManager::ServerNetworkManager()
+	: myAllowNewConnections(false)
 {
 	PostMaster::GetInstance()->Subscribe(eMessageType::NETWORK_ADD_ENEMY, this);
 	PostMaster::GetInstance()->Subscribe(eMessageType::NETWORK_SEND_POSITION, this);
@@ -68,7 +70,6 @@ ServerNetworkManager::~ServerNetworkManager()
 
 void ServerNetworkManager::Initiate()
 {
-
 	myClients.Init(16);
 	myIsServer = true;
 	myNetwork = new ServerNetwork();
@@ -190,6 +191,12 @@ void ServerNetworkManager::SendThread()
 
 void ServerNetworkManager::CreateConnection(const std::string& aName, const sockaddr_in& aSender)
 {
+	myIDCount++;
+	NetMessageConnectReply connectReply(NetMessageConnectReply::eType::SUCCESS, myIDCount);
+	connectReply.PackMessage();
+	myNetwork->Send(connectReply.myStream, aSender);
+
+	Sleep(200);
 	//for (Connection& connection : myClients)
 	//{
 	//	if (connection.myAddress.sin_addr.S_un.S_addr == aSender.sin_addr.S_un.S_addr) //._.
@@ -198,7 +205,23 @@ void ServerNetworkManager::CreateConnection(const std::string& aName, const sock
 	//		return;
 	//	}
 	//}
-	myIDCount++;
+
+	for (Connection& connection : myClients)
+	{
+		NetMessageOnJoin msg(connection.myName, connection.myID);
+		msg.PackMessage();
+		myNetwork->Send(msg.myStream, aSender);
+
+
+		/*NetMessageRequestConnect onConnect = CreateMessage<NetMessageRequestConnect>();
+		onConnect.myName = aName;
+		onConnect.myServerID = myIDCount;
+		onConnect.myOtherClientID = connection.myID;
+		onConnect.PackMessage();
+		myNetwork->Send(onConnect.myStream, newConnection.myAddress);*/
+	}
+
+	
 	Connection newConnection;
 	newConnection.myAddress = aSender;
 	newConnection.myID = myIDCount;
@@ -214,20 +237,13 @@ void ServerNetworkManager::CreateConnection(const std::string& aName, const sock
 	//	onConnect.myName = aName;
 	//	onConnect.myServerID = myIDCount;
 
-	for (Connection& connection : myClients)
-	{
-		NetMessageConnectMessage onConnect = CreateMessage<NetMessageConnectMessage>();
-		onConnect.myName = aName;
-		onConnect.myServerID = myIDCount;
-		onConnect.myOtherClientID = connection.myID;
-		onConnect.PackMessage();
-		myNetwork->Send(onConnect.myStream, newConnection.myAddress);
-	}
-	NetMessageOnJoin onJoin = CreateMessage<NetMessageOnJoin>();
-	onJoin.mySenderID = newConnection.myID;
+	
+
+	
+	NetMessageOnJoin onJoin(aName, myIDCount);
 	AddMessage(onJoin);
 
-	PostMaster::GetInstance()->SendMessage(PostMasterNetAddPlayerMessage(myIDCount, newConnection.myAddress));
+	//PostMaster::GetInstance()->SendMessage(PostMasterNetAddPlayerMessage(myIDCount, newConnection.myAddress));
 }
 
 void ServerNetworkManager::DisconnectConnection(const Connection& aConnection)
@@ -317,7 +333,7 @@ void ServerNetworkManager::AddImportantMessage(std::vector<char> aBuffer, unsign
 	myImportantMessagesBuffer.Add(msg);
 }
 
-void ServerNetworkManager::HandleMessage(const NetMessageConnectMessage& aMessage, const sockaddr_in& aSenderAddress)
+void ServerNetworkManager::HandleMessage(const NetMessageRequestConnect& aMessage, const sockaddr_in& aSenderAddress)
 {
 	if (CheckIfImportantMessage(aMessage) == true)
 	{
@@ -326,7 +342,19 @@ void ServerNetworkManager::HandleMessage(const NetMessageConnectMessage& aMessag
 		
 		myNetwork->Send(toReply.myStream, aSenderAddress);
 	}
-	CreateConnection(aMessage.myName, aSenderAddress);
+
+	if (myAllowNewConnections == true)
+	{
+		PostMaster::GetInstance()->SendMessage(PostMasterNetAddPlayerMessage(aMessage.myName, aSenderAddress));
+	}
+	else
+	{
+		NetMessageConnectReply connectReply(NetMessageConnectReply::eType::FAIL);
+		connectReply.PackMessage();
+		myNetwork->Send(connectReply.myStream, aSenderAddress);
+		//Bounce
+	}
+	//CreateConnection(aMessage.myName, aSenderAddress);
 }
 
 void ServerNetworkManager::HandleMessage(const NetMessageDisconnect& aMessage, const sockaddr_in& )

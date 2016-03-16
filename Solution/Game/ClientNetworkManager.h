@@ -20,6 +20,8 @@ public:
 	void ReceiveMessage(const PostMasterNetOnDisconnectMessage& aMessage) override;
 	void ReceiveMessage(const PostMasterNetOnHitMessage& aMessage) override;
 
+	void DebugPrint();
+
 private:
 	ClientNetworkManager();
 	~ClientNetworkManager();
@@ -30,7 +32,8 @@ private:
 	void AddImportantMessage(std::vector<char> aBuffer, unsigned int aImportantID) override;
 
 	ClientNetwork* myNetwork;
-	void HandleMessage(const NetMessageConnectMessage& aMessage, const sockaddr_in& aSenderAddress) override;
+	void HandleMessage(const NetMessageConnectReply& aMessage, const sockaddr_in& aSenderAddress) override;
+	void HandleMessage(const NetMessageRequestConnect& aMessage, const sockaddr_in& aSenderAddress) override;
 	void HandleMessage(const NetMessagePingRequest& aMessage, const sockaddr_in& aSenderAddress) override;
 	void HandleMessage(const NetMessageDisconnect& aMessage, const sockaddr_in& aSenderAddress) override;
 	void HandleMessage(const NetMessageOnJoin& aMessage, const sockaddr_in& aSenderAddress) override;
@@ -42,6 +45,6 @@ private:
 
 
 	CU::GrowingArray<OtherClients> myClients;
-
+	std::string myName;
 };
 

@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "ClientNetwork.h"
-#include "NetMessageConnectMessage.h"
+#include "NetMessageRequestConnect.h"
 #include <DL_Debug.h>
 #define BUFFERSIZE 512
 

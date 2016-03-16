@@ -154,6 +154,17 @@ namespace Prism
 #endif
 	}
 
+	void DebugDrawer::RenderText(const char* aName, unsigned int aValue)
+	{
+#ifndef RELEASE_BUILD
+
+		std::stringstream ss;
+		ss.precision(4);
+		ss << aValue;
+		myDebugTexts.Add(DebugText(aName, ss.str()));
+#endif
+	}
+
 	void DebugDrawer::RenderText(const char* aName, const std::string& aValue)
 	{
 #ifndef RELEASE_BUILD

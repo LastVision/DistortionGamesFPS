@@ -20,7 +20,7 @@
 #include <PhysicsInterface.h>
 
 #include <NetMessageOnJoin.h>
-#include <NetMessageConnectMessage.h>
+#include <NetMessageRequestConnect.h>
 #include <NetMessageDisconnect.h>
 #include <NetMessageOnHit.h>
 #include <NetMessageLevelLoaded.h>
@@ -168,21 +168,21 @@ void ClientLevel::Render()
 
 void ClientLevel::ReceiveMessage(const PostMasterNetAddPlayerMessage& aMessage)
 {
-	if (aMessage.myGID == ClientNetworkManager::GetInstance()->GetGID())
+	/*if (aMessage.myGID == ClientNetworkManager::GetInstance()->GetGID())
 	{
 		myPlayer->SetGID(aMessage.myGID);
 	}
 	else
 	{
-	bool isRunTime = Prism::MemoryTracker::GetInstance()->GetRunTime();
-	Prism::MemoryTracker::GetInstance()->SetRunTime(false);
-	Entity* newPlayer = EntityFactory::CreateEntity(aMessage.myGID, eEntityType::UNIT, "player", myScene, true, { 0.f, 0.f, 0.f });
-	newPlayer->GetComponent<NetworkComponent>()->SetPlayer(true);
-	newPlayer->AddToScene();
-	newPlayer->Reset();
-	myPlayers.Add(newPlayer);
-	Prism::MemoryTracker::GetInstance()->SetRunTime(isRunTime);
-}
+		bool isRunTime = Prism::MemoryTracker::GetInstance()->GetRunTime();
+		Prism::MemoryTracker::GetInstance()->SetRunTime(false);
+		Entity* newPlayer = EntityFactory::CreateEntity(aMessage.myGID, eEntityType::UNIT, "player", myScene, true, { 0.f, 0.f, 0.f });
+		newPlayer->GetComponent<NetworkComponent>()->SetPlayer(true);
+		newPlayer->AddToScene();
+		newPlayer->Reset();
+		myPlayers.Add(newPlayer);
+		Prism::MemoryTracker::GetInstance()->SetRunTime(isRunTime);
+	}*/
 }
 
 void ClientLevel::ReceiveMessage(const PostMasterNetRemovePlayerMessage& aMessage)

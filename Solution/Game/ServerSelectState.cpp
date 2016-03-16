@@ -108,6 +108,7 @@ void ServerSelectState::Render()
 void ServerSelectState::ResumeState()
 {
 	myIsActiveState = true;
+	myServer = nullptr;
 	PostMaster::GetInstance()->Subscribe(eMessageType::ON_CLICK, this);
 }
 

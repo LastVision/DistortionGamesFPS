@@ -3,7 +3,8 @@
 
 #include <NetMessage.h>
 #include <NetMessageImportantReply.h>
-#include <NetMessageConnectMessage.h>
+#include <NetMessageConnectReply.h>
+#include <NetMessageRequestConnect.h>
 #include <NetMessageOnJoin.h>
 #include <NetMessageDisconnect.h>
 #include <NetMessageRequestLevel.h>
@@ -161,8 +162,11 @@ void SharedNetworkManager::HandleMessage()
 		case eNetMessageType::IMPORTANT_REPLY:
 			UnpackAndHandle(NetMessageImportantReply(), buffer);
 			break;
+		case eNetMessageType::CONNECT_REPLY:
+			UnpackAndHandle(NetMessageConnectReply(), buffer);
+			break;
 		case eNetMessageType::ON_CONNECT:
-			UnpackAndHandle(NetMessageConnectMessage(), buffer);
+			UnpackAndHandle(NetMessageRequestConnect(), buffer);
 			break;
 		case eNetMessageType::ON_JOIN:
 			UnpackAndHandle(NetMessageOnJoin(), buffer);
@@ -231,7 +235,8 @@ void SharedNetworkManager::HandleMessage(const NetMessageImportantReply& aMessag
 		}
 	}
 }
-void SharedNetworkManager::HandleMessage(const NetMessageConnectMessage&, const sockaddr_in&) {}
+void SharedNetworkManager::HandleMessage(const NetMessageConnectReply&, const sockaddr_in&) {}
+void SharedNetworkManager::HandleMessage(const NetMessageRequestConnect&, const sockaddr_in&) {}
 void SharedNetworkManager::HandleMessage(const NetMessageDisconnect&, const sockaddr_in&) {}
 void SharedNetworkManager::HandleMessage(const NetMessageRequestLevel&, const sockaddr_in&) {}
 void SharedNetworkManager::HandleMessage(const NetMessagePingRequest&, const sockaddr_in&) {}

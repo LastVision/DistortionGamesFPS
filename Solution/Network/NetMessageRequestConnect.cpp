@@ -1,26 +1,26 @@
 #include "stdafx.h"
-#include "NetMessageConnectMessage.h"
+#include "NetMessageRequestConnect.h"
 #include "NetworkMessageTypes.h"
 #include <MemoryTracker.h>
-NetMessageConnectMessage::NetMessageConnectMessage(const std::string& aName, short aServerID)
+NetMessageRequestConnect::NetMessageRequestConnect(const std::string& aName, short aServerID)
 {
 	myID = static_cast<uint8_t>(eNetMessageType::ON_CONNECT);
 	myName = aName;
 	myServerID = aServerID;
 }
 
-NetMessageConnectMessage::NetMessageConnectMessage()
+NetMessageRequestConnect::NetMessageRequestConnect()
 {
 	myID = static_cast<uint8_t>(eNetMessageType::ON_CONNECT);
 }
 
-NetMessageConnectMessage::NetMessageConnectMessage(sockaddr_in anAddress)
+NetMessageRequestConnect::NetMessageRequestConnect(sockaddr_in anAddress)
 {
 	anAddress;
 	myID = static_cast<uint8_t>(eNetMessageType::ON_CONNECT);
 }
 
-NetMessageConnectMessage::NetMessageConnectMessage(const std::string& aName, short aServerID, short aOtherClientID)
+NetMessageRequestConnect::NetMessageRequestConnect(const std::string& aName, short aServerID, short aOtherClientID)
 {
 	myID = static_cast<uint8_t>(eNetMessageType::ON_CONNECT);
 	myName = aName;
@@ -28,11 +28,11 @@ NetMessageConnectMessage::NetMessageConnectMessage(const std::string& aName, sho
 	myOtherClientID = aOtherClientID;
 }
 
-NetMessageConnectMessage::~NetMessageConnectMessage()
+NetMessageRequestConnect::~NetMessageRequestConnect()
 {
 }
 
-void NetMessageConnectMessage::DoSerialize(StreamType& aStream)
+void NetMessageRequestConnect::DoSerialize(StreamType& aStream)
 {
 	__super::DoSerialize(aStream);
 	SERIALIZE(aStream, myName);
@@ -40,7 +40,7 @@ void NetMessageConnectMessage::DoSerialize(StreamType& aStream)
 	SERIALIZE(aStream, myOtherClientID);
 }
 
-void NetMessageConnectMessage::DoDeSerialize(StreamType& aStream)
+void NetMessageRequestConnect::DoDeSerialize(StreamType& aStream)
 {
 
 	__super::DoDeSerialize(aStream);

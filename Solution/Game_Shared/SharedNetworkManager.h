@@ -9,7 +9,8 @@ namespace std
 
 class NetMessage;
 class NetMessageImportantReply;
-class NetMessageConnectMessage;
+class NetMessageConnectReply;
+class NetMessageRequestConnect;
 class NetMessageOnJoin;
 class NetMessageDisconnect;
 class NetMessageRequestLevel;
@@ -114,7 +115,8 @@ protected:
 	void HandleMessage();
 
 	virtual void HandleMessage(const NetMessageImportantReply& aMessage, const sockaddr_in& aSenderAddress);
-	virtual void HandleMessage(const NetMessageConnectMessage& aMessage, const sockaddr_in& aSenderAddress);
+	virtual void HandleMessage(const NetMessageConnectReply& aMessage, const sockaddr_in& aSenderAddress);
+	virtual void HandleMessage(const NetMessageRequestConnect& aMessage, const sockaddr_in& aSenderAddress);
 	virtual void HandleMessage(const NetMessageOnJoin& aMessage, const sockaddr_in& aSenderAddress);
 	virtual void HandleMessage(const NetMessageDisconnect& aMessage, const sockaddr_in& aSenderAddress);
 	virtual void HandleMessage(const NetMessageRequestLevel& aMessage, const sockaddr_in& aSenderAddress);

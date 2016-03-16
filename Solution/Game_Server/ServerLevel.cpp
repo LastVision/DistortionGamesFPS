@@ -35,7 +35,7 @@ void ServerLevel::Update(const float aDeltaTime)
 void ServerLevel::ReceiveMessage(const PostMasterNetAddPlayerMessage& aMessage)
 {
 	aMessage;
-	bool isRunTime = Prism::MemoryTracker::GetInstance()->GetRunTime();
+	/*bool isRunTime = Prism::MemoryTracker::GetInstance()->GetRunTime();
 	Prism::MemoryTracker::GetInstance()->SetRunTime(false);
 	Entity* newPlayer = EntityFactory::CreateEntity(aMessage.myGID, eEntityType::UNIT, "player", nullptr, false, { 0.f, 0.f, 0.f });
 	newPlayer->Reset();
@@ -49,7 +49,7 @@ void ServerLevel::ReceiveMessage(const PostMasterNetAddPlayerMessage& aMessage)
 		{
 			PostMaster::GetInstance()->SendMessage(PostMasterNetAddEnemyMessage({ 0.f, 0.f, 0.f }, e->GetGID(), aMessage.myAddress));
 		}
-	}
+	}*/
 }
 
 void ServerLevel::ReceiveMessage(const PostMasterNetLevelLoadedMessage& aMessage)

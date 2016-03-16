@@ -89,7 +89,8 @@
     <ClInclude Include="NetMessageAddEnemy.h" />
     <ClInclude Include="NetImportantMessage.h" />
     <ClInclude Include="NetMessage.h" />
-    <ClInclude Include="NetMessageConnectMessage.h" />
+    <ClInclude Include="NetMessageConnectReply.h" />
+    <ClInclude Include="NetMessageRequestConnect.h" />
     <ClInclude Include="NetMessageDisconnect.h" />
     <ClInclude Include="NetMessageImportantReply.h" />
     <ClInclude Include="NetMessageLevelLoaded.h" />
@@ -113,7 +114,8 @@
     <ClCompile Include="NetMessageAddEnemy.cpp" />
     <ClCompile Include="NetImportantMessage.cpp" />
     <ClCompile Include="NetMessage.cpp" />
-    <ClCompile Include="NetMessageConnectMessage.cpp" />
+    <ClCompile Include="NetMessageConnectReply.cpp" />
+    <ClCompile Include="NetMessageRequestConnect.cpp" />
     <ClCompile Include="NetMessageDisconnect.cpp" />
     <ClCompile Include="NetMessageImportantReply.cpp" />
     <ClCompile Include="NetMessageLevelLoaded.cpp" />

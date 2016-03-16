@@ -68,6 +68,8 @@ const eStateStatus LobbyState::Update(const float& aDeltaTime)
 		return eStateStatus::ePopSubState;
 	}
 
+	ClientNetworkManager::GetInstance()->DebugPrint();
+
 	if (CU::InputWrapper::GetInstance()->KeyDown(DIK_SPACE) == true)
 	{
 		ClientNetworkManager::GetInstance()->AddMessage(NetMessageRequestStartGame());

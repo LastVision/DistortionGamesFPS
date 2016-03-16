@@ -6,6 +6,7 @@ enum class eNetMessageType
 	NONE,
 	IMPORTANT_REPLY,
 	
+	CONNECT_REPLY,
 	ON_CONNECT,
 	ON_JOIN,
 	ON_DISCONNECT,
@@ -45,16 +46,18 @@ struct Connection
 struct OtherClients
 {
 	OtherClients();
-	OtherClients(unsigned int anID);
+	OtherClients(const std::string& aName, unsigned int anID);
 	unsigned int myID;
 	CU::Vector3<float> myPosition;
+	std::string myName;
 };
 
 inline OtherClients::OtherClients()
 {
 }
 
-inline OtherClients::OtherClients(unsigned int anID)
+inline OtherClients::OtherClients(const std::string& aName, unsigned int anID)
+	: myName(aName)
+	, myID(anID)
 {
-	myID = anID;
 }

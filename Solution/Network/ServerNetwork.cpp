@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "ServerNetwork.h"
 #include "Utility.h"
-#include "NetMessageConnectMessage.h"
+#include "NetMessageRequestConnect.h"
 #include "NetMessageOnJoin.h"
 #define BUFFERSIZE 512
 

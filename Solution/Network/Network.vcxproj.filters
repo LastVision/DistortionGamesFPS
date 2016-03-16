@@ -21,9 +21,6 @@
     <ClCompile Include="NetMessage.cpp">
       <Filter>Messages</Filter>
     </ClCompile>
-    <ClCompile Include="NetMessageConnectMessage.cpp">
-      <Filter>Messages</Filter>
-    </ClCompile>
     <ClCompile Include="NetMessagePingReply.cpp">
       <Filter>Messages</Filter>
     </ClCompile>
@@ -72,15 +69,16 @@
     <ClCompile Include="NetMessageLevelLoaded.cpp">
       <Filter>Messages</Filter>
     </ClCompile>
+    <ClCompile Include="NetMessageRequestConnect.cpp">
+      <Filter>Messages</Filter>
+    </ClCompile>
+    <ClCompile Include="NetMessageConnectReply.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
       <Filter>Precompile</Filter>
     </ClInclude>
     <ClInclude Include="NetMessage.h">
-      <Filter>Messages</Filter>
-    </ClInclude>
-    <ClInclude Include="NetMessageConnectMessage.h">
       <Filter>Messages</Filter>
     </ClInclude>
     <ClInclude Include="NetMessagePingReply.h">
@@ -140,5 +138,9 @@
     <ClInclude Include="NetMessageLevelLoaded.h">
       <Filter>Messages</Filter>
     </ClInclude>
+    <ClInclude Include="NetMessageRequestConnect.h">
+      <Filter>Messages</Filter>
+    </ClInclude>
+    <ClInclude Include="NetMessageConnectReply.h" />
   </ItemGroup>
 </Project>
