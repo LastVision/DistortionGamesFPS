@@ -12,6 +12,13 @@ public:
 	static ServerNetworkManager* GetInstance();
 
 	void StartNetwork(unsigned int aPortNum = 13397) override;
+
+	void ReceiveNetworkMessage(const NetMessagePingRequest& aMessage, const sockaddr_in& aSenderAddress) override;
+	void ReceiveNetworkMessage(const NetMessagePingReply& aMessage, const sockaddr_in& aSenderAddress) override;
+	void ReceiveNetworkMessage(const NetMessageDisconnect& aMessage, const sockaddr_in& aSenderAddress) override;
+	void ReceiveNetworkMessage(const NetMessageConnectMessage& aMessage, const sockaddr_in& aSenderAddress) override;
+
+	const short GetLastJoinedID() const;
 private:
 	ServerNetworkManager();
 	~ServerNetworkManager();
@@ -21,17 +28,9 @@ private:
 
 	void AddImportantMessage(std::vector<char> aBuffer, unsigned int aImportantID) override;
 
-	void HandleMessage(const NetMessageConnectMessage& aMessage, const sockaddr_in& aSender) override;
-	void HandleMessage(const NetMessageDisconnect& aMessage, const sockaddr_in& aSenderAddress) override;
-	void HandleMessage(const NetMessageRequestLevel& aMessage, const sockaddr_in& aSenderAddress) override;
-	void HandleMessage(const NetMessagePingReply& aMessage, const sockaddr_in& aSenderAddress) override;
-	void HandleMessage(const NetMessagePingRequest& aMessage, const sockaddr_in& aSenderAddress) override;
-	void HandleMessage(const NetMessageOnHit& aMessage, const sockaddr_in& aSenderAddress) override;
-
-
-	void ReceiveMessage(const PostMasterNetAddEnemyMessage& aMessage) override;
-	void ReceiveMessage(const PostMasterNetSendPositionMessage& aMessage) override;
-	void ReceiveMessage(const PostMasterNetOnDeathMessage& aMessage) override;
+	//void ReceiveMessage(const PostMasterNetAddEnemyMessage& aMessage) override;
+	//void ReceiveMessage(const PostMasterNetSendPositionMessage& aMessage) override;
+	//void ReceiveMessage(const PostMasterNetOnDeathMessage& aMessage) override;
 
 	void ReceieveThread() override;
 	void SendThread() override;
@@ -44,4 +43,9 @@ private:
 	std::unordered_map<std::string, int> myNames;
 
 };
+
+inline const short ServerNetworkManager::GetLastJoinedID() const
+{
+	return myIDCount;
+}
 

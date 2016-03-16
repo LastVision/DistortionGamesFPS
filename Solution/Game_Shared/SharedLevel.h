@@ -2,11 +2,12 @@
 #include <GrowingArray.h>
 #include <unordered_map>
 #include <Subscriber.h>
+#include <NetworkSubscriber.h>
 
 class Entity;
 class PhysicsComponent;
 
-class SharedLevel : public Subscriber
+class SharedLevel : public Subscriber, public NetworkSubscriber
 {
 public:
 	SharedLevel();

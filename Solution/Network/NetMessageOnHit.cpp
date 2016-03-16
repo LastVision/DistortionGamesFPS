@@ -8,6 +8,13 @@ NetMessageOnHit::NetMessageOnHit(eNetMessageType aType, float aDamage, unsigned 
 	myID = uint8_t(aType);
 }
 
+NetMessageOnHit::NetMessageOnHit(float aDamage, unsigned int aGID)
+{
+	myDamage = aDamage;
+	myGID = aGID;
+	myID = uint8_t(eNetMessageType::ENEMY_ON_HIT);
+}
+
 NetMessageOnHit::NetMessageOnHit()
 {
 	myID = int(eNetMessageType::ENEMY_ON_HIT);

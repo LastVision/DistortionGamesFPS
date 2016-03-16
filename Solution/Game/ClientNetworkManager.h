@@ -20,27 +20,23 @@ public:
 	void ReceiveMessage(const PostMasterNetOnDisconnectMessage& aMessage) override;
 	void ReceiveMessage(const PostMasterNetOnHitMessage& aMessage) override;
 
+	void ReceiveNetworkMessage(const NetMessageConnectMessage& aMessage, const sockaddr_in& aSenderAddress) override;
+	void ReceiveNetworkMessage(const NetMessageDisconnect& aMessage, const sockaddr_in& aSenderAddress) override;
+	void ReceiveNetworkMessage(const NetMessageOnJoin& aMessage, const sockaddr_in& aSenderAddress) override;
+	void ReceiveNetworkMessage(const NetMessagePingRequest& aMessage, const sockaddr_in& aSenderAddress) override;
 private:
 	ClientNetworkManager();
 	~ClientNetworkManager();
 	static ClientNetworkManager* myInstance;
-	//void AddNetworkMessage(std::vector<char> aBuffer) override;
-	void UpdateImportantMessages(float aDeltaTime) override;
 
+	void UpdateImportantMessages(float aDeltaTime) override;
 	void AddImportantMessage(std::vector<char> aBuffer, unsigned int aImportantID) override;
 
-	ClientNetwork* myNetwork;
-	void HandleMessage(const NetMessageConnectMessage& aMessage, const sockaddr_in& aSenderAddress) override;
-	void HandleMessage(const NetMessagePingRequest& aMessage, const sockaddr_in& aSenderAddress) override;
-	void HandleMessage(const NetMessageDisconnect& aMessage, const sockaddr_in& aSenderAddress) override;
-	void HandleMessage(const NetMessageOnJoin& aMessage, const sockaddr_in& aSenderAddress) override;
-	void HandleMessage(const NetMessageAddEnemy& aMessage, const sockaddr_in& aSenderAddress) override;
-	void HandleMessage(const NetMessageOnDeath& aMessage, const sockaddr_in& aSenderAddress) override;
 	void ReceieveThread() override;
 	void SendThread() override;
 
+	ClientNetwork* myNetwork;
 
 	CU::GrowingArray<OtherClients> myClients;
-
 };
 

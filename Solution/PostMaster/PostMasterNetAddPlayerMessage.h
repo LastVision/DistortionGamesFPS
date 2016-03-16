@@ -7,6 +7,7 @@ struct PostMasterNetAddPlayerMessage : public Message
 	PostMasterNetAddPlayerMessage(unsigned int aGID);
 
 	unsigned int myGID;
+	unsigned int my
 	sockaddr_in myAddress;
 
 };

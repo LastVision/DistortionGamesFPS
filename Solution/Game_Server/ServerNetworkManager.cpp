@@ -194,28 +194,20 @@ void ServerNetworkManager::CreateConnection(const std::string& aName, const sock
 
 	for (Connection& connection : myClients)
 	{
-		NetMessageConnectMessage onConnect = CreateMessage<NetMessageConnectMessage>();
-		onConnect.myName = aName;
-		onConnect.myServerID = myIDCount;
-		onConnect.myOtherClientID = connection.myID;
+		NetMessageConnectMessage onConnect = NetMessageConnectMessage(aName, myIDCount, connection.myID);
 		onConnect.PackMessage();
 		myNetwork->Send(onConnect.myStream, newConnection.myAddress);
 	}
-	NetMessageOnJoin onJoin = CreateMessage<NetMessageOnJoin>();
-	onJoin.mySenderID = newConnection.myID;
-	AddMessage(onJoin);
+	AddMessage(NetMessageOnJoin(newConnection.myID));
 	PostMaster::GetInstance()->SendMessage(PostMasterNetAddPlayerMessage(myIDCount, newConnection.myAddress));
 }
 
 void ServerNetworkManager::DisconnectConnection(const Connection& aConnection)
 {
-	//send disconnect message to the client
-	NetMessageDisconnect disconnect = CreateMessage<NetMessageDisconnect>();
-	disconnect.myClientID = aConnection.myID;
-	disconnect.PackMessage();
-	myNetwork->Send(disconnect.myStream, aConnection.myAddress);
-	AddMessage(disconnect);
-	//remove the disconnected client from server
+	NetMessageDisconnect onDisconnect = NetMessageDisconnect(aConnection.myID);
+	onDisconnect.PackMessage();
+	myNetwork->Send(onDisconnect.myStream, aConnection.myAddress);
+	
 	std::string msg(aConnection.myName + " disconnected from server!");
 	Utility::PrintEndl(msg, LIGHT_BLUE_TEXT);
 
@@ -240,6 +232,8 @@ void ServerNetworkManager::DisconnectConnection(const Connection& aConnection)
 			break;
 		}
 	}
+	//Send to all other clients which client has been disconnected
+	AddMessage(NetMessageDisconnect(aConnection.myID));
 }
 
 void ServerNetworkManager::UpdateImportantMessages(float aDeltaTime)
@@ -294,27 +288,20 @@ void ServerNetworkManager::AddImportantMessage(std::vector<char> aBuffer, unsign
 	myImportantMessagesBuffer.Add(msg);
 }
 
-void ServerNetworkManager::HandleMessage(const NetMessageConnectMessage& aMessage, const sockaddr_in& aSenderAddress)
+void ServerNetworkManager::ReceiveNetworkMessage(const NetMessageConnectMessage& aMessage, const sockaddr_in& aSenderAddress)
 {
 	if (CheckIfImportantMessage(aMessage) == true)
 	{
 		NetMessageImportantReply toReply(aMessage.GetImportantID());
 		toReply.PackMessage();
-		
+
 		myNetwork->Send(toReply.myStream, aSenderAddress);
 	}
 	CreateConnection(aMessage.myName, aSenderAddress);
 }
 
-void ServerNetworkManager::HandleMessage(const NetMessageDisconnect& aMessage, const sockaddr_in& )
+void ServerNetworkManager::ReceiveNetworkMessage(const NetMessageDisconnect& aMessage, const sockaddr_in&)
 {
-	/*if (CheckIfImportantMessage(aMessage) == true)
-	{
-		NetMessageImportantReply toReply(aMessage.GetImportantID());
-		toReply.PackMessage();
-
-		myNetwork->Send(toReply.myStream, aSenderAddress);
-	}*/
 	for (Connection c : myClients)
 	{
 		if (c.myID == aMessage.myClientID)
@@ -325,18 +312,8 @@ void ServerNetworkManager::HandleMessage(const NetMessageDisconnect& aMessage, c
 	}
 }
 
-void ServerNetworkManager::HandleMessage(const NetMessageRequestLevel& aMessage, const sockaddr_in&)
+void ServerNetworkManager::ReceiveNetworkMessage(const NetMessagePingReply& aMessage, const sockaddr_in&)
 {
-	aMessage;
-	// change level on server
-	//send to all change level
-	int apa = 5;
-	++apa;
-}
-
-void ServerNetworkManager::HandleMessage(const NetMessagePingReply& aMessage, const sockaddr_in& aSenderAddress)
-{
-	__super::HandleMessage(aMessage, aSenderAddress);
 	for (Connection& c : myClients)
 	{
 		if (c.myID == aMessage.mySenderID)
@@ -347,12 +324,9 @@ void ServerNetworkManager::HandleMessage(const NetMessagePingReply& aMessage, co
 	}
 }
 
-void ServerNetworkManager::HandleMessage(const NetMessagePingRequest&, const sockaddr_in& aSenderAddress)
+void ServerNetworkManager::ReceiveNetworkMessage(const NetMessagePingRequest& aMessage, const sockaddr_in&)
 {
-	NetMessagePingReply reply;
-	reply.PackMessage();
-
-	myNetwork->Send(reply.myStream, aSenderAddress);
+	AddMessage(NetMessagePingReply(), aMessage.mySenderID);
 	for (Connection& c : myClients)
 	{
 		c.myPingCount++;
@@ -363,34 +337,30 @@ void ServerNetworkManager::HandleMessage(const NetMessagePingRequest&, const soc
 	}
 }
 
-void ServerNetworkManager::HandleMessage(const NetMessageOnHit& aMessage, const sockaddr_in& aSenderAddress)
-{
-	__super::HandleMessage(aMessage, aSenderAddress);
-}
-
-void ServerNetworkManager::ReceiveMessage(const PostMasterNetAddEnemyMessage& aMessage)
-{
-	NetMessageAddEnemy toSend = CreateMessage<NetMessageAddEnemy>();
-	toSend.myPosition = aMessage.myPosition;
-	toSend.myGID = aMessage.myGID;
-	toSend.PackMessage();
-	myNetwork->Send(toSend.myStream, aMessage.myAddress);
-}
-
-void ServerNetworkManager::ReceiveMessage(const PostMasterNetSendPositionMessage& aMessage)
-{
-	NetMessagePosition toSend;
-	toSend.mySenderID = static_cast<short>(aMessage.myGID);
-	toSend.myPosition = aMessage.myPosition;
-	toSend.myRotationY = aMessage.myRotationY;
-	toSend.myGID = aMessage.myGID;
-	AddMessage(toSend);
-}
-
-void ServerNetworkManager::ReceiveMessage(const PostMasterNetOnDeathMessage& aMessage)
-{
-	NetMessageOnDeath toSend = CreateMessage<NetMessageOnDeath>();
-	toSend.mySenderID = 0;
-	toSend.myGID = aMessage.myGID;
-	AddMessage(toSend);
-}
+//void ServerNetworkManager::ReceiveMessage(const PostMasterNetAddEnemyMessage& aMessage)
+//{
+//	NetMessageAddEnemy toSend = CreateMessage<NetMessageAddEnemy>();
+//	toSend.myPosition = aMessage.myPosition;
+//	toSend.myGID = aMessage.myGID;
+//	toSend.PackMessage();
+//	myNetwork->Send(toSend.myStream, aMessage.myAddress);
+//	AddMessage(NetMessageAddEnemy(aMessage.myPosition, aMessage.myGID), aMessage.)
+//}
+//
+//void ServerNetworkManager::ReceiveMessage(const PostMasterNetSendPositionMessage& aMessage)
+//{
+//	NetMessagePosition toSend;
+//	toSend.mySenderID = static_cast<short>(aMessage.myGID);
+//	toSend.myPosition = aMessage.myPosition;
+//	toSend.myRotationY = aMessage.myRotationY;
+//	toSend.myGID = aMessage.myGID;
+//	AddMessage(toSend);
+//}
+//
+//void ServerNetworkManager::ReceiveMessage(const PostMasterNetOnDeathMessage& aMessage)
+//{
+//	NetMessageOnDeath toSend = CreateMessage<NetMessageOnDeath>();
+//	toSend.mySenderID = 0;
+//	toSend.myGID = aMessage.myGID;
+//	AddMessage(toSend);
+//}

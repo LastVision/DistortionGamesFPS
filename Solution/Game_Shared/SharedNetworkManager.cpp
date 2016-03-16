@@ -31,6 +31,10 @@ void SharedNetworkManager::Initiate()
 	myPingTime = 0.f;
 	myReceieveIsDone = true;
 	myMainIsDone = true;
+	for (int i = 0; i < static_cast<int>(eNetMessageType::_COUNT); ++i)
+	{
+		mySubscribers[i].Init(64);
+	}
 }
 
 void SharedNetworkManager::StartNetwork(unsigned int /*aPortNum*/)
@@ -65,7 +69,15 @@ SharedNetworkManager::SharedNetworkManager()
 
 SharedNetworkManager::~SharedNetworkManager()
 {
-
+	for (int i = 0; i < static_cast<int>(eNetMessageType::_COUNT); ++i)
+	{
+		if (mySubscribers[i].Size() > 0)
+		{
+			DL_DEBUG("Subscriber not unsubscribed at index %i", i);
+			DL_ASSERT("Subscriber not unsubscribed at NetworkManager-Destroy.");
+		}
+		mySubscribers[i].RemoveAll();
+	}
 }
 
 void SharedNetworkManager::Update(float aDelta)
@@ -118,6 +130,67 @@ void SharedNetworkManager::WaitForReceieve()
 		Sleep(1);
 	}
 	myReceieveIsDone = false;
+}
+
+void SharedNetworkManager::Subscribe(const eNetMessageType aMessageType, NetworkSubscriber* aSubscriber)
+{
+#ifdef _DEBUG
+	CU::GrowingArray<NetworkSubscriberInfo>& subscribers = mySubscribers[static_cast<int>(aMessageType)];
+	for (int i = 0; i < subscribers.Size(); ++i)
+	{
+		DL_ASSERT_EXP(subscribers[i].myNetworkSubscriber != aSubscriber, "Tried to add the same subscriber to the same network message twice.");
+	}
+#endif
+
+	NetworkSubscriberInfo newSubsciber;
+	newSubsciber.myNetworkSubscriber = aSubscriber;
+	mySubscribers[static_cast<int>(aMessageType)].Add(newSubsciber);
+}
+
+void SharedNetworkManager::UnSubscribe(const eNetMessageType aMessageType, NetworkSubscriber* aSubscriber)
+{
+	CU::GrowingArray<NetworkSubscriberInfo>& subscribers = mySubscribers[static_cast<int>(aMessageType)];
+
+	for (int i = 0; i < subscribers.Size(); ++i)
+	{
+		if (subscribers[i].myNetworkSubscriber == aSubscriber)
+		{
+			subscribers.RemoveCyclicAtIndex(i);
+			break;
+		}
+	}
+}
+
+void SharedNetworkManager::UnSubscribe(NetworkSubscriber* aSubscriber)
+{
+	for (int i = 0; i < static_cast<int>(eNetMessageType::_COUNT); ++i)
+	{
+		CU::GrowingArray<NetworkSubscriberInfo, int>& subscribers = mySubscribers[i];
+
+		for (int j = 0; j < subscribers.Size(); ++j)
+		{
+			if (subscribers[j].myNetworkSubscriber == aSubscriber)
+			{
+				subscribers.RemoveCyclicAtIndex(j);
+				break;
+			}
+		}
+	}
+}
+
+bool SharedNetworkManager::IsSubscribed(const eNetMessageType aMessageType, NetworkSubscriber* aSubscriber)
+{
+	CU::GrowingArray<NetworkSubscriberInfo>& subscribers = mySubscribers[static_cast<int>(aMessageType)];
+
+	for (int i = 0; i < subscribers.Size(); ++i)
+	{
+		if (subscribers[i].myNetworkSubscriber == aSubscriber)
+		{
+			return true;
+		}
+	}
+
+	return false;
 }
 
 eNetMessageType SharedNetworkManager::ReadType(const char* aBuffer)
@@ -196,12 +269,12 @@ void SharedNetworkManager::HandleMessage()
 	}
 }
 
-void SharedNetworkManager::HandleMessage(const NetMessagePingReply&, const sockaddr_in&)
+void SharedNetworkManager::ReceiveNetworkMessage(const NetMessagePingReply& aMessage, const sockaddr_in& aSenderAddress)
 {
 	myMS = myResponsTime * 1000.f;
 }
 
-void SharedNetworkManager::HandleMessage(const NetMessageImportantReply& aMessage, const sockaddr_in&)
+void SharedNetworkManager::ReceiveNetworkMessage(const NetMessageImportantReply& aMessage, const sockaddr_in& aSenderAddress)
 {
 	for (ImportantMessage& msg : myImportantMessagesBuffer)
 	{
@@ -218,21 +291,6 @@ void SharedNetworkManager::HandleMessage(const NetMessageImportantReply& aMessag
 		}
 	}
 }
-void SharedNetworkManager::HandleMessage(const NetMessageConnectMessage&, const sockaddr_in&) {}
-void SharedNetworkManager::HandleMessage(const NetMessageDisconnect&, const sockaddr_in&) {}
-void SharedNetworkManager::HandleMessage(const NetMessageRequestLevel&, const sockaddr_in&) {}
-void SharedNetworkManager::HandleMessage(const NetMessagePingRequest&, const sockaddr_in&) {}
-void SharedNetworkManager::HandleMessage(const NetMessageOnJoin&, const sockaddr_in&) {}
-void SharedNetworkManager::HandleMessage(const NetMessagePosition& aMessage, const sockaddr_in&) 
-{
-	PostMaster::GetInstance()->SendMessage(PostMasterNetSetPositionMessage(aMessage.myPosition, aMessage.myRotationY, aMessage.myGID)); 
-}
-void SharedNetworkManager::HandleMessage(const NetMessageAddEnemy&, const sockaddr_in&){}
-void SharedNetworkManager::HandleMessage(const NetMessageOnHit& aMessage, const sockaddr_in&)
-{ 
-	PostMaster::GetInstance()->SendMessage(PostMasterNetOnHitMessage(aMessage.myDamage, aMessage.myGID)); 
-}
-void SharedNetworkManager::HandleMessage(const NetMessageOnDeath&, const sockaddr_in&) {}
 
 bool SharedNetworkManager::AlreadyReceived(const NetMessage& aMessage)
 {

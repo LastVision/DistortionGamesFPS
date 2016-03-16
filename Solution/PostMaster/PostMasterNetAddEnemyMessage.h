@@ -5,10 +5,12 @@
 struct PostMasterNetAddEnemyMessage : public Message
 {
 	PostMasterNetAddEnemyMessage(const CU::Vector3<float>& aPosition, unsigned int aGID, const sockaddr_in& anAddress);
+	PostMasterNetAddEnemyMessage(const CU::Vector3<float>& aPosition, unsigned int aGID, unsigned int aSenderGID);
 	PostMasterNetAddEnemyMessage(const CU::Vector3<float>& aPosition, unsigned int aGID);
 
 	CU::Vector3<float> myPosition;
 	unsigned int myGID;
+	unsigned int mySenderGID;
 	sockaddr_in myAddress;
 };
 
@@ -17,6 +19,14 @@ inline PostMasterNetAddEnemyMessage::PostMasterNetAddEnemyMessage(const CU::Vect
 	, myPosition(aPosition)
 	, myAddress(anAddress)
 	, myGID(aGID)
+{
+}
+
+inline PostMasterNetAddEnemyMessage::PostMasterNetAddEnemyMessage(const CU::Vector3<float>& aPositon, unsigned int aGID, unsigned int aSenderGID)
+	: Message(eMessageType::NETWORK_ADD_ENEMY)
+	, myPosition(aPositon)
+	, myGID(aGID)
+	, mySenderGID(aSenderGID)
 {
 }
 

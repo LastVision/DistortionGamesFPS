@@ -61,6 +61,7 @@
       <Filter>Messages</Filter>
     </ClCompile>
     <ClCompile Include="NetMessageRequestLevel.cpp" />
+    <ClCompile Include="NetworkSubscriber.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
@@ -118,5 +119,6 @@
       <Filter>Messages</Filter>
     </ClInclude>
     <ClInclude Include="NetMessageRequestLevel.h" />
+    <ClInclude Include="NetworkSubscriber.h" />
   </ItemGroup>
 </Project>

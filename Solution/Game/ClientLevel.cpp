@@ -23,11 +23,8 @@
 #include <NetMessageConnectMessage.h>
 #include <NetMessageDisconnect.h>
 #include <NetMessageOnHit.h>
-
-#include <PostMasterNetAddPlayerMessage.h>
-#include <PostMasterNetRemovePlayer.h>
-#include <PostMasterNetAddEnemyMessage.h>
-#include <PostMasterNetOnDeathMessage.h>
+#include <NetMessageOnDeath.h>
+#include <NetMessageAddEnemy.h>
 
 #include "ClientNetworkManager.h"
 #include "DeferredRenderer.h"
@@ -156,38 +153,48 @@ void ClientLevel::Render()
 	myPlayer->GetComponent<FirstPersonRenderComponent>()->Render();
 }
 
-void ClientLevel::ReceiveMessage(const PostMasterNetAddPlayerMessage& aMessage)
+void ClientLevel::ReceiveNetworkMessage(const NetMessageOnJoin& aMessage, const sockaddr_in& aSenderAddress)
 {
-	if (aMessage.myGID == ClientNetworkManager::GetInstance()->GetGID())
-	{
-		myPlayer->SetGID(aMessage.myGID);
-	}
-	else
-	{
+	DL_ASSERT_EXP(aMessage.mySenderID != ClientNetworkManager::GetInstance()->GetGID(), "You joined but you are already ingame?");
 	bool isRunTime = Prism::MemoryTracker::GetInstance()->GetRunTime();
 	Prism::MemoryTracker::GetInstance()->SetRunTime(false);
-	Entity* newPlayer = EntityFactory::CreateEntity(aMessage.myGID, eEntityType::UNIT, "player", myScene, true, { 0.f, 0.f, 0.f });
+	Entity* newPlayer = EntityFactory::CreateEntity(aMessage.mySenderID, eEntityType::UNIT, "player", myScene, true, { 0.f, 0.f, 0.f });
 	newPlayer->GetComponent<NetworkComponent>()->SetPlayer(true);
 	newPlayer->AddToScene();
 	newPlayer->Reset();
 	myPlayers.Add(newPlayer);
 	Prism::MemoryTracker::GetInstance()->SetRunTime(isRunTime);
 }
-}
-
-void ClientLevel::ReceiveMessage(const PostMasterNetRemovePlayerMessage& aMessage)
+void ClientLevel::ReceiveNetworkMessage(const NetMessageConnectMessage& aMessage, const sockaddr_in& aSenderAddress)
 {
-	DL_ASSERT_EXP(aMessage.myGID != 0, "Can't remove server (id 0).");
+	if (aMessage.myServerID == ClientNetworkManager::GetInstance()->GetGID())
+	{
+		myPlayer->SetGID(aMessage.myServerID);
+	}
+	else
+	{
+		bool isRunTime = Prism::MemoryTracker::GetInstance()->GetRunTime();
+		Prism::MemoryTracker::GetInstance()->SetRunTime(false);
+		Entity* newPlayer = EntityFactory::CreateEntity(aMessage.myOtherClientID, eEntityType::UNIT, "player", myScene, true, { 0.f, 0.f, 0.f });
+		newPlayer->GetComponent<NetworkComponent>()->SetPlayer(true);
+		newPlayer->AddToScene();
+		newPlayer->Reset();
+		myPlayers.Add(newPlayer);
+		Prism::MemoryTracker::GetInstance()->SetRunTime(isRunTime);
+	}
+}
+void ClientLevel::ReceiveNetworkMessage(const NetMessageDisconnect& aMessage, const sockaddr_in& aSenderAddress)
+{
+	DL_ASSERT_EXP(ClientNetworkManager::GetInstance()->GetGID() != 0, "You are not connected yet.");
 	for (Entity* e : myPlayers)
 	{
-		if (e->GetGID() == aMessage.myGID)
+		if (e->GetGID() == ClientNetworkManager::GetInstance()->GetGID())
 		{
 			e->RemoveFromScene();
 		}
 	}
 }
-
-void ClientLevel::ReceiveMessage(const PostMasterNetAddEnemyMessage& aMessage)
+void ClientLevel::ReceiveNetworkMessage(const NetMessageAddEnemy& aMessage, const sockaddr_in& aSenderAddress)
 {
 	bool isRunTime = Prism::MemoryTracker::GetInstance()->GetRunTime();
 	Prism::MemoryTracker::GetInstance()->SetRunTime(false);
@@ -199,8 +206,7 @@ void ClientLevel::ReceiveMessage(const PostMasterNetAddEnemyMessage& aMessage)
 	myActiveEnemies.Add(newEnemy);
 	Prism::MemoryTracker::GetInstance()->SetRunTime(isRunTime);
 }
-
-void ClientLevel::ReceiveMessage(const PostMasterNetOnDeathMessage& aMessage)
+void ClientLevel::ReceiveNetworkMessage(const NetMessageOnDeath& aMessage, const sockaddr_in& aSenderAddress)
 {
 	DL_ASSERT_EXP(aMessage.myGID != 0, "Can't kill server (id 0).");
 

@@ -4,7 +4,6 @@
 #include <NetworkMessageTypes.h>
 #include <SharedLevel.h>
 
-
 namespace Prism
 {
 	class Camera;
@@ -27,10 +26,12 @@ public:
 	void Render();
 	bool connected;
 	Prism::Scene* GetScene();
-	void ReceiveMessage(const PostMasterNetAddPlayerMessage& aMessage) override;
-	void ReceiveMessage(const PostMasterNetRemovePlayerMessage& aMessage) override;
-	void ReceiveMessage(const PostMasterNetAddEnemyMessage& aMessage) override;
-	void ReceiveMessage(const PostMasterNetOnDeathMessage& aMessage) override;
+
+	void ReceiveNetworkMessage(const NetMessageOnJoin& aMessage, const sockaddr_in& aSenderAddress) override;
+	void ReceiveNetworkMessage(const NetMessageConnectMessage& aMessage, const sockaddr_in& aSenderAddress) override;
+	void ReceiveNetworkMessage(const NetMessageDisconnect& aMessage, const sockaddr_in& aSenderAddress) override;
+	void ReceiveNetworkMessage(const NetMessageAddEnemy& aMessage, const sockaddr_in& aSenderAddress) override;
+	void ReceiveNetworkMessage(const NetMessageOnDeath& aMessage, const sockaddr_in& aSenderAddress) override;
 
 	void AddLight(Prism::PointLight* aLight);
 
