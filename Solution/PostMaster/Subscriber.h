@@ -19,6 +19,7 @@ struct PostMasterNetOnDeathMessage;
 struct PostMasterNetOnDisconnectMessage;
 struct PostMasterNetStartGameMessage;
 struct PostMasterNetRequestStartGameMessage;
+struct PostMasterNetLevelLoadedMessage;
 
 class Subscriber
 {
@@ -45,6 +46,7 @@ public:
 	virtual void ReceiveMessage(const PostMasterNetOnDisconnectMessage& aMessage);
 	virtual void ReceiveMessage(const PostMasterNetStartGameMessage& aMessage);
 	virtual void ReceiveMessage(const PostMasterNetRequestStartGameMessage& aMessage);
+	virtual void ReceiveMessage(const PostMasterNetLevelLoadedMessage& aMessage);
 
 };
 

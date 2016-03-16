@@ -45,6 +45,7 @@ namespace Prism
 		, mySwapDone(false)
 		, myTimerManager(new CU::TimerManager())
 #endif
+		, myInitDone(false)
 	{
 		myRaycastJobs[0].Init(64);
 		myRaycastJobs[1].Init(64);
@@ -262,6 +263,7 @@ namespace Prism
 			// do something useful..
 		}
 
+		myInitDone = true;
 		
 		if (myMoveJobs[1].myId > -1)
 		{

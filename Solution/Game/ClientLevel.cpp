@@ -23,6 +23,7 @@
 #include <NetMessageConnectMessage.h>
 #include <NetMessageDisconnect.h>
 #include <NetMessageOnHit.h>
+#include <NetMessageLevelLoaded.h>
 
 #include <PostMasterNetAddPlayerMessage.h>
 #include <PostMasterNetRemovePlayer.h>
@@ -46,6 +47,7 @@ ClientLevel::ClientLevel()
 	: myInstanceOrientations(16)
 	, myInstances(16)
 	, myPointLights(64)
+	, myInitDone(false)
 {
 	//Prism::PhysicsInterface::Destroy();
 	//Prism::PhysicsInterface::GetInstance()->RayCast({ 0, 0, 0 }, { 0, 1, 0 }, 10.f);
@@ -106,6 +108,12 @@ ClientLevel::~ClientLevel()
 
 void ClientLevel::Update(const float aDeltaTime)
 {
+	if (myInitDone == false && Prism::PhysicsInterface::GetInstance()->GetInitDone() == true)
+	{
+		myInitDone = true;
+		ClientNetworkManager::GetInstance()->AddMessage(NetMessageLevelLoaded());
+	}
+
 	SharedLevel::Update(aDeltaTime);
 	myPlayer->GetComponent<FirstPersonRenderComponent>()->UpdateCoOpPositions(myPlayers);
 	myPlayer->Update(aDeltaTime);

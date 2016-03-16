@@ -15,6 +15,7 @@
 #include <NetMessageOnHit.h>
 #include <NetMessageOnDeath.h>
 #include <NetMessageStartGame.h>
+#include <NetMessageLevelLoaded.h>
 
 #include <PostMaster.h>
 #include <PostMasterNetOnHitMessage.h>
@@ -178,6 +179,9 @@ void SharedNetworkManager::HandleMessage()
 		case eNetMessageType::START_GAME:
 			UnpackAndHandle(NetMessageStartGame(), buffer);
 			break;
+		case eNetMessageType::LEVEL_LOADED:
+			UnpackAndHandle(NetMessageLevelLoaded(), buffer);
+			break;
 		case eNetMessageType::PING_REQUEST:
 			UnpackAndHandle(NetMessagePingRequest(), buffer);
 			break;
@@ -244,6 +248,7 @@ void SharedNetworkManager::HandleMessage(const NetMessageOnHit& aMessage, const 
 void SharedNetworkManager::HandleMessage(const NetMessageOnDeath&, const sockaddr_in&) {}
 void SharedNetworkManager::HandleMessage(const NetMessageRequestStartGame&, const sockaddr_in&) {}
 void SharedNetworkManager::HandleMessage(const NetMessageStartGame&, const sockaddr_in&){}
+void SharedNetworkManager::HandleMessage(const NetMessageLevelLoaded&, const sockaddr_in&){}
 
 bool SharedNetworkManager::AlreadyReceived(const NetMessage& aMessage)
 {

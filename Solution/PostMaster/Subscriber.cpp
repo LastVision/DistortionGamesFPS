@@ -23,3 +23,4 @@ void Subscriber::ReceiveMessage(const PostMasterNetOnDeathMessage&){}
 void Subscriber::ReceiveMessage(const PostMasterNetOnDisconnectMessage&) {}
 void Subscriber::ReceiveMessage(const PostMasterNetStartGameMessage&) {}
 void Subscriber::ReceiveMessage(const PostMasterNetRequestStartGameMessage&) {}
+void Subscriber::ReceiveMessage(const PostMasterNetLevelLoadedMessage&) {}

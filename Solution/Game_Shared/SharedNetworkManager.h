@@ -21,6 +21,7 @@ class NetMessageOnHit;
 class NetMessageOnDeath;
 class NetMessageRequestStartGame;
 class NetMessageStartGame;
+class NetMessageLevelLoaded;
 
 class SharedNetworkManager
 {
@@ -125,6 +126,7 @@ protected:
 	virtual void HandleMessage(const NetMessageOnDeath& aMessage, const sockaddr_in& aSenderAddress);
 	virtual void HandleMessage(const NetMessageRequestStartGame& aMessage, const sockaddr_in& aSenderAddress);
 	virtual void HandleMessage(const NetMessageStartGame& aMessage, const sockaddr_in& aSenderAddress);
+	virtual void HandleMessage(const NetMessageLevelLoaded& aMessage, const sockaddr_in& aSenderAddress);
 
 
 	std::thread* myReceieveThread;

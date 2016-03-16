@@ -164,6 +164,7 @@
     <ClInclude Include="GameStateMessage.h" />
     <ClInclude Include="Message.h" />
     <ClInclude Include="MessageEnum.h" />
+    <ClInclude Include="PostMasterNetLevelLoadedMessage.h" />
     <ClInclude Include="PostMasterNetOnDeathMessage.h" />
     <ClInclude Include="PostMasterNetOnDisconnectMessage.h" />
     <ClInclude Include="PostMasterNetOnHitMessage.h" />
