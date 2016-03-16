@@ -49,34 +49,12 @@ ClientLevel::ClientLevel()
 	, myPointLights(64)
 	, myInitDone(false)
 {
-	//Prism::PhysicsInterface::Destroy();
-	//Prism::PhysicsInterface::GetInstance()->RayCast({ 0, 0, 0 }, { 0, 1, 0 }, 10.f);
-	//Prism::PhysicsInterface::GetInstance()->Update();
 	PostMaster::GetInstance()->Subscribe(eMessageType::NETWORK_ADD_PLAYER, this);
 	PostMaster::GetInstance()->Subscribe(eMessageType::NETWORK_REMOVE_PLAYER, this);
 	PostMaster::GetInstance()->Subscribe(eMessageType::NETWORK_ADD_ENEMY, this);
 	PostMaster::GetInstance()->Subscribe(eMessageType::NETWORK_ON_DEATH, this);
 
 	myScene = new Prism::Scene();
-	EntityData data;
-	data.myInputData.myExistsInEntity = true;
-	//myPlayer = new Entity(data, myScene, true, CU::Vector3<float>(), CU::Vector3<float>(), CU::Vector3<float>(1.f, 1.f, 1.f));
-	myPlayer = EntityFactory::GetInstance()->CreateEntity(UINT32_MAX, eEntityType::UNIT, "localplayer", myScene, true, CU::Vector3<float>());
-	myScene->SetCamera(*myPlayer->GetComponent<InputComponent>()->GetCamera());
-
-	//myTempPosition = { 835.f, 0.f, -1000.f };
-
-	Prism::ModelLoader::GetInstance()->Pause();
-	myDeferredRenderer = new Prism::DeferredRenderer();
-
-	myEmitterManager = new EmitterManager(*myPlayer->GetComponent<InputComponent>()->GetCamera());
-	Prism::ModelLoader::GetInstance()->UnPause();
-	CU::Matrix44f orientation;
-	myInstanceOrientations.Add(orientation);
-
-	Prism::Audio::AudioInterface::GetInstance()->PostEvent("PlayBackground", 0);
-	Prism::Audio::AudioInterface::GetInstance()->PostEvent("PlayFirstLayer", 0);
-	Prism::Audio::AudioInterface::GetInstance()->PostEvent("PlaySecondLayer", 0);
 }
 
 ClientLevel::~ClientLevel()
@@ -104,6 +82,23 @@ ClientLevel::~ClientLevel()
 	Prism::Audio::AudioInterface::GetInstance()->PostEvent("StopBackground", 0);
 	Prism::Audio::AudioInterface::GetInstance()->PostEvent("StopFirstLayer", 0);
 	Prism::Audio::AudioInterface::GetInstance()->PostEvent("StopSecondLayer", 0);
+}
+
+void ClientLevel::Init()
+{
+	CreatePlayers();
+
+	Prism::ModelLoader::GetInstance()->Pause();
+	myDeferredRenderer = new Prism::DeferredRenderer();
+
+	myEmitterManager = new EmitterManager(*myPlayer->GetComponent<InputComponent>()->GetCamera());
+	Prism::ModelLoader::GetInstance()->UnPause();
+	CU::Matrix44f orientation;
+	myInstanceOrientations.Add(orientation);
+
+	Prism::Audio::AudioInterface::GetInstance()->PostEvent("PlayBackground", 0);
+	Prism::Audio::AudioInterface::GetInstance()->PostEvent("PlayFirstLayer", 0);
+	Prism::Audio::AudioInterface::GetInstance()->PostEvent("PlaySecondLayer", 0);
 }
 
 void ClientLevel::Update(const float aDeltaTime)
@@ -168,6 +163,7 @@ void ClientLevel::Render()
 
 void ClientLevel::ReceiveMessage(const PostMasterNetAddPlayerMessage& aMessage)
 {
+	DL_ASSERT("Legacy.");
 	/*if (aMessage.myGID == ClientNetworkManager::GetInstance()->GetGID())
 	{
 		myPlayer->SetGID(aMessage.myGID);
@@ -254,5 +250,21 @@ void ClientLevel::DebugMusic()
 	if (CU::InputWrapper::GetInstance()->KeyDown(DIK_9) == true)
 	{
 		Prism::Audio::AudioInterface::GetInstance()->PostEvent("FadeOutSecondLayer", 0);
+	}
+}
+
+void ClientLevel::CreatePlayers()
+{
+	myPlayer = EntityFactory::GetInstance()->CreateEntity(ClientNetworkManager::GetInstance()->GetGID(), eEntityType::UNIT, "localplayer", myScene, true, CU::Vector3<float>());
+
+	myScene->SetCamera(*myPlayer->GetComponent<InputComponent>()->GetCamera());
+
+	for each (const OtherClients& client in ClientNetworkManager::GetInstance()->GetClients())
+	{
+		Entity* newPlayer = EntityFactory::CreateEntity(client.myID, eEntityType::UNIT, "player", myScene, true, { 0.f, 0.f, 0.f });
+		newPlayer->GetComponent<NetworkComponent>()->SetPlayer(true);
+		newPlayer->AddToScene();
+		newPlayer->Reset();
+		myPlayers.Add(newPlayer);
 	}
 }

@@ -16,7 +16,8 @@ public:
 	ClientLevelFactory(const std::string& aLevelListPath);
 	~ClientLevelFactory();
 
-	SharedLevel* LoadCurrentLevel() override;
+	ClientLevel* LoadLevel(int aID);
+	ClientLevel* LoadCurrentLevel();
 
 private:
 	void ReadLevel(const std::string& aLevelPath) override;
@@ -26,4 +27,6 @@ private:
 	void LoadUnits(XMLReader& aReader, tinyxml2::XMLElement* aElement) override;
 	void LoadTriggers(XMLReader& aReader, tinyxml2::XMLElement* aElement) override;
 	void LoadLights(XMLReader& aReader, tinyxml2::XMLElement* aElement);
+
+	ClientLevel* myCurrentLevel;
 };

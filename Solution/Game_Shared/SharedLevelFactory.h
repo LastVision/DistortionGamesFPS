@@ -24,8 +24,8 @@ public:
 	SharedLevelFactory(const std::string& aLevelListPath);
 	~SharedLevelFactory();
 
-	SharedLevel* LoadLevel(const int& aID);
-	virtual SharedLevel* LoadCurrentLevel() = 0;
+	//SharedLevel* LoadLevel(const int& aID);
+	//virtual SharedLevel* LoadCurrentLevel() = 0;
 	//SharedLevel* LoadNextLevel();
 
 	//bool IsLastLevel();
@@ -43,7 +43,6 @@ protected:
 	void ReadOrientation(XMLReader& aReader, tinyxml2::XMLElement* aElement,
 		CU::Vector3f& aOutPosition, CU::Vector3f& aOutRotation, CU::Vector3f& aOutScale);
 
-	SharedLevel* myCurrentLevel;
 	int myCurrentID;
 
 	std::unordered_map<int, std::string> myLevelPaths;

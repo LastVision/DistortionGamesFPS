@@ -22,10 +22,24 @@ ClientLevelFactory::~ClientLevelFactory()
 {
 }
 
-SharedLevel* ClientLevelFactory::LoadCurrentLevel()
+ClientLevel* ClientLevelFactory::LoadLevel(int aID)
+{
+	if (myLevelPaths.find(aID) == myLevelPaths.end())
+	{
+		DL_ASSERT(CU::Concatenate("[LevelFactory] Trying to load a non-existing level! Check so the ID: %s is a valid id in LI_level.xml"
+			, std::to_string(aID).c_str()));
+	}
+			
+	myCurrentID = aID;
+		
+	return LoadCurrentLevel();
+}
+
+ClientLevel* ClientLevelFactory::LoadCurrentLevel()
 {
 	myCurrentLevel = new ClientLevel();
 	ReadLevel(myLevelPaths[myCurrentID]);
+	myCurrentLevel->Init();
 #ifdef THREAD_PHYSICS
 	Prism::PhysicsInterface::GetInstance()->InitThread();
 #endif

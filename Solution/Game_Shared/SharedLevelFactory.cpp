@@ -24,18 +24,18 @@ SharedLevelFactory::~SharedLevelFactory()
 {
 }
 
-SharedLevel* SharedLevelFactory::LoadLevel(const int& aID)
-{
-	if (myLevelPaths.find(aID) == myLevelPaths.end())
-	{
-		DL_ASSERT("[LevelFactory] Trying to load a non-existing level! Check so the ID: "
-			+ std::to_string(aID) + " is a valid id in LI_level.xml");
-	}
-	
-	myCurrentID = aID;
-
-	return LoadCurrentLevel();
-}
+//SharedLevel* SharedLevelFactory::LoadLevel(const int& aID)
+//{
+//	if (myLevelPaths.find(aID) == myLevelPaths.end())
+//	{
+//		DL_ASSERT("[LevelFactory] Trying to load a non-existing level! Check so the ID: "
+//			+ std::to_string(aID) + " is a valid id in LI_level.xml");
+//	}
+//	
+//	myCurrentID = aID;
+//
+//	return LoadCurrentLevel();
+//}
 
 
 //SharedLevel* SharedLevelFactory::LoadNextLevel()
