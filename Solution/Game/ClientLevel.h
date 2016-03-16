@@ -47,7 +47,7 @@ private:
 
 	Entity* myPlayer;
 	EmitterManager* myEmitterManager;
-
+	bool myInitDone;
 };
 
 inline Prism::Scene* ClientLevel::GetScene()

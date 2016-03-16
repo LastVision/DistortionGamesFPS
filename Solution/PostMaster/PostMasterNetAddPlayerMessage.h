@@ -1,26 +1,18 @@
 #pragma once
 #include "Message.h"
-
+#include <string>
 struct PostMasterNetAddPlayerMessage : public Message
 {
-	PostMasterNetAddPlayerMessage(unsigned int aGID, const sockaddr_in& anAddress);
-	PostMasterNetAddPlayerMessage(unsigned int aGID);
+	PostMasterNetAddPlayerMessage(const std::string& aName, const sockaddr_in& anAddress);
 
-	unsigned int myGID;
-	unsigned int my
+	std::string myName;
 	sockaddr_in myAddress;
 
 };
 
-inline PostMasterNetAddPlayerMessage::PostMasterNetAddPlayerMessage(unsigned int aGID, const sockaddr_in& anAddress)
+inline PostMasterNetAddPlayerMessage::PostMasterNetAddPlayerMessage(const std::string& aName, const sockaddr_in& anAddress)
 	: Message(eMessageType::NETWORK_ADD_PLAYER)
-	, myGID(aGID)
+	, myName(aName)
 	, myAddress(anAddress)
-{
-}
-
-inline PostMasterNetAddPlayerMessage::PostMasterNetAddPlayerMessage(unsigned int aGID)
-	: Message(eMessageType::NETWORK_ADD_PLAYER)
-	, myGID(aGID)
 {
 }

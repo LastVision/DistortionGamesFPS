@@ -13,27 +13,20 @@ namespace Prism
 	ParticleEmitterData::ParticleEmitterData()
 		: myTexture(nullptr)
 		, myEffect(nullptr)
-		, myFileName("not initialized")
-		, myInputLayout(nullptr)
 		, myTechniqueDesc(nullptr)
-		, myMinRotation(0.f)
-		, myMaxRotation(0.f)
-		, myRotationDelta(0.f)
-		, mySpeedMultiplier(0.f)
+		, myInputLayout(nullptr)
+		, myFileName("not initialized")
 		, myEffectName("not initialized")
 		, myTextureName("not initialized")
-		, myParticlesLifeTime(0.f)
+		, myEmissionAngle(0.f)
+		, myAngleVariation(0.f)
+		, myRotationDelta(0.f)
 		, myEmitterLifeTime(0.f)
-		, myEmissionLifeTime(0.f)
 		, myEmissionRate(0.f)
-		, myEmissionRateDelta(0.f)
-		, myMinScale(0.f)
-		, myMaxScale(0.f)
 		, myParticlesPerEmitt(0)
 		, myMaxParticleAmount(0)
 		, myIsActiveAtStart(false)
 		, myUseEmitterLifeTime(false)
-		, myUseAlphaDelta(false)
 		, myIsHollow(false)
 		, myIsCircle(false)
 	{
@@ -73,21 +66,18 @@ namespace Prism
 		read.ReadAttribute(element, "x", "y", "z", myEmitterSize);
 		myEmitterSize *= 0.5f;
 
-		element = read.ForceFindFirstChild(emitter, "ParticleRotation");
-		read.ReadAttribute(element, "min", myMinRotation);
-		read.ReadAttribute(element, "max", myMaxRotation);
+		//element = read.ForceFindFirstChild(emitter, "ParticleRotation");
+		//read.ReadAttribute(element, "min", myMinRotation);
+		//read.ReadAttribute(element, "max", myMaxRotation);
 
 		element = read.ForceFindFirstChild(emitter, "ParticleRotationDelta");
 		read.ReadAttribute(element, "value", myRotationDelta);
 
-		element = read.ForceFindFirstChild(emitter, "ParticleMaxVelocity");
-		read.ReadAttribute(element, "x", "y", "z", myMaxVelocity);
+		//element = read.ForceFindFirstChild(emitter, "ParticleMaxVelocity");
+		//read.ReadAttribute(element, "x", "y", "z", myMaxVelocity);
 
-		element = read.ForceFindFirstChild(emitter, "ParticleMinVelocity");
-		read.ReadAttribute(element, "x", "y", "z", myMinVelocity);
-
-		element = read.ForceFindFirstChild(emitter, "ParticleSpeedMultiplier");
-		read.ReadAttribute(element, "value", mySpeedMultiplier);
+		//element = read.ForceFindFirstChild(emitter, "ParticleMinVelocity");
+		//read.ReadAttribute(element, "x", "y", "z", myMinVelocity);
 
 		element = read.ForceFindFirstChild(emitter, "ParticleStartColor");
 		read.ReadAttribute(element, "r", "g", "b", myData.myStartColor);
@@ -96,7 +86,7 @@ namespace Prism
 		read.ReadAttribute(element, "r", "g", "b", myData.myEndColor);
 
 		element = read.ForceFindFirstChild(emitter, "ParticleLifeTime");
-		read.ReadAttribute(element, "value", myParticlesLifeTime);
+		read.ReadAttribute(element, "value", myData.myParticleLifeTime);
 
 		element = read.ForceFindFirstChild(emitter, "EmitterLifeTime");
 		read.ReadAttribute(element, "value", myEmitterLifeTime);
@@ -121,12 +111,12 @@ namespace Prism
 
 
 		element = read.ForceFindFirstChild(emitter, "ParticleScale");
-		read.ReadAttribute(element, "min", myMinScale);
-		read.ReadAttribute(element, "max", myMaxScale);
+		read.ReadAttribute(element, "min", myData.myMinStartSize);
+		read.ReadAttribute(element, "max", myData.myMaxStartSize);
 
 
-		element = read.ForceFindFirstChild(emitter, "ParticleAlphaDelta");
-		read.ReadAttribute(element, "value", myData.myAlphaDelta);
+		//element = read.ForceFindFirstChild(emitter, "ParticleAlphaDelta");
+		//read.ReadAttribute(element, "value", myData.myAlphaDelta);
 
 		element = read.ForceFindFirstChild(emitter, "ParticleSizeDelta");
 		read.ReadAttribute(element, "value", myData.mySizeDelta);
@@ -137,21 +127,14 @@ namespace Prism
 		element = read.ForceFindFirstChild(emitter, "ActiveAtStart");
 		read.ReadAttribute(element, "value", myIsActiveAtStart);
 
-		element = read.ForceFindFirstChild(emitter, "UseAlphaDelta");
-		read.ReadAttribute(element, "value", myUseAlphaDelta);
+		//element = read.ForceFindFirstChild(emitter, "UseAlphaDelta");
+		//read.ReadAttribute(element, "value", myUseAlphaDelta);
 
 		read.CloseDocument();
 
 		myData.myStartColor /= 255.f;
 		myData.myEndColor /= 255.f;
 
-		myData.myMaxStartSize = myMaxScale;
-		myData.myMinStartSize = myMinScale;
-		
-		myData.myMaxVelocity = myMaxVelocity;;
-		myData.myMinVelocity = myMinVelocity;;
-
-		myData.myLifeTime = myParticlesLifeTime;
 		myTexture = TextureContainer::GetInstance()->GetTexture(myTextureName.c_str());
 		myEffect = EffectContainer::GetInstance()->GetEffect(myEffectName.c_str());
 

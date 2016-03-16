@@ -29,45 +29,31 @@ namespace Prism
 		
 		Texture*				myTexture;
 		Effect*					myEffect;
-		std::string				myFileName;
-		ParticleData			myData;
 		ID3D11InputLayout*		myInputLayout;
 		_D3DX11_TECHNIQUE_DESC*	myTechniqueDesc;
 
-		CU::Vector3f			myEmitterSize;
 
-		float					myMinRotation;
-		float					myMaxRotation;
-		float					myRotationDelta;
-
-		float					mySpeedMultiplier;
-
-		CU::Vector3f			myMaxVelocity;
-		CU::Vector3f			myMinVelocity;
-
-
-		std::string				myEffectName;
-		std::string				myTextureName;
-
-		float					myParticlesLifeTime;
-		float					myEmitterLifeTime;
-
-		float					myEmissionLifeTime;
-		float					myEmissionRate;
-		float					myEmissionRateDelta;
-
-		float					myMinScale;
-		float					myMaxScale;
-		
-		int						myParticlesPerEmitt;
+		ParticleData			myData;
+		std::string				myFileName;
 		int						myMaxParticleAmount;
 
-		bool					myIsActiveAtStart;
-		bool					myUseEmitterLifeTime;
-		bool					myUseAlphaDelta;
-		bool					myIsHollow;
-		bool					myIsCircle;
+		std::string	myEffectName;
+		std::string	myTextureName;
 
+		CU::Vector3f myEmitterSize;
 
+		float myEmissionAngle;
+		float myAngleVariation;
+		float myRotationDelta;
+		float myEmitterLifeTime;
+		float myEmissionRate;
+
+		int	myParticlesPerEmitt;
+
+		bool myUseEmitterLifeTime;
+		bool myIsActiveAtStart;
+		bool myIsHollow;
+		bool myIsCircle;
+		bool myIsAnimated;
 	};
 }

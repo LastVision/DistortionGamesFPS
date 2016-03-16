@@ -1,14 +1,19 @@
 #pragma once
 #include <Vector3.h>
+#include <string>
 enum class eNetMessageType
 {
 	NONE,
 	IMPORTANT_REPLY,
 	
+	CONNECT_REPLY,
 	ON_CONNECT,
 	ON_JOIN,
 	ON_DISCONNECT,
 	REQUEST_LEVEL,
+	REQUEST_START_GAME,
+	START_GAME,
+	LEVEL_LOADED,
 
 	PING_REQUEST,
 	PING_REPLY,
@@ -42,16 +47,18 @@ struct Connection
 struct OtherClients
 {
 	OtherClients();
-	OtherClients(unsigned int anID);
+	OtherClients(const std::string& aName, unsigned int anID);
 	unsigned int myID;
 	CU::Vector3<float> myPosition;
+	std::string myName;
 };
 
 inline OtherClients::OtherClients()
 {
 }
 
-inline OtherClients::OtherClients(unsigned int anID)
+inline OtherClients::OtherClients(const std::string& aName, unsigned int anID)
+	: myName(aName)
+	, myID(anID)
 {
-	myID = anID;
 }

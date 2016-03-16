@@ -45,6 +45,7 @@ namespace Prism
 		, mySwapDone(false)
 		, myTimerManager(new CU::TimerManager())
 #endif
+		, myInitDone(false)
 	{
 		myRaycastJobs[0].Init(64);
 		myRaycastJobs[1].Init(64);
@@ -124,7 +125,7 @@ namespace Prism
 		myScene->setFlag(physx::PxSceneFlag::eENABLE_KINEMATIC_STATIC_PAIRS, true);
 		myScene->setSimulationEventCallback(this);
 
-#ifndef RELEASE_BUILD
+#ifdef _DEBUG
 		if (myPhysicsSDK->getPvdConnectionManager())
 		{
 			myPhysicsSDK->getPvdConnectionManager()->addHandler(*this);
@@ -262,6 +263,7 @@ namespace Prism
 			// do something useful..
 		}
 
+		myInitDone = true;
 		
 		if (myMoveJobs[1].myId > -1)
 		{
@@ -453,7 +455,7 @@ namespace Prism
 		}
 		else
 		{
-			DL_ASSERT("Unknown position job type.");
+			//DL_ASSERT("Unknown position job type.");
 		}
 	}
 
@@ -711,9 +713,9 @@ namespace Prism
 		if (CU::FileExists(cowPath) == false)
 		{
 
-			if (!wfo.loadObj(cowPath.c_str(), false))
+			if (!wfo.loadObj(objPath.c_str(), false))
 			{
-				DL_ASSERT(CU::Concatenate("Error loading file: %s", cowPath.c_str()));
+				DL_ASSERT(CU::Concatenate("Error loading file: %s", objPath.c_str()));
 			}
 
 			physx::PxTriangleMeshDesc meshDesc;

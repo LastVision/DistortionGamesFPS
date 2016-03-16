@@ -6,6 +6,7 @@
     <ClInclude Include="DLLCamera.h" />
     <ClInclude Include="DLLModel.h" />
     <ClInclude Include="DLLParticle.h" />
+    <ClInclude Include="DLLParticleData.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="DLLExport.cpp" />

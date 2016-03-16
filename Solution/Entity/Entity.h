@@ -128,9 +128,9 @@ inline void Entity::SetRotation(const CU::Vector3<float>& aRotation)
 	CU::Vector3f position(myOrientation.GetPos());
 	myOrientation.SetPos(CU::Vector3f());
 
-	myOrientation = CU::Matrix44f::CreateRotateAroundX(aRotation.x) * myOrientation;
-	myOrientation = CU::Matrix44f::CreateRotateAroundY(aRotation.y) * myOrientation;
-	myOrientation = CU::Matrix44f::CreateRotateAroundZ(aRotation.z) * myOrientation;
+	myOrientation = myOrientation * CU::Matrix44f::CreateRotateAroundZ(aRotation.z);
+	myOrientation = myOrientation * CU::Matrix44f::CreateRotateAroundX(aRotation.x);
+	myOrientation = myOrientation * CU::Matrix44f::CreateRotateAroundY(aRotation.y);
 
 	myOrientation.SetPos(position);
 }

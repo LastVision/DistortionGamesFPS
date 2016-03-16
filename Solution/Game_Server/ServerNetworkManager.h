@@ -13,6 +13,12 @@ public:
 
 	void StartNetwork(unsigned int aPortNum = 13397) override;
 
+	bool ListContainsAllClients(const CU::GrowingArray<unsigned int>& someClientIDs) const;
+	void AllowNewConnections(bool aValue);
+
+	void CreateConnection(const std::string& aName, const sockaddr_in& aSender);
+
+
 	void ReceiveNetworkMessage(const NetMessagePingRequest& aMessage, const sockaddr_in& aSenderAddress) override;
 	void ReceiveNetworkMessage(const NetMessagePingReply& aMessage, const sockaddr_in& aSenderAddress) override;
 	void ReceiveNetworkMessage(const NetMessageDisconnect& aMessage, const sockaddr_in& aSenderAddress) override;
@@ -36,13 +42,18 @@ private:
 	void SendThread() override;
 
 	short myIDCount;
-	void CreateConnection(const std::string& aName, const sockaddr_in& aSender);
+	
 	void DisconnectConnection(const Connection& aConnection);
 
 	CU::GrowingArray<Connection> myClients;
 	std::unordered_map<std::string, int> myNames;
-
+	bool myAllowNewConnections;
 };
+
+inline void ServerNetworkManager::AllowNewConnections(bool aValue)
+{
+	myAllowNewConnections = aValue;
+}
 
 inline const short ServerNetworkManager::GetLastJoinedID() const
 {

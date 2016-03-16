@@ -3,16 +3,20 @@
 
 #include <NetMessage.h>
 #include <NetMessageImportantReply.h>
-#include <NetMessageConnectMessage.h>
+#include <NetMessageConnectReply.h>
+#include <NetMessageRequestConnect.h>
 #include <NetMessageOnJoin.h>
 #include <NetMessageDisconnect.h>
 #include <NetMessageRequestLevel.h>
+#include <NetMessageRequestStartGame.h>
 #include <NetMessagePingRequest.h>
 #include <NetMessagePingReply.h>
 #include <NetMessagePosition.h>
 #include <NetMessageAddEnemy.h>
 #include <NetMessageOnHit.h>
 #include <NetMessageOnDeath.h>
+#include <NetMessageStartGame.h>
+#include <NetMessageLevelLoaded.h>
 
 #include <PostMaster.h>
 #include <PostMasterNetOnHitMessage.h>
@@ -34,7 +38,7 @@ void SharedNetworkManager::Initiate()
 	for (int i = 0; i < static_cast<int>(eNetMessageType::_COUNT); ++i)
 	{
 		mySubscribers[i].Init(64);
-	}
+}
 }
 
 void SharedNetworkManager::StartNetwork(unsigned int /*aPortNum*/)
@@ -75,7 +79,7 @@ SharedNetworkManager::~SharedNetworkManager()
 		{
 			DL_DEBUG("Subscriber not unsubscribed at index %i", i);
 			DL_ASSERT("Subscriber not unsubscribed at NetworkManager-Destroy.");
-		}
+}
 		mySubscribers[i].RemoveAll();
 	}
 }
@@ -231,8 +235,11 @@ void SharedNetworkManager::HandleMessage()
 		case eNetMessageType::IMPORTANT_REPLY:
 			UnpackAndHandle(NetMessageImportantReply(), buffer);
 			break;
+		case eNetMessageType::CONNECT_REPLY:
+			UnpackAndHandle(NetMessageConnectReply(), buffer);
+			break;
 		case eNetMessageType::ON_CONNECT:
-			UnpackAndHandle(NetMessageConnectMessage(), buffer);
+			UnpackAndHandle(NetMessageRequestConnect(), buffer);
 			break;
 		case eNetMessageType::ON_JOIN:
 			UnpackAndHandle(NetMessageOnJoin(), buffer);
@@ -242,6 +249,15 @@ void SharedNetworkManager::HandleMessage()
 			break;
 		case eNetMessageType::REQUEST_LEVEL:
 			UnpackAndHandle(NetMessageRequestLevel(), buffer);
+			break;
+		case eNetMessageType::REQUEST_START_GAME:
+			UnpackAndHandle(NetMessageRequestStartGame(), buffer);
+			break;
+		case eNetMessageType::START_GAME:
+			UnpackAndHandle(NetMessageStartGame(), buffer);
+			break;
+		case eNetMessageType::LEVEL_LOADED:
+			UnpackAndHandle(NetMessageLevelLoaded(), buffer);
 			break;
 		case eNetMessageType::PING_REQUEST:
 			UnpackAndHandle(NetMessagePingRequest(), buffer);
@@ -264,6 +280,7 @@ void SharedNetworkManager::HandleMessage()
 			UnpackAndHandle(NetMessageOnDeath(), buffer);
 			break;
 		default:
+			DL_ASSERT("Unhandled network message type");
 			break;
 		}
 	}

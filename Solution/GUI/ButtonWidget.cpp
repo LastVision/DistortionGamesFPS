@@ -32,9 +32,13 @@ namespace GUI
 
 		if (textElement != nullptr)
 		{
-			myIsVisible = false;
 			myIsTextButton = true;
 			aReader->ForceReadAttribute(textElement, "value", myButtonText);
+
+			if (CU::ToLower(myButtonText) == "default")
+			{
+				myIsVisible = false;
+			}
 		}
 		aReader->ForceReadAttribute(aReader->ForceFindFirstChild(anXMLElement, "spritenormal"), "path", spritePathNormal);
 		aReader->ForceReadAttribute(aReader->ForceFindFirstChild(anXMLElement, "spritehover"), "path", spritePathHover);
@@ -148,6 +152,10 @@ namespace GUI
 			aReader->ForceReadAttribute(aReader->ForceFindFirstChild(anXMLElement, "onclick"), "id", myId);
 			DL_ASSERT_EXP(myId != -1, "Incorrect connection id.");
 			myClickEvent = new OnClickMessage(eOnClickEvent::CONNECT, myId);
+		}
+		else if (clickEvent == "start_game")
+		{
+			myClickEvent = new OnClickMessage(eOnClickEvent::START_GAME);
 		}
 		else
 		{

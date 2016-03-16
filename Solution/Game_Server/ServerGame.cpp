@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "ServerGame.h"
-#include "ServerInGameState.h"
+#include "ServerLobbyState.h"
 #include <TimerManager.h>
 #include "ServerNetworkManager.h"
 #include "NetworkMessageTypes.h"
@@ -22,7 +22,7 @@ bool ServerGame::Init()
 	PostMaster::Create();
 	ServerNetworkManager::Create();
 	ServerNetworkManager::GetInstance()->StartNetwork();
-	myStateStack.PushMainState(new ServerInGameState());
+	myStateStack.PushMainState(new ServerLobbyState());
 	return true;
 }
 

@@ -89,9 +89,11 @@
     <ClInclude Include="NetMessageAddEnemy.h" />
     <ClInclude Include="NetImportantMessage.h" />
     <ClInclude Include="NetMessage.h" />
-    <ClInclude Include="NetMessageConnectMessage.h" />
+    <ClInclude Include="NetMessageConnectReply.h" />
+    <ClInclude Include="NetMessageRequestConnect.h" />
     <ClInclude Include="NetMessageDisconnect.h" />
     <ClInclude Include="NetMessageImportantReply.h" />
+    <ClInclude Include="NetMessageLevelLoaded.h" />
     <ClInclude Include="NetMessageOnDeath.h" />
     <ClInclude Include="NetMessageOnHit.h" />
     <ClInclude Include="NetMessageOnJoin.h" />
@@ -99,6 +101,8 @@
     <ClInclude Include="NetMessagePingRequest.h" />
     <ClInclude Include="NetMessagePosition.h" />
     <ClInclude Include="NetMessageRequestLevel.h" />
+    <ClInclude Include="NetMessageRequestStartGame.h" />
+    <ClInclude Include="NetMessageStartGame.h" />
     <ClInclude Include="NetworkMessageTypes.h" />
     <ClInclude Include="NetworkSubscriber.h" />
     <ClInclude Include="SerializeHelper.h" />
@@ -111,9 +115,11 @@
     <ClCompile Include="NetMessageAddEnemy.cpp" />
     <ClCompile Include="NetImportantMessage.cpp" />
     <ClCompile Include="NetMessage.cpp" />
-    <ClCompile Include="NetMessageConnectMessage.cpp" />
+    <ClCompile Include="NetMessageConnectReply.cpp" />
+    <ClCompile Include="NetMessageRequestConnect.cpp" />
     <ClCompile Include="NetMessageDisconnect.cpp" />
     <ClCompile Include="NetMessageImportantReply.cpp" />
+    <ClCompile Include="NetMessageLevelLoaded.cpp" />
     <ClCompile Include="NetMessageOnDeath.cpp" />
     <ClCompile Include="NetMessageOnHit.cpp" />
     <ClCompile Include="NetMessageOnJoin.cpp" />
@@ -121,6 +127,8 @@
     <ClCompile Include="NetMessagePingRequest.cpp" />
     <ClCompile Include="NetMessagePosition.cpp" />
     <ClCompile Include="NetMessageRequestLevel.cpp" />
+    <ClCompile Include="NetMessageRequestStartGame.cpp" />
+    <ClCompile Include="NetMessageStartGame.cpp" />
     <ClCompile Include="NetworkSubscriber.cpp" />
     <ClCompile Include="ServerNetwork.cpp" />
     <ClCompile Include="stdafx.cpp">

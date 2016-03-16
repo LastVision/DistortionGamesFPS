@@ -4,28 +4,27 @@
 struct ParticleData
 {
 	ParticleData()
-		: myLifeTime(0.f)
+		: myParticleLifeTime(0.f)
 		, myMaxStartSize(0.f)
 		, myMinStartSize(0.f)
 		, mySizeDelta(0.f)
 		, myStartAlpha(0.f)
-		, myAlphaDelta(0.f)
+		, myMidAlpha(0.f)
 	{}
-	CU::Vector3f myMaxVelocity;
-	CU::Vector3f myMinVelocity;
 
 	CU::Vector3f myStartColor;
 	CU::Vector3f myEndColor;
 
-	float myLifeTime;
+	float myParticleLifeTime;
 	
 	float myMaxStartSize;
 	float myMinStartSize;
-
 	float mySizeDelta;
 
 	float myStartAlpha;
-	float myAlphaDelta;
+	float myMidAlpha;
+
+	bool myHasRandomStartRotation;
 
 };
 
@@ -64,7 +63,7 @@ struct LogicalParticle
 	{
 	}
 	bool myIsAlive;
-	CU::Vector3f myVelocity;
+	CU::Vector3f myDirection;
 	float mySpeed;
 	float myRotation;
 	float myRotationDelta;

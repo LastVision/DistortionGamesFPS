@@ -10,6 +10,7 @@
 DLLModel::DLLModel()
 	: myInstance(nullptr)
 {
+	myOrientation.SetPos({ 1, 0, 0 });
 }
 
 DLLModel::~DLLModel()

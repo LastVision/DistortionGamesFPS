@@ -13,6 +13,7 @@ public:
 	void UnPackMessage(char* aMessage, int aSize);
 	virtual bool GetIsImportant() const;
 	virtual const unsigned int GetImportantID() const;
+	virtual void SetImportantID(unsigned int){}
 
 	StreamType myStream;
 	uint32_t myTimeStamp;

@@ -23,17 +23,10 @@ public:
 	void Render() override;
 	void ResumeState() override;
 	void ReceiveMessage(const OnClickMessage& aMessage) override;
+	void ReceiveMessage(const PostMasterNetStartGameMessage& aMessage) override;
 
 private:
-	struct Server
-	{
-		std::string myIp;
-		std::string myName;
-	};
 	GUI::GUIManager* myGUIManager;
-
-	CU::GrowingArray<Server> myServers;
-
-	Server* myServer;
+	int myLevelToStart;
 };
 

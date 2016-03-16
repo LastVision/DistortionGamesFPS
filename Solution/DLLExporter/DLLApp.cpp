@@ -16,6 +16,8 @@
 #include <Scene.h>
 #include <SetupInfo.h>
 #include <TimerManager.h>
+#include <Room.h>
+#include <ModelLoader.h>
 
 #define EngineInstance Prism::Engine::GetInstance()
 #define InputInstance CU::InputWrapper::GetInstance()
@@ -27,9 +29,9 @@ DLLApp::DLLApp(int* aHwnd, Prism::SetupInfo& aWindowSetup, WNDPROC aWindowProc)
 	DL_DEBUG("Startup!");
 
 	myPanelWindowHandler = (HWND)aHwnd;
-
+	DL_DEBUG("Handle");
 	Prism::Engine::Create(myEngineWindowHandler, aWindowProc, aWindowSetup);
-
+	DL_DEBUG("Engine Created!");
 	SetupLight();
 	SetupInput();
 	SetParentWindow(aWindowSetup);
@@ -40,11 +42,18 @@ DLLApp::DLLApp(int* aHwnd, Prism::SetupInfo& aWindowSetup, WNDPROC aWindowProc)
 	myModel = new DLLModel();
 	myParticle = new DLLParticle();
 	myScene.SetCamera(*myCamera->GetCamera());
-	
+	myRoom = new Prism::Room({ 0.f,0.f,0.f }, { 800.f,800.f,800.f }, "Preview Room", Prism::eRoomType::ROOM);
+	myScene.AddRoom(myRoom);
+	//LoadModel("Data/Resource/Model/SM_dev_box_small2.fbx", "Data/Resource/Shader/S_effect_pbldebug.fx");
+	LoadParticle("Data/Resource/Particle/P_emitter_example.xml");
 }
 
 DLLApp::~DLLApp()
 {
+
+	delete myRoom; 
+	myRoom = nullptr;
+
 	delete myTimeManager;
 	myTimeManager = nullptr;
 
@@ -61,8 +70,12 @@ DLLApp::~DLLApp()
 void DLLApp::Render()
 {
 	Prism::Engine::GetInstance()->Render();
-	myScene.Render();
 	myParticle->Render(myCamera->GetCamera());
+}
+
+void DLLApp::RenderScene()
+{
+	myScene.Render();
 }
 
 void DLLApp::Update()
@@ -74,12 +87,17 @@ void DLLApp::Update()
 	LogicUpdate(deltaTime);
 }
 
-void DLLApp::LoadModel(const char* aModelFile, const char* aShaderFile)
+void DLLApp::RemoveActiveModel()
 {
 	if (myModel->GetInstance() != nullptr)
 	{
 		myScene.RemoveInstance(myModel->GetInstance());
 	}
+}
+
+void DLLApp::LoadModel(const char* aModelFile, const char* aShaderFile)
+{
+	RemoveActiveModel();
 	myModel->LoadModel(aModelFile, aShaderFile);
 	myModelFile = aModelFile;
 	myShaderFile = aShaderFile;
@@ -106,7 +124,8 @@ void DLLApp::SetCubeMap(const char* aCubeMapFile)
 
 void DLLApp::LogicUpdate(float aDeltaTime)
 {
-	if (GetActiveWindow()) {
+	if (GetActiveWindow()) 
+	{
 		if (InputInstance->KeyIsPressed(DIK_LALT) && InputInstance->MouseIsPressed(0))
 		{
 			myCamera->Zoom(aDeltaTime, myMouseSensitivty);
@@ -151,7 +170,7 @@ void DLLApp::SetParentWindow(Prism::SetupInfo &aWindowSetup)
 void DLLApp::SetupLight()
 {
 	myDirectionalLight = new Prism::DirectionalLight();
-	myDirectionalLight->SetDir(CU::Vector3f( 0.f, 0.f, -1.f ));
+	myDirectionalLight->SetDir(CU::Vector3f(0.f, 0.f, -1.f));
 	myDirectionalLight->SetColor(CU::Vector4f(1.f, 1.f, 1.f, 1.f));
 
 	myScene.AddLight(myDirectionalLight);

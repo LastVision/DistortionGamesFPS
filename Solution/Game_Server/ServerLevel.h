@@ -10,8 +10,11 @@ public:
 	void Update(const float aDeltaTime) override;
 
 	void ReceiveNetworkMessage(const NetMessageConnectMessage& aMessage, const sockaddr_in& aSenderAddress) override;
+	//void ReceiveMessage(const PostMasterNetAddPlayerMessage& aMessage);
+	//void ReceiveMessage(const PostMasterNetLevelLoadedMessage& aMessage);
+
 private:
 	unsigned int myEntityIDCount;
-	
+	CU::GrowingArray<unsigned int> myLoadedClients;
 };
 

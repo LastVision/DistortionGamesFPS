@@ -20,11 +20,10 @@
 #include <PhysicsInterface.h>
 
 #include <NetMessageOnJoin.h>
-#include <NetMessageConnectMessage.h>
+#include <NetMessageRequestConnect.h>
 #include <NetMessageDisconnect.h>
 #include <NetMessageOnHit.h>
-#include <NetMessageOnDeath.h>
-#include <NetMessageAddEnemy.h>
+#include <NetMessageLevelLoaded.h>
 
 #include "ClientNetworkManager.h"
 #include "DeferredRenderer.h"
@@ -42,6 +41,7 @@ ClientLevel::ClientLevel()
 	: myInstanceOrientations(16)
 	, myInstances(16)
 	, myPointLights(64)
+	, myInitDone(false)
 {
 	//Prism::PhysicsInterface::Destroy();
 	//Prism::PhysicsInterface::GetInstance()->RayCast({ 0, 0, 0 }, { 0, 1, 0 }, 10.f);
@@ -102,6 +102,12 @@ ClientLevel::~ClientLevel()
 
 void ClientLevel::Update(const float aDeltaTime)
 {
+	if (myInitDone == false && Prism::PhysicsInterface::GetInstance()->GetInitDone() == true)
+	{
+		myInitDone = true;
+		ClientNetworkManager::GetInstance()->AddMessage(NetMessageLevelLoaded());
+	}
+
 	SharedLevel::Update(aDeltaTime);
 	myPlayer->GetComponent<FirstPersonRenderComponent>()->UpdateCoOpPositions(myPlayers);
 	myPlayer->Update(aDeltaTime);
@@ -151,6 +157,7 @@ void ClientLevel::Render()
 	//myDeferredRenderer->Render(myScene);
 	myEmitterManager->RenderEmitters();
 	myPlayer->GetComponent<FirstPersonRenderComponent>()->Render();
+	myPlayer->GetComponent<ShootingComponent>()->Render();
 }
 
 void ClientLevel::ReceiveNetworkMessage(const NetMessageOnJoin& aMessage, const sockaddr_in& aSenderAddress)
@@ -173,15 +180,15 @@ void ClientLevel::ReceiveNetworkMessage(const NetMessageConnectMessage& aMessage
 	}
 	else
 	{
-		bool isRunTime = Prism::MemoryTracker::GetInstance()->GetRunTime();
-		Prism::MemoryTracker::GetInstance()->SetRunTime(false);
+	bool isRunTime = Prism::MemoryTracker::GetInstance()->GetRunTime();
+	Prism::MemoryTracker::GetInstance()->SetRunTime(false);
 		Entity* newPlayer = EntityFactory::CreateEntity(aMessage.myOtherClientID, eEntityType::UNIT, "player", myScene, true, { 0.f, 0.f, 0.f });
-		newPlayer->GetComponent<NetworkComponent>()->SetPlayer(true);
-		newPlayer->AddToScene();
-		newPlayer->Reset();
-		myPlayers.Add(newPlayer);
-		Prism::MemoryTracker::GetInstance()->SetRunTime(isRunTime);
-	}
+	newPlayer->GetComponent<NetworkComponent>()->SetPlayer(true);
+	newPlayer->AddToScene();
+	newPlayer->Reset();
+	myPlayers.Add(newPlayer);
+	Prism::MemoryTracker::GetInstance()->SetRunTime(isRunTime);
+	}*/
 }
 void ClientLevel::ReceiveNetworkMessage(const NetMessageDisconnect& aMessage, const sockaddr_in& aSenderAddress)
 {

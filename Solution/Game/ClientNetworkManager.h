@@ -24,6 +24,8 @@ public:
 	void ReceiveNetworkMessage(const NetMessageDisconnect& aMessage, const sockaddr_in& aSenderAddress) override;
 	void ReceiveNetworkMessage(const NetMessageOnJoin& aMessage, const sockaddr_in& aSenderAddress) override;
 	void ReceiveNetworkMessage(const NetMessagePingRequest& aMessage, const sockaddr_in& aSenderAddress) override;
+	void DebugPrint();
+
 private:
 	ClientNetworkManager();
 	~ClientNetworkManager();
@@ -38,5 +40,6 @@ private:
 	ClientNetwork* myNetwork;
 
 	CU::GrowingArray<OtherClients> myClients;
+	std::string myName;
 };
 
