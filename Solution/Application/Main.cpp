@@ -23,6 +23,36 @@ bool globalPreviousFullscreenState = false;
 bool globalIsActive = true;
 Prism::SetupInfo globalSetup;
 
+void InitRawInput(const HWND& aHwnd)
+{
+	/*RAWINPUTDEVICE Rid[1];
+	Rid[0].usUsagePage = 0x01;
+	Rid[0].usUsage = 0x02;
+	Rid[0].dwFlags = RIDEV_INPUTSINK;
+	Rid[0].hwndTarget = aHwnd;
+
+	if (RegisterRawInputDevices(Rid, 1, sizeof(Rid[0]) == false))
+	{
+		DL_ASSERT("RAwInputSetUp Failed!");
+	}*/
+
+	RAWINPUTDEVICE Rid[2];
+
+	Rid[0].usUsagePage = 0x01;
+	Rid[0].usUsage = 0x02;
+	Rid[0].dwFlags = RIDEV_NOLEGACY;   // adds HID mouse and also ignores legacy mouse messages
+	Rid[0].hwndTarget = 0;
+
+	//Rid[1].usUsagePage = 0x01;
+	//Rid[1].usUsage = 0x06;
+	//Rid[1].dwFlags = RIDEV_NOLEGACY;   // adds HID keyboard and also ignores legacy keyboard messages
+	//Rid[1].hwndTarget = 0;
+
+	if (RegisterRawInputDevices(Rid, 1, sizeof(Rid[0])) == FALSE) {
+		//registration failed. Call GetLastError for the cause of the error
+	}
+}
+
 int WINAPI WinMain(HINSTANCE, HINSTANCE, LPTSTR, int aNumberCommands)
 {
 	ShowCursor(false);
@@ -91,6 +121,77 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPTSTR, int aNumberCommands)
 
 	globalPreviousFullscreenState = Prism::Engine::GetInstance()->IsFullscreen();
 
+
+	UINT nDevices;
+	PRAWINPUTDEVICELIST pRawInputDeviceList;
+	if (GetRawInputDeviceList(NULL, &nDevices, sizeof(RAWINPUTDEVICELIST)) != 0)
+	{
+		DL_ASSERT("Errors...");
+	}
+	if ((pRawInputDeviceList = (PRAWINPUTDEVICELIST)malloc(sizeof(RAWINPUTDEVICELIST) * nDevices)) == NULL)
+	{
+		DL_ASSERT("Initialization failed...");
+	}
+	int nNoOfDevices = 0;
+	if ((nNoOfDevices = GetRawInputDeviceList(pRawInputDeviceList, &nDevices, sizeof(RAWINPUTDEVICELIST))) == ((UINT) - 1))
+	{
+		DL_ASSERT("Errors...");
+	}
+	RID_DEVICE_INFO rdi;
+	rdi.cbSize = sizeof(RID_DEVICE_INFO);
+
+	for (int i = 0; i < nNoOfDevices; i++)
+	{
+		UINT size = 256;
+		TCHAR tBuffer[256] = { 0 };
+		tBuffer[0] = '\0';
+		if (GetRawInputDeviceInfo(pRawInputDeviceList[i].hDevice, RIDI_DEVICENAME, tBuffer, &size) < 0)
+		{
+			// Error in reading device name
+			DL_ASSERT("error reading device name");
+		}
+
+		//qDebug() << "Device Name: " << tBuffer;
+		//_tprintf(L"Device Name: %s\n", tBuffer);
+
+		UINT cbSize = rdi.cbSize;
+		if (GetRawInputDeviceInfo(pRawInputDeviceList[i].hDevice, RIDI_DEVICEINFO, &rdi, &cbSize) < 0)
+		{
+			int apa = 5;
+		}
+
+		if (rdi.dwType == RIM_TYPEMOUSE)
+		{
+			rdi.mouse.dwId;
+			rdi.mouse.dwNumberOfButtons;
+			rdi.mouse.dwSampleRate;
+			int apa = 5;
+		}
+		if (rdi.dwType == RIM_TYPEKEYBOARD)
+		{
+			rdi.keyboard.dwKeyboardMode;
+			rdi.keyboard.dwNumberOfFunctionKeys;
+			rdi.keyboard.dwNumberOfIndicators;
+			rdi.keyboard.dwNumberOfKeysTotal;
+			rdi.keyboard.dwType;
+			rdi.keyboard.dwSubType;
+			int apa = 5;
+		}
+		if (rdi.dwType == RIM_TYPEHID)
+		{
+			rdi.hid.dwVendorId;
+			rdi.hid.dwProductId;
+			rdi.hid.dwVersionNumber;
+			rdi.hid.usUsage;
+			rdi.hid.usUsagePage;
+			int apa = 5;
+		}
+	}
+
+	free(pRawInputDeviceList);
+
+	InitRawInput(hwnd);
+
 #ifdef RELEASE_BUILD
 	Prism::Engine::GetInstance()->SetFullscreen(true);
 	globalPreviousFullscreenState = true;
@@ -137,11 +238,35 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	PAINTSTRUCT ps;
 	HDC hdc;
 
+	LPBYTE lpb;
+	UINT dwSize;
+	RAWINPUT *raw;
+
 	switch (message)
 	{
 	case WM_PAINT:
 		hdc = BeginPaint(hWnd, &ps);
 		EndPaint(hWnd, &ps);
+		break;
+	case WM_INPUT:
+	{
+		GetRawInputData((HRAWINPUT)lParam, RID_INPUT, NULL, &dwSize, sizeof(RAWINPUTHEADER));
+		lpb = new BYTE[dwSize];
+
+		if (GetRawInputData((HRAWINPUT)lParam, RID_INPUT, lpb, &dwSize, sizeof(RAWINPUTHEADER)) != dwSize)
+		{
+			DL_ASSERT("GetRawInputData doesn't return correct size");
+			//OutputDebugStr(TEXT("GetRawInputData doesn't return correct size\n"));
+		}
+
+		raw = (RAWINPUT*)lpb;
+		float deltaX = raw->data.mouse.lLastX;
+		float deltaY = raw->data.mouse.lLastY;
+		if (CU::InputWrapper::GetInstance() != nullptr)
+		{
+			CU::InputWrapper::GetInstance()->FeedMouseRawInput(deltaX, deltaY);
+		}
+	}
 		break;
 	case WM_DESTROY:
 		PostQuitMessage(0);

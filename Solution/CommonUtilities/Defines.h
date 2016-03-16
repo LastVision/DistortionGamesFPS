@@ -39,3 +39,5 @@
 #define THREAD_PHYSICS
 
 #define NETWORK_UPDATE_INTERVAL 1.f / 30.f
+
+#define USE_RAW_INPUT
