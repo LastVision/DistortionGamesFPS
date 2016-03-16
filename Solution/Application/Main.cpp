@@ -25,7 +25,6 @@ Prism::SetupInfo globalSetup;
 
 void InitRawInput(const HWND&)
 {
-	aHwnd;
 	/*RAWINPUTDEVICE Rid[1];
 	Rid[0].usUsagePage = 0x01;
 	Rid[0].usUsage = 0x02;
