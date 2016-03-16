@@ -4,6 +4,7 @@
 #define DIRECTINPUT_VERSION 0x0800
 #include <dinput.h>
 #include <Vector.h>
+#include <GrowingArray.h>
 
 
 namespace CU
@@ -34,6 +35,7 @@ namespace CU
 		bool KeyIsPressed(unsigned int aKey) const; //Returns true if specified key is down 
 
 		void Update();
+		void FeedMouseRawInput(float aDeltaX, float aDeltaY);
 		void PauseDeltaRecording();
 		void ResumeDeltaRecording();
 		void ToggleWindowActive();
@@ -41,6 +43,8 @@ namespace CU
 		void TweakValue(float& aValue, float aRate, float aDeltaTime
 			, unsigned int aIncreaseKey, unsigned int aDecreaseKey) const;
 	private:
+		CU::GrowingArray<CU::Vector2<int>> myBufferedMousePosition;
+		CU::Vector2<int> myMouseDelta;
 		InputWrapper();
 		~InputWrapper();
 		void Init(HWND aHwnd, HINSTANCE aHInstance, DWORD aKeyCoopFlags, DWORD aMouseCoopFlags);

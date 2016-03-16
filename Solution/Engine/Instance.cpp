@@ -20,6 +20,7 @@ namespace Prism
 		, myHierarchyIsBuilt(false)
 		, myAnimation(nullptr)
 		, myTotalTime(0.f)
+		, myShouldRender(true)
 	{
 	}
 
@@ -54,7 +55,7 @@ namespace Prism
 
 	void Instance::Render(const Camera& aCamera)
 	{
-		if (myProxy.IsLoaded())
+		if (myShouldRender == true && myProxy.IsLoaded())
 		{
 			myProxy.GetEffect()->SetViewProjectionMatrix(aCamera.GetViewProjection());
 			myProxy.GetEffect()->SetScaleVector(myScale);
@@ -75,7 +76,7 @@ namespace Prism
 	void Instance::Render(const Camera& aCamera, InstancingHelper& aInstancingHelper)
 	{
 
-		if (myProxy.IsLoaded())
+		if (myShouldRender == true && myProxy.IsLoaded())
 		{
 			if (myProxy.IsAnimated() == true)
 			{

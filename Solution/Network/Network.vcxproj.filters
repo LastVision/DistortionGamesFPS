@@ -21,9 +21,6 @@
     <ClCompile Include="NetMessage.cpp">
       <Filter>Messages</Filter>
     </ClCompile>
-    <ClCompile Include="NetMessageConnectMessage.cpp">
-      <Filter>Messages</Filter>
-    </ClCompile>
     <ClCompile Include="NetMessagePingReply.cpp">
       <Filter>Messages</Filter>
     </ClCompile>
@@ -60,16 +57,28 @@
     <ClCompile Include="NetMessageOnDeath.cpp">
       <Filter>Messages</Filter>
     </ClCompile>
-    <ClCompile Include="NetMessageRequestLevel.cpp" />
+    <ClCompile Include="NetMessageRequestLevel.cpp">
+      <Filter>Messages</Filter>
+    </ClCompile>
+    <ClCompile Include="NetMessageRequestStartGame.cpp">
+      <Filter>Messages</Filter>
+    </ClCompile>
+    <ClCompile Include="NetMessageStartGame.cpp">
+      <Filter>Messages</Filter>
+    </ClCompile>
+    <ClCompile Include="NetMessageLevelLoaded.cpp">
+      <Filter>Messages</Filter>
+    </ClCompile>
+    <ClCompile Include="NetMessageRequestConnect.cpp">
+      <Filter>Messages</Filter>
+    </ClCompile>
+    <ClCompile Include="NetMessageConnectReply.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
       <Filter>Precompile</Filter>
     </ClInclude>
     <ClInclude Include="NetMessage.h">
-      <Filter>Messages</Filter>
-    </ClInclude>
-    <ClInclude Include="NetMessageConnectMessage.h">
       <Filter>Messages</Filter>
     </ClInclude>
     <ClInclude Include="NetMessagePingReply.h">
@@ -117,6 +126,21 @@
     <ClInclude Include="NetMessageOnDeath.h">
       <Filter>Messages</Filter>
     </ClInclude>
-    <ClInclude Include="NetMessageRequestLevel.h" />
+    <ClInclude Include="NetMessageRequestLevel.h">
+      <Filter>Messages</Filter>
+    </ClInclude>
+    <ClInclude Include="NetMessageRequestStartGame.h">
+      <Filter>Messages</Filter>
+    </ClInclude>
+    <ClInclude Include="NetMessageStartGame.h">
+      <Filter>Messages</Filter>
+    </ClInclude>
+    <ClInclude Include="NetMessageLevelLoaded.h">
+      <Filter>Messages</Filter>
+    </ClInclude>
+    <ClInclude Include="NetMessageRequestConnect.h">
+      <Filter>Messages</Filter>
+    </ClInclude>
+    <ClInclude Include="NetMessageConnectReply.h" />
   </ItemGroup>
 </Project>

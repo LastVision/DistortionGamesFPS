@@ -75,5 +75,14 @@
     <ClInclude Include="PostMasterNetSetPositionMessage.h">
       <Filter>Message\NetworkMessages</Filter>
     </ClInclude>
+    <ClInclude Include="PostMasterNetRequestStartGameMessage.h">
+      <Filter>Message\NetworkMessages</Filter>
+    </ClInclude>
+    <ClInclude Include="PostMasterNetStartGameMessage.h">
+      <Filter>Message\NetworkMessages</Filter>
+    </ClInclude>
+    <ClInclude Include="PostMasterNetLevelLoadedMessage.h">
+      <Filter>Message\NetworkMessages</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

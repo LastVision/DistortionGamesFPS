@@ -1,11 +1,14 @@
 #pragma once
 #include "NetImportantMessage.h"
+#include <string>
 class NetMessageOnJoin : public NetImportantMessage
 {
 public:
 	NetMessageOnJoin();
-	NetMessageOnJoin(unsigned short aSenderID);
+	NetMessageOnJoin(const std::string& aName, unsigned int aSenderID);
 	~NetMessageOnJoin();
+
+	std::string myName;
 
 protected:
 	

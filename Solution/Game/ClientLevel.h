@@ -22,6 +22,8 @@ public:
 	ClientLevel();
 	~ClientLevel();
 
+	void Init();
+
 	void Update(const float aDeltaTime) override;
 	void Render();
 	bool connected;
@@ -36,6 +38,7 @@ public:
 	void DebugMusic();
 
 private:
+	void CreatePlayers();
 	Prism::Scene* myScene;
 	Prism::DeferredRenderer* myDeferredRenderer;
 
@@ -45,7 +48,7 @@ private:
 
 	Entity* myPlayer;
 	EmitterManager* myEmitterManager;
-
+	bool myInitDone;
 };
 
 inline Prism::Scene* ClientLevel::GetScene()

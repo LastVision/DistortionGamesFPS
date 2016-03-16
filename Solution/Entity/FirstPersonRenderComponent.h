@@ -27,6 +27,7 @@ public:
 	bool IsCurrentAnimationDone() const;
 	void RestartCurrentAnimation();
 
+	const CU::Matrix44<float>& GetUIJointOrientation() const;
 
 	void PlayAnimation(ePlayerState aAnimationState);
 

@@ -45,6 +45,7 @@ namespace Prism
 		, mySwapDone(false)
 		, myTimerManager(new CU::TimerManager())
 #endif
+		, myInitDone(false)
 	{
 		myRaycastJobs[0].Init(64);
 		myRaycastJobs[1].Init(64);
@@ -124,7 +125,7 @@ namespace Prism
 		myScene->setFlag(physx::PxSceneFlag::eENABLE_KINEMATIC_STATIC_PAIRS, true);
 		myScene->setSimulationEventCallback(this);
 
-#ifndef RELEASE_BUILD
+#ifdef _DEBUG
 		if (myPhysicsSDK->getPvdConnectionManager())
 		{
 			myPhysicsSDK->getPvdConnectionManager()->addHandler(*this);
@@ -261,6 +262,7 @@ namespace Prism
 			// do something useful..
 		}
 
+		myInitDone = true;
 		
 		if (myMoveJobs[1].myId > -1)
 		{

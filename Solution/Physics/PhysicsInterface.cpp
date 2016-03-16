@@ -37,6 +37,11 @@ namespace Prism
 	}
 #endif
 
+	bool PhysicsInterface::GetInitDone() const
+	{
+		return myManager->GetInitDone();
+	}
+
 	void PhysicsInterface::EndFrame()
 	{
 #ifndef THREAD_PHYSICS

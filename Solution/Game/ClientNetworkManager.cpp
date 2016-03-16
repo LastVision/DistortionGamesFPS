@@ -5,7 +5,8 @@
 #include <PostMaster.h>
 
 #include <NetMessageImportantReply.h>
-#include <NetMessageConnectMessage.h>
+#include <NetMessageConnectReply.h>
+#include <NetMessageRequestConnect.h>
 #include <NetMessageOnHit.h>
 #include <NetMessageOnJoin.h>
 #include <NetMessageDisconnect.h>
@@ -14,6 +15,7 @@
 #include <NetMessagePosition.h>
 #include <NetMessageAddEnemy.h>
 #include <NetMessageOnDeath.h>
+#include <NetMessageStartGame.h>
 
 #include <PostMasterNetAddPlayerMessage.h>
 #include <PostMasterNetOnHitMessage.h>
@@ -23,6 +25,8 @@
 #include <PostMasterNetSendPositionMessage.h>
 #include <PostMasterNetOnDisconnectMessage.h>
 #include <PostMasterNetOnDeathMessage.h>
+#include <PostMasterNetStartGameMessage.h>
+
 #define BUFFERSIZE 512
 
 ClientNetworkManager* ClientNetworkManager::myInstance = nullptr;
@@ -141,10 +145,12 @@ void ClientNetworkManager::ConnectToServer(const char* aServerIP)
 	char username[256 + 1];
 	DWORD username_len = 256 + 1;
 	GetUserNameA(username, &username_len);
-	NetMessageConnectMessage connect = CreateMessage<NetMessageConnectMessage>();
+	NetMessageRequestConnect connect = CreateMessage<NetMessageRequestConnect>();
 	connect.myName = username;
 	connect.myServerID = 0;
 	AddMessage(connect);
+
+	myName = username;
 }
 
 unsigned int ClientNetworkManager::GetGID() const
@@ -184,6 +190,18 @@ void ClientNetworkManager::ReceiveMessage(const PostMasterNetOnHitMessage& aMess
 	AddMessage(toSend);
 }
 
+void ClientNetworkManager::DebugPrint()
+{ 
+	DEBUG_PRINT(myGID);
+	DEBUG_PRINT(myName);
+
+	for each (const OtherClients& client in myClients)
+	{
+		DEBUG_PRINT(client.myID);
+		DEBUG_PRINT(client.myName);
+	}
+}
+
 void ClientNetworkManager::HandleMessage(const NetMessagePingRequest&, const sockaddr_in&)
 {
 	NetMessagePingReply reply;
@@ -205,22 +223,36 @@ void ClientNetworkManager::HandleMessage(const NetMessageDisconnect& aMessage, c
 	}
 }
 
-void ClientNetworkManager::HandleMessage(const NetMessageConnectMessage& aMessage, const sockaddr_in&)
+void ClientNetworkManager::HandleMessage(const NetMessageConnectReply& aMessage, const sockaddr_in&)
 {
-	myGID = aMessage.myServerID;
-	if (aMessage.myOtherClientID != myGID)
+	if (aMessage.myType == NetMessageConnectReply::eType::SUCCESS)
+	{
+		myGID = aMessage.myGID;
+	}
+	else
+	{
+		DL_ASSERT("Failed to connect");
+	}
+}
+
+void ClientNetworkManager::HandleMessage(const NetMessageRequestConnect& aMessage, const sockaddr_in&)
+{
+	DL_ASSERT("Should not happen");
+	/*if (aMessage.myOtherClientID != myGID)
 	{
 		myClients.Add(OtherClients(aMessage.myOtherClientID));
-	}
-	PostMaster::GetInstance()->SendMessage(PostMasterNetAddPlayerMessage(aMessage.myOtherClientID));
+	}*/
+	//bool needsToBeImplemented = true;
+	//PostMaster::GetInstance()->SendMessage(PostMasterNetAddPlayerMessage(aMessage.myOtherClientID));
 }
 
 void ClientNetworkManager::HandleMessage(const NetMessageOnJoin& aMessage, const sockaddr_in&)
 {
 	if (aMessage.mySenderID != myGID)
 	{
-		myClients.Add(OtherClients(aMessage.mySenderID));
-		PostMaster::GetInstance()->SendMessage(PostMasterNetAddPlayerMessage(static_cast<unsigned short>(aMessage.mySenderID)));
+		myClients.Add(OtherClients(aMessage.myName, aMessage.mySenderID));
+		bool needsToBeImplemented = true;
+		//PostMaster::GetInstance()->SendMessage(PostMasterNetAddPlayerMessage(static_cast<unsigned short>(aMessage.mySenderID)));
 	}
 }
 
@@ -232,6 +264,11 @@ void ClientNetworkManager::HandleMessage(const NetMessageAddEnemy& aMessage, con
 void ClientNetworkManager::HandleMessage(const NetMessageOnDeath& aMessage, const sockaddr_in&)
 {
 	PostMaster::GetInstance()->SendMessage(PostMasterNetOnDeathMessage(aMessage.myGID));
+}
+
+void ClientNetworkManager::HandleMessage(const NetMessageStartGame& aMessage, const sockaddr_in&)
+{
+	PostMaster::GetInstance()->SendMessage(PostMasterNetStartGameMessage(aMessage.myLevelID));
 }
 
 void ClientNetworkManager::UpdateImportantMessages(float aDeltaTime)

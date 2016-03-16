@@ -1,5 +1,6 @@
 #include "InputWrapper.h"
 #include <MemoryMacros.h>
+#include <Defines.h>
 
 CU::InputWrapper* CU::InputWrapper::myInstance = nullptr;
 
@@ -25,6 +26,7 @@ void CU::InputWrapper::Destroy()
 
 CU::InputWrapper::InputWrapper()
 	: myWindowIsActive(true)
+	, myBufferedMousePosition(128)
 {
 
 }
@@ -61,6 +63,13 @@ CU::InputWrapper::~InputWrapper()
 
 void CU::InputWrapper::Update()
 {
+	myMouseDelta.x = 0.f;
+	myMouseDelta.y = 0.f;
+	for (int i = 0; i < myBufferedMousePosition.Size(); ++i)
+	{
+		myMouseDelta += myBufferedMousePosition[i];
+	}
+	myBufferedMousePosition.RemoveAll();
 	if (myWindowIsActive == true)
 	{
 		CapturePreviousState();
@@ -98,6 +107,11 @@ void CU::InputWrapper::Update()
 		//myMousePos.z += myMouseState.lZ;
 		//}
 	}
+}
+
+void CU::InputWrapper::FeedMouseRawInput(float aDeltaX, float aDeltaY)
+{
+	myBufferedMousePosition.Add(CU::Vector2<int>(aDeltaX, aDeltaY));
 }
 
 void CU::InputWrapper::ToggleWindowActive()
@@ -182,12 +196,20 @@ bool CU::InputWrapper::MouseUp(int aButton) const
 
 float CU::InputWrapper::GetMouseDX() const
 {
+#ifdef USE_RAW_INPUT
+	return myMouseDelta.x;
+#else
 	return static_cast<float>(myMouseState.lX);
+#endif
 }
 
 float CU::InputWrapper::GetMouseDY() const
 {
+#ifdef USE_RAW_INPUT
+	return myMouseDelta.y;
+#else
 	return static_cast<float>(myMouseState.lY);
+#endif
 }
 
 float CU::InputWrapper::GetMouseDZ() const

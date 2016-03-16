@@ -53,6 +53,7 @@ namespace Prism
 		void RenderText(const char* aName, const CU::Vector4<float>& aValue);
 		void RenderText(const char* aName, float aValue);
 		void RenderText(const char* aName, int aValue);
+		void RenderText(const char* aName, unsigned int aValue);
 		void RenderText(const char* aName, const std::string& aValue);
 
 		void RenderTextToScreen();

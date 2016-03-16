@@ -12,7 +12,12 @@ class ShootingComponent : public Component
 public:
 	ShootingComponent(Entity& anEntity, Prism::Scene* aScene);
 	~ShootingComponent();
+
+	void Init(Prism::Scene* aScene);
+
 	void Update(float aDelta) override;
+	void Render();
+
 
 	Weapon* GetWeapon(eWeaponType aWeaponType);
 	Weapon* GetCurrentWeapon();

@@ -4,6 +4,7 @@
 enum class eOnClickEvent
 {
 	CONNECT,
+	START_GAME,
 };
 
 struct OnClickMessage : public Message

@@ -10,7 +10,8 @@ public:
 
 	virtual bool Shoot(const CU::Matrix44<float>& aOrientation) = 0;
 	virtual void Reload() = 0;
-	virtual void Update(float) {};
+	virtual void Update(float) {}
+	virtual void Render(){}
 	const int& GetAmmoInClip() const;
 	const int& GetClipSize() const;
 	eWeaponType GetWeaponType();

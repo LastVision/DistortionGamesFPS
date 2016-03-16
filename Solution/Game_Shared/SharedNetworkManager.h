@@ -9,7 +9,8 @@ namespace std
 
 class NetMessage;
 class NetMessageImportantReply;
-class NetMessageConnectMessage;
+class NetMessageConnectReply;
+class NetMessageRequestConnect;
 class NetMessageOnJoin;
 class NetMessageDisconnect;
 class NetMessageRequestLevel;
@@ -19,6 +20,9 @@ class NetMessagePosition;
 class NetMessageAddEnemy;
 class NetMessageOnHit;
 class NetMessageOnDeath;
+class NetMessageRequestStartGame;
+class NetMessageStartGame;
+class NetMessageLevelLoaded;
 
 class SharedNetworkManager
 {
@@ -111,7 +115,8 @@ protected:
 	void HandleMessage();
 
 	virtual void HandleMessage(const NetMessageImportantReply& aMessage, const sockaddr_in& aSenderAddress);
-	virtual void HandleMessage(const NetMessageConnectMessage& aMessage, const sockaddr_in& aSenderAddress);
+	virtual void HandleMessage(const NetMessageConnectReply& aMessage, const sockaddr_in& aSenderAddress);
+	virtual void HandleMessage(const NetMessageRequestConnect& aMessage, const sockaddr_in& aSenderAddress);
 	virtual void HandleMessage(const NetMessageOnJoin& aMessage, const sockaddr_in& aSenderAddress);
 	virtual void HandleMessage(const NetMessageDisconnect& aMessage, const sockaddr_in& aSenderAddress);
 	virtual void HandleMessage(const NetMessageRequestLevel& aMessage, const sockaddr_in& aSenderAddress);
@@ -121,6 +126,9 @@ protected:
 	virtual void HandleMessage(const NetMessageAddEnemy& aMessage, const sockaddr_in& aSenderAddress);
 	virtual void HandleMessage(const NetMessageOnHit& aMessage, const sockaddr_in& aSenderAddress);
 	virtual void HandleMessage(const NetMessageOnDeath& aMessage, const sockaddr_in& aSenderAddress);
+	virtual void HandleMessage(const NetMessageRequestStartGame& aMessage, const sockaddr_in& aSenderAddress);
+	virtual void HandleMessage(const NetMessageStartGame& aMessage, const sockaddr_in& aSenderAddress);
+	virtual void HandleMessage(const NetMessageLevelLoaded& aMessage, const sockaddr_in& aSenderAddress);
 
 
 	std::thread* myReceieveThread;
@@ -175,6 +183,7 @@ inline void SharedNetworkManager::AddMessage(T aMessage, unsigned int aTargetID)
 	unsigned int importantID = 0;
 	if (isImportant == true)
 	{
+		aMessage.SetImportantID(myImportantID++);
 		importantID = aMessage.GetImportantID();
 	}
 

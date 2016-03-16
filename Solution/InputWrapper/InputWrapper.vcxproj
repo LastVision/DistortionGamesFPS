@@ -81,31 +81,31 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <IncludePath>$(SolutionDir)\Memory;..\CommonUtilities;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)\Memory;..\CommonUtilities;$(SolutionDir)\DL_Debug;$(IncludePath)</IncludePath>
     <OutDir>$(SolutionDir)..\Libs\</OutDir>
     <IntDir>$(SolutionDir)..\temp\$(ProjectName)\</IntDir>
     <TargetName>$(ProjectName)_$(Configuration)</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <IncludePath>$(SolutionDir)\Memory;..\CommonUtilities;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)\Memory;..\CommonUtilities;$(SolutionDir)\DL_Debug;$(IncludePath)</IncludePath>
     <OutDir>$(SolutionDir)..\Libs\</OutDir>
     <IntDir>$(SolutionDir)..\temp\$(ProjectName)\</IntDir>
     <TargetName>$(ProjectName)_$(Configuration)</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DLL_Release|Win32'">
-    <IncludePath>$(SolutionDir)\Memory;..\CommonUtilities;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)\Memory;..\CommonUtilities;$(SolutionDir)\DL_Debug;$(IncludePath)</IncludePath>
     <OutDir>$(SolutionDir)..\Libs\</OutDir>
     <IntDir>$(SolutionDir)..\temp\$(ProjectName)\</IntDir>
     <TargetName>$(ProjectName)_$(Configuration)</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Internal|Win32'">
-    <IncludePath>$(SolutionDir)\Memory;..\CommonUtilities;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)\Memory;..\CommonUtilities;$(SolutionDir)\DL_Debug;$(IncludePath)</IncludePath>
     <OutDir>$(SolutionDir)..\Libs\</OutDir>
     <IntDir>$(SolutionDir)..\temp\$(ProjectName)\</IntDir>
     <TargetName>$(ProjectName)_$(Configuration)</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DataExporter|Win32'">
-    <IncludePath>$(SolutionDir)\Memory;..\CommonUtilities;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)\Memory;..\CommonUtilities;$(SolutionDir)\DL_Debug;$(IncludePath)</IncludePath>
     <OutDir>$(SolutionDir)..\Libs\</OutDir>
     <IntDir>$(SolutionDir)..\temp\$(ProjectName)\</IntDir>
     <TargetName>$(ProjectName)_$(Configuration)</TargetName>
@@ -193,6 +193,9 @@
   <ItemGroup>
     <ProjectReference Include="..\CommonUtilities\CommonUtilities.vcxproj">
       <Project>{cf69d483-5bf1-4673-99e2-c04b953ca73c}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\DL_Debug\DL_Debug.vcxproj">
+      <Project>{79d52050-1454-49c9-9186-ab74c959970e}</Project>
     </ProjectReference>
     <ProjectReference Include="..\Memory\Memory.vcxproj">
       <Project>{25945336-03d1-42a6-8764-7ef11dbc42e6}</Project>

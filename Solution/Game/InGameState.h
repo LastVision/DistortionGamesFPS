@@ -28,7 +28,7 @@ namespace GUI
 class InGameState : public GameState, public Subscriber
 {
 public:
-	InGameState();
+	InGameState(int aLevelID);
 	~InGameState();
 
 	void InitState(StateStackProxy* aStateStackProxy, GUI::Cursor* aCursor) override;
@@ -48,4 +48,5 @@ private:
 	ClientLevelFactory* myLevelFactory;
 
 	int myLevelToLoad;
+	bool myShouldLoadLevel;
 };
