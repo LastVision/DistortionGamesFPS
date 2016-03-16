@@ -22,10 +22,16 @@ PhysicsComponent::PhysicsComponent(Entity& aEntity, const PhysicsComponentData& 
 
 	myPhysicsType = aPhysicsComponentData.myPhysicsType;
 
+	bool shouldAddToPhysicsScene = true;
+	if (myEntity.GetType() == eEntityType::EXPLOSION)
+	{
+		shouldAddToPhysicsScene = false;
+	}
+
 	if (myPhysicsType != ePhysics::CAPSULE)
 	{
 		myCallbackStruct = Prism::PhysicsCallbackStruct(myData, std::bind(&PhysicsComponent::SwapOrientations, this), std::bind(&PhysicsComponent::UpdateOrientation, this));
-		Prism::PhysicsInterface::GetInstance()->Create(this, myCallbackStruct, my4x4Float, aFBXPath, &myDynamicBody, &myStaticBody, &myShapes);
+		Prism::PhysicsInterface::GetInstance()->Create(this, myCallbackStruct, my4x4Float, aFBXPath, &myDynamicBody, &myStaticBody, &myShapes, shouldAddToPhysicsScene);
 	}
 	else if (myPhysicsType == ePhysics::CAPSULE)
 	{
@@ -118,7 +124,14 @@ void PhysicsComponent::TeleportToPosition(const CU::Vector3<float>& aPosition)
 {
 	DL_ASSERT_EXP(myPhysicsType != ePhysics::STATIC, "Cant add Force to STATIC objects");
 
-	Prism::PhysicsInterface::GetInstance()->TeleportToPosition(myDynamicBody, aPosition);
+	if (myDynamicBody != nullptr)
+	{
+		Prism::PhysicsInterface::GetInstance()->TeleportToPosition(myDynamicBody, aPosition);
+	}
+	else if (myStaticBody != nullptr)
+	{
+		Prism::PhysicsInterface::GetInstance()->TeleportToPosition(myStaticBody, aPosition);
+	}
 }
 
 void PhysicsComponent::MoveToPosition(const CU::Vector3<float>& aPosition)

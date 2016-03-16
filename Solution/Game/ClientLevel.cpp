@@ -17,6 +17,7 @@
 #include <EntityData.h>
 #include <FirstPersonRenderComponent.h>
 #include "GameEnum.h"
+#include <PhysicsComponent.h>
 #include <PhysicsInterface.h>
 
 #include <NetMessageOnJoin.h>
@@ -148,6 +149,7 @@ void ClientLevel::Update(const float aDeltaTime)
 	Prism::PhysicsInterface::GetInstance()->EndFrame();
 
 	ClientNetworkManager::GetInstance()->Update(aDeltaTime);
+
 }
 
 void ClientLevel::Render()
@@ -170,14 +172,14 @@ void ClientLevel::ReceiveMessage(const PostMasterNetAddPlayerMessage& aMessage)
 	}
 	else
 	{
-		bool isRunTime = Prism::MemoryTracker::GetInstance()->GetRunTime();
-		Prism::MemoryTracker::GetInstance()->SetRunTime(false);
-		Entity* newPlayer = EntityFactory::CreateEntity(aMessage.myGID, eEntityType::UNIT, "player", myScene, true, { 0.f, 0.f, 0.f });
-		newPlayer->GetComponent<NetworkComponent>()->SetPlayer(true);
-		newPlayer->AddToScene();
-		newPlayer->Reset();
-		myPlayers.Add(newPlayer);
-		Prism::MemoryTracker::GetInstance()->SetRunTime(isRunTime);
+	bool isRunTime = Prism::MemoryTracker::GetInstance()->GetRunTime();
+	Prism::MemoryTracker::GetInstance()->SetRunTime(false);
+	Entity* newPlayer = EntityFactory::CreateEntity(aMessage.myGID, eEntityType::UNIT, "player", myScene, true, { 0.f, 0.f, 0.f });
+	newPlayer->GetComponent<NetworkComponent>()->SetPlayer(true);
+	newPlayer->AddToScene();
+	newPlayer->Reset();
+	myPlayers.Add(newPlayer);
+	Prism::MemoryTracker::GetInstance()->SetRunTime(isRunTime);
 	}*/
 }
 

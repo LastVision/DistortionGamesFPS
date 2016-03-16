@@ -22,6 +22,7 @@ enum eEntityType
 	PROJECTILE = 4,
 	TRIGGER = 8,
 	PLAYER = 16,
+	EXPLOSION = 32,
 	_COUNT,
 };
 

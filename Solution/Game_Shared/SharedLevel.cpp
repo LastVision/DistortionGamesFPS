@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include <CollisionNote.h>
+#include <DamageNote.h>
 #include <Entity.h>
 #include <EntityFactory.h>
 #include <EmitterMessage.h>
@@ -10,6 +11,8 @@
 #include <TriggerComponent.h>
 #include <UpgradeComponent.h>
 #include <UpgradeNote.h>
+
+#include <ProjectileComponent.h>
 
 SharedLevel::SharedLevel()
 	: myActiveEntities(256)
@@ -70,25 +73,49 @@ void SharedLevel::Update(const float aDeltaTime)
 
 void SharedLevel::CollisionCallback(PhysicsComponent* aFirst, PhysicsComponent* aSecond)
 {
-	if (aSecond->GetEntity().GetType() == eEntityType::PLAYER)
-	{
-		TriggerComponent* firstTrigger = aFirst->GetEntity().GetComponent<TriggerComponent>();
+	Entity& first = aFirst->GetEntity();
+	Entity& second = aSecond->GetEntity();
 
-		if (firstTrigger->GetTriggerType() == eTriggerType::UPGRADE)
+	if (first.GetType() == eEntityType::TRIGGER)
+	{
+		if (second.GetType() == eEntityType::PLAYER)
 		{
-			aSecond->GetEntity().SendNote<UpgradeNote>(aFirst->GetEntity().GetComponent<UpgradeComponent>()->GetData());
+			TriggerComponent* firstTrigger = first.GetComponent<TriggerComponent>();
+
+			if (firstTrigger != nullptr)
+			{
+				if (firstTrigger->GetTriggerType() == eTriggerType::UPGRADE)
+				{
+					second.SendNote<UpgradeNote>(first.GetComponent<UpgradeComponent>()->GetData());
+				}
+				else if (firstTrigger->GetTriggerType() == eTriggerType::UNLOCK)
+				{
+					PostMaster::GetInstance()->SendMessage(EmitterMessage("Unlock", myActiveEntitiesMap[firstTrigger->GetValue()]->GetOrientation().GetPos()));
+					myActiveEntitiesMap[firstTrigger->GetValue()]->Kill();
+				}
+				else
+				{
+					second.SendNote<CollisionNote>(CollisionNote(&first));
+				}
+				first.SendNote<CollisionNote>(CollisionNote(&second));
+			}
 		}
-		else if (firstTrigger->GetTriggerType() == eTriggerType::UNLOCK)
+	}
+	else if (first.GetType() == eEntityType::EXPLOSION)
+	{
+		PhysicsComponent* physicsComponent = second.GetComponent<PhysicsComponent>();
+	
+		if (physicsComponent->GetPhysicsType() == ePhysics::DYNAMIC)
 		{
-			//firstTrigger->
-			PostMaster::GetInstance()->SendMessage(EmitterMessage("Unlock", myActiveEntitiesMap[firstTrigger->GetValue()]->GetOrientation().GetPos()));
-			myActiveEntitiesMap[firstTrigger->GetValue()]->Kill();
+			CU::Vector3<float> direction = second.GetOrientation().GetPos() - first.GetOrientation().GetPos();
+			physicsComponent->AddForce(direction, 10.f);
 		}
-		else
+		else if (physicsComponent->GetPhysicsType() == ePhysics::CAPSULE)
 		{
-			aSecond->GetEntity().SendNote<CollisionNote>(CollisionNote(&aFirst->GetEntity()));
+			second.SendNote<DamageNote>(DamageNote(10));
 		}
-		aFirst->GetEntity().SendNote<CollisionNote>(CollisionNote(&aSecond->GetEntity()));
+
+		//first.GetComponent<PhysicsComponent>()->RemoveFromScene();
 	}
 }
 

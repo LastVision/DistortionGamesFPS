@@ -11,7 +11,7 @@ namespace Prism
 class GrenadeLauncher : public Weapon
 {
 public:
-	GrenadeLauncher(Prism::Scene* aScene);
+	GrenadeLauncher(Prism::Scene* aScene, unsigned int aEntityGID);
 	~GrenadeLauncher();
 
 	bool Shoot(const CU::Matrix44<float>& aOrientation) override;
@@ -26,5 +26,7 @@ private:
 	float myBulletSpeed;
 	Prism::Scene* myScene;
 	int myCurrentBulletToUse;
+
+	const unsigned int myEntityGID;
 };
 
