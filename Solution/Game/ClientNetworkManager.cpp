@@ -235,15 +235,9 @@ void ClientNetworkManager::HandleMessage(const NetMessageConnectReply& aMessage,
 	}
 }
 
-void ClientNetworkManager::HandleMessage(const NetMessageRequestConnect& aMessage, const sockaddr_in&)
+void ClientNetworkManager::HandleMessage(const NetMessageRequestConnect&, const sockaddr_in&)
 {
 	DL_ASSERT("Should not happen");
-	/*if (aMessage.myOtherClientID != myGID)
-	{
-		myClients.Add(OtherClients(aMessage.myOtherClientID));
-	}*/
-	//bool needsToBeImplemented = true;
-	//PostMaster::GetInstance()->SendMessage(PostMasterNetAddPlayerMessage(aMessage.myOtherClientID));
 }
 
 void ClientNetworkManager::HandleMessage(const NetMessageOnJoin& aMessage, const sockaddr_in&)
@@ -251,8 +245,6 @@ void ClientNetworkManager::HandleMessage(const NetMessageOnJoin& aMessage, const
 	if (aMessage.mySenderID != myGID)
 	{
 		myClients.Add(OtherClients(aMessage.myName, aMessage.mySenderID));
-		bool needsToBeImplemented = true;
-		//PostMaster::GetInstance()->SendMessage(PostMasterNetAddPlayerMessage(static_cast<unsigned short>(aMessage.mySenderID)));
 	}
 }
 

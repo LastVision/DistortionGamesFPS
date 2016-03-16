@@ -20,6 +20,7 @@ public:
 	void Update(float aDelta) override;
 
 private:
+	void operator=(GrenadeLauncher&) = delete;
 	void ShootAtDirection(const CU::Matrix44<float>& aOrientation);
 
 	CU::GrowingArray<Entity*> myBullets;

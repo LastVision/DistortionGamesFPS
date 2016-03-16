@@ -149,22 +149,8 @@ void Prism::Text::ConstructBuffers()
 		z -= 0.001f;
 	}
 
-
-	ModelLoader* loader = ModelLoader::GetInstance();
-	/*bool wePaused = false;
-	if (loader->IsPaused() == false)
-	{
-	loader->Pause();
-	wePaused = true;
-	}*/
-
 	SetupVertexBuffer(myVertices.Size(), sizeof(VertexPosUV), reinterpret_cast<char*>(&myVertices[0]), "Text::VertexBuffer");
 	SetupIndexBuffer(myIndices.Size(), reinterpret_cast<char*>(&myIndices[0]), "Text::IndexBuffer");
-
-	/*if (wePaused == true)
-	{
-		loader->UnPause();
-	}*/
 
 	mySurfaces[0]->SetVertexCount(myVertices.Size());
 	mySurfaces[0]->SetIndexCount(myIndices.Size());

@@ -23,7 +23,7 @@ bool globalPreviousFullscreenState = false;
 bool globalIsActive = true;
 Prism::SetupInfo globalSetup;
 
-void InitRawInput(const HWND& aHwnd)
+void InitRawInput(const HWND&)
 {
 	/*RAWINPUTDEVICE Rid[1];
 	Rid[0].usUsagePage = 0x01;
@@ -256,8 +256,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		}
 
 		raw = (RAWINPUT*)lpb;
-		float deltaX = raw->data.mouse.lLastX;
-		float deltaY = raw->data.mouse.lLastY;
+		float deltaX = static_cast<float>(raw->data.mouse.lLastX);
+		float deltaY = static_cast<float>(raw->data.mouse.lLastY);
 		if (CU::InputWrapper::GetInstance() != nullptr)
 		{
 			CU::InputWrapper::GetInstance()->FeedMouseRawInput(deltaX, deltaY);

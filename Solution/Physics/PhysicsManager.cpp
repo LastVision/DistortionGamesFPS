@@ -554,7 +554,7 @@ namespace Prism
 		myControllerManager->getController(aId)->setFootPosition(physx::PxExtendedVec3(aPosition.x, aPosition.y, aPosition.z));
 	}
 
-	void PhysicsManager::GetPosition(int aId, CU::Vector3<float>& aPositionOut)
+	void PhysicsManager::GetPosition(int, CU::Vector3<float>& aPositionOut)
 	{
 		aPositionOut = myPlayerPosition;
 	}
@@ -655,7 +655,7 @@ namespace Prism
 			*someShapesOut = new physx::PxShape*[nShapes];
 
 			physx::PxShape* treasureShape;
-			(*aStaticBodyOut)->getShapes(&treasureShape, 1.f);
+			(*aStaticBodyOut)->getShapes(&treasureShape, 1);
 
 			treasureShape->setFlag(physx::PxShapeFlag::eSIMULATION_SHAPE, false);
 			treasureShape->setFlag(physx::PxShapeFlag::eTRIGGER_SHAPE, true);
