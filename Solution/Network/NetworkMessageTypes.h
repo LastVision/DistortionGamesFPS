@@ -1,5 +1,6 @@
 #pragma once
 #include <Vector3.h>
+#include <string>
 enum class eNetMessageType
 {
 	NONE,
@@ -10,6 +11,7 @@ enum class eNetMessageType
 	ON_DISCONNECT,
 	REQUEST_LEVEL,
 	REQUEST_START_GAME,
+	START_GAME,
 
 	PING_REQUEST,
 	PING_REPLY,

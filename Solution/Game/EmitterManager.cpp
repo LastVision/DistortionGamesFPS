@@ -250,8 +250,9 @@ void EmitterManager::ReadList(const std::string& aPath, const std::string& anID,
 		else if (entityPath != "")
 		{
 			Prism::ParticleEmitterInstance* newEmitter;
+			bool manyParticles = true;
 			newEmitter = new Prism::ParticleEmitterInstance(Prism::ParticleDataContainer::GetInstance()->
-				GetParticleData(entityPath), false);
+				GetParticleData(entityPath), manyParticles);
 			newEmitter->SetShouldAlwaysShow(false);
 			myEmitters[anID]->myEmitters[anIndex].Add(newEmitter);
 		}

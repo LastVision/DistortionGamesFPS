@@ -8,6 +8,7 @@
 
 StateStack::StateStack()
 	: myCursor(nullptr)
+	, myShouldRender(true)
 {
 	myMainIndex = -1;
 	mySubIndex = -1;
@@ -74,6 +75,8 @@ void StateStack::PushSubGameState(GameState* aSubGameState)
 	SET_RUNTIME(true);
 
 	mySubIndex = myGameStates[myMainIndex].Size() - 1;
+
+	myShouldRender = false;
 }
 
 void StateStack::PushMainGameState(GameState* aMainGameState)
@@ -85,7 +88,8 @@ void StateStack::PushMainGameState(GameState* aMainGameState)
 
 bool StateStack::UpdateCurrentState(const float& aDeltaTime)
 {
-	
+	myShouldRender = true;
+
 	switch (myGameStates[myMainIndex][mySubIndex]->Update(aDeltaTime))
 	{
 	case eStateStatus::ePopSubState:
@@ -98,6 +102,7 @@ bool StateStack::UpdateCurrentState(const float& aDeltaTime)
 		break;
 	}
 
+	ClientNetworkManager::GetInstance()->Update(aDeltaTime);
 	ClientNetworkManager::GetInstance()->MainIsDone();
 	ClientNetworkManager::GetInstance()->WaitForReceieve();
 
@@ -107,7 +112,10 @@ bool StateStack::UpdateCurrentState(const float& aDeltaTime)
 void StateStack::RenderCurrentState()
 {
 	DL_ASSERT_EXP(myGameStates.Size() > 0, "Can't render, no gamestate present.");
-	RenderStateAtIndex(mySubIndex);
+	if (myShouldRender == true)
+	{
+		RenderStateAtIndex(mySubIndex);
+	}
 }
 
 void StateStack::ResumeState()

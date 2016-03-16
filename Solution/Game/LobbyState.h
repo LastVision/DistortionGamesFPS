@@ -23,8 +23,10 @@ public:
 	void Render() override;
 	void ResumeState() override;
 	void ReceiveMessage(const OnClickMessage& aMessage) override;
+	void ReceiveMessage(const PostMasterNetStartGameMessage& aMessage) override;
 
 private:
 	GUI::GUIManager* myGUIManager;
+	int myLevelToStart;
 };
 

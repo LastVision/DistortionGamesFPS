@@ -10,10 +10,12 @@
 #include <NetMessageRequestStartGame.h>
 #include <OnClickMessage.h>
 #include <PostMaster.h>
+#include <PostMasterNetStartGameMessage.h>
 
 
 LobbyState::LobbyState()
 	: myGUIManager(nullptr)
+	, myLevelToStart(-1)
 {
 }
 
@@ -23,11 +25,13 @@ LobbyState::~LobbyState()
 	SAFE_DELETE(myGUIManager);
 	myCursor = nullptr;
 	PostMaster::GetInstance()->UnSubscribe(eMessageType::ON_CLICK, this);
+	PostMaster::GetInstance()->UnSubscribe(eMessageType::NETWORK_START_GAME, this);
 }
 
 void LobbyState::InitState(StateStackProxy* aStateStackProxy, GUI::Cursor* aCursor)
 {
 	PostMaster::GetInstance()->Subscribe(eMessageType::ON_CLICK, this);
+	PostMaster::GetInstance()->Subscribe(eMessageType::NETWORK_START_GAME, this);
 	myCursor = aCursor;
 	myIsActiveState = true;
 	myIsLetThrough = false;
@@ -40,12 +44,14 @@ void LobbyState::InitState(StateStackProxy* aStateStackProxy, GUI::Cursor* aCurs
 	OnResize(windowSize.x, windowSize.y);
 
 	myCursor->SetShouldRender(true);
+	myLevelToStart = -1;
 }
 
 void LobbyState::EndState()
 {
 	myIsActiveState = false;
 	myCursor->SetShouldRender(false);
+	myLevelToStart = -1;
 }
 
 void LobbyState::OnResize(int aX, int aY)
@@ -62,6 +68,11 @@ const eStateStatus LobbyState::Update(const float& aDeltaTime)
 		return eStateStatus::ePopSubState;
 	}
 
+	if (myLevelToStart != -1)
+	{
+		myStateStack->PushSubGameState(new InGameState(myLevelToStart));
+	}
+
 	myGUIManager->Update(aDeltaTime);
 
 	return myStateStatus;
@@ -75,6 +86,7 @@ void LobbyState::Render()
 void LobbyState::ResumeState()
 {
 	myIsActiveState = true;
+	myLevelToStart = -1;
 }
 
 void LobbyState::ReceiveMessage(const OnClickMessage& aMessage)
@@ -84,7 +96,6 @@ void LobbyState::ReceiveMessage(const OnClickMessage& aMessage)
 		switch (aMessage.myEvent)
 		{
 		case eOnClickEvent::START_GAME:
-			//myStateStack->PushSubGameState(new InGameState());
 			ClientNetworkManager::GetInstance()->AddMessage(NetMessageRequestStartGame());
 			break;
 		default:
@@ -92,4 +103,10 @@ void LobbyState::ReceiveMessage(const OnClickMessage& aMessage)
 			break;
 		}
 	}
+}
+
+void LobbyState::ReceiveMessage(const PostMasterNetStartGameMessage& aMessage)
+{
+	PostMaster::GetInstance()->UnSubscribe(eMessageType::ON_CLICK, this);
+	myLevelToStart = aMessage.myLevelID;
 }

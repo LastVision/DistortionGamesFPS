@@ -24,9 +24,10 @@
 #include <PostMasterNetSetPositionMessage.h>
 #include <PostMasterNetOnHitMessage.h>
 #include <PostMasterNetOnDeathMessage.h>
+#include <PostMasterNetRequestStartGameMessage.h>
 
 #define BUFFERSIZE 512
-#define RECONNECT_ATTEMPTS 100
+#define RECONNECT_ATTEMPTS 10000
 
 ServerNetworkManager* ServerNetworkManager::myInstance = nullptr;
 
@@ -204,6 +205,7 @@ void ServerNetworkManager::CreateConnection(const std::string& aName, const sock
 	NetMessageOnJoin onJoin = CreateMessage<NetMessageOnJoin>();
 	onJoin.mySenderID = newConnection.myID;
 	AddMessage(onJoin);
+
 	PostMaster::GetInstance()->SendMessage(PostMasterNetAddPlayerMessage(myIDCount, newConnection.myAddress));
 }
 
@@ -329,9 +331,9 @@ void ServerNetworkManager::HandleMessage(const NetMessageRequestLevel& aMessage,
 	++apa;
 }
 
-void ServerNetworkManager::HandleMessage(const NetMessageRequestStartGame& aMessage, const sockaddr_in& aSenderAddress)
+void ServerNetworkManager::HandleMessage(const NetMessageRequestStartGame&, const sockaddr_in&)
 {
-	
+	PostMaster::GetInstance()->SendMessage(PostMasterNetRequestStartGameMessage());
 }
 
 void ServerNetworkManager::HandleMessage(const NetMessagePingReply& aMessage, const sockaddr_in& aSenderAddress)

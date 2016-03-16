@@ -14,6 +14,7 @@
 #include <NetMessageAddEnemy.h>
 #include <NetMessageOnHit.h>
 #include <NetMessageOnDeath.h>
+#include <NetMessageStartGame.h>
 
 #include <PostMaster.h>
 #include <PostMasterNetOnHitMessage.h>
@@ -174,6 +175,9 @@ void SharedNetworkManager::HandleMessage()
 		case eNetMessageType::REQUEST_START_GAME:
 			UnpackAndHandle(NetMessageRequestStartGame(), buffer);
 			break;
+		case eNetMessageType::START_GAME:
+			UnpackAndHandle(NetMessageStartGame(), buffer);
+			break;
 		case eNetMessageType::PING_REQUEST:
 			UnpackAndHandle(NetMessagePingRequest(), buffer);
 			break;
@@ -195,6 +199,7 @@ void SharedNetworkManager::HandleMessage()
 			UnpackAndHandle(NetMessageOnDeath(), buffer);
 			break;
 		default:
+			DL_ASSERT("Unhandled network message type");
 			break;
 		}
 	}
@@ -237,8 +242,8 @@ void SharedNetworkManager::HandleMessage(const NetMessageOnHit& aMessage, const 
 	PostMaster::GetInstance()->SendMessage(PostMasterNetOnHitMessage(aMessage.myDamage, aMessage.myGID)); 
 }
 void SharedNetworkManager::HandleMessage(const NetMessageOnDeath&, const sockaddr_in&) {}
-
 void SharedNetworkManager::HandleMessage(const NetMessageRequestStartGame&, const sockaddr_in&) {}
+void SharedNetworkManager::HandleMessage(const NetMessageStartGame&, const sockaddr_in&){}
 
 bool SharedNetworkManager::AlreadyReceived(const NetMessage& aMessage)
 {

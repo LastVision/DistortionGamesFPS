@@ -172,7 +172,9 @@
     <ClInclude Include="PostMasterNetSetPositionMessage.h" />
     <ClInclude Include="OnClickMessage.h" />
     <ClInclude Include="PostMaster.h" />
+    <ClInclude Include="PostMasterNetRequestStartGameMessage.h" />
     <ClInclude Include="ResizeMessage.h" />
+    <ClInclude Include="PostMasterNetStartGameMessage.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="Subscriber.h" />
   </ItemGroup>

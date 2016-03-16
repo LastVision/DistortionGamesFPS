@@ -41,6 +41,7 @@ private:
 
 	int myMainIndex;
 	int mySubIndex;
+	bool myShouldRender;
 
 	StateStackProxy* myStateStackProxy;
 };

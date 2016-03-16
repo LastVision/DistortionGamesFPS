@@ -66,6 +66,9 @@
     <ClCompile Include="NetMessageRequestStartGame.cpp">
       <Filter>Messages</Filter>
     </ClCompile>
+    <ClCompile Include="NetMessageStartGame.cpp">
+      <Filter>Messages</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
@@ -126,6 +129,9 @@
       <Filter>Messages</Filter>
     </ClInclude>
     <ClInclude Include="NetMessageRequestStartGame.h">
+      <Filter>Messages</Filter>
+    </ClInclude>
+    <ClInclude Include="NetMessageStartGame.h">
       <Filter>Messages</Filter>
     </ClInclude>
   </ItemGroup>

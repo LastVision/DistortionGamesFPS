@@ -453,7 +453,7 @@ namespace Prism
 		}
 		else
 		{
-			DL_ASSERT("Unknown position job type.");
+			//DL_ASSERT("Unknown position job type.");
 		}
 	}
 

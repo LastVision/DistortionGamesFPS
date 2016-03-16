@@ -17,8 +17,11 @@
 #include <Cursor.h>
 #include "ClientNetworkManager.h"
 
-InGameState::InGameState()
+InGameState::InGameState(int aLevelID)
 	: myGUIManager(nullptr)
+	, myLevelToLoad(aLevelID)
+	, myShouldLoadLevel(true)
+	, myLevel(nullptr)
 {
 	myIsActiveState = false;
 	myLevelFactory = new ClientLevelFactory("Data/Level/LI_level.xml");
@@ -34,7 +37,6 @@ InGameState::~InGameState()
 
 void InGameState::InitState(StateStackProxy* aStateStackProxy, GUI::Cursor* aCursor)
 {
-	myLevelToLoad = -1;
 	myIsLetThrough = false;
 	myStateStack = aStateStackProxy;
 	myStateStatus = eStateStatus::eKeepState;
@@ -42,7 +44,7 @@ void InGameState::InitState(StateStackProxy* aStateStackProxy, GUI::Cursor* aCur
 	myCursor->SetShouldRender(false);
 
 	//PostMaster::GetInstance()->SendMessage(RunScriptMessage("Data/Script/Autorun.script"));
-	myLevel = static_cast<ClientLevel*>(myLevelFactory->LoadCurrentLevel());
+	//myLevel = static_cast<ClientLevel*>(myLevelFactory->LoadLevel(myLevelToLoad));
 
 	myIsActiveState = true;
 
@@ -89,15 +91,18 @@ const eStateStatus InGameState::Update(const float& aDeltaTime)
 		//myLevel = static_cast<ClientLevel*>(myLevelFactory->LoadLevel(2));
 	}
 
-	if (myLevelToLoad != -1)
+	if (myShouldLoadLevel == true)
 	{
+		myShouldLoadLevel = false;
 		SET_RUNTIME(false);
 		SAFE_DELETE(myLevel);
 		myLevel = static_cast<ClientLevel*>(myLevelFactory->LoadLevel(myLevelToLoad));
 		myLevelToLoad = -1;
 	}
 
+	DL_ASSERT_EXP(myLevel != nullptr, "Invalid level");
 	myLevel->Update(aDeltaTime);
+	
 
 	//LUA::ScriptSystem::GetInstance()->CallFunction("Update", { aDeltaTime });
 	//LUA::ScriptSystem::GetInstance()->Update();

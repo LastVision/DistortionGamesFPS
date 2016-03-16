@@ -6,7 +6,8 @@
 #include "ServerStateStackProxy.h"
 #include <iostream>
 
-ServerInGameState::ServerInGameState()
+ServerInGameState::ServerInGameState(int aLevelID)
+	: myLevelID(aLevelID)
 {
 	myIsActiveState = false;
 	myLevelFactory = new ServerLevelFactory("Data/Level/LI_level.xml");
@@ -23,7 +24,7 @@ void ServerInGameState::InitState(ServerStateStackProxy* aStateStackProxy)
 	myStateStack = aStateStackProxy;
 	myStateStatus = eStateStatus::KEEP_STATE;
 
-	myLevel = static_cast<ServerLevel*>(myLevelFactory->LoadCurrentLevel());
+	myLevel = static_cast<ServerLevel*>(myLevelFactory->LoadLevel(myLevelID));
 
 	myIsActiveState = true;
 }
