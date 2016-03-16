@@ -10,11 +10,12 @@
 #include <XMLReader.h>
 
 
-GrenadeLauncher::GrenadeLauncher(Prism::Scene* aScene)
+GrenadeLauncher::GrenadeLauncher(Prism::Scene* aScene, unsigned int aEntityGID)
 	: Weapon(eWeaponType::GRENADE_LAUNCHER)
 	, myScene(aScene)
 	, myBullets(16)
 	, myCurrentBulletToUse(0)
+	, myEntityGID(aEntityGID)
 {
 	XMLReader reader;
 	reader.OpenDocument("Data/Setting/SET_weapons.xml");
@@ -33,12 +34,12 @@ GrenadeLauncher::GrenadeLauncher(Prism::Scene* aScene)
 	reader.CloseDocument();
 
 
-	//for (int i = 0; i < 8; ++i)
-	//{
-	//	Entity* bullet = EntityFactory::CreateEntity(eEntityType::PROJECTILE, myScene, true, CU::Vector3<float>());
-	//	myBullets.Add(bullet);
-	//	bullet->GetComponent<PhysicsComponent>()->Sleep();
-	//}
+	for (int i = 0; i < 8; ++i)
+	{
+		Entity* bullet = EntityFactory::CreateEntity((100000 + i), eEntityType::PROJECTILE, myScene, true, CU::Vector3<float>());
+		myBullets.Add(bullet);
+		bullet->GetComponent<PhysicsComponent>()->Sleep();
+	}
 }
 
 
@@ -88,7 +89,7 @@ void GrenadeLauncher::ShootAtDirection(const CU::Matrix44<float>& aOrientation)
 	//	myBullets[myCurrentBulletToUse]->AddToScene();
 	//}
 
-	myBullets[myCurrentBulletToUse]->GetComponent<ProjectileComponent>()->Activate();
+	myBullets[myCurrentBulletToUse]->GetComponent<ProjectileComponent>()->Activate(myEntityGID);
 	myBullets[myCurrentBulletToUse]->GetComponent<PhysicsComponent>()->TeleportToPosition(aOrientation.GetPos());
 	myBullets[myCurrentBulletToUse]->GetComponent<PhysicsComponent>()->AddForce(aOrientation.GetForward(), myForceStrength);
 	++myCurrentBulletToUse;

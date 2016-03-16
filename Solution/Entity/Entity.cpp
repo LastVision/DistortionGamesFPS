@@ -70,7 +70,7 @@ Entity::Entity(unsigned int aGID, const EntityData& aEntityData, Prism::Scene* a
 	
 	if (aEntityData.myProjecileData.myExistsInEntity == true)
 	{
-		myComponents[static_cast<int>(eComponentType::PROJECTILE)] = new ProjectileComponent(*this, aEntityData.myProjecileData);
+		myComponents[static_cast<int>(eComponentType::PROJECTILE)] = new ProjectileComponent(*this, aEntityData.myProjecileData, aScene);
 	}
 
 	if (aEntityData.myNetworkData.myExistsInEntity == true)
@@ -230,14 +230,14 @@ Prism::ParticleEmitterInstance* Entity::GetEmitter()
 	return myEmitterConnection;
 }
 
-void Entity::Kill()
+void Entity::Kill(bool aRemoveFromPhysics)
 {
 	myAlive = false;
 
 	if (myIsInScene == true)
 	{
 		RemoveFromScene();
-		if (myEntityData.myPhysicsData.myExistsInEntity == true)
+		if (aRemoveFromPhysics == true && myEntityData.myPhysicsData.myExistsInEntity == true)
 		{
 			GetComponent<PhysicsComponent>()->RemoveFromScene();
 		}

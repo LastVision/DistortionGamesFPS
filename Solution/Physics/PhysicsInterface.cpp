@@ -80,6 +80,11 @@ namespace Prism
 		myManager->TeleportToPosition(aDynamicBody, aPosition);
 	}
 
+	void PhysicsInterface::TeleportToPosition(physx::PxRigidStatic* aStaticBody, const CU::Vector3<float>& aPosition)
+	{
+		myManager->TeleportToPosition(aStaticBody, aPosition);
+	}
+
 	void PhysicsInterface::MoveToPosition(physx::PxRigidDynamic* aDynamicBody, const CU::Vector3<float>& aPosition)
 	{
 		myManager->MoveToPosition(aDynamicBody, aPosition);
@@ -123,9 +128,9 @@ namespace Prism
 	void PhysicsInterface::Create(PhysicsComponent* aComponent, const PhysicsCallbackStruct& aPhysData
 		, float* aOrientation, const std::string& aFBXPath
 		, physx::PxRigidDynamic** aDynamicBodyOut, physx::PxRigidStatic** aStaticBodyOut
-		, physx::PxShape*** someShapesOut)
+		, physx::PxShape*** someShapesOut, bool aShouldAddToScene)
 	{
-		myManager->Create(aComponent, aPhysData, aOrientation, aFBXPath, aDynamicBodyOut, aStaticBodyOut, someShapesOut);
+		myManager->Create(aComponent, aPhysData, aOrientation, aFBXPath, aDynamicBodyOut, aStaticBodyOut, someShapesOut, aShouldAddToScene);
 	}
 
 	void PhysicsInterface::Add(physx::PxRigidDynamic* aDynamic)

@@ -4,7 +4,6 @@
 #include <NetworkMessageTypes.h>
 #include <SharedLevel.h>
 
-
 namespace Prism
 {
 	class Camera;

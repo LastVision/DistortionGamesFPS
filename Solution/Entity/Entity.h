@@ -52,7 +52,7 @@ public:
 	void AddEmitter(Prism::ParticleEmitterInstance* anEmitterConnection);
 	Prism::ParticleEmitterInstance* GetEmitter();
 
-	void Kill();
+	void Kill(bool aRemoveFromPhysics = true);
 
 	bool GetIsClient();
 

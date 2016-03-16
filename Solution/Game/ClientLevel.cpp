@@ -17,6 +17,7 @@
 #include <EntityData.h>
 #include <FirstPersonRenderComponent.h>
 #include "GameEnum.h"
+#include <PhysicsComponent.h>
 #include <PhysicsInterface.h>
 
 #include <NetMessageOnJoin.h>
@@ -46,6 +47,7 @@ ClientLevel::ClientLevel()
 	, myInstances(16)
 	, myPointLights(64)
 {
+	//myBulletExplosions.Init(8);
 	//Prism::PhysicsInterface::Destroy();
 	//Prism::PhysicsInterface::GetInstance()->RayCast({ 0, 0, 0 }, { 0, 1, 0 }, 10.f);
 	//Prism::PhysicsInterface::GetInstance()->Update();
@@ -144,6 +146,7 @@ void ClientLevel::Update(const float aDeltaTime)
 	Prism::PhysicsInterface::GetInstance()->EndFrame();
 
 	ClientNetworkManager::GetInstance()->Update(aDeltaTime);
+
 }
 
 void ClientLevel::Render()

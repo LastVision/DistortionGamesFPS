@@ -254,7 +254,6 @@ namespace Prism
 			DL_ASSERT("no scene in PhysicsManager");
 		}
 
-
 		myScene->simulate(myTimestep);
 
 		while (!myScene->fetchResults())
@@ -331,13 +330,19 @@ namespace Prism
 
 		for (int i = 0; i < myActorsToAdd[1].Size(); ++i)
 		{
-			GetScene()->addActor(*myActorsToAdd[1][i]);
+			if (myActorsToAdd[1][i]->getScene() == nullptr)
+			{
+				GetScene()->addActor(*myActorsToAdd[1][i]);
+			}
 		}
 		myActorsToAdd[1].RemoveAll();
 
 		for (int i = 0; i < myActorsToRemove[1].Size(); ++i)
 		{
-			GetScene()->removeActor(*myActorsToRemove[1][i]);
+			if (myActorsToRemove[1][i]->getScene() != nullptr)
+			{
+				GetScene()->removeActor(*myActorsToRemove[1][i]);
+			}
 		}
 		myActorsToRemove[1].RemoveAll();
 	}
@@ -433,6 +438,11 @@ namespace Prism
 		myPositionJobs[0].Add(PositionJob(aDynamicBody, aPosition, PositionJobType::TELEPORT));
 	}
 
+	void PhysicsManager::TeleportToPosition(physx::PxRigidStatic * aStaticBody, const CU::Vector3<float>& aPosition)
+	{
+		myPositionJobs[0].Add(PositionJob(aStaticBody, aPosition, PositionJobType::TELEPORT));
+	}
+
 	void PhysicsManager::MoveToPosition(physx::PxRigidDynamic* aDynamicBody, const CU::Vector3<float>& aPosition)
 	{
 		myPositionJobs[0].Add(PositionJob(aDynamicBody, aPosition, PositionJobType::MOVE));
@@ -445,15 +455,15 @@ namespace Prism
 		
 		if (aPositionJob.myType == PositionJobType::TELEPORT)
 		{
-			aPositionJob.myDynamicBody->setGlobalPose(pose);
+			aPositionJob.myRigidBody->setGlobalPose(pose);
 		}
 		else if (aPositionJob.myType == PositionJobType::MOVE)
 		{
-			aPositionJob.myDynamicBody->setKinematicTarget(pose);
+			static_cast<physx::PxRigidDynamic*>(aPositionJob.myRigidBody)->setKinematicTarget(pose);
 		}
 		else
 		{
-			DL_ASSERT("Unknown position job type.");
+			//DL_ASSERT("Unknown position job type.");
 		}
 	}
 
@@ -550,7 +560,7 @@ namespace Prism
 	void PhysicsManager::Create(PhysicsComponent* aComponent, const PhysicsCallbackStruct& aPhysData
 		, float* aOrientation, const std::string& aFBXPath
 		, physx::PxRigidDynamic** aDynamicBodyOut, physx::PxRigidStatic** aStaticBodyOut
-		, physx::PxShape*** someShapesOut)
+		, physx::PxShape*** someShapesOut, bool aShouldAddToScene)
 	{
 		physx::PxPhysics* core = GetCore();
 
@@ -571,7 +581,10 @@ namespace Prism
 			(*aStaticBodyOut)->createShape(physx::PxTriangleMeshGeometry(mesh), *myDefaultMaterial);
 			(*aStaticBodyOut)->setName(aFBXPath.c_str());
 			(*aStaticBodyOut)->userData = aComponent;
-			GetScene()->addActor(*(*aStaticBodyOut));
+			if (aShouldAddToScene == true)
+			{
+				GetScene()->addActor(*(*aStaticBodyOut));
+			}
 		}
 		else if (aPhysData.myData->myPhysicsType == ePhysics::DYNAMIC)
 		{
@@ -585,8 +598,10 @@ namespace Prism
 			(*aDynamicBodyOut)->setLinearVelocity(physx::PxVec3(0, 0, 0));
 			(*aDynamicBodyOut)->setName(aFBXPath.c_str());
 			(*aDynamicBodyOut)->userData = aComponent;
-			GetScene()->addActor(*(*aDynamicBodyOut));
-
+			if (aShouldAddToScene == true)
+			{
+				GetScene()->addActor(*(*aDynamicBodyOut));
+			}
 			physx::PxU32 nShapes = (*aDynamicBodyOut)->getNbShapes();
 
 			*someShapesOut = new physx::PxShape*[nShapes];
@@ -605,20 +620,32 @@ namespace Prism
 			//(*aDynamicBodyOut)->setLinearVelocity(physx::PxVec3(0, 0, 0));
 			(*aDynamicBodyOut)->setName(aFBXPath.c_str());
 			(*aDynamicBodyOut)->userData = aComponent;
-			GetScene()->addActor(*(*aDynamicBodyOut));
-
+			if (aShouldAddToScene == true)
+			{
+				GetScene()->addActor(*(*aDynamicBodyOut));
+			}
 			physx::PxU32 nShapes = (*aDynamicBodyOut)->getNbShapes();
 
 			*someShapesOut = new physx::PxShape*[nShapes];
 		}
 		else if (aPhysData.myData->myPhysicsType == ePhysics::PHANTOM)
 		{
-			physx::PxVec3 dimensions(
-				aPhysData.myData->myPhysicsMax.x - aPhysData.myData->myPhysicsMin.x
-				, aPhysData.myData->myPhysicsMax.y - aPhysData.myData->myPhysicsMin.y
-				, aPhysData.myData->myPhysicsMax.z - aPhysData.myData->myPhysicsMin.z);
-			physx::PxBoxGeometry geometry(dimensions / 2.f);
-			*aStaticBodyOut = physx::PxCreateStatic(*core, transform, geometry, *myDefaultMaterial);
+			if (aShouldAddToScene == true)
+			{
+				physx::PxVec3 dimensions(
+					aPhysData.myData->myPhysicsMax.x - aPhysData.myData->myPhysicsMin.x
+					, aPhysData.myData->myPhysicsMax.y - aPhysData.myData->myPhysicsMin.y
+					, aPhysData.myData->myPhysicsMax.z - aPhysData.myData->myPhysicsMin.z);
+				physx::PxBoxGeometry geometry(dimensions / 2.f);
+				*aStaticBodyOut = physx::PxCreateStatic(*core, transform, geometry, *myDefaultMaterial);
+			}
+			else
+			{
+				physx::PxSphereGeometry geometry;
+				geometry.radius = aPhysData.myData->myPhysicsMax.x;
+				*aStaticBodyOut = physx::PxCreateStatic(*core, transform, geometry, *myDefaultMaterial);
+			}
+
 			(*aStaticBodyOut)->userData = aComponent;
 			(*aStaticBodyOut)->setName("Phantom");
 
@@ -630,8 +657,10 @@ namespace Prism
 
 			treasureShape->setFlag(physx::PxShapeFlag::eSIMULATION_SHAPE, false);
 			treasureShape->setFlag(physx::PxShapeFlag::eTRIGGER_SHAPE, true);
-	
-			GetScene()->addActor(*(*aStaticBodyOut));
+			if (aShouldAddToScene == true)
+			{
+				GetScene()->addActor(*(*aStaticBodyOut));
+			}
 		}
 
 		if (aPhysData.myData->myPhysicsType != ePhysics::STATIC)
@@ -652,28 +681,34 @@ namespace Prism
 
 	void PhysicsManager::Remove(physx::PxRigidDynamic* aDynamic, const PhysicsComponentData& aData)
 	{
-		//GetScene()->removeActor(*aDynamic);
-		myActorsToRemove[0].Add(aDynamic);
-		for (int i = 0; i < myPhysicsComponentCallbacks.Size(); ++i)
+		if (aDynamic != nullptr && aDynamic->getScene() != nullptr)
 		{
-			if (myPhysicsComponentCallbacks[i].myData == &aData)
+			//GetScene()->removeActor(*aDynamic);
+			myActorsToRemove[0].Add(aDynamic);
+			for (int i = 0; i < myPhysicsComponentCallbacks.Size(); ++i)
 			{
-				myPhysicsComponentCallbacks.RemoveCyclicAtIndex(i);
-				break;
+				if (myPhysicsComponentCallbacks[i].myData == &aData)
+				{
+					myPhysicsComponentCallbacks.RemoveCyclicAtIndex(i);
+					break;
+				}
 			}
 		}
 	}
 
 	void PhysicsManager::Remove(physx::PxRigidStatic* aStatic, const PhysicsComponentData& aData)
 	{
-		//GetScene()->removeActor(*aStatic);
-		myActorsToRemove[0].Add(aStatic);
-		for (int i = 0; i < myPhysicsComponentCallbacks.Size(); ++i)
+		if (aStatic != nullptr && aStatic->getScene() != nullptr)
 		{
-			if (myPhysicsComponentCallbacks[i].myData == &aData)
+			//GetScene()->removeActor(*aStatic);
+			myActorsToRemove[0].Add(aStatic);
+			for (int i = 0; i < myPhysicsComponentCallbacks.Size(); ++i)
 			{
-				myPhysicsComponentCallbacks.RemoveCyclicAtIndex(i);
-				break;
+				if (myPhysicsComponentCallbacks[i].myData == &aData)
+				{
+					myPhysicsComponentCallbacks.RemoveCyclicAtIndex(i);
+					break;
+				}
 			}
 		}
 	}
