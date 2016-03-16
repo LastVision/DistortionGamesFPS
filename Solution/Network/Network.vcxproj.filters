@@ -60,7 +60,18 @@
     <ClCompile Include="NetMessageOnDeath.cpp">
       <Filter>Messages</Filter>
     </ClCompile>
-    <ClCompile Include="NetMessageRequestLevel.cpp" />
+    <ClCompile Include="NetMessageRequestLevel.cpp">
+      <Filter>Messages</Filter>
+    </ClCompile>
+    <ClCompile Include="NetMessageRequestStartGame.cpp">
+      <Filter>Messages</Filter>
+    </ClCompile>
+    <ClCompile Include="NetMessageStartGame.cpp">
+      <Filter>Messages</Filter>
+    </ClCompile>
+    <ClCompile Include="NetMessageLevelLoaded.cpp">
+      <Filter>Messages</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
@@ -117,6 +128,17 @@
     <ClInclude Include="NetMessageOnDeath.h">
       <Filter>Messages</Filter>
     </ClInclude>
-    <ClInclude Include="NetMessageRequestLevel.h" />
+    <ClInclude Include="NetMessageRequestLevel.h">
+      <Filter>Messages</Filter>
+    </ClInclude>
+    <ClInclude Include="NetMessageRequestStartGame.h">
+      <Filter>Messages</Filter>
+    </ClInclude>
+    <ClInclude Include="NetMessageStartGame.h">
+      <Filter>Messages</Filter>
+    </ClInclude>
+    <ClInclude Include="NetMessageLevelLoaded.h">
+      <Filter>Messages</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

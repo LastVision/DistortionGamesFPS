@@ -8,11 +8,11 @@ namespace GUI
 	class GUIManager;
 }
 
-class LobbyState : public GameState, public Subscriber
+class ServerSelectState : public GameState, public Subscriber
 {
 public:
-	LobbyState();
-	~LobbyState();
+	ServerSelectState();
+	~ServerSelectState();
 
 	void InitState(StateStackProxy* aStateStackProxy, GUI::Cursor* aCursor) override;
 	void EndState() override;
@@ -23,10 +23,17 @@ public:
 	void Render() override;
 	void ResumeState() override;
 	void ReceiveMessage(const OnClickMessage& aMessage) override;
-	void ReceiveMessage(const PostMasterNetStartGameMessage& aMessage) override;
 
 private:
+	struct Server
+	{
+		std::string myIp;
+		std::string myName;
+	};
 	GUI::GUIManager* myGUIManager;
-	int myLevelToStart;
+
+	CU::GrowingArray<Server> myServers;
+
+	Server* myServer;
 };
 

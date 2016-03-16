@@ -52,6 +52,7 @@ namespace Prism
 		void SetPhysicsDone();
 		void SetSwapDone();
 #endif
+		bool GetInitDone() const;
 
 		void EndFrame();
 		void Add(const PhysicsCallbackStruct& aCallbackStruct);
@@ -103,6 +104,8 @@ namespace Prism
 		volatile bool myPhysicsDone;
 		volatile bool mySwapDone;
 #endif
+		volatile bool myInitDone;
+
 		struct RaycastJob
 		{
 			RaycastJob() {}
@@ -298,4 +301,9 @@ namespace Prism
 		mySwapDone = true;
 	}
 #endif
+
+	inline bool PhysicsManager::GetInitDone() const
+	{
+		return myInitDone;
+	}
 }

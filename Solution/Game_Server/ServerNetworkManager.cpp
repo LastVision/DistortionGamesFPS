@@ -10,12 +10,14 @@
 #include <NetMessageOnJoin.h>
 #include <NetMessageDisconnect.h>
 #include <NetMessageRequestLevel.h>
+#include <NetMessageRequestStartGame.h>
 #include <NetMessagePingRequest.h>
 #include <NetMessagePingReply.h>
 #include <NetMessagePosition.h>
 #include <NetMessageAddEnemy.h>
 #include <NetMessageOnHit.h>
 #include <NetMessageOnDeath.h>
+#include <NetMessageLevelLoaded.h>
 
 #include <PostMasterNetAddPlayerMessage.h>
 #include <PostMasterNetAddEnemyMessage.h>
@@ -23,9 +25,11 @@
 #include <PostMasterNetSetPositionMessage.h>
 #include <PostMasterNetOnHitMessage.h>
 #include <PostMasterNetOnDeathMessage.h>
+#include <PostMasterNetRequestStartGameMessage.h>
+#include <PostMasterNetLevelLoadedMessage.h>
 
 #define BUFFERSIZE 512
-#define RECONNECT_ATTEMPTS 100
+#define RECONNECT_ATTEMPTS 10000
 
 ServerNetworkManager* ServerNetworkManager::myInstance = nullptr;
 
@@ -104,6 +108,24 @@ void ServerNetworkManager::StartNetwork(unsigned int aPortNum)
 	myNetwork->PrintStatus();
 	__super::StartNetwork(aPortNum);
 	myIsOnline = true;
+}
+
+bool ServerNetworkManager::ListContainsAllClients(const CU::GrowingArray<unsigned int>& someClientIDs) const
+{
+	if (myClients.Size() != someClientIDs.Size())
+	{
+		return false;
+	}
+
+	for each (const Connection& connection in myClients)
+	{
+		if (someClientIDs.Find(connection.myID) == someClientIDs.FoundNone)
+		{
+			return false;
+		}
+	}
+
+	return true;
 }
 
 void ServerNetworkManager::ReceieveThread()
@@ -204,6 +226,7 @@ void ServerNetworkManager::CreateConnection(const std::string& aName, const sock
 	NetMessageOnJoin onJoin = CreateMessage<NetMessageOnJoin>();
 	onJoin.mySenderID = newConnection.myID;
 	AddMessage(onJoin);
+
 	PostMaster::GetInstance()->SendMessage(PostMasterNetAddPlayerMessage(myIDCount, newConnection.myAddress));
 }
 
@@ -334,6 +357,11 @@ void ServerNetworkManager::HandleMessage(const NetMessageRequestLevel& aMessage,
 	++apa;
 }
 
+void ServerNetworkManager::HandleMessage(const NetMessageRequestStartGame&, const sockaddr_in&)
+{
+	PostMaster::GetInstance()->SendMessage(PostMasterNetRequestStartGameMessage());
+}
+
 void ServerNetworkManager::HandleMessage(const NetMessagePingReply& aMessage, const sockaddr_in& aSenderAddress)
 {
 	__super::HandleMessage(aMessage, aSenderAddress);
@@ -366,6 +394,11 @@ void ServerNetworkManager::HandleMessage(const NetMessagePingRequest&, const soc
 void ServerNetworkManager::HandleMessage(const NetMessageOnHit& aMessage, const sockaddr_in& aSenderAddress)
 {
 	__super::HandleMessage(aMessage, aSenderAddress);
+}
+
+void ServerNetworkManager::HandleMessage(const NetMessageLevelLoaded& aMessage, const sockaddr_in&)
+{
+	PostMaster::GetInstance()->SendMessage(PostMasterNetLevelLoadedMessage(aMessage.mySenderID));
 }
 
 void ServerNetworkManager::ReceiveMessage(const PostMasterNetAddEnemyMessage& aMessage)

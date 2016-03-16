@@ -19,6 +19,9 @@ class NetMessagePosition;
 class NetMessageAddEnemy;
 class NetMessageOnHit;
 class NetMessageOnDeath;
+class NetMessageRequestStartGame;
+class NetMessageStartGame;
+class NetMessageLevelLoaded;
 
 class SharedNetworkManager
 {
@@ -121,6 +124,9 @@ protected:
 	virtual void HandleMessage(const NetMessageAddEnemy& aMessage, const sockaddr_in& aSenderAddress);
 	virtual void HandleMessage(const NetMessageOnHit& aMessage, const sockaddr_in& aSenderAddress);
 	virtual void HandleMessage(const NetMessageOnDeath& aMessage, const sockaddr_in& aSenderAddress);
+	virtual void HandleMessage(const NetMessageRequestStartGame& aMessage, const sockaddr_in& aSenderAddress);
+	virtual void HandleMessage(const NetMessageStartGame& aMessage, const sockaddr_in& aSenderAddress);
+	virtual void HandleMessage(const NetMessageLevelLoaded& aMessage, const sockaddr_in& aSenderAddress);
 
 
 	std::thread* myReceieveThread;
@@ -175,6 +181,7 @@ inline void SharedNetworkManager::AddMessage(T aMessage, unsigned int aTargetID)
 	unsigned int importantID = 0;
 	if (isImportant == true)
 	{
+		aMessage.SetImportantID(myImportantID++);
 		importantID = aMessage.GetImportantID();
 	}
 

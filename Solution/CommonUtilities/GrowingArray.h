@@ -38,7 +38,7 @@ namespace CU
 		inline void RemoveCyclicAtIndex(SizeType aItemNumber);
 		inline void RemoveNonCyclic(const ObjectType& aObject);
 		inline void RemoveNonCyclicAtIndex(SizeType aItemNumber);
-		inline SizeType Find(const ObjectType& aObject);
+		inline SizeType Find(const ObjectType& aObject) const;
 
 		inline ObjectType& GetLast();
 		inline const ObjectType& GetLast() const;
@@ -352,7 +352,7 @@ namespace CU
 	}
 
 	GA_TEMPLATE
-	inline SizeType GA_TYPE::Find(const ObjectType& aObject)
+	inline SizeType GA_TYPE::Find(const ObjectType& aObject) const
 	{
 		DL_ASSERT_EXP(myIsInit == true, "Not initialized, run Init first.");
 

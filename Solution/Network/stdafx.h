@@ -9,6 +9,8 @@
 #include <stdio.h>
 #include <stdint.h>
 
+#include "NetworkMessageTypes.h"
+
 #pragma comment(lib, "Ws2_32.lib")
 
 #include <MemoryMacros.h>

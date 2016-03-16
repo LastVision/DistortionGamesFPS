@@ -14,6 +14,7 @@
 #include <NetMessagePosition.h>
 #include <NetMessageAddEnemy.h>
 #include <NetMessageOnDeath.h>
+#include <NetMessageStartGame.h>
 
 #include <PostMasterNetAddPlayerMessage.h>
 #include <PostMasterNetOnHitMessage.h>
@@ -23,6 +24,8 @@
 #include <PostMasterNetSendPositionMessage.h>
 #include <PostMasterNetOnDisconnectMessage.h>
 #include <PostMasterNetOnDeathMessage.h>
+#include <PostMasterNetStartGameMessage.h>
+
 #define BUFFERSIZE 512
 
 ClientNetworkManager* ClientNetworkManager::myInstance = nullptr;
@@ -232,6 +235,11 @@ void ClientNetworkManager::HandleMessage(const NetMessageAddEnemy& aMessage, con
 void ClientNetworkManager::HandleMessage(const NetMessageOnDeath& aMessage, const sockaddr_in&)
 {
 	PostMaster::GetInstance()->SendMessage(PostMasterNetOnDeathMessage(aMessage.myGID));
+}
+
+void ClientNetworkManager::HandleMessage(const NetMessageStartGame& aMessage, const sockaddr_in&)
+{
+	PostMaster::GetInstance()->SendMessage(PostMasterNetStartGameMessage(aMessage.myLevelID));
 }
 
 void ClientNetworkManager::UpdateImportantMessages(float aDeltaTime)

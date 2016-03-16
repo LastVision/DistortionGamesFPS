@@ -7,7 +7,7 @@ class ServerLevelFactory;
 class ServerInGameState : public ServerState
 {
 public:
-	ServerInGameState();
+	ServerInGameState(int aLevelID);
 	~ServerInGameState();
 
 	void InitState(ServerStateStackProxy* aStateStackProxy) override;
@@ -18,5 +18,6 @@ public:
 private:
 	ServerLevel* myLevel;
 	ServerLevelFactory* myLevelFactory;
+	int myLevelID;
 };
 

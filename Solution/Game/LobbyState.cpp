@@ -1,18 +1,21 @@
 #include "stdafx.h"
-#include "LobbyState.h"
+
+#include "ClientNetworkManager.h"
 #include <Cursor.h>
 #include <fstream>
 #include <GUIManager.h>
+#include "InGameState.h"
 #include <InputWrapper.h>
-#include "ClientNetworkManager.h"
-#include <PostMaster.h>
+#include "LobbyState.h"
+#include <NetMessageRequestStartGame.h>
 #include <OnClickMessage.h>
+#include <PostMaster.h>
+#include <PostMasterNetStartGameMessage.h>
 
 
 LobbyState::LobbyState()
 	: myGUIManager(nullptr)
-	, myServer(nullptr)
-	, myServers(16)
+	, myLevelToStart(-1)
 {
 }
 
@@ -22,14 +25,16 @@ LobbyState::~LobbyState()
 	SAFE_DELETE(myGUIManager);
 	myCursor = nullptr;
 	PostMaster::GetInstance()->UnSubscribe(eMessageType::ON_CLICK, this);
+	PostMaster::GetInstance()->UnSubscribe(eMessageType::NETWORK_START_GAME, this);
 }
 
 void LobbyState::InitState(StateStackProxy* aStateStackProxy, GUI::Cursor* aCursor)
 {
 	PostMaster::GetInstance()->Subscribe(eMessageType::ON_CLICK, this);
+	PostMaster::GetInstance()->Subscribe(eMessageType::NETWORK_START_GAME, this);
 	myCursor = aCursor;
 	myIsActiveState = true;
-	myIsLetThrough = true;
+	myIsLetThrough = false;
 	myStateStatus = eStateStatus::eKeepState;
 	myStateStack = aStateStackProxy;
 
@@ -38,31 +43,15 @@ void LobbyState::InitState(StateStackProxy* aStateStackProxy, GUI::Cursor* aCurs
 	const CU::Vector2<int>& windowSize = Prism::Engine::GetInstance()->GetWindowSizeInt();
 	OnResize(windowSize.x, windowSize.y);
 
-	std::ifstream stream;
-	stream.open("Data/Setting/ip.txt");
-
-	int i = 0;
-	Server server;
-	while (stream >> server.myIp && i < 9)
-	{
-		++i;
-		stream >> server.myName;
-
-		myServers.Add(server);
-	}
-
-	for (int i = 0; i < myServers.Size(); ++i)
-	{
-		std::string text(myServers[i].myName + ": " + myServers[i].myIp);
-		myGUIManager->SetButtonText(i, text);
-	}
 	myCursor->SetShouldRender(true);
+	myLevelToStart = -1;
 }
 
 void LobbyState::EndState()
 {
 	myIsActiveState = false;
 	myCursor->SetShouldRender(false);
+	myLevelToStart = -1;
 }
 
 void LobbyState::OnResize(int aX, int aY)
@@ -75,14 +64,13 @@ const eStateStatus LobbyState::Update(const float& aDeltaTime)
 	if (CU::InputWrapper::GetInstance()->KeyDown(DIK_ESCAPE) == true
 		|| CU::InputWrapper::GetInstance()->KeyDown(DIK_N) == true)
 	{
+		bool ShouldDisconnectFromServerHere = true;
 		return eStateStatus::ePopSubState;
 	}
 
-	if (myServer != nullptr)
+	if (myLevelToStart != -1)
 	{
-		ClientNetworkManager::GetInstance()->ConnectToServer(myServer->myIp.c_str());
-
-		return eStateStatus::ePopSubState;
+		myStateStack->PushSubGameState(new InGameState(myLevelToStart));
 	}
 
 	myGUIManager->Update(aDeltaTime);
@@ -98,6 +86,7 @@ void LobbyState::Render()
 void LobbyState::ResumeState()
 {
 	myIsActiveState = true;
+	myLevelToStart = -1;
 }
 
 void LobbyState::ReceiveMessage(const OnClickMessage& aMessage)
@@ -106,12 +95,18 @@ void LobbyState::ReceiveMessage(const OnClickMessage& aMessage)
 	{
 		switch (aMessage.myEvent)
 		{
-		case eOnClickEvent::CONNECT:
-			myServer = &myServers[aMessage.myID];
+		case eOnClickEvent::START_GAME:
+			ClientNetworkManager::GetInstance()->AddMessage(NetMessageRequestStartGame());
 			break;
 		default:
 			DL_ASSERT("Unknown event.");
 			break;
 		}
 	}
+}
+
+void LobbyState::ReceiveMessage(const PostMasterNetStartGameMessage& aMessage)
+{
+	PostMaster::GetInstance()->UnSubscribe(eMessageType::ON_CLICK, this);
+	myLevelToStart = aMessage.myLevelID;
 }
