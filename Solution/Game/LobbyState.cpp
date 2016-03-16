@@ -68,8 +68,15 @@ const eStateStatus LobbyState::Update(const float& aDeltaTime)
 		return eStateStatus::ePopSubState;
 	}
 
+	if (CU::InputWrapper::GetInstance()->KeyDown(DIK_SPACE) == true)
+	{
+		ClientNetworkManager::GetInstance()->AddMessage(NetMessageRequestStartGame());
+	}
+
 	if (myLevelToStart != -1)
 	{
+		PostMaster::GetInstance()->UnSubscribe(eMessageType::ON_CLICK, this);
+		PostMaster::GetInstance()->UnSubscribe(eMessageType::NETWORK_START_GAME, this);
 		myStateStack->PushSubGameState(new InGameState(myLevelToStart));
 	}
 
@@ -107,6 +114,5 @@ void LobbyState::ReceiveMessage(const OnClickMessage& aMessage)
 
 void LobbyState::ReceiveMessage(const PostMasterNetStartGameMessage& aMessage)
 {
-	PostMaster::GetInstance()->UnSubscribe(eMessageType::ON_CLICK, this);
 	myLevelToStart = aMessage.myLevelID;
 }

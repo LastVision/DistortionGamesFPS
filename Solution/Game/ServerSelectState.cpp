@@ -80,6 +80,11 @@ const eStateStatus ServerSelectState::Update(const float& aDeltaTime)
 		return eStateStatus::ePopSubState;
 	}
 
+	if (CU::InputWrapper::GetInstance()->KeyDown(DIK_SPACE) == true)
+	{
+		myServer = &myServers[0];
+	}
+
 	if (myServer != nullptr)
 	{
 		ClientNetworkManager::GetInstance()->ConnectToServer(myServer->myIp.c_str());
