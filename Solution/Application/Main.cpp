@@ -25,6 +25,7 @@ Prism::SetupInfo globalSetup;
 
 void InitRawInput(const HWND&)
 {
+	aHwnd;
 	/*RAWINPUTDEVICE Rid[1];
 	Rid[0].usUsagePage = 0x01;
 	Rid[0].usUsage = 0x02;
@@ -256,8 +257,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		}
 
 		raw = (RAWINPUT*)lpb;
-		float deltaX = static_cast<float>(raw->data.mouse.lLastX);
-		float deltaY = static_cast<float>(raw->data.mouse.lLastY);
+		int deltaX = raw->data.mouse.lLastX;
+		int deltaY = raw->data.mouse.lLastY;
 		if (CU::InputWrapper::GetInstance() != nullptr)
 		{
 			CU::InputWrapper::GetInstance()->FeedMouseRawInput(deltaX, deltaY);
