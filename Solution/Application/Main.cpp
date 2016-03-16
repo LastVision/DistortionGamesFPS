@@ -157,7 +157,6 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPTSTR, int aNumberCommands)
 		UINT cbSize = rdi.cbSize;
 		if (GetRawInputDeviceInfo(pRawInputDeviceList[i].hDevice, RIDI_DEVICEINFO, &rdi, &cbSize) < 0)
 		{
-			int apa = 5;
 		}
 
 		if (rdi.dwType == RIM_TYPEMOUSE)
@@ -165,7 +164,6 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPTSTR, int aNumberCommands)
 			rdi.mouse.dwId;
 			rdi.mouse.dwNumberOfButtons;
 			rdi.mouse.dwSampleRate;
-			int apa = 5;
 		}
 		if (rdi.dwType == RIM_TYPEKEYBOARD)
 		{
@@ -175,7 +173,6 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPTSTR, int aNumberCommands)
 			rdi.keyboard.dwNumberOfKeysTotal;
 			rdi.keyboard.dwType;
 			rdi.keyboard.dwSubType;
-			int apa = 5;
 		}
 		if (rdi.dwType == RIM_TYPEHID)
 		{
@@ -184,7 +181,6 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPTSTR, int aNumberCommands)
 			rdi.hid.dwVersionNumber;
 			rdi.hid.usUsage;
 			rdi.hid.usUsagePage;
-			int apa = 5;
 		}
 	}
 
