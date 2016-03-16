@@ -24,6 +24,7 @@ Shotgun::Shotgun()
 	reader.ForceReadAttribute(reader.ForceFindFirstChild(shotgunElement, "minspreadrotation"), "value", myMinSpreadRotation);
 	reader.ForceReadAttribute(reader.ForceFindFirstChild(shotgunElement, "maxspreadrotation"), "value", myMaxSpreadRotation);
 	reader.ForceReadAttribute(reader.ForceFindFirstChild(shotgunElement, "shoottime"), "value", myShootTime);
+	reader.ForceReadAttribute(reader.ForceFindFirstChild(shotgunElement, "forceStrength"), "value", myForceStrength);
 
 	myAmmoInClip = myClipSize;
 	myShootTimer = myShootTime;
@@ -74,7 +75,7 @@ void Shotgun::HandleRaycast(PhysicsComponent* aComponent, const CU::Vector3<floa
 	{
 		if (aComponent->GetPhysicsType() == ePhysics::DYNAMIC)
 		{
-			aComponent->AddForce(aDirection, 25.f);
+			aComponent->AddForce(aDirection, myForceStrength);
 		}
 		aComponent->GetEntity().SendNote<DamageNote>(DamageNote(myDamage));
 

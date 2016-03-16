@@ -17,6 +17,7 @@ ShootingComponent::ShootingComponent(Entity& anEntity, Prism::Scene* aScene)
 	, myShotgun(nullptr)
 	, myGrenadeLauncher(nullptr)
 {
+
 	myPistol = new Pistol();
 	myShotgun = new Shotgun();
 	myGrenadeLauncher = new GrenadeLauncher(aScene);
@@ -28,6 +29,11 @@ ShootingComponent::~ShootingComponent()
 	SAFE_DELETE(myPistol);
 	SAFE_DELETE(myShotgun);
 	SAFE_DELETE(myGrenadeLauncher);
+}
+
+void ShootingComponent::Init(Prism::Scene* aScene)
+{
+	myPistol->Init(aScene, myEntity.GetComponent<FirstPersonRenderComponent>()->GetUIJointOrientation());
 }
 
 void ShootingComponent::Update(float aDelta)
@@ -132,6 +138,11 @@ void ShootingComponent::Update(float aDelta)
 	myPistol->Update(aDelta);
 	myGrenadeLauncher->Update(aDelta);
 	myShotgun->Update(aDelta);
+}
+
+void ShootingComponent::Render()
+{
+	myCurrentWeapon->Render();
 }
 
 Weapon* ShootingComponent::GetWeapon(eWeaponType aWeaponType)

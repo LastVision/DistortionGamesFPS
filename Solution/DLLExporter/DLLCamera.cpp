@@ -12,7 +12,7 @@ DLLCamera::DLLCamera(CU::Vector2<float>& aWindowSize, float aMovementSpeed, floa
 	, myRotationSpeed(aRotationSpeed)
 	, myZoomSpeed(aZoomSpeed)
 {
-	myOrientation.SetPos({ 0, 1.5f, 0 });
+	myOrientation.SetPos({ 0, 0, 0 });
 	myOriginalOrientation = myOrientation;
 	myCamera = new Prism::Camera(myOrientation);
 	myCamera->OnResize(aWindowSize.x, aWindowSize.y);

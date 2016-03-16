@@ -39,7 +39,7 @@ protected:
 	virtual void LoadUnits(XMLReader& aReader, tinyxml2::XMLElement* aElement) = 0;
 	virtual void LoadTriggers(XMLReader& aReader, tinyxml2::XMLElement* aElement) = 0;
 
-	void ReadGID(XMLReader& aReader, tinyxml2::XMLElement* aElement, unsigned int aOutGID);
+	void ReadGID(XMLReader& aReader, tinyxml2::XMLElement* aElement, unsigned int& aOutGID);
 	void ReadOrientation(XMLReader& aReader, tinyxml2::XMLElement* aElement,
 		CU::Vector3f& aOutPosition, CU::Vector3f& aOutRotation, CU::Vector3f& aOutScale);
 

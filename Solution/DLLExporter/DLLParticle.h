@@ -1,7 +1,7 @@
 #pragma once
 #include <string>
 #include <Matrix.h>
-
+#include "DLLParticleData.h"
 namespace Prism
 {
 	class Camera;
@@ -16,6 +16,8 @@ public:
 	~DLLParticle();
 
 	void LoadParticle(std::string& aParticleFile);
+	void LoadParticle(const ToolParticleData& aParticleDataStruct);
+
 	void Update(float aDeltaTime);
 	void Render(Prism::Camera* aCamera);
 private:

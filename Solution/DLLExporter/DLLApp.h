@@ -13,11 +13,13 @@ class DLLCamera;
 class DLLModel;
 class DLLParticle;
 
+
 namespace Prism
 {
 	class DirectionalLight;
 	class Scene;
-
+	class Room;
+	class Instance;
 	struct SetupInfo;
 };
 
@@ -34,7 +36,10 @@ public:
 	~DLLApp();
 
 	void Render();
+	void RenderScene();
 	void Update();
+
+	void RemoveActiveModel();
 
 	void LoadModel(const char* aModelFile, const char* aShaderFile);
 	void LoadParticle(const char* aParticleFile);
@@ -54,7 +59,6 @@ public:
 private:
 	void LogicUpdate(float aDeltaTime);
 
-
 	bool HasMouseDeltaXMoved();
 	bool HasMouseDeltaYMoved();
 
@@ -66,8 +70,9 @@ private:
 	DLLCamera* myCamera;
 	DLLModel* myModel;
 	DLLParticle* myParticle;
-
+	Prism::Instance* myInstance;
 	CU::TimerManager* myTimeManager;
+
 
 	Prism::DirectionalLight* myDirectionalLight;
 	CU::Vector3f myDirectionalLightRotation;
@@ -81,6 +86,7 @@ private:
 	std::string myShaderFile;
 
 	Prism::Scene myScene;
+	Prism::Room* myRoom;
 };
 
 inline bool DLLApp::HasMouseDeltaYMoved()

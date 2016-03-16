@@ -2,6 +2,8 @@
 #include <CollisionNote.h>
 #include <Entity.h>
 #include <EntityFactory.h>
+#include <EmitterMessage.h>
+#include <PostMaster.h>
 #include <PhysicsInterface.h>
 #include <PhysicsComponent.h>
 #include "SharedLevel.h"
@@ -32,6 +34,7 @@ SharedLevel::~SharedLevel()
 void SharedLevel::AddEntity(Entity* aEntity)
 {
 	myActiveEntities.Add(aEntity);
+	myActiveEntitiesMap[aEntity->GetGID()] = aEntity;
 }
 
 void SharedLevel::AddEnemy(Entity* anEntity)
@@ -78,6 +81,8 @@ void SharedLevel::CollisionCallback(PhysicsComponent* aFirst, PhysicsComponent* 
 		else if (firstTrigger->GetTriggerType() == eTriggerType::UNLOCK)
 		{
 			//firstTrigger->
+			PostMaster::GetInstance()->SendMessage(EmitterMessage("Unlock", myActiveEntitiesMap[firstTrigger->GetValue()]->GetOrientation().GetPos()));
+			myActiveEntitiesMap[firstTrigger->GetValue()]->Kill();
 		}
 		else
 		{

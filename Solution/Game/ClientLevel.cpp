@@ -28,6 +28,7 @@
 #include <PostMasterNetRemovePlayer.h>
 #include <PostMasterNetAddEnemyMessage.h>
 #include <PostMasterNetOnDeathMessage.h>
+#include <ShootingComponent.h>
 
 #include "ClientNetworkManager.h"
 #include "DeferredRenderer.h"
@@ -154,6 +155,7 @@ void ClientLevel::Render()
 	//myDeferredRenderer->Render(myScene);
 	myEmitterManager->RenderEmitters();
 	myPlayer->GetComponent<FirstPersonRenderComponent>()->Render();
+	myPlayer->GetComponent<ShootingComponent>()->Render();
 }
 
 void ClientLevel::ReceiveMessage(const PostMasterNetAddPlayerMessage& aMessage)

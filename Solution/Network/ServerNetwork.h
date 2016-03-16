@@ -14,7 +14,7 @@ public:
 
 	void Receieve(std::vector<Buffer>& someBuffers);
 
-
+	void PrintStatus();
 private:
 
 	void Send(NetMessageOnJoin join);
@@ -25,7 +25,7 @@ private:
 	SOCKET myListenSocket;
 	WSADATA myWSAData;
 
-	const char* myPort;
+	std::string myPort;
 
 
 	

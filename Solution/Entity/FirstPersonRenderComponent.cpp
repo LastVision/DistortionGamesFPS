@@ -190,6 +190,11 @@ void FirstPersonRenderComponent::RestartCurrentAnimation()
 	myModel->ResetAnimationTime(0.f);
 }
 
+const CU::Matrix44<float>& FirstPersonRenderComponent::GetUIJointOrientation() const
+{
+	return myUIJoint;
+}
+
 void FirstPersonRenderComponent::AddAnimation(ePlayerState aState, const std::string& aAnimationPath
 	, bool aLoopFlag, bool aResetTimeOnRestart)
 {

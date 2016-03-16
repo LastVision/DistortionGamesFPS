@@ -1,5 +1,6 @@
 #pragma once
 #include <GrowingArray.h>
+#include <unordered_map>
 #include <Subscriber.h>
 
 class Entity;
@@ -26,5 +27,7 @@ protected:
 	CU::GrowingArray<Entity*> myActiveEnemies;
 	CU::GrowingArray<Entity*> myInactiveEnemies;
 	CU::GrowingArray<Entity*> myPlayers;
+
+	std::unordered_map<unsigned int, Entity*> myActiveEntitiesMap;
 };
 
