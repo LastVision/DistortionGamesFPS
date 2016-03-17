@@ -19,11 +19,14 @@
 #include "GameEnum.h"
 #include <PhysicsInterface.h>
 
+#include <NetMessageAddEnemy.h>
+#include <NetMessageConnectReply.h>
+#include <NetMessageDisconnect.h>
+#include <NetMessageLevelLoaded.h>
+#include <NetMessageOnDeath.h>
+#include <NetMessageOnHit.h>
 #include <NetMessageOnJoin.h>
 #include <NetMessageRequestConnect.h>
-#include <NetMessageDisconnect.h>
-#include <NetMessageOnHit.h>
-#include <NetMessageLevelLoaded.h>
 
 #include "ClientNetworkManager.h"
 #include "DeferredRenderer.h"
@@ -157,7 +160,7 @@ void ClientLevel::Render()
 	//myDeferredRenderer->Render(myScene);
 	myEmitterManager->RenderEmitters();
 	myPlayer->GetComponent<FirstPersonRenderComponent>()->Render();
-	myPlayer->GetComponent<ShootingComponent>()->Render();
+	//myPlayer->GetComponent<ShootingComponent>()->Render();
 }
 
 void ClientLevel::ReceiveNetworkMessage(const NetMessageOnJoin& aMessage, const sockaddr_in& aSenderAddress)
@@ -172,13 +175,13 @@ void ClientLevel::ReceiveNetworkMessage(const NetMessageOnJoin& aMessage, const 
 	myPlayers.Add(newPlayer);
 	Prism::MemoryTracker::GetInstance()->SetRunTime(isRunTime);
 }
-void ClientLevel::ReceiveNetworkMessage(const NetMessageConnectMessage& aMessage, const sockaddr_in& aSenderAddress)
+void ClientLevel::ReceiveNetworkMessage(const NetMessageConnectReply& aMessage, const sockaddr_in& aSenderAddress)
 {
-	if (aMessage.myServerID == ClientNetworkManager::GetInstance()->GetGID())
+	if (aMessage.myGID == ClientNetworkManager::GetInstance()->GetGID())
 	{
-		myPlayer->SetGID(aMessage.myServerID);
+		myPlayer->SetGID(aMessage.myGID);
 	}
-	else
+	/*else
 	{
 	bool isRunTime = Prism::MemoryTracker::GetInstance()->GetRunTime();
 	Prism::MemoryTracker::GetInstance()->SetRunTime(false);

@@ -1,7 +1,7 @@
 #pragma once
 #include <vector>
-#include <NetworkMessageTypes.h>
-#include <NetworkSubscriber.h>
+#include "NetworkMessageTypes.h"
+#include "NetworkSubscriber.h"
 
 namespace std
 {
@@ -21,6 +21,8 @@ struct NetworkSubscriberInfo
 class SharedNetworkManager : public NetworkSubscriber
 {
 public:
+	virtual ~SharedNetworkManager();
+	static SharedNetworkManager* GetInstance();
 
 	virtual void Initiate();
 	virtual void StartNetwork(unsigned int aPortNum);
@@ -53,6 +55,8 @@ public:
 	void ReceiveNetworkMessage(const NetMessagePingReply& aMessage, const sockaddr_in& aSenderAddress) override;
 
 protected:
+	static SharedNetworkManager* myInstance;
+
 	struct ImportantClient
 	{
 		float myTimer;
@@ -96,7 +100,7 @@ protected:
 	};
 
 	SharedNetworkManager();
-	virtual ~SharedNetworkManager();
+	
 
 	virtual void UpdateImportantMessages(float aDeltaTime) = 0;
 
@@ -112,7 +116,7 @@ protected:
 	bool CheckIfImportantMessage(T aMessage);
 
 	template<typename T>
-	void SendToSubscriber(const T& aMessage);
+	void SendToSubscriber(const T& aMessage, const sockaddr_in& aSenderAddress);
 	void HandleMessage();
 
 	std::thread* myReceieveThread;
@@ -192,7 +196,7 @@ void SharedNetworkManager::UnpackAndHandle(T aMessage, Buffer& aBuffer)
 	}
 	if (AlreadyReceived(aMessage) == false)
 	{
-		SendToSubscriber(aMessage)
+		SendToSubscriber(aMessage, aBuffer.mySenderAddress);
 	}
 }
 
@@ -203,7 +207,7 @@ bool SharedNetworkManager::CheckIfImportantMessage(T aMessage)
 }
 
 template<typename T>
-void SharedNetworkManager::SendToSubscriber(const T& aMessage)
+void SharedNetworkManager::SendToSubscriber(const T& aMessage, const sockaddr_in& aSenderAddress)
 {
 	CU::GrowingArray<NetworkSubscriberInfo>& subscribers = mySubscribers[static_cast<int>(aMessage.myID)];
 
@@ -211,7 +215,7 @@ void SharedNetworkManager::SendToSubscriber(const T& aMessage)
 	{
 		for (int i = 0; i < subscribers.Size(); ++i)
 		{
-			subscribers[i].myNetworkSubscriber->RecieveNetworkMessage(aMessage);
+			subscribers[i].myNetworkSubscriber->ReceiveNetworkMessage(aMessage, aSenderAddress);
 		}
 	}
 	else

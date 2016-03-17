@@ -17,19 +17,7 @@
 #include <NetMessageOnDeath.h>
 #include <NetMessageStartGame.h>
 
-#include <PostMasterNetAddPlayerMessage.h>
-#include <PostMasterNetOnHitMessage.h>
-#include <PostMasterNetRemovePlayer.h>
-#include <PostMasterNetAddEnemyMessage.h>
-#include <PostMasterNetSetPositionMessage.h>
-#include <PostMasterNetSendPositionMessage.h>
-#include <PostMasterNetOnDisconnectMessage.h>
-#include <PostMasterNetOnDeathMessage.h>
-#include <PostMasterNetStartGameMessage.h>
-
 #define BUFFERSIZE 512
-
-ClientNetworkManager* ClientNetworkManager::myInstance = nullptr;
 
 ClientNetworkManager::ClientNetworkManager()
 {
@@ -83,7 +71,7 @@ ClientNetworkManager* ClientNetworkManager::GetInstance()
 {
 	if (myInstance != nullptr)
 	{
-		return myInstance;
+		return static_cast<ClientNetworkManager*>(myInstance);
 	}
 	DL_ASSERT("Instance were null, did you forget to create the ClientNetworkManager?");
 	return nullptr;
@@ -145,13 +133,8 @@ void ClientNetworkManager::ConnectToServer(const char* aServerIP)
 	char username[256 + 1];
 	DWORD username_len = 256 + 1;
 	GetUserNameA(username, &username_len);
-	NetMessageRequestConnect connect = CreateMessage<NetMessageRequestConnect>();
-	connect.myName = username;
-	connect.myServerID = 0;
-	AddMessage(connect);
 
-	myName = username;
-	AddMessage(NetMessageConnectMessage(username, 0));
+	AddMessage(NetMessageRequestConnect(username, 0));
 }
 
 unsigned int ClientNetworkManager::GetGID() const
@@ -164,20 +147,20 @@ const CU::GrowingArray<OtherClients>& ClientNetworkManager::GetClients()
 	return myClients;
 }
 
-void ClientNetworkManager::ReceiveMessage(const PostMasterNetSendPositionMessage& aMessage)
-{
-	AddMessage(NetMessagePosition(aMessage.myPosition, aMessage.myRotationY, aMessage.myGID));
-}
-
-void ClientNetworkManager::ReceiveMessage(const PostMasterNetOnDisconnectMessage&)
-{
-	AddMessage(NetMessageDisconnect(myGID));
-}
-
-void ClientNetworkManager::ReceiveMessage(const PostMasterNetOnHitMessage& aMessage)
-{
-	AddMessage(NetMessageOnHit(aMessage.myDamage, aMessage.myDamage));
-}
+//void ClientNetworkManager::ReceiveMessage(const PostMasterNetSendPositionMessage& aMessage)
+//{
+//	AddMessage(NetMessagePosition(aMessage.myPosition, aMessage.myRotationY, aMessage.myGID));
+//}
+//
+//void ClientNetworkManager::ReceiveMessage(const PostMasterNetOnDisconnectMessage&)
+//{
+//	AddMessage(NetMessageDisconnect(myGID));
+//}
+//
+//void ClientNetworkManager::ReceiveMessage(const PostMasterNetOnHitMessage& aMessage)
+//{
+//	AddMessage(NetMessageOnHit(aMessage.myDamage, aMessage.myDamage));
+//}
 
 void ClientNetworkManager::DebugPrint()
 { 
@@ -200,26 +183,31 @@ void ClientNetworkManager::ReceiveNetworkMessage(const NetMessageDisconnect& aMe
 }
 
 void ClientNetworkManager::ReceiveNetworkMessage(const NetMessagePingRequest&, const sockaddr_in&)
-	{
+{
 	AddMessage(NetMessagePingReply());
-	}
+}
 
-void ClientNetworkManager::HandleMessage(const NetMessageConnectReply& aMessage, const sockaddr_in&)
+void ClientNetworkManager::ReceiveNetworkMessage(const NetMessageConnectReply& aMessage, const sockaddr_in&)
 {
 	if (aMessage.myType == NetMessageConnectReply::eType::SUCCESS)
 	{
 		myGID = aMessage.myGID;
 	}
 	else
-void ClientNetworkManager::ReceiveNetworkMessage(const NetMessageConnectMessage& aMessage, const sockaddr_in&)
-{
+	{
 		DL_ASSERT("Failed to connect");
 	}
 }
 
-void ClientNetworkManager::HandleMessage(const NetMessageRequestConnect& aMessage, const sockaddr_in&)
-	{
+void ClientNetworkManager::ReceiveNetworkMessage(const NetMessageOnJoin&, const sockaddr_in&)
+{
+
+}
+
+void ClientNetworkManager::ReceiveNetworkMessage(const NetMessageRequestConnect& aMessage, const sockaddr_in&)
+{
 	DL_ASSERT("Should not happen");
+}
 	/*if (aMessage.myOtherClientID != myGID)
 	{
 		myClients.Add(OtherClients(aMessage.myOtherClientID));
@@ -247,7 +235,7 @@ void ClientNetworkManager::HandleMessage(const NetMessageStartGame& aMessage, co
 {
 	PostMaster::GetInstance()->SendMessage(PostMasterNetStartGameMessage(aMessage.myLevelID));
 }
-
+*/
 void ClientNetworkManager::UpdateImportantMessages(float aDeltaTime)
 {
 	for (ImportantMessage& msg : myImportantMessagesBuffer)

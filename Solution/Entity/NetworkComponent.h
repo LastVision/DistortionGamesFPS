@@ -1,7 +1,7 @@
 #pragma once
 #include "Component.h"
-#include "Subscriber.h"
-class NetworkComponent : public Component, public Subscriber
+#include <NetworkSubscriber.h>
+class NetworkComponent : public Component, public NetworkSubscriber
 {
 public:
 	NetworkComponent(Entity& anEntity, CU::Matrix44<float>& anOrientation);
@@ -13,8 +13,8 @@ public:
 
 	void Update(float aDelta) override;
 
-	void ReceiveMessage(const PostMasterNetSetPositionMessage& aMessage) override;
-	void ReceiveMessage(const PostMasterNetOnHitMessage& aMessage) override;
+	void ReceiveNetworkMessage(const NetMessagePosition& aMessage, const sockaddr_in& aSenderAddress) override;
+	void ReceiveNetworkMessage(const NetMessageOnHit& aMessage, const sockaddr_in& aSenderAddress) override;
 
 	void SetPlayer(bool aBool);
 

@@ -1,28 +1,36 @@
 #include "stdafx.h"
 #include "SharedNetworkManager.h"
 
-#include <NetMessage.h>
-#include <NetMessageImportantReply.h>
-#include <NetMessageConnectReply.h>
-#include <NetMessageRequestConnect.h>
-#include <NetMessageOnJoin.h>
-#include <NetMessageDisconnect.h>
-#include <NetMessageRequestLevel.h>
-#include <NetMessageRequestStartGame.h>
-#include <NetMessagePingRequest.h>
-#include <NetMessagePingReply.h>
-#include <NetMessagePosition.h>
-#include <NetMessageAddEnemy.h>
-#include <NetMessageOnHit.h>
-#include <NetMessageOnDeath.h>
-#include <NetMessageStartGame.h>
-#include <NetMessageLevelLoaded.h>
-
-#include <PostMaster.h>
-#include <PostMasterNetOnHitMessage.h>
-#include <PostMasterNetSetPositionMessage.h>
+#include "NetMessage.h"
+#include "NetMessageImportantReply.h"
+#include "NetMessageConnectReply.h"
+#include "NetMessageRequestConnect.h"
+#include "NetMessageOnJoin.h"
+#include "NetMessageDisconnect.h"
+#include "NetMessageRequestLevel.h"
+#include "NetMessageRequestStartGame.h"
+#include "NetMessagePingRequest.h"
+#include "NetMessagePingReply.h"
+#include "NetMessagePosition.h"
+#include "NetMessageAddEnemy.h"
+#include "NetMessageOnHit.h"
+#include "NetMessageOnDeath.h"
+#include "NetMessageStartGame.h"
+#include "NetMessageLevelLoaded.h"
 
 #define BUFFERSIZE 512
+
+SharedNetworkManager* SharedNetworkManager::myInstance = nullptr;
+
+SharedNetworkManager* SharedNetworkManager::GetInstance()
+{
+	if (myInstance != nullptr)
+	{
+		return myInstance;
+	}
+	DL_ASSERT("Instance were null, did you forget to create the NetworkManager?");
+	return nullptr;
+}
 
 void SharedNetworkManager::Initiate()
 {
@@ -286,12 +294,12 @@ void SharedNetworkManager::HandleMessage()
 	}
 }
 
-void SharedNetworkManager::ReceiveNetworkMessage(const NetMessagePingReply& aMessage, const sockaddr_in& aSenderAddress)
+void SharedNetworkManager::ReceiveNetworkMessage(const NetMessagePingReply&, const sockaddr_in&)
 {
 	myMS = myResponsTime * 1000.f;
 }
 
-void SharedNetworkManager::ReceiveNetworkMessage(const NetMessageImportantReply& aMessage, const sockaddr_in& aSenderAddress)
+void SharedNetworkManager::ReceiveNetworkMessage(const NetMessageImportantReply& aMessage, const sockaddr_in&)
 {
 	for (ImportantMessage& msg : myImportantMessagesBuffer)
 	{

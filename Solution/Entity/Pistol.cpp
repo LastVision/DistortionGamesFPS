@@ -5,13 +5,14 @@
 #include <EmitterMessage.h>
 #include <ModelLoader.h>
 #include <Instance.h>
-#include <PostMasterNetOnHitMessage.h>
 #include "PhysicsComponent.h"
 #include <PostMaster.h>
 #include <PhysicsInterface.h>
 #include "Pistol.h"
 #include <Scene.h>
 #include <XMLReader.h>
+#include <SharedNetworkManager.h>
+#include <NetMessageOnHit.h>
 
 Pistol::Pistol()
 	: Weapon(eWeaponType::PISTOL)
@@ -148,6 +149,6 @@ void Pistol::HandleRaycast(PhysicsComponent* aComponent, const CU::Vector3<float
 		PostMaster::GetInstance()->SendMessage(EmitterMessage("Shotgun", aHitPosition));
 		//aComponent->GetEntity().SendNote<DamageNote>(DamageNote(myDamage));
 
-		PostMaster::GetInstance()->SendMessage(PostMasterNetOnHitMessage(static_cast<float>(myDamage), aComponent->GetEntity().GetGID()));
+		SharedNetworkManager::GetInstance()->AddMessage(NetMessageOnHit(myDamage, aComponent->GetEntity().GetGID()));
 	}
 }

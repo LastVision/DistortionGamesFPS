@@ -20,15 +20,6 @@
 #include <NetMessageOnDeath.h>
 #include <NetMessageLevelLoaded.h>
 
-#include <PostMasterNetAddPlayerMessage.h>
-#include <PostMasterNetAddEnemyMessage.h>
-#include <PostMasterNetSendPositionMessage.h>
-#include <PostMasterNetSetPositionMessage.h>
-#include <PostMasterNetOnHitMessage.h>
-#include <PostMasterNetOnDeathMessage.h>
-#include <PostMasterNetRequestStartGameMessage.h>
-#include <PostMasterNetLevelLoadedMessage.h>
-
 #define BUFFERSIZE 512
 #define RECONNECT_ATTEMPTS 10000
 
@@ -211,14 +202,6 @@ void ServerNetworkManager::CreateConnection(const std::string& aName, const sock
 		NetMessageOnJoin msg(connection.myName, connection.myID);
 		msg.PackMessage();
 		myNetwork->Send(msg.myStream, aSender);
-
-
-		/*NetMessageRequestConnect onConnect = CreateMessage<NetMessageRequestConnect>();
-		onConnect.myName = aName;
-		onConnect.myServerID = myIDCount;
-		onConnect.myOtherClientID = connection.myID;
-		onConnect.PackMessage();
-		myNetwork->Send(onConnect.myStream, newConnection.myAddress);*/
 	}
 
 	
@@ -233,25 +216,9 @@ void ServerNetworkManager::CreateConnection(const std::string& aName, const sock
 
 	std::string conn(aName + " connected to the server!");
 	Utility::PrintEndl(conn, LIGHT_GREEN_TEXT);
-
-	//	onConnect.myName = aName;
-	//	onConnect.myServerID = myIDCount;
-
-	
-
 	
 	NetMessageOnJoin onJoin(aName, myIDCount);
 	AddMessage(onJoin);
-
-	/*//PostMaster::GetInstance()->SendMessage(PostMasterNetAddPlayerMessage(myIDCount, newConnection.myAddress));
-	for (Connection& connection : myClients)
-	{
-		NetMessageConnectMessage onConnect = NetMessageConnectMessage(aName, myIDCount, connection.myID);
-		onConnect.PackMessage();
-		myNetwork->Send(onConnect.myStream, newConnection.myAddress);
-	}
-	AddMessage(NetMessageOnJoin(newConnection.myID));
-	PostMaster::GetInstance()->SendMessage(PostMasterNetAddPlayerMessage(myIDCount, newConnection.myAddress));*/
 }
 
 void ServerNetworkManager::DisconnectConnection(const Connection& aConnection)
@@ -340,7 +307,7 @@ void ServerNetworkManager::AddImportantMessage(std::vector<char> aBuffer, unsign
 	myImportantMessagesBuffer.Add(msg);
 }
 
-void ServerNetworkManager::ReceiveNetworkMessage(const NetMessageConnectMessage& aMessage, const sockaddr_in& aSenderAddress)
+void ServerNetworkManager::ReceiveNetworkMessage(const NetMessageRequestConnect& aMessage, const sockaddr_in& aSenderAddress)
 {
 	if (CheckIfImportantMessage(aMessage) == true)
 	{
@@ -350,11 +317,7 @@ void ServerNetworkManager::ReceiveNetworkMessage(const NetMessageConnectMessage&
 		myNetwork->Send(toReply.myStream, aSenderAddress);
 	}
 
-	if (myAllowNewConnections == true)
-	{
-		PostMaster::GetInstance()->SendMessage(PostMasterNetAddPlayerMessage(aMessage.myName, aSenderAddress));
-	}
-	else
+	if(myAllowNewConnections == false)
 	{
 		NetMessageConnectReply connectReply(NetMessageConnectReply::eType::FAIL);
 		connectReply.PackMessage();
@@ -376,23 +339,13 @@ void ServerNetworkManager::ReceiveNetworkMessage(const NetMessageDisconnect& aMe
 	}
 }
 
+//void ServerNetworkManager::HandleMessage(const NetMessageRequestStartGame&, const sockaddr_in&)
+//{
+//	PostMaster::GetInstance()->SendMessage(PostMasterNetRequestStartGameMessage());
+//}
+
 void ServerNetworkManager::ReceiveNetworkMessage(const NetMessagePingReply& aMessage, const sockaddr_in&)
 {
-	/*aMessage;
-	// change level on server
-	//send to all change level
-	int apa = 5;
-	++apa;
-}
-
-void ServerNetworkManager::HandleMessage(const NetMessageRequestStartGame&, const sockaddr_in&)
-{
-	PostMaster::GetInstance()->SendMessage(PostMasterNetRequestStartGameMessage());
-}
-
-void ServerNetworkManager::HandleMessage(const NetMessagePingReply& aMessage, const sockaddr_in& aSenderAddress)
-{
-	__super::HandleMessage(aMessage, aSenderAddress);*/
 	for (Connection& c : myClients)
 	{
 		if (c.myID == aMessage.mySenderID)
@@ -416,38 +369,7 @@ void ServerNetworkManager::ReceiveNetworkMessage(const NetMessagePingRequest& aM
 	}
 }
 
-//void ServerNetworkManager::ReceiveMessage(const PostMasterNetAddEnemyMessage& aMessage)
-//{
-//	NetMessageAddEnemy toSend = CreateMessage<NetMessageAddEnemy>();
-//	toSend.myPosition = aMessage.myPosition;
-//	toSend.myGID = aMessage.myGID;
-//	toSend.PackMessage();
-//	myNetwork->Send(toSend.myStream, aMessage.myAddress);
-//	AddMessage(NetMessageAddEnemy(aMessage.myPosition, aMessage.myGID), aMessage.)
-//}
-//
-//void ServerNetworkManager::ReceiveMessage(const PostMasterNetSendPositionMessage& aMessage)
-//{
-//	NetMessagePosition toSend;
-//	toSend.mySenderID = static_cast<short>(aMessage.myGID);
-//	toSend.myPosition = aMessage.myPosition;
-//	toSend.myRotationY = aMessage.myRotationY;
-//	toSend.myGID = aMessage.myGID;
-//	AddMessage(toSend);
-//}
-//
-//void ServerNetworkManager::ReceiveMessage(const PostMasterNetOnDeathMessage& aMessage)
-//{
-//	NetMessageOnDeath toSend = CreateMessage<NetMessageOnDeath>();
-//	toSend.mySenderID = 0;
-//	toSend.myGID = aMessage.myGID;
-//	AddMessage(toSend);
-//}
-/*void ServerNetworkManager::HandleMessage(const NetMessageOnHit& aMessage, const sockaddr_in& aSenderAddress)
-{
-	__super::HandleMessage(aMessage, aSenderAddress);
-}
-
+/*
 void ServerNetworkManager::HandleMessage(const NetMessageLevelLoaded& aMessage, const sockaddr_in&)
 {
 	PostMaster::GetInstance()->SendMessage(PostMasterNetLevelLoadedMessage(aMessage.mySenderID));

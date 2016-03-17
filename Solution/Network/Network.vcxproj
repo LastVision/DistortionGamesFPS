@@ -107,6 +107,7 @@
     <ClInclude Include="NetworkSubscriber.h" />
     <ClInclude Include="SerializeHelper.h" />
     <ClInclude Include="ServerNetwork.h" />
+    <ClInclude Include="SharedNetworkManager.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="Utility.h" />
   </ItemGroup>
@@ -131,6 +132,7 @@
     <ClCompile Include="NetMessageStartGame.cpp" />
     <ClCompile Include="NetworkSubscriber.cpp" />
     <ClCompile Include="ServerNetwork.cpp" />
+    <ClCompile Include="SharedNetworkManager.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>

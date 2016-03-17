@@ -7,7 +7,9 @@
 #include "ServerStateStackProxy.h"
 #include <NetMessageStartGame.h>
 #include <iostream>
-#include <PostMasterNetAddPlayerMessage.h>
+#include <NetMessageRequestConnect.h>
+#include <NetMessageRequestStartGame.h>
+
 
 ServerLobbyState::ServerLobbyState()
 {
@@ -16,8 +18,9 @@ ServerLobbyState::ServerLobbyState()
 
 ServerLobbyState::~ServerLobbyState()
 {
-	PostMaster::GetInstance()->UnSubscribe(eMessageType::NETWORK_REQUEST_START_GAME, this);
-	PostMaster::GetInstance()->UnSubscribe(eMessageType::NETWORK_ADD_PLAYER, this);
+	ServerNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::REQUEST_START_GAME, this);
+	ServerNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::ON_CONNECT, this);
+
 }
 
 void ServerLobbyState::InitState(ServerStateStackProxy* aStateStackProxy)
@@ -25,8 +28,8 @@ void ServerLobbyState::InitState(ServerStateStackProxy* aStateStackProxy)
 	myStateStack = aStateStackProxy;
 	myStateStatus = eStateStatus::KEEP_STATE;
 
-	PostMaster::GetInstance()->Subscribe(eMessageType::NETWORK_REQUEST_START_GAME, this);
-	PostMaster::GetInstance()->Subscribe(eMessageType::NETWORK_ADD_PLAYER, this);
+	ServerNetworkManager::GetInstance()->Subscribe(eNetMessageType::REQUEST_START_GAME, this);
+	ServerNetworkManager::GetInstance()->Subscribe(eNetMessageType::ON_CONNECT, this);
 	myCurrentLevelID = 0;
 	myIsActiveState = true;
 	
@@ -47,26 +50,25 @@ const eStateStatus ServerLobbyState::Update(const float aDeltaTime)
 void ServerLobbyState::ResumeState()
 {
 	myIsActiveState = true;
-	PostMaster::GetInstance()->Subscribe(eMessageType::NETWORK_REQUEST_START_GAME, this);
-	PostMaster::GetInstance()->Subscribe(eMessageType::NETWORK_ADD_PLAYER, this);
+	ServerNetworkManager::GetInstance()->Subscribe(eNetMessageType::REQUEST_START_GAME, this);
+	ServerNetworkManager::GetInstance()->Subscribe(eNetMessageType::ON_CONNECT, this);
 	ServerNetworkManager::GetInstance()->AllowNewConnections(true);
 
 }
 
-void ServerLobbyState::ReceiveMessage(const PostMasterNetRequestStartGameMessage&)
+void ServerLobbyState::ReceiveNetworkMessage(const NetMessageRequestStartGame&, const sockaddr_in&)
 {
 	ServerNetworkManager::GetInstance()->AddMessage(NetMessageStartGame(myCurrentLevelID));
 
 	ServerNetworkManager::GetInstance()->AllowNewConnections(false);
-	PostMaster::GetInstance()->UnSubscribe(eMessageType::NETWORK_REQUEST_START_GAME, this);
-	PostMaster::GetInstance()->UnSubscribe(eMessageType::NETWORK_ADD_PLAYER, this);
+	ServerNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::REQUEST_START_GAME, this);
+	ServerNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::ON_CONNECT, this);
 
 	myStateStack->PushMainState(new ServerInGameState(myCurrentLevelID));
 }
 
-void ServerLobbyState::ReceiveMessage(const PostMasterNetAddPlayerMessage& aMessage)
+void ServerLobbyState::ReceiveNetworkMessage(const NetMessageRequestConnect& aMessage, const sockaddr_in& aSenderAddress)
 {
 	//Broadcast join
-
-	ServerNetworkManager::GetInstance()->CreateConnection(aMessage.myName, aMessage.myAddress);
+	ServerNetworkManager::GetInstance()->CreateConnection(aMessage.myName, aSenderAddress);
 }

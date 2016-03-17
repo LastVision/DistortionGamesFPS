@@ -1,6 +1,6 @@
 #pragma once
 #include "../PostMaster/Subscriber.h"
-#include "../Game_Shared/SharedNetworkManager.h"
+#include <SharedNetworkManager.h>
 
 class ServerNetwork;
 class ServerNetworkManager : public SharedNetworkManager, public Subscriber
@@ -22,7 +22,7 @@ public:
 	void ReceiveNetworkMessage(const NetMessagePingRequest& aMessage, const sockaddr_in& aSenderAddress) override;
 	void ReceiveNetworkMessage(const NetMessagePingReply& aMessage, const sockaddr_in& aSenderAddress) override;
 	void ReceiveNetworkMessage(const NetMessageDisconnect& aMessage, const sockaddr_in& aSenderAddress) override;
-	void ReceiveNetworkMessage(const NetMessageConnectMessage& aMessage, const sockaddr_in& aSenderAddress) override;
+	void ReceiveNetworkMessage(const NetMessageRequestConnect& aMessage, const sockaddr_in& aSenderAddress) override;
 
 	const short GetLastJoinedID() const;
 private:
