@@ -21,7 +21,6 @@ public:
 	bool Shoot(const CU::Matrix44<float>& aOrientation) override;
 	void Reload() override;
 	void Update(float aDelta) override;
-	void Render() override;
 
 	void HandleRaycast(PhysicsComponent* aComponent, const CU::Vector3<float>& aDirection, const CU::Vector3<float>& aHitPosition);
 

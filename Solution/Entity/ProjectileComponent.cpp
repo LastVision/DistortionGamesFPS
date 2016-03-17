@@ -60,8 +60,12 @@ void ProjectileComponent::Activate(unsigned int aShooterGID)
 	myShooterGID = aShooterGID;
 	myTimeUntilExplode = 2.f;
 	myShouldBeUpdated = true;
+	myShouldReallyDeleteExplosion = false;
+	myShouldDeleteExplosion = false;
+
 	if (myEntity.IsInScene() == false)
 	{
+		myEntity.SetPosition({0.f, 0.f, 0.f});
 		myEntity.AddToScene();
 		myEntity.GetComponent<PhysicsComponent>()->Wake();
 	}

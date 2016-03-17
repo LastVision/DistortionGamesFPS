@@ -108,7 +108,7 @@ void SharedLevel::CollisionCallback(PhysicsComponent* aFirst, PhysicsComponent* 
 		if (physicsComponent->GetPhysicsType() == ePhysics::DYNAMIC)
 		{
 			CU::Vector3<float> direction = second.GetOrientation().GetPos() - first.GetOrientation().GetPos();
-			physicsComponent->AddForce(direction, 10.f);
+			physicsComponent->AddForce(direction, 5.f);
 		}
 		else if (physicsComponent->GetPhysicsType() == ePhysics::CAPSULE)
 		{

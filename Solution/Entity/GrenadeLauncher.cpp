@@ -1,17 +1,14 @@
 #include "stdafx.h"
 
 #include "DamageNote.h"
-#include "Entity.h"
 #include "EntityFactory.h"
 #include "GrenadeLauncher.h"
 #include "PhysicsComponent.h"
 #include <PhysicsInterface.h>
 #include "ProjectileComponent.h"
-#include <XMLReader.h>
-
 
 GrenadeLauncher::GrenadeLauncher(Prism::Scene* aScene, unsigned int aEntityGID)
-	: Weapon(eWeaponType::GRENADE_LAUNCHER)
+	: Weapon(eWeaponType::GRENADE_LAUNCHER, "grenadelauncher")
 	, myScene(aScene)
 	, myBullets(16)
 	, myCurrentBulletToUse(0)
@@ -20,21 +17,15 @@ GrenadeLauncher::GrenadeLauncher(Prism::Scene* aScene, unsigned int aEntityGID)
 	XMLReader reader;
 	reader.OpenDocument("Data/Setting/SET_weapons.xml");
 	tinyxml2::XMLElement* root = reader.ForceFindFirstChild("root");
-
 	tinyxml2::XMLElement* grenadeLauncherElement = reader.ForceFindFirstChild(root, "grenadelauncher");
-	reader.ForceReadAttribute(reader.ForceFindFirstChild(grenadeLauncherElement, "clipsize"), "value", myClipSize);
-	reader.ForceReadAttribute(reader.ForceFindFirstChild(grenadeLauncherElement, "damage"), "value", myDamage);
+	
 	reader.ForceReadAttribute(reader.ForceFindFirstChild(grenadeLauncherElement, "startammo"), "value", myAmmoTotal);
-	reader.ForceReadAttribute(reader.ForceFindFirstChild(grenadeLauncherElement, "shoottime"), "value", myShootTime);
-	reader.ForceReadAttribute(reader.ForceFindFirstChild(grenadeLauncherElement, "forceStrength"), "value", myForceStrength);
-
-	myAmmoInClip = myClipSize;
-	myShootTimer = myShootTime;
+	reader.ForceReadAttribute(reader.ForceFindFirstChild(grenadeLauncherElement, "maxAmountOfGrenades"), "value", myMaxGrenades);
 
 	reader.CloseDocument();
 
 
-	for (int i = 0; i < 8; ++i)
+	for (int i = 0; i < myMaxGrenades; ++i)
 	{
 		Entity* bullet = EntityFactory::CreateEntity((100000 + i), eEntityType::PROJECTILE, myScene, true, CU::Vector3<float>());
 		myBullets.Add(bullet);
@@ -42,16 +33,13 @@ GrenadeLauncher::GrenadeLauncher(Prism::Scene* aScene, unsigned int aEntityGID)
 	}
 }
 
-
 GrenadeLauncher::~GrenadeLauncher()
 {
 	myBullets.DeleteAll();
 }
 
-
 bool GrenadeLauncher::Shoot(const CU::Matrix44<float>& aOrientation)
 {
-	aOrientation;
 	if (myAmmoInClip > 0 && myShootTimer <= 0.f && myBullets.Size() < 1024)
 	{
 		ShootAtDirection(aOrientation);
@@ -83,20 +71,13 @@ void GrenadeLauncher::Update(float aDelta)
 void GrenadeLauncher::ShootAtDirection(const CU::Matrix44<float>& aOrientation)
 {
 	myBullets[myCurrentBulletToUse]->Reset();
-	//if (myBullets[myCurrentBulletToUse]->IsInScene() == false)
-	//{
-	//	myBullets[myCurrentBulletToUse]->GetComponent<PhysicsComponent>()->AddToScene();
-	//	myBullets[myCurrentBulletToUse]->AddToScene();
-	//}
-
-	myBullets[myCurrentBulletToUse]->GetComponent<ProjectileComponent>()->Activate(myEntityGID);
 	myBullets[myCurrentBulletToUse]->GetComponent<PhysicsComponent>()->TeleportToPosition(aOrientation.GetPos());
+	myBullets[myCurrentBulletToUse]->GetComponent<ProjectileComponent>()->Activate(myEntityGID);
 	myBullets[myCurrentBulletToUse]->GetComponent<PhysicsComponent>()->AddForce(aOrientation.GetForward(), myForceStrength);
 	++myCurrentBulletToUse;
 
-	if (myCurrentBulletToUse > 7)
+	if (myCurrentBulletToUse >= myMaxGrenades)
 	{
 		myCurrentBulletToUse = 0;
 	}
-	//myBullets.Add(bullet);
 }
