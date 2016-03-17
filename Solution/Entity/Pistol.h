@@ -32,4 +32,6 @@ private:
 	const CU::Matrix44<float>* myOrientation;
 	float myMuzzleflashTimer;
 
+	float myMinSpreadRotation;
+	float myMaxSpreadRotation;
 };
