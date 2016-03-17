@@ -70,7 +70,7 @@ namespace Prism
 		myMoveJobs[0].myId = -1;
 		myMoveJobs[1].myId = -1;
 		myTimestep = 1.f / 60.f;
-		
+
 		myFoundation = PxCreateFoundation(0x03030300, myDefaultAllocatorCallback, myDefaultErrorCallback);
 
 		myProfileZoneManager = nullptr;
@@ -95,7 +95,7 @@ namespace Prism
 
 		physx::PxSceneDesc sceneDesc(myPhysicsSDK->getTolerancesScale());
 		sceneDesc.gravity = physx::PxVec3(0.f, -9.82f, 0.f);
-		
+
 		myCpuDispatcher = physx::PxDefaultCpuDispatcherCreate(1);
 
 		if (!sceneDesc.cpuDispatcher)
@@ -228,7 +228,7 @@ namespace Prism
 
 	void PhysicsManager::Swap()
 	{
- 		for each (const PhysicsCallbackStruct& obj in myPhysicsComponentCallbacks)
+		for each (const PhysicsCallbackStruct& obj in myPhysicsComponentCallbacks)
 		{
 			obj.mySwapOrientationCallback();
 		}
@@ -263,7 +263,7 @@ namespace Prism
 		}
 
 		myInitDone = true;
-		
+
 		if (myMoveJobs[1].myId > -1)
 		{
 			Move(myMoveJobs[1]);
@@ -274,7 +274,7 @@ namespace Prism
 			myPlayerPosition.z = float(pos.z);
 		}
 		//myMoveJobs[0].RemoveAll();
-		
+
 		for (int i = 0; i < myActorsToWakeUp[1].Size(); ++i)
 		{
 			myActorsToWakeUp[1][i]->setActorFlag(physx::PxActorFlag::Enum::eDISABLE_SIMULATION, false);
@@ -316,15 +316,15 @@ namespace Prism
 
 		for (int i = 0; i < myOnTriggerResults[1].Size(); ++i)
 		{
-			
+
 			myOnTriggerCallback(myOnTriggerResults[1][i].myFirstPhysicsComponent, myOnTriggerResults[1][i].mySecondPhysicsComponent);
 		}
 		myOnTriggerResults[1].RemoveAll();
 
 		for (int i = 0; i < myActorsToSleep[1].Size(); ++i)
-		{ 
+		{
 			physx::PxTransform pose = physx::PxTransform(
-				ConvertVector({ 0.f, -10.f, 0.f }), physx::PxQuat(physx::PxHalfPi, physx::PxVec3(0.f, 0.f, 1.f)));
+				ConvertVector({ 0.f, -1.f, 0.f }), physx::PxQuat(physx::PxHalfPi, physx::PxVec3(0.f, 0.f, 1.f)));
 			static_cast<physx::PxRigidDynamic*>(myActorsToSleep[1][i])->setGlobalPose(pose);
 			myActorsToSleep[1][i]->setActorFlag(physx::PxActorFlag::Enum::eDISABLE_SIMULATION, true);
 		}
@@ -454,7 +454,7 @@ namespace Prism
 	{
 		physx::PxTransform pose = physx::PxTransform(
 			ConvertVector(aPositionJob.myPosition), physx::PxQuat(physx::PxHalfPi, physx::PxVec3(0.f, 0.f, 1.f)));
-		
+
 		if (aPositionJob.myType == PositionJobType::TELEPORT)
 		{
 			aPositionJob.myRigidBody->setGlobalPose(pose);
@@ -502,7 +502,7 @@ namespace Prism
 	{
 		myMoveJobs[0] = MoveJob(aId, aDirection, aMinDisplacement, aDeltaTime);
 	}
-		
+
 	void PhysicsManager::Move(const MoveJob& aMoveJob)
 	{
 		physx::PxControllerFilters filter;
@@ -718,7 +718,7 @@ namespace Prism
 	void PhysicsManager::Sleep(physx::PxRigidDynamic* aDynamic)
 	{
 		myActorsToSleep[0].Add(aDynamic);
-		}
+	}
 
 	void PhysicsManager::Wake(physx::PxRigidDynamic* aDynamic)
 	{

@@ -26,7 +26,9 @@ private:
 	CU::GrowingArray<Entity*> myBullets;
 	float myBulletSpeed;
 	Prism::Scene* myScene;
+
 	int myCurrentBulletToUse;
+	int myMaxGrenades;
 
 	const unsigned int myEntityGID;
 };

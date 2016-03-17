@@ -238,6 +238,14 @@ void ComponentLoader::LoadUpgradeComponent(XMLReader& aDocument, tinyxml2::XMLEl
 		{
 			aDocument.ForceReadAttribute(e, "value", aOutputData.myShootTimeModifier);
 		}
+		else if (elementName == CU::ToLower("MinSpreadRotation"))
+		{
+			aDocument.ForceReadAttribute(e, "value", aOutputData.myMinSpreadRotation);
+		}
+		else if (elementName == CU::ToLower("MaxSpreadRotation"))
+		{
+			aDocument.ForceReadAttribute(e, "value", aOutputData.myMaxSpreadRotation);
+		}
 	}
 
 	aOutputData.myExistsInEntity = true;

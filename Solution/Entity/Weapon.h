@@ -5,7 +5,7 @@ struct UpgradeComponentData;
 class Weapon
 {
 public:
-	Weapon(eWeaponType aWeaponType);
+	Weapon(eWeaponType aWeaponType, std::string aXMLTagName);
 	virtual ~Weapon();
 
 	virtual bool Shoot(const CU::Matrix44<float>& aOrientation) = 0;

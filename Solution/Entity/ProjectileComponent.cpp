@@ -16,8 +16,6 @@ ProjectileComponent::ProjectileComponent(Entity& aEntity, const ProjectileCompon
 	, myShouldReallyDeleteExplosion(false)
 {
 	myExplosion = EntityFactory::CreateEntity((20000), eEntityType::EXPLOSION, aScene, true, CU::Vector3<float>());
-	//myExplosion->GetComponent<PhysicsComponent>()->TeleportToPosition({ -10.f, 0.f, 0.f });
-	//myExplosion->GetComponent<PhysicsComponent>()->RemoveFromScene();
 }
 
 ProjectileComponent::~ProjectileComponent()
@@ -44,12 +42,10 @@ void ProjectileComponent::Update(float aDelta)
 		{
 			myEntity.RemoveFromScene();
 			myEntity.GetComponent<PhysicsComponent>()->Sleep();
-			
-			//PostMaster::GetInstance()->SendMessage(ExplosionMessage(myEntity.GetGID(), myEntity.GetOrientation().GetPos()));
+
 			myShouldDeleteExplosion = true;
 
 			myExplosion->GetComponent<PhysicsComponent>()->AddToScene();
-			//myExplosion->GetComponent<PhysicsComponent>()->AddToScene();
 			myExplosion->GetComponent<PhysicsComponent>()->TeleportToPosition(myEntity.GetOrientation().GetPos());
 		}
 	}
@@ -60,8 +56,12 @@ void ProjectileComponent::Activate(unsigned int aShooterGID)
 	myShooterGID = aShooterGID;
 	myTimeUntilExplode = 2.f;
 	myShouldBeUpdated = true;
+	myShouldReallyDeleteExplosion = false;
+	myShouldDeleteExplosion = false;
+
 	if (myEntity.IsInScene() == false)
 	{
+		myEntity.SetPosition({0.f, 0.f, 0.f});
 		myEntity.AddToScene();
 		myEntity.GetComponent<PhysicsComponent>()->Wake();
 	}

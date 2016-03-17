@@ -14,7 +14,7 @@
 #include <XMLReader.h>
 
 Pistol::Pistol()
-	: Weapon(eWeaponType::PISTOL)
+	: Weapon(eWeaponType::PISTOL, "pistol")
 	, myOrientation(nullptr)
 	, myMuzzleflashTimer(0.f)
 	, myCurrentMuzzleflash(0)
@@ -22,19 +22,15 @@ Pistol::Pistol()
 	XMLReader reader;
 	reader.OpenDocument("Data/Setting/SET_weapons.xml");
 	tinyxml2::XMLElement* root = reader.ForceFindFirstChild("root");
+	tinyxml2::XMLElement* shotgunElement = reader.ForceFindFirstChild(root, "pistol");
+	reader.ForceReadAttribute(reader.ForceFindFirstChild(shotgunElement, "minspreadrotation"), "value", myMinSpreadRotation);
+	reader.ForceReadAttribute(reader.ForceFindFirstChild(shotgunElement, "maxspreadrotation"), "value", myMaxSpreadRotation);
 
-	tinyxml2::XMLElement* pistolElement = reader.ForceFindFirstChild(root, "pistol");
-
-	reader.ForceReadAttribute(reader.ForceFindFirstChild(pistolElement, "clipsize"), "value", myClipSize);
-	reader.ForceReadAttribute(reader.ForceFindFirstChild(pistolElement, "damage"), "value", myDamage);
-	reader.ForceReadAttribute(reader.ForceFindFirstChild(pistolElement, "shoottime"), "value", myShootTime);
-	reader.ForceReadAttribute(reader.ForceFindFirstChild(pistolElement, "forceStrength"), "value", myForceStrength);
+	reader.CloseDocument();
 
 	myAmmoInClip = myClipSize;
 	myAmmoTotal = INT_MAX;
 	myShootTimer = myShootTime;
-
-	reader.CloseDocument();
 
 	myRaycastHandler = [=](PhysicsComponent* aComponent, const CU::Vector3<float>& aDirection, const CU::Vector3<float>& aHitPosition)
 	{
@@ -45,7 +41,6 @@ Pistol::Pistol()
 	{
 		myMuzzleflash[i] = nullptr;
 	}
-
 }
 
 Pistol::~Pistol()
@@ -56,7 +51,6 @@ Pistol::~Pistol()
 	SAFE_DELETE(myMuzzleflash[3]);
 	SAFE_DELETE(myMuzzleflash[4]);
 }
-
 
 void Pistol::Init(Prism::Scene* aScene, const CU::Matrix44<float>& aOrientation)
 {
@@ -87,13 +81,16 @@ void Pistol::Init(Prism::Scene* aScene, const CU::Matrix44<float>& aOrientation)
 	aScene->AddInstance(myMuzzleflash[4], true);
 }
 
-
 bool Pistol::Shoot(const CU::Matrix44<float>& aOrientation)
 {
 	if (myAmmoInClip > 0 && myShootTimer <= 0.f)
 	{
+		CU::Vector3<float> forward = aOrientation.GetForward();
+		forward = forward * CU::Matrix44<float>::CreateRotateAroundY(CU::Math::RandomRange(myMinSpreadRotation, myMaxSpreadRotation));
+		forward = forward * CU::Matrix44<float>::CreateRotateAroundX(CU::Math::RandomRange(myMinSpreadRotation, myMaxSpreadRotation));
+
 		Prism::PhysicsInterface::GetInstance()->RayCast(aOrientation.GetPos()
-			, aOrientation.GetForward(), 500.f, myRaycastHandler);
+			, forward, 500.f, myRaycastHandler);
 		myAmmoInClip -= 1;
 		myShootTimer = myShootTime;
 		myMuzzleflashTimer = 0.2f;
@@ -132,11 +129,6 @@ void Pistol::Update(float aDelta)
 	}
 }
 
-void Pistol::Render()
-{
-	//myMuzzleflash->Render()
-}
-
 void Pistol::HandleRaycast(PhysicsComponent* aComponent, const CU::Vector3<float>& aDirection, const CU::Vector3<float>& aHitPosition)
 {
 	if (aComponent != nullptr)
@@ -145,9 +137,15 @@ void Pistol::HandleRaycast(PhysicsComponent* aComponent, const CU::Vector3<float
 		{
 			aComponent->AddForce(aDirection, myForceStrength);
 		}
-		PostMaster::GetInstance()->SendMessage(EmitterMessage("Shotgun", aHitPosition));
-		//aComponent->GetEntity().SendNote<DamageNote>(DamageNote(myDamage));
 
+		PostMaster::GetInstance()->SendMessage(EmitterMessage("Shotgun", aHitPosition));
 		PostMaster::GetInstance()->SendMessage(PostMasterNetOnHitMessage(static_cast<float>(myDamage), aComponent->GetEntity().GetGID()));
 	}
+}
+
+void Pistol::Upgrade(const UpgradeComponentData& aData)
+{
+	Weapon::Upgrade(aData);
+	myMinSpreadRotation += aData.myMinSpreadRotation;
+	myMaxSpreadRotation += aData.myMaxSpreadRotation;
 }
