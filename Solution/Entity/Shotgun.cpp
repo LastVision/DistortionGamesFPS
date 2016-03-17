@@ -10,25 +10,16 @@
 #include <XMLReader.h>
 
 Shotgun::Shotgun()
-	:Weapon(eWeaponType::SHOTGUN)
+	: Weapon(eWeaponType::SHOTGUN, "shotgun")
 {
 	XMLReader reader;
 	reader.OpenDocument("Data/Setting/SET_weapons.xml");
 	tinyxml2::XMLElement* root = reader.ForceFindFirstChild("root");
-
 	tinyxml2::XMLElement* shotgunElement = reader.ForceFindFirstChild(root, "shotgun");
-
-	reader.ForceReadAttribute(reader.ForceFindFirstChild(shotgunElement, "clipsize"), "value", myClipSize);
-	reader.ForceReadAttribute(reader.ForceFindFirstChild(shotgunElement, "damage"), "value", myDamage);
 	reader.ForceReadAttribute(reader.ForceFindFirstChild(shotgunElement, "startammo"), "value", myAmmoTotal);
 	reader.ForceReadAttribute(reader.ForceFindFirstChild(shotgunElement, "minspreadrotation"), "value", myMinSpreadRotation);
 	reader.ForceReadAttribute(reader.ForceFindFirstChild(shotgunElement, "maxspreadrotation"), "value", myMaxSpreadRotation);
-	reader.ForceReadAttribute(reader.ForceFindFirstChild(shotgunElement, "shoottime"), "value", myShootTime);
-	reader.ForceReadAttribute(reader.ForceFindFirstChild(shotgunElement, "forceStrength"), "value", myForceStrength);
-
-	myAmmoInClip = myClipSize;
-	myShootTimer = myShootTime;
-
+	
 	reader.CloseDocument();
 
 	myRaycastHandler = [=](PhysicsComponent* aComponent, const CU::Vector3<float>& aDirection, const CU::Vector3<float>& aHitPosition)
@@ -81,6 +72,13 @@ void Shotgun::HandleRaycast(PhysicsComponent* aComponent, const CU::Vector3<floa
 
 		PostMaster::GetInstance()->SendMessage(EmitterMessage("Shotgun", aHitPosition));
 	}
+}
+
+void Shotgun::Upgrade(const UpgradeComponentData& aData)
+{
+	Weapon::Upgrade(aData);
+	myMinSpreadRotation += aData.myMinSpreadRotation;
+	myMaxSpreadRotation += aData.myMaxSpreadRotation;
 }
 
 void Shotgun::ShootRowAround(const CU::Matrix44<float>& aOrientation, const CU::Vector3<float>& aForward)

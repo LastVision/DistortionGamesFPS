@@ -23,7 +23,7 @@ bool globalPreviousFullscreenState = false;
 bool globalIsActive = true;
 Prism::SetupInfo globalSetup;
 
-void InitRawInput(const HWND& aHwnd)
+void InitRawInput(const HWND&)
 {
 	/*RAWINPUTDEVICE Rid[1];
 	Rid[0].usUsagePage = 0x01;
@@ -48,7 +48,8 @@ void InitRawInput(const HWND& aHwnd)
 	//Rid[1].dwFlags = RIDEV_NOLEGACY;   // adds HID keyboard and also ignores legacy keyboard messages
 	//Rid[1].hwndTarget = 0;
 
-	if (RegisterRawInputDevices(Rid, 1, sizeof(Rid[0])) == FALSE) {
+	if (RegisterRawInputDevices(Rid, 1, sizeof(Rid[0])) == FALSE) 
+	{
 		//registration failed. Call GetLastError for the cause of the error
 	}
 }
@@ -186,7 +187,9 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPTSTR, int aNumberCommands)
 
 	free(pRawInputDeviceList);
 
+#ifdef USE_RAW_INPUT
 	InitRawInput(hwnd);
+#endif
 
 #ifdef RELEASE_BUILD
 	Prism::Engine::GetInstance()->SetFullscreen(true);
@@ -256,8 +259,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		}
 
 		raw = (RAWINPUT*)lpb;
-		float deltaX = raw->data.mouse.lLastX;
-		float deltaY = raw->data.mouse.lLastY;
+		int deltaX = raw->data.mouse.lLastX;
+		int deltaY = raw->data.mouse.lLastY;
 		if (CU::InputWrapper::GetInstance() != nullptr)
 		{
 			CU::InputWrapper::GetInstance()->FeedMouseRawInput(deltaX, deltaY);

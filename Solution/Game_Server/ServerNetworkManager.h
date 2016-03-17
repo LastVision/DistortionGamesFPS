@@ -25,6 +25,8 @@ public:
 	void ReceiveNetworkMessage(const NetMessageRequestConnect& aMessage, const sockaddr_in& aSenderAddress) override;
 
 	const short GetLastJoinedID() const;
+	const CU::GrowingArray<Connection>& GetClients() const;
+
 private:
 	ServerNetworkManager();
 	~ServerNetworkManager();
@@ -55,8 +57,11 @@ inline void ServerNetworkManager::AllowNewConnections(bool aValue)
 	myAllowNewConnections = aValue;
 }
 
+inline const CU::GrowingArray<Connection>& ServerNetworkManager::GetClients() const
+{
+	return myClients;
+}
 inline const short ServerNetworkManager::GetLastJoinedID() const
 {
 	return myIDCount;
 }
-

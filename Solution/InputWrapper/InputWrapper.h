@@ -35,7 +35,7 @@ namespace CU
 		bool KeyIsPressed(unsigned int aKey) const; //Returns true if specified key is down 
 
 		void Update();
-		void FeedMouseRawInput(float aDeltaX, float aDeltaY);
+		void FeedMouseRawInput(int aDeltaX, int aDeltaY);
 		void PauseDeltaRecording();
 		void ResumeDeltaRecording();
 		void ToggleWindowActive();

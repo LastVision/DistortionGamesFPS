@@ -22,6 +22,17 @@ ServerLevel::~ServerLevel()
 	ServerNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::ON_CONNECT, this);
 }
 
+void ServerLevel::Init()
+{
+	for each (const Connection& client in ServerNetworkManager::GetInstance()->GetClients())
+	{
+		Entity* newPlayer = EntityFactory::CreateEntity(client.myID, eEntityType::UNIT, "player", nullptr, false, { 0.f, 0.f, 0.f });
+		newPlayer->Reset();
+		newPlayer->GetComponent<NetworkComponent>()->SetPlayer(true);
+		myPlayers.Add(newPlayer);
+	}
+}
+
 void ServerLevel::Update(const float aDeltaTime)
 {
 	__super::Update(aDeltaTime);

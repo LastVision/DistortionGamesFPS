@@ -183,7 +183,7 @@ void ClientNetworkManager::ReceiveNetworkMessage(const NetMessageDisconnect& aMe
 }
 
 void ClientNetworkManager::ReceiveNetworkMessage(const NetMessagePingRequest&, const sockaddr_in&)
-{
+	{
 	AddMessage(NetMessagePingReply());
 }
 
@@ -208,19 +208,12 @@ void ClientNetworkManager::ReceiveNetworkMessage(const NetMessageRequestConnect&
 {
 	DL_ASSERT("Should not happen");
 }
-	/*if (aMessage.myOtherClientID != myGID)
-	{
-		myClients.Add(OtherClients(aMessage.myOtherClientID));
-	}
-}
 
 void ClientNetworkManager::ReceiveNetworkMessage(const NetMessageOnJoin& aMessage, const sockaddr_in& aSenderAddress)
 {
 	if (aMessage.mySenderID != myGID)
 	{
 		myClients.Add(OtherClients(aMessage.myName, aMessage.mySenderID));
-		bool needsToBeImplemented = true;
-		//PostMaster::GetInstance()->SendMessage(PostMasterNetAddPlayerMessage(static_cast<unsigned short>(aMessage.mySenderID)));
 	}
 }
 

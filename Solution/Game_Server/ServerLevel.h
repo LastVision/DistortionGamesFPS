@@ -7,6 +7,8 @@ public:
 	ServerLevel();
 	~ServerLevel();
 
+	void Init() override;
+
 	void Update(const float aDeltaTime) override;
 
 	void ReceiveNetworkMessage(const NetMessageRequestConnect& aMessage, const sockaddr_in& aSenderAddress) override;

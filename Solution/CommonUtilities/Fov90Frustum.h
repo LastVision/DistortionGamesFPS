@@ -26,7 +26,7 @@ namespace CU
 		};
 	}
 
-	inline Intersection::Fov90Frustum::Fov90Frustum(float aNear, float aFar) :
+	inline Intersection::Fov90Frustum::Fov90Frustum(float, float aFar) :
 		myVolume(CU::GrowingArray<CU::Plane<float>>())
 	{
 		myNear = 0;
@@ -147,7 +147,7 @@ namespace CU
 		myVolume.myPlanes[0].InitWith3Points(zero, aRight, y);
 	}
 
-	inline void CU::Intersection::Fov90Frustum::OnResize(float aNearPlane, float aFarPlane)
+	inline void CU::Intersection::Fov90Frustum::OnResize(float, float aFarPlane)
 	{
 		myVolume.myPlanes.RemoveAll();
 		myNear = 0;

@@ -70,7 +70,7 @@ namespace Prism
 		myMoveJobs[0].myId = -1;
 		myMoveJobs[1].myId = -1;
 		myTimestep = 1.f / 60.f;
-		
+
 		myFoundation = PxCreateFoundation(0x03030300, myDefaultAllocatorCallback, myDefaultErrorCallback);
 
 		myProfileZoneManager = nullptr;
@@ -95,7 +95,7 @@ namespace Prism
 
 		physx::PxSceneDesc sceneDesc(myPhysicsSDK->getTolerancesScale());
 		sceneDesc.gravity = physx::PxVec3(0.f, -9.82f, 0.f);
-		
+
 		myCpuDispatcher = physx::PxDefaultCpuDispatcherCreate(1);
 
 		if (!sceneDesc.cpuDispatcher)
@@ -228,7 +228,7 @@ namespace Prism
 
 	void PhysicsManager::Swap()
 	{
- 		for each (const PhysicsCallbackStruct& obj in myPhysicsComponentCallbacks)
+		for each (const PhysicsCallbackStruct& obj in myPhysicsComponentCallbacks)
 		{
 			obj.mySwapOrientationCallback();
 		}
@@ -255,7 +255,6 @@ namespace Prism
 			DL_ASSERT("no scene in PhysicsManager");
 		}
 
-
 		myScene->simulate(myTimestep);
 
 		while (!myScene->fetchResults())
@@ -264,7 +263,7 @@ namespace Prism
 		}
 
 		myInitDone = true;
-		
+
 		if (myMoveJobs[1].myId > -1)
 		{
 			Move(myMoveJobs[1]);
@@ -275,7 +274,7 @@ namespace Prism
 			myPlayerPosition.z = float(pos.z);
 		}
 		//myMoveJobs[0].RemoveAll();
-		
+
 		for (int i = 0; i < myActorsToWakeUp[1].Size(); ++i)
 		{
 			myActorsToWakeUp[1][i]->setActorFlag(physx::PxActorFlag::Enum::eDISABLE_SIMULATION, false);
@@ -317,15 +316,15 @@ namespace Prism
 
 		for (int i = 0; i < myOnTriggerResults[1].Size(); ++i)
 		{
-			
+
 			myOnTriggerCallback(myOnTriggerResults[1][i].myFirstPhysicsComponent, myOnTriggerResults[1][i].mySecondPhysicsComponent);
 		}
 		myOnTriggerResults[1].RemoveAll();
 
 		for (int i = 0; i < myActorsToSleep[1].Size(); ++i)
-		{ 
+		{
 			physx::PxTransform pose = physx::PxTransform(
-				ConvertVector({ 0.f, -10.f, 0.f }), physx::PxQuat(physx::PxHalfPi, physx::PxVec3(0.f, 0.f, 1.f)));
+				ConvertVector({ 0.f, -1.f, 0.f }), physx::PxQuat(physx::PxHalfPi, physx::PxVec3(0.f, 0.f, 1.f)));
 			static_cast<physx::PxRigidDynamic*>(myActorsToSleep[1][i])->setGlobalPose(pose);
 			myActorsToSleep[1][i]->setActorFlag(physx::PxActorFlag::Enum::eDISABLE_SIMULATION, true);
 		}
@@ -333,13 +332,19 @@ namespace Prism
 
 		for (int i = 0; i < myActorsToAdd[1].Size(); ++i)
 		{
-			GetScene()->addActor(*myActorsToAdd[1][i]);
+			if (myActorsToAdd[1][i]->getScene() == nullptr)
+			{
+				GetScene()->addActor(*myActorsToAdd[1][i]);
+			}
 		}
 		myActorsToAdd[1].RemoveAll();
 
 		for (int i = 0; i < myActorsToRemove[1].Size(); ++i)
 		{
-			GetScene()->removeActor(*myActorsToRemove[1][i]);
+			if (myActorsToRemove[1][i]->getScene() != nullptr)
+			{
+				GetScene()->removeActor(*myActorsToRemove[1][i]);
+			}
 		}
 		myActorsToRemove[1].RemoveAll();
 	}
@@ -435,6 +440,11 @@ namespace Prism
 		myPositionJobs[0].Add(PositionJob(aDynamicBody, aPosition, PositionJobType::TELEPORT));
 	}
 
+	void PhysicsManager::TeleportToPosition(physx::PxRigidStatic * aStaticBody, const CU::Vector3<float>& aPosition)
+	{
+		myPositionJobs[0].Add(PositionJob(aStaticBody, aPosition, PositionJobType::TELEPORT));
+	}
+
 	void PhysicsManager::MoveToPosition(physx::PxRigidDynamic* aDynamicBody, const CU::Vector3<float>& aPosition)
 	{
 		myPositionJobs[0].Add(PositionJob(aDynamicBody, aPosition, PositionJobType::MOVE));
@@ -444,14 +454,14 @@ namespace Prism
 	{
 		physx::PxTransform pose = physx::PxTransform(
 			ConvertVector(aPositionJob.myPosition), physx::PxQuat(physx::PxHalfPi, physx::PxVec3(0.f, 0.f, 1.f)));
-		
+
 		if (aPositionJob.myType == PositionJobType::TELEPORT)
 		{
-			aPositionJob.myDynamicBody->setGlobalPose(pose);
+			aPositionJob.myRigidBody->setGlobalPose(pose);
 		}
 		else if (aPositionJob.myType == PositionJobType::MOVE)
 		{
-			aPositionJob.myDynamicBody->setKinematicTarget(pose);
+			static_cast<physx::PxRigidDynamic*>(aPositionJob.myRigidBody)->setKinematicTarget(pose);
 		}
 		else
 		{
@@ -492,7 +502,7 @@ namespace Prism
 	{
 		myMoveJobs[0] = MoveJob(aId, aDirection, aMinDisplacement, aDeltaTime);
 	}
-		
+
 	void PhysicsManager::Move(const MoveJob& aMoveJob)
 	{
 		physx::PxControllerFilters filter;
@@ -544,7 +554,7 @@ namespace Prism
 		myControllerManager->getController(aId)->setFootPosition(physx::PxExtendedVec3(aPosition.x, aPosition.y, aPosition.z));
 	}
 
-	void PhysicsManager::GetPosition(int aId, CU::Vector3<float>& aPositionOut)
+	void PhysicsManager::GetPosition(int, CU::Vector3<float>& aPositionOut)
 	{
 		aPositionOut = myPlayerPosition;
 	}
@@ -552,7 +562,7 @@ namespace Prism
 	void PhysicsManager::Create(PhysicsComponent* aComponent, const PhysicsCallbackStruct& aPhysData
 		, float* aOrientation, const std::string& aFBXPath
 		, physx::PxRigidDynamic** aDynamicBodyOut, physx::PxRigidStatic** aStaticBodyOut
-		, physx::PxShape*** someShapesOut)
+		, physx::PxShape*** someShapesOut, bool aShouldAddToScene)
 	{
 		physx::PxPhysics* core = GetCore();
 
@@ -573,7 +583,10 @@ namespace Prism
 			(*aStaticBodyOut)->createShape(physx::PxTriangleMeshGeometry(mesh), *myDefaultMaterial);
 			(*aStaticBodyOut)->setName(aFBXPath.c_str());
 			(*aStaticBodyOut)->userData = aComponent;
-			GetScene()->addActor(*(*aStaticBodyOut));
+			if (aShouldAddToScene == true)
+			{
+				GetScene()->addActor(*(*aStaticBodyOut));
+			}
 		}
 		else if (aPhysData.myData->myPhysicsType == ePhysics::DYNAMIC)
 		{
@@ -587,8 +600,10 @@ namespace Prism
 			(*aDynamicBodyOut)->setLinearVelocity(physx::PxVec3(0, 0, 0));
 			(*aDynamicBodyOut)->setName(aFBXPath.c_str());
 			(*aDynamicBodyOut)->userData = aComponent;
-			GetScene()->addActor(*(*aDynamicBodyOut));
-
+			if (aShouldAddToScene == true)
+			{
+				GetScene()->addActor(*(*aDynamicBodyOut));
+			}
 			physx::PxU32 nShapes = (*aDynamicBodyOut)->getNbShapes();
 
 			*someShapesOut = new physx::PxShape*[nShapes];
@@ -607,20 +622,32 @@ namespace Prism
 			//(*aDynamicBodyOut)->setLinearVelocity(physx::PxVec3(0, 0, 0));
 			(*aDynamicBodyOut)->setName(aFBXPath.c_str());
 			(*aDynamicBodyOut)->userData = aComponent;
-			GetScene()->addActor(*(*aDynamicBodyOut));
-
+			if (aShouldAddToScene == true)
+			{
+				GetScene()->addActor(*(*aDynamicBodyOut));
+			}
 			physx::PxU32 nShapes = (*aDynamicBodyOut)->getNbShapes();
 
 			*someShapesOut = new physx::PxShape*[nShapes];
 		}
 		else if (aPhysData.myData->myPhysicsType == ePhysics::PHANTOM)
 		{
-			physx::PxVec3 dimensions(
-				aPhysData.myData->myPhysicsMax.x - aPhysData.myData->myPhysicsMin.x
-				, aPhysData.myData->myPhysicsMax.y - aPhysData.myData->myPhysicsMin.y
-				, aPhysData.myData->myPhysicsMax.z - aPhysData.myData->myPhysicsMin.z);
-			physx::PxBoxGeometry geometry(dimensions / 2.f);
-			*aStaticBodyOut = physx::PxCreateStatic(*core, transform, geometry, *myDefaultMaterial);
+			if (aShouldAddToScene == true)
+			{
+				physx::PxVec3 dimensions(
+					aPhysData.myData->myPhysicsMax.x - aPhysData.myData->myPhysicsMin.x
+					, aPhysData.myData->myPhysicsMax.y - aPhysData.myData->myPhysicsMin.y
+					, aPhysData.myData->myPhysicsMax.z - aPhysData.myData->myPhysicsMin.z);
+				physx::PxBoxGeometry geometry(dimensions / 2.f);
+				*aStaticBodyOut = physx::PxCreateStatic(*core, transform, geometry, *myDefaultMaterial);
+			}
+			else
+			{
+				physx::PxSphereGeometry geometry;
+				geometry.radius = aPhysData.myData->myPhysicsMax.x;
+				*aStaticBodyOut = physx::PxCreateStatic(*core, transform, geometry, *myDefaultMaterial);
+			}
+
 			(*aStaticBodyOut)->userData = aComponent;
 			(*aStaticBodyOut)->setName("Phantom");
 
@@ -628,12 +655,14 @@ namespace Prism
 			*someShapesOut = new physx::PxShape*[nShapes];
 
 			physx::PxShape* treasureShape;
-			(*aStaticBodyOut)->getShapes(&treasureShape, 1.f);
+			(*aStaticBodyOut)->getShapes(&treasureShape, 1);
 
 			treasureShape->setFlag(physx::PxShapeFlag::eSIMULATION_SHAPE, false);
 			treasureShape->setFlag(physx::PxShapeFlag::eTRIGGER_SHAPE, true);
-	
-			GetScene()->addActor(*(*aStaticBodyOut));
+			if (aShouldAddToScene == true)
+			{
+				GetScene()->addActor(*(*aStaticBodyOut));
+			}
 		}
 
 		if (aPhysData.myData->myPhysicsType != ePhysics::STATIC)
@@ -654,28 +683,34 @@ namespace Prism
 
 	void PhysicsManager::Remove(physx::PxRigidDynamic* aDynamic, const PhysicsComponentData& aData)
 	{
-		//GetScene()->removeActor(*aDynamic);
-		myActorsToRemove[0].Add(aDynamic);
-		for (int i = 0; i < myPhysicsComponentCallbacks.Size(); ++i)
+		if (aDynamic != nullptr && aDynamic->getScene() != nullptr)
 		{
-			if (myPhysicsComponentCallbacks[i].myData == &aData)
+			//GetScene()->removeActor(*aDynamic);
+			myActorsToRemove[0].Add(aDynamic);
+			for (int i = 0; i < myPhysicsComponentCallbacks.Size(); ++i)
 			{
-				myPhysicsComponentCallbacks.RemoveCyclicAtIndex(i);
-				break;
+				if (myPhysicsComponentCallbacks[i].myData == &aData)
+				{
+					myPhysicsComponentCallbacks.RemoveCyclicAtIndex(i);
+					break;
+				}
 			}
 		}
 	}
 
 	void PhysicsManager::Remove(physx::PxRigidStatic* aStatic, const PhysicsComponentData& aData)
 	{
-		//GetScene()->removeActor(*aStatic);
-		myActorsToRemove[0].Add(aStatic);
-		for (int i = 0; i < myPhysicsComponentCallbacks.Size(); ++i)
+		if (aStatic != nullptr && aStatic->getScene() != nullptr)
 		{
-			if (myPhysicsComponentCallbacks[i].myData == &aData)
+			//GetScene()->removeActor(*aStatic);
+			myActorsToRemove[0].Add(aStatic);
+			for (int i = 0; i < myPhysicsComponentCallbacks.Size(); ++i)
 			{
-				myPhysicsComponentCallbacks.RemoveCyclicAtIndex(i);
-				break;
+				if (myPhysicsComponentCallbacks[i].myData == &aData)
+				{
+					myPhysicsComponentCallbacks.RemoveCyclicAtIndex(i);
+					break;
+				}
 			}
 		}
 	}
@@ -683,7 +718,7 @@ namespace Prism
 	void PhysicsManager::Sleep(physx::PxRigidDynamic* aDynamic)
 	{
 		myActorsToSleep[0].Add(aDynamic);
-		}
+	}
 
 	void PhysicsManager::Wake(physx::PxRigidDynamic* aDynamic)
 	{

@@ -20,7 +20,7 @@ ShootingComponent::ShootingComponent(Entity& anEntity, Prism::Scene* aScene)
 
 	myPistol = new Pistol();
 	myShotgun = new Shotgun();
-	myGrenadeLauncher = new GrenadeLauncher(aScene);
+	myGrenadeLauncher = new GrenadeLauncher(aScene, myEntity.GetGID());
 	myCurrentWeapon = myPistol;
 }
 

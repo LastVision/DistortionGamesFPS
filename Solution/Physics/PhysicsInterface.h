@@ -45,6 +45,7 @@ namespace Prism
 		void AddForce(physx::PxRigidDynamic* aDynamicBody, const CU::Vector3<float>& aDirection, float aMagnitude);
 		void SetVelocity(physx::PxRigidDynamic* aDynamicBody, const CU::Vector3<float>& aVelocity);
 		void TeleportToPosition(physx::PxRigidDynamic* aDynamicBody, const CU::Vector3<float>& aPosition);
+		void TeleportToPosition(physx::PxRigidStatic* aStaticBody, const CU::Vector3<float>& aPosition);
 		void MoveToPosition(physx::PxRigidDynamic* aDynamicBody, const CU::Vector3<float>& aPosition);
 
 		int CreatePlayerController(const CU::Vector3<float>& aStartPosition, PhysicsComponent* aComponent);
@@ -59,7 +60,7 @@ namespace Prism
 		void Create(PhysicsComponent* aComponent, const PhysicsCallbackStruct& aPhysData
 			, float* aOrientation, const std::string& aFBXPath
 			, physx::PxRigidDynamic** aDynamicBodyOut, physx::PxRigidStatic** aStaticBodyOut
-			, physx::PxShape*** someShapesOut);
+			, physx::PxShape*** someShapesOut, bool aShouldAddToScene);
 		void Add(physx::PxRigidDynamic* aDynamic);
 		void Add(physx::PxRigidStatic* aStatic);
 		void Remove(physx::PxRigidDynamic* aDynamic, const PhysicsComponentData& aData);

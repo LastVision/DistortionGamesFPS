@@ -7,6 +7,7 @@
 #include "InGameState.h"
 #include <InputWrapper.h>
 #include "LobbyState.h"
+#include <NetMessageDisconnect.h>
 #include <NetMessageStartGame.h>
 #include <NetMessageRequestStartGame.h>
 #include <OnClickMessage.h>
@@ -64,8 +65,8 @@ const eStateStatus LobbyState::Update(const float& aDeltaTime)
 	if (CU::InputWrapper::GetInstance()->KeyDown(DIK_ESCAPE) == true
 		|| CU::InputWrapper::GetInstance()->KeyDown(DIK_N) == true)
 	{
-		bool ShouldDisconnectFromServerHere = true;
-		return eStateStatus::ePopSubState;
+		ClientNetworkManager::GetInstance()->AddMessage(NetMessageDisconnect(ClientNetworkManager::GetInstance()->GetGID()));
+		return eStateStatus::ePopMainState;
 	}
 
 	ClientNetworkManager::GetInstance()->DebugPrint();

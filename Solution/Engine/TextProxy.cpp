@@ -53,7 +53,7 @@ namespace Prism
 		}
 	}
 
-	void TextProxy::SetScale(const CU::Vector2<float>& aScale)
+	void TextProxy::SetScale(const CU::Vector2<float>&)
 	{
 		//Scaling is not supported!
 		myScale = CU::Vector2<float>(1.f, 1.f);

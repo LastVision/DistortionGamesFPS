@@ -63,8 +63,8 @@ CU::InputWrapper::~InputWrapper()
 
 void CU::InputWrapper::Update()
 {
-	myMouseDelta.x = 0.f;
-	myMouseDelta.y = 0.f;
+	myMouseDelta.x = 0;
+	myMouseDelta.y = 0;
 	for (int i = 0; i < myBufferedMousePosition.Size(); ++i)
 	{
 		myMouseDelta += myBufferedMousePosition[i];
@@ -109,9 +109,9 @@ void CU::InputWrapper::Update()
 	}
 }
 
-void CU::InputWrapper::FeedMouseRawInput(float aDeltaX, float aDeltaY)
+void CU::InputWrapper::FeedMouseRawInput(int aDeltaX, int aDeltaY)
 {
-	myBufferedMousePosition.Add(CU::Vector2<int>(aDeltaX, aDeltaY));
+	myBufferedMousePosition.Add(CU::Vector2<int>(int(aDeltaX), int(aDeltaY)));
 }
 
 void CU::InputWrapper::ToggleWindowActive()
