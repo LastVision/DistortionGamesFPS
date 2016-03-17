@@ -48,7 +48,8 @@ void InitRawInput(const HWND&)
 	//Rid[1].dwFlags = RIDEV_NOLEGACY;   // adds HID keyboard and also ignores legacy keyboard messages
 	//Rid[1].hwndTarget = 0;
 
-	if (RegisterRawInputDevices(Rid, 1, sizeof(Rid[0])) == FALSE) {
+	if (RegisterRawInputDevices(Rid, 1, sizeof(Rid[0])) == FALSE) 
+	{
 		//registration failed. Call GetLastError for the cause of the error
 	}
 }
@@ -186,7 +187,9 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPTSTR, int aNumberCommands)
 
 	free(pRawInputDeviceList);
 
+#ifdef USE_RAW_INPUT
 	InitRawInput(hwnd);
+#endif
 
 #ifdef RELEASE_BUILD
 	Prism::Engine::GetInstance()->SetFullscreen(true);
