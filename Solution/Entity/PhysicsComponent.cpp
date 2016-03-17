@@ -50,7 +50,7 @@ void PhysicsComponent::Update(float)
 {
 	if (myPhysicsType == ePhysics::KINEMATIC)
 	{
-		Prism::PhysicsInterface::GetInstance()->MoveToPosition(myDynamicBody, myEntity.GetOrientation().GetPos());
+		Prism::PhysicsInterface::GetInstance()->MoveToPosition(myDynamicBody, myEntity.GetOrientation().GetPos() + CU::Vector3<float>(0, 1.f, 0));
 	}
 }
 
