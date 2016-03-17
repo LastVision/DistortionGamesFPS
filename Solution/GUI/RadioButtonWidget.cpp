@@ -1,27 +1,30 @@
 #include "stdafx.h"
 #include <AudioInterface.h>
-#include "ButtonWidget.h"
+#include "RadioButtonContainer.h"
+#include "RadioButtonWidget.h"
 #include <CommonHelper.h>
 #include <Engine.h>
-#include <OnClickMessage.h>
 #include <PostMaster.h>
 
 namespace GUI
 {
-	ButtonWidget::ButtonWidget(XMLReader* aReader, tinyxml2::XMLElement* anXMLElement)
+	RadioButtonWidget::RadioButtonWidget(XMLReader* aReader, tinyxml2::XMLElement* anXMLElement, eOnRadioButtonEvent aRadioButtonType, RadioButtonContainer& aContainer)
 		: Widget()
+		, myContainer(aContainer)
 		, myImageNormal(nullptr)
 		, myImagePressed(nullptr)
 		, myImageHover(nullptr)
 		, myImageCurrent(nullptr)
-		, myClickEvent(nullptr)
 		, myHoverText("")
 		, myIsTextButton(false)
 		, myId(-1)
+		, myActive(false)
+		, myType(aRadioButtonType)
 	{
 		std::string spritePathNormal = "";
 		std::string spritePathHover = "";
 		std::string spritePathPressed = "";
+		std::string spritePathActive = "";
 
 		aReader->ForceReadAttribute(aReader->ForceFindFirstChild(anXMLElement, "size"), "x", mySize.x);
 		aReader->ForceReadAttribute(aReader->ForceFindFirstChild(anXMLElement, "size"), "y", mySize.y);
@@ -43,35 +46,44 @@ namespace GUI
 		aReader->ForceReadAttribute(aReader->ForceFindFirstChild(anXMLElement, "spritenormal"), "path", spritePathNormal);
 		aReader->ForceReadAttribute(aReader->ForceFindFirstChild(anXMLElement, "spritehover"), "path", spritePathHover);
 		aReader->ForceReadAttribute(aReader->ForceFindFirstChild(anXMLElement, "spritepressed"), "path", spritePathPressed);
+		aReader->ForceReadAttribute(aReader->ForceFindFirstChild(anXMLElement, "spriteactive"), "path", spritePathActive);
 
 		myImageNormal = Prism::ModelLoader::GetInstance()->LoadSprite(spritePathNormal, mySize, mySize / 2.f);
 		myImageHover = Prism::ModelLoader::GetInstance()->LoadSprite(spritePathHover, mySize, mySize / 2.f);
 		myImagePressed = Prism::ModelLoader::GetInstance()->LoadSprite(spritePathPressed, mySize, mySize / 2.f);
+		myImageActive = Prism::ModelLoader::GetInstance()->LoadSprite(spritePathActive, mySize, mySize / 2.f);
 		myImageCurrent = myImageNormal;
+
+		aReader->ForceReadAttribute(aReader->ForceFindFirstChild(anXMLElement, "id"), "value", myId);
 
 		tinyxml2::XMLElement* hoverElement = aReader->FindFirstChild(anXMLElement, "hover");
 		if (hoverElement != nullptr)
 		{
 			aReader->ForceReadAttribute(hoverElement, "text", myHoverText);
 		}
-
-		ReadEvent(aReader, anXMLElement);
 	}
 
-	ButtonWidget::~ButtonWidget()
+	RadioButtonWidget::~RadioButtonWidget()
 	{
 		SAFE_DELETE(myImageNormal);
 		SAFE_DELETE(myImagePressed);
 		SAFE_DELETE(myImageHover);
-		SAFE_DELETE(myClickEvent);
+		SAFE_DELETE(myImageActive);
 		myImageCurrent = nullptr;
 	}
 
-	void ButtonWidget::Render(const CU::Vector2<float>& aParentPosition)
+	void RadioButtonWidget::Render(const CU::Vector2<float>& aParentPosition)
 	{
 		if (myIsVisible == true)
 		{
-			myImageCurrent->Render(myPosition + aParentPosition);
+			if (myActive == true)
+			{
+				myImageActive->Render(myPosition + aParentPosition);
+			}
+			else
+			{
+				myImageCurrent->Render(myPosition + aParentPosition);
+			}
 
 			if (myIsTextButton == true)
 			{
@@ -88,37 +100,38 @@ namespace GUI
 		}
 	}
 
-	void ButtonWidget::OnLeftMousePressed(const CU::Vector2<float>&)
+	void RadioButtonWidget::OnLeftMousePressed(const CU::Vector2<float>&)
 	{
 		myImageCurrent = myImagePressed;
 	}
 
-	void ButtonWidget::OnLeftMouseUp()
+	void RadioButtonWidget::OnLeftMouseUp()
 	{
 		Click();
 		myImageCurrent = myImageNormal;
 	}
 
-	void ButtonWidget::OnMouseEnter()
+	void RadioButtonWidget::OnMouseEnter()
 	{
 		Prism::Audio::AudioInterface::GetInstance()->PostEvent("buttonHover", 0);
 		myImageCurrent = myImageHover;
 	}
 
-	void ButtonWidget::OnMouseExit()
+	void RadioButtonWidget::OnMouseExit()
 	{
 		myImageCurrent = myImageNormal;
 	}
 
-	void ButtonWidget::OnResize(const CU::Vector2<float>& aNewSize, const CU::Vector2<float>& anOldSize)
+	void RadioButtonWidget::OnResize(const CU::Vector2<float>& aNewSize, const CU::Vector2<float>& anOldSize)
 	{
 		Widget::OnResize(aNewSize, anOldSize);
 		myImageNormal->SetSize(mySize, mySize / 2.f);
 		myImagePressed->SetSize(mySize, mySize / 2.f);
 		myImageHover->SetSize(mySize, mySize / 2.f);
+		myImageActive->SetSize(mySize, mySize / 2.f);
 	}
 
-	bool ButtonWidget::IsInside(const CU::Vector2<float>& aPosition) const
+	bool RadioButtonWidget::IsInside(const CU::Vector2<float>& aPosition) const
 	{
 		return aPosition.x >= myPosition.x - myImageCurrent->GetHotspot().x &&
 			aPosition.x <= myPosition.x + mySize.x - myImageCurrent->GetHotspot().x &&
@@ -126,7 +139,7 @@ namespace GUI
 			aPosition.y <= myPosition.y + mySize.y - myImageCurrent->GetHotspot().y;
 	}
 
-	void ButtonWidget::SetPosition(const CU::Vector2<float>& aPosition, bool aIsHotspot)
+	void RadioButtonWidget::SetPosition(const CU::Vector2<float>& aPosition, bool aIsHotspot)
 	{
 		if (aIsHotspot == true)
 		{
@@ -138,33 +151,7 @@ namespace GUI
 		}
 	}
 
-	void ButtonWidget::ReadEvent(XMLReader* aReader, tinyxml2::XMLElement* anXMLElement)
-	{
-		std::string clickEvent = "";
-		aReader->ForceReadAttribute(aReader->ForceFindFirstChild(anXMLElement, "onclick"), "event", clickEvent);
-
-		if (clickEvent == "none") // for passive ability buttons
-		{
-			DL_ASSERT("None not yet implemented, needed in FPS?");
-		}
-		else if (clickEvent == "connect")
-		{
-			aReader->ForceReadAttribute(aReader->ForceFindFirstChild(anXMLElement, "onclick"), "id", myId);
-			DL_ASSERT_EXP(myId != -1, "Incorrect connection id.");
-			myClickEvent = new OnClickMessage(eOnClickEvent::CONNECT, myId);
-		}
-		else if (clickEvent == "start_game")
-		{
-			myClickEvent = new OnClickMessage(eOnClickEvent::START_GAME);
-		}
-		else
-		{
-			std::string message = "[ButtonWidget]: No onclick event named " + clickEvent;
-			DL_ASSERT(message);
-		}
-	}
-
-	void ButtonWidget::SetButtonText(int aButtonId, const std::string& aText, bool& aSuccessOut)
+	void RadioButtonWidget::SetButtonText(int aButtonId, const std::string& aText, bool& aSuccessOut)
 	{
 		if (myId == aButtonId)
 		{
@@ -175,12 +162,19 @@ namespace GUI
 		}
 	}
 
-	void ButtonWidget::Click()
+	void RadioButtonWidget::Deactivate()
 	{
-		if (myClickEvent != nullptr)
-		{
-			Prism::Audio::AudioInterface::GetInstance()->PostEvent("buttonClick", 0);
-			PostMaster::GetInstance()->SendMessage(*myClickEvent);
-		}
+		myActive = false;
+	}
+
+	void RadioButtonWidget::Activate()
+	{
+		myActive = true;
+		PostMaster::GetInstance()->SendMessage(OnRadioButtonMessage(myType, myId));
+	}
+
+	void RadioButtonWidget::Click()
+	{
+		myContainer.Activate(this);
 	}
 }

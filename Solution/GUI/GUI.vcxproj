@@ -24,6 +24,8 @@
     <ClInclude Include="Cursor.h" />
     <ClInclude Include="GUIManager.h" />
     <ClInclude Include="GUIManager3D.h" />
+    <ClInclude Include="RadioButtonContainer.h" />
+    <ClInclude Include="RadioButtonWidget.h" />
     <ClInclude Include="SpriteWidget.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="Widget.h" />
@@ -35,6 +37,8 @@
     <ClCompile Include="Cursor.cpp" />
     <ClCompile Include="GUIManager.cpp" />
     <ClCompile Include="GUIManager3D.cpp" />
+    <ClCompile Include="RadioButtonContainer.cpp" />
+    <ClCompile Include="RadioButtonWidget.cpp" />
     <ClCompile Include="SpriteWidget.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>

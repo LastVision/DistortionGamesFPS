@@ -9,8 +9,10 @@
 #include "LobbyState.h"
 #include <NetMessageDisconnect.h>
 #include <NetMessageStartGame.h>
+#include <NetMessageRequestLevel.h>
 #include <NetMessageRequestStartGame.h>
 #include <OnClickMessage.h>
+#include <OnRadioButtonMessage.h>
 #include <PostMaster.h>
 #include <SharedNetworkManager.h>
 
@@ -113,6 +115,13 @@ void LobbyState::ReceiveMessage(const OnClickMessage& aMessage)
 			break;
 		}
 	}
+}
+
+void LobbyState::ReceiveMessage(const OnRadioButtonMessage& aMessage)
+{
+	DL_ASSERT_EXP(aMessage.myEvent == eOnRadioButtonEvent::LEVEL_SELECT, "Only level select in lobby state.");
+
+	ClientNetworkManager::GetInstance()->AddMessage(NetMessageRequestLevel(aMessage.myID));
 }
 
 void LobbyState::ReceiveNetworkMessage(const NetMessageStartGame& aMessage, const sockaddr_in&)
