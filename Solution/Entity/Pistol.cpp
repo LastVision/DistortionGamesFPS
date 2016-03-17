@@ -142,3 +142,10 @@ void Pistol::HandleRaycast(PhysicsComponent* aComponent, const CU::Vector3<float
 		PostMaster::GetInstance()->SendMessage(PostMasterNetOnHitMessage(static_cast<float>(myDamage), aComponent->GetEntity().GetGID()));
 	}
 }
+
+void Pistol::Upgrade(const UpgradeComponentData& aData)
+{
+	Weapon::Upgrade(aData);
+	myMinSpreadRotation += aData.myMinSpreadRotation;
+	myMaxSpreadRotation += aData.myMaxSpreadRotation;
+}

@@ -74,6 +74,13 @@ void Shotgun::HandleRaycast(PhysicsComponent* aComponent, const CU::Vector3<floa
 	}
 }
 
+void Shotgun::Upgrade(const UpgradeComponentData& aData)
+{
+	Weapon::Upgrade(aData);
+	myMinSpreadRotation += aData.myMinSpreadRotation;
+	myMaxSpreadRotation += aData.myMaxSpreadRotation;
+}
+
 void Shotgun::ShootRowAround(const CU::Matrix44<float>& aOrientation, const CU::Vector3<float>& aForward)
 {
 	CU::Vector3<float> forward = aForward;

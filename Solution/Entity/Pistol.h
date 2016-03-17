@@ -24,6 +24,7 @@ public:
 
 	void HandleRaycast(PhysicsComponent* aComponent, const CU::Vector3<float>& aDirection, const CU::Vector3<float>& aHitPosition);
 
+	void Upgrade(const UpgradeComponentData& aData) override;
 
 private:
 	std::function<void(PhysicsComponent*, const CU::Vector3<float>&, const CU::Vector3<float>&)> myRaycastHandler;
