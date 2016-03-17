@@ -8,8 +8,10 @@
 #include <InputWrapper.h>
 #include "LobbyState.h"
 #include <NetMessageDisconnect.h>
+#include <NetMessageRequestLevel.h>
 #include <NetMessageRequestStartGame.h>
 #include <OnClickMessage.h>
+#include <OnRadioButtonMessage.h>
 #include <PostMaster.h>
 #include <PostMasterNetStartGameMessage.h>
 
@@ -113,6 +115,13 @@ void LobbyState::ReceiveMessage(const OnClickMessage& aMessage)
 			break;
 		}
 	}
+}
+
+void LobbyState::ReceiveMessage(const OnRadioButtonMessage& aMessage)
+{
+	DL_ASSERT_EXP(aMessage.myEvent == eOnRadioButtonEvent::LEVEL_SELECT, "Only level select in lobby state.");
+
+	ClientNetworkManager::GetInstance()->AddMessage(NetMessageRequestLevel(aMessage.myID));
 }
 
 void LobbyState::ReceiveMessage(const PostMasterNetStartGameMessage& aMessage)

@@ -4,6 +4,7 @@ enum class eMessageType
 	GAME_STATE,
 	RESIZE,
 	ON_CLICK,
+	ON_RADIO_BUTTON,
 	FADE,
 	PARTICLE,
 

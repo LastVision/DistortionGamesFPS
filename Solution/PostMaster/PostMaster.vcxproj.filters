@@ -84,5 +84,8 @@
     <ClInclude Include="PostMasterNetLevelLoadedMessage.h">
       <Filter>Message\NetworkMessages</Filter>
     </ClInclude>
+    <ClInclude Include="OnRadioButtonMessage.h">
+      <Filter>Message</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
