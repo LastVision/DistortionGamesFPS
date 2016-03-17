@@ -3,10 +3,9 @@
 
 #include <Entity.h>
 #include <EntityFactory.h>
-#include <PostMasterNetAddPlayerMessage.h>
-#include <PostMasterNetAddEnemyMessage.h>
-#include <PostMasterNetLevelLoadedMessage.h>
-#include <PostMaster.h>
+#include <NetMessageAddEnemy.h>
+#include <NetMessageRequestConnect.h>
+#include <NetMessageLevelLoaded.h>
 #include <NetworkComponent.h>
 #include <NetMessageAddEnemy.h>
 #include <PhysicsInterface.h>
@@ -15,14 +14,14 @@
 ServerLevel::ServerLevel()
 	: myLoadedClients(16)
 {
-	PostMaster::GetInstance()->Subscribe(eMessageType::NETWORK_ADD_PLAYER, this);
-	PostMaster::GetInstance()->Subscribe(eMessageType::NETWORK_LEVEL_LOADED, this);
+	ServerNetworkManager::GetInstance()->Subscribe(eNetMessageType::ON_CONNECT, this);
+	ServerNetworkManager::GetInstance()->Subscribe(eNetMessageType::LEVEL_LOADED, this);
 }
 
 ServerLevel::~ServerLevel()
 {
-	PostMaster::GetInstance()->UnSubscribe(eMessageType::NETWORK_ADD_PLAYER, this);
-	PostMaster::GetInstance()->UnSubscribe(eMessageType::NETWORK_LEVEL_LOADED, this);
+	ServerNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::ON_CONNECT, this);
+	ServerNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::LEVEL_LOADED, this);
 }
 
 void ServerLevel::Init()
@@ -43,38 +42,26 @@ void ServerLevel::Update(const float aDeltaTime)
 	Prism::PhysicsInterface::GetInstance()->EndFrame();
 }
 
-void ServerLevel::ReceiveMessage(const PostMasterNetAddPlayerMessage& aMessage)
+void ServerLevel::ReceiveNetworkMessage(const NetMessageRequestConnect&, const sockaddr_in&)
 {
-	aMessage;
-	/*bool isRunTime = Prism::MemoryTracker::GetInstance()->GetRunTime();
+	bool isRunTime = Prism::MemoryTracker::GetInstance()->GetRunTime();
 	Prism::MemoryTracker::GetInstance()->SetRunTime(false);
-	Entity* newPlayer = EntityFactory::CreateEntity(aMessage.myGID, eEntityType::UNIT, "player", nullptr, false, { 0.f, 0.f, 0.f });
+	Entity* newPlayer = EntityFactory::CreateEntity(ServerNetworkManager::GetInstance()->GetLastJoinedID(), eEntityType::UNIT, "player", nullptr, false, { 0.f, 0.f, 0.f });
 	newPlayer->Reset();
 	newPlayer->GetComponent<NetworkComponent>()->SetPlayer(true);
 	myPlayers.Add(newPlayer);
 	Prism::MemoryTracker::GetInstance()->SetRunTime(isRunTime);
-
-	for (Entity* e : myActiveEnemies)
-	{
-		if (e->GetComponent<NetworkComponent>() != nullptr)
-		{
-			PostMaster::GetInstance()->SendMessage(PostMasterNetAddEnemyMessage({ 0.f, 0.f, 0.f }, e->GetGID(), aMessage.myAddress));
-		}
-	}*/
 }
 
-void ServerLevel::ReceiveMessage(const PostMasterNetLevelLoadedMessage& aMessage)
+void ServerLevel::ReceiveNetworkMessage(const NetMessageLevelLoaded& aMessage, const sockaddr_in&)
 {
-	myLoadedClients.Add(aMessage.mySender);
+	myLoadedClients.Add(aMessage.mySenderID);
 
 	if (ServerNetworkManager::GetInstance()->ListContainsAllClients(myLoadedClients) == true)
 	{
 		for (Entity* e : myActiveEnemies)
 		{
-			if (e->GetComponent<NetworkComponent>() != nullptr)
-			{
-				ServerNetworkManager::GetInstance()->AddMessage(NetMessageAddEnemy({ 0.f, 0.f, 0.f }, e->GetGID()));
-			}
+			ServerNetworkManager::GetInstance()->AddMessage(NetMessageAddEnemy(e->GetOrientation().GetPos(), e->GetGID()));
 		}
 	}
 }

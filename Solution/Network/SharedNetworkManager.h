@@ -1,6 +1,7 @@
 #pragma once
 #include <vector>
-#include <NetworkMessageTypes.h>
+#include "NetworkMessageTypes.h"
+#include "NetworkSubscriber.h"
 
 namespace std
 {
@@ -9,24 +10,19 @@ namespace std
 
 class NetMessage;
 class NetMessageImportantReply;
-class NetMessageConnectReply;
-class NetMessageRequestConnect;
-class NetMessageOnJoin;
-class NetMessageDisconnect;
-class NetMessageRequestLevel;
-class NetMessagePingRequest;
-class NetMessagePingReply;
-class NetMessagePosition;
-class NetMessageAddEnemy;
-class NetMessageOnHit;
-class NetMessageOnDeath;
-class NetMessageRequestStartGame;
-class NetMessageStartGame;
-class NetMessageLevelLoaded;
 
-class SharedNetworkManager
+class NetworkSubscriber;
+
+struct NetworkSubscriberInfo
+{
+	NetworkSubscriber* myNetworkSubscriber;
+};
+
+class SharedNetworkManager : public NetworkSubscriber
 {
 public:
+	virtual ~SharedNetworkManager();
+	static SharedNetworkManager* GetInstance();
 
 	virtual void Initiate();
 	virtual void StartNetwork(unsigned int aPortNum);
@@ -50,7 +46,17 @@ public:
 	void WaitForMain();
 	void WaitForReceieve();
 
+	void Subscribe(const eNetMessageType aMessageType, NetworkSubscriber* aSubscriber);
+	void UnSubscribe(const eNetMessageType aMessageType, NetworkSubscriber* aSubscriber);
+	void UnSubscribe(NetworkSubscriber* aSubscriber);
+	bool IsSubscribed(const eNetMessageType aMessageType, NetworkSubscriber* aSubscriber);
+
+	void ReceiveNetworkMessage(const NetMessageImportantReply& aMessage, const sockaddr_in& aSenderAddress) override;
+	void ReceiveNetworkMessage(const NetMessagePingReply& aMessage, const sockaddr_in& aSenderAddress) override;
+
 protected:
+	static SharedNetworkManager* myInstance;
+
 	struct ImportantClient
 	{
 		float myTimer;
@@ -94,7 +100,7 @@ protected:
 	};
 
 	SharedNetworkManager();
-	virtual ~SharedNetworkManager();
+	
 
 	virtual void UpdateImportantMessages(float aDeltaTime) = 0;
 
@@ -108,28 +114,10 @@ protected:
 	void UnpackAndHandle(T aMessage, Buffer& aBuffer);
 	template<typename T>
 	bool CheckIfImportantMessage(T aMessage);
+
 	template<typename T>
-	T CreateMessage();
-	
-
+	void SendToSubscriber(const T& aMessage, const sockaddr_in& aSenderAddress);
 	void HandleMessage();
-
-	virtual void HandleMessage(const NetMessageImportantReply& aMessage, const sockaddr_in& aSenderAddress);
-	virtual void HandleMessage(const NetMessageConnectReply& aMessage, const sockaddr_in& aSenderAddress);
-	virtual void HandleMessage(const NetMessageRequestConnect& aMessage, const sockaddr_in& aSenderAddress);
-	virtual void HandleMessage(const NetMessageOnJoin& aMessage, const sockaddr_in& aSenderAddress);
-	virtual void HandleMessage(const NetMessageDisconnect& aMessage, const sockaddr_in& aSenderAddress);
-	virtual void HandleMessage(const NetMessageRequestLevel& aMessage, const sockaddr_in& aSenderAddress);
-	virtual void HandleMessage(const NetMessagePingRequest& aMessage, const sockaddr_in& aSenderAddress);
-	virtual void HandleMessage(const NetMessagePingReply& aMessage, const sockaddr_in& aSenderAddress);
-	virtual void HandleMessage(const NetMessagePosition& aMessage, const sockaddr_in& aSenderAddress);
-	virtual void HandleMessage(const NetMessageAddEnemy& aMessage, const sockaddr_in& aSenderAddress);
-	virtual void HandleMessage(const NetMessageOnHit& aMessage, const sockaddr_in& aSenderAddress);
-	virtual void HandleMessage(const NetMessageOnDeath& aMessage, const sockaddr_in& aSenderAddress);
-	virtual void HandleMessage(const NetMessageRequestStartGame& aMessage, const sockaddr_in& aSenderAddress);
-	virtual void HandleMessage(const NetMessageStartGame& aMessage, const sockaddr_in& aSenderAddress);
-	virtual void HandleMessage(const NetMessageLevelLoaded& aMessage, const sockaddr_in& aSenderAddress);
-
 
 	std::thread* myReceieveThread;
 	std::thread* mySendThread;
@@ -138,6 +126,8 @@ protected:
 	CU::StaticArray<CU::GrowingArray<SendBufferMessage>, 2> mySendBuffer;
 	CU::GrowingArray<ImportantMessage> myImportantMessagesBuffer;
 	CU::GrowingArray<ImportantReceivedMessage> myImportantReceivedMessages;
+
+	CU::StaticArray<CU::GrowingArray<NetworkSubscriberInfo>, static_cast<int>(eNetMessageType::_COUNT)> mySubscribers;
 
 	bool myIsServer;
 	bool myIsOnline;
@@ -183,8 +173,8 @@ inline void SharedNetworkManager::AddMessage(T aMessage, unsigned int aTargetID)
 	unsigned int importantID = 0;
 	if (isImportant == true)
 	{
+		importantID = myImportantID;
 		aMessage.SetImportantID(myImportantID++);
-		importantID = aMessage.GetImportantID();
 	}
 
 	aMessage.PackMessage();
@@ -197,14 +187,6 @@ inline void SharedNetworkManager::AddMessage(T aMessage, unsigned int aTargetID)
 }
 
 template<typename T>
-T SharedNetworkManager::CreateMessage()
-{
-	T toReturn;
-	toReturn.SetImportantID(myImportantID++);
-	return toReturn;
-}
-
-template<typename T>
 void SharedNetworkManager::UnpackAndHandle(T aMessage, Buffer& aBuffer)
 {
 	aMessage.UnPackMessage(aBuffer.myData, aBuffer.myLength);
@@ -214,7 +196,7 @@ void SharedNetworkManager::UnpackAndHandle(T aMessage, Buffer& aBuffer)
 	}
 	if (AlreadyReceived(aMessage) == false)
 	{
-		HandleMessage(aMessage, aBuffer.mySenderAddress);
+		SendToSubscriber(aMessage, aBuffer.mySenderAddress);
 	}
 }
 
@@ -222,4 +204,22 @@ template<typename T>
 bool SharedNetworkManager::CheckIfImportantMessage(T aMessage)
 {
 	return aMessage.GetIsImportant();
+}
+
+template<typename T>
+void SharedNetworkManager::SendToSubscriber(const T& aMessage, const sockaddr_in& aSenderAddress)
+{
+	CU::GrowingArray<NetworkSubscriberInfo>& subscribers = mySubscribers[static_cast<int>(aMessage.myID)];
+
+	if (subscribers.Size() > 0)
+	{
+		for (int i = 0; i < subscribers.Size(); ++i)
+		{
+			subscribers[i].myNetworkSubscriber->ReceiveNetworkMessage(aMessage, aSenderAddress);
+		}
+	}
+	else if (static_cast<int>(aMessage.myID) != static_cast<int>(eNetMessageType::REQUEST_START_GAME))
+	{
+		//DL_ASSERT("Network message sent without subscriber.");
+	}
 }

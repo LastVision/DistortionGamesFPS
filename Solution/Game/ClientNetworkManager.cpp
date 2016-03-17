@@ -17,25 +17,15 @@
 #include <NetMessageOnDeath.h>
 #include <NetMessageStartGame.h>
 
-#include <PostMasterNetAddPlayerMessage.h>
-#include <PostMasterNetOnHitMessage.h>
-#include <PostMasterNetRemovePlayer.h>
-#include <PostMasterNetAddEnemyMessage.h>
-#include <PostMasterNetSetPositionMessage.h>
-#include <PostMasterNetSendPositionMessage.h>
-#include <PostMasterNetOnDisconnectMessage.h>
-#include <PostMasterNetOnDeathMessage.h>
-#include <PostMasterNetStartGameMessage.h>
-
 #define BUFFERSIZE 512
-
-ClientNetworkManager* ClientNetworkManager::myInstance = nullptr;
 
 ClientNetworkManager::ClientNetworkManager()
 {
 	PostMaster::GetInstance()->Subscribe(eMessageType::NETWORK_SEND_POSITION, this);
 	PostMaster::GetInstance()->Subscribe(eMessageType::NETWORK_ON_DISCONNECT, this);
 	PostMaster::GetInstance()->Subscribe(eMessageType::NETWORK_ON_HIT, this);
+
+	
 }
 
 ClientNetworkManager::~ClientNetworkManager()
@@ -43,6 +33,13 @@ ClientNetworkManager::~ClientNetworkManager()
 	PostMaster::GetInstance()->UnSubscribe(eMessageType::NETWORK_SEND_POSITION, this);
 	PostMaster::GetInstance()->UnSubscribe(eMessageType::NETWORK_ON_DISCONNECT, this);
 	PostMaster::GetInstance()->UnSubscribe(eMessageType::NETWORK_ON_HIT, this);
+
+	UnSubscribe(eNetMessageType::CONNECT_REPLY, this);
+	UnSubscribe(eNetMessageType::ON_CONNECT, this);
+	UnSubscribe(eNetMessageType::ON_DISCONNECT, this);
+	UnSubscribe(eNetMessageType::ON_JOIN, this);
+	UnSubscribe(eNetMessageType::PING_REQUEST, this);
+	UnSubscribe(eNetMessageType::PING_REPLY, this);
 
 	myMainIsDone = true;
 	myReceieveIsDone = true;
@@ -83,7 +80,7 @@ ClientNetworkManager* ClientNetworkManager::GetInstance()
 {
 	if (myInstance != nullptr)
 	{
-		return myInstance;
+		return static_cast<ClientNetworkManager*>(myInstance);
 	}
 	DL_ASSERT("Instance were null, did you forget to create the ClientNetworkManager?");
 	return nullptr;
@@ -96,6 +93,12 @@ void ClientNetworkManager::Initiate()
 	myGID = 0;
 	__super::Initiate();
 	myClients.Init(16);
+	Subscribe(eNetMessageType::CONNECT_REPLY, this);
+	Subscribe(eNetMessageType::ON_CONNECT, this);
+	Subscribe(eNetMessageType::ON_DISCONNECT, this);
+	Subscribe(eNetMessageType::ON_JOIN, this);
+	Subscribe(eNetMessageType::PING_REQUEST, this);
+	Subscribe(eNetMessageType::PING_REPLY, this);
 }
 
 void ClientNetworkManager::StartNetwork(unsigned int aPortNum)
@@ -145,12 +148,8 @@ void ClientNetworkManager::ConnectToServer(const char* aServerIP)
 	char username[256 + 1];
 	DWORD username_len = 256 + 1;
 	GetUserNameA(username, &username_len);
-	NetMessageRequestConnect connect = CreateMessage<NetMessageRequestConnect>();
-	connect.myName = username;
-	connect.myServerID = 0;
-	AddMessage(connect);
 
-	myName = username;
+	AddMessage(NetMessageRequestConnect(username, 0));
 }
 
 unsigned int ClientNetworkManager::GetGID() const
@@ -163,32 +162,20 @@ const CU::GrowingArray<OtherClients>& ClientNetworkManager::GetClients()
 	return myClients;
 }
 
-void ClientNetworkManager::ReceiveMessage(const PostMasterNetSendPositionMessage& aMessage)
-{
-	NetMessagePosition toSend;
-	toSend.mySenderID = myGID;
-	toSend.myPosition = aMessage.myPosition;
-	toSend.myRotationY = aMessage.myRotationY;
-	toSend.myGID = aMessage.myGID;
-	AddMessage(toSend);
-}
-
-void ClientNetworkManager::ReceiveMessage(const PostMasterNetOnDisconnectMessage&)
-{
-	NetMessageDisconnect toSend = CreateMessage<NetMessageDisconnect>();
-	toSend.mySenderID = myGID;
-	toSend.myClientID = myGID;
-	AddMessage(toSend);
-}
-
-void ClientNetworkManager::ReceiveMessage(const PostMasterNetOnHitMessage& aMessage)
-{
-	NetMessageOnHit toSend;
-	toSend.mySenderID = myGID;
-	toSend.myDamage = aMessage.myDamage;
-	toSend.myGID = aMessage.myGID;
-	AddMessage(toSend);
-}
+//void ClientNetworkManager::ReceiveMessage(const PostMasterNetSendPositionMessage& aMessage)
+//{
+//	AddMessage(NetMessagePosition(aMessage.myPosition, aMessage.myRotationY, aMessage.myGID));
+//}
+//
+//void ClientNetworkManager::ReceiveMessage(const PostMasterNetOnDisconnectMessage&)
+//{
+//	AddMessage(NetMessageDisconnect(myGID));
+//}
+//
+//void ClientNetworkManager::ReceiveMessage(const PostMasterNetOnHitMessage& aMessage)
+//{
+//	AddMessage(NetMessageOnHit(aMessage.myDamage, aMessage.myDamage));
+//}
 
 void ClientNetworkManager::DebugPrint()
 { 
@@ -202,28 +189,20 @@ void ClientNetworkManager::DebugPrint()
 	}
 }
 
-void ClientNetworkManager::HandleMessage(const NetMessagePingRequest&, const sockaddr_in&)
-{
-	NetMessagePingReply reply;
-	reply.mySenderID = myGID;
-	reply.PackMessage();
-	myDataSent += reply.myStream.size() * sizeof(char);
-	myNetwork->Send(reply.myStream);
-}
-
-void ClientNetworkManager::HandleMessage(const NetMessageDisconnect& aMessage, const sockaddr_in&)
+void ClientNetworkManager::ReceiveNetworkMessage(const NetMessageDisconnect& aMessage, const sockaddr_in&)
 {
 	if (aMessage.myClientID == myGID)
 	{
 		MessageBox(NULL, "You have been disconnected!", "Connection Lost!", MB_ICONERROR | MB_OK);
 	}
-	else
-	{
-		PostMaster::GetInstance()->SendMessage(PostMasterNetRemovePlayerMessage(aMessage.myClientID));
-	}
 }
 
-void ClientNetworkManager::HandleMessage(const NetMessageConnectReply& aMessage, const sockaddr_in&)
+void ClientNetworkManager::ReceiveNetworkMessage(const NetMessagePingRequest&, const sockaddr_in&)
+	{
+	AddMessage(NetMessagePingReply());
+}
+
+void ClientNetworkManager::ReceiveNetworkMessage(const NetMessageConnectReply& aMessage, const sockaddr_in&)
 {
 	if (aMessage.myType == NetMessageConnectReply::eType::SUCCESS)
 	{
@@ -235,34 +214,31 @@ void ClientNetworkManager::HandleMessage(const NetMessageConnectReply& aMessage,
 	}
 }
 
-void ClientNetworkManager::HandleMessage(const NetMessageRequestConnect&, const sockaddr_in&)
+void ClientNetworkManager::ReceiveNetworkMessage(const NetMessageRequestConnect& aMessage, const sockaddr_in&)
 {
 	DL_ASSERT("Should not happen");
 }
 
-void ClientNetworkManager::HandleMessage(const NetMessageOnJoin& aMessage, const sockaddr_in&)
+void ClientNetworkManager::ReceiveNetworkMessage(const NetMessageOnJoin& aMessage, const sockaddr_in& aSenderAddress)
 {
 	if (aMessage.mySenderID != myGID)
 	{
 		myClients.Add(OtherClients(aMessage.myName, aMessage.mySenderID));
 	}
 }
+//
+//void ClientNetworkManager::HandleMessage(const NetMessageAddEnemy& aMessage, const sockaddr_in&)
+//{
+//	PostMaster::GetInstance()->SendMessage(PostMasterNetAddEnemyMessage(aMessage.myPosition, aMessage.myGID));
+//		myClients.Add(OtherClients(aMessage.mySenderID));
+//}
+//}
 
-void ClientNetworkManager::HandleMessage(const NetMessageAddEnemy& aMessage, const sockaddr_in&)
-{
-	PostMaster::GetInstance()->SendMessage(PostMasterNetAddEnemyMessage(aMessage.myPosition, aMessage.myGID));
-}
-
-void ClientNetworkManager::HandleMessage(const NetMessageOnDeath& aMessage, const sockaddr_in&)
-{
-	PostMaster::GetInstance()->SendMessage(PostMasterNetOnDeathMessage(aMessage.myGID));
-}
-
-void ClientNetworkManager::HandleMessage(const NetMessageStartGame& aMessage, const sockaddr_in&)
-{
-	PostMaster::GetInstance()->SendMessage(PostMasterNetStartGameMessage(aMessage.myLevelID));
-}
-
+//void ClientNetworkManager::HandleMessage(const NetMessageStartGame& aMessage, const sockaddr_in&)
+//{
+//	PostMaster::GetInstance()->SendMessage(PostMasterNetStartGameMessage(aMessage.myLevelID));
+//}
+//*/
 void ClientNetworkManager::UpdateImportantMessages(float aDeltaTime)
 {
 	for (ImportantMessage& msg : myImportantMessagesBuffer)

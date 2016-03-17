@@ -8,13 +8,13 @@
 #include <InputWrapper.h>
 #include "LobbyState.h"
 #include <NetMessageDisconnect.h>
+#include <NetMessageStartGame.h>
 #include <NetMessageRequestLevel.h>
 #include <NetMessageRequestStartGame.h>
 #include <OnClickMessage.h>
 #include <OnRadioButtonMessage.h>
 #include <PostMaster.h>
-#include <PostMasterNetStartGameMessage.h>
-
+#include <SharedNetworkManager.h>
 
 LobbyState::LobbyState()
 	: myGUIManager(nullptr)
@@ -28,13 +28,13 @@ LobbyState::~LobbyState()
 	SAFE_DELETE(myGUIManager);
 	myCursor = nullptr;
 	PostMaster::GetInstance()->UnSubscribe(eMessageType::ON_CLICK, this);
-	PostMaster::GetInstance()->UnSubscribe(eMessageType::NETWORK_START_GAME, this);
+	SharedNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::START_GAME, this);
 }
 
 void LobbyState::InitState(StateStackProxy* aStateStackProxy, GUI::Cursor* aCursor)
 {
 	PostMaster::GetInstance()->Subscribe(eMessageType::ON_CLICK, this);
-	PostMaster::GetInstance()->Subscribe(eMessageType::NETWORK_START_GAME, this);
+	SharedNetworkManager::GetInstance()->Subscribe(eNetMessageType::START_GAME, this);
 	myCursor = aCursor;
 	myIsActiveState = true;
 	myIsLetThrough = false;
@@ -124,7 +124,7 @@ void LobbyState::ReceiveMessage(const OnRadioButtonMessage& aMessage)
 	ClientNetworkManager::GetInstance()->AddMessage(NetMessageRequestLevel(aMessage.myID));
 }
 
-void LobbyState::ReceiveMessage(const PostMasterNetStartGameMessage& aMessage)
+void LobbyState::ReceiveNetworkMessage(const NetMessageStartGame& aMessage, const sockaddr_in&)
 {
 	myLevelToStart = aMessage.myLevelID;
 }

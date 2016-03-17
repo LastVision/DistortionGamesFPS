@@ -73,6 +73,9 @@
       <Filter>Messages</Filter>
     </ClCompile>
     <ClCompile Include="NetMessageConnectReply.cpp" />
+    <ClCompile Include="NetMessageRequestLevel.cpp" />
+    <ClCompile Include="NetworkSubscriber.cpp" />
+    <ClCompile Include="SharedNetworkManager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
@@ -142,5 +145,8 @@
       <Filter>Messages</Filter>
     </ClInclude>
     <ClInclude Include="NetMessageConnectReply.h" />
+    <ClInclude Include="NetMessageRequestLevel.h" />
+    <ClInclude Include="NetworkSubscriber.h" />
+    <ClInclude Include="SharedNetworkManager.h" />
   </ItemGroup>
 </Project>

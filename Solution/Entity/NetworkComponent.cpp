@@ -3,15 +3,17 @@
 #include "Entity.h"
 #include <MathHelper.h>
 
-#include <PostMasterNetSetPositionMessage.h>
-#include <PostMasterNetSendPositionMessage.h>
-#include <PostMasterNetOnHitMessage.h>
-#include <PostMasterNetOnDeathMessage.h>
+#include <NetMessageOnDeath.h>
+#include <NetMessageOnHit.h>
+#include <NetMessagePosition.h>
+
 #include "DamageNote.h"
 
 #include <PostMaster.h>
 #include "HealthComponent.h"
 #include <Quaternion.h>
+
+#include <SharedNetworkManager.h>
 
 NetworkComponent::NetworkComponent(Entity& anEntity, CU::Matrix44<float>& anOrientation)
 	: Component(anEntity)
@@ -24,16 +26,17 @@ NetworkComponent::NetworkComponent(Entity& anEntity, CU::Matrix44<float>& anOrie
 	myFirstPosition = myOrientation.GetPos();
 	mySecondPosition = { 1.f, 0.5f, -56.f };
 	mySecondPosition2 = { 0.f, 0.f, 0.f };
-	PostMaster::GetInstance()->Subscribe(eMessageType::NETWORK_SET_POSITION, this);
-	PostMaster::GetInstance()->Subscribe(eMessageType::NETWORK_ON_HIT, this);
+	SharedNetworkManager::GetInstance()->Subscribe(eNetMessageType::POSITION, this);
+	SharedNetworkManager::GetInstance()->Subscribe(eNetMessageType::PLAYER_ON_HIT, this);
+	SharedNetworkManager::GetInstance()->Subscribe(eNetMessageType::ENEMY_ON_HIT, this);
 }
 
 
 NetworkComponent::~NetworkComponent()
 {
-	PostMaster::GetInstance()->UnSubscribe(eMessageType::NETWORK_SET_POSITION, this);
-	PostMaster::GetInstance()->UnSubscribe(eMessageType::NETWORK_ON_HIT, this);
-
+	SharedNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::POSITION, this);
+	SharedNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::PLAYER_ON_HIT, this);
+	SharedNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::ENEMY_ON_HIT, this);
 }
 
 void NetworkComponent::Reset()
@@ -53,7 +56,7 @@ void NetworkComponent::Update(float aDelta)
 	}
 }
 
-void NetworkComponent::ReceiveMessage(const PostMasterNetSetPositionMessage& aMessage)
+void NetworkComponent::ReceiveNetworkMessage(const NetMessagePosition& aMessage, const sockaddr_in& aSenderAddress)
 {
 	if (aMessage.myGID == myEntity.GetGID())
 	{
@@ -65,7 +68,7 @@ void NetworkComponent::ReceiveMessage(const PostMasterNetSetPositionMessage& aMe
 	}
 }
 
-void NetworkComponent::ReceiveMessage(const PostMasterNetOnHitMessage& aMessage)
+void NetworkComponent::ReceiveNetworkMessage(const NetMessageOnHit& aMessage, const sockaddr_in& aSenderAddress)
 {
 	if (myEntity.GetIsClient() == false && myEntity.GetGID() == aMessage.myGID)
 	{
@@ -77,7 +80,6 @@ void NetworkComponent::SetPlayer(bool aBool)
 {
 	myIsPlayer = aBool;
 }
-
 
 void NetworkComponent::ClientUpdate(float aDelta)
 {
@@ -157,13 +159,12 @@ void NetworkComponent::ServerUpdate(float aDelta)
 			}
 			else
 			{
-				PostMaster::GetInstance()->SendMessage(PostMasterNetOnDeathMessage(myEntity.GetGID()));
+				SharedNetworkManager::GetInstance()->AddMessage(NetMessageOnDeath(eNetMessageType::ENEMY_ON_DEATH,myEntity.GetGID()));
 				myShouldUpdate = false;
 				return;
 			}
 		}
 		mySendTime = NETWORK_UPDATE_INTERVAL;
-		PostMaster::GetInstance()->SendMessage(PostMasterNetSendPositionMessage(myServerPosition, myServerRotationY, myEntity.GetGID()));
-
+		SharedNetworkManager::GetInstance()->AddMessage(NetMessagePosition(myServerPosition, myServerRotationY, myEntity.GetGID()));
 	}
 }

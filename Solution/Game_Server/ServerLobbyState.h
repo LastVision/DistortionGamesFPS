@@ -1,8 +1,8 @@
 #pragma once
 #include "ServerState.h"
-#include <Subscriber.h>
+#include <NetworkSubscriber.h>
 
-class ServerLobbyState : public ServerState, public Subscriber
+class ServerLobbyState : public ServerState, public NetworkSubscriber
 {
 public:
 	ServerLobbyState();
@@ -14,8 +14,8 @@ public:
 	const eStateStatus Update(const float aDeltaTime) override;
 	void ResumeState() override;
 
-	void ReceiveMessage(const PostMasterNetRequestStartGameMessage& aMessage) override;
-	void ReceiveMessage(const PostMasterNetAddPlayerMessage& aMessage) override;
+	void ReceiveNetworkMessage(const NetMessageRequestStartGame& aMessage, const sockaddr_in& aSenderAddress) override;
+	void ReceiveNetworkMessage(const NetMessageRequestConnect& aMessage, const sockaddr_in& aSenderAddress) override;
 
 private:
 	int myCurrentLevelID;

@@ -6,6 +6,7 @@ class NetMessageOnHit :
 {
 public:
 	NetMessageOnHit();
+	NetMessageOnHit(float aDamage, unsigned int aGID);
 	NetMessageOnHit(eNetMessageType aType, float aDamage, unsigned int aGID);
 	~NetMessageOnHit();
 

@@ -13,9 +13,6 @@
     <Filter Include="Message\StateMessage">
       <UniqueIdentifier>{d387a4d5-0a6e-4895-8fa3-78744878958f}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Message\NetworkMessages">
-      <UniqueIdentifier>{050a7b40-b418-4883-a98f-f9307ec8bddd}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -49,42 +46,6 @@
       <Filter>Message</Filter>
     </ClInclude>
     <ClInclude Include="EmitterMessage.h">
-      <Filter>Message</Filter>
-    </ClInclude>
-    <ClInclude Include="PostMasterNetAddEnemyMessage.h">
-      <Filter>Message\NetworkMessages</Filter>
-    </ClInclude>
-    <ClInclude Include="PostMasterNetAddPlayerMessage.h">
-      <Filter>Message\NetworkMessages</Filter>
-    </ClInclude>
-    <ClInclude Include="PostMasterNetOnDeathMessage.h">
-      <Filter>Message\NetworkMessages</Filter>
-    </ClInclude>
-    <ClInclude Include="PostMasterNetOnDisconnectMessage.h">
-      <Filter>Message\NetworkMessages</Filter>
-    </ClInclude>
-    <ClInclude Include="PostMasterNetOnHitMessage.h">
-      <Filter>Message\NetworkMessages</Filter>
-    </ClInclude>
-    <ClInclude Include="PostMasterNetRemovePlayer.h">
-      <Filter>Message\NetworkMessages</Filter>
-    </ClInclude>
-    <ClInclude Include="PostMasterNetSendPositionMessage.h">
-      <Filter>Message\NetworkMessages</Filter>
-    </ClInclude>
-    <ClInclude Include="PostMasterNetSetPositionMessage.h">
-      <Filter>Message\NetworkMessages</Filter>
-    </ClInclude>
-    <ClInclude Include="PostMasterNetRequestStartGameMessage.h">
-      <Filter>Message\NetworkMessages</Filter>
-    </ClInclude>
-    <ClInclude Include="PostMasterNetStartGameMessage.h">
-      <Filter>Message\NetworkMessages</Filter>
-    </ClInclude>
-    <ClInclude Include="PostMasterNetLevelLoadedMessage.h">
-      <Filter>Message\NetworkMessages</Filter>
-    </ClInclude>
-    <ClInclude Include="OnRadioButtonMessage.h">
       <Filter>Message</Filter>
     </ClInclude>
   </ItemGroup>

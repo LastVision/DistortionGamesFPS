@@ -4,9 +4,6 @@
     <Filter Include="Precompile">
       <UniqueIdentifier>{ec4b8537-8167-4b1c-b1c0-bcb00740e8ea}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Network">
-      <UniqueIdentifier>{e6ab7b65-8924-4539-8e9e-329b153b796e}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Level">
       <UniqueIdentifier>{31f7f677-ea48-4dcf-a128-480fa5fe43e6}</UniqueIdentifier>
     </Filter>
@@ -16,9 +13,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="SharedGame.h" />
-    <ClInclude Include="SharedNetworkManager.h">
-      <Filter>Network</Filter>
-    </ClInclude>
     <ClInclude Include="SharedLevelFactory.h">
       <Filter>Level\Factory</Filter>
     </ClInclude>
@@ -31,9 +25,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="SharedGame.cpp" />
-    <ClCompile Include="SharedNetworkManager.cpp">
-      <Filter>Network</Filter>
-    </ClCompile>
     <ClCompile Include="SharedLevelFactory.cpp">
       <Filter>Level\Factory</Filter>
     </ClCompile>

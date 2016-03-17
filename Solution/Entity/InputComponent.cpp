@@ -8,11 +8,12 @@
 #include "InputComponent.h"
 #include "InputComponentData.h"
 #include <InputWrapper.h>
+#include <NetMessagePosition.h>
 #include "NetworkComponent.h"
-#include <PostMasterNetSendPositionMessage.h>
 #include <PostMaster.h>
 #include <PhysicsInterface.h>
 #include "PhysicsComponent.h"
+#include <SharedNetworkManager.h>
 #include "ShootingComponent.h"
 #include <XMLReader.h>
 
@@ -89,7 +90,7 @@ void InputComponent::Update(float aDelta)
 	{
 		if (myEntity.GetGID() != 0 && (myOrientation != myPrevOrientation))
 		{
-			PostMaster::GetInstance()->SendMessage(PostMasterNetSendPositionMessage(myOrientation.GetPos(), myCursorPosition.x, myEntity.GetGID()));
+			SharedNetworkManager::GetInstance()->AddMessage(NetMessagePosition(myOrientation.GetPos(), myCursorPosition.x, myEntity.GetGID()));
 			mySendTime = NETWORK_UPDATE_INTERVAL;
 		}
 	}

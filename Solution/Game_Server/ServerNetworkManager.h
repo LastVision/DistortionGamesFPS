@@ -1,6 +1,6 @@
 #pragma once
 #include "../PostMaster/Subscriber.h"
-#include "../Game_Shared/SharedNetworkManager.h"
+#include <SharedNetworkManager.h>
 
 class ServerNetwork;
 class ServerNetworkManager : public SharedNetworkManager, public Subscriber
@@ -18,30 +18,26 @@ public:
 
 	void CreateConnection(const std::string& aName, const sockaddr_in& aSender);
 
+
+	void ReceiveNetworkMessage(const NetMessagePingRequest& aMessage, const sockaddr_in& aSenderAddress) override;
+	void ReceiveNetworkMessage(const NetMessagePingReply& aMessage, const sockaddr_in& aSenderAddress) override;
+	void ReceiveNetworkMessage(const NetMessageDisconnect& aMessage, const sockaddr_in& aSenderAddress) override;
+	void ReceiveNetworkMessage(const NetMessageRequestConnect& aMessage, const sockaddr_in& aSenderAddress) override;
+
+	const short GetLastJoinedID() const;
 	const CU::GrowingArray<Connection>& GetClients() const;
 
 private:
 	ServerNetworkManager();
 	~ServerNetworkManager();
-	static ServerNetworkManager* myInstance;
 	ServerNetwork* myNetwork;
 	void UpdateImportantMessages(float aDeltaTime) override;
 
 	void AddImportantMessage(std::vector<char> aBuffer, unsigned int aImportantID) override;
 
-	void HandleMessage(const NetMessageRequestConnect& aMessage, const sockaddr_in& aSender) override;
-	void HandleMessage(const NetMessageDisconnect& aMessage, const sockaddr_in& aSenderAddress) override;
-	void HandleMessage(const NetMessageRequestLevel& aMessage, const sockaddr_in& aSenderAddress) override;
-	void HandleMessage(const NetMessageRequestStartGame& aMessage, const sockaddr_in& aSenderAddress) override;
-	void HandleMessage(const NetMessagePingReply& aMessage, const sockaddr_in& aSenderAddress) override;
-	void HandleMessage(const NetMessagePingRequest& aMessage, const sockaddr_in& aSenderAddress) override;
-	void HandleMessage(const NetMessageOnHit& aMessage, const sockaddr_in& aSenderAddress) override;
-	void HandleMessage(const NetMessageLevelLoaded& aMessage, const sockaddr_in& aSenderAddress) override;
-
-
-	void ReceiveMessage(const PostMasterNetAddEnemyMessage& aMessage) override;
-	void ReceiveMessage(const PostMasterNetSendPositionMessage& aMessage) override;
-	void ReceiveMessage(const PostMasterNetOnDeathMessage& aMessage) override;
+	//void ReceiveMessage(const PostMasterNetAddEnemyMessage& aMessage) override;
+	//void ReceiveMessage(const PostMasterNetSendPositionMessage& aMessage) override;
+	//void ReceiveMessage(const PostMasterNetOnDeathMessage& aMessage) override;
 
 	void ReceieveThread() override;
 	void SendThread() override;
@@ -63,4 +59,8 @@ inline void ServerNetworkManager::AllowNewConnections(bool aValue)
 inline const CU::GrowingArray<Connection>& ServerNetworkManager::GetClients() const
 {
 	return myClients;
+}
+inline const short ServerNetworkManager::GetLastJoinedID() const
+{
+	return myIDCount;
 }
