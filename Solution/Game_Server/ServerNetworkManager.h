@@ -30,7 +30,6 @@ public:
 private:
 	ServerNetworkManager();
 	~ServerNetworkManager();
-	static ServerNetworkManager* myInstance;
 	ServerNetwork* myNetwork;
 	void UpdateImportantMessages(float aDeltaTime) override;
 

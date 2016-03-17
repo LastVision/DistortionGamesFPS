@@ -52,6 +52,14 @@ ClientLevel::ClientLevel()
 	PostMaster::GetInstance()->Subscribe(eMessageType::NETWORK_ADD_ENEMY, this);
 	PostMaster::GetInstance()->Subscribe(eMessageType::NETWORK_ON_DEATH, this);
 
+	ClientNetworkManager::GetInstance()->Subscribe(eNetMessageType::ON_JOIN, this);
+	ClientNetworkManager::GetInstance()->Subscribe(eNetMessageType::ON_DISCONNECT, this);
+	ClientNetworkManager::GetInstance()->Subscribe(eNetMessageType::CONNECT_REPLY, this);
+	ClientNetworkManager::GetInstance()->Subscribe(eNetMessageType::ENEMY_ON_DEATH, this);
+	ClientNetworkManager::GetInstance()->Subscribe(eNetMessageType::PLAYER_ON_DEATH, this);
+	ClientNetworkManager::GetInstance()->Subscribe(eNetMessageType::ADD_ENEMY, this);
+
+
 	myScene = new Prism::Scene();
 }
 
@@ -70,6 +78,13 @@ ClientLevel::~ClientLevel()
 	PostMaster::GetInstance()->UnSubscribe(eMessageType::NETWORK_REMOVE_PLAYER, this);
 	PostMaster::GetInstance()->UnSubscribe(eMessageType::NETWORK_ADD_ENEMY, this);
 	PostMaster::GetInstance()->UnSubscribe(eMessageType::NETWORK_ON_DEATH, this);
+
+	ClientNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::ON_JOIN, this);
+	ClientNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::ON_DISCONNECT, this);
+	ClientNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::CONNECT_REPLY, this);
+	ClientNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::ENEMY_ON_DEATH, this);
+	ClientNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::PLAYER_ON_DEATH, this);
+	ClientNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::ADD_ENEMY, this);
 
 	myInstances.DeleteAll();
 	myPointLights.DeleteAll();

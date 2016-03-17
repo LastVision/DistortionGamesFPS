@@ -24,6 +24,8 @@ ClientNetworkManager::ClientNetworkManager()
 	PostMaster::GetInstance()->Subscribe(eMessageType::NETWORK_SEND_POSITION, this);
 	PostMaster::GetInstance()->Subscribe(eMessageType::NETWORK_ON_DISCONNECT, this);
 	PostMaster::GetInstance()->Subscribe(eMessageType::NETWORK_ON_HIT, this);
+
+	
 }
 
 ClientNetworkManager::~ClientNetworkManager()
@@ -31,6 +33,13 @@ ClientNetworkManager::~ClientNetworkManager()
 	PostMaster::GetInstance()->UnSubscribe(eMessageType::NETWORK_SEND_POSITION, this);
 	PostMaster::GetInstance()->UnSubscribe(eMessageType::NETWORK_ON_DISCONNECT, this);
 	PostMaster::GetInstance()->UnSubscribe(eMessageType::NETWORK_ON_HIT, this);
+
+	UnSubscribe(eNetMessageType::CONNECT_REPLY, this);
+	UnSubscribe(eNetMessageType::ON_CONNECT, this);
+	UnSubscribe(eNetMessageType::ON_DISCONNECT, this);
+	UnSubscribe(eNetMessageType::ON_JOIN, this);
+	UnSubscribe(eNetMessageType::PING_REQUEST, this);
+	UnSubscribe(eNetMessageType::PING_REPLY, this);
 
 	myMainIsDone = true;
 	myReceieveIsDone = true;
@@ -84,6 +93,12 @@ void ClientNetworkManager::Initiate()
 	myGID = 0;
 	__super::Initiate();
 	myClients.Init(16);
+	Subscribe(eNetMessageType::CONNECT_REPLY, this);
+	Subscribe(eNetMessageType::ON_CONNECT, this);
+	Subscribe(eNetMessageType::ON_DISCONNECT, this);
+	Subscribe(eNetMessageType::ON_JOIN, this);
+	Subscribe(eNetMessageType::PING_REQUEST, this);
+	Subscribe(eNetMessageType::PING_REPLY, this);
 }
 
 void ClientNetworkManager::StartNetwork(unsigned int aPortNum)
@@ -199,11 +214,6 @@ void ClientNetworkManager::ReceiveNetworkMessage(const NetMessageConnectReply& a
 	}
 }
 
-void ClientNetworkManager::ReceiveNetworkMessage(const NetMessageOnJoin&, const sockaddr_in&)
-{
-
-}
-
 void ClientNetworkManager::ReceiveNetworkMessage(const NetMessageRequestConnect& aMessage, const sockaddr_in&)
 {
 	DL_ASSERT("Should not happen");
@@ -216,19 +226,19 @@ void ClientNetworkManager::ReceiveNetworkMessage(const NetMessageOnJoin& aMessag
 		myClients.Add(OtherClients(aMessage.myName, aMessage.mySenderID));
 	}
 }
+//
+//void ClientNetworkManager::HandleMessage(const NetMessageAddEnemy& aMessage, const sockaddr_in&)
+//{
+//	PostMaster::GetInstance()->SendMessage(PostMasterNetAddEnemyMessage(aMessage.myPosition, aMessage.myGID));
+//		myClients.Add(OtherClients(aMessage.mySenderID));
+//}
+//}
 
-void ClientNetworkManager::HandleMessage(const NetMessageAddEnemy& aMessage, const sockaddr_in&)
-{
-	PostMaster::GetInstance()->SendMessage(PostMasterNetAddEnemyMessage(aMessage.myPosition, aMessage.myGID));
-		myClients.Add(OtherClients(aMessage.mySenderID));
-}
-}
-
-void ClientNetworkManager::HandleMessage(const NetMessageStartGame& aMessage, const sockaddr_in&)
-{
-	PostMaster::GetInstance()->SendMessage(PostMasterNetStartGameMessage(aMessage.myLevelID));
-}
-*/
+//void ClientNetworkManager::HandleMessage(const NetMessageStartGame& aMessage, const sockaddr_in&)
+//{
+//	PostMaster::GetInstance()->SendMessage(PostMasterNetStartGameMessage(aMessage.myLevelID));
+//}
+//*/
 void ClientNetworkManager::UpdateImportantMessages(float aDeltaTime)
 {
 	for (ImportantMessage& msg : myImportantMessagesBuffer)

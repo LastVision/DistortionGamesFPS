@@ -46,7 +46,10 @@ void SharedNetworkManager::Initiate()
 	for (int i = 0; i < static_cast<int>(eNetMessageType::_COUNT); ++i)
 	{
 		mySubscribers[i].Init(64);
-}
+	}
+	Subscribe(eNetMessageType::IMPORTANT_REPLY, this);
+
+
 }
 
 void SharedNetworkManager::StartNetwork(unsigned int /*aPortNum*/)
@@ -81,6 +84,8 @@ SharedNetworkManager::SharedNetworkManager()
 
 SharedNetworkManager::~SharedNetworkManager()
 {
+	UnSubscribe(eNetMessageType::IMPORTANT_REPLY, this);
+
 	for (int i = 0; i < static_cast<int>(eNetMessageType::_COUNT); ++i)
 	{
 		if (mySubscribers[i].Size() > 0)

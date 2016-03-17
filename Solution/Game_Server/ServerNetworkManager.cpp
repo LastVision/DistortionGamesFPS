@@ -23,8 +23,6 @@
 #define BUFFERSIZE 512
 #define RECONNECT_ATTEMPTS 10000
 
-ServerNetworkManager* ServerNetworkManager::myInstance = nullptr;
-
 ServerNetworkManager::ServerNetworkManager()
 	: myAllowNewConnections(false)
 {
@@ -38,6 +36,11 @@ ServerNetworkManager::~ServerNetworkManager()
 	PostMaster::GetInstance()->UnSubscribe(eMessageType::NETWORK_ADD_ENEMY, this);
 	PostMaster::GetInstance()->UnSubscribe(eMessageType::NETWORK_SEND_POSITION, this);
 	PostMaster::GetInstance()->UnSubscribe(eMessageType::NETWORK_ON_DEATH, this);
+
+	UnSubscribe(eNetMessageType::PING_REPLY, this);
+	UnSubscribe(eNetMessageType::PING_REQUEST, this);
+	UnSubscribe(eNetMessageType::ON_CONNECT, this);
+	UnSubscribe(eNetMessageType::ON_DISCONNECT, this);
 
 	myMainIsDone = true;
 	myReceieveIsDone = true;
@@ -67,6 +70,10 @@ void ServerNetworkManager::Initiate()
 	myGID = 0;
 	myIDCount = 0;
 	__super::Initiate();
+	Subscribe(eNetMessageType::PING_REPLY, this);
+	Subscribe(eNetMessageType::PING_REQUEST, this);
+	Subscribe(eNetMessageType::ON_CONNECT, this);
+	Subscribe(eNetMessageType::ON_DISCONNECT, this);
 }
 
 void ServerNetworkManager::Create()
@@ -88,7 +95,7 @@ ServerNetworkManager* ServerNetworkManager::GetInstance()
 {
 	if (myInstance != nullptr)
 	{
-		return myInstance;
+		return static_cast<ServerNetworkManager*>(myInstance);
 	}
 	DL_ASSERT("Instance were null, did you forget to create the ServerNetworkManager?");
 	return nullptr;
@@ -289,22 +296,25 @@ void ServerNetworkManager::UpdateImportantMessages(float aDeltaTime)
 
 void ServerNetworkManager::AddImportantMessage(std::vector<char> aBuffer, unsigned int aImportantID)
 {
-	ImportantMessage msg;
-	msg.myData = aBuffer;
-	msg.myImportantID = aImportantID;
-	msg.myMessageType = aBuffer[0];
-	msg.mySenders.Init(myClients.Size());
-	for (Connection c : myClients)
+	if (myClients.Size() > 0)
 	{
-		ImportantClient client;
-		client.myGID = c.myID;
-		client.myNetworkAddress = c.myAddress;
-		client.myName = c.myName;
-		client.myTimer = 0.f;
-		client.myHasReplied = false;
-		msg.mySenders.Add(client);
+		ImportantMessage msg;
+		msg.myData = aBuffer;
+		msg.myImportantID = aImportantID;
+		msg.myMessageType = aBuffer[0];
+		msg.mySenders.Init(myClients.Size());
+		for (Connection c : myClients)
+		{
+			ImportantClient client;
+			client.myGID = c.myID;
+			client.myNetworkAddress = c.myAddress;
+			client.myName = c.myName;
+			client.myTimer = 0.f;
+			client.myHasReplied = false;
+			msg.mySenders.Add(client);
+		}
+		myImportantMessagesBuffer.Add(msg);
 	}
-	myImportantMessagesBuffer.Add(msg);
 }
 
 void ServerNetworkManager::ReceiveNetworkMessage(const NetMessageRequestConnect& aMessage, const sockaddr_in& aSenderAddress)

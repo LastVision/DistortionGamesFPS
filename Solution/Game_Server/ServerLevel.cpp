@@ -15,11 +15,13 @@ ServerLevel::ServerLevel()
 	: myLoadedClients(16)
 {
 	ServerNetworkManager::GetInstance()->Subscribe(eNetMessageType::ON_CONNECT, this);
+	ServerNetworkManager::GetInstance()->Subscribe(eNetMessageType::LEVEL_LOADED, this);
 }
 
 ServerLevel::~ServerLevel()
 {
 	ServerNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::ON_CONNECT, this);
+	ServerNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::LEVEL_LOADED, this);
 }
 
 void ServerLevel::Init()
