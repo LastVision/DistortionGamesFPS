@@ -44,6 +44,7 @@ namespace Prism
 		, myPhysicsDone(false)
 		, mySwapDone(false)
 		, myTimerManager(new CU::TimerManager())
+		, myPhysicsThread(nullptr)
 #endif
 		, myInitDone(false)
 	{
@@ -594,6 +595,12 @@ namespace Prism
 		, physx::PxRigidDynamic** aDynamicBodyOut, physx::PxRigidStatic** aStaticBodyOut
 		, physx::PxShape*** someShapesOut, bool aShouldAddToScene)
 	{
+		if (myPhysicsThread != nullptr)
+		{
+			bool changeLaterToAssert = true;
+		}
+
+
 		physx::PxPhysics* core = GetCore();
 
 		physx::PxReal density = 1.f;
