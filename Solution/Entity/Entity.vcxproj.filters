@@ -95,6 +95,7 @@
     <ClCompile Include="UpgradeComponent.cpp">
       <Filter>Component</Filter>
     </ClCompile>
+    <ClCompile Include="AIComponent.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
@@ -210,5 +211,6 @@
     <ClInclude Include="UpgradeNote.h">
       <Filter>Notes</Filter>
     </ClInclude>
+    <ClInclude Include="AIComponent.h" />
   </ItemGroup>
 </Project>
