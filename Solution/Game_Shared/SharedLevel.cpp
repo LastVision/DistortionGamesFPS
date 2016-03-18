@@ -124,10 +124,12 @@ void SharedLevel::HandleTrigger(Entity& aFirstEntity, Entity& aSecondEntity)
 			case eTriggerType::UNLOCK:
 				PostMaster::GetInstance()->SendMessage(EmitterMessage("Unlock", myActiveEntitiesMap[firstTrigger->GetValue()]->GetOrientation().GetPos()));
 				myActiveEntitiesMap[firstTrigger->GetValue()]->GetComponent<PhysicsComponent>()->RemoveFromScene();
+				myActiveEntitiesMap[firstTrigger->GetValue()]->RemoveFromScene();
 				// do "open" animation
 				break;
 			case eTriggerType::LOCK:
 				myActiveEntitiesMap[firstTrigger->GetValue()]->GetComponent<PhysicsComponent>()->AddToScene();
+				myActiveEntitiesMap[firstTrigger->GetValue()]->AddToScene();
 				// do "close" animation
 				break;
 			default:
