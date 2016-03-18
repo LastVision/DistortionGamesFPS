@@ -101,6 +101,7 @@
     <ClInclude Include="NetMessagePosition.h" />
     <ClInclude Include="NetMessageRequestLevel.h" />
     <ClInclude Include="NetMessageRequestStartGame.h" />
+    <ClInclude Include="NetMessageSetActive.h" />
     <ClInclude Include="NetMessageStartGame.h" />
     <ClInclude Include="NetworkMessageTypes.h" />
     <ClInclude Include="NetworkSubscriber.h" />
@@ -127,6 +128,7 @@
     <ClCompile Include="NetMessagePosition.cpp" />
     <ClCompile Include="NetMessageRequestLevel.cpp" />
     <ClCompile Include="NetMessageRequestStartGame.cpp" />
+    <ClCompile Include="NetMessageSetActive.cpp" />
     <ClCompile Include="NetMessageStartGame.cpp" />
     <ClCompile Include="NetworkSubscriber.cpp" />
     <ClCompile Include="ServerNetwork.cpp" />

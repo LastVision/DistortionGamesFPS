@@ -14,6 +14,7 @@
 #include "NetMessagePosition.h"
 #include "NetMessageOnHit.h"
 #include "NetMessageOnDeath.h"
+#include "NetMessageSetActive.h"
 #include "NetMessageStartGame.h"
 #include "NetMessageLevelLoaded.h"
 
@@ -287,6 +288,9 @@ void SharedNetworkManager::HandleMessage()
 		case eNetMessageType::PLAYER_ON_DEATH:
 		case eNetMessageType::ENEMY_ON_DEATH:
 			UnpackAndHandle(NetMessageOnDeath(), buffer);
+			break;
+		case eNetMessageType::SET_ACTIVE:
+			UnpackAndHandle(NetMessageSetActive(), buffer);
 			break;
 		default:
 			DL_ASSERT("Unhandled network message type");

@@ -17,4 +17,5 @@ void NetworkSubscriber::ReceiveNetworkMessage(const NetMessagePosition&, const s
 void NetworkSubscriber::ReceiveNetworkMessage(const NetMessageRequestConnect&, const sockaddr_in&){};
 void NetworkSubscriber::ReceiveNetworkMessage(const NetMessageRequestLevel&, const sockaddr_in&){};
 void NetworkSubscriber::ReceiveNetworkMessage(const NetMessageRequestStartGame&, const sockaddr_in&){};
+void NetworkSubscriber::ReceiveNetworkMessage(const NetMessageSetActive&, const sockaddr_in&){};
 void NetworkSubscriber::ReceiveNetworkMessage(const NetMessageStartGame&, const sockaddr_in&){};

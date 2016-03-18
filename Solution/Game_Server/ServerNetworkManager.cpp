@@ -131,11 +131,10 @@ bool ServerNetworkManager::ListContainsAllClients(const CU::GrowingArray<unsigne
 void ServerNetworkManager::ReceieveThread()
 {
 	char buffer[BUFFERSIZE];
+	std::vector<Buffer> someBuffers;
 	while (myIsRunning == true)
 	{
 		ZeroMemory(&buffer, BUFFERSIZE);
-
-		std::vector<Buffer> someBuffers;
 		myNetwork->Receieve(someBuffers);
 
 		if (someBuffers.size() == 0)
@@ -149,6 +148,7 @@ void ServerNetworkManager::ReceieveThread()
 		}
 		ReceieveIsDone();
 		WaitForMain();
+		someBuffers.clear();
 		Sleep(1);
 
 	}

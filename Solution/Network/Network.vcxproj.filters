@@ -73,6 +73,9 @@
     <ClCompile Include="NetMessageRequestLevel.cpp" />
     <ClCompile Include="NetworkSubscriber.cpp" />
     <ClCompile Include="SharedNetworkManager.cpp" />
+    <ClCompile Include="NetMessageSetActive.cpp">
+      <Filter>Messages</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
@@ -142,5 +145,8 @@
     <ClInclude Include="NetMessageRequestLevel.h" />
     <ClInclude Include="NetworkSubscriber.h" />
     <ClInclude Include="SharedNetworkManager.h" />
+    <ClInclude Include="NetMessageSetActive.h">
+      <Filter>Messages</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

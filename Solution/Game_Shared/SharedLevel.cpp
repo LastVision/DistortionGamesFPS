@@ -4,10 +4,12 @@
 #include <Entity.h>
 #include <EntityFactory.h>
 #include <EmitterMessage.h>
+#include <NetMessageSetActive.h>
 #include <PostMaster.h>
 #include <PhysicsInterface.h>
 #include <PhysicsComponent.h>
 #include "SharedLevel.h"
+#include <SharedNetworkManager.h>
 #include <TriggerComponent.h>
 #include <UpgradeComponent.h>
 #include <UpgradeNote.h>
@@ -109,6 +111,41 @@ void SharedLevel::CleanUp()
 
 void SharedLevel::HandleTrigger(Entity& aFirstEntity, Entity& aSecondEntity)
 {
+	TriggerComponent* firstTrigger = aFirstEntity.GetComponent<TriggerComponent>();
+	if (firstTrigger->GetTriggerType() == eTriggerType::UPGRADE && firstTrigger->GetTriggerType() == eTriggerType::HEALTH_PACK) //clientside
+	{
+		if (aSecondEntity.GetType() == eEntityType::PLAYER)
+		{
+			aSecondEntity.SendNote<UpgradeNote>(aFirstEntity.GetComponent<UpgradeComponent>()->GetData());
+		}
+	}
+	else //serverside
+	{
+		if (aSecondEntity.GetType() == eEntityType::UNIT && aSecondEntity.GetSubType() == "player")
+		{
+			switch (firstTrigger->GetTriggerType())
+			{
+			case eTriggerType::UNLOCK:
+				//PostMaster::GetInstance()->SendMessage(EmitterMessage("Unlock", myActiveEntitiesMap[firstTrigger->GetValue()]->GetOrientation().GetPos()));
+				SharedNetworkManager::GetInstance()->AddMessage(NetMessageSetActive(false, firstTrigger->GetValue()));
+				myActiveEntitiesMap[firstTrigger->GetValue()]->GetComponent<PhysicsComponent>()->RemoveFromScene();
+				//myActiveEntitiesMap[firstTrigger->GetValue()]->RemoveFromScene();
+				// do "open" animation
+				break;
+			case eTriggerType::LOCK:
+				SharedNetworkManager::GetInstance()->AddMessage(NetMessageSetActive(true, firstTrigger->GetValue()));
+				myActiveEntitiesMap[firstTrigger->GetValue()]->GetComponent<PhysicsComponent>()->AddToScene();
+				//myActiveEntitiesMap[firstTrigger->GetValue()]->AddToScene();
+				// do "close" animation
+				break;
+			}
+		}
+	}
+	aSecondEntity.SendNote<CollisionNote>(CollisionNote(&aFirstEntity));
+	aFirstEntity.SendNote<CollisionNote>(CollisionNote(&aSecondEntity));
+
+
+	/*
 	if (aSecondEntity.GetType() == eEntityType::PLAYER)
 	{
 		TriggerComponent* firstTrigger = aFirstEntity.GetComponent<TriggerComponent>();
@@ -138,6 +175,7 @@ void SharedLevel::HandleTrigger(Entity& aFirstEntity, Entity& aSecondEntity)
 			aFirstEntity.SendNote<CollisionNote>(CollisionNote(&aSecondEntity));
 		}
 	}
+	*/
 }
 
 void SharedLevel::HandleExplosion(Entity& aFirstEntity, Entity& aSecondEntity)

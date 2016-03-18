@@ -62,6 +62,7 @@ public:
 	unsigned int GetGID() const;
 
 	bool IsInScene() const;
+	const std::string& GetSubType() const;
 
 private:
 	void operator=(Entity&) = delete;
@@ -169,4 +170,9 @@ inline unsigned int Entity::GetGID() const
 inline bool Entity::IsInScene() const
 {
 	return myIsInScene;
+}
+
+inline const std::string& Entity::GetSubType() const
+{
+	return mySubType;
 }

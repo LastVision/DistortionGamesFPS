@@ -61,10 +61,10 @@ namespace Prism
 		myPositionJobs[1].Init(256);
 		myOnTriggerResults[0].Init(64);
 		myOnTriggerResults[1].Init(64);
-		myActorsToAdd[0].Init(64);
-		myActorsToAdd[1].Init(64);
-		myActorsToRemove[0].Init(64);
-		myActorsToRemove[1].Init(64);
+		myActorsToAdd[0].Init(128);
+		myActorsToAdd[1].Init(128);
+		myActorsToRemove[0].Init(128);
+		myActorsToRemove[1].Init(128);
 		myActorsToSleep[0].Init(64);
 		myActorsToSleep[1].Init(64);
 		myActorsToWakeUp[0].Init(64);

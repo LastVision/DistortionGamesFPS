@@ -27,6 +27,7 @@
 #include <NetMessageOnHit.h>
 #include <NetMessageOnJoin.h>
 #include <NetMessageRequestConnect.h>
+#include <NetMessageSetActive.h>
 
 #include "ClientNetworkManager.h"
 #include "DeferredRenderer.h"
@@ -58,6 +59,8 @@ ClientLevel::ClientLevel()
 	ClientNetworkManager::GetInstance()->Subscribe(eNetMessageType::ENEMY_ON_DEATH, this);
 	ClientNetworkManager::GetInstance()->Subscribe(eNetMessageType::PLAYER_ON_DEATH, this);
 
+	ClientNetworkManager::GetInstance()->Subscribe(eNetMessageType::SET_ACTIVE, this);
+
 
 	myScene = new Prism::Scene();
 }
@@ -83,6 +86,8 @@ ClientLevel::~ClientLevel()
 	ClientNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::CONNECT_REPLY, this);
 	ClientNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::ENEMY_ON_DEATH, this);
 	ClientNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::PLAYER_ON_DEATH, this);
+
+	ClientNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::SET_ACTIVE, this);
 
 	myInstances.DeleteAll();
 	myPointLights.DeleteAll();
@@ -236,6 +241,25 @@ void ClientLevel::ReceiveNetworkMessage(const NetMessageOnDeath& aMessage, const
 		{
 			e->Kill();
 		}
+	}
+}
+
+void ClientLevel::ReceiveNetworkMessage(const NetMessageSetActive& aMessage, const sockaddr_in& aSenderAddress)
+{
+	if (myActiveEntitiesMap.find(aMessage.myGID) == myActiveEntitiesMap.end())
+	{
+		DL_ASSERT("GID NOT FOUND IN CLIENT LEVEL!");
+	}
+
+	if (aMessage.myShouldActivate == true)
+	{
+		myActiveEntitiesMap[aMessage.myGID]->GetComponent<PhysicsComponent>()->AddToScene();
+		myActiveEntitiesMap[aMessage.myGID]->AddToScene();
+	}
+	else
+	{
+		myActiveEntitiesMap[aMessage.myGID]->GetComponent<PhysicsComponent>()->RemoveFromScene();
+		myActiveEntitiesMap[aMessage.myGID]->RemoveFromScene();
 	}
 }
 
