@@ -62,7 +62,7 @@ public:
 	unsigned int GetGID() const;
 
 	bool IsInScene() const;
-
+	const std::string& GetSubType() const;
 private:
 	void operator=(Entity&) = delete;
 
