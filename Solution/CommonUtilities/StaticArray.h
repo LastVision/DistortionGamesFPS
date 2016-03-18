@@ -29,8 +29,8 @@ namespace CU
 		typedef const Type* const_iterator;
 		iterator begin() { return &myData[0]; }
 		const_iterator begin() const { return &myData[0]; }
-		iterator end() { return &myData[Size-1]; }
-		const_iterator end() const { return &myData[Size-1]; }
+		iterator end() { return &myData[Size]; }
+		const_iterator end() const { return &myData[Size]; }
 	private:
 		Type myData[Size];
 	};
