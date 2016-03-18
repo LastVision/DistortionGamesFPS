@@ -59,11 +59,6 @@ namespace GUI
 		myButtons.DeleteAll();
 	}
 
-	void RadioButtonContainer::Update(float aDelta)
-	{
-
-	}
-
 	void RadioButtonContainer::Render(const CU::Vector2<float>& aParentPosition)
 	{
 		myBackground->Render(myPosition + aParentPosition);
