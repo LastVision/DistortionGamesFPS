@@ -4,7 +4,7 @@
 class AIComponent : public Component
 {
 public:
-	AIComponent(Entity& anEntity);
+	AIComponent(Entity& anEntity, const AIComponentData& aData);
 	~AIComponent();
 
 	void Update(float aDelta) override;
@@ -13,9 +13,8 @@ public:
 	eComponentType GetType() override;
 
 private:
-
-
-
+	void operator=(AIComponent&) = delete;
+	const AIComponentData& myData;
 
 };
 

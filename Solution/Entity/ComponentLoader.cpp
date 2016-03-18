@@ -12,6 +12,13 @@
 #include "XMLReader.h"
 #include "GameEnum.h"
 
+void ComponentLoader::LoadAIComponent(XMLReader& aDocument, tinyxml2::XMLElement* aSourceElement, AIComponentData& aOutputData)
+{
+	aDocument;
+	aSourceElement;
+	aOutputData.myExistsInEntity = true;
+}
+
 void ComponentLoader::LoadAnimationComponent(XMLReader& aDocument, tinyxml2::XMLElement* aSourceElement, AnimationComponentData& aOutputData)
 {
 	aOutputData.myExistsInEntity = true;

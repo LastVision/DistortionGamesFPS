@@ -1,5 +1,6 @@
 #include "stdafx.h"
 
+#include "AIComponent.h"
 #include "AnimationComponent.h"
 #include "FirstPersonRenderComponent.h"
 #include "GraphicsComponent.h"
@@ -64,10 +65,17 @@ Entity::Entity(unsigned int aGID, const EntityData& aEntityData, Prism::Scene* a
 		}
 		else
 		{
-			DL_ASSERT("Failed to load PhysicsComponent in EntityConstructor");
+			DL_ASSERT_EXP(myIsClientSide == false, "Can't create PhysicsComponent on client without graphics.");
+			myComponents[static_cast<int>(eComponentType::PHYSICS)] = new PhysicsComponent(*this, aEntityData.myPhysicsData
+				, "no path");
 		}
 	}
-	
+
+	if (aEntityData.myAIComponentData.myExistsInEntity == true)
+	{
+		myComponents[static_cast<int>(eComponentType::AI)] = new AIComponent(*this, aEntityData.myAIComponentData);
+	}
+
 	if (aEntityData.myProjecileData.myExistsInEntity == true)
 	{
 		myComponents[static_cast<int>(eComponentType::PROJECTILE)] = new GrenadeComponent(*this, aEntityData.myProjecileData, aScene);
