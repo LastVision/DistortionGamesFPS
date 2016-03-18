@@ -7,6 +7,13 @@ enum class eWeaponType
 	GRENADE_LAUNCHER
 };
 
+enum class eActionEventType
+{
+	LOCK,
+	UNLOCK,
+};
+
+
 enum eOwnerType
 {
 	NOT_USED = -1,
@@ -34,6 +41,7 @@ enum class eTriggerType : int
 	UPGRADE,
 	UNLOCK,
 	LOCK,
+	MISSION,
 	_COUNT,
 };
 
