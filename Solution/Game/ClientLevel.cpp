@@ -257,7 +257,7 @@ void ClientLevel::DebugMusic()
 void ClientLevel::HandleTrigger(Entity& aFirstEntity, Entity& aSecondEntity)
 {
 	TriggerComponent* firstTrigger = aFirstEntity.GetComponent<TriggerComponent>();
-	if (firstTrigger->GetTriggerType() == eTriggerType::UPGRADE && firstTrigger->GetTriggerType() == eTriggerType::HEALTH_PACK) //clientside
+	if (firstTrigger->GetTriggerType() == eTriggerType::UPGRADE && firstTrigger->GetTriggerType() == eTriggerType::HEALTH_PACK) 
 	{
 		if (aSecondEntity.GetType() == eEntityType::PLAYER)
 		{

@@ -15,7 +15,6 @@ Mission::Mission(const std::string& aMissionType, bool aShouldLoopMissionEvents)
 {
 }
 
-
 Mission::~Mission()
 {
 }
@@ -26,15 +25,11 @@ void Mission::SendMissionMessage(eActionEventType aType, int aGID)
 	{
 	case eActionEventType::LOCK:
 		ServerNetworkManager::GetInstance()->AddMessage(NetMessageSetActive(true, aGID));
-		//myActiveEntitiesMap[aGid]->GetComponent<PhysicsComponent>()->AddToScene();
 		PostMaster::GetInstance()->SendMessage(SetActiveMessage(aGID, true));
-		//Postmastermeddelande till level om att lägga till i scen
 		break;
 	case eActionEventType::UNLOCK:
 		ServerNetworkManager::GetInstance()->AddMessage(NetMessageSetActive(false, aGID));
-		//myActiveEntitiesMap[aGid]->GetComponent<PhysicsComponent>()->RemoveFromScene();
 		PostMaster::GetInstance()->SendMessage(SetActiveMessage(aGID, false));
-		//Postmastermeddelande till level om att ta bort ur scene
 		break;
 	default:
 		break;
