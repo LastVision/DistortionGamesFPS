@@ -277,6 +277,10 @@ int ComponentLoader::ConvertToTriggerEnum(std::string aName)
 	{
 		return static_cast<int>(eTriggerType::UNLOCK);
 	}
+	else if (aName == "lock")
+	{
+		return static_cast<int>(eTriggerType::LOCK);
+	}
 
 	DL_ASSERT("[ComponentLoader] No trigger type in trigger component named " + aName);
 	return static_cast<int>(eTriggerType::_COUNT);

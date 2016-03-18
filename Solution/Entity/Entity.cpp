@@ -118,10 +118,10 @@ Entity::Entity(unsigned int aGID, const EntityData& aEntityData, Prism::Scene* a
 
 Entity::~Entity()
 {
-	if (myIsInScene == true)
-	{
-		RemoveFromScene();		
-	}
+	//if (myIsInScene == true)
+	//{
+	//	RemoveFromScene();		
+	//}
 	if (GetComponent<PhysicsComponent>() != nullptr)
 	{
 		GetComponent<PhysicsComponent>()->RemoveFromScene();

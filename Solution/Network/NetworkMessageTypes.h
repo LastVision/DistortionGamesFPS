@@ -19,7 +19,6 @@ enum class eNetMessageType
 	PING_REPLY,
 	
 	POSITION,
-	ADD_ENEMY,
 	
 	PLAYER_ON_HIT,
 	ENEMY_ON_HIT,

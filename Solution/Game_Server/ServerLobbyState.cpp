@@ -64,6 +64,7 @@ void ServerLobbyState::ReceiveNetworkMessage(const NetMessageRequestStartGame&, 
 	ServerNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::REQUEST_START_GAME, this);
 	ServerNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::ON_CONNECT, this);
 
+	SET_RUNTIME(false);
 	myStateStack->PushMainState(new ServerInGameState(myCurrentLevelID));
 }
 

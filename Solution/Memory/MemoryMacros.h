@@ -4,7 +4,7 @@
 
 #ifndef RELEASE_BUILD
 
-//#define ENABLE_MEMORY_TRACKER
+#define ENABLE_MEMORY_TRACKER
 
 #endif
 

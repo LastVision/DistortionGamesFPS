@@ -55,6 +55,7 @@ void ClientLevelFactory::ReadLevel(const std::string& aLevelPath)
 
 	LoadRooms(reader, levelElement);
 	LoadProps(reader, levelElement);
+	LoadDoors(reader, levelElement);
 	LoadUnits(reader, levelElement);
 	LoadTriggers(reader, levelElement);
 	LoadLights(reader, levelElement);
@@ -126,11 +127,40 @@ void ClientLevelFactory::LoadProps(XMLReader& aReader, tinyxml2::XMLElement* aEl
 	}
 }
 
+void ClientLevelFactory::LoadDoors(XMLReader& aReader, tinyxml2::XMLElement* aElement)
+{
+	for (tinyxml2::XMLElement* entityElement = aReader.FindFirstChild(aElement, "door"); entityElement != nullptr;
+		entityElement = aReader.FindNextElement(entityElement, "door"))
+	{
+		std::string propType;
+		aReader.ForceReadAttribute(entityElement, "doorType", propType);
+		propType = CU::ToLower(propType);
+
+		CU::Vector3f propPosition;
+		CU::Vector3f propRotation;
+		CU::Vector3f propScale;
+
+		unsigned int gid(UINT32_MAX);
+
+		ReadGID(aReader, entityElement, gid);
+		ReadOrientation(aReader, entityElement, propPosition, propRotation, propScale);
+
+		propRotation.x = CU::Math::DegreeToRad(propRotation.x);
+		propRotation.y = CU::Math::DegreeToRad(propRotation.y);
+		propRotation.z = CU::Math::DegreeToRad(propRotation.z);
+
+		Entity* newEntity = EntityFactory::CreateEntity(gid, eEntityType::PROP, propType, static_cast<ClientLevel*>(myCurrentLevel)->GetScene()
+			, true, propPosition, propRotation, propScale);
+		newEntity->AddToScene();
+		newEntity->Reset();
+
+		myCurrentLevel->AddEntity(newEntity);
+	}
+}
+
 void ClientLevelFactory::LoadUnits(XMLReader& aReader, tinyxml2::XMLElement* aElement)
 {
-	aReader;
-	aElement;
-	/*for (tinyxml2::XMLElement* entityElement = aReader.FindFirstChild(aElement, "unit"); entityElement != nullptr;
+	for (tinyxml2::XMLElement* entityElement = aReader.FindFirstChild(aElement, "unit"); entityElement != nullptr;
 		entityElement = aReader.FindNextElement(entityElement, "unit"))
 	{
 		std::string unitType;
@@ -141,19 +171,25 @@ void ClientLevelFactory::LoadUnits(XMLReader& aReader, tinyxml2::XMLElement* aEl
 		CU::Vector3f unitRotation;
 		CU::Vector3f unitScale;
 
+		unsigned int gid(UINT32_MAX);
+
+		ReadGID(aReader, entityElement, gid);
+
 		ReadOrientation(aReader, entityElement, unitPosition, unitRotation, unitScale);
 
 		unitRotation.x = CU::Math::DegreeToRad(unitRotation.x);
 		unitRotation.y = CU::Math::DegreeToRad(unitRotation.y);
 		unitRotation.z = CU::Math::DegreeToRad(unitRotation.z);
 
-		Entity* newEntity = EntityFactory::CreateEntity(eEntityType::UNIT, unitType, static_cast<ClientLevel*>(myCurrentLevel)->GetScene()
-			, true, unitPosition, unitRotation, unitScale);
-		newEntity->AddToScene();
+		Entity* newEntity = EntityFactory::CreateEntity(gid, eEntityType::UNIT, unitType, myCurrentLevel->GetScene(), true
+			, unitPosition, unitRotation, unitScale);
 		newEntity->Reset();
 
-		myCurrentLevel->AddEntity(newEntity);
-	}*/
+		myCurrentLevel->AddEnemy(newEntity);
+		newEntity->AddToScene();
+
+		//Entity* newEnemy = EntityFactory::CreateEntity(aMessage.myGID, eEntityType::UNIT, "gundroid", myScene, true, aMessage.myPosition);
+	}
 }
 
 void ClientLevelFactory::LoadTriggers(XMLReader& aReader, tinyxml2::XMLElement* aElement)

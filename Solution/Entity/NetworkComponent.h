@@ -19,8 +19,6 @@ public:
 	void SetPlayer(bool aBool);
 
 private:
-	void ClientUpdate(float aDelta);
-	void ServerUpdate(float aDelta);
 
 	CU::Matrix44<float>& myOrientation;
 	CU::Vector3<float> myServerPosition;

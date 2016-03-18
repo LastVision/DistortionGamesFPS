@@ -25,6 +25,9 @@ public:
 	void CleanUp();
 
 protected:
+	void HandleTrigger(Entity& aFirstEntity, Entity& aSecondEntity);
+	void HandleExplosion(Entity& aFirstEntity, Entity& aSecondEntity);
+
 	CU::GrowingArray<Entity*> myActiveEntities;
 	CU::GrowingArray<Entity*> myInactiveEntities;
 	CU::GrowingArray<Entity*> myActiveEnemies;
