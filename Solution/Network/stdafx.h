@@ -18,3 +18,10 @@
 #include <StaticArray.h>
 #include <GrowingArray.h>
 #include <ThreadUtilities.h>
+
+#include "SerializeHelper.h"
+#include <stdint.h>
+#include "NetworkMessageTypes.h"
+
+#include "NetMessage.h"
+#include "NetImportantMessage.h"

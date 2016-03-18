@@ -17,13 +17,31 @@ private:
 };
 
 inline NetMessageSetActive::NetMessageSetActive(bool aActivate, unsigned int aGID)
-	: myShouldActivate(aActivate)
+	: NetImportantMessage(eNetMessageType::SET_ACTIVE)
+	, myShouldActivate(aActivate)
 	, myGID(aGID)
 {
-	myID = static_cast<int>(eNetMessageType::SET_ACTIVE);
 }
 
 inline NetMessageSetActive::NetMessageSetActive()
+	: NetImportantMessage(eNetMessageType::SET_ACTIVE)
 {
-	myID = static_cast<int>(eNetMessageType::SET_ACTIVE);
 }
+
+
+inline void NetMessageSetActive::DoSerialize(StreamType& aStream)
+{
+	__super::DoSerialize(aStream);
+
+	SERIALIZE(aStream, myShouldActivate);
+	SERIALIZE(aStream, myGID);
+}
+
+inline void NetMessageSetActive::DoDeSerialize(StreamType& aStream)
+{
+	__super::DoDeSerialize(aStream);
+
+	DESERIALIZE(aStream, myShouldActivate);
+	DESERIALIZE(aStream, myGID);
+}
+

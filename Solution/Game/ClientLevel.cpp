@@ -178,7 +178,7 @@ void ClientLevel::Render()
 	//myPlayer->GetComponent<ShootingComponent>()->Render();
 }
 
-void ClientLevel::ReceiveNetworkMessage(const NetMessageOnJoin& aMessage, const sockaddr_in& aSenderAddress)
+void ClientLevel::ReceiveNetworkMessage(const NetMessageOnJoin& aMessage, const sockaddr_in&)
 {
 	DL_ASSERT_EXP(aMessage.mySenderID != ClientNetworkManager::GetInstance()->GetGID(), "You joined but you are already ingame?");
 	bool isRunTime = Prism::MemoryTracker::GetInstance()->GetRunTime();
@@ -190,7 +190,7 @@ void ClientLevel::ReceiveNetworkMessage(const NetMessageOnJoin& aMessage, const 
 	myPlayers.Add(newPlayer);
 	Prism::MemoryTracker::GetInstance()->SetRunTime(isRunTime);
 }
-void ClientLevel::ReceiveNetworkMessage(const NetMessageConnectReply& aMessage, const sockaddr_in& aSenderAddress)
+void ClientLevel::ReceiveNetworkMessage(const NetMessageConnectReply& aMessage, const sockaddr_in&)
 {
 	if (aMessage.myGID == ClientNetworkManager::GetInstance()->GetGID())
 	{
@@ -208,7 +208,7 @@ void ClientLevel::ReceiveNetworkMessage(const NetMessageConnectReply& aMessage, 
 	Prism::MemoryTracker::GetInstance()->SetRunTime(isRunTime);
 	}*/
 }
-void ClientLevel::ReceiveNetworkMessage(const NetMessageDisconnect& aMessage, const sockaddr_in& aSenderAddress)
+void ClientLevel::ReceiveNetworkMessage(const NetMessageDisconnect&, const sockaddr_in&)
 {
 	DL_ASSERT_EXP(ClientNetworkManager::GetInstance()->GetGID() != 0, "You are not connected yet.");
 	for (Entity* e : myPlayers)
@@ -231,7 +231,7 @@ void ClientLevel::ReceiveNetworkMessage(const NetMessageDisconnect& aMessage, co
 //	myActiveEnemies.Add(newEnemy);
 //	Prism::MemoryTracker::GetInstance()->SetRunTime(isRunTime);
 //}
-void ClientLevel::ReceiveNetworkMessage(const NetMessageOnDeath& aMessage, const sockaddr_in& aSenderAddress)
+void ClientLevel::ReceiveNetworkMessage(const NetMessageOnDeath& aMessage, const sockaddr_in&)
 {
 	DL_ASSERT_EXP(aMessage.myGID != 0, "Can't kill server (id 0).");
 
@@ -244,7 +244,7 @@ void ClientLevel::ReceiveNetworkMessage(const NetMessageOnDeath& aMessage, const
 	}
 }
 
-void ClientLevel::ReceiveNetworkMessage(const NetMessageSetActive& aMessage, const sockaddr_in& aSenderAddress)
+void ClientLevel::ReceiveNetworkMessage(const NetMessageSetActive& aMessage, const sockaddr_in&)
 {
 	if (myActiveEntitiesMap.find(aMessage.myGID) == myActiveEntitiesMap.end())
 	{

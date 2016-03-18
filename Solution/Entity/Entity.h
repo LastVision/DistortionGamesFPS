@@ -63,7 +63,6 @@ public:
 
 	bool IsInScene() const;
 	const std::string& GetSubType() const;
-
 private:
 	void operator=(Entity&) = delete;
 
