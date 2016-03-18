@@ -21,53 +21,11 @@
     <ClCompile Include="NetMessage.cpp">
       <Filter>Messages</Filter>
     </ClCompile>
-    <ClCompile Include="NetMessagePingReply.cpp">
-      <Filter>Messages</Filter>
-    </ClCompile>
-    <ClCompile Include="NetMessagePingRequest.cpp">
-      <Filter>Messages</Filter>
-    </ClCompile>
-    <ClCompile Include="NetMessageOnJoin.cpp">
-      <Filter>Messages</Filter>
-    </ClCompile>
-    <ClCompile Include="NetMessagePosition.cpp">
-      <Filter>Messages</Filter>
-    </ClCompile>
     <ClCompile Include="ClientNetwork.cpp">
       <Filter>Interfaces</Filter>
     </ClCompile>
     <ClCompile Include="ServerNetwork.cpp">
       <Filter>Interfaces</Filter>
-    </ClCompile>
-    <ClCompile Include="NetMessageOnHit.cpp">
-      <Filter>Messages</Filter>
-    </ClCompile>
-    <ClCompile Include="NetImportantMessage.cpp">
-      <Filter>Messages</Filter>
-    </ClCompile>
-    <ClCompile Include="NetMessageDisconnect.cpp">
-      <Filter>Messages</Filter>
-    </ClCompile>
-    <ClCompile Include="NetMessageImportantReply.cpp">
-      <Filter>Messages</Filter>
-    </ClCompile>
-    <ClCompile Include="NetMessageOnDeath.cpp">
-      <Filter>Messages</Filter>
-    </ClCompile>
-    <ClCompile Include="NetMessageRequestLevel.cpp">
-      <Filter>Messages</Filter>
-    </ClCompile>
-    <ClCompile Include="NetMessageRequestStartGame.cpp">
-      <Filter>Messages</Filter>
-    </ClCompile>
-    <ClCompile Include="NetMessageStartGame.cpp">
-      <Filter>Messages</Filter>
-    </ClCompile>
-    <ClCompile Include="NetMessageLevelLoaded.cpp">
-      <Filter>Messages</Filter>
-    </ClCompile>
-    <ClCompile Include="NetMessageRequestConnect.cpp">
-      <Filter>Messages</Filter>
     </ClCompile>
     <ClCompile Include="NetMessageConnectReply.cpp" />
     <ClCompile Include="NetMessageRequestLevel.cpp" />

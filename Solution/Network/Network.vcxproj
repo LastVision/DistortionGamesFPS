@@ -112,22 +112,8 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ClientNetwork.cpp" />
-    <ClCompile Include="NetImportantMessage.cpp" />
     <ClCompile Include="NetMessage.cpp" />
     <ClCompile Include="NetMessageConnectReply.cpp" />
-    <ClCompile Include="NetMessageRequestConnect.cpp" />
-    <ClCompile Include="NetMessageDisconnect.cpp" />
-    <ClCompile Include="NetMessageImportantReply.cpp" />
-    <ClCompile Include="NetMessageLevelLoaded.cpp" />
-    <ClCompile Include="NetMessageOnDeath.cpp" />
-    <ClCompile Include="NetMessageOnHit.cpp" />
-    <ClCompile Include="NetMessageOnJoin.cpp" />
-    <ClCompile Include="NetMessagePingReply.cpp" />
-    <ClCompile Include="NetMessagePingRequest.cpp" />
-    <ClCompile Include="NetMessagePosition.cpp" />
-    <ClCompile Include="NetMessageRequestLevel.cpp" />
-    <ClCompile Include="NetMessageRequestStartGame.cpp" />
-    <ClCompile Include="NetMessageStartGame.cpp" />
     <ClCompile Include="NetworkSubscriber.cpp" />
     <ClCompile Include="ServerNetwork.cpp" />
     <ClCompile Include="SharedNetworkManager.cpp" />

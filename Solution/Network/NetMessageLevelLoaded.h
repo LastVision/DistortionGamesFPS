@@ -7,3 +7,7 @@ public:
 	NetMessageLevelLoaded();
 };
 
+inline NetMessageLevelLoaded::NetMessageLevelLoaded()
+	: NetImportantMessage(eNetMessageType::LEVEL_LOADED)
+{
+}

@@ -5,7 +5,7 @@
 
 NetMessage::NetMessage(eNetMessageType aID)
 {
-	myID = static_cast<int>(aID);
+	myID = static_cast<uint8_t>(aID);
 }
 
 
