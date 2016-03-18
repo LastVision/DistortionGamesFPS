@@ -139,6 +139,7 @@ enum class eComponentType
 	FIRST_PERSON_RENDER,
 	PHYSICS,
 	UPGRADE,
+	AI,
 	_COUNT,
 };
 

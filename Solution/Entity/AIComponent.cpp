@@ -11,3 +11,8 @@ AIComponent::AIComponent(Entity& anEntity)
 AIComponent::~AIComponent()
 {
 }
+
+void AIComponent::Update(float aDelta)
+{
+
+}
