@@ -50,7 +50,7 @@ void PhysicsComponent::Update(float)
 {
 	if (myPhysicsType == ePhysics::KINEMATIC)
 	{
-		Prism::PhysicsInterface::GetInstance()->MoveToPosition(myDynamicBody, myEntity.GetOrientation().GetPos());
+		Prism::PhysicsInterface::GetInstance()->MoveToPosition(myDynamicBody, myEntity.GetOrientation().GetPos() + CU::Vector3<float>(0, 1.f, 0));
 	}
 }
 
@@ -85,8 +85,8 @@ void PhysicsComponent::SwapOrientations()
 
 float* PhysicsComponent::GetPosition()
 {
-	DL_ASSERT("Not used? Not verified to work.");
-	return &my4x4Float[12];
+	//DL_ASSERT("Not used? Not verified to work.");
+	return &myPosition[0];
 }
 
 float* PhysicsComponent::GetOrientation()
@@ -100,6 +100,20 @@ void PhysicsComponent::UpdateOrientation()
 
 	Prism::PhysicsInterface::GetInstance()->UpdateOrientation(myDynamicBody, myShapes, myThread4x4Float);
 
+
+	myPosition[0] = myThread4x4Float[12];
+	myPosition[1] = myThread4x4Float[13];
+	myPosition[2] = myThread4x4Float[14];
+}
+
+void PhysicsComponent::UpdateOrientationStatic()
+{
+	DL_ASSERT_EXP(myPhysicsType == ePhysics::PHANTOM, "Cant update Orientation Static on other types of PhysEntities");
+
+	Prism::PhysicsInterface::GetInstance()->UpdateOrientation(myStaticBody, myShapes, myThread4x4Float);
+
+
+	
 
 	myPosition[0] = myThread4x4Float[12];
 	myPosition[1] = myThread4x4Float[13];

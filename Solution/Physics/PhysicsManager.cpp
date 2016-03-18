@@ -44,6 +44,7 @@ namespace Prism
 		, myPhysicsDone(false)
 		, mySwapDone(false)
 		, myTimerManager(new CU::TimerManager())
+		, myPhysicsThread(nullptr)
 #endif
 		, myInitDone(false)
 	{
@@ -540,6 +541,36 @@ namespace Prism
 		aThread4x4[15] = 1;
 	}
 
+	void PhysicsManager::UpdateOrientation(physx::PxRigidStatic* aStaticBody, physx::PxShape** aShape, float* aThread4x4)
+	{
+		physx::PxU32 nShapes = aStaticBody->getNbShapes();
+		aStaticBody->getShapes(aShape, nShapes);
+
+		physx::PxTransform pT = physx::PxShapeExt::getGlobalPose(*aShape[0], *aStaticBody);
+		physx::PxTransform graphicsTransform(pT.p, pT.q);
+		physx::PxMat33 m = physx::PxMat33(graphicsTransform.q);
+
+		aThread4x4[0] = m(0, 0);
+		aThread4x4[1] = m(1, 0);
+		aThread4x4[2] = m(2, 0);
+		aThread4x4[3] = 0;
+
+		aThread4x4[4] = m(0, 1);
+		aThread4x4[5] = m(1, 1);
+		aThread4x4[6] = m(2, 1);
+		aThread4x4[7] = 0;
+
+		aThread4x4[8] = m(0, 2);
+		aThread4x4[9] = m(1, 2);
+		aThread4x4[10] = m(2, 2);
+		aThread4x4[11] = 0;
+
+		aThread4x4[12] = graphicsTransform.p.x;
+		aThread4x4[13] = graphicsTransform.p.y;
+		aThread4x4[14] = graphicsTransform.p.z;
+		aThread4x4[15] = 1;
+	}
+
 	bool PhysicsManager::GetAllowedToJump(int aId)
 	{
 		physx::PxControllerState state;
@@ -564,6 +595,12 @@ namespace Prism
 		, physx::PxRigidDynamic** aDynamicBodyOut, physx::PxRigidStatic** aStaticBodyOut
 		, physx::PxShape*** someShapesOut, bool aShouldAddToScene)
 	{
+		if (myPhysicsThread != nullptr)
+		{
+			bool changeLaterToAssert = true;
+		}
+
+
 		physx::PxPhysics* core = GetCore();
 
 		physx::PxReal density = 1.f;
