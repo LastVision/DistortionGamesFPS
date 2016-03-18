@@ -89,6 +89,7 @@ const eStateStatus ServerSelectState::Update(const float& aDeltaTime)
 	{
 		ClientNetworkManager::GetInstance()->ConnectToServer(myServer->myIp.c_str());
 
+		SET_RUNTIME(false);
 		PostMaster::GetInstance()->UnSubscribe(eMessageType::ON_CLICK, this);
 		myStateStack->PushSubGameState(new LobbyState());
 

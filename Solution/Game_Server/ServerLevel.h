@@ -19,5 +19,6 @@ public:
 private:
 	unsigned int myEntityIDCount;
 	CU::GrowingArray<unsigned int> myLoadedClients;
+	bool myAllClientsLoaded;
 };
 

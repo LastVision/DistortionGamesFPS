@@ -19,6 +19,11 @@ namespace Prism
 		myLightMesh = new Instance(*model, myOrientation);
 	}
 
+	PointLight::~PointLight()
+	{
+		SAFE_DELETE(myLightMesh);
+	}
+
 	void PointLight::Update()
 	{
 		myLightData.myColor = GetColor();

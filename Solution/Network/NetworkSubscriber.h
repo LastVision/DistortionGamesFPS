@@ -1,6 +1,5 @@
 #pragma once
 
-class NetMessageAddEnemy;
 class NetMessageConnectReply;
 class NetMessageDisconnect;
 class NetMessageImportantReply;
@@ -22,7 +21,6 @@ public:
 	NetworkSubscriber();
 	~NetworkSubscriber();
 
-	virtual void ReceiveNetworkMessage(const NetMessageAddEnemy& aMessage, const sockaddr_in& aSenderAddress);
 	virtual void ReceiveNetworkMessage(const NetMessageConnectReply& aMessage, const sockaddr_in& aSenderAddress);
 	virtual void ReceiveNetworkMessage(const NetMessageDisconnect& aMessage, const sockaddr_in& aSenderAddress);
 	virtual void ReceiveNetworkMessage(const NetMessageImportantReply& aMessage, const sockaddr_in& aSenderAddress);

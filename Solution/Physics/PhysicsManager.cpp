@@ -47,6 +47,7 @@ namespace Prism
 		, myPhysicsThread(nullptr)
 #endif
 		, myInitDone(false)
+		, myCurrentIndex(0)
 	{
 		myRaycastJobs[0].Init(64);
 		myRaycastJobs[1].Init(64);
@@ -56,8 +57,8 @@ namespace Prism
 		myForceJobs[1].Init(64);
 		myVelocityJobs[0].Init(64);
 		myVelocityJobs[1].Init(64);
-		myPositionJobs[0].Init(64);
-		myPositionJobs[1].Init(64);
+		myPositionJobs[0].Init(256);
+		myPositionJobs[1].Init(256);
 		myOnTriggerResults[0].Init(64);
 		myOnTriggerResults[1].Init(64);
 		myActorsToAdd[0].Init(64);
@@ -238,19 +239,21 @@ namespace Prism
 			obj.mySwapOrientationCallback();
 		}
 
-		std::swap(myRaycastJobs[0], myRaycastJobs[1]);
-		std::swap(myRaycastResults[0], myRaycastResults[1]);
-		std::swap(myMoveJobs[0], myMoveJobs[1]);
-		std::swap(myForceJobs[0], myForceJobs[1]);
-		std::swap(myVelocityJobs[0], myVelocityJobs[1]);
-		std::swap(myPositionJobs[0], myPositionJobs[1]);
-		std::swap(myOnTriggerResults[0], myOnTriggerResults[1]);
-		std::swap(myActorsToAdd[0], myActorsToAdd[1]);
-		std::swap(myActorsToRemove[0], myActorsToRemove[1]);
-		std::swap(myActorsToSleep[0], myActorsToSleep[1]);
-		std::swap(myActorsToWakeUp[0], myActorsToWakeUp[1]);
+		myCurrentIndex ^= 1;
 
-		myMoveJobs[0].myId = -1;
+		//std::swap(myRaycastJobs[0], myRaycastJobs[1]);
+		//std::swap(myRaycastResults[0], myRaycastResults[1]);
+		//std::swap(myMoveJobs[0], myMoveJobs[1]);
+		//std::swap(myForceJobs[0], myForceJobs[1]);
+		//std::swap(myVelocityJobs[0], myVelocityJobs[1]);
+		//std::swap(myPositionJobs[0], myPositionJobs[1]);
+		//std::swap(myOnTriggerResults[0], myOnTriggerResults[1]);
+		//std::swap(myActorsToAdd[0], myActorsToAdd[1]);
+		//std::swap(myActorsToRemove[0], myActorsToRemove[1]);
+		//std::swap(myActorsToSleep[0], myActorsToSleep[1]);
+		//std::swap(myActorsToWakeUp[0], myActorsToWakeUp[1]);
+
+		myMoveJobs[myCurrentIndex].myId = -1;
 	}
 
 	void PhysicsManager::Update()
@@ -269,40 +272,40 @@ namespace Prism
 
 		myInitDone = true;
 
-		if (myMoveJobs[1].myId > -1)
+		if (myMoveJobs[myCurrentIndex ^ 1].myId > -1)
 		{
-			Move(myMoveJobs[1]);
+			Move(myMoveJobs[myCurrentIndex ^ 1]);
 
-			const physx::PxExtendedVec3& pos = myControllerManager->getController(myMoveJobs[1].myId)->getFootPosition();
+			const physx::PxExtendedVec3& pos = myControllerManager->getController(myMoveJobs[myCurrentIndex ^ 1].myId)->getFootPosition();
 			myPlayerPosition.x = float(pos.x);
 			myPlayerPosition.y = float(pos.y);
 			myPlayerPosition.z = float(pos.z);
 		}
-		//myMoveJobs[0].RemoveAll();
+		//myMoveJobs[myCurrentIndex].RemoveAll();
 
-		for (int i = 0; i < myActorsToWakeUp[1].Size(); ++i)
+		for (int i = 0; i < myActorsToWakeUp[myCurrentIndex ^ 1].Size(); ++i)
 		{
-			myActorsToWakeUp[1][i]->setActorFlag(physx::PxActorFlag::Enum::eDISABLE_SIMULATION, false);
+			myActorsToWakeUp[myCurrentIndex ^ 1][i]->setActorFlag(physx::PxActorFlag::Enum::eDISABLE_SIMULATION, false);
 		}
-		myActorsToWakeUp[1].RemoveAll();
+		myActorsToWakeUp[myCurrentIndex ^ 1].RemoveAll();
 
-		for (int i = 0; i < myForceJobs[1].Size(); ++i)
+		for (int i = 0; i < myForceJobs[myCurrentIndex ^ 1].Size(); ++i)
 		{
-			AddForce(myForceJobs[1][i]);
+			AddForce(myForceJobs[myCurrentIndex ^ 1][i]);
 		}
-		myForceJobs[1].RemoveAll();
+		myForceJobs[myCurrentIndex ^ 1].RemoveAll();
 
-		for (int i = 0; i < myVelocityJobs[1].Size(); ++i)
+		for (int i = 0; i < myVelocityJobs[myCurrentIndex ^ 1].Size(); ++i)
 		{
-			SetVelocity(myVelocityJobs[1][i]);
+			SetVelocity(myVelocityJobs[myCurrentIndex ^ 1][i]);
 		}
-		myVelocityJobs[1].RemoveAll();
+		myVelocityJobs[myCurrentIndex ^ 1].RemoveAll();
 
-		for (int i = 0; i < myPositionJobs[1].Size(); ++i)
+		for (int i = 0; i < myPositionJobs[myCurrentIndex ^ 1].Size(); ++i)
 		{
-			SetPosition(myPositionJobs[1][i]);
+			SetPosition(myPositionJobs[myCurrentIndex ^ 1][i]);
 		}
-		myPositionJobs[1].RemoveAll();
+		myPositionJobs[myCurrentIndex ^ 1].RemoveAll();
 
 
 		for (int i = 0; i < myPhysicsComponentCallbacks.Size(); ++i)
@@ -313,50 +316,50 @@ namespace Prism
 			}
 		}
 
-		for (int i = 0; i < myRaycastJobs[1].Size(); ++i)
+		for (int i = 0; i < myRaycastJobs[myCurrentIndex ^ 1].Size(); ++i)
 		{
-			RayCast(myRaycastJobs[1][i]);
+			RayCast(myRaycastJobs[myCurrentIndex ^ 1][i]);
 		}
-		myRaycastJobs[1].RemoveAll();
+		myRaycastJobs[myCurrentIndex ^ 1].RemoveAll();
 
-		for (int i = 0; i < myOnTriggerResults[1].Size(); ++i)
+		for (int i = 0; i < myOnTriggerResults[myCurrentIndex ^ 1].Size(); ++i)
 		{
 
-			myOnTriggerCallback(myOnTriggerResults[1][i].myFirstPhysicsComponent, myOnTriggerResults[1][i].mySecondPhysicsComponent);
+			myOnTriggerCallback(myOnTriggerResults[myCurrentIndex ^ 1][i].myFirstPhysicsComponent, myOnTriggerResults[myCurrentIndex ^ 1][i].mySecondPhysicsComponent);
 		}
-		myOnTriggerResults[1].RemoveAll();
+		myOnTriggerResults[myCurrentIndex ^ 1].RemoveAll();
 
-		for (int i = 0; i < myActorsToSleep[1].Size(); ++i)
+		for (int i = 0; i < myActorsToSleep[myCurrentIndex ^ 1].Size(); ++i)
 		{
 			physx::PxTransform pose = physx::PxTransform(
 				ConvertVector({ 0.f, -1.f, 0.f }), physx::PxQuat(physx::PxHalfPi, physx::PxVec3(0.f, 0.f, 1.f)));
-			static_cast<physx::PxRigidDynamic*>(myActorsToSleep[1][i])->setGlobalPose(pose);
-			myActorsToSleep[1][i]->setActorFlag(physx::PxActorFlag::Enum::eDISABLE_SIMULATION, true);
+			static_cast<physx::PxRigidDynamic*>(myActorsToSleep[myCurrentIndex ^ 1][i])->setGlobalPose(pose);
+			myActorsToSleep[myCurrentIndex ^ 1][i]->setActorFlag(physx::PxActorFlag::Enum::eDISABLE_SIMULATION, true);
 		}
-		myActorsToSleep[1].RemoveAll();
+		myActorsToSleep[myCurrentIndex ^ 1].RemoveAll();
 
-		for (int i = 0; i < myActorsToAdd[1].Size(); ++i)
+		for (int i = 0; i < myActorsToAdd[myCurrentIndex ^ 1].Size(); ++i)
 		{
-			if (myActorsToAdd[1][i]->getScene() == nullptr)
+			if (myActorsToAdd[myCurrentIndex ^ 1][i]->getScene() == nullptr)
 			{
-				GetScene()->addActor(*myActorsToAdd[1][i]);
+				GetScene()->addActor(*myActorsToAdd[myCurrentIndex ^ 1][i]);
 			}
 		}
-		myActorsToAdd[1].RemoveAll();
+		myActorsToAdd[myCurrentIndex ^ 1].RemoveAll();
 
-		for (int i = 0; i < myActorsToRemove[1].Size(); ++i)
+		for (int i = 0; i < myActorsToRemove[myCurrentIndex ^ 1].Size(); ++i)
 		{
-			if (myActorsToRemove[1][i]->getScene() != nullptr)
+			if (myActorsToRemove[myCurrentIndex ^ 1][i]->getScene() != nullptr)
 			{
-				GetScene()->removeActor(*myActorsToRemove[1][i]);
+				GetScene()->removeActor(*myActorsToRemove[myCurrentIndex ^ 1][i]);
 			}
 		}
-		myActorsToRemove[1].RemoveAll();
+		myActorsToRemove[myCurrentIndex ^ 1].RemoveAll();
 	}
 
 	void PhysicsManager::RayCast(const CU::Vector3<float>& aOrigin, const CU::Vector3<float>& aNormalizedDirection, float aMaxRayDistance, std::function<void(PhysicsComponent*, const CU::Vector3<float>&, const CU::Vector3<float>&)> aFunctionToCall)
 	{
-		myRaycastJobs[0].Add(RaycastJob(aOrigin, aNormalizedDirection, aMaxRayDistance, aFunctionToCall));
+		myRaycastJobs[myCurrentIndex].Add(RaycastJob(aOrigin, aNormalizedDirection, aMaxRayDistance, aFunctionToCall));
 	}
 
 	void PhysicsManager::onTrigger(physx::PxTriggerPair* somePairs, physx::PxU32 aCount)
@@ -367,7 +370,7 @@ namespace Prism
 
 			if (pairs.status == physx::PxPairFlag::Enum::eNOTIFY_TOUCH_FOUND)
 			{
-				myOnTriggerResults[0].Add(OnTriggerResult(static_cast<PhysicsComponent*>(pairs.triggerActor->userData)
+				myOnTriggerResults[myCurrentIndex].Add(OnTriggerResult(static_cast<PhysicsComponent*>(pairs.triggerActor->userData)
 					, static_cast<PhysicsComponent*>(pairs.otherActor->userData)));
 			}
 		}
@@ -387,7 +390,7 @@ namespace Prism
 		CU::Vector3<float> hitPosition;
 		if (returnValue == true)
 		{
-			PhysicsComponent* ent = nullptr;//static_cast<PhysEntity*>(buffer.touches[0].actor->userData);
+			PhysicsComponent* ent = nullptr;//static_cast<PhysEntity*>(buffer.touches[myCurrentIndex].actor->userData);
 			float closestDist = FLT_MAX;
 			for (int i = 0; i < int(buffer.nbTouches); ++i)
 			{
@@ -407,22 +410,22 @@ namespace Prism
 			}
 			if (ent == nullptr)
 			{
-				myRaycastResults[1].Add(RaycastResult(nullptr, aRaycastJob.myNormalizedDirection, hitPosition, aRaycastJob.myFunctionToCall));
+				myRaycastResults[myCurrentIndex ^ 1].Add(RaycastResult(nullptr, aRaycastJob.myNormalizedDirection, hitPosition, aRaycastJob.myFunctionToCall));
 			}
 			else
 			{
-				myRaycastResults[1].Add(RaycastResult(ent, aRaycastJob.myNormalizedDirection, hitPosition, aRaycastJob.myFunctionToCall));
+				myRaycastResults[myCurrentIndex ^ 1].Add(RaycastResult(ent, aRaycastJob.myNormalizedDirection, hitPosition, aRaycastJob.myFunctionToCall));
 			}
 		}
 		else
 		{
-			myRaycastResults[1].Add(RaycastResult(nullptr, aRaycastJob.myNormalizedDirection, hitPosition, aRaycastJob.myFunctionToCall));
+			myRaycastResults[myCurrentIndex ^ 1].Add(RaycastResult(nullptr, aRaycastJob.myNormalizedDirection, hitPosition, aRaycastJob.myFunctionToCall));
 		}
 	}
 
 	void PhysicsManager::AddForce(physx::PxRigidDynamic* aDynamicBody, const CU::Vector3<float>& aDirection, float aMagnitude)
 	{
-		myForceJobs[0].Add(ForceJob(aDynamicBody, aDirection, aMagnitude));
+		myForceJobs[myCurrentIndex].Add(ForceJob(aDynamicBody, aDirection, aMagnitude));
 	}
 
 	void PhysicsManager::AddForce(const ForceJob& aForceJob)
@@ -432,7 +435,7 @@ namespace Prism
 
 	void PhysicsManager::SetVelocity(physx::PxRigidDynamic* aDynamicBody, const CU::Vector3<float>& aVelocity)
 	{
-		myVelocityJobs[0].Add(VelocityJob(aDynamicBody, aVelocity));
+		myVelocityJobs[myCurrentIndex].Add(VelocityJob(aDynamicBody, aVelocity));
 	}
 
 	void PhysicsManager::SetVelocity(const VelocityJob& aVelocityJob)
@@ -442,17 +445,17 @@ namespace Prism
 
 	void PhysicsManager::TeleportToPosition(physx::PxRigidDynamic* aDynamicBody, const CU::Vector3<float>& aPosition)
 	{
-		myPositionJobs[0].Add(PositionJob(aDynamicBody, aPosition, PositionJobType::TELEPORT));
+		myPositionJobs[myCurrentIndex].Add(PositionJob(aDynamicBody, aPosition, PositionJobType::TELEPORT));
 	}
 
 	void PhysicsManager::TeleportToPosition(physx::PxRigidStatic * aStaticBody, const CU::Vector3<float>& aPosition)
 	{
-		myPositionJobs[0].Add(PositionJob(aStaticBody, aPosition, PositionJobType::TELEPORT));
+		myPositionJobs[myCurrentIndex].Add(PositionJob(aStaticBody, aPosition, PositionJobType::TELEPORT));
 	}
 
 	void PhysicsManager::MoveToPosition(physx::PxRigidDynamic* aDynamicBody, const CU::Vector3<float>& aPosition)
 	{
-		myPositionJobs[0].Add(PositionJob(aDynamicBody, aPosition, PositionJobType::MOVE));
+		myPositionJobs[myCurrentIndex].Add(PositionJob(aDynamicBody, aPosition, PositionJobType::MOVE));
 	}
 
 	void PhysicsManager::SetPosition(const PositionJob& aPositionJob)
@@ -505,7 +508,7 @@ namespace Prism
 
 	void PhysicsManager::Move(int aId, const CU::Vector3<float>& aDirection, float aMinDisplacement, float aDeltaTime)
 	{
-		myMoveJobs[0] = MoveJob(aId, aDirection, aMinDisplacement, aDeltaTime);
+		myMoveJobs[myCurrentIndex] = MoveJob(aId, aDirection, aMinDisplacement, aDeltaTime);
 	}
 
 	void PhysicsManager::Move(const MoveJob& aMoveJob)
@@ -714,12 +717,12 @@ namespace Prism
 
 	void PhysicsManager::Add(physx::PxRigidDynamic* aDynamic)
 	{
-		myActorsToAdd[0].Add(aDynamic);
+		myActorsToAdd[myCurrentIndex].Add(aDynamic);
 	}
 
 	void PhysicsManager::Add(physx::PxRigidStatic* aStatic)
 	{
-		myActorsToAdd[0].Add(aStatic);
+		myActorsToAdd[myCurrentIndex].Add(aStatic);
 	}
 
 	void PhysicsManager::Remove(physx::PxRigidDynamic* aDynamic, const PhysicsComponentData& aData)
@@ -727,7 +730,7 @@ namespace Prism
 		if (aDynamic != nullptr && aDynamic->getScene() != nullptr)
 		{
 			//GetScene()->removeActor(*aDynamic);
-			myActorsToRemove[0].Add(aDynamic);
+			myActorsToRemove[myCurrentIndex].Add(aDynamic);
 			for (int i = 0; i < myPhysicsComponentCallbacks.Size(); ++i)
 			{
 				if (myPhysicsComponentCallbacks[i].myData == &aData)
@@ -744,7 +747,7 @@ namespace Prism
 		if (aStatic != nullptr && aStatic->getScene() != nullptr)
 		{
 			//GetScene()->removeActor(*aStatic);
-			myActorsToRemove[0].Add(aStatic);
+			myActorsToRemove[myCurrentIndex].Add(aStatic);
 			for (int i = 0; i < myPhysicsComponentCallbacks.Size(); ++i)
 			{
 				if (myPhysicsComponentCallbacks[i].myData == &aData)
@@ -758,12 +761,12 @@ namespace Prism
 
 	void PhysicsManager::Sleep(physx::PxRigidDynamic* aDynamic)
 	{
-		myActorsToSleep[0].Add(aDynamic);
+		myActorsToSleep[myCurrentIndex].Add(aDynamic);
 	}
 
 	void PhysicsManager::Wake(physx::PxRigidDynamic* aDynamic)
 	{
-		myActorsToWakeUp[0].Add(aDynamic);
+		myActorsToWakeUp[myCurrentIndex].Add(aDynamic);
 	}
 
 	physx::PxTriangleMesh* PhysicsManager::GetPhysMesh(const std::string& aFBXPath)
@@ -822,11 +825,11 @@ namespace Prism
 
 	void PhysicsManager::EndFrame()
 	{
-		for (int i = 0; i < myRaycastResults[0].Size(); ++i)
+		for (int i = 0; i < myRaycastResults[myCurrentIndex].Size(); ++i)
 		{
-			myRaycastResults[0][i].myFunctionToCall(myRaycastResults[0][i].myPhysicsComponent, myRaycastResults[0][i].myDirection, myRaycastResults[0][i].myHitPosition);
+			myRaycastResults[myCurrentIndex][i].myFunctionToCall(myRaycastResults[myCurrentIndex][i].myPhysicsComponent, myRaycastResults[myCurrentIndex][i].myDirection, myRaycastResults[myCurrentIndex][i].myHitPosition);
 		}
 
-		myRaycastResults[0].RemoveAll();
+		myRaycastResults[myCurrentIndex].RemoveAll();
 	}
 }

@@ -108,6 +108,7 @@ namespace Prism
 		volatile bool mySwapDone;
 #endif
 		volatile bool myInitDone;
+		volatile int myCurrentIndex;
 
 		struct RaycastJob
 		{
