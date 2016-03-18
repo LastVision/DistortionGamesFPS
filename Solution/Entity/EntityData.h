@@ -7,7 +7,7 @@
 #include "HealthComponentData.h"
 #include "InputComponentData.h"
 #include "NetworkComponentData.h"
-#include "ProjectileComponentData.h"
+#include "GrenadeComponentData.h"
 #include "ShootingComponentData.h"
 #include "TriggerComponentData.h"
 #include "UpgradeComponentData.h"
@@ -21,7 +21,7 @@ struct EntityData
 	HealthComponentData myHealthData;
 	InputComponentData myInputData;
 	NetworkComponentData myNetworkData;
-	ProjectileComponentData myProjecileData;
+	GrenadeComponentData myProjecileData;
 	PhysicsComponentData myPhysicsData;
 	ShootingComponentData myShootingData;
 	TriggerComponentData myTriggerData;

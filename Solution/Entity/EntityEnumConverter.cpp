@@ -10,9 +10,9 @@ namespace EntityEnumConverter
 		{
 			return eEntityType::PROP;
 		}
-		else if (aType == "projectile")
+		else if (aType == "grenade")
 		{
-			return eEntityType::PROJECTILE;
+			return eEntityType::GRENADE;
 		}
 		else if (aType == "unit")
 		{

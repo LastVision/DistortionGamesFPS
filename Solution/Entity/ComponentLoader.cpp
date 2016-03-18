@@ -139,7 +139,7 @@ void ComponentLoader::LoadPhysicsComponent(XMLReader& aDocument, tinyxml2::XMLEl
 	}
 }
 
-void ComponentLoader::LoadProjectileComponent(XMLReader& aDocument, tinyxml2::XMLElement* aSourceElement, ProjectileComponentData& aOutputData)
+void ComponentLoader::LoadGrenadeComponent(XMLReader& aDocument, tinyxml2::XMLElement* aSourceElement, GrenadeComponentData& aOutputData)
 {
 	aDocument;
 	aSourceElement;
