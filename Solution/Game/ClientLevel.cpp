@@ -53,14 +53,9 @@ ClientLevel::ClientLevel()
 	PostMaster::GetInstance()->Subscribe(eMessageType::NETWORK_ADD_ENEMY, this);
 	PostMaster::GetInstance()->Subscribe(eMessageType::NETWORK_ON_DEATH, this);
 
-	ClientNetworkManager::GetInstance()->Subscribe(eNetMessageType::ON_JOIN, this);
-	ClientNetworkManager::GetInstance()->Subscribe(eNetMessageType::ON_DISCONNECT, this);
-	ClientNetworkManager::GetInstance()->Subscribe(eNetMessageType::CONNECT_REPLY, this);
 	ClientNetworkManager::GetInstance()->Subscribe(eNetMessageType::ENEMY_ON_DEATH, this);
 	ClientNetworkManager::GetInstance()->Subscribe(eNetMessageType::PLAYER_ON_DEATH, this);
-
 	ClientNetworkManager::GetInstance()->Subscribe(eNetMessageType::SET_ACTIVE, this);
-
 
 	myScene = new Prism::Scene();
 }
@@ -81,12 +76,8 @@ ClientLevel::~ClientLevel()
 	PostMaster::GetInstance()->UnSubscribe(eMessageType::NETWORK_ADD_ENEMY, this);
 	PostMaster::GetInstance()->UnSubscribe(eMessageType::NETWORK_ON_DEATH, this);
 
-	ClientNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::ON_JOIN, this);
-	ClientNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::ON_DISCONNECT, this);
-	ClientNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::CONNECT_REPLY, this);
 	ClientNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::ENEMY_ON_DEATH, this);
 	ClientNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::PLAYER_ON_DEATH, this);
-
 	ClientNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::SET_ACTIVE, this);
 
 	myInstances.DeleteAll();
@@ -178,59 +169,6 @@ void ClientLevel::Render()
 	//myPlayer->GetComponent<ShootingComponent>()->Render();
 }
 
-void ClientLevel::ReceiveNetworkMessage(const NetMessageOnJoin& aMessage, const sockaddr_in&)
-{
-	DL_ASSERT_EXP(aMessage.mySenderID != ClientNetworkManager::GetInstance()->GetGID(), "You joined but you are already ingame?");
-	bool isRunTime = Prism::MemoryTracker::GetInstance()->GetRunTime();
-	Prism::MemoryTracker::GetInstance()->SetRunTime(false);
-	Entity* newPlayer = EntityFactory::CreateEntity(aMessage.mySenderID, eEntityType::UNIT, "player", myScene, true, { 0.f, 0.f, 0.f });
-	newPlayer->GetComponent<NetworkComponent>()->SetPlayer(true);
-	newPlayer->AddToScene();
-	newPlayer->Reset();
-	myPlayers.Add(newPlayer);
-	Prism::MemoryTracker::GetInstance()->SetRunTime(isRunTime);
-}
-void ClientLevel::ReceiveNetworkMessage(const NetMessageConnectReply& aMessage, const sockaddr_in&)
-{
-	if (aMessage.myGID == ClientNetworkManager::GetInstance()->GetGID())
-	{
-		myPlayer->SetGID(aMessage.myGID);
-	}
-	/*else
-	{
-	bool isRunTime = Prism::MemoryTracker::GetInstance()->GetRunTime();
-	Prism::MemoryTracker::GetInstance()->SetRunTime(false);
-		Entity* newPlayer = EntityFactory::CreateEntity(aMessage.myOtherClientID, eEntityType::UNIT, "player", myScene, true, { 0.f, 0.f, 0.f });
-	newPlayer->GetComponent<NetworkComponent>()->SetPlayer(true);
-	newPlayer->AddToScene();
-	newPlayer->Reset();
-	myPlayers.Add(newPlayer);
-	Prism::MemoryTracker::GetInstance()->SetRunTime(isRunTime);
-	}*/
-}
-void ClientLevel::ReceiveNetworkMessage(const NetMessageDisconnect&, const sockaddr_in&)
-{
-	DL_ASSERT_EXP(ClientNetworkManager::GetInstance()->GetGID() != 0, "You are not connected yet.");
-	for (Entity* e : myPlayers)
-	{
-		if (e->GetGID() == ClientNetworkManager::GetInstance()->GetGID())
-		{
-			e->RemoveFromScene();
-		}
-	}
-}
-//void ClientLevel::ReceiveNetworkMessage(const NetMessageAddEnemy& aMessage, const sockaddr_in& aSenderAddress)
-//{
-//	bool isRunTime = Prism::MemoryTracker::GetInstance()->GetRunTime();
-//	Prism::MemoryTracker::GetInstance()->SetRunTime(false);
-//	Entity* newEnemy = EntityFactory::CreateEntity(aMessage.myGID, eEntityType::UNIT, "gundroid", myScene, true, aMessage.myPosition);
-//
-//	newEnemy->AddToScene();
-//	newEnemy->Reset();
-//
-//	myActiveEnemies.Add(newEnemy);
-//	Prism::MemoryTracker::GetInstance()->SetRunTime(isRunTime);
-//}
 void ClientLevel::ReceiveNetworkMessage(const NetMessageOnDeath& aMessage, const sockaddr_in&)
 {
 	DL_ASSERT_EXP(aMessage.myGID != 0, "Can't kill server (id 0).");

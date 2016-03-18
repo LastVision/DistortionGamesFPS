@@ -36,10 +36,6 @@ private:
 
 	void AddImportantMessage(std::vector<char> aBuffer, unsigned int aImportantID) override;
 
-	//void ReceiveMessage(const PostMasterNetAddEnemyMessage& aMessage) override;
-	//void ReceiveMessage(const PostMasterNetSendPositionMessage& aMessage) override;
-	//void ReceiveMessage(const PostMasterNetOnDeathMessage& aMessage) override;
-
 	void ReceieveThread() override;
 	void SendThread() override;
 

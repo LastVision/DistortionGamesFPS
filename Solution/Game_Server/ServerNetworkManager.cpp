@@ -212,7 +212,6 @@ void ServerNetworkManager::CreateConnection(const std::string& aName, const sock
 		myNetwork->Send(msg.myStream, aSender);
 	}
 
-	
 	Connection newConnection;
 	newConnection.myAddress = aSender;
 	newConnection.myID = myIDCount;
@@ -224,9 +223,8 @@ void ServerNetworkManager::CreateConnection(const std::string& aName, const sock
 
 	std::string conn(aName + " connected to the server!");
 	Utility::PrintEndl(conn, LIGHT_GREEN_TEXT);
-	
-	NetMessageOnJoin onJoin(aName, myIDCount);
-	AddMessage(onJoin);
+
+	AddMessage(NetMessageOnJoin(aName, myIDCount));
 }
 
 void ServerNetworkManager::DisconnectConnection(const Connection& aConnection)
@@ -327,13 +325,15 @@ void ServerNetworkManager::ReceiveNetworkMessage(const NetMessageRequestConnect&
 		
 		myNetwork->Send(toReply.myStream, aSenderAddress);
 	}
-
-	if(myAllowNewConnections == false)
+	if (AlreadyReceived(aMessage) == false)
 	{
-		NetMessageConnectReply connectReply(NetMessageConnectReply::eType::FAIL);
-		connectReply.PackMessage();
-		myNetwork->Send(connectReply.myStream, aSenderAddress);
-		//Bounce
+		if (myAllowNewConnections == false)
+		{
+			NetMessageConnectReply connectReply(NetMessageConnectReply::eType::FAIL);
+			connectReply.PackMessage();
+			myNetwork->Send(connectReply.myStream, aSenderAddress);
+			//Bounce
+		}
 	}
 	//CreateConnection(aMessage.myName, aSenderAddress);
 }
