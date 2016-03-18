@@ -33,6 +33,7 @@ enum class eTriggerType : int
 	HEALTH_PACK,
 	UPGRADE,
 	UNLOCK,
+	LOCK,
 	_COUNT,
 };
 
