@@ -192,6 +192,7 @@
     <ClInclude Include="GrenadeComponent.h" />
     <ClInclude Include="GrenadeComponentData.h" />
     <ClInclude Include="ProjectileComponent.h" />
+    <ClInclude Include="ProjectileComponentData.h" />
     <ClInclude Include="ShootingComponent.h" />
     <ClInclude Include="ShootingComponentData.h" />
     <ClInclude Include="ShootNote.h" />
