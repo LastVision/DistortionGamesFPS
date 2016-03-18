@@ -20,7 +20,6 @@
 #include <PhysicsComponent.h>
 #include <PhysicsInterface.h>
 
-#include <NetMessageAddEnemy.h>
 #include <NetMessageConnectReply.h>
 #include <NetMessageDisconnect.h>
 #include <NetMessageLevelLoaded.h>
@@ -57,7 +56,6 @@ ClientLevel::ClientLevel()
 	ClientNetworkManager::GetInstance()->Subscribe(eNetMessageType::CONNECT_REPLY, this);
 	ClientNetworkManager::GetInstance()->Subscribe(eNetMessageType::ENEMY_ON_DEATH, this);
 	ClientNetworkManager::GetInstance()->Subscribe(eNetMessageType::PLAYER_ON_DEATH, this);
-	ClientNetworkManager::GetInstance()->Subscribe(eNetMessageType::ADD_ENEMY, this);
 
 
 	myScene = new Prism::Scene();
@@ -84,7 +82,6 @@ ClientLevel::~ClientLevel()
 	ClientNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::CONNECT_REPLY, this);
 	ClientNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::ENEMY_ON_DEATH, this);
 	ClientNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::PLAYER_ON_DEATH, this);
-	ClientNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::ADD_ENEMY, this);
 
 	myInstances.DeleteAll();
 	myPointLights.DeleteAll();
@@ -216,18 +213,18 @@ void ClientLevel::ReceiveNetworkMessage(const NetMessageDisconnect& aMessage, co
 		}
 	}
 }
-void ClientLevel::ReceiveNetworkMessage(const NetMessageAddEnemy& aMessage, const sockaddr_in& aSenderAddress)
-{
-	bool isRunTime = Prism::MemoryTracker::GetInstance()->GetRunTime();
-	Prism::MemoryTracker::GetInstance()->SetRunTime(false);
-	Entity* newEnemy = EntityFactory::CreateEntity(aMessage.myGID, eEntityType::UNIT, "gundroid", myScene, true, aMessage.myPosition);
-
-	newEnemy->AddToScene();
-	newEnemy->Reset();
-
-	myActiveEnemies.Add(newEnemy);
-	Prism::MemoryTracker::GetInstance()->SetRunTime(isRunTime);
-}
+//void ClientLevel::ReceiveNetworkMessage(const NetMessageAddEnemy& aMessage, const sockaddr_in& aSenderAddress)
+//{
+//	bool isRunTime = Prism::MemoryTracker::GetInstance()->GetRunTime();
+//	Prism::MemoryTracker::GetInstance()->SetRunTime(false);
+//	Entity* newEnemy = EntityFactory::CreateEntity(aMessage.myGID, eEntityType::UNIT, "gundroid", myScene, true, aMessage.myPosition);
+//
+//	newEnemy->AddToScene();
+//	newEnemy->Reset();
+//
+//	myActiveEnemies.Add(newEnemy);
+//	Prism::MemoryTracker::GetInstance()->SetRunTime(isRunTime);
+//}
 void ClientLevel::ReceiveNetworkMessage(const NetMessageOnDeath& aMessage, const sockaddr_in& aSenderAddress)
 {
 	DL_ASSERT_EXP(aMessage.myGID != 0, "Can't kill server (id 0).");

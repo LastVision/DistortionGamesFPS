@@ -9,11 +9,11 @@
 
 #include "DamageNote.h"
 
-#include <PostMaster.h>
 #include "HealthComponent.h"
+#include <PostMaster.h>
 #include <Quaternion.h>
-
 #include <SharedNetworkManager.h>
+
 
 NetworkComponent::NetworkComponent(Entity& anEntity, CU::Matrix44<float>& anOrientation)
 	: Component(anEntity)
@@ -46,43 +46,6 @@ void NetworkComponent::Reset()
 
 void NetworkComponent::Update(float aDelta)
 {
-	if (myEntity.GetIsClient() == true)
-	{
-		ClientUpdate(aDelta);
-	}
-	else
-	{
-		ServerUpdate(aDelta);
-	}
-}
-
-void NetworkComponent::ReceiveNetworkMessage(const NetMessagePosition& aMessage, const sockaddr_in& aSenderAddress)
-{
-	if (aMessage.myGID == myEntity.GetGID())
-	{
-		myPrevPosition = myServerPosition;
-		myServerPosition = aMessage.myPosition;
-		myPrevRotationY = myServerRotationY;
-		myServerRotationY = aMessage.myRotationY;
-		myAlpha = 0.f;
-	}
-}
-
-void NetworkComponent::ReceiveNetworkMessage(const NetMessageOnHit& aMessage, const sockaddr_in& aSenderAddress)
-{
-	if (myEntity.GetIsClient() == false && myEntity.GetGID() == aMessage.myGID)
-	{
-		myEntity.SendNote(DamageNote(static_cast<int>(aMessage.myDamage)));
-	}
-}
-
-void NetworkComponent::SetPlayer(bool aBool)
-{
-	myIsPlayer = aBool;
-}
-
-void NetworkComponent::ClientUpdate(float aDelta)
-{
 	myAlpha += aDelta * NETWORK_UPDATE_INTERVAL;
 	CU::Vector3<float> newPos = CU::Math::Lerp(myPrevPosition, myServerPosition, myAlpha);
 	myCurrentRotationY = CU::Math::Lerp(myPrevRotationY, myServerRotationY, myAlpha);
@@ -110,61 +73,85 @@ void NetworkComponent::ClientUpdate(float aDelta)
 	myOrientation.myMatrix[10] = axisZ.z;
 
 	myOrientation.SetPos(newPos);
-
-	
 }
 
-void NetworkComponent::ServerUpdate(float aDelta)
+void NetworkComponent::ReceiveNetworkMessage(const NetMessagePosition& aMessage, const sockaddr_in& aSenderAddress)
 {
-	myAlpha += aDelta * 0.25f;
-	if (myShouldUpdate == false)
+	if (aMessage.myGID == myEntity.GetGID())
 	{
-		return;
-	}
-	mySendTime -= aDelta;
-	if (mySendTime < 0.f)
-	{
-		//myServerPosition += aDelta * 5.f;
-		if (myIsPlayer == false)
-		{
-			if (myEntity.GetComponent<HealthComponent>()->GetCurrentHealth() > 0)
-			{
-				if (myShouldReturn == false)
-				{
-					if (myFirstPosition.z < 0.f)
-					{
-						myServerPosition = CU::Math::Lerp(myFirstPosition, mySecondPosition2, myAlpha);
-					}
-					else
-					{
-						myServerPosition = CU::Math::Lerp(myFirstPosition, mySecondPosition, myAlpha);
-					}
-				}
-				else
-				{
-					if (myFirstPosition.z < 0.f)
-					{
-						myServerPosition = CU::Math::Lerp(mySecondPosition2, myFirstPosition, myAlpha);
-					}
-					else
-					{
-						myServerPosition = CU::Math::Lerp(mySecondPosition, myFirstPosition, myAlpha);
-					}
-				}
-				if (myAlpha >= 1)
-				{
-					myShouldReturn = !myShouldReturn;
-					myAlpha = 0;
-				}
-			}
-			else
-			{
-				SharedNetworkManager::GetInstance()->AddMessage(NetMessageOnDeath(eNetMessageType::ENEMY_ON_DEATH,myEntity.GetGID()));
-				myShouldUpdate = false;
-				return;
-			}
-		}
-		mySendTime = NETWORK_UPDATE_INTERVAL;
-		SharedNetworkManager::GetInstance()->AddMessage(NetMessagePosition(myServerPosition, myServerRotationY, myEntity.GetGID()));
+		myPrevPosition = myServerPosition;
+		myServerPosition = aMessage.myPosition;
+		myPrevRotationY = myServerRotationY;
+		myServerRotationY = aMessage.myRotationY;
+		myAlpha = 0.f;
 	}
 }
+
+void NetworkComponent::ReceiveNetworkMessage(const NetMessageOnHit& aMessage, const sockaddr_in& aSenderAddress)
+{
+	if (myEntity.GetIsClient() == false && myEntity.GetGID() == aMessage.myGID)
+	{
+		myEntity.SendNote(DamageNote(static_cast<int>(aMessage.myDamage)));
+	}
+}
+
+void NetworkComponent::SetPlayer(bool aBool)
+{
+	myIsPlayer = aBool;
+}
+
+// legacy, remove when we have AI on server
+//void NetworkComponent::ServerUpdate(float aDelta)
+//{
+//	myAlpha += aDelta * 0.25f;
+//	if (myShouldUpdate == false)
+//	{
+//		return;
+//	}
+//	mySendTime -= aDelta;
+//	if (mySendTime < 0.f)
+//	{
+//		//myServerPosition += aDelta * 5.f;
+//		if (myIsPlayer == false)
+//		{
+//			if (myEntity.GetComponent<HealthComponent>()->GetCurrentHealth() > 0)
+//			{
+//				if (myShouldReturn == false)
+//				{
+//					if (myFirstPosition.z < 0.f)
+//					{
+//						myServerPosition = CU::Math::Lerp(myFirstPosition, mySecondPosition2, myAlpha);
+//					}
+//					else
+//					{
+//						myServerPosition = CU::Math::Lerp(myFirstPosition, mySecondPosition, myAlpha);
+//					}
+//				}
+//				else
+//				{
+//					if (myFirstPosition.z < 0.f)
+//					{
+//						myServerPosition = CU::Math::Lerp(mySecondPosition2, myFirstPosition, myAlpha);
+//					}
+//					else
+//					{
+//						myServerPosition = CU::Math::Lerp(mySecondPosition, myFirstPosition, myAlpha);
+//					}
+//				}
+//				if (myAlpha >= 1)
+//				{
+//					myShouldReturn = !myShouldReturn;
+//					myAlpha = 0;
+//				}
+//			}
+//			else
+//			{
+//				SharedNetworkManager::GetInstance()->AddMessage(NetMessageOnDeath(eNetMessageType::ENEMY_ON_DEATH,myEntity.GetGID()));
+//				myShouldUpdate = false;
+//				return;
+//			}
+//		}
+//		mySendTime = NETWORK_UPDATE_INTERVAL;
+//		SharedNetworkManager::GetInstance()->AddMessage(NetMessagePosition(myServerPosition, myServerRotationY, myEntity.GetGID()));
+//	}
+//}

@@ -180,6 +180,9 @@
     <ClCompile Include="TextProxy.cpp">
       <Filter>Rendering\Text</Filter>
     </ClCompile>
+    <ClCompile Include="CubeMapGenerator.cpp">
+      <Filter>Rendering\Renderer</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Engine.h" />
@@ -410,6 +413,9 @@
     </ClInclude>
     <ClInclude Include="TextProxy.h">
       <Filter>Rendering\Text</Filter>
+    </ClInclude>
+    <ClInclude Include="CubeMapGenerator.h">
+      <Filter>Rendering\Renderer</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -13,7 +13,6 @@
 #include <NetMessagePingRequest.h>
 #include <NetMessagePingReply.h>
 #include <NetMessagePosition.h>
-#include <NetMessageAddEnemy.h>
 #include <NetMessageOnDeath.h>
 #include <NetMessageStartGame.h>
 

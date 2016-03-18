@@ -15,7 +15,6 @@
 #include <NetMessagePingRequest.h>
 #include <NetMessagePingReply.h>
 #include <NetMessagePosition.h>
-#include <NetMessageAddEnemy.h>
 #include <NetMessageOnHit.h>
 #include <NetMessageOnDeath.h>
 #include <NetMessageLevelLoaded.h>
@@ -37,6 +36,7 @@ ServerNetworkManager::~ServerNetworkManager()
 	PostMaster::GetInstance()->UnSubscribe(eMessageType::NETWORK_SEND_POSITION, this);
 	PostMaster::GetInstance()->UnSubscribe(eMessageType::NETWORK_ON_DEATH, this);
 
+	UnSubscribe(eNetMessageType::POSITION, this);
 	UnSubscribe(eNetMessageType::PING_REPLY, this);
 	UnSubscribe(eNetMessageType::PING_REQUEST, this);
 	UnSubscribe(eNetMessageType::ON_CONNECT, this);
@@ -70,6 +70,7 @@ void ServerNetworkManager::Initiate()
 	myGID = 0;
 	myIDCount = 0;
 	__super::Initiate();
+	Subscribe(eNetMessageType::POSITION, this);
 	Subscribe(eNetMessageType::PING_REPLY, this);
 	Subscribe(eNetMessageType::PING_REQUEST, this);
 	Subscribe(eNetMessageType::ON_CONNECT, this);
@@ -364,6 +365,11 @@ void ServerNetworkManager::ReceiveNetworkMessage(const NetMessagePingReply& aMes
 			break;
 		}
 	}
+}
+
+void ServerNetworkManager::ReceiveNetworkMessage(const NetMessagePosition& aMessage, const sockaddr_in&)
+{
+	AddMessage(aMessage);
 }
 
 void ServerNetworkManager::ReceiveNetworkMessage(const NetMessagePingRequest& aMessage, const sockaddr_in&)

@@ -34,6 +34,7 @@ namespace Prism
 	Scene::~Scene()
 	{
 		SAFE_DELETE(myInstancingHelper);
+		SAFE_DELETE(myRoomManager);
 	}
 
 	void Scene::Render()
