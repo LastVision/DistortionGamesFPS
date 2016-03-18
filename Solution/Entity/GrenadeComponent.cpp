@@ -61,7 +61,6 @@ void GrenadeComponent::Activate(unsigned int aShooterGID)
 
 	if (myEntity.IsInScene() == false)
 	{
-		myEntity.SetPosition({0.f, 0.f, 0.f});
 		myEntity.AddToScene();
 		myEntity.GetComponent<PhysicsComponent>()->Wake();
 	}
