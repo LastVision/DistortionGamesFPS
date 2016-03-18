@@ -191,6 +191,7 @@
     <ClInclude Include="PollingStation.h" />
     <ClInclude Include="GrenadeComponent.h" />
     <ClInclude Include="GrenadeComponentData.h" />
+    <ClInclude Include="ProjectileComponent.h" />
     <ClInclude Include="ShootingComponent.h" />
     <ClInclude Include="ShootingComponentData.h" />
     <ClInclude Include="ShootNote.h" />
@@ -221,6 +222,7 @@
     <ClCompile Include="Pistol.cpp" />
     <ClCompile Include="PollingStation.cpp" />
     <ClCompile Include="GrenadeComponent.cpp" />
+    <ClCompile Include="ProjectileComponent.cpp" />
     <ClCompile Include="ShootingComponent.cpp" />
     <ClCompile Include="Shotgun.cpp" />
     <ClCompile Include="stdafx.cpp">
