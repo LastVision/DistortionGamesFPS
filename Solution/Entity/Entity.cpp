@@ -252,3 +252,8 @@ bool Entity::GetIsClient()
 {
 	return myIsClientSide;
 }
+
+const std::string& Entity::GetSubType() const
+{
+	return mySubType;
+}

@@ -30,6 +30,10 @@ namespace EntityEnumConverter
 		{
 			return eEntityType::EXPLOSION;
 		}
+		else if (aType == "door")
+		{
+			return eEntityType::PROP;
+		}
 
 		DL_ASSERT("The " + aType + " entity type is not supported, please tell Daniel about it.");
 		return eEntityType::_COUNT;

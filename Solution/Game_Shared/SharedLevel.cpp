@@ -21,7 +21,6 @@ SharedLevel::SharedLevel()
 	, myInactiveEnemies(64)
 	, myPlayers(16)
 {
-	Prism::PhysicsInterface::Create(std::bind(&SharedLevel::CollisionCallback, this, std::placeholders::_1, std::placeholders::_2));
 }
 
 SharedLevel::~SharedLevel()
