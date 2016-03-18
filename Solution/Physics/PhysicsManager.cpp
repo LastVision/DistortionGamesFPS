@@ -69,8 +69,10 @@ namespace Prism
 		myActorsToSleep[1].Init(64);
 		myActorsToWakeUp[0].Init(64);
 		myActorsToWakeUp[1].Init(64);
-		myMoveJobs[0].myId = -1;
-		myMoveJobs[1].myId = -1;
+		myMoveJobs[0].Init(64);
+		myMoveJobs[1].Init(64);
+		myControllerPositions[0].Init(64);
+		myControllerPositions[1].Init(64);
 		myTimestep = 1.f / 60.f;
 
 		myFoundation = PxCreateFoundation(0x03030300, myDefaultAllocatorCallback, myDefaultErrorCallback);
@@ -253,7 +255,7 @@ namespace Prism
 		//std::swap(myActorsToSleep[0], myActorsToSleep[1]);
 		//std::swap(myActorsToWakeUp[0], myActorsToWakeUp[1]);
 
-		myMoveJobs[myCurrentIndex].myId = -1;
+		//myMoveJobs[myCurrentIndex].myId = -1;
 	}
 
 	void PhysicsManager::Update()
@@ -272,14 +274,17 @@ namespace Prism
 
 		myInitDone = true;
 
-		if (myMoveJobs[myCurrentIndex ^ 1].myId > -1)
+		for (int i = 0; i < myMoveJobs[myCurrentIndex ^ 1].Size(); ++i)
 		{
-			Move(myMoveJobs[myCurrentIndex ^ 1]);
+			if (myMoveJobs[myCurrentIndex ^ 1][i].myId > -1)
+			{
+				Move(myMoveJobs[myCurrentIndex ^ 1][i]);
 
-			const physx::PxExtendedVec3& pos = myControllerManager->getController(myMoveJobs[myCurrentIndex ^ 1].myId)->getFootPosition();
-			myPlayerPosition.x = float(pos.x);
-			myPlayerPosition.y = float(pos.y);
-			myPlayerPosition.z = float(pos.z);
+				const physx::PxExtendedVec3& pos = myControllerManager->getController(myMoveJobs[myCurrentIndex ^ 1][i].myId)->getFootPosition();
+				myControllerPositions[myCurrentIndex ^ 1][i].x = float(pos.x);
+				myControllerPositions[myCurrentIndex ^ 1][i].y = float(pos.y);
+				myControllerPositions[myCurrentIndex ^ 1][i].z = float(pos.z);
+			}
 		}
 		//myMoveJobs[myCurrentIndex].RemoveAll();
 
@@ -503,12 +508,16 @@ namespace Prism
 		myControllerManager->createController(controllerDesc);
 		myControllerManager->getController(myControllerManager->getNbControllers() - 1)->getActor()->userData = aComponent;
 
+		myControllerPositions[0].Add(aStartPosition);
+		myControllerPositions[1].Add(aStartPosition);
+		myMoveJobs[0].Add(MoveJob());
+		myMoveJobs[1].Add(MoveJob());
 		return myControllerManager->getNbControllers() - 1;
 	}
 
 	void PhysicsManager::Move(int aId, const CU::Vector3<float>& aDirection, float aMinDisplacement, float aDeltaTime)
 	{
-		myMoveJobs[myCurrentIndex] = MoveJob(aId, aDirection, aMinDisplacement, aDeltaTime);
+		myMoveJobs[myCurrentIndex][aId] = MoveJob(aId, aDirection, aMinDisplacement, aDeltaTime);
 	}
 
 	void PhysicsManager::Move(const MoveJob& aMoveJob)
@@ -592,9 +601,9 @@ namespace Prism
 		myControllerManager->getController(aId)->setFootPosition(physx::PxExtendedVec3(aPosition.x, aPosition.y, aPosition.z));
 	}
 
-	void PhysicsManager::GetPosition(int, CU::Vector3<float>& aPositionOut)
+	void PhysicsManager::GetPosition(int aId, CU::Vector3<float>& aPositionOut)
 	{
-		aPositionOut = myPlayerPosition;
+		aPositionOut = myControllerPositions[myCurrentIndex][aId];
 	}
 
 	void PhysicsManager::Create(PhysicsComponent* aComponent, const PhysicsCallbackStruct& aPhysData
