@@ -5,12 +5,12 @@ namespace Prism
 {
 	class Scene;
 }
-struct ProjectileComponentData;
-class ProjectileComponent : public Component
+struct GrenadeComponentData;
+class GrenadeComponent : public Component
 {
 public:
-	ProjectileComponent(Entity& aEntity, const ProjectileComponentData& aComponentData, Prism::Scene* aScene);
-	~ProjectileComponent();
+	GrenadeComponent(Entity& aEntity, const GrenadeComponentData& aComponentData, Prism::Scene* aScene);
+	~GrenadeComponent();
 
 	void Update(float aDelta) override;
 	void Activate(unsigned int aShooterGID);
@@ -24,7 +24,7 @@ public:
 	void SetHasExploded(bool aHasExploded);
 
 private:
-	const ProjectileComponentData& myData;
+	const GrenadeComponentData& myData;
 	float myTimeUntilExplode;
 	bool myShouldBeUpdated;
 	bool myHasExploded;
@@ -36,27 +36,27 @@ private:
 	unsigned int myShooterGID;
 };
 
-inline eComponentType ProjectileComponent::GetTypeStatic()
+inline eComponentType GrenadeComponent::GetTypeStatic()
 {
 	return eComponentType::PROJECTILE;
 }
 
-inline eComponentType ProjectileComponent::GetType()
+inline eComponentType GrenadeComponent::GetType()
 {
 	return GetTypeStatic();
 }
 
-inline bool ProjectileComponent::GetShouldBeUpdated() const
+inline bool GrenadeComponent::GetShouldBeUpdated() const
 {
 	return myShouldBeUpdated;
 }
 
-inline bool ProjectileComponent::HasExploded() const
+inline bool GrenadeComponent::HasExploded() const
 {
 	return myHasExploded;
 }
 
-inline void ProjectileComponent::SetHasExploded(bool aHasExploded)
+inline void GrenadeComponent::SetHasExploded(bool aHasExploded)
 {
 	myHasExploded = aHasExploded;
 }

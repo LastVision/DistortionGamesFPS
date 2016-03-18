@@ -110,9 +110,9 @@ void EntityFactory::LoadEntity(const char* aEntityPath)
 
 			myComponentLoader->LoadGraphicsComponent(entityDocument, e, newData.myGraphicsData);
 		}
-		else if (elementName == CU::ToLower("ProjectileComponent"))
+		else if (elementName == CU::ToLower("GrenadeComponent"))
 		{
-			myComponentLoader->LoadProjectileComponent(entityDocument, e, newData.myProjecileData);
+			myComponentLoader->LoadGrenadeComponent(entityDocument, e, newData.myProjecileData);
 		}
 		else if (elementName == CU::ToLower("NetworkComponent"))
 		{

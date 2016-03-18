@@ -14,7 +14,7 @@
 #include <UpgradeComponent.h>
 #include <UpgradeNote.h>
 
-#include <ProjectileComponent.h>
+#include <GrenadeComponent.h>
 
 SharedLevel::SharedLevel()
 	: myActiveEntities(256)

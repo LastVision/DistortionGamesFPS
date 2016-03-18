@@ -19,7 +19,7 @@ enum eEntityType
 	EMPTY = -1,
 	UNIT = 1,
 	PROP = 2,
-	PROJECTILE = 4,
+	GRENADE = 4,
 	TRIGGER = 8,
 	PLAYER = 16,
 	EXPLOSION = 32,

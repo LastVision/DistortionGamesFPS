@@ -1,11 +1,11 @@
 #include "stdafx.h"
 #include "Entity.h"
 #include "EntityFactory.h"
-#include "ProjectileComponent.h"
+#include "GrenadeComponent.h"
 #include "PhysicsComponent.h"
 #include <PostMaster.h>
 
-ProjectileComponent::ProjectileComponent(Entity& aEntity, const ProjectileComponentData& aComponentData
+GrenadeComponent::GrenadeComponent(Entity& aEntity, const GrenadeComponentData& aComponentData
 	, Prism::Scene* aScene)
 	: Component(aEntity)
 	, myData(aComponentData)
@@ -18,11 +18,11 @@ ProjectileComponent::ProjectileComponent(Entity& aEntity, const ProjectileCompon
 	myExplosion = EntityFactory::CreateEntity((20000), eEntityType::EXPLOSION, aScene, true, CU::Vector3<float>());
 }
 
-ProjectileComponent::~ProjectileComponent()
+GrenadeComponent::~GrenadeComponent()
 {
 }
 
-void ProjectileComponent::Update(float aDelta)
+void GrenadeComponent::Update(float aDelta)
 {
 	if (myShouldReallyDeleteExplosion == true)
 	{
@@ -51,7 +51,7 @@ void ProjectileComponent::Update(float aDelta)
 	}
 }
 
-void ProjectileComponent::Activate(unsigned int aShooterGID)
+void GrenadeComponent::Activate(unsigned int aShooterGID)
 {
 	myShooterGID = aShooterGID;
 	myTimeUntilExplode = 2.f;

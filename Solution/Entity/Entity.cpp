@@ -7,7 +7,7 @@
 #include "InputComponent.h"
 #include "NetworkComponent.h"
 #include "PhysicsComponent.h"
-#include "ProjectileComponent.h"
+#include "GrenadeComponent.h"
 #include <Scene.h>
 #include <Instance.h>
 #include <EmitterMessage.h>
@@ -70,7 +70,7 @@ Entity::Entity(unsigned int aGID, const EntityData& aEntityData, Prism::Scene* a
 	
 	if (aEntityData.myProjecileData.myExistsInEntity == true)
 	{
-		myComponents[static_cast<int>(eComponentType::PROJECTILE)] = new ProjectileComponent(*this, aEntityData.myProjecileData, aScene);
+		myComponents[static_cast<int>(eComponentType::PROJECTILE)] = new GrenadeComponent(*this, aEntityData.myProjecileData, aScene);
 	}
 
 	if (aEntityData.myNetworkData.myExistsInEntity == true)

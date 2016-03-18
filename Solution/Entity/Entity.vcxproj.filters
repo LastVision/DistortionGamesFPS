@@ -59,9 +59,6 @@
     <ClCompile Include="HealthComponent.cpp">
       <Filter>Component</Filter>
     </ClCompile>
-    <ClCompile Include="ProjectileComponent.cpp">
-      <Filter>Component</Filter>
-    </ClCompile>
     <ClCompile Include="TriggerComponent.cpp">
       <Filter>Component</Filter>
     </ClCompile>
@@ -96,6 +93,9 @@
       <Filter>Component</Filter>
     </ClCompile>
     <ClCompile Include="AIComponent.cpp">
+      <Filter>Component</Filter>
+    </ClCompile>
+    <ClCompile Include="GrenadeComponent.cpp">
       <Filter>Component</Filter>
     </ClCompile>
   </ItemGroup>
@@ -143,12 +143,6 @@
     </ClInclude>
     <ClInclude Include="HealthComponent.h">
       <Filter>Component</Filter>
-    </ClInclude>
-    <ClInclude Include="ProjectileComponent.h">
-      <Filter>Component</Filter>
-    </ClInclude>
-    <ClInclude Include="ProjectileComponentData.h">
-      <Filter>EntityFactory\EntityData\ComponentData</Filter>
     </ClInclude>
     <ClInclude Include="HealthComponentData.h">
       <Filter>EntityFactory\EntityData\ComponentData</Filter>
@@ -215,6 +209,12 @@
     </ClInclude>
     <ClInclude Include="AIComponent.h">
       <Filter>Component</Filter>
+    </ClInclude>
+    <ClInclude Include="GrenadeComponent.h">
+      <Filter>Component</Filter>
+    </ClInclude>
+    <ClInclude Include="GrenadeComponentData.h">
+      <Filter>EntityFactory\EntityData\ComponentData</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
