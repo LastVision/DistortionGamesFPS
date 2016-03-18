@@ -2,9 +2,11 @@
 #include "AIComponent.h"
 
 
-AIComponent::AIComponent(Entity& anEntity)
+AIComponent::AIComponent(Entity& anEntity, const AIComponentData& aData)
 	: Component(anEntity)
+	, myData(aData)
 {
+	int apa = 5;
 }
 
 

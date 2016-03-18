@@ -1,5 +1,6 @@
 #pragma once
 
+struct AIComponentData;
 struct AnimationComponentData;
 struct FirstPersonRenderComponentData;
 struct GraphicsComponentData;
@@ -22,6 +23,7 @@ namespace tinyxml2
 class ComponentLoader
 {
 public:
+	void LoadAIComponent(XMLReader& aDocument, tinyxml2::XMLElement* aSourceElement, AIComponentData& aOutputData);
 	void LoadAnimationComponent(XMLReader& aDocument, tinyxml2::XMLElement* aSourceElement, AnimationComponentData& aOutputData);
 	void LoadFirstPersonRenderComponent(XMLReader& aDocument, tinyxml2::XMLElement* aSourceElement, FirstPersonRenderComponentData& aOutputData);
 	void LoadGraphicsComponent(XMLReader& aDocument, tinyxml2::XMLElement* aSourceElement, GraphicsComponentData& aOutputData);

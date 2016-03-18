@@ -132,6 +132,7 @@ void ServerLevelFactory::LoadUnits(XMLReader& aReader, tinyxml2::XMLElement* aEl
 		std::string unitType;
 		aReader.ForceReadAttribute(entityElement, "unitType", unitType);
 		unitType = CU::ToLower(unitType);
+		unitType += "server";
 
 		CU::Vector3f unitPosition;
 		CU::Vector3f unitRotation;

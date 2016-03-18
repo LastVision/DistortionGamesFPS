@@ -1,5 +1,6 @@
 #pragma once
 
+#include "AIComponentData.h"
 #include "AnimationComponentData.h"
 #include "GraphicsComponentData.h"
 #include "FirstPersonRenderComponentData.h"
@@ -15,6 +16,7 @@
 struct EntityData
 {
 	eEntityType myType;
+	AIComponentData myAIComponentData;
 	AnimationComponentData myAnimationData;
 	FirstPersonRenderComponentData myFirstPersonRenderData;
 	GraphicsComponentData myGraphicsData;

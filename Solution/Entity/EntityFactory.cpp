@@ -96,7 +96,11 @@ void EntityFactory::LoadEntity(const char* aEntityPath)
 		e = entityDocument.FindNextElement(e))
 	{
 		std::string elementName = CU::ToLower(e->Name());
-		if (elementName == CU::ToLower("AnimationComponent"))
+		if (elementName == CU::ToLower("AIComponent"))
+		{
+			myComponentLoader->LoadAIComponent(entityDocument, e, newData.myAIComponentData);
+		}
+		else if (elementName == CU::ToLower("AnimationComponent"))
 		{
 			if (newData.myGraphicsData.myExistsInEntity == true) DL_ASSERT("You have a GraphicsComponent so you can't have a AnimationComponent");
 			if (newData.myAnimationData.myExistsInEntity == true) DL_ASSERT("You already have a AnimationComponent");
