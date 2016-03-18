@@ -110,6 +110,11 @@ namespace Prism
 		myManager->UpdateOrientation(aDynamicBody, aShape, aThread4x4);
 	}
 
+	void PhysicsInterface::UpdateOrientation(physx::PxRigidStatic* aStaticBody, physx::PxShape** aShape, float* aThread4x4)
+	{
+		myManager->UpdateOrientation(aStaticBody, aShape, aThread4x4);
+	}
+
 	bool PhysicsInterface::GetAllowedToJump(int aId)
 	{
 		return myManager->GetAllowedToJump(aId);
