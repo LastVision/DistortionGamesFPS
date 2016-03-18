@@ -16,6 +16,9 @@
     <Filter Include="Level\Factory">
       <UniqueIdentifier>{82738a90-795c-4af8-9d12-d1677f52503b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Mission">
+      <UniqueIdentifier>{3abe5c38-98cc-4543-ba61-6d332ce13db2}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
@@ -49,6 +52,15 @@
     <ClInclude Include="ServerLevelFactory.h">
       <Filter>Level\Factory</Filter>
     </ClInclude>
+    <ClInclude Include="Mission.h">
+      <Filter>Mission</Filter>
+    </ClInclude>
+    <ClInclude Include="MissionManager.h">
+      <Filter>Mission</Filter>
+    </ClInclude>
+    <ClInclude Include="KillXMission.h">
+      <Filter>Mission</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -75,6 +87,15 @@
     </ClCompile>
     <ClCompile Include="ServerLevelFactory.cpp">
       <Filter>Level\Factory</Filter>
+    </ClCompile>
+    <ClCompile Include="Mission.cpp">
+      <Filter>Mission</Filter>
+    </ClCompile>
+    <ClCompile Include="MissionManager.cpp">
+      <Filter>Mission</Filter>
+    </ClCompile>
+    <ClCompile Include="KillXMission.cpp">
+      <Filter>Mission</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
