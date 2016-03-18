@@ -143,7 +143,6 @@ void ServerNetworkManager::ReceieveThread()
 		}
 		for (Buffer message : someBuffers)
 		{
-			//Utility::PrintEndl("Server receieved a message.", LIGHT_GREEN_TEXT);
 			myReceieveBuffer[myCurrentBuffer ^ 1].Add(message);
 		}
 		ReceieveIsDone();
@@ -335,7 +334,6 @@ void ServerNetworkManager::ReceiveNetworkMessage(const NetMessageRequestConnect&
 			//Bounce
 		}
 	}
-	//CreateConnection(aMessage.myName, aSenderAddress);
 }
 
 void ServerNetworkManager::ReceiveNetworkMessage(const NetMessageDisconnect& aMessage, const sockaddr_in&)
@@ -349,11 +347,6 @@ void ServerNetworkManager::ReceiveNetworkMessage(const NetMessageDisconnect& aMe
 		}
 	}
 }
-
-//void ServerNetworkManager::HandleMessage(const NetMessageRequestStartGame&, const sockaddr_in&)
-//{
-//	PostMaster::GetInstance()->SendMessage(PostMasterNetRequestStartGameMessage());
-//}
 
 void ServerNetworkManager::ReceiveNetworkMessage(const NetMessagePingReply& aMessage, const sockaddr_in&)
 {
@@ -384,36 +377,3 @@ void ServerNetworkManager::ReceiveNetworkMessage(const NetMessagePingRequest& aM
 		}
 	}
 }
-
-/*
-void ServerNetworkManager::HandleMessage(const NetMessageLevelLoaded& aMessage, const sockaddr_in&)
-{
-	PostMaster::GetInstance()->SendMessage(PostMasterNetLevelLoadedMessage(aMessage.mySenderID));
-}
-
-void ServerNetworkManager::ReceiveMessage(const PostMasterNetAddEnemyMessage& aMessage)
-{
-	NetMessageAddEnemy toSend = CreateMessage<NetMessageAddEnemy>();
-	toSend.myPosition = aMessage.myPosition;
-	toSend.myGID = aMessage.myGID;
-	toSend.PackMessage();
-	myNetwork->Send(toSend.myStream, aMessage.myAddress);
-}
-
-void ServerNetworkManager::ReceiveMessage(const PostMasterNetSendPositionMessage& aMessage)
-{
-	NetMessagePosition toSend;
-	toSend.mySenderID = static_cast<short>(aMessage.myGID);
-	toSend.myPosition = aMessage.myPosition;
-	toSend.myRotationY = aMessage.myRotationY;
-	toSend.myGID = aMessage.myGID;
-	AddMessage(toSend);
-}
-
-void ServerNetworkManager::ReceiveMessage(const PostMasterNetOnDeathMessage& aMessage)
-{
-	NetMessageOnDeath toSend = CreateMessage<NetMessageOnDeath>();
-	toSend.mySenderID = 0;
-	toSend.myGID = aMessage.myGID;
-	AddMessage(toSend);
-}*/
