@@ -29,9 +29,6 @@
     </ClCompile>
     <ClCompile Include="NetworkSubscriber.cpp" />
     <ClCompile Include="SharedNetworkManager.cpp" />
-    <ClCompile Include="NetMessageConnectReply.cpp">
-      <Filter>Messages</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">

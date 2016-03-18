@@ -114,7 +114,6 @@
   <ItemGroup>
     <ClCompile Include="ClientNetwork.cpp" />
     <ClCompile Include="NetMessage.cpp" />
-    <ClCompile Include="NetMessageConnectReply.cpp" />
     <ClCompile Include="NetworkSubscriber.cpp" />
     <ClCompile Include="ServerNetwork.cpp" />
     <ClCompile Include="SharedNetworkManager.cpp" />
