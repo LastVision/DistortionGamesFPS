@@ -3,14 +3,14 @@
 #include "NetworkMessageTypes.h"
 
 NetMessageDisconnect::NetMessageDisconnect(unsigned int aClientID)
+	: NetImportantMessage(eNetMessageType::ON_DISCONNECT)
+	, myClientID(aClientID)
 {
-	myID = static_cast<int>(eNetMessageType::ON_DISCONNECT);
-	myClientID = aClientID;
 }
 
 NetMessageDisconnect::NetMessageDisconnect()
+	: NetImportantMessage(eNetMessageType::ON_DISCONNECT)
 {
-	myID = static_cast<int>(eNetMessageType::ON_DISCONNECT);
 }
 
 NetMessageDisconnect::~NetMessageDisconnect()

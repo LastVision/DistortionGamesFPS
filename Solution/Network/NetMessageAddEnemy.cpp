@@ -3,16 +3,16 @@
 #include "NetworkMessageTypes.h"
 
 NetMessageAddEnemy::NetMessageAddEnemy()
+	: NetImportantMessage(eNetMessageType::ADD_ENEMY)
 {
-	myID = int(eNetMessageType::ADD_ENEMY);
 }
 
 
 NetMessageAddEnemy::NetMessageAddEnemy(const CU::Vector3<float> &aPosition, unsigned int aGID)
+	: NetImportantMessage(eNetMessageType::ADD_ENEMY)
+	, myPosition(aPosition)
+	, myGID(aGID)
 {
-	myPosition = aPosition;
-	myID = int(eNetMessageType::ADD_ENEMY);
-	myGID = aGID;
 }
 
 NetMessageAddEnemy::~NetMessageAddEnemy()

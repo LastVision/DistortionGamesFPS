@@ -2,7 +2,8 @@
 #include "NetImportantMessage.h"
 
 
-NetImportantMessage::NetImportantMessage()
+NetImportantMessage::NetImportantMessage(eNetMessageType aID)
+	: NetMessage(aID)
 {
 }
 

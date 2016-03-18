@@ -3,7 +3,7 @@
 class NetImportantMessage : public NetMessage 
 {
 public:
-	NetImportantMessage();
+	NetImportantMessage(eNetMessageType aID = eNetMessageType::NONE);
 	virtual ~NetImportantMessage();
 
 	bool GetIsImportant() const override;

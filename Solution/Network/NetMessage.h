@@ -6,7 +6,7 @@
 class NetMessage
 {
 public:
-	NetMessage();
+	NetMessage(eNetMessageType aID = eNetMessageType::NONE);
 	virtual ~NetMessage();
 
 	void PackMessage();

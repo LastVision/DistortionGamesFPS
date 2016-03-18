@@ -3,14 +3,14 @@
 #include "NetworkMessageTypes.h"
 
 NetMessageImportantReply::NetMessageImportantReply(const unsigned int aImportantID)
+	: NetMessage(eNetMessageType::IMPORTANT_REPLY)
+	, myImportantID(aImportantID)
 {
-	myID = static_cast<int>(eNetMessageType::IMPORTANT_REPLY);
-	myImportantID = aImportantID;
 }
 
 NetMessageImportantReply::NetMessageImportantReply()
+	: NetMessage(eNetMessageType::IMPORTANT_REPLY)
 {
-	myID = static_cast<int>(eNetMessageType::IMPORTANT_REPLY);
 }
 
 NetMessageImportantReply::~NetMessageImportantReply()
