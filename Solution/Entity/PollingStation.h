@@ -7,10 +7,9 @@ public:
 	static PollingStation* GetInstance();
 	static void Destroy();
 
-	void AddEntity(const Entity& anEntity);
+	void AddEntity(Entity* anEntity);
 	Entity* FindClosestEntityToEntity(const Entity& anEntity);
 	Entity* FindClosestEntity(const CU::Vector3<float>& aPosition, float aMaxRange);
-
 
 private:
 	PollingStation();
@@ -18,9 +17,8 @@ private:
 
 	static PollingStation* myInstance;
 
-	//CU::GrowingArray<const Entity&> myPlayers;
-	//CU::GrowingArray<const Entity&> myEnemies;
-
+	CU::GrowingArray<Entity*> myPlayers;
+	CU::GrowingArray<Entity*> myEnemies;
 };
 
 
