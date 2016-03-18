@@ -22,6 +22,7 @@ bool KillXMission::Update(float aDeltaTime)
 			myStartEvents.RemoveNonCyclicAtIndex(0);
 		}
 		return false;
+
 	}
 	else if (myEnemiesKilled <= myAmountToKill)
 	{
@@ -45,7 +46,6 @@ bool KillXMission::Update(float aDeltaTime)
 				}
 			}
 		}
-
 
 		return false;
 	}

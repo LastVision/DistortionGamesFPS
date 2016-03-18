@@ -119,16 +119,13 @@ void ServerLevel::HandleTrigger(Entity& aFirstEntity, Entity& aSecondEntity)
 		switch (firstTrigger->GetTriggerType())
 		{
 		case eTriggerType::UNLOCK:
-			//PostMaster::GetInstance()->SendMessage(EmitterMessage("Unlock", myActiveEntitiesMap[firstTrigger->GetValue()]->GetOrientation().GetPos()));
 			SharedNetworkManager::GetInstance()->AddMessage(NetMessageSetActive(false, firstTrigger->GetValue()));
 			myActiveEntitiesMap[firstTrigger->GetValue()]->GetComponent<PhysicsComponent>()->RemoveFromScene();
-			//myActiveEntitiesMap[firstTrigger->GetValue()]->RemoveFromScene();
 			// do "open" animation
 			break;
 		case eTriggerType::LOCK:
 			SharedNetworkManager::GetInstance()->AddMessage(NetMessageSetActive(true, firstTrigger->GetValue()));
 			myActiveEntitiesMap[firstTrigger->GetValue()]->GetComponent<PhysicsComponent>()->AddToScene();
-			//myActiveEntitiesMap[firstTrigger->GetValue()]->AddToScene();
 			// do "close" animation
 			break;
 		case eTriggerType::MISSION:

@@ -15,8 +15,6 @@ public:
 
 	void ReceiveNetworkMessage(const NetMessageRequestConnect& aMessage, const sockaddr_in& aSenderAddress) override;
 	void ReceiveNetworkMessage(const NetMessageLevelLoaded& aMessage, const sockaddr_in& aSenderAddress) override;
-	//void ReceiveMessage(const PostMasterNetAddPlayerMessage& aMessage);
-	//void ReceiveMessage(const PostMasterNetLevelLoadedMessage& aMessage);
 	void ReceiveMessage(const SetActiveMessage& aMessage) override;
 
 private:

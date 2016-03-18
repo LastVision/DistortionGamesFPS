@@ -8,7 +8,6 @@
 
 MissionManager::MissionManager(const std::string& aMissionXMLPath)
 {
-	//Read missionxml
 	LoadMissions(aMissionXMLPath);
 	PostMaster::GetInstance()->Subscribe(eMessageType::ENEMY_KILLED, this);
 }
@@ -31,7 +30,6 @@ void MissionManager::Update(float aDeltaTime)
 			myCurrentMission = nullptr;
 		}
 	}
-
 }
 
 void MissionManager::SetMission(int aId)
@@ -55,7 +53,7 @@ void MissionManager::LoadMissions(const std::string& aMissionXMLPath)
 	XMLReader reader;
 	reader.OpenDocument(aMissionXMLPath);
 	tinyxml2::XMLElement* rootElement = reader.ForceFindFirstChild("root");
-	//tinyxml2::XMLElement* missionElement = reader.FindFirstChild(rootElement, "Mission");
+
 	for (rootElement = reader.FindFirstChild(rootElement, "Mission"); rootElement != nullptr;
 		rootElement = reader.FindNextElement(rootElement, "Mission"))
 	{
@@ -74,8 +72,6 @@ void MissionManager::LoadMissions(const std::string& aMissionXMLPath)
 			KillXMission* mission = new KillXMission(missionType, enemiesToKill, shouldLoopMissionEvents);
 			myMissions[missionId] = mission;
 		}
-
-
 
 		tinyxml2::XMLElement* eventElement = reader.FindFirstChild(rootElement, "StartEvent");
 		for (eventElement = reader.FindFirstChild(eventElement, "Event"); eventElement != nullptr;
@@ -118,7 +114,6 @@ void MissionManager::LoadMissions(const std::string& aMissionXMLPath)
 	}
 
 	reader.CloseDocument();
-
 }
 
 eActionEventType MissionManager::GetType(const std::string& aType)
@@ -131,6 +126,7 @@ eActionEventType MissionManager::GetType(const std::string& aType)
 	{
 		return eActionEventType::LOCK;
 	}
+
 	DL_ASSERT("UNKNOWN event type");
 	return eActionEventType::LOCK;
 }
