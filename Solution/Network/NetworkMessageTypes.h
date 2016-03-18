@@ -24,6 +24,9 @@ enum class eNetMessageType
 	ENEMY_ON_HIT,
 	PLAYER_ON_DEATH,
 	ENEMY_ON_DEATH,
+
+	SET_ACTIVE,
+
 	_COUNT,
 };
 

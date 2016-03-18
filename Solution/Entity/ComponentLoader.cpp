@@ -12,6 +12,13 @@
 #include "XMLReader.h"
 #include "GameEnum.h"
 
+void ComponentLoader::LoadAIComponent(XMLReader& aDocument, tinyxml2::XMLElement* aSourceElement, AIComponentData& aOutputData)
+{
+	aDocument;
+	aSourceElement;
+	aOutputData.myExistsInEntity = true;
+}
+
 void ComponentLoader::LoadAnimationComponent(XMLReader& aDocument, tinyxml2::XMLElement* aSourceElement, AnimationComponentData& aOutputData)
 {
 	aOutputData.myExistsInEntity = true;
@@ -139,7 +146,7 @@ void ComponentLoader::LoadPhysicsComponent(XMLReader& aDocument, tinyxml2::XMLEl
 	}
 }
 
-void ComponentLoader::LoadProjectileComponent(XMLReader& aDocument, tinyxml2::XMLElement* aSourceElement, ProjectileComponentData& aOutputData)
+void ComponentLoader::LoadGrenadeComponent(XMLReader& aDocument, tinyxml2::XMLElement* aSourceElement, GrenadeComponentData& aOutputData)
 {
 	aDocument;
 	aSourceElement;
@@ -276,6 +283,10 @@ int ComponentLoader::ConvertToTriggerEnum(std::string aName)
 	else if (aName == "unlock")
 	{
 		return static_cast<int>(eTriggerType::UNLOCK);
+	}
+	else if (aName == "lock")
+	{
+		return static_cast<int>(eTriggerType::LOCK);
 	}
 
 	DL_ASSERT("[ComponentLoader] No trigger type in trigger component named " + aName);

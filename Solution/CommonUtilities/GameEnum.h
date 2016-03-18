@@ -19,7 +19,7 @@ enum eEntityType
 	EMPTY = -1,
 	UNIT = 1,
 	PROP = 2,
-	PROJECTILE = 4,
+	GRENADE = 4,
 	TRIGGER = 8,
 	PLAYER = 16,
 	EXPLOSION = 32,
@@ -33,6 +33,7 @@ enum class eTriggerType : int
 	HEALTH_PACK,
 	UPGRADE,
 	UNLOCK,
+	LOCK,
 	_COUNT,
 };
 
@@ -139,6 +140,7 @@ enum class eComponentType
 	FIRST_PERSON_RENDER,
 	PHYSICS,
 	UPGRADE,
+	AI,
 	_COUNT,
 };
 

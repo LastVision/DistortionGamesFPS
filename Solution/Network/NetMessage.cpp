@@ -3,8 +3,9 @@
 
 
 
-NetMessage::NetMessage()
+NetMessage::NetMessage(eNetMessageType aID)
 {
+	myID = static_cast<uint8_t>(aID);
 }
 
 

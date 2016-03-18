@@ -1,5 +1,6 @@
 #pragma once
 
+#include "AIComponentData.h"
 #include "AnimationComponentData.h"
 #include "GraphicsComponentData.h"
 #include "FirstPersonRenderComponentData.h"
@@ -7,7 +8,7 @@
 #include "HealthComponentData.h"
 #include "InputComponentData.h"
 #include "NetworkComponentData.h"
-#include "ProjectileComponentData.h"
+#include "GrenadeComponentData.h"
 #include "ShootingComponentData.h"
 #include "TriggerComponentData.h"
 #include "UpgradeComponentData.h"
@@ -15,13 +16,14 @@
 struct EntityData
 {
 	eEntityType myType;
+	AIComponentData myAIComponentData;
 	AnimationComponentData myAnimationData;
 	FirstPersonRenderComponentData myFirstPersonRenderData;
 	GraphicsComponentData myGraphicsData;
 	HealthComponentData myHealthData;
 	InputComponentData myInputData;
 	NetworkComponentData myNetworkData;
-	ProjectileComponentData myProjecileData;
+	GrenadeComponentData myProjecileData;
 	PhysicsComponentData myPhysicsData;
 	ShootingComponentData myShootingData;
 	TriggerComponentData myTriggerData;

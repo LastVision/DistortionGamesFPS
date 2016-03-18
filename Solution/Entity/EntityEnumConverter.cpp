@@ -10,9 +10,9 @@ namespace EntityEnumConverter
 		{
 			return eEntityType::PROP;
 		}
-		else if (aType == "projectile")
+		else if (aType == "grenade")
 		{
-			return eEntityType::PROJECTILE;
+			return eEntityType::GRENADE;
 		}
 		else if (aType == "unit")
 		{
@@ -29,6 +29,10 @@ namespace EntityEnumConverter
 		else if (aType == "explosion")
 		{
 			return eEntityType::EXPLOSION;
+		}
+		else if (aType == "door")
+		{
+			return eEntityType::PROP;
 		}
 
 		DL_ASSERT("The " + aType + " entity type is not supported, please tell Daniel about it.");

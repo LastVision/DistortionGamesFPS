@@ -1,12 +1,13 @@
 #pragma once
 #include "SerializeHelper.h"
 #include <stdint.h>
+#include "NetworkMessageTypes.h"
 #define SERIALIZE(aStream, aType) serialize(aType,aStream);
 #define DESERIALIZE(aStream, aType) aType = deserialize<decltype(aType)>(aStream)
 class NetMessage
 {
 public:
-	NetMessage();
+	NetMessage(eNetMessageType aID = eNetMessageType::NONE);
 	virtual ~NetMessage();
 
 	void PackMessage();

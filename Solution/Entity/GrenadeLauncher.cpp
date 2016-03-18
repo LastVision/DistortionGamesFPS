@@ -5,7 +5,7 @@
 #include "GrenadeLauncher.h"
 #include "PhysicsComponent.h"
 #include <PhysicsInterface.h>
-#include "ProjectileComponent.h"
+#include "GrenadeComponent.h"
 
 GrenadeLauncher::GrenadeLauncher(Prism::Scene* aScene, unsigned int aEntityGID)
 	: Weapon(eWeaponType::GRENADE_LAUNCHER, "grenadelauncher")
@@ -27,7 +27,7 @@ GrenadeLauncher::GrenadeLauncher(Prism::Scene* aScene, unsigned int aEntityGID)
 
 	for (int i = 0; i < myMaxGrenades; ++i)
 	{
-		Entity* bullet = EntityFactory::CreateEntity((100000 + i), eEntityType::PROJECTILE, myScene, true, CU::Vector3<float>());
+		Entity* bullet = EntityFactory::CreateEntity((100000 + i), eEntityType::GRENADE, myScene, true, CU::Vector3<float>());
 		myBullets.Add(bullet);
 		bullet->GetComponent<PhysicsComponent>()->Sleep();
 	}
@@ -60,7 +60,7 @@ void GrenadeLauncher::Update(float aDelta)
 {
 	for (int i = 0; i < myBullets.Size(); ++i)
 	{
-		if (myBullets[i]->GetComponent<ProjectileComponent>()->GetShouldBeUpdated() == true)
+		if (myBullets[i]->GetComponent<GrenadeComponent>()->GetShouldBeUpdated() == true)
 		{
 			myBullets[i]->Update(aDelta);
 		}
@@ -72,7 +72,7 @@ void GrenadeLauncher::ShootAtDirection(const CU::Matrix44<float>& aOrientation)
 {
 	myBullets[myCurrentBulletToUse]->Reset();
 	myBullets[myCurrentBulletToUse]->GetComponent<PhysicsComponent>()->TeleportToPosition(aOrientation.GetPos());
-	myBullets[myCurrentBulletToUse]->GetComponent<ProjectileComponent>()->Activate(myEntityGID);
+	myBullets[myCurrentBulletToUse]->GetComponent<GrenadeComponent>()->Activate(myEntityGID);
 	myBullets[myCurrentBulletToUse]->GetComponent<PhysicsComponent>()->AddForce(aOrientation.GetForward(), myForceStrength);
 	++myCurrentBulletToUse;
 

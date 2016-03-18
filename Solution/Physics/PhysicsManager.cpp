@@ -35,7 +35,7 @@
 
 namespace Prism
 {
-	PhysicsManager::PhysicsManager(std::function<void(PhysicsComponent*, PhysicsComponent*)> anOnTriggerCallback)
+	PhysicsManager::PhysicsManager(std::function<void(PhysicsComponent*, PhysicsComponent*)> anOnTriggerCallback, bool aIsServer)
 		: myPhysicsComponentCallbacks(4096)
 		, myOnTriggerCallback(anOnTriggerCallback)
 #ifdef THREAD_PHYSICS
@@ -61,10 +61,10 @@ namespace Prism
 		myPositionJobs[1].Init(256);
 		myOnTriggerResults[0].Init(64);
 		myOnTriggerResults[1].Init(64);
-		myActorsToAdd[0].Init(64);
-		myActorsToAdd[1].Init(64);
-		myActorsToRemove[0].Init(64);
-		myActorsToRemove[1].Init(64);
+		myActorsToAdd[0].Init(128);
+		myActorsToAdd[1].Init(128);
+		myActorsToRemove[0].Init(128);
+		myActorsToRemove[1].Init(128);
 		myActorsToSleep[0].Init(64);
 		myActorsToSleep[1].Init(64);
 		myActorsToWakeUp[0].Init(64);
@@ -128,20 +128,24 @@ namespace Prism
 		myScene->setSimulationEventCallback(this);
 
 #ifdef _DEBUG
-		if (myPhysicsSDK->getPvdConnectionManager())
+		if (aIsServer == true && SERVER_CONNECT_TO_DEBUGGER == true
+			|| aIsServer == false && SERVER_CONNECT_TO_DEBUGGER == false)
 		{
-			myPhysicsSDK->getPvdConnectionManager()->addHandler(*this);
+			if (myPhysicsSDK->getPvdConnectionManager())
+			{
+				myPhysicsSDK->getPvdConnectionManager()->addHandler(*this);
+			}
+
+			const char* pvdHostIp = "127.0.0.1";
+			int port = 5425;
+			unsigned int timeout = 100;
+			physx::debugger::PxVisualDebuggerConnectionFlags connectionFlags = physx::debugger::PxVisualDebuggerExt::getAllConnectionFlags();
+
+			myDebugConnection = physx::debugger::PxVisualDebuggerExt::createConnection(myPhysicsSDK->getPvdConnectionManager()
+				, pvdHostIp, port, timeout, connectionFlags);
+
+			myPhysicsSDK->getVisualDebugger()->setVisualDebuggerFlag(physx::PxVisualDebuggerFlag::eTRANSMIT_SCENEQUERIES, true);
 		}
-
-		const char* pvdHostIp = "127.0.0.1";
-		int port = 5425;
-		unsigned int timeout = 100;
-		physx::debugger::PxVisualDebuggerConnectionFlags connectionFlags = physx::debugger::PxVisualDebuggerExt::getAllConnectionFlags();
-
-		myDebugConnection = physx::debugger::PxVisualDebuggerExt::createConnection(myPhysicsSDK->getPvdConnectionManager()
-			, pvdHostIp, port, timeout, connectionFlags);
-
-		myPhysicsSDK->getVisualDebugger()->setVisualDebuggerFlag(physx::PxVisualDebuggerFlag::eTRANSMIT_SCENEQUERIES, true);
 #endif
 
 		myDefaultMaterial = myPhysicsSDK->createMaterial(0.5, 0.5, 0.5);

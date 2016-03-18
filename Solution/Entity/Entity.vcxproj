@@ -163,6 +163,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="AIComponent.h" />
+    <ClInclude Include="AIComponentData.h" />
     <ClInclude Include="AnimationComponent.h" />
     <ClInclude Include="AnimationComponentData.h" />
     <ClInclude Include="BehaviorNote.h" />
@@ -189,6 +190,8 @@
     <ClInclude Include="PhysicsComponent.h" />
     <ClInclude Include="Pistol.h" />
     <ClInclude Include="PollingStation.h" />
+    <ClInclude Include="GrenadeComponent.h" />
+    <ClInclude Include="GrenadeComponentData.h" />
     <ClInclude Include="ProjectileComponent.h" />
     <ClInclude Include="ProjectileComponentData.h" />
     <ClInclude Include="ShootingComponent.h" />
@@ -220,6 +223,7 @@
     <ClCompile Include="PhysicsComponent.cpp" />
     <ClCompile Include="Pistol.cpp" />
     <ClCompile Include="PollingStation.cpp" />
+    <ClCompile Include="GrenadeComponent.cpp" />
     <ClCompile Include="ProjectileComponent.cpp" />
     <ClCompile Include="ShootingComponent.cpp" />
     <ClCompile Include="Shotgun.cpp" />

@@ -23,8 +23,6 @@ ClientNetworkManager::ClientNetworkManager()
 	PostMaster::GetInstance()->Subscribe(eMessageType::NETWORK_SEND_POSITION, this);
 	PostMaster::GetInstance()->Subscribe(eMessageType::NETWORK_ON_DISCONNECT, this);
 	PostMaster::GetInstance()->Subscribe(eMessageType::NETWORK_ON_HIT, this);
-
-	
 }
 
 ClientNetworkManager::~ClientNetworkManager()
@@ -161,21 +159,6 @@ const CU::GrowingArray<OtherClients>& ClientNetworkManager::GetClients()
 	return myClients;
 }
 
-//void ClientNetworkManager::ReceiveMessage(const PostMasterNetSendPositionMessage& aMessage)
-//{
-//	AddMessage(NetMessagePosition(aMessage.myPosition, aMessage.myRotationY, aMessage.myGID));
-//}
-//
-//void ClientNetworkManager::ReceiveMessage(const PostMasterNetOnDisconnectMessage&)
-//{
-//	AddMessage(NetMessageDisconnect(myGID));
-//}
-//
-//void ClientNetworkManager::ReceiveMessage(const PostMasterNetOnHitMessage& aMessage)
-//{
-//	AddMessage(NetMessageOnHit(aMessage.myDamage, aMessage.myDamage));
-//}
-
 void ClientNetworkManager::DebugPrint()
 { 
 	DEBUG_PRINT(myGID);
@@ -225,19 +208,7 @@ void ClientNetworkManager::ReceiveNetworkMessage(const NetMessageOnJoin& aMessag
 		myClients.Add(OtherClients(aMessage.myName, aMessage.mySenderID));
 	}
 }
-//
-//void ClientNetworkManager::HandleMessage(const NetMessageAddEnemy& aMessage, const sockaddr_in&)
-//{
-//	PostMaster::GetInstance()->SendMessage(PostMasterNetAddEnemyMessage(aMessage.myPosition, aMessage.myGID));
-//		myClients.Add(OtherClients(aMessage.mySenderID));
-//}
-//}
 
-//void ClientNetworkManager::HandleMessage(const NetMessageStartGame& aMessage, const sockaddr_in&)
-//{
-//	PostMaster::GetInstance()->SendMessage(PostMasterNetStartGameMessage(aMessage.myLevelID));
-//}
-//*/
 void ClientNetworkManager::UpdateImportantMessages(float aDeltaTime)
 {
 	for (ImportantMessage& msg : myImportantMessagesBuffer)

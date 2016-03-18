@@ -19,6 +19,7 @@ public:
 	void CreateConnection(const std::string& aName, const sockaddr_in& aSender);
 
 
+	void ReceiveNetworkMessage(const NetMessagePosition& aMessage, const sockaddr_in& aSenderAddress) override;
 	void ReceiveNetworkMessage(const NetMessagePingRequest& aMessage, const sockaddr_in& aSenderAddress) override;
 	void ReceiveNetworkMessage(const NetMessagePingReply& aMessage, const sockaddr_in& aSenderAddress) override;
 	void ReceiveNetworkMessage(const NetMessageDisconnect& aMessage, const sockaddr_in& aSenderAddress) override;
@@ -34,10 +35,6 @@ private:
 	void UpdateImportantMessages(float aDeltaTime) override;
 
 	void AddImportantMessage(std::vector<char> aBuffer, unsigned int aImportantID) override;
-
-	//void ReceiveMessage(const PostMasterNetAddEnemyMessage& aMessage) override;
-	//void ReceiveMessage(const PostMasterNetSendPositionMessage& aMessage) override;
-	//void ReceiveMessage(const PostMasterNetOnDeathMessage& aMessage) override;
 
 	void ReceieveThread() override;
 	void SendThread() override;

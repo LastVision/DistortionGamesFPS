@@ -150,8 +150,8 @@ protected:
 
 	unsigned int myImportantID;
 
-private:
 	bool AlreadyReceived(const NetMessage& aMessage);
+private:
 	void UpdateImportantReceivedMessages(float aDelta);
 };
 

@@ -53,6 +53,7 @@ void ServerLevelFactory::ReadLevel(const std::string& aLevelPath)
 
 	LoadRooms(reader, levelElement);
 	LoadProps(reader, levelElement);
+	LoadDoors(reader, levelElement);
 	LoadUnits(reader, levelElement);
 	LoadTriggers(reader, levelElement);
 
@@ -94,6 +95,35 @@ void ServerLevelFactory::LoadProps(XMLReader& aReader, tinyxml2::XMLElement* aEl
 	}
 }
 
+void ServerLevelFactory::LoadDoors(XMLReader& aReader, tinyxml2::XMLElement* aElement)
+{
+	for (tinyxml2::XMLElement* entityElement = aReader.FindFirstChild(aElement, "door"); entityElement != nullptr;
+		entityElement = aReader.FindNextElement(entityElement, "door"))
+	{
+		std::string propType;
+		aReader.ForceReadAttribute(entityElement, "doorType", propType);
+		propType = CU::ToLower(propType);
+
+		CU::Vector3f propPosition;
+		CU::Vector3f propRotation;
+		CU::Vector3f propScale;
+		unsigned int gid(UINT32_MAX);
+
+		ReadGID(aReader, entityElement, gid);
+		ReadOrientation(aReader, entityElement, propPosition, propRotation, propScale);
+
+		propRotation.x = CU::Math::DegreeToRad(propRotation.x);
+		propRotation.y = CU::Math::DegreeToRad(propRotation.y);
+		propRotation.z = CU::Math::DegreeToRad(propRotation.z);
+
+		Entity* newEntity = EntityFactory::CreateEntity(gid, eEntityType::PROP, propType, nullptr, false
+			, propPosition, propRotation, propScale);
+		newEntity->Reset();
+
+		myCurrentLevel->AddEntity(newEntity);
+	}
+}
+
 void ServerLevelFactory::LoadUnits(XMLReader& aReader, tinyxml2::XMLElement* aElement)
 {
 	for (tinyxml2::XMLElement* entityElement = aReader.FindFirstChild(aElement, "unit"); entityElement != nullptr;
@@ -102,6 +132,7 @@ void ServerLevelFactory::LoadUnits(XMLReader& aReader, tinyxml2::XMLElement* aEl
 		std::string unitType;
 		aReader.ForceReadAttribute(entityElement, "unitType", unitType);
 		unitType = CU::ToLower(unitType);
+		unitType += "server";
 
 		CU::Vector3f unitPosition;
 		CU::Vector3f unitRotation;

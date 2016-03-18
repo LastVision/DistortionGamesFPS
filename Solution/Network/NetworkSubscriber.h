@@ -13,6 +13,7 @@ class NetMessagePosition;
 class NetMessageRequestConnect;
 class NetMessageRequestLevel;
 class NetMessageRequestStartGame;
+class NetMessageSetActive;
 class NetMessageStartGame;
 
 class NetworkSubscriber
@@ -34,5 +35,6 @@ public:
 	virtual void ReceiveNetworkMessage(const NetMessageRequestConnect& aMessage, const sockaddr_in& aSenderAddress);
 	virtual void ReceiveNetworkMessage(const NetMessageRequestLevel& aMessage, const sockaddr_in& aSenderAddress);
 	virtual void ReceiveNetworkMessage(const NetMessageRequestStartGame& aMessage, const sockaddr_in& aSenderAddress);
+	virtual void ReceiveNetworkMessage(const NetMessageSetActive& aMessage, const sockaddr_in& aSenderAddress);
 	virtual void ReceiveNetworkMessage(const NetMessageStartGame& aMessage, const sockaddr_in& aSenderAddress);
 };
