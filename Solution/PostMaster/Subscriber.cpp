@@ -7,7 +7,7 @@ Subscriber::~Subscriber(){}
 
 void Subscriber::ReceiveMessage(const FadeMessage&){}
 void Subscriber::ReceiveMessage(const EmitterMessage&){}
-void Subscriber::ReceiveMessage(const EnemyKilled&){}
+void Subscriber::ReceiveMessage(const EnemyKilledMessage&){}
 void Subscriber::ReceiveMessage(const GameStateMessage&){}
 void Subscriber::ReceiveMessage(const Message&){}
 void Subscriber::ReceiveMessage(const OnClickMessage&){}

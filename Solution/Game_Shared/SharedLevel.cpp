@@ -1,12 +1,10 @@
 #include "stdafx.h"
 #include <CollisionNote.h>
 #include <DamageNote.h>
-#include <EnemyKilledMessage.h>
 #include <Entity.h>
 #include <EntityFactory.h>
 #include <EmitterMessage.h>
 #include <NetMessageSetActive.h>
-#include <PostMaster.h>
 #include <PhysicsInterface.h>
 #include <PhysicsComponent.h>
 #include "SharedLevel.h"
@@ -81,7 +79,6 @@ void SharedLevel::CleanUp()
 		{
 			myInactiveEnemies.Add(myActiveEnemies[i]);
 			myActiveEnemies.RemoveCyclicAtIndex(i);
-			PostMaster::GetInstance()->SendMessage(EnemyKilledMessage());
 		}
 	}
 

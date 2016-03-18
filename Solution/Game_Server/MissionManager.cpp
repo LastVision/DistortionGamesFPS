@@ -1,17 +1,21 @@
 #include "stdafx.h"
+#include <EnemyKilledMessage.h>
 #include "KillXMission.h"
 #include "Mission.h"
 #include "MissionManager.h"
+#include <PostMaster.h>
 #include <XMLReader.h>
 
 MissionManager::MissionManager(const std::string& aMissionXMLPath)
 {
 	//Read missionxml
 	LoadMissions(aMissionXMLPath);
+	PostMaster::GetInstance()->Subscribe(eMessageType::ENEMY_KILLED, this);
 }
 
 MissionManager::~MissionManager()
 {
+	PostMaster::GetInstance()->UnSubscribe(eMessageType::ENEMY_KILLED, this);
 	for (auto it = myMissions.begin(); it != myMissions.end(); ++it)
 	{
 		SAFE_DELETE(it->second);
@@ -35,11 +39,14 @@ void MissionManager::SetMission(int aId)
 	myCurrentMission = myMissions[aId];
 }
 
-void MissionManager::ReceiveMessage(const EnemyKilled&)
+void MissionManager::ReceiveMessage(const EnemyKilledMessage&)
 {
-	if (myCurrentMission->GetMissionType() == "killx")
+	if (myCurrentMission != nullptr)
 	{
-		myCurrentMission->AddValue(1);
+		if (myCurrentMission->GetMissionType() == "killx")
+		{
+			myCurrentMission->AddValue(1);
+		}
 	}
 }
 

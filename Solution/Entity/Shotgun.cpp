@@ -3,10 +3,12 @@
 #include "DamageNote.h"
 #include "Entity.h"
 #include <EmitterMessage.h>
+#include <NetMessageOnHit.h>
 #include <PostMaster.h>
 #include <PhysicsInterface.h>
 #include "PhysicsComponent.h"
 #include "Shotgun.h"
+#include <SharedNetworkManager.h>
 #include <XMLReader.h>
 
 Shotgun::Shotgun()
@@ -68,8 +70,8 @@ void Shotgun::HandleRaycast(PhysicsComponent* aComponent, const CU::Vector3<floa
 		{
 			aComponent->AddForce(aDirection, myForceStrength);
 		}
-		aComponent->GetEntity().SendNote<DamageNote>(DamageNote(myDamage));
-
+		//aComponent->GetEntity().SendNote<DamageNote>(DamageNote(myDamage));
+		SharedNetworkManager::GetInstance()->AddMessage(NetMessageOnHit(eNetMessageType::ENEMY_ON_HIT, float(myDamage), aComponent->GetEntity().GetGID()));
 		PostMaster::GetInstance()->SendMessage(EmitterMessage("Shotgun", aHitPosition));
 	}
 }

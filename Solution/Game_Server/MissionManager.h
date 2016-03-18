@@ -12,7 +12,7 @@ public:
 
 	void SetMission(int aId);
 
-	void ReceiveMessage(const EnemyKilled& aMessage) override;
+	void ReceiveMessage(const EnemyKilledMessage& aMessage) override;
 
 private:
 	eActionEventType GetType(const std::string& aType);
