@@ -81,6 +81,9 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="KillXMission.h" />
+    <ClInclude Include="Mission.h" />
+    <ClInclude Include="MissionManager.h" />
     <ClInclude Include="ServerGame.h" />
     <ClInclude Include="ServerInGameState.h" />
     <ClInclude Include="ServerLevel.h" />
@@ -94,6 +97,9 @@
     <ClInclude Include="stdafx.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="KillXMission.cpp" />
+    <ClCompile Include="Mission.cpp" />
+    <ClCompile Include="MissionManager.cpp" />
     <ClCompile Include="ServerGame.cpp" />
     <ClCompile Include="ServerInGameState.cpp" />
     <ClCompile Include="ServerLevel.cpp" />
