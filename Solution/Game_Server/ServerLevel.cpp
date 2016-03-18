@@ -3,16 +3,15 @@
 
 #include <Entity.h>
 #include <EntityFactory.h>
-#include <NetMessageAddEnemy.h>
 #include <NetMessageRequestConnect.h>
 #include <NetMessageLevelLoaded.h>
 #include <NetworkComponent.h>
-#include <NetMessageAddEnemy.h>
 #include <PhysicsInterface.h>
 #include "ServerNetworkManager.h"
 
 ServerLevel::ServerLevel()
 	: myLoadedClients(16)
+	, myAllClientsLoaded(false)
 {
 	ServerNetworkManager::GetInstance()->Subscribe(eNetMessageType::ON_CONNECT, this);
 	ServerNetworkManager::GetInstance()->Subscribe(eNetMessageType::LEVEL_LOADED, this);
@@ -37,9 +36,12 @@ void ServerLevel::Init()
 
 void ServerLevel::Update(const float aDeltaTime)
 {
-	__super::Update(aDeltaTime);
+	if (myAllClientsLoaded == true && Prism::PhysicsInterface::GetInstance()->GetInitDone() == true)
+	{
+		__super::Update(aDeltaTime);
 
-	Prism::PhysicsInterface::GetInstance()->EndFrame();
+		Prism::PhysicsInterface::GetInstance()->EndFrame();
+	}
 }
 
 void ServerLevel::ReceiveNetworkMessage(const NetMessageRequestConnect&, const sockaddr_in&)
@@ -59,9 +61,11 @@ void ServerLevel::ReceiveNetworkMessage(const NetMessageLevelLoaded& aMessage, c
 
 	if (ServerNetworkManager::GetInstance()->ListContainsAllClients(myLoadedClients) == true)
 	{
-		for (Entity* e : myActiveEnemies)
-		{
-			ServerNetworkManager::GetInstance()->AddMessage(NetMessageAddEnemy(e->GetOrientation().GetPos(), e->GetGID()));
-		}
+		myAllClientsLoaded = true;
+
+		//for (Entity* e : myActiveEnemies)
+		//{
+		//	ServerNetworkManager::GetInstance()->AddMessage(NetMessageAddEnemy(e->GetOrientation().GetPos(), e->GetGID()));
+		//}
 	}
 }

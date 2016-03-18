@@ -11,6 +11,7 @@ namespace Prism
 	{
 	public:
 		PointLight(unsigned int aGID);
+		~PointLight();
 		void Render(const Camera& aCamera);
 		void Update();
 

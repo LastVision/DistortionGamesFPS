@@ -39,9 +39,6 @@
     <ClCompile Include="ServerNetwork.cpp">
       <Filter>Interfaces</Filter>
     </ClCompile>
-    <ClCompile Include="NetMessageAddEnemy.cpp">
-      <Filter>Messages</Filter>
-    </ClCompile>
     <ClCompile Include="NetMessageOnHit.cpp">
       <Filter>Messages</Filter>
     </ClCompile>
@@ -110,9 +107,6 @@
     </ClInclude>
     <ClInclude Include="ServerNetwork.h">
       <Filter>Interfaces</Filter>
-    </ClInclude>
-    <ClInclude Include="NetMessageAddEnemy.h">
-      <Filter>Messages</Filter>
     </ClInclude>
     <ClInclude Include="NetMessageOnHit.h">
       <Filter>Messages</Filter>

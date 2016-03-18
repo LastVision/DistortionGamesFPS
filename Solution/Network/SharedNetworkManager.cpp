@@ -12,7 +12,6 @@
 #include "NetMessagePingRequest.h"
 #include "NetMessagePingReply.h"
 #include "NetMessagePosition.h"
-#include "NetMessageAddEnemy.h"
 #include "NetMessageOnHit.h"
 #include "NetMessageOnDeath.h"
 #include "NetMessageStartGame.h"
@@ -280,9 +279,6 @@ void SharedNetworkManager::HandleMessage()
 			break;
 		case eNetMessageType::POSITION:
 			UnpackAndHandle(NetMessagePosition(), buffer);
-			break;
-		case eNetMessageType::ADD_ENEMY:
-			UnpackAndHandle(NetMessageAddEnemy(), buffer);
 			break;
 		case eNetMessageType::PLAYER_ON_HIT:
 		case eNetMessageType::ENEMY_ON_HIT:

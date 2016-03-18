@@ -4,7 +4,6 @@
 NetworkSubscriber::NetworkSubscriber(){}
 NetworkSubscriber::~NetworkSubscriber(){}
 
-void NetworkSubscriber::ReceiveNetworkMessage(const NetMessageAddEnemy&, const sockaddr_in&){};
 void NetworkSubscriber::ReceiveNetworkMessage(const NetMessageConnectReply&, const sockaddr_in&){};
 void NetworkSubscriber::ReceiveNetworkMessage(const NetMessageDisconnect&, const sockaddr_in&){};
 void NetworkSubscriber::ReceiveNetworkMessage(const NetMessageImportantReply&, const sockaddr_in&){};
