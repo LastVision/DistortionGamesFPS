@@ -23,6 +23,7 @@ public:
 	~ClientLevel();
 
 	void Init() override;
+	void SetMinMax(const CU::Vector3<float>& aMinPoint, const CU::Vector3<float>& aMaxPoint);
 
 	void Update(const float aDeltaTime) override;
 	void Render();
@@ -50,6 +51,9 @@ private:
 	Entity* myPlayer;
 	EmitterManager* myEmitterManager;
 	bool myInitDone;
+
+	CU::Vector3<float> myMinPoint;
+	CU::Vector3<float> myMaxPoint;
 };
 
 inline Prism::Scene* ClientLevel::GetScene()

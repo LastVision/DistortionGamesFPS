@@ -23,6 +23,18 @@ namespace Prism
 		myCubemap = myEffect->GetEffect()->GetVariableByName("CubeMap")->AsShaderResource();
 		myAmbientMultiplier = myEffect->GetEffect()->GetVariableByName("AmbientMultiplier")->AsScalar();
 
+		mycAr = myEffect->GetEffect()->GetVariableByName("cAr")->AsShaderResource();
+		mycAg = myEffect->GetEffect()->GetVariableByName("cAg")->AsShaderResource();
+		mycAb = myEffect->GetEffect()->GetVariableByName("cAb")->AsShaderResource();
+		mycBr = myEffect->GetEffect()->GetVariableByName("cBr")->AsShaderResource();
+		mycBg = myEffect->GetEffect()->GetVariableByName("cBg")->AsShaderResource();
+		mycBb = myEffect->GetEffect()->GetVariableByName("cBb")->AsShaderResource();
+		mycC = myEffect->GetEffect()->GetVariableByName("cC")->AsShaderResource();
+
+		myInvertedProjection = myEffect->GetEffect()->GetVariableByName("InvertedProjection")->AsMatrix();
+		myNotInvertedView = myEffect->GetEffect()->GetVariableByName("NotInvertedView")->AsMatrix();
+
+
 #ifdef USE_LIGHT
 		myAmbientMultiplier->SetFloat(0.05f);
 #else
@@ -69,11 +81,13 @@ namespace Prism
 		InitFullscreenQuad();
 
 		myCubemap = TextureContainer::GetInstance()->GetTexture("Data/Resource/Texture/CubeMap/T_cubemap_level01.dds");
+		myCubeMapGenerator = new CubeMapGenerator();
 	}
 
 
 	DeferredRenderer::~DeferredRenderer()
 	{
+		SAFE_DELETE(myCubeMapGenerator);
 		SAFE_DELETE(myGBufferData.myAlbedoTexture);
 		SAFE_DELETE(myGBufferData.myNormalTexture);
 		SAFE_DELETE(myGBufferData.myDepthTexture);
@@ -112,6 +126,33 @@ namespace Prism
 		RenderDeferred(aScene);
 	}
 
+	void DeferredRenderer::RenderCubeMap(Scene* aScene, ID3D11RenderTargetView* aRenderTarget, ID3D11DepthStencilView* aDepth,
+		D3D11_VIEWPORT* aViewPort)
+	{
+		Engine::GetInstance()->GetContex()->RSSetViewports(1, aViewPort);
+
+		ID3D11DeviceContext* context = Engine::GetInstance()->GetContex();
+		context->ClearRenderTargetView(myGBufferData.myAlbedoTexture->GetRenderTargetView(), myClearColor);
+		context->ClearRenderTargetView(myGBufferData.myNormalTexture->GetRenderTargetView(), myClearColor);
+		context->ClearRenderTargetView(myGBufferData.myDepthTexture->GetRenderTargetView(), myClearColor);
+
+		context->ClearDepthStencilView(myDepthStencilTexture->GetDepthStencilView(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
+
+		ID3D11RenderTargetView* targets[3];
+		targets[0] = myGBufferData.myAlbedoTexture->GetRenderTargetView();
+		targets[1] = myGBufferData.myNormalTexture->GetRenderTargetView();
+		targets[2] = myGBufferData.myDepthTexture->GetRenderTargetView();
+
+		context->OMSetRenderTargets(3, targets
+			, myDepthStencilTexture->GetDepthStencilView());
+
+		aScene->Render();
+
+		ActivateBuffers();
+
+		RenderDeferred(aScene, aRenderTarget, aDepth, aViewPort);
+	}
+
 	void DeferredRenderer::OnResize(float aWidth, float aHeight)
 	{
 		myGBufferData.myAlbedoTexture->Resize(aWidth, aHeight);
@@ -121,6 +162,12 @@ namespace Prism
 		myGBufferData.myAmbientOcclusionTexture->Resize(aWidth, aHeight);
 		myGBufferData.myRoughnessTexture->Resize(aWidth, aHeight);
 		myDepthStencilTexture->Resize(aWidth, aHeight);
+	}
+
+	void DeferredRenderer::GenerateSHData(Scene* aScene
+		, const CU::Vector3<float>& aMinPoint, const CU::Vector3<float>& aMaxPoint)
+	{
+		myCubeMapGenerator->GenerateSHTextures(this, aScene, mySHTextures, aMinPoint, aMaxPoint);
 	}
 
 	void DeferredRenderer::InitFullscreenQuad()
@@ -195,32 +242,26 @@ namespace Prism
 		}
 	}
 
-	void DeferredRenderer::RenderDeferred(Scene* aScene)
+	void DeferredRenderer::RenderDeferred(Scene* aScene, ID3D11RenderTargetView* aTarget, ID3D11DepthStencilView* aDepth,
+		D3D11_VIEWPORT* aViewPort)
 	{
-		Engine::GetInstance()->RestoreViewPort();
 		ID3D11DeviceContext* context = Engine::GetInstance()->GetContex();
 
-		ID3D11RenderTargetView* backbuffer = Engine::GetInstance()->GetBackbuffer();
-		context->ClearRenderTargetView(backbuffer, myClearColor);
-		context->ClearDepthStencilView(Engine::GetInstance()->GetDepthView(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
-		context->OMSetRenderTargets(1, &backbuffer
-			, Engine::GetInstance()->GetDepthView());
+		ID3D11RenderTargetView* renderTarget = Engine::GetInstance()->GetBackbuffer();
+		ID3D11DepthStencilView* depth = myDepthStencilTexture->GetDepthStencilView();
+		
+		Engine::GetInstance()->RestoreViewPort();
+		if (aTarget == nullptr && aDepth == nullptr)
+		{
+			RenderAmbientPass(aScene);
+		}
+		else
+		{
+			renderTarget = aTarget;
+			depth = aDepth;
+		}
 
-		myAmbientPass.myAlbedo->SetResource(myGBufferData.myAlbedoTexture->GetShaderView());
-		myAmbientPass.myNormal->SetResource(myGBufferData.myNormalTexture->GetShaderView());
-		myAmbientPass.myDepth->SetResource(myGBufferData.myDepthTexture->GetShaderView());
-		myAmbientPass.myCubemap->SetResource(myCubemap->GetShaderView());
-		myAmbientPass.myEffect->SetCameraPosition(aScene->GetCamera()->GetOrientation().GetPos());
-
-		Render(myAmbientPass.myEffect);
-
-		myAmbientPass.myAlbedo->SetResource(nullptr);
-		myAmbientPass.myNormal->SetResource(nullptr);
-		myAmbientPass.myDepth->SetResource(nullptr);
-		myAmbientPass.myCubemap->SetResource(nullptr);
-
-		context->OMSetRenderTargets(1, &backbuffer
-			, myDepthStencilTexture->GetDepthStencilView());
+		context->OMSetRenderTargets(1, &renderTarget, depth);
 
 #ifdef USE_LIGHT
 		aScene->UpdateLights();
@@ -263,6 +304,60 @@ namespace Prism
 		myLightPass.myRoughness->SetResource(nullptr);
 	}
 
+	void DeferredRenderer::RenderAmbientPass(Scene* aScene)
+	{
+		ID3D11DeviceContext* context = Engine::GetInstance()->GetContex();
+
+		ID3D11RenderTargetView* backbuffer = Engine::GetInstance()->GetBackbuffer();
+		context->ClearRenderTargetView(backbuffer, myClearColor);
+		context->ClearDepthStencilView(Engine::GetInstance()->GetDepthView(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
+		context->OMSetRenderTargets(1, &backbuffer
+			, Engine::GetInstance()->GetDepthView());
+
+		SetAmbientTextures(false);
+		myAmbientPass.myEffect->SetCameraPosition(aScene->GetCamera()->GetOrientation().GetPos());
+		myAmbientPass.myInvertedProjection->SetMatrix(&CU::InverseReal(aScene->GetCamera()->GetProjection()).myMatrix[0]);
+		myAmbientPass.myNotInvertedView->SetMatrix(&aScene->GetCamera()->GetOrientation().myMatrix[0]);
+
+		Render(myAmbientPass.myEffect);
+
+		SetAmbientTextures(true);
+	}
+
+	void DeferredRenderer::SetAmbientTextures(bool aClearTextures)
+	{
+		if (aClearTextures == false)
+		{
+			myAmbientPass.myAlbedo->SetResource(myGBufferData.myAlbedoTexture->GetShaderView());
+			myAmbientPass.myNormal->SetResource(myGBufferData.myNormalTexture->GetShaderView());
+			myAmbientPass.myDepth->SetResource(myGBufferData.myDepthTexture->GetShaderView());
+			myAmbientPass.myCubemap->SetResource(myCubemap->GetShaderView());
+
+			myAmbientPass.mycAr->SetResource(mySHTextures.cAr->GetShaderView());
+			myAmbientPass.mycAg->SetResource(mySHTextures.cAg->GetShaderView());
+			myAmbientPass.mycAb->SetResource(mySHTextures.cAb->GetShaderView());
+			myAmbientPass.mycBr->SetResource(mySHTextures.cBr->GetShaderView());
+			myAmbientPass.mycBg->SetResource(mySHTextures.cBg->GetShaderView());
+			myAmbientPass.mycBb->SetResource(mySHTextures.cBb->GetShaderView());
+			myAmbientPass.mycC->SetResource(mySHTextures.cC->GetShaderView());
+		}
+		else
+		{
+			myAmbientPass.myAlbedo->SetResource(nullptr);
+			myAmbientPass.myNormal->SetResource(nullptr);
+			myAmbientPass.myDepth->SetResource(nullptr);
+			myAmbientPass.myCubemap->SetResource(nullptr);
+
+			myAmbientPass.mycAr->SetResource(nullptr);
+			myAmbientPass.mycAg->SetResource(nullptr);
+			myAmbientPass.mycAb->SetResource(nullptr);
+			myAmbientPass.mycBr->SetResource(nullptr);
+			myAmbientPass.mycBg->SetResource(nullptr);
+			myAmbientPass.mycBb->SetResource(nullptr);
+			myAmbientPass.mycC->SetResource(nullptr);
+		}
+	}
+
 	void DeferredRenderer::SetupAmbientData()
 	{
 		myAmbientPass.myEffect = EffectContainer::GetInstance()->GetEffect(
@@ -270,23 +365,6 @@ namespace Prism
 
 		myAmbientPass.OnEffectLoad();
 		myAmbientPass.myEffect->AddListener(&myAmbientPass);
-
-		/*myAmbientPass.myAlbedo
-			= myAmbientPass.myEffect->GetEffect()->GetVariableByName("AlbedoTexture")->AsShaderResource();
-		myAmbientPass.myNormal
-			= myAmbientPass.myEffect->GetEffect()->GetVariableByName("NormalTexture")->AsShaderResource();
-		myAmbientPass.myDepth
-			= myAmbientPass.myEffect->GetEffect()->GetVariableByName("DepthTexture")->AsShaderResource();
-		myAmbientPass.myCubemap
-			= myAmbientPass.myEffect->GetEffect()->GetVariableByName("CubeMap")->AsShaderResource();
-		myAmbientPass.myAmbientMultiplier
-			= myAmbientPass.myEffect->GetEffect()->GetVariableByName("AmbientMultiplier")->AsScalar();
-
-#ifdef USE_LIGHT
-		myAmbientPass.myAmbientMultiplier->SetFloat(0.05f);
-#else
-		myAmbientPass.myAmbientMultiplier->SetFloat(1.f);
-#endif*/
 	}
 
 	void DeferredRenderer::SetupLightData()
@@ -296,25 +374,6 @@ namespace Prism
 
 		myLightPass.OnEffectLoad();
 		myLightPass.myEffect->AddListener(&myLightPass);
-
-		/*myLightPass.myAlbedo
-			= myLightPass.myEffect->GetEffect()->GetVariableByName("AlbedoTexture")->AsShaderResource();
-		myLightPass.myNormal
-			= myLightPass.myEffect->GetEffect()->GetVariableByName("NormalTexture")->AsShaderResource();
-		myLightPass.myDepth
-			= myLightPass.myEffect->GetEffect()->GetVariableByName("DepthTexture")->AsShaderResource();
-		myLightPass.myMetalness
-			= myLightPass.myEffect->GetEffect()->GetVariableByName("MetalnessTexture")->AsShaderResource();
-		myLightPass.myAmbientOcclusion
-			= myLightPass.myEffect->GetEffect()->GetVariableByName("AOTexture")->AsShaderResource();
-		myLightPass.myRoughness
-			= myLightPass.myEffect->GetEffect()->GetVariableByName("RoughnessTexture")->AsShaderResource();
-
-		myLightPass.myPointLightVariable
-			= myLightPass.myEffect->GetEffect()->GetVariableByName("PointLights");
-
-		myLightPass.myInvertedProjection = myLightPass.myEffect->GetEffect()->GetVariableByName("InvertedProjection")->AsMatrix();
-		myLightPass.myNotInvertedView = myLightPass.myEffect->GetEffect()->GetVariableByName("NotInvertedView")->AsMatrix();*/
 	}
 
 	void DeferredRenderer::SetupGBufferData()

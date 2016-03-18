@@ -30,6 +30,7 @@
 
 #include "ClientNetworkManager.h"
 #include "DeferredRenderer.h"
+#include <CubeMapGenerator.h>
 #include <PointLight.h>
 
 #include <PhysicsInterface.h>
@@ -111,13 +112,25 @@ void ClientLevel::Init()
 	Prism::Audio::AudioInterface::GetInstance()->PostEvent("PlaySecondLayer", 0);
 }
 
+void ClientLevel::SetMinMax(const CU::Vector3<float>& aMinPoint, const CU::Vector3<float>& aMaxPoint)
+{
+	myMinPoint = aMinPoint;
+	myMaxPoint = aMaxPoint;
+}
+
 void ClientLevel::Update(const float aDeltaTime)
 {
 	if (myInitDone == false && Prism::PhysicsInterface::GetInstance()->GetInitDone() == true)
 	{
 		myInitDone = true;
 		ClientNetworkManager::GetInstance()->AddMessage(NetMessageLevelLoaded());
+
+		SET_RUNTIME(false);
+		myDeferredRenderer->GenerateSHData(myScene, myMinPoint, myMaxPoint);
+		RESET_RUNTIME;
 	}
+
+	
 
 	SharedLevel::Update(aDeltaTime);
 	myPlayer->GetComponent<FirstPersonRenderComponent>()->UpdateCoOpPositions(myPlayers);
@@ -163,13 +176,16 @@ void ClientLevel::Update(const float aDeltaTime)
 
 void ClientLevel::Render()
 {
-	myDeferredRenderer->Render(myScene);
-	Prism::DebugDrawer::GetInstance()->RenderLinesToScreen(*myPlayer->GetComponent<InputComponent>()->GetCamera());
-	//myScene->Render();
-	//myDeferredRenderer->Render(myScene);
-	myEmitterManager->RenderEmitters();
-	myPlayer->GetComponent<FirstPersonRenderComponent>()->Render();
-	//myPlayer->GetComponent<ShootingComponent>()->Render();
+	if (myInitDone == true)
+	{
+		myDeferredRenderer->Render(myScene);
+		Prism::DebugDrawer::GetInstance()->RenderLinesToScreen(*myPlayer->GetComponent<InputComponent>()->GetCamera());
+		//myScene->Render();
+		//myDeferredRenderer->Render(myScene);
+		myEmitterManager->RenderEmitters();
+		myPlayer->GetComponent<FirstPersonRenderComponent>()->Render();
+		//myPlayer->GetComponent<ShootingComponent>()->Render();
+	}
 }
 
 void ClientLevel::ReceiveNetworkMessage(const NetMessageOnJoin& aMessage, const sockaddr_in& aSenderAddress)
@@ -274,7 +290,7 @@ void ClientLevel::DebugMusic()
 
 void ClientLevel::CreatePlayers()
 {
-	myPlayer = EntityFactory::GetInstance()->CreateEntity(ClientNetworkManager::GetInstance()->GetGID(), eEntityType::UNIT, "localplayer", myScene, true, CU::Vector3<float>());
+	myPlayer = EntityFactory::GetInstance()->CreateEntity(ClientNetworkManager::GetInstance()->GetGID(), eEntityType::UNIT, "localplayer", myScene, true, CU::Vector3<float>(0.f, 2.f, 10.f));
 
 	myScene->SetCamera(*myPlayer->GetComponent<InputComponent>()->GetCamera());
 

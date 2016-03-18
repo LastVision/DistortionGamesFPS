@@ -40,6 +40,7 @@ ClientLevel* ClientLevelFactory::LoadCurrentLevel()
 	myCurrentLevel = new ClientLevel();
 	ReadLevel(myLevelPaths[myCurrentID]);
 	myCurrentLevel->Init();
+	myCurrentLevel->SetMinMax(myMinPoint, myMaxPoint);
 #ifdef THREAD_PHYSICS
 	Prism::PhysicsInterface::GetInstance()->InitThread();
 #endif

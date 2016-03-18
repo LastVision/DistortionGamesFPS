@@ -1,7 +1,9 @@
 #pragma once
 #include "BaseModel.h"
 #include "EffectListener.h"
+#include "CubeMapGenerator.h"
 
+struct D3D11_VIEWPORT;
 struct ID3DX11EffectVariable;
 struct ID3DX11EffectScalarVariable;
 struct ID3DX11EffectShaderResourceVariable;
@@ -31,6 +33,17 @@ namespace Prism
 		ID3DX11EffectShaderResourceVariable* myDepth = nullptr;
 		ID3DX11EffectShaderResourceVariable* myCubemap = nullptr;
 		ID3DX11EffectScalarVariable* myAmbientMultiplier = nullptr;
+		ID3DX11EffectMatrixVariable* myInvertedProjection;
+		ID3DX11EffectMatrixVariable* myNotInvertedView;
+
+		ID3DX11EffectShaderResourceVariable* mycAr = nullptr;
+		ID3DX11EffectShaderResourceVariable* mycAg = nullptr;
+		ID3DX11EffectShaderResourceVariable* mycAb = nullptr;
+		ID3DX11EffectShaderResourceVariable* mycBr = nullptr;
+		ID3DX11EffectShaderResourceVariable* mycBg = nullptr;
+		ID3DX11EffectShaderResourceVariable* mycBb = nullptr;
+		ID3DX11EffectShaderResourceVariable* mycC = nullptr;
+
 	};
 
 	struct LightPass : public EffectListener
@@ -58,7 +71,12 @@ namespace Prism
 		~DeferredRenderer();
 
 		void Render(Scene* aScene);
+		void RenderCubeMap(Scene* aScene, ID3D11RenderTargetView* aRenderTarget, ID3D11DepthStencilView* aDepth,
+			D3D11_VIEWPORT* aViewPort);
 		void OnResize(float aWidth, float aHeight);
+
+		void GenerateSHData(Scene* aScene
+			, const CU::Vector3<float>& aMinPoint, const CU::Vector3<float>& aMaxPoint);
 
 	private:
 		struct GBufferData
@@ -76,14 +94,18 @@ namespace Prism
 		void CreateVertices();
 		void ActivateBuffers();
 		void Render(Effect* aEffect);
-		void RenderDeferred(Scene* aScene);
+		void RenderDeferred(Scene* aScene, ID3D11RenderTargetView* aTarget = nullptr, ID3D11DepthStencilView* aDepth = nullptr,
+			D3D11_VIEWPORT* aViewPort = nullptr);
 		void RenderPointLights(Scene* aScene);
+		void RenderAmbientPass(Scene* aScene);
+		void SetAmbientTextures(bool aClearTextures);
 
 		void SetupAmbientData();
 		void SetupLightData();
 		void SetupGBufferData();
 
-		
+		CubeMapGenerator* myCubeMapGenerator;
+		SHTextures mySHTextures;
 		Texture* myDepthStencilTexture;
 		Texture* myCubemap;
 		RenderToScreenData myRenderToScreenData;
