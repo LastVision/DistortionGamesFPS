@@ -166,7 +166,10 @@
     <ClInclude Include="AIComponentData.h" />
     <ClInclude Include="AnimationComponent.h" />
     <ClInclude Include="AnimationComponentData.h" />
+    <ClInclude Include="ArriveBehavior.h" />
+    <ClInclude Include="Behavior.h" />
     <ClInclude Include="BehaviorNote.h" />
+    <ClInclude Include="BlendedBehavior.h" />
     <ClInclude Include="CollisionNote.h" />
     <ClInclude Include="EntityEnumConverter.h" />
     <ClInclude Include="Component.h" />
@@ -175,6 +178,7 @@
     <ClInclude Include="Entity.h" />
     <ClInclude Include="EntityData.h" />
     <ClInclude Include="EntityFactory.h" />
+    <ClInclude Include="EvadeBehavior.h" />
     <ClInclude Include="FirstPersonRenderComponent.h" />
     <ClInclude Include="FirstPersonRenderComponentData.h" />
     <ClInclude Include="GraphicsComponent.h" />
@@ -209,11 +213,15 @@
   <ItemGroup>
     <ClCompile Include="AIComponent.cpp" />
     <ClCompile Include="AnimationComponent.cpp" />
+    <ClCompile Include="ArriveBehavior.cpp" />
+    <ClCompile Include="Behavior.cpp" />
+    <ClCompile Include="BlendedBehavior.cpp" />
     <ClCompile Include="EntityEnumConverter.cpp" />
     <ClCompile Include="Component.cpp" />
     <ClCompile Include="ComponentLoader.cpp" />
     <ClCompile Include="Entity.cpp" />
     <ClCompile Include="EntityFactory.cpp" />
+    <ClCompile Include="EvadeBehavior.cpp" />
     <ClCompile Include="FirstPersonRenderComponent.cpp" />
     <ClCompile Include="GraphicsComponent.cpp" />
     <ClCompile Include="GrenadeLauncher.cpp" />
