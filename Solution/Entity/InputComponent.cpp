@@ -209,10 +209,4 @@ void InputComponent::UpdateMovement(float aDelta)
 	Prism::PhysicsInterface::GetInstance()->GetPosition(myEntity.GetComponent<PhysicsComponent>()->GetCapsuleControllerId(), pos);
 
 	myOrientation.SetPos(pos);
-	CU::Vector3<float> forward = CU::Cross(myOrientation.GetRight(), CU::Vector3<float>(0.f, 1.f, 0.f));
-
-	CU::Normalize(forward);
-
-	myOrientation.SetPos(myOrientation.GetPos() + forward * movement.z * myData.mySpeed * aDelta);
-	myOrientation.SetPos(myOrientation.GetPos() + myOrientation.GetRight() * movement.x * myData.mySpeed * aDelta);
 }

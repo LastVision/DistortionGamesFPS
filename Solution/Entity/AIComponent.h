@@ -4,7 +4,7 @@
 class AIComponent : public Component
 {
 public:
-	AIComponent(Entity& anEntity, const AIComponentData& aData);
+	AIComponent(Entity& anEntity, const AIComponentData& aData, CU::Matrix44<float>& anOrientation);
 	~AIComponent();
 
 	void Update(float aDelta) override;
@@ -15,6 +15,8 @@ public:
 private:
 	void operator=(AIComponent&) = delete;
 	const AIComponentData& myData;
+
+	CU::Matrix44<float>& myOrientation;
 
 };
 
