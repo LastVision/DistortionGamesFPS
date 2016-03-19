@@ -38,8 +38,8 @@ namespace Prism
 
 		myRadius = CU::Length(myTopRightBack - myCenterPosition);
 
-		mySmallRoom->AddPortal(this);
-		myLargeRoom->AddPortal(this);
+		mySmallRoom->Add(this);
+		myLargeRoom->Add(this);
 		CalcPoints(); // tried to calc all 4 different corners of portal, not verified //Linus
 	}
 

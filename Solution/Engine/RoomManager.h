@@ -42,10 +42,12 @@ namespace Prism
 		CU::GrowingArray<Portal*> myPortals;
 		CU::GrowingArray<int> myCurrentRoomIds;
 
-		CU::GrowingArray<InstanceInRoom> myInstances;
 		CU::GrowingArray<Instance*> myAlwaysRenderInstances;
 		CU::GrowingArray<Instance*> myActiveInstances;
 
 		bool myDebugDraw;
+
+		int myTotalObjects;
+		int myDuplicateRooms;
 	};
 }
