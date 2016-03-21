@@ -221,7 +221,14 @@ void ClientLevelFactory::LoadTriggers(XMLReader& aReader, tinyxml2::XMLElement* 
 		if (newEntity->GetComponent<TriggerComponent>()->IsClientSide() == true)
 		{
 			newEntity->Reset();
-			newEntity->AddToScene();
+			if(newEntity->GetComponent<TriggerComponent>()->GetIsActiveFromStart() == true)
+			{
+				newEntity->AddToScene();
+			}
+			else
+			{
+				newEntity->GetComponent<PhysicsComponent>()->RemoveFromScene();
+			}
 			myCurrentLevel->AddEntity(newEntity);
 		}
 		else

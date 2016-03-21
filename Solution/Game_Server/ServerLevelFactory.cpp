@@ -3,13 +3,14 @@
 #include <Entity.h>
 #include <EntityFactory.h>
 #include <MathHelper.h>
+#include <NetworkComponent.h>
+#include <PhysicsComponent.h>
+#include <PhysicsInterface.h>
+#include <PollingStation.h>
 #include "ServerLevel.h"
 #include "ServerLevelFactory.h"
-#include <PhysicsInterface.h>
-#include <XMLReader.h>
 #include <TriggerComponent.h>
-#include <NetworkComponent.h>
-#include <PollingStation.h>
+#include <XMLReader.h>
 
 ServerLevelFactory::ServerLevelFactory(const std::string& aLevelListPath)
 	: SharedLevelFactory(aLevelListPath)
@@ -195,6 +196,10 @@ void ServerLevelFactory::LoadTriggers(XMLReader& aReader, tinyxml2::XMLElement* 
 			//	myIDCount++;
 			//	newEntity->GetComponent<NetworkComponent>()->SetNetworkID(myIDCount);
 			//}
+			if (newEntity->GetComponent<TriggerComponent>()->GetIsActiveFromStart() == false)
+			{
+				newEntity->GetComponent<PhysicsComponent>()->RemoveFromScene();
+			}
 		}
 		else
 		{
