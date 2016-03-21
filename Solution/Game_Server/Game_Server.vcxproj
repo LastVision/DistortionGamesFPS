@@ -81,6 +81,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="DefendMission.h" />
     <ClInclude Include="KillXMission.h" />
     <ClInclude Include="Mission.h" />
     <ClInclude Include="MissionManager.h" />
@@ -97,6 +98,7 @@
     <ClInclude Include="stdafx.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="DefendMission.cpp" />
     <ClCompile Include="KillXMission.cpp" />
     <ClCompile Include="Mission.cpp" />
     <ClCompile Include="MissionManager.cpp" />
