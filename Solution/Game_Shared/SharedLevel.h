@@ -35,5 +35,7 @@ protected:
 	CU::GrowingArray<Entity*> myPlayers;
 
 	std::unordered_map<unsigned int, Entity*> myActiveEntitiesMap;
+
+	std::unordered_map<unsigned int, Entity*> myActiveUnitsMap;
 };
 

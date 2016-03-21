@@ -26,6 +26,7 @@ enum class eNetMessageType
 	ENEMY_ON_DEATH,
 
 	SET_ACTIVE,
+	ENTITY_STATE,
 
 	_COUNT,
 };

@@ -4,6 +4,7 @@
 #include "PhysicsComponent.h"
 #include <PhysicsInterface.h>
 #include <NetMessagePosition.h>
+#include <NetMessageEntityState.h>
 #include <SharedNetworkManager.h>
 #include "PollingStation.h"
 #include "ProjectileComponent.h"
@@ -55,6 +56,20 @@ void AIComponent::Move(float aDelta)
 	}
 
 	CU::Vector3<float> movement(myBehavior->Update(aDelta));
+
+	if (CU::Length(movement) < 0.02f)
+	{
+		if (myEntity.GetState() != eEntityState::IDLE)
+		{
+			myEntity.SetState(eEntityState::IDLE);
+			SharedNetworkManager::GetInstance()->AddMessage<NetMessageEntityState>(NetMessageEntityState(myEntity.GetState(), myEntity.GetGID()));
+		}
+	}
+	else if (myEntity.GetState() != eEntityState::WALK)
+	{
+		myEntity.SetState(eEntityState::WALK);
+		SharedNetworkManager::GetInstance()->AddMessage<NetMessageEntityState>(NetMessageEntityState(myEntity.GetState(), myEntity.GetGID()));
+	}
 
 	Prism::PhysicsInterface::GetInstance()->Move(myEntity.GetComponent<PhysicsComponent>()->GetCapsuleControllerId(), movement, 0.05f, aDelta);
 
