@@ -215,7 +215,7 @@ void ClientLevelFactory::LoadTriggers(XMLReader& aReader, tinyxml2::XMLElement* 
 		triggerRotation.y = CU::Math::DegreeToRad(triggerRotation.y);
 		triggerRotation.z = CU::Math::DegreeToRad(triggerRotation.z);
 
-		Entity* newEntity = EntityFactory::CreateEntity(gid, eEntityType::UNIT, triggerType, static_cast<ClientLevel*>(myCurrentLevel)->GetScene()
+		Entity* newEntity = EntityFactory::CreateEntity(gid, eEntityType::TRIGGER, triggerType, static_cast<ClientLevel*>(myCurrentLevel)->GetScene()
 			, true, triggerPosition, triggerRotation, triggerScale);
 
 		if (newEntity->GetComponent<TriggerComponent>()->IsClientSide() == true)

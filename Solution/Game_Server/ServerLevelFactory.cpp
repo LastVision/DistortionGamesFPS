@@ -9,6 +9,7 @@
 #include <XMLReader.h>
 #include <TriggerComponent.h>
 #include <NetworkComponent.h>
+#include <PollingStation.h>
 
 ServerLevelFactory::ServerLevelFactory(const std::string& aLevelListPath)
 	: SharedLevelFactory(aLevelListPath)
@@ -153,6 +154,10 @@ void ServerLevelFactory::LoadUnits(XMLReader& aReader, tinyxml2::XMLElement* aEl
 		newEntity->Reset();
 
 		myCurrentLevel->AddEnemy(newEntity);
+
+
+
+		PollingStation::GetInstance()->AddEntity(newEntity);
 	}
 }
 
@@ -179,7 +184,7 @@ void ServerLevelFactory::LoadTriggers(XMLReader& aReader, tinyxml2::XMLElement* 
 		triggerRotation.y = CU::Math::DegreeToRad(triggerRotation.y);
 		triggerRotation.z = CU::Math::DegreeToRad(triggerRotation.z);
 
-		Entity* newEntity = EntityFactory::CreateEntity(gid, eEntityType::UNIT, triggerType, nullptr, false, triggerPosition, triggerRotation, triggerScale);
+		Entity* newEntity = EntityFactory::CreateEntity(gid, eEntityType::TRIGGER, triggerType, nullptr, false, triggerPosition, triggerRotation, triggerScale);
 
 		if (newEntity->GetComponent<TriggerComponent>()->IsClientSide() == false)
 		{

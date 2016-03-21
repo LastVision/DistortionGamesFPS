@@ -6,7 +6,7 @@
 #include "EntityEnumConverter.h"
 #include <string>
 
-
+#include "PollingStation.h"
 EntityFactory* EntityFactory::myInstance = nullptr;
 
 EntityFactory* EntityFactory::GetInstance()
@@ -64,6 +64,8 @@ Entity* EntityFactory::CreateEntity(unsigned int aGID, eEntityType aType, std::s
 			Entity* newEntity = new Entity(aGID, myInstance->myLoadedSubEntityData.find(aSubType)->second, aScene, aClientSide, aPosition, aRotation
 				, aScale);
 			newEntity->mySubType = aSubType;
+
+				
 			return newEntity;
 		}
 	}

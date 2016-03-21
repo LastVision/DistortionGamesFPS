@@ -4,7 +4,7 @@
 #include <PhysicsInterface.h>
 #include <NetMessagePosition.h>
 #include <SharedNetworkManager.h>
-
+#include "PollingStation.h"
 AIComponent::AIComponent(Entity& anEntity, const AIComponentData& aData, CU::Matrix44<float>& anOrientation)
 	: Component(anEntity)
 	, myData(aData)
@@ -26,5 +26,12 @@ void AIComponent::Update(float aDelta)
 	Prism::PhysicsInterface::GetInstance()->GetPosition(myEntity.GetComponent<PhysicsComponent>()->GetCapsuleControllerId(), pos);
 	myOrientation.SetPos(pos);
 
-	SharedNetworkManager::GetInstance()->AddMessage(NetMessagePosition(pos, 0, myEntity.GetGID()));
+	Entity* target = PollingStation::GetInstance()->FindClosestEntityToEntity(myEntity);
+	float rad = 0.f;
+	if (target != nullptr)
+	{
+		rad = CU::Dot(target->GetOrientation().GetPos(), myEntity.GetOrientation().GetPos());
+		rad *= M_PI;
+	}
+	SharedNetworkManager::GetInstance()->AddMessage(NetMessagePosition(pos, rad, myEntity.GetGID()));
 }

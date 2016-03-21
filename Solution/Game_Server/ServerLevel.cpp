@@ -16,6 +16,7 @@
 #include <PostMaster.h>
 #include <SetActiveMessage.h>
 
+#include <PollingStation.h>
 ServerLevel::ServerLevel()
 	: myLoadedClients(16)
 	, myAllClientsLoaded(false)
@@ -29,6 +30,7 @@ ServerLevel::ServerLevel()
 
 ServerLevel::~ServerLevel()
 {
+	PollingStation::Destroy();
 	SAFE_DELETE(myMissionManager);
 	ServerNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::ON_CONNECT, this);
 	ServerNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::LEVEL_LOADED, this);
@@ -44,6 +46,7 @@ void ServerLevel::Init()
 		newPlayer->Reset();
 		newPlayer->GetComponent<NetworkComponent>()->SetPlayer(true);
 		myPlayers.Add(newPlayer);
+		PollingStation::GetInstance()->AddEntity(newPlayer);
 	}
 }
 
@@ -53,6 +56,8 @@ void ServerLevel::Update(const float aDeltaTime)
 	{
 		__super::Update(aDeltaTime);
 		myMissionManager->Update(aDeltaTime);
+		//	PollingStation::GetInstance()->FindClosestEntityToEntity(*myPlayers[0]);
+
 		Prism::PhysicsInterface::GetInstance()->EndFrame();
 	}
 }
@@ -70,6 +75,8 @@ void ServerLevel::CollisionCallback(PhysicsComponent* aFirst, PhysicsComponent* 
 	case eEntityType::EXPLOSION:
 		SharedLevel::HandleExplosion(first, second);
 		break;
+
+
 	}
 }
 
