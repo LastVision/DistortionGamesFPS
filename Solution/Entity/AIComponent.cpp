@@ -24,35 +24,39 @@ AIComponent::~AIComponent()
 
 void AIComponent::Update(float aDelta)
 {
+	Move(aDelta);
+}
+
+
+void AIComponent::Move(float aDelta)
+{
 	myBehavior->SetTarget(PollingStation::GetInstance()->GetPlayers()[0]->GetOrientation().GetPos());
 	CU::Vector3<float> movement(myBehavior->Update(aDelta));
-	//movement *= 0.13f;
+
 	Prism::PhysicsInterface::GetInstance()->Move(myEntity.GetComponent<PhysicsComponent>()->GetCapsuleControllerId(), movement, 0.05f, aDelta);
+
+	SetOrientation(CU::GetNormalized(movement));
+}
+
+void AIComponent::SetOrientation(const CU::Vector3<float>& aLookInDirection)
+{
 	CU::Vector3<float> pos;
 	Prism::PhysicsInterface::GetInstance()->GetPosition(myEntity.GetComponent<PhysicsComponent>()->GetCapsuleControllerId(), pos);
 	myOrientation.SetPos(pos);
 
-	CU::Vector3<float> direction(CU::GetNormalized(movement));
-	CU::Vector3<float> up(0, 1.f, 0);
-	CU::Vector3<float> right(CU::GetNormalized(CU::Cross(up, direction)));
-	CU::Vector3<float> forward(CU::GetNormalized(CU::Cross(right, up)));
+	static CU::Vector3<float> y(0, 1.f, 0);
+	CU::Vector3<float> right(CU::GetNormalized(CU::Cross(y, aLookInDirection)));
+	CU::Vector3<float> forward(CU::GetNormalized(CU::Cross(right, y)));
 
 	myOrientation.SetForward(forward);
 	myOrientation.SetRight(right);
-	myOrientation.SetUp(up);
+	myOrientation.SetUp(y);
 
-
-	Entity* target = PollingStation::GetInstance()->FindClosestEntityToEntity(myEntity);
-	float rad = 0.f;
-	if (target != nullptr)
+	static CU::Vector3<float> z(0, 0, 1.f);
+	float angle = acosf(CU::Dot(z, myOrientation.GetForward()));
+	CU::Vector3<float> cross = CU::Cross(z, myOrientation.GetForward());
+	if (CU::Dot(y, cross) < 0)
 	{
-		rad = CU::Dot(target->GetOrientation().GetPos(), myEntity.GetOrientation().GetPos());
-		rad *= M_PI;
-	}
-
-	float angle = acosf(CU::Dot(CU::Vector3<float>(0, 0, 1.f), myOrientation.GetForward()));
-	CU::Vector3<float> cross = CU::Cross(CU::Vector3<float>(0, 0, 1.f), myOrientation.GetForward());
-	if (CU::Dot(CU::Vector3<float>(0, 1.f, 0), cross) < 0) { // Or > 0
 		angle = -angle;
 	}
 

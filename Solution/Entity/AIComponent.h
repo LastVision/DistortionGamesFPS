@@ -16,6 +16,8 @@ public:
 
 private:
 	void operator=(AIComponent&) = delete;
+	void Move(float aDelta);
+	void SetOrientation(const CU::Vector3<float>& aLookInDirection);
 
 	const AIComponentData& myData;
 
