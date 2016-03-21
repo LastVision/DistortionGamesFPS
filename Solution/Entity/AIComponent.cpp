@@ -91,17 +91,17 @@ void AIComponent::SetOrientation(const CU::Vector3<float>& aLookInDirection)
 
 void AIComponent::Shoot()
 {
-	if (myBulletIndex > myBullets.Size()-1)
-	{
-		myBulletIndex = 0;
-	}
-
-	CU::Vector3<float> forward = myOrientation.GetForward();
-	CU::Vector3<float> pos = myOrientation.GetPos();
-	myBullets[myBulletIndex]->GetComponent<ProjectileComponent>()->SetPosition({ pos.x, 0.5f, pos.z });
-	myBullets[myBulletIndex]->GetComponent<ProjectileComponent>()->SetForward(forward);
-	myBullets[myBulletIndex]->GetComponent<ProjectileComponent>()->Activate();
-	std::cout << "I shot" << std::endl;
-
-	myBulletIndex++;
+	//if (myBulletIndex > myBullets.Size()-1)
+	//{
+	//	myBulletIndex = 0;
+	//}
+	//
+	//CU::Vector3<float> forward = myOrientation.GetForward();
+	//CU::Vector3<float> pos = myOrientation.GetPos();
+	//myBullets[myBulletIndex]->GetComponent<ProjectileComponent>()->SetPosition({ pos.x, 0.5f, pos.z });
+	//myBullets[myBulletIndex]->GetComponent<ProjectileComponent>()->SetForward(forward);
+	//myBullets[myBulletIndex]->GetComponent<ProjectileComponent>()->Activate();
+	//std::cout << "I shot" << std::endl;
+	//
+	//myBulletIndex++;
 }
