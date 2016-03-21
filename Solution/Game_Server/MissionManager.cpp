@@ -1,4 +1,7 @@
 #include "stdafx.h"
+#include <CommonHelper.h>
+#include "DefendMission.h"
+#include <DefendTouchMessage.h>
 #include <EnemyKilledMessage.h>
 #include "KillXMission.h"
 #include "Mission.h"
@@ -10,11 +13,13 @@ MissionManager::MissionManager(const std::string& aMissionXMLPath)
 {
 	LoadMissions(aMissionXMLPath);
 	PostMaster::GetInstance()->Subscribe(eMessageType::ENEMY_KILLED, this);
+	PostMaster::GetInstance()->Subscribe(eMessageType::DEFEND_TOUCH, this);
 }
 
 MissionManager::~MissionManager()
 {
 	PostMaster::GetInstance()->UnSubscribe(eMessageType::ENEMY_KILLED, this);
+	PostMaster::GetInstance()->UnSubscribe(eMessageType::DEFEND_TOUCH, this);
 	for (auto it = myMissions.begin(); it != myMissions.end(); ++it)
 	{
 		SAFE_DELETE(it->second);
@@ -37,13 +42,41 @@ void MissionManager::SetMission(int aId)
 	myCurrentMission = myMissions[aId];
 }
 
+eMissionType MissionManager::GetCurrentMissionType() const
+{
+	if (myCurrentMission != nullptr)
+	{
+		return myCurrentMission->GetMissionType();
+	}
+	return eMissionType::NONE;
+}
+
+
 void MissionManager::ReceiveMessage(const EnemyKilledMessage&)
 {
 	if (myCurrentMission != nullptr)
 	{
-		if (myCurrentMission->GetMissionType() == "killx")
+		if (myCurrentMission->GetMissionType() == eMissionType::KILL_X)
 		{
 			myCurrentMission->AddValue(1);
+		}
+	}
+}
+
+void MissionManager::ReceiveMessage(const DefendTouchMessage& aMessage)
+{
+	if (myCurrentMission != nullptr)
+	{
+		if (myCurrentMission->GetMissionType() == eMissionType::DEFEND)
+		{
+			if (aMessage.myHasEntered == true)
+			{
+				myCurrentMission->AddValue(1);
+			}
+			else
+			{
+				myCurrentMission->AddValue(-1);
+			}
 		}
 	}
 }
@@ -57,20 +90,30 @@ void MissionManager::LoadMissions(const std::string& aMissionXMLPath)
 	for (rootElement = reader.FindFirstChild(rootElement, "Mission"); rootElement != nullptr;
 		rootElement = reader.FindNextElement(rootElement, "Mission"))
 	{
-
 		std::string missionType;
 		reader.ForceReadAttribute(rootElement, "type", missionType);
 		bool shouldLoopMissionEvents = false;
 		reader.ForceReadAttribute(rootElement, "shouldLoopMissionEvents", shouldLoopMissionEvents);
 		int missionId = -1;
 		reader.ForceReadAttribute(rootElement, "id", missionId);
-
+		missionType = CU::ToLower(missionType);
 		if (missionType == "killx")
 		{
 			int enemiesToKill = 0;
 			reader.ForceReadAttribute(rootElement, "value", enemiesToKill);
 			KillXMission* mission = new KillXMission(missionType, enemiesToKill, shouldLoopMissionEvents);
 			myMissions[missionId] = mission;
+		}
+		else if (missionType == "defend")
+		{
+			float secondsToDefend = 0;
+			reader.ForceReadAttribute(rootElement, "value", secondsToDefend);
+			DefendMission* mission = new DefendMission(missionType, secondsToDefend, shouldLoopMissionEvents);
+			myMissions[missionId] = mission;
+		}
+		else
+		{
+			DL_ASSERT("UNKNOWN MISSIONTYPE!");
 		}
 
 		tinyxml2::XMLElement* eventElement = reader.FindFirstChild(rootElement, "StartEvent");

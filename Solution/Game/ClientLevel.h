@@ -33,11 +33,11 @@ public:
 	void ReceiveNetworkMessage(const NetMessageSetActive& aMessage, const sockaddr_in& aSenderAddress) override;
 
 	void AddLight(Prism::PointLight* aLight);
-	void CollisionCallback(PhysicsComponent* aFirst, PhysicsComponent* aSecond) override;
+	void CollisionCallback(PhysicsComponent* aFirst, PhysicsComponent* aSecond, bool aHasEntered) override;
 	void DebugMusic();
 
 private:
-	void HandleTrigger(Entity& aFirstEntity, Entity& aSecondEntity) override;
+	void HandleTrigger(Entity& aFirstEntity, Entity& aSecondEntity, bool aHasEntered) override;
 	void CreatePlayers();
 	Prism::Scene* myScene;
 	Prism::DeferredRenderer* myDeferredRenderer;

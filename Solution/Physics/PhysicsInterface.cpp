@@ -6,7 +6,7 @@
 namespace Prism
 {
 	PhysicsInterface* PhysicsInterface::myInstance = nullptr;
-	void PhysicsInterface::Create(std::function<void(PhysicsComponent*, PhysicsComponent*)> anOnTriggerCallback, bool aIsServer)
+	void PhysicsInterface::Create(std::function<void(PhysicsComponent*, PhysicsComponent*, bool)> anOnTriggerCallback, bool aIsServer)
 	{
 		myInstance = new PhysicsInterface(anOnTriggerCallback, aIsServer);
 	}
@@ -173,7 +173,7 @@ namespace Prism
 		myManager->Wake(aDynamic);
 	}
 
-	PhysicsInterface::PhysicsInterface(std::function<void(PhysicsComponent*, PhysicsComponent*)> anOnTriggerCallback, bool aIsServer)
+	PhysicsInterface::PhysicsInterface(std::function<void(PhysicsComponent*, PhysicsComponent*, bool)> anOnTriggerCallback, bool aIsServer)
 	{
 		myManager = new PhysicsManager(anOnTriggerCallback, aIsServer);
 	}

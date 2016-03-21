@@ -55,5 +55,8 @@
     <ClInclude Include="EnemyKilledMessage.h">
       <Filter>Message</Filter>
     </ClInclude>
+    <ClInclude Include="DefendTouchMessage.h">
+      <Filter>Message</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

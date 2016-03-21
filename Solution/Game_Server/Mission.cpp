@@ -6,13 +6,24 @@
 #include <SetActiveMessage.h>
 
 Mission::Mission(const std::string& aMissionType, bool aShouldLoopMissionEvents)
-	: myMissionType(aMissionType)
-	, myShouldLoopMissionEvents(aShouldLoopMissionEvents)
+	: myShouldLoopMissionEvents(aShouldLoopMissionEvents)
 	, myStartEvents(8)
 	, myMissionEvents(8)
 	, myEndEvents(8)
 	, myCurrentMissionEvent(0)
 {
+	if (aMissionType == "killx")
+	{
+		myMissionType = eMissionType::KILL_X;
+	}
+	else if (aMissionType == "defend")
+	{
+		myMissionType = eMissionType::DEFEND;
+	}
+	else
+	{
+		DL_ASSERT("UNKNOWN MISSIONTYPE");
+	}
 }
 
 Mission::~Mission()
