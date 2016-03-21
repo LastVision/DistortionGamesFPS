@@ -16,9 +16,10 @@
 #include "ShootingComponent.h"
 #include "TriggerComponent.h"
 #include "UpgradeComponent.h"
+#include "ProjectileComponent.h"
 
 Entity::Entity(unsigned int aGID, const EntityData& aEntityData, Prism::Scene* aScene, bool aClientSide, const CU::Vector3<float>& aStartPosition,
-		const CU::Vector3f& aRotation, const CU::Vector3f& aScale)
+	const CU::Vector3f& aRotation, const CU::Vector3f& aScale)
 	: myGID(aGID)
 	, myScene(aScene)
 	, myEntityData(aEntityData)
@@ -33,7 +34,7 @@ Entity::Entity(unsigned int aGID, const EntityData& aEntityData, Prism::Scene* a
 	myOrientation.SetPos(aStartPosition);
 
 	SetRotation(aRotation);
-	
+
 
 	if (myScene != nullptr)
 	{
@@ -76,9 +77,9 @@ Entity::Entity(unsigned int aGID, const EntityData& aEntityData, Prism::Scene* a
 		myComponents[static_cast<int>(eComponentType::AI)] = new AIComponent(*this, aEntityData.myAIComponentData, myOrientation);
 	}
 
-	if (aEntityData.myProjecileData.myExistsInEntity == true)
+	if (aEntityData.myGrenadeData.myExistsInEntity == true)
 	{
-		myComponents[static_cast<int>(eComponentType::PROJECTILE)] = new GrenadeComponent(*this, aEntityData.myProjecileData, aScene);
+		myComponents[static_cast<int>(eComponentType::PROJECTILE)] = new GrenadeComponent(*this, aEntityData.myGrenadeData, aScene);
 	}
 
 	if (aEntityData.myNetworkData.myExistsInEntity == true)
@@ -119,7 +120,11 @@ Entity::Entity(unsigned int aGID, const EntityData& aEntityData, Prism::Scene* a
 			GetComponent<ShootingComponent>()->Init(aScene);
 		}
 	}
-	
+	if (aEntityData.myProjecileData.myExistsInEntity == true)
+	{
+		myComponents[static_cast<int>(eComponentType::BULLET)] = new ProjectileComponent(*this, aEntityData.myProjecileData, myOrientation);
+	}
+
 
 	Reset();
 };
@@ -199,7 +204,7 @@ void Entity::AddToScene()
 	{
 		myScene->AddInstance(GetComponent<AnimationComponent>()->GetInstance());
 	}
-	
+
 	myIsInScene = true;
 }
 

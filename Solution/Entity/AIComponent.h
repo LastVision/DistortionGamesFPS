@@ -15,6 +15,9 @@ public:
 	eComponentType GetType() override;
 
 private:
+
+	void Shoot();
+
 	void operator=(AIComponent&) = delete;
 	void Move(float aDelta);
 	void SetOrientation(const CU::Vector3<float>& aLookInDirection);
@@ -24,6 +27,13 @@ private:
 	Behavior* myBehavior;
 
 	CU::Matrix44<float>& myOrientation;
+
+	float myShootTime;
+
+	CU::GrowingArray<Entity*> myBullets;
+	int myBulletIndex;
+
+
 
 };
 

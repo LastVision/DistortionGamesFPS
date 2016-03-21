@@ -12,6 +12,7 @@ struct GrenadeComponentData;
 struct ShootingComponentData;
 struct TriggerComponentData;
 struct UpgradeComponentData;
+struct ProjectileComponentData;
 
 class XMLReader;
 
@@ -35,7 +36,7 @@ public:
 	void LoadInputComponent(XMLReader& aDocument, tinyxml2::XMLElement* aSourceElement, InputComponentData& aOutputData);
 	void LoadShootingComponent(XMLReader& aDocument, tinyxml2::XMLElement* aSourceElement, ShootingComponentData& aOutputData);
 	void LoadUpgradeComponent(XMLReader& aDocument, tinyxml2::XMLElement* aSourceElement, UpgradeComponentData& aOutputData);
-
+	void LoadProjectileComponent(XMLReader& aDocument, tinyxml2::XMLElement* aSourceElement, ProjectileComponentData& aOutputData);
 private:
 
 	int ConvertToTriggerEnum(std::string aName);
