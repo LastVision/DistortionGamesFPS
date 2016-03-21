@@ -27,7 +27,7 @@ void ProjectileComponent::Update(float aDelta)
 void ProjectileComponent::SetForward(const CU::Vector3<float>& aForwardVector)
 {
 	myOrientation.SetForward(aForwardVector);
-	myEntity.GetComponent<PhysicsComponent>()->MoveToPosition(myOrientation.GetPos());
+	//myEntity.GetComponent<PhysicsComponent>()->MoveToPosition(myOrientation.GetPos());
 }
 
 void ProjectileComponent::SetPosition(const CU::Vector3<float>& aForwardVector)

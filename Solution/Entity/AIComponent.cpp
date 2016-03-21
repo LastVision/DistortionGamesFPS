@@ -37,6 +37,12 @@ AIComponent::~AIComponent()
 void AIComponent::Update(float aDelta)
 {
 	Move(aDelta);
+	myShootTime -= aDelta;
+	if (myShootTime < 0.f)
+	{
+		Shoot();
+		myShootTime = 5.f;
+	}
 }
 
 
@@ -51,6 +57,7 @@ void AIComponent::Move(float aDelta)
 	CU::Vector3<float> movement(myBehavior->Update(aDelta));
 
 	Prism::PhysicsInterface::GetInstance()->Move(myEntity.GetComponent<PhysicsComponent>()->GetCapsuleControllerId(), movement, 0.05f, aDelta);
+
 
 	SetOrientation(CU::GetNormalized(movement));
 }
@@ -79,12 +86,7 @@ void AIComponent::SetOrientation(const CU::Vector3<float>& aLookInDirection)
 
 	SharedNetworkManager::GetInstance()->AddMessage(NetMessagePosition(pos, angle, myEntity.GetGID()));
 
-	myShootTime -= aDelta;
-	if (myShootTime < 0.f)
-	{
-		Shoot();
-		myShootTime = 5.f;
-	}
+	
 }
 
 void AIComponent::Shoot()
