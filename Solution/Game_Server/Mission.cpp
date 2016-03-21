@@ -1,12 +1,52 @@
 #include "stdafx.h"
 #include "Mission.h"
+#include <NetMessageSetActive.h>
+#include <PostMaster.h>
+#include "ServerNetworkManager.h"
+#include <SetActiveMessage.h>
 
-
-Mission::Mission()
+Mission::Mission(const std::string& aMissionType, bool aShouldLoopMissionEvents)
+	: myMissionType(aMissionType)
+	, myShouldLoopMissionEvents(aShouldLoopMissionEvents)
+	, myStartEvents(8)
+	, myMissionEvents(8)
+	, myEndEvents(8)
+	, myCurrentMissionEvent(0)
 {
 }
 
-
 Mission::~Mission()
 {
+}
+
+void Mission::SendMissionMessage(eActionEventType aType, int aGID)
+{
+	switch (aType)
+	{
+	case eActionEventType::LOCK:
+		ServerNetworkManager::GetInstance()->AddMessage(NetMessageSetActive(true, aGID));
+		PostMaster::GetInstance()->SendMessage(SetActiveMessage(aGID, true));
+		break;
+	case eActionEventType::UNLOCK:
+		ServerNetworkManager::GetInstance()->AddMessage(NetMessageSetActive(false, aGID));
+		PostMaster::GetInstance()->SendMessage(SetActiveMessage(aGID, false));
+		break;
+	default:
+		break;
+	}
+}
+
+void Mission::AddStartEvent(ActionEvent aEvent)
+{
+	myStartEvents.Add(aEvent);
+}
+
+void Mission::AddMissionEvent(ActionEvent aEvent)
+{
+	myMissionEvents.Add(aEvent);
+}
+
+void Mission::AddEndEvent(ActionEvent aEvent)
+{
+	myEndEvents.Add(aEvent);
 }

@@ -24,8 +24,11 @@ namespace Prism
 		void SetRoomId(int aId);
 		int GetRoomId() const;
 
-		void AddPortal(Portal* aPortal);
+		void Add(Portal* aPortal);
 		const CU::GrowingArray<Portal*>& GetPortals() const;
+
+		void Add(Instance* anInstance);
+		const CU::GrowingArray<Instance*>& GetInstances() const;
 
 		const std::string& GetName() const;
 		eRoomType GetType() const;
@@ -37,6 +40,7 @@ namespace Prism
 		int myRoomId;
 		CU::Intersection::AABB myAABB;
 		CU::GrowingArray<Portal*> myPortals;
+		CU::GrowingArray<Instance*> myInstances;
 		const std::string myName;
 		const eRoomType myType;
 	};
@@ -59,6 +63,11 @@ namespace Prism
 	inline const CU::GrowingArray<Portal*>& Room::GetPortals() const
 	{
 		return myPortals;
+	}
+
+	inline const CU::GrowingArray<Instance*>& Room::GetInstances() const
+	{
+		return myInstances;
 	}
 
 	inline const std::string& Room::GetName() const

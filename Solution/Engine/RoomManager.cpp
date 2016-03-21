@@ -5,6 +5,7 @@
 #include <InputWrapper.h>
 #include "Instance.h"
 #include <Intersection.h>
+#include "ModelProxy.h"
 #include "Portal.h"
 #include "Room.h"
 #include "RoomManager.h"
@@ -15,10 +16,11 @@ namespace Prism
 		: myRooms(128)
 		, myPortals(128)
 		, myCurrentRoomIds(16)
-		, myInstances(4096)
 		, myAlwaysRenderInstances(128)
 		, myActiveInstances(4096)
 		, myDebugDraw(false)
+		, myTotalObjects(0)
+		, myDuplicateRooms(0)
 	{
 	}
 
@@ -26,7 +28,6 @@ namespace Prism
 	RoomManager::~RoomManager()
 	{
 		myActiveInstances.RemoveAll();
-		myInstances.RemoveAll();
 		myPortals.DeleteAll();
 	}
 
@@ -85,13 +86,21 @@ namespace Prism
 		else
 		{
 			bool success(false);
+			++myTotalObjects;
+
 			for (int i = 0; i < myRooms.Size(); ++i)
 			{
 				if (myRooms[i]->Inside(anInstance->GetPosition()) == true)
 				{
-					myInstances.Add(InstanceInRoom(i, anInstance));
+					if (success == true)
+					{
+						anInstance->SetExistInMultipleRooms(true);
+						++myDuplicateRooms;
+					}
+					//myInstances.Add(InstanceInRoom(i, anInstance));
+					myRooms[i]->Add(anInstance);
 					success = true;
-					break;
+					//break;
 				}
 			}
 
@@ -104,16 +113,17 @@ namespace Prism
 
 	void RoomManager::Remove(Instance* anInstance)
 	{
-		for (int i = 0; i < myInstances.Size(); ++i)
+		for (int i = 0; i < myAlwaysRenderInstances.Size(); ++i)
 		{
-			if (myInstances[i].myInstance == anInstance)
+			if (myAlwaysRenderInstances[i] == anInstance)
 			{
-				myInstances.RemoveCyclicAtIndex(i);
+				myAlwaysRenderInstances.RemoveCyclicAtIndex(i);
 				return;
 			}
 		}
 
-		//DL_ASSERT("Unable to remove instance that does not exist in Room Manager.");
+		bool addAssertHereWhenGrenadeRemoveIsWorking = true;
+		//DL_ASSERT("Unable to remove instance that does either not exist or does not have the \"AlwaysRender\" bool set to true.");
 	}
 
 	const CU::GrowingArray<Instance*>& RoomManager::GetActiveInstances(const Camera& aCamera)
@@ -127,80 +137,80 @@ namespace Prism
 		myActiveInstances.RemoveAll();
 		myCurrentRoomIds.RemoveAll();
 
-		for (int i = 0; i < myPortals.Size(); ++i)
-		{
-			myPortals[i]->SetAlreadyPassed(false);
-		}
+for (int i = 0; i < myPortals.Size(); ++i)
+{
+	myPortals[i]->SetAlreadyPassed(false);
+}
 
-		int playerRoom = GetRoomId(aCamera.GetOrientation().GetPos());
-		myCurrentRoomIds.Add(playerRoom);
+int playerRoom = GetRoomId(aCamera.GetOrientation().GetPos());
+myCurrentRoomIds.Add(playerRoom);
 
-		FindActiveRooms(aCamera.GetFrustum(), aCamera.GetProjection(), playerRoom);
+FindActiveRooms(aCamera.GetFrustum(), aCamera.GetProjection(), playerRoom);
 
-		//for (int i = 0; i < myCurrentRoomIds.Size(); ++i)
-		//{
-		//	const Room* current(myRooms[myCurrentRoomIds[i]]);
-		//	if (current->GetType() == eRoomType::ROOM)
-		//	{
-		//		for (int j = 0; j < current->GetPortals().Size(); ++j)
-		//		{
-		//			const Room* other(current->GetPortals()[j]->GetOther(current));
-		//			if (myCurrentRoomIds.Find(other->GetRoomId()) == myCurrentRoomIds.FoundNone)
-		//			{
-		//				myCurrentRoomIds.Add(other->GetRoomId());
-		//			}
-		//		}
-		//	}
-		//}
+//for (int i = 0; i < myCurrentRoomIds.Size(); ++i)
+//{
+//	const Room* current(myRooms[myCurrentRoomIds[i]]);
+//	if (current->GetType() == eRoomType::ROOM)
+//	{
+//		for (int j = 0; j < current->GetPortals().Size(); ++j)
+//		{
+//			const Room* other(current->GetPortals()[j]->GetOther(current));
+//			if (myCurrentRoomIds.Find(other->GetRoomId()) == myCurrentRoomIds.FoundNone)
+//			{
+//				myCurrentRoomIds.Add(other->GetRoomId());
+//			}
+//		}
+//	}
+//}
 
-		for each (Instance* instance in myAlwaysRenderInstances)
-		{
-			myActiveInstances.Add(instance);
-		}
+for each (Instance* instance in myAlwaysRenderInstances)
+{
+	myActiveInstances.Add(instance);
+}
 
-		for each (const InstanceInRoom& instance in myInstances)
-		{
-			for each (int id in myCurrentRoomIds)
-			{
-				if (instance.myRoomId == id)
-				{
-					myActiveInstances.Add(instance.myInstance);
-					break;
-				}
-			}
-		}
-		
+//for each (const InstanceInRoom& instance in myInstances)
+//{
+//	for each (int id in myCurrentRoomIds)
+//	{
+//		if (instance.myRoomId == id)
+//		{
+//			myActiveInstances.Add(instance.myInstance);
+//			break;
+//		}
+//	}
+//}
+
 
 
 #ifndef RELEASE_BUILD
 #ifdef SHOW_PORTAL_CULLING_DEBUG_TEXT
-		//DEBUG_PRINT(playerRoom);
-		DEBUG_PRINT(myActiveInstances.Size());
-		DEBUG_PRINT(myInstances.Size());
-		float renderPercentage = 100.f * float(myActiveInstances.Size())
-			/ (myInstances.Size() + myAlwaysRenderInstances.Size());
-		DEBUG_PRINT(renderPercentage);
-		for (int j = 0; j < myCurrentRoomIds.Size(); ++j)
-		{
-			const std::string& roomName(myRooms[myCurrentRoomIds[j]]->GetName());
-			if(j == 0)
-			{
-				const std::string& playerRoom(roomName);
-				DEBUG_PRINT(playerRoom);
-			}
-			DEBUG_PRINT(roomName);
-		}
-		if (renderPercentage > 25.f)
-		{
-			for (float i = 25.f; i < renderPercentage; i += 5.f)
-			{
-				DEBUG_PRINT("WARNING, rendering huge part of level");
+//DEBUG_PRINT(playerRoom);
+DEBUG_PRINT(myActiveInstances.Size());
+//DEBUG_PRINT(myInstances.Size());
+//float renderPercentage = 100.f * float(myActiveInstances.Size())
+//	/ (myInstances.Size() + myAlwaysRenderInstances.Size());
+//DEBUG_PRINT(renderPercentage);
+for (int j = 0; j < myCurrentRoomIds.Size(); ++j)
+{
+	const std::string& roomName(myRooms[myCurrentRoomIds[j]]->GetName());
+	if (j == 0)
+	{
+		const std::string& playerRoom(roomName);
+		DEBUG_PRINT(playerRoom);
+	}
+	DEBUG_PRINT(roomName);
+}
+//if (renderPercentage > 25.f)
+//{
+//	for (float i = 25.f; i < renderPercentage; i += 5.f)
+//	{
+//		DEBUG_PRINT("WARNING, rendering huge part of level");
 
-			}
-		}
+//	}
+//}
 #endif
 #endif
-		return myActiveInstances;
+return myActiveInstances;
 	}
 
 	int RoomManager::GetRoomId(const CU::Vector3<float>& aPosition) const
@@ -222,7 +232,18 @@ namespace Prism
 		if (anArrivePortal != nullptr)
 		{
 			aFrustum.Resize(anArrivePortal, aProjection, myDebugDraw);
+		}
 
+		for each (Instance* instance in myRooms[aRoomId]->GetInstances())
+		{
+			if (aFrustum.Inside(instance->GetPosition(), instance->GetModel().GetRadius()) == true)
+			{
+				if (instance->GetExistInMultipleRooms() == false
+					|| myActiveInstances.Find(instance) == myActiveInstances.FoundNone)
+				{
+					myActiveInstances.Add(instance);
+				}
+			}
 		}
 
 

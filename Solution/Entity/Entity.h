@@ -37,9 +37,8 @@ public:
 
 	void AddToScene();
 	void RemoveFromScene();
-	void SetPosition(const CU::Vector3f& aPosition);
+
 	const CU::Matrix44<float>& GetOrientation() const;
-	void SetOrientation(const CU::Matrix44<float>& aOrientation);
 	float* GetOrientationAsFloatPtr();
 	void SetRotation(const CU::Vector3<float>& aRotation);
 
@@ -111,11 +110,6 @@ inline void Entity::SendNote(const T& aMessage)
 inline const CU::Matrix44<float>& Entity::GetOrientation() const
 {
 	return myOrientation;
-}
-
-inline void Entity::SetOrientation(const CU::Matrix44<float>& aOrientation)
-{
-	myOrientation = aOrientation;
 }
 
 inline float* Entity::GetOrientationAsFloatPtr()

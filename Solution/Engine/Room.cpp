@@ -9,6 +9,7 @@ namespace Prism
 			, const std::string& aName, eRoomType aType)
 		: myAABB(aPosition, aScale)
 		, myPortals(8)
+		, myInstances(128)
 		, myName(aName)
 		, myType(aType)
 	{
@@ -16,6 +17,8 @@ namespace Prism
 
 	Room::~Room()
 	{
+		myPortals.RemoveAll();
+		myInstances.RemoveAll();
 	}
 
 	bool Room::Inside(const CU::Vector3<float>& aPosition) const
@@ -28,8 +31,13 @@ namespace Prism
 		return CU::Intersection::AABBvsAABB(myAABB, aRoom.myAABB);
 	}
 
-	void Room::AddPortal(Portal* aPortal)
+	void Room::Add(Portal* aPortal)
 	{
 		myPortals.Add(aPortal);
+	}
+
+	void Room::Add(Instance* anInstance)
+	{
+		myInstances.Add(anInstance);
 	}
 }

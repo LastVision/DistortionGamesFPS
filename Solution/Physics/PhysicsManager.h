@@ -161,7 +161,7 @@ namespace Prism
 		struct MoveJob
 		{
 			MoveJob()
-				: myId(0)
+				: myId(-1)
 				, myMinDisplacement(0.f)
 				, myDeltaTime(1.f/60.f)
 			{}
@@ -176,7 +176,8 @@ namespace Prism
 			float myMinDisplacement;
 			float myDeltaTime;
 		};
-		MoveJob myMoveJobs[2];
+		CU::GrowingArray<MoveJob> myMoveJobs[2];
+		CU::GrowingArray<CU::Vector3<float>> myControllerPositions[2];
 		void Move(const MoveJob& aMoveJob);
 
 		struct ForceJob

@@ -20,6 +20,8 @@ namespace Prism
 		Effect* GetEffect();
 		void SetEffect(Effect* aEffect);
 
+		float GetRadius() const;
+
 		bool IsLoaded() const;
 		bool IsAnimated() const;
 	private:

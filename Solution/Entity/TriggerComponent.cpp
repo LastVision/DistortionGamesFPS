@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "CollisionNote.h"
 #include <GameStateMessage.h>
+#include "PhysicsComponent.h"
 #include <PostMaster.h>
 #include "TriggerComponent.h"
 #include "TriggerComponentData.h"
@@ -31,7 +32,7 @@ void TriggerComponent::ReceiveNote(const CollisionNote&)
 
 	if (myData.myIsOneTime == true)
 	{
-		myEntity.Kill();
+		myEntity.GetComponent<PhysicsComponent>()->RemoveFromScene();
 	}
 }
 

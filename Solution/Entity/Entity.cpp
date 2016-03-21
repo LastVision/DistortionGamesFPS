@@ -73,7 +73,7 @@ Entity::Entity(unsigned int aGID, const EntityData& aEntityData, Prism::Scene* a
 
 	if (aEntityData.myAIComponentData.myExistsInEntity == true)
 	{
-		myComponents[static_cast<int>(eComponentType::AI)] = new AIComponent(*this, aEntityData.myAIComponentData);
+		myComponents[static_cast<int>(eComponentType::AI)] = new AIComponent(*this, aEntityData.myAIComponentData, myOrientation);
 	}
 
 	if (aEntityData.myProjecileData.myExistsInEntity == true)
@@ -218,12 +218,6 @@ void Entity::RemoveFromScene()
 	}
 
 	myIsInScene = false;
-}
-
-
-void Entity::SetPosition(const CU::Vector3f& aPosition)
-{
-	myOrientation.SetPos(aPosition);
 }
 
 eEntityType Entity::GetType() const

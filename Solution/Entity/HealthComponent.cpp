@@ -1,20 +1,26 @@
 #include "stdafx.h"
 #include "CollisionNote.h"
 #include "DamageNote.h"
+#include <EnemyKilledMessage.h>
 #include "HealthComponent.h"
 #include "HealthComponentData.h"
 #include "HealthNote.h"
+#include <NetMessageOnHit.h>
 #include "TriggerComponent.h"
+#include <PostMaster.h>
+#include <SharedNetworkManager.h>
 
 HealthComponent::HealthComponent(Entity& anEntity, const HealthComponentData& someData)
 	: Component(anEntity)
 	, myData(someData)
 	, myCurrentHealth(someData.myMaxHealth)
 {
+	SharedNetworkManager::GetInstance()->Subscribe(eNetMessageType::ENEMY_ON_HIT, this);
 }
 
 HealthComponent::~HealthComponent()
 {
+	SharedNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::ENEMY_ON_HIT, this);
 }
 
 void HealthComponent::ReceiveNote(const DamageNote& aNote)
@@ -32,7 +38,6 @@ void HealthComponent::ReceiveNote(const CollisionNote& aNote)
 	if (aNote.myOther->GetComponent<TriggerComponent>()->GetTriggerType() == eTriggerType::HEALTH_PACK)
 	{
 		Heal(aNote.myOther->GetComponent<TriggerComponent>()->GetValue());
-		//aNote.myOther->Kill();
 	}
 }
 
@@ -43,6 +48,18 @@ void HealthComponent::TakeDamage(int aDamage)
 	{
 		myCurrentHealth = 0;
 		myEntity.Kill();
+		if (myEntity.GetIsClient() == false)
+		{
+			PostMaster::GetInstance()->SendMessage(EnemyKilledMessage());
+		}
+	}
+}
+
+void HealthComponent::ReceiveNetworkMessage(const NetMessageOnHit& aMessage, const sockaddr_in& aSenderAddress)
+{
+	if (myEntity.GetIsClient() == false && myEntity.GetGID() == aMessage.myGID)
+	{
+		TakeDamage(aMessage.myDamage);
 	}
 }
 
