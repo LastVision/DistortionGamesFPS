@@ -630,6 +630,30 @@ namespace CU
 	}
 
 	template <typename T>
+	void Matrix44<T>::SetForward(const CU::Vector3<T>& aForward)
+	{
+		myMatrix[8] = aForward.x;
+		myMatrix[9] = aForward.y;
+		myMatrix[10] = aForward.z;
+	}
+
+	template <typename T>
+	void Matrix44<T>::SetUp(const CU::Vector3<T>& anUp)
+	{
+		myMatrix[4] = anUp.x;
+		myMatrix[5] = anUp.y;
+		myMatrix[6] = anUp.z;
+	}
+
+	template <typename T>
+	void Matrix44<T>::SetRight(const CU::Vector3<T>& aRight)
+	{
+		myMatrix[0] = aRight.x;
+		myMatrix[1] = aRight.y;
+		myMatrix[2] = aRight.z;
+	}
+
+	template <typename T>
 	void Matrix44<T>::NormalizeRotationVectors()
 	{
 		NormalizeVector(&myMatrix[0]);
