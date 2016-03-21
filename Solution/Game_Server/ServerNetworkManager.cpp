@@ -4,6 +4,7 @@
 #include <thread>
 #include <Utility.h>
 #include <PostMaster.h>
+#include <ConvertNetworkEnumToString.h>
 
 #include <NetMessageImportantReply.h>
 #include <NetMessageConnectReply.h>
@@ -275,8 +276,8 @@ void ServerNetworkManager::UpdateImportantMessages(float aDeltaTime)
 				{
 					client.myTimer = 0.f;
 					
-					std::string resend = "Sending important message " + std::to_string(msg.myImportantID) + " of message type id " 
-						+ std::to_string(msg.myMessageType) + " to client id " + std::to_string(client.myGID) + " - " + client.myName;
+					std::string resend = "Sending important message " + std::to_string(msg.myImportantID) + " of message type " 
+						+ ConvertNetworkEnumToString(static_cast<eNetMessageType>(msg.myMessageType)) + " to client id " + std::to_string(client.myGID) + " - " + client.myName;
 					Utility::PrintEndl(resend, AQUA_TEXT);
 					myNetwork->Send(msg.myData, client.myNetworkAddress);
 				}
@@ -285,7 +286,7 @@ void ServerNetworkManager::UpdateImportantMessages(float aDeltaTime)
 		if (finished == true)
 		{
 			std::string resend = "All client has replied to the message id " + std::to_string(msg.myImportantID) 
-				+ " of message type id " + std::to_string(msg.myMessageType);
+				+ " of message type " + ConvertNetworkEnumToString(static_cast<eNetMessageType>(msg.myMessageType));
 			Utility::PrintEndl(resend, YELLOW_TEXT);
 			myImportantMessagesBuffer.RemoveCyclic(msg);
 		}

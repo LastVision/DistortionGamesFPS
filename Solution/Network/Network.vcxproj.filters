@@ -103,5 +103,6 @@
     <ClInclude Include="NetMessageSetActive.h">
       <Filter>Messages</Filter>
     </ClInclude>
+    <ClInclude Include="ConvertNetworkEnumToString.h" />
   </ItemGroup>
 </Project>
