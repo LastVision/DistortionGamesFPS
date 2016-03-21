@@ -56,6 +56,8 @@ void ServerLevel::Update(const float aDeltaTime)
 	{
 		__super::Update(aDeltaTime);
 		myMissionManager->Update(aDeltaTime);
+		//	PollingStation::GetInstance()->FindClosestEntityToEntity(*myPlayers[0]);
+
 		Prism::PhysicsInterface::GetInstance()->EndFrame();
 	}
 }
@@ -73,10 +75,8 @@ void ServerLevel::CollisionCallback(PhysicsComponent* aFirst, PhysicsComponent* 
 	case eEntityType::EXPLOSION:
 		SharedLevel::HandleExplosion(first, second);
 		break;
-	//	PollingStation::GetInstance()->FindClosestEntityToEntity(*myPlayers[0]);
 
 
-		Prism::PhysicsInterface::GetInstance()->EndFrame();
 	}
 }
 
