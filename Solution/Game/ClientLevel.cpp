@@ -94,7 +94,7 @@ ClientLevel::~ClientLevel()
 	Prism::Audio::AudioInterface::GetInstance()->PostEvent("StopSecondLayer", 0);
 }
 
-void ClientLevel::Init()
+void ClientLevel::Init(const std::string&)
 {
 	CreatePlayers();
 

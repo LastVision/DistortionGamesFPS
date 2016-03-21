@@ -23,7 +23,6 @@ ServerLevel::ServerLevel()
 	, myAllClientsLoaded(false)
 {
 	Prism::PhysicsInterface::Create(std::bind(&ServerLevel::CollisionCallback, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3), true);
-	myMissionManager = new MissionManager("Data/Level/level_01/level_01_mission.xml");
 	ServerNetworkManager::GetInstance()->Subscribe(eNetMessageType::ON_CONNECT, this);
 	ServerNetworkManager::GetInstance()->Subscribe(eNetMessageType::LEVEL_LOADED, this);
 	PostMaster::GetInstance()->Subscribe(eMessageType::SET_ACTIVE, this);
@@ -39,7 +38,7 @@ ServerLevel::~ServerLevel()
 	PostMaster::GetInstance()->UnSubscribe(eMessageType::SET_ACTIVE, this);
 }
 
-void ServerLevel::Init()
+void ServerLevel::Init(const std::string& aMissionXMLPath)
 {
 	for each (const Connection& client in ServerNetworkManager::GetInstance()->GetClients())
 	{
@@ -48,6 +47,8 @@ void ServerLevel::Init()
 		newPlayer->GetComponent<NetworkComponent>()->SetPlayer(true);
 		myPlayers.Add(newPlayer);
 		PollingStation::GetInstance()->AddEntity(newPlayer);
+
+		myMissionManager = new MissionManager(aMissionXMLPath);
 	}
 }
 

@@ -8,7 +8,7 @@ public:
 	ServerLevel();
 	~ServerLevel();
 
-	void Init() override;
+	void Init(const std::string& aMissionXMLPath) override;
 
 	void Update(const float aDeltaTime) override;
 	void CollisionCallback(PhysicsComponent* aFirst, PhysicsComponent* aSecond, bool aHasEntered) override;

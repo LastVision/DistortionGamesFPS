@@ -19,5 +19,6 @@ private:
 	void LoadTriggers(XMLReader& aReader, tinyxml2::XMLElement* aElement) override;
 
 	ServerLevel* myCurrentLevel;
+	std::string myMissionXMLPath;
 };
 

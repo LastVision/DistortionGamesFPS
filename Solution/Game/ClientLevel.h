@@ -22,7 +22,7 @@ public:
 	ClientLevel();
 	~ClientLevel();
 
-	void Init() override;
+	void Init(const std::string& aMissionXMLPath = "") override;
 
 	void Update(const float aDeltaTime) override;
 	void Render();

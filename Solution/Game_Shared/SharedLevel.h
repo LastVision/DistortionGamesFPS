@@ -13,7 +13,7 @@ public:
 	SharedLevel();
 	virtual ~SharedLevel();
 
-	virtual void Init() = 0;
+	virtual void Init(const std::string& aMissionXMLPath) = 0;
 
 	void AddEntity(Entity* aEntity);
 	void AddEnemy(Entity* anEntity);

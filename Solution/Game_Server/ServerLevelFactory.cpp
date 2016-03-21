@@ -14,6 +14,7 @@
 
 ServerLevelFactory::ServerLevelFactory(const std::string& aLevelListPath)
 	: SharedLevelFactory(aLevelListPath)
+	, myMissionXMLPath("")
 {
 }
 
@@ -38,7 +39,7 @@ ServerLevel* ServerLevelFactory::LoadCurrentLevel()
 {
 	myCurrentLevel = new ServerLevel();
 	ReadLevel(myLevelPaths[myCurrentID]);
-	myCurrentLevel->Init();
+	myCurrentLevel->Init(myMissionXMLPath);
 #ifdef THREAD_PHYSICS
 	Prism::PhysicsInterface::GetInstance()->InitThread();
 #endif
@@ -52,6 +53,8 @@ void ServerLevelFactory::ReadLevel(const std::string& aLevelPath)
 	reader.OpenDocument(aLevelPath);
 	tinyxml2::XMLElement* levelElement = reader.ForceFindFirstChild("root");
 	levelElement = reader.ForceFindFirstChild(levelElement, "scene");
+
+	reader.ForceReadAttribute(reader.ForceFindFirstChild(levelElement, "missionXML"), "path", myMissionXMLPath);
 
 	LoadRooms(reader, levelElement);
 	LoadProps(reader, levelElement);
