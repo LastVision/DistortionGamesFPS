@@ -58,7 +58,9 @@ namespace Prism
 					std::stringstream ss;
 					ss << "Data/SHNodes/Node_" << x << "_" << y << "_" << z << ".dds";
 					CU::Vector3<float> pos = CU::Vector3<float>(x, y, z) + offset;
-					Texture* cubeMap = GenerateCubeMap(aRenderer, aScene, pos, ss.str());
+					//Texture* cubeMap = GenerateCubeMap(aRenderer, aScene, pos, ss.str());
+					Texture* cubeMap = new Texture();
+					cubeMap->LoadTexture("Data/church_cubemap.dds");
 					gridNodes[x][y][z] = GetSHGridNode(GenerateSHNode(cubeMap, pos));
 					SAFE_DELETE(cubeMap);
 				}
@@ -147,8 +149,11 @@ namespace Prism
 		
 		const Camera* sceneCamera = aScene->GetCamera();
 		Texture* cubemapTexture = new Texture();
-		cubemapTexture->CreateCubemap(32.f, 32.f);
-		cubemapTexture->CreateDepthStencilView(32.f, 32.f, 1);
+	/*	cubemapTexture->CreateCubemap(32.f, 32.f);
+		cubemapTexture->CreateDepthStencilView(32.f, 32.f, 1);*/
+
+		cubemapTexture->CreateCubemap(512.f, 512.f);
+		cubemapTexture->CreateDepthStencilView(512.f, 512.f, 1);
 
 
 		ID3D11DeviceContext* context = Engine::GetInstance()->GetContex();
