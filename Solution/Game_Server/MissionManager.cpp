@@ -118,11 +118,11 @@ void MissionManager::LoadMissions(const std::string& aMissionXMLPath)
 
 eActionEventType MissionManager::GetType(const std::string& aType)
 {
-	if (aType == "unlock")
+	if (aType == "remove")
 	{
 		return eActionEventType::UNLOCK;
 	}
-	else if (aType == "lock")
+	else if (aType == "add")
 	{
 		return eActionEventType::LOCK;
 	}

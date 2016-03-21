@@ -139,9 +139,10 @@ void ServerLevel::HandleTrigger(Entity& aFirstEntity, Entity& aSecondEntity)
 			myMissionManager->SetMission(firstTrigger->GetValue());
 			break;
 		}
+		aSecondEntity.SendNote<CollisionNote>(CollisionNote(&aFirstEntity));
+		aFirstEntity.SendNote<CollisionNote>(CollisionNote(&aSecondEntity));
 	}
 
-	aSecondEntity.SendNote<CollisionNote>(CollisionNote(&aFirstEntity));
-	aFirstEntity.SendNote<CollisionNote>(CollisionNote(&aSecondEntity));
+
 }
 
