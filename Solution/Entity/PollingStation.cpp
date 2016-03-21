@@ -58,12 +58,28 @@ Entity* PollingStation::FindClosestEntityToEntity(const Entity& anEntity)
 		{*/
 		toReturn = entities[i];
 
-
-
 		prevDistance = distance;
 		/*}*/
 	}
 	return  toReturn;
 }
 
+Entity* PollingStation::FindClosestPlayer(const CU::Vector3<float>& aPosition, float aMaxRange)
+{
+	Entity* toReturn = nullptr;
+
+	float currentMinDistance2 = FLT_MAX;
+
+	for each (Entity* player in myPlayers)
+	{
+		float distance2 = CU::Length2(player->GetOrientation().GetPos() - aPosition);
+		if (distance2 < aMaxRange * aMaxRange && distance2 < currentMinDistance2)
+		{
+			currentMinDistance2 = distance2;
+			toReturn = player;
+		}
+	}
+
+	return toReturn;
+}
 

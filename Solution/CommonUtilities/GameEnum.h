@@ -7,6 +7,13 @@ enum class eWeaponType
 	GRENADE_LAUNCHER
 };
 
+enum class eMissionType
+{
+	NONE,
+	KILL_X,
+	DEFEND,
+};
+
 enum class eActionEventType
 {
 	LOCK,

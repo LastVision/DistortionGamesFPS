@@ -10,6 +10,7 @@ public:
 	void AddEntity(Entity* anEntity);
 	Entity* FindClosestEntityToEntity(const Entity& anEntity);
 	Entity* FindClosestEntity(const CU::Vector3<float>& aPosition, float aMaxRange);
+	Entity* FindClosestPlayer(const CU::Vector3<float>& aPosition, float aMaxRange);
 
 	const CU::GrowingArray<Entity*>& GetPlayers() const;
 

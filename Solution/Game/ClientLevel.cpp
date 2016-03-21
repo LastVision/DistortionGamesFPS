@@ -50,7 +50,7 @@ ClientLevel::ClientLevel()
 	, myPointLights(64)
 	, myInitDone(false)
 {
-	Prism::PhysicsInterface::Create(std::bind(&ClientLevel::CollisionCallback, this, std::placeholders::_1, std::placeholders::_2), false);
+	Prism::PhysicsInterface::Create(std::bind(&ClientLevel::CollisionCallback, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3), false);
 	PostMaster::GetInstance()->Subscribe(eMessageType::NETWORK_ADD_PLAYER, this);
 	PostMaster::GetInstance()->Subscribe(eMessageType::NETWORK_REMOVE_PLAYER, this);
 	PostMaster::GetInstance()->Subscribe(eMessageType::NETWORK_ADD_ENEMY, this);
@@ -212,7 +212,7 @@ void ClientLevel::AddLight(Prism::PointLight* aLight)
 	myScene->AddLight(aLight);
 }
 
-void ClientLevel::CollisionCallback(PhysicsComponent* aFirst, PhysicsComponent* aSecond)
+void ClientLevel::CollisionCallback(PhysicsComponent* aFirst, PhysicsComponent* aSecond, bool aHasEntered)
 {
 	Entity& first = aFirst->GetEntity();
 	Entity& second = aSecond->GetEntity();
@@ -220,10 +220,13 @@ void ClientLevel::CollisionCallback(PhysicsComponent* aFirst, PhysicsComponent* 
 	switch (first.GetType())
 	{
 	case eEntityType::TRIGGER:
-		HandleTrigger(first, second);
+		HandleTrigger(first, second, aHasEntered);
 		break;
 	case eEntityType::EXPLOSION:
-		HandleExplosion(first, second);
+		if (aHasEntered == true)
+		{
+			HandleExplosion(first, second);
+		}
 		break;
 	}
 }
@@ -256,7 +259,7 @@ void ClientLevel::DebugMusic()
 	}
 }
 
-void ClientLevel::HandleTrigger(Entity& aFirstEntity, Entity& aSecondEntity)
+void ClientLevel::HandleTrigger(Entity& aFirstEntity, Entity& aSecondEntity, bool aHasEntered)
 {
 	TriggerComponent* firstTrigger = aFirstEntity.GetComponent<TriggerComponent>();
 	if (firstTrigger->GetTriggerType() == eTriggerType::UPGRADE && firstTrigger->GetTriggerType() == eTriggerType::HEALTH_PACK) 

@@ -20,12 +20,12 @@ public:
 
 	virtual void Update(const float aDeltaTime);
 
-	virtual void CollisionCallback(PhysicsComponent* aFirst, PhysicsComponent* aSecond) = 0;
+	virtual void CollisionCallback(PhysicsComponent* aFirst, PhysicsComponent* aSecond, bool aHasEntered) = 0;
 
 	void CleanUp();
 
 protected:
-	virtual void HandleTrigger(Entity& aFirstEntity, Entity& aSecondEntity) = 0;
+	virtual void HandleTrigger(Entity& aFirstEntity, Entity& aSecondEntity, bool aHasEntered) = 0;
 	void HandleExplosion(Entity& aFirstEntity, Entity& aSecondEntity);
 
 	CU::GrowingArray<Entity*> myActiveEntities;

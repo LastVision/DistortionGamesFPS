@@ -27,7 +27,7 @@ public:
 	void AddMissionEvent(ActionEvent aEvent);
 	void AddEndEvent(ActionEvent aEvent);
 
-	const std::string& GetMissionType() const;
+	const eMissionType GetMissionType() const;
 	virtual void AddValue(int aValue) = 0;
 
 protected:
@@ -37,10 +37,10 @@ protected:
 	CU::GrowingArray<ActionEvent> myEndEvents;
 	bool myShouldLoopMissionEvents;
 	int myCurrentMissionEvent;
-	std::string myMissionType;
+	eMissionType myMissionType;
 };
 
-inline const std::string& Mission::GetMissionType() const
+inline const eMissionType Mission::GetMissionType() const
 {
 	return myMissionType;
 }

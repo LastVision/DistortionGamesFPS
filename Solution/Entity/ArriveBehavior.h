@@ -4,7 +4,7 @@
 class ArriveBehavior : public Behavior
 {
 public:
-	ArriveBehavior(const Entity& anEntity);
+	ArriveBehavior(const Entity& anEntity, const AIComponentData& aData);
 	~ArriveBehavior();
 
 	const CU::Vector3<float>& Update(float aDelta) override;
@@ -12,10 +12,7 @@ public:
 
 private:
 
-	float myTargetRadius;
-	float mySlowRadius;
 	float myTimeToTarget;
-	float myMaxAcceleration;
 	bool myActive;
 };
 

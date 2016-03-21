@@ -39,7 +39,7 @@ namespace Prism
 	class PhysicsManager : public physx::debugger::comm::PvdConnectionHandler, public physx::PxSimulationEventCallback
 	{
 	public:
-		PhysicsManager(std::function<void(PhysicsComponent*, PhysicsComponent*)> anOnTriggerCallback, bool aIsServer);
+		PhysicsManager(std::function<void(PhysicsComponent*, PhysicsComponent*, bool)> anOnTriggerCallback, bool aIsServer);
 		~PhysicsManager();
 
 #ifdef THREAD_PHYSICS
@@ -146,17 +146,19 @@ namespace Prism
 		struct OnTriggerResult
 		{
 			OnTriggerResult() {}
-			OnTriggerResult(PhysicsComponent* aFirstPhysicsComponent, PhysicsComponent* aSecondPhysicsComponent)
+			OnTriggerResult(PhysicsComponent* aFirstPhysicsComponent, PhysicsComponent* aSecondPhysicsComponent, bool aHasEntered)
 				: myFirstPhysicsComponent(aFirstPhysicsComponent)
 				, mySecondPhysicsComponent(aSecondPhysicsComponent)
+				, myHasEntered(aHasEntered)
 			{}
 			PhysicsComponent* myFirstPhysicsComponent;
 			PhysicsComponent* mySecondPhysicsComponent;
 			//std::function<void(PhysicsComponent*, const CU::Vector3<float>&, const CU::Vector3<float>&)> myFunctionToCall;
+			bool myHasEntered;
 		};
 		CU::GrowingArray<OnTriggerResult> myOnTriggerResults[2];
 
-		std::function<void(PhysicsComponent*, PhysicsComponent*)> myOnTriggerCallback;
+		std::function<void(PhysicsComponent*, PhysicsComponent*, bool)> myOnTriggerCallback;
 
 		struct MoveJob
 		{

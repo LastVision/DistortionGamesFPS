@@ -5,6 +5,7 @@
 Subscriber::Subscriber(){}
 Subscriber::~Subscriber(){}
 
+void Subscriber::ReceiveMessage(const DefendTouchMessage&){};
 void Subscriber::ReceiveMessage(const FadeMessage&){}
 void Subscriber::ReceiveMessage(const EmitterMessage&){}
 void Subscriber::ReceiveMessage(const EnemyKilledMessage&){}

@@ -29,7 +29,7 @@ namespace Prism
 	class PhysicsInterface
 	{
 	public:
-		static void Create(std::function<void(PhysicsComponent*, PhysicsComponent*)> anOnTriggerCallback, bool aIsServer);
+		static void Create(std::function<void(PhysicsComponent*, PhysicsComponent*, bool)> anOnTriggerCallback, bool aIsServer);
 		static void Destroy();
 		static PhysicsInterface* GetInstance();
 
@@ -73,7 +73,7 @@ namespace Prism
 		// Requires PhysX includes!!
 		PhysicsManager* GetManager() const;
 
-		PhysicsInterface(std::function<void(PhysicsComponent*, PhysicsComponent*)> anOnTriggerCallback, bool aIsServer);
+		PhysicsInterface(std::function<void(PhysicsComponent*, PhysicsComponent*, bool)> anOnTriggerCallback, bool aIsServer);
 		~PhysicsInterface();
 		PhysicsManager* myManager;
 		static PhysicsInterface* myInstance;

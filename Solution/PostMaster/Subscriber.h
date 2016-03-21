@@ -1,6 +1,6 @@
 #pragma once
 
-
+struct DefendTouchMessage;
 struct FadeMessage;
 struct EmitterMessage;
 struct EnemyKilledMessage;
@@ -18,6 +18,7 @@ public:
 	Subscriber();
 	~Subscriber();
 
+	virtual void ReceiveMessage(const DefendTouchMessage& aMessage);
 	virtual void ReceiveMessage(const FadeMessage& aMessage);
 	virtual void ReceiveMessage(const EmitterMessage& aMessage);
 	virtual void ReceiveMessage(const EnemyKilledMessage& aMessage);

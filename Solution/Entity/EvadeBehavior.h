@@ -4,7 +4,7 @@
 class EvadeBehavior : public Behavior
 {
 public:
-	EvadeBehavior(const Entity& anEntity);
+	EvadeBehavior(const Entity& anEntity, const AIComponentData& aData);
 	~EvadeBehavior();
 
 	const CU::Vector3<float>& Update(float aDelta) override;

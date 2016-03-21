@@ -2,6 +2,7 @@
 #include "ServerLevel.h"
 
 #include <CollisionNote.h>
+#include <DefendTouchMessage.h>
 #include <Entity.h>
 #include <EntityFactory.h>
 #include "MissionManager.h"
@@ -21,7 +22,7 @@ ServerLevel::ServerLevel()
 	: myLoadedClients(16)
 	, myAllClientsLoaded(false)
 {
-	Prism::PhysicsInterface::Create(std::bind(&ServerLevel::CollisionCallback, this, std::placeholders::_1, std::placeholders::_2), true);
+	Prism::PhysicsInterface::Create(std::bind(&ServerLevel::CollisionCallback, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3), true);
 	myMissionManager = new MissionManager("Data/Level/level_01/level_01_mission.xml");
 	ServerNetworkManager::GetInstance()->Subscribe(eNetMessageType::ON_CONNECT, this);
 	ServerNetworkManager::GetInstance()->Subscribe(eNetMessageType::LEVEL_LOADED, this);
@@ -62,7 +63,7 @@ void ServerLevel::Update(const float aDeltaTime)
 	}
 }
 
-void ServerLevel::CollisionCallback(PhysicsComponent* aFirst, PhysicsComponent* aSecond)
+void ServerLevel::CollisionCallback(PhysicsComponent* aFirst, PhysicsComponent* aSecond, bool aHasEntered)
 {
 	Entity& first = aFirst->GetEntity();
 	Entity& second = aSecond->GetEntity();
@@ -70,10 +71,13 @@ void ServerLevel::CollisionCallback(PhysicsComponent* aFirst, PhysicsComponent* 
 	switch (first.GetType())
 	{
 	case eEntityType::TRIGGER:
-		HandleTrigger(first, second);
+		HandleTrigger(first, second, aHasEntered);
 		break;
 	case eEntityType::EXPLOSION:
-		SharedLevel::HandleExplosion(first, second);
+		if (aHasEntered == true)
+		{
+			SharedLevel::HandleExplosion(first, second);
+		}
 		break;
 
 
@@ -118,30 +122,52 @@ void ServerLevel::ReceiveMessage(const SetActiveMessage& aMessage)
 	}
 }
 
-void ServerLevel::HandleTrigger(Entity& aFirstEntity, Entity& aSecondEntity)
+void ServerLevel::HandleTrigger(Entity& aFirstEntity, Entity& aSecondEntity, bool aHasEntered)
 {
 	TriggerComponent* firstTrigger = aFirstEntity.GetComponent<TriggerComponent>();
-	if (aSecondEntity.GetType() == eEntityType::UNIT && aSecondEntity.GetSubType() == "player")
+	if (aHasEntered == true)
 	{
-		switch (firstTrigger->GetTriggerType())
+		if (aSecondEntity.GetType() == eEntityType::UNIT && aSecondEntity.GetSubType() == "player")
 		{
-		case eTriggerType::UNLOCK:
-			SharedNetworkManager::GetInstance()->AddMessage(NetMessageSetActive(false, firstTrigger->GetValue()));
-			myActiveEntitiesMap[firstTrigger->GetValue()]->GetComponent<PhysicsComponent>()->RemoveFromScene();
-			// do "open" animation
-			break;
-		case eTriggerType::LOCK:
-			SharedNetworkManager::GetInstance()->AddMessage(NetMessageSetActive(true, firstTrigger->GetValue()));
-			myActiveEntitiesMap[firstTrigger->GetValue()]->GetComponent<PhysicsComponent>()->AddToScene();
-			// do "close" animation
-			break;
-		case eTriggerType::MISSION:
-			myMissionManager->SetMission(firstTrigger->GetValue());
-			break;
+			switch (firstTrigger->GetTriggerType())
+			{
+			case eTriggerType::UNLOCK:
+				SharedNetworkManager::GetInstance()->AddMessage(NetMessageSetActive(false, firstTrigger->GetValue()));
+				myActiveEntitiesMap[firstTrigger->GetValue()]->GetComponent<PhysicsComponent>()->RemoveFromScene();
+				// do "open" animation
+				break;
+			case eTriggerType::LOCK:
+				SharedNetworkManager::GetInstance()->AddMessage(NetMessageSetActive(true, firstTrigger->GetValue()));
+				myActiveEntitiesMap[firstTrigger->GetValue()]->GetComponent<PhysicsComponent>()->AddToScene();
+				// do "close" animation
+				break;
+			case eTriggerType::MISSION:
+				myMissionManager->SetMission(firstTrigger->GetValue());
+				break;
+			}
+			aSecondEntity.SendNote<CollisionNote>(CollisionNote(&aFirstEntity));
+			aFirstEntity.SendNote<CollisionNote>(CollisionNote(&aSecondEntity));
+		}
+		else if (aSecondEntity.GetType() == eEntityType::UNIT && aSecondEntity.GetSubType() != "player")
+		{
+			if (myMissionManager->GetCurrentMissionType() == eMissionType::DEFEND)
+			{
+				PostMaster::GetInstance()->SendMessage<DefendTouchMessage>(DefendTouchMessage(true));
+			}
 		}
 	}
+	else
+	{
+		if (aSecondEntity.GetType() == eEntityType::UNIT && aSecondEntity.GetSubType() != "player")
+		{
+			if (myMissionManager->GetCurrentMissionType() == eMissionType::DEFEND)
+			{
+				PostMaster::GetInstance()->SendMessage<DefendTouchMessage>(DefendTouchMessage(false));
+			}
+		}
+	}
+	
 
-	aSecondEntity.SendNote<CollisionNote>(CollisionNote(&aFirstEntity));
-	aFirstEntity.SendNote<CollisionNote>(CollisionNote(&aSecondEntity));
+
 }
 

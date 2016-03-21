@@ -15,9 +15,11 @@
 
 void ComponentLoader::LoadAIComponent(XMLReader& aDocument, tinyxml2::XMLElement* aSourceElement, AIComponentData& aOutputData)
 {
-	aDocument;
-	aSourceElement;
 	aOutputData.myExistsInEntity = true;
+
+	aDocument.ForceReadAttribute(aDocument.ForceFindFirstChild(aSourceElement, "VisionRange"), "value", aOutputData.myVisionRange);
+	aDocument.ForceReadAttribute(aDocument.ForceFindFirstChild(aSourceElement, "ArriveStopRange"), "value", aOutputData.myArriveStopRange);
+	aDocument.ForceReadAttribute(aDocument.ForceFindFirstChild(aSourceElement, "Speed"), "value", aOutputData.mySpeed);
 }
 
 void ComponentLoader::LoadAnimationComponent(XMLReader& aDocument, tinyxml2::XMLElement* aSourceElement, AnimationComponentData& aOutputData)
