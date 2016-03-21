@@ -203,9 +203,9 @@ void ClientNetworkManager::ReceiveNetworkMessage(const NetMessageRequestConnect&
 
 void ClientNetworkManager::ReceiveNetworkMessage(const NetMessageOnJoin& aMessage, const sockaddr_in& aSenderAddress)
 {
-	if (aMessage.mySenderID != myGID)
+	if (aMessage.myOtherClientID != myGID)
 	{
-		myClients.Add(OtherClients(aMessage.myName, aMessage.mySenderID));
+		myClients.Add(OtherClients(aMessage.myName, aMessage.myOtherClientID));
 	}
 }
 

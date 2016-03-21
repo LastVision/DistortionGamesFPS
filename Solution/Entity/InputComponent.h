@@ -52,6 +52,8 @@ private:
 
 	float mySprintEnergy;
 	bool myEnergyOverheat;
+
+	eEntityState myPreviousState;
 };
 
 inline eComponentType InputComponent::GetTypeStatic()

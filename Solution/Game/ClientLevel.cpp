@@ -220,6 +220,11 @@ void ClientLevel::ReceiveNetworkMessage(const NetMessageSetActive& aMessage, con
 
 void ClientLevel::ReceiveNetworkMessage(const NetMessageEntityState& aMessage, const sockaddr_in&)
 {
+	if (aMessage.myGID == myPlayer->GetGID())
+	{
+		return;
+	}
+
 	if (myActiveUnitsMap.find(aMessage.myGID) == myActiveUnitsMap.end())
 	{
 		DL_ASSERT("ENTITY GID NOT FOUND IN CLIENT LEVEL!");
