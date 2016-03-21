@@ -21,6 +21,7 @@ namespace Prism
 		, myAnimation(nullptr)
 		, myTotalTime(0.f)
 		, myShouldRender(true)
+		, myExistInMultipleRooms(false)
 	{
 	}
 

@@ -31,6 +31,9 @@
     <Filter Include="Weapon">
       <UniqueIdentifier>{bb49f49e-fabb-452b-8e46-c4a02fac7e1d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Behavior">
+      <UniqueIdentifier>{3a0fb7b1-9c95-4a4d-964f-ab01c665a244}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -100,6 +103,18 @@
     </ClCompile>
     <ClCompile Include="ProjectileComponent.cpp">
       <Filter>Component</Filter>
+    </ClCompile>
+    <ClCompile Include="ArriveBehavior.cpp">
+      <Filter>Behavior</Filter>
+    </ClCompile>
+    <ClCompile Include="Behavior.cpp">
+      <Filter>Behavior</Filter>
+    </ClCompile>
+    <ClCompile Include="BlendedBehavior.cpp">
+      <Filter>Behavior</Filter>
+    </ClCompile>
+    <ClCompile Include="EvadeBehavior.cpp">
+      <Filter>Behavior</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -227,6 +242,18 @@
     </ClInclude>
     <ClInclude Include="AIComponentData.h">
       <Filter>EntityFactory\EntityData\ComponentData</Filter>
+    </ClInclude>
+    <ClInclude Include="ArriveBehavior.h">
+      <Filter>Behavior</Filter>
+    </ClInclude>
+    <ClInclude Include="Behavior.h">
+      <Filter>Behavior</Filter>
+    </ClInclude>
+    <ClInclude Include="BlendedBehavior.h">
+      <Filter>Behavior</Filter>
+    </ClInclude>
+    <ClInclude Include="EvadeBehavior.h">
+      <Filter>Behavior</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

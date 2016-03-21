@@ -25,7 +25,6 @@ namespace GUI
 		RadioButtonContainer(XMLReader* aReader, tinyxml2::XMLElement* anXMLElement);
 		~RadioButtonContainer();
 
-		void Update(float aDelta) override;
 		void Render(const CU::Vector2<float>& aParentPosition) override;
 
 		Widget* MouseIsOver(const CU::Vector2<float>& aPosition) override;

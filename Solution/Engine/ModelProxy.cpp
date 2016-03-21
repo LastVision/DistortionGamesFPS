@@ -53,4 +53,13 @@ namespace Prism
 	{
 		myModel->SetEffect(aEffect);
 	}
+
+	float ModelProxy::GetRadius() const
+	{
+		if (myModel != nullptr)
+		{
+			return myModel->GetRadius();
+		}
+		return 0.f;
+	}
 }

@@ -12,6 +12,7 @@
 
 #include "DebugDrawer.h"
 
+#include <CollisionNote.h>
 #include "EntityFactory.h"
 #include "Entity.h"
 #include <EntityData.h>
@@ -35,7 +36,9 @@
 
 #include <PhysicsInterface.h>
 #include <PostMaster.h>
-
+#include <TriggerComponent.h>
+#include <UpgradeComponent.h>
+#include <UpgradeNote.h>
 #include "EmitterManager.h"
 #include <EmitterMessage.h>
 
@@ -47,7 +50,7 @@ ClientLevel::ClientLevel()
 	, myPointLights(64)
 	, myInitDone(false)
 {
-	Prism::PhysicsInterface::Create(std::bind(&SharedLevel::CollisionCallback, this, std::placeholders::_1, std::placeholders::_2), false);
+	Prism::PhysicsInterface::Create(std::bind(&ClientLevel::CollisionCallback, this, std::placeholders::_1, std::placeholders::_2), false);
 	PostMaster::GetInstance()->Subscribe(eMessageType::NETWORK_ADD_PLAYER, this);
 	PostMaster::GetInstance()->Subscribe(eMessageType::NETWORK_REMOVE_PLAYER, this);
 	PostMaster::GetInstance()->Subscribe(eMessageType::NETWORK_ADD_ENEMY, this);
@@ -207,6 +210,22 @@ void ClientLevel::AddLight(Prism::PointLight* aLight)
 	myScene->AddLight(aLight);
 }
 
+void ClientLevel::CollisionCallback(PhysicsComponent* aFirst, PhysicsComponent* aSecond)
+{
+	Entity& first = aFirst->GetEntity();
+	Entity& second = aSecond->GetEntity();
+
+	switch (first.GetType())
+	{
+	case eEntityType::TRIGGER:
+		HandleTrigger(first, second);
+		break;
+	case eEntityType::EXPLOSION:
+		HandleExplosion(first, second);
+		break;
+	}
+}
+
 void ClientLevel::DebugMusic()
 {
 	if (CU::InputWrapper::GetInstance()->KeyDown(DIK_4) == true)
@@ -233,6 +252,20 @@ void ClientLevel::DebugMusic()
 	{
 		Prism::Audio::AudioInterface::GetInstance()->PostEvent("FadeOutSecondLayer", 0);
 	}
+}
+
+void ClientLevel::HandleTrigger(Entity& aFirstEntity, Entity& aSecondEntity)
+{
+	TriggerComponent* firstTrigger = aFirstEntity.GetComponent<TriggerComponent>();
+	if (firstTrigger->GetTriggerType() == eTriggerType::UPGRADE && firstTrigger->GetTriggerType() == eTriggerType::HEALTH_PACK) 
+	{
+		if (aSecondEntity.GetType() == eEntityType::PLAYER)
+		{
+			aSecondEntity.SendNote<UpgradeNote>(aFirstEntity.GetComponent<UpgradeComponent>()->GetData());
+		}
+	}
+	aSecondEntity.SendNote<CollisionNote>(CollisionNote(&aFirstEntity));
+	aFirstEntity.SendNote<CollisionNote>(CollisionNote(&aSecondEntity));
 }
 
 void ClientLevel::CreatePlayers()

@@ -48,5 +48,12 @@
     <ClInclude Include="EmitterMessage.h">
       <Filter>Message</Filter>
     </ClInclude>
+    <ClInclude Include="OnRadioButtonMessage.h" />
+    <ClInclude Include="SetActiveMessage.h">
+      <Filter>Message</Filter>
+    </ClInclude>
+    <ClInclude Include="EnemyKilledMessage.h">
+      <Filter>Message</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

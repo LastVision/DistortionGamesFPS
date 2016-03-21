@@ -47,6 +47,9 @@ namespace Prism
 
 		void SetShouldRender(bool aValue);
 
+		bool GetExistInMultipleRooms() const;
+		void SetExistInMultipleRooms(bool aValue);
+
 	private:
 		void operator=(Instance&) = delete;
 
@@ -67,6 +70,8 @@ namespace Prism
 		CU::StaticArray<CU::Matrix44<float>, MAX_NR_OF_BONES> myBones;
 
 		bool myShouldRender;
+
+		bool myExistInMultipleRooms;
 	};
 
 	inline const CU::Matrix44f& Instance::GetOrientation() const
@@ -77,5 +82,15 @@ namespace Prism
 	inline void Instance::SetShouldRender(bool aValue)
 	{
 		myShouldRender = aValue;
+	}
+
+	inline bool Instance::GetExistInMultipleRooms() const
+	{
+		return myExistInMultipleRooms;
+	}
+
+	inline void Instance::SetExistInMultipleRooms(bool aValue)
+	{
+		myExistInMultipleRooms = aValue;
 	}
 }

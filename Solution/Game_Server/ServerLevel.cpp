@@ -1,29 +1,41 @@
 #include "stdafx.h"
 #include "ServerLevel.h"
 
+#include <CollisionNote.h>
 #include <Entity.h>
 #include <EntityFactory.h>
+#include "MissionManager.h"
 #include <NetMessageRequestConnect.h>
 #include <NetMessageLevelLoaded.h>
+#include <NetMessageSetActive.h>
 #include <NetworkComponent.h>
 #include <PhysicsInterface.h>
+#include <PhysicsComponent.h>
 #include "ServerNetworkManager.h"
+#include <TriggerComponent.h>
+#include <PostMaster.h>
+#include <SetActiveMessage.h>
+
 #include <PollingStation.h>
 ServerLevel::ServerLevel()
 	: myLoadedClients(16)
 	, myAllClientsLoaded(false)
 {
-	Prism::PhysicsInterface::Create(std::bind(&SharedLevel::CollisionCallback, this, std::placeholders::_1, std::placeholders::_2), true);
-
+	Prism::PhysicsInterface::Create(std::bind(&ServerLevel::CollisionCallback, this, std::placeholders::_1, std::placeholders::_2), true);
+	myMissionManager = new MissionManager("Data/Level/level_01/level_01_mission.xml");
 	ServerNetworkManager::GetInstance()->Subscribe(eNetMessageType::ON_CONNECT, this);
 	ServerNetworkManager::GetInstance()->Subscribe(eNetMessageType::LEVEL_LOADED, this);
+	PostMaster::GetInstance()->Subscribe(eMessageType::SET_ACTIVE, this);
 }
 
 ServerLevel::~ServerLevel()
 {
 	PollingStation::Destroy();
+	SAFE_DELETE(myMissionManager);
 	ServerNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::ON_CONNECT, this);
 	ServerNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::LEVEL_LOADED, this);
+
+	PostMaster::GetInstance()->UnSubscribe(eMessageType::SET_ACTIVE, this);
 }
 
 void ServerLevel::Init()
@@ -43,7 +55,24 @@ void ServerLevel::Update(const float aDeltaTime)
 	if (myAllClientsLoaded == true && Prism::PhysicsInterface::GetInstance()->GetInitDone() == true)
 	{
 		__super::Update(aDeltaTime);
-		
+		myMissionManager->Update(aDeltaTime);
+		Prism::PhysicsInterface::GetInstance()->EndFrame();
+	}
+}
+
+void ServerLevel::CollisionCallback(PhysicsComponent* aFirst, PhysicsComponent* aSecond)
+{
+	Entity& first = aFirst->GetEntity();
+	Entity& second = aSecond->GetEntity();
+
+	switch (first.GetType())
+	{
+	case eEntityType::TRIGGER:
+		HandleTrigger(first, second);
+		break;
+	case eEntityType::EXPLOSION:
+		SharedLevel::HandleExplosion(first, second);
+		break;
 	//	PollingStation::GetInstance()->FindClosestEntityToEntity(*myPlayers[0]);
 
 
@@ -76,3 +105,43 @@ void ServerLevel::ReceiveNetworkMessage(const NetMessageLevelLoaded& aMessage, c
 		//}
 	}
 }
+
+void ServerLevel::ReceiveMessage(const SetActiveMessage& aMessage)
+{
+	if (aMessage.myShouldActivate == true)
+	{
+		myActiveEntitiesMap[aMessage.myGID]->GetComponent<PhysicsComponent>()->AddToScene();
+	}
+	else
+	{
+		myActiveEntitiesMap[aMessage.myGID]->GetComponent<PhysicsComponent>()->RemoveFromScene();
+	}
+}
+
+void ServerLevel::HandleTrigger(Entity& aFirstEntity, Entity& aSecondEntity)
+{
+	TriggerComponent* firstTrigger = aFirstEntity.GetComponent<TriggerComponent>();
+	if (aSecondEntity.GetType() == eEntityType::UNIT && aSecondEntity.GetSubType() == "player")
+	{
+		switch (firstTrigger->GetTriggerType())
+		{
+		case eTriggerType::UNLOCK:
+			SharedNetworkManager::GetInstance()->AddMessage(NetMessageSetActive(false, firstTrigger->GetValue()));
+			myActiveEntitiesMap[firstTrigger->GetValue()]->GetComponent<PhysicsComponent>()->RemoveFromScene();
+			// do "open" animation
+			break;
+		case eTriggerType::LOCK:
+			SharedNetworkManager::GetInstance()->AddMessage(NetMessageSetActive(true, firstTrigger->GetValue()));
+			myActiveEntitiesMap[firstTrigger->GetValue()]->GetComponent<PhysicsComponent>()->AddToScene();
+			// do "close" animation
+			break;
+		case eTriggerType::MISSION:
+			myMissionManager->SetMission(firstTrigger->GetValue());
+			break;
+		}
+	}
+
+	aSecondEntity.SendNote<CollisionNote>(CollisionNote(&aFirstEntity));
+	aFirstEntity.SendNote<CollisionNote>(CollisionNote(&aSecondEntity));
+}
+
