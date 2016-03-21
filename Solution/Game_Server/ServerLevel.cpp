@@ -10,6 +10,7 @@
 #include <NetMessageRequestConnect.h>
 #include <NetMessageLevelLoaded.h>
 #include <NetMessageSetActive.h>
+#include <NetMessageEntityState.h>
 #include <NetworkComponent.h>
 #include <PhysicsInterface.h>
 #include <PhysicsComponent.h>
@@ -27,6 +28,7 @@ ServerLevel::ServerLevel()
 	Prism::PhysicsInterface::Create(std::bind(&ServerLevel::CollisionCallback, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3), true);
 	ServerNetworkManager::GetInstance()->Subscribe(eNetMessageType::ON_CONNECT, this);
 	ServerNetworkManager::GetInstance()->Subscribe(eNetMessageType::LEVEL_LOADED, this);
+	ServerNetworkManager::GetInstance()->Subscribe(eNetMessageType::ENTITY_STATE, this);
 	PostMaster::GetInstance()->Subscribe(eMessageType::SET_ACTIVE, this);
 }
 
@@ -36,6 +38,7 @@ ServerLevel::~ServerLevel()
 	SAFE_DELETE(myMissionManager);
 	ServerNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::ON_CONNECT, this);
 	ServerNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::LEVEL_LOADED, this);
+	ServerNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::ENTITY_STATE, this);
 
 	PostMaster::GetInstance()->UnSubscribe(eMessageType::SET_ACTIVE, this);
 }
@@ -114,6 +117,14 @@ void ServerLevel::ReceiveNetworkMessage(const NetMessageLevelLoaded& aMessage, c
 		//{
 		//	ServerNetworkManager::GetInstance()->AddMessage(NetMessageAddEnemy(e->GetOrientation().GetPos(), e->GetGID()));
 		//}
+	}
+}
+
+void ServerLevel::ReceiveNetworkMessage(const NetMessageEntityState& aMessage, const sockaddr_in&)
+{
+	for each (const Connection& client in ServerNetworkManager::GetInstance()->GetClients())
+	{
+		ServerNetworkManager::GetInstance()->AddMessage<NetMessageEntityState>(aMessage, client.myID);
 	}
 }
 

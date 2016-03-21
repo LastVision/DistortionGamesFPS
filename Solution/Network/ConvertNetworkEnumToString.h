@@ -39,6 +39,8 @@ static std::string ConvertNetworkEnumToString(eNetMessageType aType)
 		return "ON DEATH";
 	case eNetMessageType::SET_ACTIVE:
 		return "SET ACTIVE";
+	case eNetMessageType::ENTITY_STATE:
+		return "ENTITY STATE";
 	case eNetMessageType::_COUNT:
 		DL_ASSERT("_COUNT not used as regular enum value");
 	default:

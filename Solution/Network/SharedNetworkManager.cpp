@@ -4,6 +4,7 @@
 #include "NetMessage.h"
 #include "NetMessageImportantReply.h"
 #include "NetMessageConnectReply.h"
+#include "NetMessageEntityState.h"
 #include "NetMessageRequestConnect.h"
 #include "NetMessageOnJoin.h"
 #include "NetMessageDisconnect.h"
@@ -289,6 +290,9 @@ void SharedNetworkManager::HandleMessage()
 			break;
 		case eNetMessageType::SET_ACTIVE:
 			UnpackAndHandle(NetMessageSetActive(), buffer);
+			break;
+		case eNetMessageType::ENTITY_STATE:
+			UnpackAndHandle(NetMessageEntityState(), buffer);
 			break;
 		default:
 			DL_ASSERT("Unhandled network message type");

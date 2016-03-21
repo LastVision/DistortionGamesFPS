@@ -104,5 +104,8 @@
       <Filter>Messages</Filter>
     </ClInclude>
     <ClInclude Include="ConvertNetworkEnumToString.h" />
+    <ClInclude Include="NetMessageEntityState.h">
+      <Filter>Messages</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

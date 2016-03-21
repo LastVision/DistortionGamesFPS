@@ -165,6 +165,7 @@ template<typename T>
 inline void SharedNetworkManager::AddMessage(T aMessage, unsigned int aTargetID)
 {
 	aMessage.myTargetID = aTargetID;
+	aMessage.mySenderID = 0;
 	if (myIsServer == false)
 	{
 		aMessage.mySenderID = myGID;

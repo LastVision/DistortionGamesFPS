@@ -23,6 +23,7 @@
 
 #include <NetMessageConnectReply.h>
 #include <NetMessageDisconnect.h>
+#include <NetMessageEntityState.h>
 #include <NetMessageLevelLoaded.h>
 #include <NetMessageOnDeath.h>
 #include <NetMessageOnHit.h>
@@ -58,6 +59,7 @@ ClientLevel::ClientLevel()
 
 	ClientNetworkManager::GetInstance()->Subscribe(eNetMessageType::ON_DEATH, this);
 	ClientNetworkManager::GetInstance()->Subscribe(eNetMessageType::SET_ACTIVE, this);
+	ClientNetworkManager::GetInstance()->Subscribe(eNetMessageType::ENTITY_STATE, this);
 
 	myScene = new Prism::Scene();
 }
@@ -80,6 +82,7 @@ ClientLevel::~ClientLevel()
 
 	ClientNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::ON_DEATH, this);
 	ClientNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::SET_ACTIVE, this);
+	ClientNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::ENTITY_STATE, this);
 
 	myInstances.DeleteAll();
 	myPointLights.DeleteAll();
@@ -116,6 +119,15 @@ void ClientLevel::Update(const float aDeltaTime)
 		myInitDone = true;
 		ClientNetworkManager::GetInstance()->AddMessage(NetMessageLevelLoaded());
 	}
+
+	//if (CU::InputWrapper::GetInstance()->KeyDown(DIK_U))
+	//{
+	//	myActiveEnemies.GetLast()->SetState(eEntityState::WALK);
+	//}
+	//if (CU::InputWrapper::GetInstance()->KeyDown(DIK_Y))
+	//{
+	//	myActiveEnemies.GetLast()->SetState(eEntityState::ATTACK);
+	//}
 
 	SharedLevel::Update(aDeltaTime);
 	myPlayer->GetComponent<FirstPersonRenderComponent>()->UpdateCoOpPositions(myPlayers);
@@ -205,6 +217,21 @@ void ClientLevel::ReceiveNetworkMessage(const NetMessageSetActive& aMessage, con
 	}
 }
 
+void ClientLevel::ReceiveNetworkMessage(const NetMessageEntityState& aMessage, const sockaddr_in&)
+{
+	if (aMessage.myGID == myPlayer->GetGID())
+	{
+		return;
+	}
+
+	if (myActiveUnitsMap.find(aMessage.myGID) == myActiveUnitsMap.end())
+	{
+		DL_ASSERT("ENTITY GID NOT FOUND IN CLIENT LEVEL!");
+	}
+
+	myActiveUnitsMap[aMessage.myGID]->SetState(static_cast<eEntityState>(aMessage.myEntityState));
+}
+
 void ClientLevel::AddLight(Prism::PointLight* aLight)
 {
 	myPointLights.Add(aLight);
@@ -285,5 +312,6 @@ void ClientLevel::CreatePlayers()
 		newPlayer->AddToScene();
 		newPlayer->Reset();
 		myPlayers.Add(newPlayer);
+		myActiveUnitsMap[newPlayer->GetGID()] = newPlayer;
 	}
 }

@@ -112,7 +112,7 @@ enum class ePropType
 
 };
 
-enum class eEntityState : int
+enum class eEntityState : unsigned char
 {
 	IDLE,
 	WALK,

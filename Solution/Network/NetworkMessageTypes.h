@@ -24,6 +24,7 @@ enum class eNetMessageType
 	ON_DEATH,
 
 	SET_ACTIVE,
+	ENTITY_STATE,
 
 	_COUNT,
 };
@@ -61,4 +62,6 @@ inline OtherClients::OtherClients(const std::string& aName, unsigned int anID)
 	: myName(aName)
 	, myID(anID)
 {
+	int apa = 4;
+	apa++;
 }
