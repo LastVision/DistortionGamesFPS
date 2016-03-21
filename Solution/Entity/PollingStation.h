@@ -8,6 +8,8 @@ public:
 	static void Destroy();
 
 	void AddEntity(Entity* anEntity);
+	void RemovePlayer(Entity* aPlayer);
+
 	Entity* FindClosestEntityToEntity(const Entity& anEntity);
 	Entity* FindClosestEntity(const CU::Vector3<float>& aPosition, float aMaxRange);
 	Entity* FindClosestPlayer(const CU::Vector3<float>& aPosition, float aMaxRange);

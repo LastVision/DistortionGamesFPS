@@ -5,6 +5,7 @@
 #include <DefendTouchMessage.h>
 #include <Entity.h>
 #include <EntityFactory.h>
+#include <HealthComponent.h>
 #include "MissionManager.h"
 #include <NetMessageRequestConnect.h>
 #include <NetMessageLevelLoaded.h>
@@ -12,6 +13,7 @@
 #include <NetworkComponent.h>
 #include <PhysicsInterface.h>
 #include <PhysicsComponent.h>
+#include <ProjectileComponent.h>
 #include "ServerNetworkManager.h"
 #include <TriggerComponent.h>
 #include <PostMaster.h>
@@ -46,7 +48,6 @@ void ServerLevel::Init(const std::string& aMissionXMLPath)
 		newPlayer->Reset();
 		newPlayer->GetComponent<NetworkComponent>()->SetPlayer(true);
 		myPlayers.Add(newPlayer);
-		PollingStation::GetInstance()->AddEntity(newPlayer);
 
 		myMissionManager = new MissionManager(aMissionXMLPath);
 	}
@@ -80,8 +81,13 @@ void ServerLevel::CollisionCallback(PhysicsComponent* aFirst, PhysicsComponent* 
 			SharedLevel::HandleExplosion(first, second);
 		}
 		break;
-
-
+	case eEntityType::BULLET:
+		if (second.GetComponent<HealthComponent>() != nullptr)
+		{
+			second.GetComponent<HealthComponent>()->TakeDamage(first.GetComponent<ProjectileComponent>()->GetDamage());
+		}
+		first.Kill();
+		break;
 	}
 }
 

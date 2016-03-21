@@ -71,7 +71,7 @@ void Shotgun::HandleRaycast(PhysicsComponent* aComponent, const CU::Vector3<floa
 			aComponent->AddForce(aDirection, myForceStrength);
 		}
 		//aComponent->GetEntity().SendNote<DamageNote>(DamageNote(myDamage));
-		SharedNetworkManager::GetInstance()->AddMessage(NetMessageOnHit(eNetMessageType::ENEMY_ON_HIT, float(myDamage), aComponent->GetEntity().GetGID()));
+		SharedNetworkManager::GetInstance()->AddMessage(NetMessageOnHit(myDamage, aComponent->GetEntity().GetGID()));
 		PostMaster::GetInstance()->SendMessage(EmitterMessage("Shotgun", aHitPosition));
 	}
 }

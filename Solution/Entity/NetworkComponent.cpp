@@ -27,16 +27,14 @@ NetworkComponent::NetworkComponent(Entity& anEntity, CU::Matrix44<float>& anOrie
 	mySecondPosition = { 1.f, 0.5f, -56.f };
 	mySecondPosition2 = { 0.f, 0.f, 0.f };
 	SharedNetworkManager::GetInstance()->Subscribe(eNetMessageType::POSITION, this);
-	SharedNetworkManager::GetInstance()->Subscribe(eNetMessageType::PLAYER_ON_HIT, this);
-	SharedNetworkManager::GetInstance()->Subscribe(eNetMessageType::ENEMY_ON_HIT, this);
+	SharedNetworkManager::GetInstance()->Subscribe(eNetMessageType::ON_HIT, this);
 }
 
 
 NetworkComponent::~NetworkComponent()
 {
 	SharedNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::POSITION, this);
-	SharedNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::PLAYER_ON_HIT, this);
-	SharedNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::ENEMY_ON_HIT, this);
+	SharedNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::ON_HIT, this);
 }
 
 void NetworkComponent::Reset()

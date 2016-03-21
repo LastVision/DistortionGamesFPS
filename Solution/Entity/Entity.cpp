@@ -6,13 +6,16 @@
 #include "GraphicsComponent.h"
 #include "HealthComponent.h"
 #include "InputComponent.h"
+#include <NetMessageOnDeath.h>
 #include "NetworkComponent.h"
 #include "PhysicsComponent.h"
+#include "PollingStation.h"
 #include "GrenadeComponent.h"
 #include <Scene.h>
 #include <Instance.h>
 #include <EmitterMessage.h>
 #include <PostMaster.h>
+#include <SharedNetworkManager.h>
 #include "ShootingComponent.h"
 #include "TriggerComponent.h"
 #include "UpgradeComponent.h"
@@ -79,7 +82,7 @@ Entity::Entity(unsigned int aGID, const EntityData& aEntityData, Prism::Scene* a
 
 	if (aEntityData.myGrenadeData.myExistsInEntity == true)
 	{
-		myComponents[static_cast<int>(eComponentType::PROJECTILE)] = new GrenadeComponent(*this, aEntityData.myGrenadeData, aScene);
+		myComponents[static_cast<int>(eComponentType::GRENADE)] = new GrenadeComponent(*this, aEntityData.myGrenadeData, aScene);
 	}
 
 	if (aEntityData.myNetworkData.myExistsInEntity == true)
@@ -125,12 +128,14 @@ Entity::Entity(unsigned int aGID, const EntityData& aEntityData, Prism::Scene* a
 		myComponents[static_cast<int>(eComponentType::BULLET)] = new ProjectileComponent(*this, aEntityData.myProjecileData, myOrientation);
 	}
 
-
 	Reset();
+	SharedNetworkManager::GetInstance()->Subscribe(eNetMessageType::ON_DEATH, this);
+
 };
 
 Entity::~Entity()
 {
+	SharedNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::ON_DEATH, this);
 	//if (myIsInScene == true)
 	//{
 	//	RemoveFromScene();		
@@ -149,6 +154,11 @@ Entity::~Entity()
 void Entity::Reset()
 {
 	myAlive = true;
+
+	if (myIsClientSide == false && mySubType == "player")
+	{
+		PollingStation::GetInstance()->AddEntity(this);
+	}
 
 	for (int i = 0; i < static_cast<int>(eComponentType::_COUNT); ++i)
 	{
@@ -247,15 +257,33 @@ void Entity::Kill(bool aRemoveFromPhysics)
 	if (myIsInScene == true)
 	{
 		RemoveFromScene();
-		if (aRemoveFromPhysics == true && myEntityData.myPhysicsData.myExistsInEntity == true)
-		{
-			GetComponent<PhysicsComponent>()->RemoveFromScene();
-		}
 		myIsInScene = false;
+	}
+
+	if (myIsClientSide == false)
+	{
+		SharedNetworkManager::GetInstance()->AddMessage(NetMessageOnDeath(myGID));
+		if (mySubType == "player")
+		{
+			PollingStation::GetInstance()->RemovePlayer(this);
+		}
+	}
+
+	if (aRemoveFromPhysics == true && myEntityData.myPhysicsData.myExistsInEntity == true)
+	{
+		GetComponent<PhysicsComponent>()->RemoveFromScene();
 	}
 }
 
 bool Entity::GetIsClient()
 {
 	return myIsClientSide;
+}
+
+void Entity::ReceiveNetworkMessage(const NetMessageOnDeath& aMessage, const sockaddr_in& aSenderAddress)
+{
+	if (aMessage.myGID == myGID)
+	{
+		Kill();
+	}
 }

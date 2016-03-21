@@ -56,8 +56,7 @@ ClientLevel::ClientLevel()
 	PostMaster::GetInstance()->Subscribe(eMessageType::NETWORK_ADD_ENEMY, this);
 	PostMaster::GetInstance()->Subscribe(eMessageType::NETWORK_ON_DEATH, this);
 
-	ClientNetworkManager::GetInstance()->Subscribe(eNetMessageType::ENEMY_ON_DEATH, this);
-	ClientNetworkManager::GetInstance()->Subscribe(eNetMessageType::PLAYER_ON_DEATH, this);
+	ClientNetworkManager::GetInstance()->Subscribe(eNetMessageType::ON_DEATH, this);
 	ClientNetworkManager::GetInstance()->Subscribe(eNetMessageType::SET_ACTIVE, this);
 
 	myScene = new Prism::Scene();
@@ -79,8 +78,7 @@ ClientLevel::~ClientLevel()
 	PostMaster::GetInstance()->UnSubscribe(eMessageType::NETWORK_ADD_ENEMY, this);
 	PostMaster::GetInstance()->UnSubscribe(eMessageType::NETWORK_ON_DEATH, this);
 
-	ClientNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::ENEMY_ON_DEATH, this);
-	ClientNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::PLAYER_ON_DEATH, this);
+	ClientNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::ON_DEATH, this);
 	ClientNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::SET_ACTIVE, this);
 
 	myInstances.DeleteAll();
@@ -126,16 +124,17 @@ void ClientLevel::Update(const float aDeltaTime)
 
 	if (CU::InputWrapper::GetInstance()->KeyDown(DIK_T))
 	{
-		ClientNetworkManager::GetInstance()->AddMessage(NetMessageOnHit(eNetMessageType::PLAYER_ON_HIT, 5.f, 17));
+		ClientNetworkManager::GetInstance()->AddMessage(NetMessageOnHit(5, 17));
 	}
 
 	if (CU::InputWrapper::GetInstance()->KeyDown(DIK_J))
 	{
 		for (unsigned int i = 0; i < 8; ++i)
 		{
-			ClientNetworkManager::GetInstance()->AddMessage(NetMessageOnHit(eNetMessageType::PLAYER_ON_HIT, 5.f, i));
+			ClientNetworkManager::GetInstance()->AddMessage(NetMessageOnHit(5, i));
 		}
 	}
+
 	if (CU::InputWrapper::GetInstance()->KeyDown(DIK_I))
 	{
 		ClientNetworkManager::GetInstance()->AddMessage(NetMessageDisconnect(ClientNetworkManager::GetInstance()->GetGID()));
@@ -225,7 +224,7 @@ void ClientLevel::CollisionCallback(PhysicsComponent* aFirst, PhysicsComponent* 
 	case eEntityType::EXPLOSION:
 		if (aHasEntered == true)
 		{
-			HandleExplosion(first, second);
+			//HandleExplosion(first, second);
 		}
 		break;
 	}

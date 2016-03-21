@@ -264,20 +264,11 @@ void ComponentLoader::LoadUpgradeComponent(XMLReader& aDocument, tinyxml2::XMLEl
 
 void ComponentLoader::LoadProjectileComponent(XMLReader& aDocument, tinyxml2::XMLElement* aSourceElement, ProjectileComponentData& aOutputData)
 {
-	for (tinyxml2::XMLElement* e = aDocument.FindFirstChild(aSourceElement); e != nullptr; e = aDocument.FindNextElement(e))
-	{
-		std::string elementName = CU::ToLower(e->Name());
-
-		if (elementName == "damage")
-		{
-			aDocument.ForceReadAttribute(e, "value", aOutputData.myDamage);
-		}
-		else if (elementName == "speed")
-		{
-			aDocument.ForceReadAttribute(e, "value", aOutputData.mySpeed);
-		}
-	}
 	aOutputData.myExistsInEntity = true;
+
+	aDocument.ForceReadAttribute(aDocument.ForceFindFirstChild(aSourceElement, "Damage"), "value", aOutputData.myDamage);
+	aDocument.ForceReadAttribute(aDocument.ForceFindFirstChild(aSourceElement, "Speed"), "value", aOutputData.mySpeed);
+	aDocument.ForceReadAttribute(aDocument.ForceFindFirstChild(aSourceElement, "Lifetime"), "value", aOutputData.myLifetime);
 }
 
 void ComponentLoader::LoadFirstPersonRenderComponent(XMLReader& aDocument, tinyxml2::XMLElement* aSourceElement, FirstPersonRenderComponentData& aOutputData)

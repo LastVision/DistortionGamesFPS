@@ -20,10 +20,8 @@ enum class eNetMessageType
 	
 	POSITION,
 	
-	PLAYER_ON_HIT,
-	ENEMY_ON_HIT,
-	PLAYER_ON_DEATH,
-	ENEMY_ON_DEATH,
+	ON_HIT,
+	ON_DEATH,
 
 	SET_ACTIVE,
 

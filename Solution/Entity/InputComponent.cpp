@@ -42,6 +42,9 @@ InputComponent::InputComponent(Entity& anEntity, const InputComponentData& aData
 
 	mySendTime = 3;
 
+	
+
+
 	//myCapsuleControllerId = Prism::PhysicsInterface::GetInstance()->CreatePlayerController(myOrientation.GetPos());
 }
 
@@ -52,6 +55,11 @@ InputComponent::~InputComponent()
 
 void InputComponent::Update(float aDelta)
 {
+	if (myEntity.IsAlive() == false)
+	{
+		return;
+	}
+
 	if (CU::InputWrapper::GetInstance()->KeyDown(DIK_H) == true)
 	{
 		myEntity.SendNote<DamageNote>(DamageNote(1));

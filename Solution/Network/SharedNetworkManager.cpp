@@ -281,12 +281,10 @@ void SharedNetworkManager::HandleMessage()
 		case eNetMessageType::POSITION:
 			UnpackAndHandle(NetMessagePosition(), buffer);
 			break;
-		case eNetMessageType::PLAYER_ON_HIT:
-		case eNetMessageType::ENEMY_ON_HIT:
+		case eNetMessageType::ON_HIT:
 			UnpackAndHandle(NetMessageOnHit(), buffer);
 			break;
-		case eNetMessageType::PLAYER_ON_DEATH:
-		case eNetMessageType::ENEMY_ON_DEATH:
+		case eNetMessageType::ON_DEATH:
 			UnpackAndHandle(NetMessageOnDeath(), buffer);
 			break;
 		case eNetMessageType::SET_ACTIVE:

@@ -14,18 +14,17 @@ AIComponent::AIComponent(Entity& anEntity, const AIComponentData& aData, CU::Mat
 	: Component(anEntity)
 	, myData(aData)
 	, myOrientation(anOrientation)
-	, myBullets(64)
+	, myBullets(16)
 	, myBulletIndex(0)
 	, myBehavior(new BlendedBehavior(myEntity, aData))
+	, myShootTimer(1.f)
 {
-	myShootTime = 1.f;
-
-
-	//for (int i = 0; i < myBullets.GetCapacity(); ++i)
-	//{
-	//	Entity* bullet = EntityFactory::CreateEntity((50000 + i), eEntityType::BULLET, nullptr, false, CU::Vector3<float>());
-	//	myBullets.Add(bullet);
-	//}
+	for (int i = 0; i < myBullets.GetCapacity(); ++i)
+	{
+		Entity* bullet = EntityFactory::CreateEntity((50000 + i), eEntityType::BULLET, nullptr, false, CU::Vector3<float>(0, -10.f, 0));
+		bullet->Kill();
+		myBullets.Add(bullet);
+	}
 }
 
 AIComponent::~AIComponent()
@@ -36,28 +35,36 @@ AIComponent::~AIComponent()
 
 void AIComponent::Update(float aDelta)
 {
-	Move(aDelta);
-	myShootTime -= aDelta;
-	//if (myShootTime < 0.f)
-	//{
-	//	Shoot();
-	//	myShootTime = 5.f;
-	//}
+	for each (Entity* bullet in myBullets)
+	{
+		if (bullet->IsAlive() == true)
+		{
+			bullet->Update(aDelta);
+		}
+	}
+
+	Entity* closestPlayer = PollingStation::GetInstance()->FindClosestPlayer(myEntity.GetOrientation().GetPos(), myData.myVisionRange);
+
+	Move(aDelta, closestPlayer);
+	myShootTimer -= aDelta;
+	if (closestPlayer != nullptr && myShootTimer < 0.f)
+	{
+		Shoot(closestPlayer);
+		myShootTimer = 1.f;
+	}
 }
 
 
-void AIComponent::Move(float aDelta)
+void AIComponent::Move(float aDelta, Entity* aClosestPlayer)
 {
-	Entity* closestPlayer = PollingStation::GetInstance()->FindClosestPlayer(myEntity.GetOrientation().GetPos(), myData.myVisionRange);
-	if (closestPlayer != nullptr)
+	if (aClosestPlayer != nullptr)
 	{
-		myBehavior->SetTarget(closestPlayer->GetOrientation().GetPos());
+		myBehavior->SetTarget(aClosestPlayer->GetOrientation().GetPos());
 	}
 
 	CU::Vector3<float> movement(myBehavior->Update(aDelta));
 
 	Prism::PhysicsInterface::GetInstance()->Move(myEntity.GetComponent<PhysicsComponent>()->GetCapsuleControllerId(), movement, 0.05f, aDelta);
-
 
 	SetOrientation(CU::GetNormalized(movement));
 }
@@ -85,23 +92,15 @@ void AIComponent::SetOrientation(const CU::Vector3<float>& aLookInDirection)
 	}
 
 	SharedNetworkManager::GetInstance()->AddMessage(NetMessagePosition(pos, angle, myEntity.GetGID()));
-
-	
 }
 
-void AIComponent::Shoot()
+void AIComponent::Shoot(Entity* aClosestPlayer)
 {
-	//if (myBulletIndex > myBullets.Size()-1)
-	//{
-	//	myBulletIndex = 0;
-	//}
-	//
-	//CU::Vector3<float> forward = myOrientation.GetForward();
-	//CU::Vector3<float> pos = myOrientation.GetPos();
-	//myBullets[myBulletIndex]->GetComponent<ProjectileComponent>()->SetPosition({ pos.x, 0.5f, pos.z });
-	//myBullets[myBulletIndex]->GetComponent<ProjectileComponent>()->SetForward(forward);
-	//myBullets[myBulletIndex]->GetComponent<ProjectileComponent>()->Activate();
-	//std::cout << "I shot" << std::endl;
-	//
-	//myBulletIndex++;
+	if (myBulletIndex > myBullets.Size()-1)
+	{
+		myBulletIndex = 0;
+	}
+	
+	myBullets[myBulletIndex]->GetComponent<ProjectileComponent>()->Activate(myEntity.GetOrientation());
+	myBulletIndex++;
 }

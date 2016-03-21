@@ -38,7 +38,7 @@ private:
 
 inline eComponentType GrenadeComponent::GetTypeStatic()
 {
-	return eComponentType::PROJECTILE;
+	return eComponentType::GRENADE;
 }
 
 inline eComponentType GrenadeComponent::GetType()

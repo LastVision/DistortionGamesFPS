@@ -149,7 +149,7 @@ enum class eComponentType
 	GRAPHICS,
 	HEALTH,
 	NETWORK,
-	PROJECTILE,
+	GRENADE,
 	TRIGGER,
 	INPUT,
 	SHOOTING,

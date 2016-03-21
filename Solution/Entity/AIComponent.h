@@ -15,12 +15,12 @@ public:
 	eComponentType GetType() override;
 
 private:
-
-	void Shoot();
-
 	void operator=(AIComponent&) = delete;
-	void Move(float aDelta);
+
+	void Move(float aDelta, Entity* aClosestPlayer);
 	void SetOrientation(const CU::Vector3<float>& aLookInDirection);
+
+	void Shoot(Entity* aClosestPlayer);
 
 	const AIComponentData& myData;
 
@@ -28,7 +28,7 @@ private:
 
 	CU::Matrix44<float>& myOrientation;
 
-	float myShootTime;
+	float myShootTimer;
 
 	CU::GrowingArray<Entity*> myBullets;
 	int myBulletIndex;

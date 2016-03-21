@@ -9,18 +9,20 @@ public:
 	ProjectileComponent(Entity& anEntity, const ProjectileComponentData& aData, CU::Matrix44<float>& anOrientation);
 	~ProjectileComponent();
 
+	void Activate(const CU::Matrix44<float>& anOrientation);
 
 	void Update(float aDelta) override;
 
+	int GetDamage() const;
+
 	static eComponentType GetTypeStatic();
 	eComponentType GetType() override;
-	void SetForward(const CU::Vector3<float>& aForwardVector);
-	void SetPosition(const CU::Vector3<float>& aForwardVector);
-	void Activate();
+
 private:
 	const ProjectileComponentData& myData;
 	CU::Matrix44<float>& myOrientation;
-	bool myShouldUpdate;
+
+	float myLifetimeLeft;
 };
 
 

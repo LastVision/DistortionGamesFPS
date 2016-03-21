@@ -29,12 +29,22 @@ PollingStation::~PollingStation()
 
 void PollingStation::AddEntity(Entity* anEntity)
 {
-	myEnemies.Add(anEntity);
 	if (anEntity->GetSubType() == "player")
 	{
-		myEnemies.RemoveNonCyclicAtIndex(myEnemies.Size() - 1);
+		DL_ASSERT_EXP(myPlayers.Find(anEntity) == myPlayers.FoundNone, "Can't add player twice.");
 		myPlayers.Add(anEntity);
 	}
+	else
+	{
+		DL_ASSERT_EXP(myEnemies.Find(anEntity) == myEnemies.FoundNone, "Can't add enemy twice.");
+		myEnemies.Add(anEntity);
+	}
+}
+
+void PollingStation::RemovePlayer(Entity* aPlayer)
+{
+	DL_ASSERT_EXP(myPlayers.Find(aPlayer) != myPlayers.FoundNone, "Player not found.");
+	myPlayers.RemoveCyclic(aPlayer);
 }
 
 

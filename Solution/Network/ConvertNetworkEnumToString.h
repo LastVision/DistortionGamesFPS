@@ -33,14 +33,10 @@ static std::string ConvertNetworkEnumToString(eNetMessageType aType)
 		return "PING REPLY";
 	case eNetMessageType::POSITION:
 		return "POSITION";
-	case eNetMessageType::PLAYER_ON_HIT:
-		return "PLAYER ON HIT";
-	case eNetMessageType::ENEMY_ON_HIT:
-		return "ENEMY ON HIT";
-	case eNetMessageType::PLAYER_ON_DEATH:
-		return "PLAYER ON DEATH";
-	case eNetMessageType::ENEMY_ON_DEATH:
-		return "ENEMY ON DEATH";
+	case eNetMessageType::ON_HIT:
+		return "ON HIT";
+	case eNetMessageType::ON_DEATH:
+		return "ON DEATH";
 	case eNetMessageType::SET_ACTIVE:
 		return "SET ACTIVE";
 	case eNetMessageType::_COUNT:
