@@ -1,18 +1,18 @@
 #include "stdafx.h"
 #include "AIComponent.h"
+#include "BlendedBehavior.h"
 #include "PhysicsComponent.h"
 #include <PhysicsInterface.h>
 #include <NetMessagePosition.h>
 #include <SharedNetworkManager.h>
 #include "PollingStation.h"
 
-#include "ArriveBehavior.h"
 
 AIComponent::AIComponent(Entity& anEntity, const AIComponentData& aData, CU::Matrix44<float>& anOrientation)
 	: Component(anEntity)
 	, myData(aData)
 	, myOrientation(anOrientation)
-	, myBehavior(new ArriveBehavior(myEntity))
+	, myBehavior(new BlendedBehavior(myEntity))
 {
 }
 
