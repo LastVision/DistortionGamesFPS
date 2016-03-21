@@ -170,6 +170,7 @@ void ComponentLoader::LoadTriggerComponent(XMLReader& aDocument, tinyxml2::XMLEl
 			aDocument.ReadAttribute(e, "value", aOutputData.myValue);
 			aDocument.ReadAttribute(e, "oneTimeTrigger", aOutputData.myIsOneTime);
 			aDocument.ForceReadAttribute(e, "isClientSide", aOutputData.myIsClientSide);
+			aDocument.ReadAttribute(e, "activeFromStart", aOutputData.myIsActiveFromStart);
 
 			aOutputData.myTriggerType = ConvertToTriggerEnum(name);
 		}
