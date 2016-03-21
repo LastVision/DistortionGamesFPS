@@ -28,6 +28,9 @@ private:
 
 	float myShootTime;
 
+	CU::GrowingArray<Entity*> myBullets;
+	int myBulletIndex;
+
 
 
 };

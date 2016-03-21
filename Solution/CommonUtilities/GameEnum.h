@@ -30,6 +30,7 @@ enum eEntityType
 	TRIGGER = 8,
 	PLAYER = 16,
 	EXPLOSION = 32,
+	BULLET = 64,
 	_COUNT,
 };
 
@@ -149,6 +150,7 @@ enum class eComponentType
 	PHYSICS,
 	UPGRADE,
 	AI,
+	BULLET,
 	_COUNT,
 };
 
