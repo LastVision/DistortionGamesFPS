@@ -32,6 +32,16 @@ void AIComponent::Update(float aDelta)
 	Prism::PhysicsInterface::GetInstance()->GetPosition(myEntity.GetComponent<PhysicsComponent>()->GetCapsuleControllerId(), pos);
 	myOrientation.SetPos(pos);
 
+	CU::Vector3<float> direction(CU::GetNormalized(movement));
+	CU::Vector3<float> up(0, 1.f, 0);
+	CU::Vector3<float> right(CU::GetNormalized(CU::Cross(up, direction)));
+	CU::Vector3<float> forward(CU::GetNormalized(CU::Cross(right, up)));
+
+	myOrientation.SetForward(forward);
+	myOrientation.SetRight(right);
+	myOrientation.SetUp(up);
+
+
 	Entity* target = PollingStation::GetInstance()->FindClosestEntityToEntity(myEntity);
 	float rad = 0.f;
 	if (target != nullptr)
@@ -39,5 +49,12 @@ void AIComponent::Update(float aDelta)
 		rad = CU::Dot(target->GetOrientation().GetPos(), myEntity.GetOrientation().GetPos());
 		rad *= M_PI;
 	}
-	SharedNetworkManager::GetInstance()->AddMessage(NetMessagePosition(pos, rad, myEntity.GetGID()));
+
+	float angle = acosf(CU::Dot(CU::Vector3<float>(0, 0, 1.f), myOrientation.GetForward()));
+	CU::Vector3<float> cross = CU::Cross(CU::Vector3<float>(0, 0, 1.f), myOrientation.GetForward());
+	if (CU::Dot(CU::Vector3<float>(0, 1.f, 0), cross) < 0) { // Or > 0
+		angle = -angle;
+	}
+
+	SharedNetworkManager::GetInstance()->AddMessage(NetMessagePosition(pos, angle, myEntity.GetGID()));
 }
