@@ -13,10 +13,17 @@ public:
 	eComponentType GetType() override;
 
 private:
+
+	void Shoot();
+
 	void operator=(AIComponent&) = delete;
 	const AIComponentData& myData;
 
 	CU::Matrix44<float>& myOrientation;
+
+	float myShootTime;
+
+
 
 };
 

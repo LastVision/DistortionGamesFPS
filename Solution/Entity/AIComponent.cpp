@@ -10,8 +10,8 @@ AIComponent::AIComponent(Entity& anEntity, const AIComponentData& aData, CU::Mat
 	, myData(aData)
 	, myOrientation(anOrientation)
 {
+	myShootTime = 1.f;
 }
-
 
 AIComponent::~AIComponent()
 {
@@ -26,12 +26,15 @@ void AIComponent::Update(float aDelta)
 	Prism::PhysicsInterface::GetInstance()->GetPosition(myEntity.GetComponent<PhysicsComponent>()->GetCapsuleControllerId(), pos);
 	myOrientation.SetPos(pos);
 
-	Entity* target = PollingStation::GetInstance()->FindClosestEntityToEntity(myEntity);
-	float rad = 0.f;
-	if (target != nullptr)
+	myShootTime -= aDelta;
+	if (myShootTime < 0.f)
 	{
-		rad = CU::Dot(target->GetOrientation().GetPos(), myEntity.GetOrientation().GetPos());
-		rad *= M_PI;
+		Shoot();
+		myShootTime = 1.f;
 	}
-	SharedNetworkManager::GetInstance()->AddMessage(NetMessagePosition(pos, rad, myEntity.GetGID()));
+}
+
+void AIComponent::Shoot()
+{
+
 }
