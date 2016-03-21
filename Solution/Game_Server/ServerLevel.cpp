@@ -44,7 +44,7 @@ void ServerLevel::Update(const float aDeltaTime)
 	{
 		__super::Update(aDeltaTime);
 		
-		PollingStation::GetInstance()->FindClosestEntityToEntity(*myPlayers[0]);
+	//	PollingStation::GetInstance()->FindClosestEntityToEntity(*myPlayers[0]);
 
 
 		Prism::PhysicsInterface::GetInstance()->EndFrame();

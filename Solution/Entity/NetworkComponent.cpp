@@ -13,7 +13,7 @@
 #include <PostMaster.h>
 #include <Quaternion.h>
 #include <SharedNetworkManager.h>
-
+#include "PollingStation.h"
 
 NetworkComponent::NetworkComponent(Entity& anEntity, CU::Matrix44<float>& anOrientation)
 	: Component(anEntity)
@@ -51,7 +51,7 @@ void NetworkComponent::Update(float aDelta)
 	myCurrentRotationY = CU::Math::Lerp(myPrevRotationY, myServerRotationY, myAlpha);
 
 
-	CU::Quaternion pitch = CU::Quaternion(CU::Vector3<float>(1.f, 0, 0), 0);
+	/*CU::Quaternion pitch = CU::Quaternion(CU::Vector3<float>(1.f, 0, 0), 0);
 	CU::Quaternion yaw = CU::Quaternion(CU::Vector3<float>(0, 1.f, 0), myCurrentRotationY);
 
 	CU::Vector3<float> axisX(1.f, 0, 0);
@@ -70,8 +70,8 @@ void NetworkComponent::Update(float aDelta)
 	myOrientation.myMatrix[6] = axisY.z;
 	myOrientation.myMatrix[8] = axisZ.x;
 	myOrientation.myMatrix[9] = axisZ.y;
-	myOrientation.myMatrix[10] = axisZ.z;
-
+	myOrientation.myMatrix[10] = axisZ.z;*/
+	myOrientation.CreateRotateAroundY(10*aDelta);
 	myOrientation.SetPos(newPos);
 }
 

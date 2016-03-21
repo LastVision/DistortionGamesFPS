@@ -48,23 +48,21 @@ Entity* PollingStation::FindClosestEntityToEntity(const Entity& anEntity)
 	{
 		entities = myEnemies;
 	}
-	float distance = 0;
-	float prevDistance = 0;
+	float distance = 0.f;
+	float prevDistance = 0.f;
 	for (int i = 0; i < entities.Size(); ++i)
 	{
-		distance = CU::Length2(entities[i]->GetOrientation().GetPos() - anEntity.GetOrientation().GetPos());
+		distance = CU::Length(entities[i]->GetOrientation().GetPos() - anEntity.GetOrientation().GetPos());
 
-		if (entities[i]->IsAlive() == true)
-		{
-			if (distance < prevDistance)
-			{
-				toReturn = entities[i];
-			}
-			
-			prevDistance = distance;
-		}
+		/*if (entities[i]->IsAlive() == true)
+		{*/
+		toReturn = entities[i];
+
+
+
+		prevDistance = distance;
+		/*}*/
 	}
-	std::cout << distance << "\n";
 	return  toReturn;
 }
 
