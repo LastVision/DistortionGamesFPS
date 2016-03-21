@@ -45,3 +45,8 @@ bool TriggerComponent::IsClientSide() const
 {
 	return myData.myIsClientSide;
 }
+
+bool TriggerComponent::GetIsActiveFromStart() const
+{
+	return myData.myIsActiveFromStart;
+}

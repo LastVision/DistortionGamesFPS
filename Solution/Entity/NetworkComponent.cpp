@@ -71,6 +71,7 @@ void NetworkComponent::Update(float aDelta)
 	myOrientation.myMatrix[8] = axisZ.x;
 	myOrientation.myMatrix[9] = axisZ.y;
 	myOrientation.myMatrix[10] = axisZ.z;
+	//myOrientation.CreateRotateAroundY(10*aDelta);
 	myOrientation.SetPos(newPos);
 }
 

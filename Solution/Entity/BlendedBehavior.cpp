@@ -9,7 +9,7 @@ BlendedBehavior::BlendedBehavior(const Entity& anEntity)
 	, myMaxAcceleration(100000.f)
 {
 	myBehaviors.Add(new ArriveBehavior(myEntity));
-	myBehaviors.Add(new EvadeBehavior(myEntity));
+	//myBehaviors.Add(new EvadeBehavior(myEntity));
 }
 
 
