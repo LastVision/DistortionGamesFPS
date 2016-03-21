@@ -4,8 +4,8 @@
 #include "PollingStation.h"
 #include <InputWrapper.h>
 
-EvadeBehavior::EvadeBehavior(const Entity& anEntity)
-	: Behavior(anEntity)
+EvadeBehavior::EvadeBehavior(const Entity& anEntity, const AIComponentData& aData)
+	: Behavior(anEntity, aData)
 	, myMaxAcceleration(10000.f)
 	, myEntitiesToEvade(128)
 	, myPropSpeed(240.f)

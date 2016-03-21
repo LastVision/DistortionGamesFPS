@@ -12,7 +12,7 @@ AIComponent::AIComponent(Entity& anEntity, const AIComponentData& aData, CU::Mat
 	: Component(anEntity)
 	, myData(aData)
 	, myOrientation(anOrientation)
-	, myBehavior(new BlendedBehavior(myEntity))
+	, myBehavior(new BlendedBehavior(myEntity, aData))
 {
 }
 
@@ -30,7 +30,12 @@ void AIComponent::Update(float aDelta)
 
 void AIComponent::Move(float aDelta)
 {
-	myBehavior->SetTarget(PollingStation::GetInstance()->GetPlayers()[0]->GetOrientation().GetPos());
+	Entity* closestPlayer = PollingStation::GetInstance()->FindClosestPlayer(myEntity.GetOrientation().GetPos(), myData.myVisionRange);
+	if (closestPlayer != nullptr)
+	{
+		myBehavior->SetTarget(closestPlayer->GetOrientation().GetPos());
+	}
+
 	CU::Vector3<float> movement(myBehavior->Update(aDelta));
 
 	Prism::PhysicsInterface::GetInstance()->Move(myEntity.GetComponent<PhysicsComponent>()->GetCapsuleControllerId(), movement, 0.05f, aDelta);

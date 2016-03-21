@@ -4,7 +4,7 @@
 class BlendedBehavior : public Behavior
 {
 public:
-	BlendedBehavior(const Entity& anEntity);
+	BlendedBehavior(const Entity& anEntity, const AIComponentData& aData);
 	~BlendedBehavior();
 
 	const CU::Vector3<float>& Update(float aDelta) override;
