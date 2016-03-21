@@ -21,11 +21,11 @@ AIComponent::AIComponent(Entity& anEntity, const AIComponentData& aData, CU::Mat
 	myShootTime = 1.f;
 
 
-	for (int i = 0; i < myBullets.GetCapacity(); ++i)
-	{
-		Entity* bullet = EntityFactory::CreateEntity((50000 + i), eEntityType::BULLET, nullptr, false, CU::Vector3<float>());
-		myBullets.Add(bullet);
-	}
+	//for (int i = 0; i < myBullets.GetCapacity(); ++i)
+	//{
+	//	Entity* bullet = EntityFactory::CreateEntity((50000 + i), eEntityType::BULLET, nullptr, false, CU::Vector3<float>());
+	//	myBullets.Add(bullet);
+	//}
 }
 
 AIComponent::~AIComponent()
@@ -38,11 +38,11 @@ void AIComponent::Update(float aDelta)
 {
 	Move(aDelta);
 	myShootTime -= aDelta;
-	if (myShootTime < 0.f)
-	{
-		Shoot();
-		myShootTime = 5.f;
-	}
+	//if (myShootTime < 0.f)
+	//{
+	//	Shoot();
+	//	myShootTime = 5.f;
+	//}
 }
 
 
