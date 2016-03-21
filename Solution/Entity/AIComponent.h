@@ -1,6 +1,8 @@
 #pragma once
 #include "Component.h"
 
+class Behavior;
+
 class AIComponent : public Component
 {
 public:
@@ -14,7 +16,10 @@ public:
 
 private:
 	void operator=(AIComponent&) = delete;
+
 	const AIComponentData& myData;
+
+	Behavior* myBehavior;
 
 	CU::Matrix44<float>& myOrientation;
 

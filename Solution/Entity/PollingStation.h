@@ -11,6 +11,8 @@ public:
 	Entity* FindClosestEntityToEntity(const Entity& anEntity);
 	Entity* FindClosestEntity(const CU::Vector3<float>& aPosition, float aMaxRange);
 
+	const CU::GrowingArray<Entity*>& GetPlayers() const;
+
 private:
 	PollingStation();
 	~PollingStation();
@@ -22,3 +24,7 @@ private:
 };
 
 
+inline const CU::GrowingArray<Entity*>& PollingStation::GetPlayers() const
+{
+	return myPlayers;
+}
