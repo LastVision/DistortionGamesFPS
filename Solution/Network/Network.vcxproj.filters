@@ -113,5 +113,8 @@
     <ClInclude Include="NetMessageLevelComplete.h">
       <Filter>Messages</Filter>
     </ClInclude>
+    <ClInclude Include="NetMessageHealth.h">
+      <Filter>Messages</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
