@@ -63,6 +63,8 @@ private:
 	ePhysics myPhysicsType;
 
 	int myCapsuleControllerId;
+
+	bool myIsAwake;
 };
 
 inline const int PhysicsComponent::GetCapsuleControllerId() const
