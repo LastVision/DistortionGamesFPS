@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include "AnimationComponent.h"
 #include "NetworkComponent.h"
 #include "Entity.h"
 #include <MathHelper.h>
