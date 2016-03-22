@@ -28,10 +28,6 @@ private:
 	float myServerRotationY;
 	float myPrevRotationY;
 
-	CU::Vector3<float> myFirstPosition;
-	CU::Vector3<float> mySecondPosition;
-	CU::Vector3<float> mySecondPosition2;
-
 	bool myIsPlayer;
 	bool myShouldReturn;
 	bool myShouldUpdate;
