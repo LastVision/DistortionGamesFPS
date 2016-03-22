@@ -68,19 +68,33 @@ void PhysicsComponent::Reset()
 
 void PhysicsComponent::Sleep()
 {
-	DL_ASSERT_EXP(myDynamicBody != nullptr, "Can't sleep non-dynamic body.");
 	if (myDynamicBody != nullptr)
 	{
 		Prism::PhysicsInterface::GetInstance()->Sleep(myDynamicBody);
+	}
+	else if (myPhysicsType == ePhysics::CAPSULE)
+	{
+		Prism::PhysicsInterface::GetInstance()->Sleep(myCapsuleControllerId);
+	}
+	else
+	{
+		DL_ASSERT("Can't sleep non-dynamic body or non capsule.");
 	}
 }
 
 void PhysicsComponent::Wake()
 {
-	DL_ASSERT_EXP(myDynamicBody != nullptr, "Can't wake non-dynamic body.");
 	if (myDynamicBody != nullptr)
 	{
 		Prism::PhysicsInterface::GetInstance()->Wake(myDynamicBody);
+	}
+	else if (myPhysicsType == ePhysics::CAPSULE)
+	{
+		Prism::PhysicsInterface::GetInstance()->Wake(myCapsuleControllerId);
+	}
+	else
+	{
+		DL_ASSERT("Can't wake non-dynamic body or non capsule.");
 	}
 }
 

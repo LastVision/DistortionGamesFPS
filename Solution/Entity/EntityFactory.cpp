@@ -50,7 +50,7 @@ Entity* EntityFactory::CreateEntity(unsigned int aGID, eEntityType aType, Prism:
 			, aScale);
 		return newEntity;
 	}
-	DL_ASSERT("Entity not found.");
+	DL_ASSERT("Entity not found with enum: " + std::to_string(aType));
 	return nullptr;
 }
 

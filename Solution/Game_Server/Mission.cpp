@@ -35,11 +35,11 @@ void Mission::SendMissionMessage(eActionEventType aType, int aGID)
 	switch (aType)
 	{
 	case eActionEventType::LOCK:
-		ServerNetworkManager::GetInstance()->AddMessage(NetMessageSetActive(true, aGID));
+		ServerNetworkManager::GetInstance()->AddMessage(NetMessageSetActive(true, true, aGID));
 		PostMaster::GetInstance()->SendMessage(SetActiveMessage(aGID, true));
 		break;
 	case eActionEventType::UNLOCK:
-		ServerNetworkManager::GetInstance()->AddMessage(NetMessageSetActive(false, aGID));
+		ServerNetworkManager::GetInstance()->AddMessage(NetMessageSetActive(false, true, aGID));
 		PostMaster::GetInstance()->SendMessage(SetActiveMessage(aGID, false));
 		break;
 	default:

@@ -773,14 +773,30 @@ namespace Prism
 		}
 	}
 
+	void PhysicsManager::Remove(int aCapsuleID)
+	{
+		//myControllerManager->getController(aCapsuleID)->release();
+		myActorsToRemove[myCurrentIndex].Add(myControllerManager->getController(aCapsuleID)->getActor());
+	}
+
 	void PhysicsManager::Sleep(physx::PxRigidDynamic* aDynamic)
 	{
 		myActorsToSleep[myCurrentIndex].Add(aDynamic);
 	}
 
+	void PhysicsManager::Sleep(int aCapsuleID)
+	{
+		myActorsToSleep[myCurrentIndex].Add(myControllerManager->getController(aCapsuleID)->getActor());
+	}
+
 	void PhysicsManager::Wake(physx::PxRigidDynamic* aDynamic)
 	{
 		myActorsToWakeUp[myCurrentIndex].Add(aDynamic);
+	}
+
+	void PhysicsManager::Wake(int aCapsuleID)
+	{
+		myActorsToWakeUp[myCurrentIndex].Add(myControllerManager->getController(aCapsuleID)->getActor());
 	}
 
 	physx::PxTriangleMesh* PhysicsManager::GetPhysMesh(const std::string& aFBXPath)

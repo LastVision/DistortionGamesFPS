@@ -8,9 +8,10 @@
 #include <NetMessageOnHit.h>
 #include <NetMessageEntityState.h>
 #include <NetMessageSetActive.h>
-#include "TriggerComponent.h"
+#include "PhysicsComponent.h"
 #include <PostMaster.h>
 #include <SharedNetworkManager.h>
+#include "TriggerComponent.h"
 
 HealthComponent::HealthComponent(Entity& anEntity, const HealthComponentData& someData)
 	: Component(anEntity)
@@ -61,7 +62,8 @@ void HealthComponent::TakeDamage(int aDamage)
 		{
 			myEntity.SetState(eEntityState::DIE);
 			SharedNetworkManager::GetInstance()->AddMessage<NetMessageEntityState>(NetMessageEntityState(myEntity.GetState(), myEntity.GetGID()));
-			//SharedNetworkManager::GetInstance()->AddMessage<NetMessageSetActive>(NetMessageSetActive(false, myEntity.GetGID()));
+			SharedNetworkManager::GetInstance()->AddMessage<NetMessageSetActive>(NetMessageSetActive(false, false, myEntity.GetGID()));
+			myEntity.GetComponent<PhysicsComponent>()->Sleep();
 		}
 	}
 }

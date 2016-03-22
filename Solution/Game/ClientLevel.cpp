@@ -185,22 +185,56 @@ void ClientLevel::ReceiveNetworkMessage(const NetMessageOnDeath& aMessage, const
 
 void ClientLevel::ReceiveNetworkMessage(const NetMessageSetActive& aMessage, const sockaddr_in&)
 {
+	bool useEntityMap = true;
+
 	if (myActiveEntitiesMap.find(aMessage.myGID) == myActiveEntitiesMap.end())
 	{
+		useEntityMap = false;
 		//DL_ASSERT("GID NOT FOUND IN CLIENT LEVEL!");
+	}
+	else if (myActiveUnitsMap.find(aMessage.myGID) == myActiveUnitsMap.end())
+	{
 		int triggerWillNotDoAnythingOnClient = 0;
 		return;
 	}
 
 	if (aMessage.myShouldActivate == true)
 	{
-		myActiveEntitiesMap[aMessage.myGID]->GetComponent<PhysicsComponent>()->AddToScene();
-		myActiveEntitiesMap[aMessage.myGID]->AddToScene();
+		if (useEntityMap == true)
+		{
+			myActiveEntitiesMap[aMessage.myGID]->GetComponent<PhysicsComponent>()->AddToScene();
+			if (aMessage.myIsInGraphicsScene == true)
+			{
+				myActiveEntitiesMap[aMessage.myGID]->AddToScene();
+			}
+		}
+		else
+		{
+			myActiveUnitsMap[aMessage.myGID]->GetComponent<PhysicsComponent>()->AddToScene();
+			if (aMessage.myIsInGraphicsScene == true)
+			{
+				myActiveUnitsMap[aMessage.myGID]->AddToScene();
+			}
+		}
 	}
 	else
 	{
-		myActiveEntitiesMap[aMessage.myGID]->GetComponent<PhysicsComponent>()->RemoveFromScene();
-		myActiveEntitiesMap[aMessage.myGID]->RemoveFromScene();
+		if (useEntityMap == true)
+		{
+			myActiveEntitiesMap[aMessage.myGID]->GetComponent<PhysicsComponent>()->RemoveFromScene();
+			if (aMessage.myIsInGraphicsScene == true)
+			{
+				myActiveEntitiesMap[aMessage.myGID]->RemoveFromScene();
+			}
+		}
+		else
+		{
+			myActiveUnitsMap[aMessage.myGID]->GetComponent<PhysicsComponent>()->RemoveFromScene();
+			if (aMessage.myIsInGraphicsScene == true)
+			{
+				myActiveUnitsMap[aMessage.myGID]->RemoveFromScene();
+			}
+		}
 	}
 }
 
