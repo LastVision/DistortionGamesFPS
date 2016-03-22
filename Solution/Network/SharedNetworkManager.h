@@ -219,8 +219,9 @@ void SharedNetworkManager::SendToSubscriber(const T& aMessage, const sockaddr_in
 			subscribers[i].myNetworkSubscriber->ReceiveNetworkMessage(aMessage, aSenderAddress);
 		}
 	}
-	else if (static_cast<int>(aMessage.myID) != static_cast<int>(eNetMessageType::REQUEST_START_GAME))
+	else if (static_cast<int>(aMessage.myID) != static_cast<int>(eNetMessageType::REQUEST_START_LEVEL)
+		&& static_cast<int>(aMessage.myID) != static_cast<int>(eNetMessageType::POSITION))
 	{
-		//DL_ASSERT("Network message sent without subscriber.");
+		DL_ASSERT("Network message sent without subscriber.");
 	}
 }

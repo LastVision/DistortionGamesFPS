@@ -9,7 +9,12 @@
 #include "InGameState.h"
 #include <InputWrapper.h>
 #include "ServerSelectState.h"
+#include <NetMessageAllClientsComplete.h>
+#include <NetMessageLevelComplete.h>
+#include <NetMessageLevelLoaded.h>
+#include <NetMessageLoadLevel.h>
 #include <NetMessageRequestLevel.h>
+#include <NetMessageRequestStartLevel.h>
 #include <PostMaster.h>
 #include <ScriptSystem.h>
 #include <VTuneApi.h>
@@ -22,6 +27,8 @@ InGameState::InGameState(int aLevelID)
 	, myLevelToLoad(aLevelID)
 	, myShouldLoadLevel(true)
 	, myLevel(nullptr)
+	, myLevelComplete(false)
+	, myCanStartNextLevel(false)
 {
 	myIsActiveState = false;
 	myLevelFactory = new ClientLevelFactory("Data/Level/LI_level.xml");
@@ -30,6 +37,9 @@ InGameState::InGameState(int aLevelID)
 InGameState::~InGameState()
 {
 	PostMaster::GetInstance()->UnSubscribe(eMessageType::GAME_STATE, this);
+	ClientNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::LEVEL_COMPLETE, this);
+	ClientNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::ALL_CLIENTS_COMPLETE, this);
+	ClientNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::LOAD_LEVEL, this);
 	Console::Destroy();
 	SAFE_DELETE(myLevel);
 	SAFE_DELETE(myLevelFactory);
@@ -49,6 +59,9 @@ void InGameState::InitState(StateStackProxy* aStateStackProxy, GUI::Cursor* aCur
 	myIsActiveState = true;
 
 	PostMaster::GetInstance()->Subscribe(eMessageType::GAME_STATE, this);
+	ClientNetworkManager::GetInstance()->Subscribe(eNetMessageType::LEVEL_COMPLETE, this);
+	ClientNetworkManager::GetInstance()->Subscribe(eNetMessageType::ALL_CLIENTS_COMPLETE, this);
+	ClientNetworkManager::GetInstance()->Subscribe(eNetMessageType::LOAD_LEVEL, this);
 }
 
 void InGameState::EndState()
@@ -63,33 +76,30 @@ const eStateStatus InGameState::Update(const float& aDeltaTime)
 	{
 		return eStateStatus::ePopMainState;
 	}
-	else if (CU::InputWrapper::GetInstance()->KeyDown(DIK_N))
-	{
-		SET_RUNTIME(false);
-		myStateStack->PushSubGameState(new ServerSelectState());
-	}
 
-	if (CU::InputWrapper::GetInstance()->KeyDown(DIK_NUMPAD1))
-	{
-		ClientNetworkManager::GetInstance()->AddMessage(NetMessageRequestLevel(0));
-		//SET_RUNTIME(false);
-		//SAFE_DELETE(myLevel);
-		//myLevel = static_cast<ClientLevel*>(myLevelFactory->LoadLevel(0));
-	}
-	else if (CU::InputWrapper::GetInstance()->KeyDown(DIK_NUMPAD2))
-	{
-		ClientNetworkManager::GetInstance()->AddMessage(NetMessageRequestLevel(1));
-		//SET_RUNTIME(false);
-		//SAFE_DELETE(myLevel);
-		//myLevel = static_cast<ClientLevel*>(myLevelFactory->LoadLevel(1));
-	}
-	else if (CU::InputWrapper::GetInstance()->KeyDown(DIK_NUMPAD3))
-	{
-		ClientNetworkManager::GetInstance()->AddMessage(NetMessageRequestLevel(2));
-		//SET_RUNTIME(false);
-		//SAFE_DELETE(myLevel);
-		//myLevel = static_cast<ClientLevel*>(myLevelFactory->LoadLevel(2));
-	}
+	//if (CU::InputWrapper::GetInstance()->KeyDown(DIK_NUMPAD1))
+	//{
+	//	ClientNetworkManager::GetInstance()->AddMessage(NetMessageRequestLevel(0));
+	//	//SET_RUNTIME(false);
+	//	//SAFE_DELETE(myLevel);
+	//	//myLevel = static_cast<ClientLevel*>(myLevelFactory->LoadLevel(0));
+	//}
+	//else if (CU::InputWrapper::GetInstance()->KeyDown(DIK_NUMPAD2))
+	//{
+	//	ClientNetworkManager::GetInstance()->AddMessage(NetMessageRequestLevel(1));
+	//	//SET_RUNTIME(false);
+	//	//SAFE_DELETE(myLevel);
+	//	//myLevel = static_cast<ClientLevel*>(myLevelFactory->LoadLevel(1));
+	//}
+	//else if (CU::InputWrapper::GetInstance()->KeyDown(DIK_NUMPAD3))
+	//{
+	//	ClientNetworkManager::GetInstance()->AddMessage(NetMessageRequestLevel(2));
+	//	//SET_RUNTIME(false);
+	//	//SAFE_DELETE(myLevel);
+	//	//myLevel = static_cast<ClientLevel*>(myLevelFactory->LoadLevel(2));
+	//}
+
+
 
 	if (myShouldLoadLevel == true)
 	{
@@ -100,8 +110,25 @@ const eStateStatus InGameState::Update(const float& aDeltaTime)
 		myLevelToLoad = -1;
 	}
 
-	DL_ASSERT_EXP(myLevel != nullptr, "Invalid level");
-	myLevel->Update(aDeltaTime);
+	if (myLevelComplete == true)
+	{
+		DEBUG_PRINT("LEVEL COMPLETE");
+
+		if (myCanStartNextLevel == true)
+		{
+			DEBUG_PRINT("Press space to continue!");
+
+			if (CU::InputWrapper::GetInstance()->KeyDown(DIK_SPACE) == true)
+			{
+				ClientNetworkManager::GetInstance()->AddMessage(NetMessageRequestStartLevel());
+			}
+		}
+	}
+	else
+	{
+		DL_ASSERT_EXP(myLevel != nullptr, "Invalid level");
+		myLevel->Update(aDeltaTime);
+	}
 	
 
 	//LUA::ScriptSystem::GetInstance()->CallFunction("Update", { aDeltaTime });
@@ -114,7 +141,10 @@ void InGameState::Render()
 {
 	VTUNE_EVENT_BEGIN(VTUNE::GAME_RENDER);
 
-	myLevel->Render();
+	if (myLevelComplete == false)
+	{
+		myLevel->Render();
+	}
 
 	VTUNE_EVENT_END();
 }
@@ -134,6 +164,37 @@ void InGameState::ReceiveMessage(const GameStateMessage& aMessage)
 		myLevelToLoad = aMessage.myID;
 		break;
 	}
+}
+
+void InGameState::ReceiveNetworkMessage(const NetMessageAllClientsComplete& aMessage, const sockaddr_in&)
+{
+	DL_ASSERT_EXP(aMessage.myType == NetMessageAllClientsComplete::eType::LEVEL_COMPLETE
+		|| aMessage.myType == NetMessageAllClientsComplete::eType::LEVEL_LOAD, "Unknown All clients complete message type");
+
+	switch (aMessage.myType)
+	{
+	case NetMessageAllClientsComplete::eType::LEVEL_COMPLETE:
+		myCanStartNextLevel = true;
+		break;
+	case NetMessageAllClientsComplete::eType::LEVEL_LOAD:
+		myLevelComplete = false;
+		break;
+	}
+}
+
+void InGameState::ReceiveNetworkMessage(const NetMessageLevelComplete&, const sockaddr_in&)
+{
+	ClientNetworkManager::GetInstance()->AddMessage(NetMessageLevelComplete());
+	SAFE_DELETE(myLevel);
+	myLevelComplete = true;
+}
+
+void InGameState::ReceiveNetworkMessage(const NetMessageLoadLevel& aMessage, const sockaddr_in&)
+{
+	DL_ASSERT_EXP(myLevel == nullptr, "Level has to be nullptr here");
+	SET_RUNTIME(false);
+	myLevel = static_cast<ClientLevel*>(myLevelFactory->LoadLevel(aMessage.myLevelID));
+	ClientNetworkManager::GetInstance()->AddMessage(NetMessageLevelLoaded());
 }
 
 void InGameState::OnResize(int, int)

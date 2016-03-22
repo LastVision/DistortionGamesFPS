@@ -35,6 +35,9 @@ ServerLevel::ServerLevel()
 
 ServerLevel::~ServerLevel()
 {
+#ifdef THREAD_PHYSICS
+	Prism::PhysicsInterface::GetInstance()->ShutdownThread();
+#endif
 	PollingStation::Destroy();
 	SAFE_DELETE(myMissionManager);
 	ServerNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::ON_CONNECT, this);

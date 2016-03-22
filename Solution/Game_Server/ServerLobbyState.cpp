@@ -5,10 +5,10 @@
 #include "ServerLobbyState.h"
 #include "ServerNetworkManager.h"
 #include "ServerStateStackProxy.h"
-#include <NetMessageStartGame.h>
+#include <NetMessageLoadLevel.h>
 #include <iostream>
 #include <NetMessageRequestConnect.h>
-#include <NetMessageRequestStartGame.h>
+#include <NetMessageRequestStartLevel.h>
 
 
 ServerLobbyState::ServerLobbyState()
@@ -18,7 +18,7 @@ ServerLobbyState::ServerLobbyState()
 
 ServerLobbyState::~ServerLobbyState()
 {
-	ServerNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::REQUEST_START_GAME, this);
+	ServerNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::REQUEST_START_LEVEL, this);
 	ServerNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::ON_CONNECT, this);
 
 }
@@ -28,7 +28,7 @@ void ServerLobbyState::InitState(ServerStateStackProxy* aStateStackProxy)
 	myStateStack = aStateStackProxy;
 	myStateStatus = eStateStatus::KEEP_STATE;
 
-	ServerNetworkManager::GetInstance()->Subscribe(eNetMessageType::REQUEST_START_GAME, this);
+	ServerNetworkManager::GetInstance()->Subscribe(eNetMessageType::REQUEST_START_LEVEL, this);
 	ServerNetworkManager::GetInstance()->Subscribe(eNetMessageType::ON_CONNECT, this);
 	myCurrentLevelID = 0;
 	myIsActiveState = true;
@@ -50,18 +50,18 @@ const eStateStatus ServerLobbyState::Update(const float aDeltaTime)
 void ServerLobbyState::ResumeState()
 {
 	myIsActiveState = true;
-	ServerNetworkManager::GetInstance()->Subscribe(eNetMessageType::REQUEST_START_GAME, this);
+	ServerNetworkManager::GetInstance()->Subscribe(eNetMessageType::REQUEST_START_LEVEL, this);
 	ServerNetworkManager::GetInstance()->Subscribe(eNetMessageType::ON_CONNECT, this);
 	ServerNetworkManager::GetInstance()->AllowNewConnections(true);
 
 }
 
-void ServerLobbyState::ReceiveNetworkMessage(const NetMessageRequestStartGame&, const sockaddr_in&)
+void ServerLobbyState::ReceiveNetworkMessage(const NetMessageRequestStartLevel&, const sockaddr_in&)
 {
-	ServerNetworkManager::GetInstance()->AddMessage(NetMessageStartGame(myCurrentLevelID));
+	ServerNetworkManager::GetInstance()->AddMessage(NetMessageLoadLevel(myCurrentLevelID));
 
 	ServerNetworkManager::GetInstance()->AllowNewConnections(false);
-	ServerNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::REQUEST_START_GAME, this);
+	ServerNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::REQUEST_START_LEVEL, this);
 	ServerNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::ON_CONNECT, this);
 
 	SET_RUNTIME(false);

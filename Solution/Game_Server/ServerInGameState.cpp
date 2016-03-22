@@ -1,20 +1,34 @@
 #include "stdafx.h"
+#include <NetMessageAllClientsComplete.h>
+#include <NetMessageLevelComplete.h>
+#include <NetMessageLevelLoaded.h>
+#include <NetMessageLoadLevel.h>
 #include "ServerInGameState.h"
 #include "ServerLevel.h"
 #include "ServerLevelFactory.h"
 #include "ServerLobbyState.h"
+#include "ServerNetworkManager.h"
 #include "ServerStateStackProxy.h"
 #include <iostream>
 
 ServerInGameState::ServerInGameState(int aLevelID)
 	: myLevelID(aLevelID)
+	, myState(eInGameStates::LEVEL_UPDATE)
+	, myRespondedClients(16)
 {
 	myIsActiveState = false;
 	myLevelFactory = new ServerLevelFactory("Data/Level/LI_level.xml");
+	ServerNetworkManager::GetInstance()->Subscribe(eNetMessageType::LEVEL_COMPLETE, this);
+	ServerNetworkManager::GetInstance()->Subscribe(eNetMessageType::REQUEST_START_LEVEL, this);
+	ServerNetworkManager::GetInstance()->Subscribe(eNetMessageType::LEVEL_LOADED, this);
+
 }
 
 ServerInGameState::~ServerInGameState()
 {
+	ServerNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::LEVEL_COMPLETE, this);
+	ServerNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::REQUEST_START_LEVEL, this);
+	ServerNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::LEVEL_LOADED, this);
 	SAFE_DELETE(myLevel);
 	SAFE_DELETE(myLevelFactory);
 }
@@ -36,12 +50,22 @@ void ServerInGameState::EndState()
 
 const eStateStatus ServerInGameState::Update(const float aDeltaTime)
 {
-	myLevel->Update(aDeltaTime);
-
-	int nextLevel;
-	if (myLevel->ChangeLevel(nextLevel) == true)
+	switch (myState)
 	{
-
+	case eInGameStates::LEVEL_UPDATE:
+		LevelUpdate(aDeltaTime);
+		break;
+	case eInGameStates::LEVEL_COMPLETE:
+		// only waiting for messages from clients
+		break;
+	case eInGameStates::LEVEL_COMPLETE_ALL_CLIENTS_RESPONDED:
+		// only waiting for messages from clients
+		break;
+	case eInGameStates::LEVEL_LOAD:
+		// only waiting for messages from clients
+		break;
+	default:
+		DL_ASSERT("Unknown state type");
 	}
 
 	return myStateStatus;
@@ -50,4 +74,52 @@ const eStateStatus ServerInGameState::Update(const float aDeltaTime)
 void ServerInGameState::ResumeState()
 {
 	myIsActiveState = true;
+}
+
+void ServerInGameState::ReceiveNetworkMessage(const NetMessageLevelComplete& aMessage, const sockaddr_in&)
+{
+	myRespondedClients.Add(aMessage.mySenderID);
+	if (ServerNetworkManager::GetInstance()->ListContainsAllClients(myRespondedClients) == true)
+	{
+		myRespondedClients.RemoveAll();
+		myState = eInGameStates::LEVEL_COMPLETE_ALL_CLIENTS_RESPONDED;
+		SET_RUNTIME(false);
+		SAFE_DELETE(myLevel);
+		ServerNetworkManager::GetInstance()->AddMessage(NetMessageAllClientsComplete(NetMessageAllClientsComplete::eType::LEVEL_COMPLETE));
+		myLevel = static_cast<ServerLevel*>(myLevelFactory->LoadLevel(myLevelID));
+	}
+}
+
+void ServerInGameState::ReceiveNetworkMessage(const NetMessageRequestStartLevel&, const sockaddr_in&)
+{
+	DL_ASSERT_EXP(myState == eInGameStates::LEVEL_COMPLETE_ALL_CLIENTS_RESPONDED, "Wrong state for Request Start Level message.");
+	myState = eInGameStates::LEVEL_LOAD;
+	ServerNetworkManager::GetInstance()->AddMessage(NetMessageLoadLevel(myLevelID));
+}
+
+void ServerInGameState::ReceiveNetworkMessage(const NetMessageLevelLoaded& aMessage, const sockaddr_in&)
+{
+	myRespondedClients.Add(aMessage.mySenderID);
+	if (ServerNetworkManager::GetInstance()->ListContainsAllClients(myRespondedClients) == true)
+	{
+		myRespondedClients.RemoveAll();
+		myState = eInGameStates::LEVEL_UPDATE;
+		ServerNetworkManager::GetInstance()->AddMessage(NetMessageAllClientsComplete(NetMessageAllClientsComplete::eType::LEVEL_LOAD));
+	}
+}
+
+void ServerInGameState::LevelUpdate(float aDeltaTime)
+{
+	int nextLevel;
+	if (myLevel->ChangeLevel(nextLevel) == true)
+	{
+		myState = eInGameStates::LEVEL_COMPLETE;
+		myLevelID = nextLevel;
+		myRespondedClients.RemoveAll();
+		ServerNetworkManager::GetInstance()->AddMessage(NetMessageLevelComplete());
+	}
+	else
+	{
+		myLevel->Update(aDeltaTime);
+	}
 }

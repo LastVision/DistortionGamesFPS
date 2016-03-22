@@ -25,7 +25,7 @@ public:
 	void ResumeState() override;
 	void ReceiveMessage(const OnClickMessage& aMessage) override;
 	void ReceiveMessage(const OnRadioButtonMessage& aMessage) override;
-	void ReceiveNetworkMessage(const NetMessageStartGame& aMessage, const sockaddr_in& aSenderAddress) override;
+	void ReceiveNetworkMessage(const NetMessageLoadLevel& aMessage, const sockaddr_in& aSenderAddress) override;
 
 private:
 	GUI::GUIManager* myGUIManager;
