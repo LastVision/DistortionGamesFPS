@@ -191,6 +191,7 @@ void ServerNetworkManager::SendThread()
 void ServerNetworkManager::CreateConnection(const std::string& aName, const sockaddr_in& aSender)
 {
 	myIDCount++;
+
 	NetMessageConnectReply connectReply(NetMessageConnectReply::eType::SUCCESS, myIDCount);
 	connectReply.PackMessage();
 	myNetwork->Send(connectReply.myStream, aSender);
@@ -205,8 +206,6 @@ void ServerNetworkManager::CreateConnection(const std::string& aName, const sock
 	//	}
 	//}
 
-	
-
 	Connection newConnection;
 	newConnection.myAddress = aSender;
 	newConnection.myID = myIDCount;
@@ -215,6 +214,8 @@ void ServerNetworkManager::CreateConnection(const std::string& aName, const sock
 	newConnection.myIsConnected = true;
 	myClients.Add(newConnection);
 	myNames[aName] = 1;
+
+	//AddMessage(NetMessageConnectReply(NetMessageConnectReply::eType::SUCCESS, myIDCount), newConnection.myID);
 
 	for (Connection& connection : myClients)
 	{
