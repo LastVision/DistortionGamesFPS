@@ -122,8 +122,8 @@ namespace Prism
 			}
 		}
 
-		bool addAssertHereWhenGrenadeRemoveIsWorking = true;
-		//DL_ASSERT("Unable to remove instance that does either not exist or does not have the \"AlwaysRender\" bool set to true.");
+		//bool addAssertHereWhenGrenadeRemoveIsWorking = true;
+		DL_ASSERT("Unable to remove instance that does either not exist or does not have the \"AlwaysRender\" bool set to true.");
 	}
 
 	const CU::GrowingArray<Instance*>& RoomManager::GetActiveInstances(const Camera& aCamera)
