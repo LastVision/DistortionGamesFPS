@@ -7,6 +7,8 @@
 #include "NetMessageEntityState.h"
 #include "NetMessageRequestConnect.h"
 #include "NetMessageOnJoin.h"
+#include "NetMessageHealth.h"
+#include "NetMessageHealthPack.h"
 #include "NetMessageDisconnect.h"
 #include "NetMessageRequestLevel.h"
 #include "NetMessageRequestStartGame.h"
@@ -18,6 +20,8 @@
 #include "NetMessageSetActive.h"
 #include "NetMessageStartGame.h"
 #include "NetMessageLevelLoaded.h"
+#include "NetMessageEnemyShooting.h"
+#include "NetMessageLevelComplete.h"
 
 #define BUFFERSIZE 512
 
@@ -273,6 +277,9 @@ void SharedNetworkManager::HandleMessage()
 		case eNetMessageType::LEVEL_LOADED:
 			UnpackAndHandle(NetMessageLevelLoaded(), buffer);
 			break;
+		case eNetMessageType::LEVEL_COMPLETE:
+			UnpackAndHandle(NetMessageLevelComplete(), buffer);
+			break;
 		case eNetMessageType::PING_REQUEST:
 			UnpackAndHandle(NetMessagePingRequest(), buffer);
 			break;
@@ -293,6 +300,15 @@ void SharedNetworkManager::HandleMessage()
 			break;
 		case eNetMessageType::ENTITY_STATE:
 			UnpackAndHandle(NetMessageEntityState(), buffer);
+			break;
+		case eNetMessageType::ENEMY_SHOOTING:
+			UnpackAndHandle(NetMessageEnemyShooting(), buffer);
+			break;
+		case eNetMessageType::HEALTH:
+			UnpackAndHandle(NetMessageHealth(), buffer);
+			break;
+		case eNetMessageType::HEALTH_PACK:
+			UnpackAndHandle(NetMessageHealthPack(), buffer);
 			break;
 		default:
 			DL_ASSERT("Unhandled network message type");

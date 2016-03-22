@@ -89,6 +89,7 @@ namespace Prism
 
 	DeferredRenderer::~DeferredRenderer()
 	{
+		SAFE_DELETE(myDepthStencilTexture);
 		SAFE_DELETE(myCubeMapGenerator);
 		SAFE_DELETE(myGBufferData.myAlbedoTexture);
 		SAFE_DELETE(myGBufferData.myNormalTexture);

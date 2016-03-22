@@ -61,17 +61,6 @@ void InputComponent::Update(float aDelta)
 		return;
 	}
 
-	if (CU::InputWrapper::GetInstance()->KeyDown(DIK_H) == true)
-	{
-		myEntity.SendNote<DamageNote>(DamageNote(1));
-	}
-
-	if (myEntity.GetComponent<HealthComponent>()->GetCurrentHealth() <= 0.f)
-	{
-		myEntity.GetComponent<PhysicsComponent>()->SetPlayerCapsulePosition({ 0.f, 1.5f, 0.f });
-		myEntity.SendNote<HealthNote>(HealthNote(myEntity.GetComponent<HealthComponent>()->GetMaxHealth()));
-	}
-
 	myPrevOrientation = myOrientation;
 
 	UpdateMovement(aDelta);

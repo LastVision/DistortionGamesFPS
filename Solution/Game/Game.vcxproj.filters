@@ -48,6 +48,7 @@
     <ClCompile Include="LobbyState.cpp">
       <Filter>StateStack</Filter>
     </ClCompile>
+    <ClCompile Include="ClientProjectileManager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
@@ -103,6 +104,7 @@
     <ClInclude Include="LobbyState.h">
       <Filter>StateStack</Filter>
     </ClInclude>
+    <ClInclude Include="ClientProjectileManager.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="PreCompile">

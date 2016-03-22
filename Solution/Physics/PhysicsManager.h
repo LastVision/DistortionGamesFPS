@@ -94,8 +94,11 @@ namespace Prism
 		void Add(physx::PxRigidStatic* aStatic);
 		void Remove(physx::PxRigidDynamic* aDynamic, const PhysicsComponentData& aData);
 		void Remove(physx::PxRigidStatic* aStatic, const PhysicsComponentData& aData);
+		void Remove(int aCapsuleID);
 		void Sleep(physx::PxRigidDynamic* aDynamic);
+		void Sleep(int aCapsuleID);
 		void Wake(physx::PxRigidDynamic* aDynamic);
+		void Wake(int aCapsuleID);
 
 	private:
 #ifdef THREAD_PHYSICS

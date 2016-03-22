@@ -10,11 +10,12 @@
 #include <NetMessageRequestConnect.h>
 #include <NetMessageLevelLoaded.h>
 #include <NetMessageSetActive.h>
+#include <NetMessageHealthPack.h>
 #include <NetMessageEntityState.h>
 #include <NetworkComponent.h>
 #include <PhysicsInterface.h>
 #include <PhysicsComponent.h>
-#include <ProjectileComponent.h>
+#include <BulletComponent.h>
 #include "ServerNetworkManager.h"
 #include <TriggerComponent.h>
 #include <PostMaster.h>
@@ -24,12 +25,15 @@
 ServerLevel::ServerLevel()
 	: myLoadedClients(16)
 	, myAllClientsLoaded(false)
+	, myNextLevel(-1)
 {
 	Prism::PhysicsInterface::Create(std::bind(&ServerLevel::CollisionCallback, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3), true);
 	ServerNetworkManager::GetInstance()->Subscribe(eNetMessageType::ON_CONNECT, this);
 	ServerNetworkManager::GetInstance()->Subscribe(eNetMessageType::LEVEL_LOADED, this);
 	ServerNetworkManager::GetInstance()->Subscribe(eNetMessageType::ENTITY_STATE, this);
 	PostMaster::GetInstance()->Subscribe(eMessageType::SET_ACTIVE, this);
+
+	ServerNetworkManager::GetInstance()->Subscribe(eNetMessageType::HEALTH_PACK, this);
 }
 
 ServerLevel::~ServerLevel()
@@ -41,14 +45,15 @@ ServerLevel::~ServerLevel()
 	ServerNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::ENTITY_STATE, this);
 
 	PostMaster::GetInstance()->UnSubscribe(eMessageType::SET_ACTIVE, this);
+
+	ServerNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::HEALTH_PACK, this);
 }
 
 void ServerLevel::Init(const std::string& aMissionXMLPath)
 {
 	for each (const Connection& client in ServerNetworkManager::GetInstance()->GetClients())
 	{
-		Entity* newPlayer = EntityFactory::CreateEntity(client.myID, eEntityType::UNIT, "player", nullptr, false, { 0.f, 0.f, 0.f });
-		newPlayer->Reset();
+		Entity* newPlayer = EntityFactory::CreateEntity(client.myID, eEntityType::UNIT, "playerserver", nullptr, false, { 0.f, 0.f, 0.f });
 		newPlayer->GetComponent<NetworkComponent>()->SetPlayer(true);
 		myPlayers.Add(newPlayer);
 
@@ -87,7 +92,7 @@ void ServerLevel::CollisionCallback(PhysicsComponent* aFirst, PhysicsComponent* 
 	case eEntityType::BULLET:
 		if (second.GetComponent<HealthComponent>() != nullptr)
 		{
-			second.GetComponent<HealthComponent>()->TakeDamage(first.GetComponent<ProjectileComponent>()->GetDamage());
+			second.GetComponent<HealthComponent>()->TakeDamage(first.GetComponent<BulletComponent>()->GetDamage());
 		}
 		first.Kill();
 		break;
@@ -128,6 +133,11 @@ void ServerLevel::ReceiveNetworkMessage(const NetMessageEntityState& aMessage, c
 	}
 }
 
+void ServerLevel::ReceiveNetworkMessage(const NetMessageHealthPack& aMessage, const sockaddr_in&)
+{
+	myPlayers[aMessage.mySenderID - 1]->GetComponent<HealthComponent>()->Heal(aMessage.myHealAmount);
+}
+
 void ServerLevel::ReceiveMessage(const SetActiveMessage& aMessage)
 {
 	if (aMessage.myShouldActivate == true)
@@ -150,17 +160,23 @@ void ServerLevel::HandleTrigger(Entity& aFirstEntity, Entity& aSecondEntity, boo
 			switch (firstTrigger->GetTriggerType())
 			{
 			case eTriggerType::UNLOCK:
-				SharedNetworkManager::GetInstance()->AddMessage(NetMessageSetActive(false, firstTrigger->GetValue()));
+				SharedNetworkManager::GetInstance()->AddMessage(NetMessageSetActive(false, true, firstTrigger->GetValue()));
 				myActiveEntitiesMap[firstTrigger->GetValue()]->GetComponent<PhysicsComponent>()->RemoveFromScene();
 				// do "open" animation
 				break;
 			case eTriggerType::LOCK:
-				SharedNetworkManager::GetInstance()->AddMessage(NetMessageSetActive(true, firstTrigger->GetValue()));
+				SharedNetworkManager::GetInstance()->AddMessage(NetMessageSetActive(true, true, firstTrigger->GetValue()));
 				myActiveEntitiesMap[firstTrigger->GetValue()]->GetComponent<PhysicsComponent>()->AddToScene();
 				// do "close" animation
 				break;
 			case eTriggerType::MISSION:
 				myMissionManager->SetMission(firstTrigger->GetValue());
+				break;
+			case eTriggerType::LEVEL_CHANGE:
+				myNextLevel = firstTrigger->GetValue();
+				break;
+			default:
+				DL_ASSERT("Unknown trigger type.");
 				break;
 			}
 			aSecondEntity.SendNote<CollisionNote>(CollisionNote(&aFirstEntity));
@@ -184,8 +200,15 @@ void ServerLevel::HandleTrigger(Entity& aFirstEntity, Entity& aSecondEntity, boo
 			}
 		}
 	}
-	
+}
 
-
+bool ServerLevel::ChangeLevel(int& aNextLevel)
+{
+	if (myNextLevel != -1)
+	{
+		aNextLevel = myNextLevel;
+		return true;
+	}
+	return false;
 }
 

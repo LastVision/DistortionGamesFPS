@@ -26,7 +26,7 @@
 #include <NetMessageEntityState.h>
 #include <NetMessageLevelLoaded.h>
 #include <NetMessageOnDeath.h>
-#include <NetMessageOnHit.h>
+#include <NetMessageHealthPack.h>
 #include <NetMessageOnJoin.h>
 #include <NetMessageRequestConnect.h>
 #include <NetMessageSetActive.h>
@@ -53,10 +53,6 @@ ClientLevel::ClientLevel()
 	, myInitDone(false)
 {
 	Prism::PhysicsInterface::Create(std::bind(&ClientLevel::CollisionCallback, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3), false);
-	PostMaster::GetInstance()->Subscribe(eMessageType::NETWORK_ADD_PLAYER, this);
-	PostMaster::GetInstance()->Subscribe(eMessageType::NETWORK_REMOVE_PLAYER, this);
-	PostMaster::GetInstance()->Subscribe(eMessageType::NETWORK_ADD_ENEMY, this);
-	PostMaster::GetInstance()->Subscribe(eMessageType::NETWORK_ON_DEATH, this);
 
 	ClientNetworkManager::GetInstance()->Subscribe(eNetMessageType::ON_DEATH, this);
 	ClientNetworkManager::GetInstance()->Subscribe(eNetMessageType::SET_ACTIVE, this);
@@ -76,10 +72,6 @@ ClientLevel::~ClientLevel()
 #endif
 
 	SAFE_DELETE(myEmitterManager);
-	PostMaster::GetInstance()->UnSubscribe(eMessageType::NETWORK_ADD_PLAYER, this);
-	PostMaster::GetInstance()->UnSubscribe(eMessageType::NETWORK_REMOVE_PLAYER, this);
-	PostMaster::GetInstance()->UnSubscribe(eMessageType::NETWORK_ADD_ENEMY, this);
-	PostMaster::GetInstance()->UnSubscribe(eMessageType::NETWORK_ON_DEATH, this);
 
 	ClientNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::ON_DEATH, this);
 	ClientNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::SET_ACTIVE, this);
@@ -192,22 +184,56 @@ void ClientLevel::ReceiveNetworkMessage(const NetMessageOnDeath& aMessage, const
 
 void ClientLevel::ReceiveNetworkMessage(const NetMessageSetActive& aMessage, const sockaddr_in&)
 {
+	bool useEntityMap = true;
+
 	if (myActiveEntitiesMap.find(aMessage.myGID) == myActiveEntitiesMap.end())
 	{
+		useEntityMap = false;
 		//DL_ASSERT("GID NOT FOUND IN CLIENT LEVEL!");
+	}
+	else if (myActiveUnitsMap.find(aMessage.myGID) == myActiveUnitsMap.end())
+	{
 		int triggerWillNotDoAnythingOnClient = 0;
 		return;
 	}
 
 	if (aMessage.myShouldActivate == true)
 	{
-		myActiveEntitiesMap[aMessage.myGID]->GetComponent<PhysicsComponent>()->AddToScene();
-		myActiveEntitiesMap[aMessage.myGID]->AddToScene();
+		if (useEntityMap == true)
+		{
+			myActiveEntitiesMap[aMessage.myGID]->GetComponent<PhysicsComponent>()->AddToScene();
+			if (aMessage.myIsInGraphicsScene == true)
+			{
+				myActiveEntitiesMap[aMessage.myGID]->AddToScene();
+			}
+		}
+		else
+		{
+			myActiveUnitsMap[aMessage.myGID]->GetComponent<PhysicsComponent>()->Wake();
+			if (aMessage.myIsInGraphicsScene == true)
+			{
+				myActiveUnitsMap[aMessage.myGID]->AddToScene();
+			}
+		}
 	}
 	else
 	{
-		myActiveEntitiesMap[aMessage.myGID]->GetComponent<PhysicsComponent>()->RemoveFromScene();
-		myActiveEntitiesMap[aMessage.myGID]->RemoveFromScene();
+		if (useEntityMap == true)
+		{
+			myActiveEntitiesMap[aMessage.myGID]->GetComponent<PhysicsComponent>()->RemoveFromScene();
+			if (aMessage.myIsInGraphicsScene == true)
+			{
+				myActiveEntitiesMap[aMessage.myGID]->RemoveFromScene();
+			}
+		}
+		else
+		{
+			myActiveUnitsMap[aMessage.myGID]->GetComponent<PhysicsComponent>()->Sleep();
+			if (aMessage.myIsInGraphicsScene == true)
+			{
+				myActiveUnitsMap[aMessage.myGID]->RemoveFromScene();
+			}
+		}
 	}
 }
 
@@ -281,16 +307,23 @@ void ClientLevel::DebugMusic()
 
 void ClientLevel::HandleTrigger(Entity& aFirstEntity, Entity& aSecondEntity, bool aHasEntered)
 {
-	TriggerComponent* firstTrigger = aFirstEntity.GetComponent<TriggerComponent>();
-	if (firstTrigger->GetTriggerType() == eTriggerType::UPGRADE && firstTrigger->GetTriggerType() == eTriggerType::HEALTH_PACK) 
+	if (aSecondEntity.GetType() == eEntityType::PLAYER && aHasEntered == true)
 	{
-		if (aSecondEntity.GetType() == eEntityType::PLAYER)
+		TriggerComponent* firstTrigger = aFirstEntity.GetComponent<TriggerComponent>();
+		if (firstTrigger->GetTriggerType() == eTriggerType::UPGRADE)
 		{
-			aSecondEntity.SendNote<UpgradeNote>(aFirstEntity.GetComponent<UpgradeComponent>()->GetData());
+			if (aSecondEntity.GetType() == eEntityType::PLAYER)
+			{
+				aSecondEntity.SendNote<UpgradeNote>(aFirstEntity.GetComponent<UpgradeComponent>()->GetData());
+			}
 		}
+		else if (firstTrigger->GetTriggerType() == eTriggerType::HEALTH_PACK)
+		{
+			ClientNetworkManager::GetInstance()->AddMessage<NetMessageHealthPack>(NetMessageHealthPack(firstTrigger->GetValue()));
+		}
+		aSecondEntity.SendNote<CollisionNote>(CollisionNote(&aFirstEntity));
+		aFirstEntity.SendNote<CollisionNote>(CollisionNote(&aSecondEntity));
 	}
-	aSecondEntity.SendNote<CollisionNote>(CollisionNote(&aFirstEntity));
-	aFirstEntity.SendNote<CollisionNote>(CollisionNote(&aSecondEntity));
 }
 
 void ClientLevel::CreatePlayers()

@@ -107,5 +107,17 @@
     <ClInclude Include="NetMessageEntityState.h">
       <Filter>Messages</Filter>
     </ClInclude>
+    <ClInclude Include="NetMessageEnemyShooting.h">
+      <Filter>Messages</Filter>
+    </ClInclude>
+    <ClInclude Include="NetMessageLevelComplete.h">
+      <Filter>Messages</Filter>
+    </ClInclude>
+    <ClInclude Include="NetMessageHealth.h">
+      <Filter>Messages</Filter>
+    </ClInclude>
+    <ClInclude Include="NetMessageHealthPack.h">
+      <Filter>Messages</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

@@ -19,15 +19,16 @@
 #include "ShootingComponent.h"
 #include "TriggerComponent.h"
 #include "UpgradeComponent.h"
-#include "ProjectileComponent.h"
+#include "BulletComponent.h"
 
 Entity::Entity(unsigned int aGID, const EntityData& aEntityData, Prism::Scene* aScene, bool aClientSide, const CU::Vector3<float>& aStartPosition,
-	const CU::Vector3f& aRotation, const CU::Vector3f& aScale)
+	const CU::Vector3f& aRotation, const CU::Vector3f& aScale, const std::string& aSubType)
 	: myGID(aGID)
 	, myScene(aScene)
 	, myEntityData(aEntityData)
 	, myEmitterConnection(nullptr)
 	, myIsClientSide(aClientSide)
+	, mySubType(aSubType)
 {
 	for (int i = 0; i < static_cast<int>(eComponentType::_COUNT); ++i)
 	{
@@ -125,7 +126,7 @@ Entity::Entity(unsigned int aGID, const EntityData& aEntityData, Prism::Scene* a
 	}
 	if (aEntityData.myProjecileData.myExistsInEntity == true)
 	{
-		myComponents[static_cast<int>(eComponentType::BULLET)] = new ProjectileComponent(*this, aEntityData.myProjecileData, myOrientation);
+		myComponents[static_cast<int>(eComponentType::BULLET)] = new BulletComponent(*this, aEntityData.myProjecileData, myOrientation);
 	}
 
 	Reset();
@@ -155,7 +156,7 @@ void Entity::Reset()
 {
 	myAlive = true;
 
-	if (myIsClientSide == false && mySubType == "player")
+	if (myIsClientSide == false && mySubType == "playerserver")
 	{
 		PollingStation::GetInstance()->AddEntity(this);
 	}

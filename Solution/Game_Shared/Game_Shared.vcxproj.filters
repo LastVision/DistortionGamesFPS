@@ -22,6 +22,7 @@
     <ClInclude Include="SharedLevel.h">
       <Filter>Level</Filter>
     </ClInclude>
+    <ClInclude Include="SharedProjectileManager.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="SharedGame.cpp" />
@@ -34,5 +35,6 @@
     <ClCompile Include="stdafx.cpp">
       <Filter>Precompile</Filter>
     </ClCompile>
+    <ClCompile Include="SharedProjectileManager.cpp" />
   </ItemGroup>
 </Project>

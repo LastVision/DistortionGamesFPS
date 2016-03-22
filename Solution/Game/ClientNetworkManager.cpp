@@ -20,17 +20,11 @@
 
 ClientNetworkManager::ClientNetworkManager()
 {
-	PostMaster::GetInstance()->Subscribe(eMessageType::NETWORK_SEND_POSITION, this);
-	PostMaster::GetInstance()->Subscribe(eMessageType::NETWORK_ON_DISCONNECT, this);
-	PostMaster::GetInstance()->Subscribe(eMessageType::NETWORK_ON_HIT, this);
+	
 }
 
 ClientNetworkManager::~ClientNetworkManager()
 {
-	PostMaster::GetInstance()->UnSubscribe(eMessageType::NETWORK_SEND_POSITION, this);
-	PostMaster::GetInstance()->UnSubscribe(eMessageType::NETWORK_ON_DISCONNECT, this);
-	PostMaster::GetInstance()->UnSubscribe(eMessageType::NETWORK_ON_HIT, this);
-
 	UnSubscribe(eNetMessageType::CONNECT_REPLY, this);
 	UnSubscribe(eNetMessageType::ON_CONNECT, this);
 	UnSubscribe(eNetMessageType::ON_DISCONNECT, this);

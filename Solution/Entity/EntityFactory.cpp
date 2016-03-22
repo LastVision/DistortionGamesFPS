@@ -50,7 +50,7 @@ Entity* EntityFactory::CreateEntity(unsigned int aGID, eEntityType aType, Prism:
 			, aScale);
 		return newEntity;
 	}
-	DL_ASSERT("Entity not found.");
+	DL_ASSERT("Entity not found with enum: " + std::to_string(aType));
 	return nullptr;
 }
 
@@ -62,7 +62,7 @@ Entity* EntityFactory::CreateEntity(unsigned int aGID, eEntityType aType, std::s
 		if (myInstance->myLoadedSubEntityData.find(aSubType) != myInstance->myLoadedSubEntityData.end())
 		{
 			Entity* newEntity = new Entity(aGID, myInstance->myLoadedSubEntityData.find(aSubType)->second, aScene, aClientSide, aPosition, aRotation
-				, aScale);
+				, aScale, aSubType);
 			newEntity->mySubType = aSubType;
 
 				
@@ -152,9 +152,9 @@ void EntityFactory::LoadEntity(const char* aEntityPath)
 		{
 			myComponentLoader->LoadPhysicsComponent(entityDocument, e, newData.myPhysicsData);
 		}
-		else if (elementName == CU::ToLower("ProjectileComponent"))
+		else if (elementName == CU::ToLower("BulletComponent"))
 		{
-			myComponentLoader->LoadProjectileComponent(entityDocument, e, newData.myProjecileData);
+			myComponentLoader->LoadBulletComponent(entityDocument, e, newData.myProjecileData);
 		}
 		else
 		{

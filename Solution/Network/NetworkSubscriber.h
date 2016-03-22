@@ -5,6 +5,9 @@ class NetMessageDisconnect;
 class NetMessageEntityState;
 class NetMessageImportantReply;
 class NetMessageLevelLoaded;
+class NetMessageHealth;
+class NetMessageHealthPack;
+class NetMessageLevelComplete;
 class NetMessageOnDeath;
 class NetMessageOnHit;
 class NetMessageOnJoin;
@@ -16,6 +19,7 @@ class NetMessageRequestLevel;
 class NetMessageRequestStartGame;
 class NetMessageSetActive;
 class NetMessageStartGame;
+class NetMessageEnemyShooting;
 
 class NetworkSubscriber
 {
@@ -28,6 +32,9 @@ public:
 	virtual void ReceiveNetworkMessage(const NetMessageEntityState& aMessage, const sockaddr_in& aSenderAddress);
 	virtual void ReceiveNetworkMessage(const NetMessageImportantReply& aMessage, const sockaddr_in& aSenderAddress);
 	virtual void ReceiveNetworkMessage(const NetMessageLevelLoaded& aMessage, const sockaddr_in& aSenderAddress);
+	virtual void ReceiveNetworkMessage(const NetMessageLevelComplete& aMessage, const sockaddr_in& aSenderAddress);
+	virtual void ReceiveNetworkMessage(const NetMessageHealth& aMessage, const sockaddr_in& aSenderAddress);
+	virtual void ReceiveNetworkMessage(const NetMessageHealthPack& aMessage, const sockaddr_in& aSenderAddress);
 	virtual void ReceiveNetworkMessage(const NetMessageOnDeath& aMessage, const sockaddr_in& aSenderAddress);
 	virtual void ReceiveNetworkMessage(const NetMessageOnHit& aMessage, const sockaddr_in& aSenderAddress);
 	virtual void ReceiveNetworkMessage(const NetMessageOnJoin& aMessage, const sockaddr_in& aSenderAddress);
@@ -39,4 +46,5 @@ public:
 	virtual void ReceiveNetworkMessage(const NetMessageRequestStartGame& aMessage, const sockaddr_in& aSenderAddress);
 	virtual void ReceiveNetworkMessage(const NetMessageSetActive& aMessage, const sockaddr_in& aSenderAddress);
 	virtual void ReceiveNetworkMessage(const NetMessageStartGame& aMessage, const sockaddr_in& aSenderAddress);
+	virtual void ReceiveNetworkMessage(const NetMessageEnemyShooting& aMessage, const sockaddr_in& aSenderAddress);
 };

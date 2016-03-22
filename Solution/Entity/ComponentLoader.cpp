@@ -6,7 +6,7 @@
 #include "HealthComponentData.h"
 #include "NetworkComponentData.h"
 #include "PhysicsComponentData.h"
-#include "ProjectileComponentData.h"
+#include "BulletComponentData.h"
 #include "ShootingComponentData.h"
 #include "TriggerComponentData.h"
 #include "UpgradeComponentData.h"
@@ -263,7 +263,7 @@ void ComponentLoader::LoadUpgradeComponent(XMLReader& aDocument, tinyxml2::XMLEl
 	aOutputData.myExistsInEntity = true;
 }
 
-void ComponentLoader::LoadProjectileComponent(XMLReader& aDocument, tinyxml2::XMLElement* aSourceElement, ProjectileComponentData& aOutputData)
+void ComponentLoader::LoadBulletComponent(XMLReader& aDocument, tinyxml2::XMLElement* aSourceElement, BulletComponentData& aOutputData)
 {
 	aOutputData.myExistsInEntity = true;
 

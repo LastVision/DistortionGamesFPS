@@ -64,6 +64,7 @@
     <ClInclude Include="DefendMission.h">
       <Filter>Mission</Filter>
     </ClInclude>
+    <ClInclude Include="ServerProjectileManager.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -103,5 +104,6 @@
     <ClCompile Include="DefendMission.cpp">
       <Filter>Mission</Filter>
     </ClCompile>
+    <ClCompile Include="ServerProjectileManager.cpp" />
   </ItemGroup>
 </Project>

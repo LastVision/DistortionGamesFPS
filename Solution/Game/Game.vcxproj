@@ -202,6 +202,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="ClientNetworkManager.h" />
+    <ClInclude Include="ClientProjectileManager.h" />
     <ClInclude Include="ConsoleBackspace.h" />
     <ClInclude Include="ConsoleHelp.h" />
     <ClInclude Include="ConsoleHistoryManager.h" />
@@ -223,6 +224,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ClientNetworkManager.cpp" />
+    <ClCompile Include="ClientProjectileManager.cpp" />
     <ClCompile Include="ConsoleBackspace.cpp" />
     <ClCompile Include="ConsoleHelp.cpp" />
     <ClCompile Include="ConsoleHistoryManager.cpp" />
