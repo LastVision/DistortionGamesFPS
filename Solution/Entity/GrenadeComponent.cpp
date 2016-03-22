@@ -20,6 +20,7 @@ GrenadeComponent::GrenadeComponent(Entity& aEntity, const GrenadeComponentData& 
 
 GrenadeComponent::~GrenadeComponent()
 {
+	SAFE_DELETE(myExplosion);
 }
 
 void GrenadeComponent::Update(float aDelta)

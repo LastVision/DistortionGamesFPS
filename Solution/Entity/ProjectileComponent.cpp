@@ -1,6 +1,8 @@
 #include "stdafx.h"
 #include "ProjectileComponent.h"
 #include "PhysicsComponent.h"
+#include <NetMessageEnemyShooting.h>
+#include <SharedNetworkManager.h>
 #include "Entity.h"
 
 ProjectileComponent::ProjectileComponent(Entity& anEntity, const ProjectileComponentData& aData, CU::Matrix44<float>& anOrientation)
@@ -9,11 +11,14 @@ ProjectileComponent::ProjectileComponent(Entity& anEntity, const ProjectileCompo
 	, myData(aData)
 {
 	myEntity.Kill(false);
+	SharedNetworkManager::GetInstance()->Subscribe(eNetMessageType::ENEMY_SHOOTING, this);
 }
 
 
 ProjectileComponent::~ProjectileComponent()
 {
+	SharedNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::ENEMY_SHOOTING, this);
+
 }
 
 void ProjectileComponent::Activate(const CU::Matrix44<float>& anOrientation)
@@ -40,4 +45,12 @@ void ProjectileComponent::Update(float aDelta)
 int ProjectileComponent::GetDamage() const
 {
 	return myData.myDamage;
+}
+
+void ProjectileComponent::ReceiveNetworkMessage(const NetMessageEnemyShooting& aMessage, const sockaddr_in& aSenderAddress)
+{
+	if (myEntity.GetIsClient() == true && aMessage.myGID == myEntity.GetGID())
+	{
+		myEntity.AddToScene();
+	}
 }

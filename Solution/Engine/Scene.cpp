@@ -132,6 +132,9 @@ namespace Prism
 
 	void Scene::RemoveInstance(Instance* aInstance)
 	{
-		myRoomManager->Remove(aInstance);
+		if (myRoomManager != nullptr)
+		{
+			myRoomManager->Remove(aInstance);
+		}
 	}
 }

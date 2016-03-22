@@ -5,14 +5,23 @@ class NetMessageEnemyShooting : public NetImportantMessage
 {
 public:
 	NetMessageEnemyShooting();
+	NetMessageEnemyShooting(int aGID);
 	~NetMessageEnemyShooting();
 
+	int myGID;
 private:
 
 	void DoSerialize(StreamType& aStream) override;
 	void DoDeSerialize(StreamType& aStream) override;
 
+
 };
+
+inline NetMessageEnemyShooting::NetMessageEnemyShooting(int aGID)
+	: NetImportantMessage(eNetMessageType::ENEMY_SHOOTING)
+	, myGID(aGID)
+{
+}
 
 inline NetMessageEnemyShooting::NetMessageEnemyShooting()
 	: NetImportantMessage(eNetMessageType::ENEMY_SHOOTING)
