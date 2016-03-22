@@ -6,6 +6,8 @@
 #include "HealthComponentData.h"
 #include "HealthNote.h"
 #include <NetMessageOnHit.h>
+#include <NetMessageEntityState.h>
+#include <NetMessageSetActive.h>
 #include "TriggerComponent.h"
 #include <PostMaster.h>
 #include <SharedNetworkManager.h>
@@ -53,7 +55,14 @@ void HealthComponent::TakeDamage(int aDamage)
 	if (myCurrentHealth <= 0)
 	{
 		myCurrentHealth = 0;
-		myEntity.Kill();
+		//myEntity.Kill();
+
+		if (myEntity.GetIsClient() == false)
+		{
+			myEntity.SetState(eEntityState::DIE);
+			SharedNetworkManager::GetInstance()->AddMessage<NetMessageEntityState>(NetMessageEntityState(myEntity.GetState(), myEntity.GetGID()));
+			//SharedNetworkManager::GetInstance()->AddMessage<NetMessageSetActive>(NetMessageSetActive(false, myEntity.GetGID()));
+		}
 	}
 }
 
