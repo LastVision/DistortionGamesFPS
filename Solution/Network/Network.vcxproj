@@ -92,7 +92,7 @@
     <ClInclude Include="NetMessageConnectReply.h" />
     <ClInclude Include="NetMessageEnemyShooting.h" />
     <ClInclude Include="NetMessageEntityState.h" />
-    <ClInclude Include="NetMessageHealth.h" />
+    <ClInclude Include="NetMessageLevelComplete.h" />
     <ClInclude Include="NetMessageRequestConnect.h" />
     <ClInclude Include="NetMessageDisconnect.h" />
     <ClInclude Include="NetMessageImportantReply.h" />

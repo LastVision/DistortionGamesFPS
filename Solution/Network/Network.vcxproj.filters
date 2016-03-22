@@ -110,7 +110,7 @@
     <ClInclude Include="NetMessageEnemyShooting.h">
       <Filter>Messages</Filter>
     </ClInclude>
-    <ClInclude Include="NetMessageHealth.h">
+    <ClInclude Include="NetMessageLevelComplete.h">
       <Filter>Messages</Filter>
     </ClInclude>
   </ItemGroup>
