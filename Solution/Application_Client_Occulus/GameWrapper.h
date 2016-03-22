@@ -5,6 +5,7 @@
 #include <Matrix.h>
 
 #include <Model.h>
+#include <GrowingArray.h>
 
 struct ID3D11DeviceContext;
 struct ID3D11Device;
@@ -24,7 +25,7 @@ public:
 	CU::Matrix44<float> ConvertMatrix(const DirectX::XMMATRIX& aMatrix);
 
 private:
-	CU::Matrix44<float> myOrientation;
-	Prism::Model* myModel;
+	CU::GrowingArray<CU::Matrix44<float>> myOrientations;
+	CU::GrowingArray<Prism::Model*> myModels;
 };
 

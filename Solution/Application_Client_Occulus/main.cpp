@@ -172,7 +172,8 @@ static bool MainLoop(bool retryCreate)
     roomScene = new Scene(false);
 
 	// Create camera
-    mainCam = new Camera(&XMVectorSet(0.0f, 1.6f, 5.0f, 0), &XMQuaternionIdentity());
+	//mainCam = new Camera(&XMVectorSet(0.0f, 1.6f, 5.0f, 0), &XMQuaternionIdentity());
+	mainCam = new Camera(&XMVectorSet(0.0f, 0.f, 0.f, 0), &XMQuaternionIdentity());
 
 	// Setup VR components, filling out description
 	ovrEyeRenderDesc eyeRenderDesc[2];
@@ -237,7 +238,7 @@ static bool MainLoop(bool retryCreate)
 				                            p.M[0][2], p.M[1][2], p.M[2][2], p.M[3][2],
 				                            p.M[0][3], p.M[1][3], p.M[2][3], p.M[3][3]);
 			    XMMATRIX prod = XMMatrixMultiply(view, proj);
-			    //roomScene->Render(&prod, 1, 1, 1, 1, true);
+				//roomScene->Render(&prod, 1, 1, 1, 1, true);
 
 				CU::Matrix44<float> matrix1 = gameWrapper.ConvertMatrix(view);
 				CU::Matrix44<float> matrix2 = gameWrapper.ConvertMatrix(proj);
