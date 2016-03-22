@@ -9,6 +9,7 @@ PhysicsComponent::PhysicsComponent(Entity& aEntity, const PhysicsComponentData& 
 	, const std::string& aFBXPath)
 	: Component(aEntity)
 	, myData(aPhysicsComponentData)
+	, myIsAwake(true)
 {
 	for (int i = 0; i < 16; ++i)
 	{
@@ -48,9 +49,14 @@ PhysicsComponent::~PhysicsComponent()
 
 void PhysicsComponent::Update(float)
 {
-	if (myPhysicsType == ePhysics::KINEMATIC)
+	if (myPhysicsType == ePhysics::KINEMATIC && myIsAwake == true)
 	{
 		Prism::PhysicsInterface::GetInstance()->MoveToPosition(myDynamicBody, myEntity.GetOrientation().GetPos() + CU::Vector3<float>(0, 1.f, 0));
+	}
+	if (myIsAwake == false)
+	{
+		int apa;
+		apa = 5;
 	}
 }
 
@@ -68,6 +74,8 @@ void PhysicsComponent::Reset()
 
 void PhysicsComponent::Sleep()
 {
+	myIsAwake = false;
+
 	if (myDynamicBody != nullptr)
 	{
 		Prism::PhysicsInterface::GetInstance()->Sleep(myDynamicBody);
@@ -84,6 +92,8 @@ void PhysicsComponent::Sleep()
 
 void PhysicsComponent::Wake()
 {
+	myIsAwake = true;
+
 	if (myDynamicBody != nullptr)
 	{
 		Prism::PhysicsInterface::GetInstance()->Wake(myDynamicBody);
@@ -117,32 +127,35 @@ float* PhysicsComponent::GetOrientation()
 void PhysicsComponent::UpdateOrientation()
 {
 	DL_ASSERT_EXP(myPhysicsType == ePhysics::DYNAMIC, "Cant update Orientation on STATIC PhysEntities");
+	
+	if (myIsAwake == true)
+	{
+		Prism::PhysicsInterface::GetInstance()->UpdateOrientation(myDynamicBody, myShapes, myThread4x4Float);
 
-	Prism::PhysicsInterface::GetInstance()->UpdateOrientation(myDynamicBody, myShapes, myThread4x4Float);
-
-
-	myPosition[0] = myThread4x4Float[12];
-	myPosition[1] = myThread4x4Float[13];
-	myPosition[2] = myThread4x4Float[14];
+		myPosition[0] = myThread4x4Float[12];
+		myPosition[1] = myThread4x4Float[13];
+		myPosition[2] = myThread4x4Float[14];
+	}
 }
 
 void PhysicsComponent::UpdateOrientationStatic()
 {
 	DL_ASSERT_EXP(myPhysicsType == ePhysics::PHANTOM, "Cant update Orientation Static on other types of PhysEntities");
-
-	Prism::PhysicsInterface::GetInstance()->UpdateOrientation(myStaticBody, myShapes, myThread4x4Float);
-
-
 	
+	if (myIsAwake == true)
+	{
+		Prism::PhysicsInterface::GetInstance()->UpdateOrientation(myStaticBody, myShapes, myThread4x4Float);
 
-	myPosition[0] = myThread4x4Float[12];
-	myPosition[1] = myThread4x4Float[13];
-	myPosition[2] = myThread4x4Float[14];
+		myPosition[0] = myThread4x4Float[12];
+		myPosition[1] = myThread4x4Float[13];
+		myPosition[2] = myThread4x4Float[14];
+	}
 }
 
 void PhysicsComponent::AddForce(const CU::Vector3<float>& aDirection, float aMagnitude)
 {
 	DL_ASSERT_EXP(myPhysicsType == ePhysics::DYNAMIC, "Cant add Force to STATIC objects");
+	DL_ASSERT_EXP(myIsAwake == true, "Add force on sleeping object");
 
 	Prism::PhysicsInterface::GetInstance()->AddForce(myDynamicBody, aDirection, aMagnitude);
 }
@@ -150,6 +163,7 @@ void PhysicsComponent::AddForce(const CU::Vector3<float>& aDirection, float aMag
 void PhysicsComponent::SetVelocity(const CU::Vector3<float>& aVelocity)
 {
 	DL_ASSERT_EXP(myPhysicsType == ePhysics::DYNAMIC, "Cant add Force to STATIC objects");
+	DL_ASSERT_EXP(myIsAwake == true, "Add force on sleeping object");
 
 	Prism::PhysicsInterface::GetInstance()->SetVelocity(myDynamicBody, aVelocity);
 }
@@ -157,6 +171,7 @@ void PhysicsComponent::SetVelocity(const CU::Vector3<float>& aVelocity)
 void PhysicsComponent::TeleportToPosition(const CU::Vector3<float>& aPosition)
 {
 	DL_ASSERT_EXP(myPhysicsType != ePhysics::STATIC, "Cant add Force to STATIC objects");
+	DL_ASSERT_EXP(myIsAwake == true, "Add force on sleeping object");
 
 	if (myDynamicBody != nullptr)
 	{
@@ -171,6 +186,7 @@ void PhysicsComponent::TeleportToPosition(const CU::Vector3<float>& aPosition)
 void PhysicsComponent::MoveToPosition(const CU::Vector3<float>& aPosition)
 {
 	DL_ASSERT_EXP(myPhysicsType != ePhysics::STATIC, "Cant add Force to STATIC objects");
+	DL_ASSERT_EXP(myIsAwake == true, "Add force on sleeping object");
 
 	Prism::PhysicsInterface::GetInstance()->MoveToPosition(myDynamicBody, aPosition);
 }

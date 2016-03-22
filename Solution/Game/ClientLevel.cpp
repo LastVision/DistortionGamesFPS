@@ -52,10 +52,6 @@ ClientLevel::ClientLevel()
 	, myInitDone(false)
 {
 	Prism::PhysicsInterface::Create(std::bind(&ClientLevel::CollisionCallback, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3), false);
-	PostMaster::GetInstance()->Subscribe(eMessageType::NETWORK_ADD_PLAYER, this);
-	PostMaster::GetInstance()->Subscribe(eMessageType::NETWORK_REMOVE_PLAYER, this);
-	PostMaster::GetInstance()->Subscribe(eMessageType::NETWORK_ADD_ENEMY, this);
-	PostMaster::GetInstance()->Subscribe(eMessageType::NETWORK_ON_DEATH, this);
 
 	ClientNetworkManager::GetInstance()->Subscribe(eNetMessageType::ON_DEATH, this);
 	ClientNetworkManager::GetInstance()->Subscribe(eNetMessageType::SET_ACTIVE, this);
@@ -75,10 +71,6 @@ ClientLevel::~ClientLevel()
 #endif
 
 	SAFE_DELETE(myEmitterManager);
-	PostMaster::GetInstance()->UnSubscribe(eMessageType::NETWORK_ADD_PLAYER, this);
-	PostMaster::GetInstance()->UnSubscribe(eMessageType::NETWORK_REMOVE_PLAYER, this);
-	PostMaster::GetInstance()->UnSubscribe(eMessageType::NETWORK_ADD_ENEMY, this);
-	PostMaster::GetInstance()->UnSubscribe(eMessageType::NETWORK_ON_DEATH, this);
 
 	ClientNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::ON_DEATH, this);
 	ClientNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::SET_ACTIVE, this);
@@ -210,7 +202,7 @@ void ClientLevel::ReceiveNetworkMessage(const NetMessageSetActive& aMessage, con
 		}
 		else
 		{
-			myActiveUnitsMap[aMessage.myGID]->GetComponent<PhysicsComponent>()->AddToScene();
+			myActiveUnitsMap[aMessage.myGID]->GetComponent<PhysicsComponent>()->Wake();
 			if (aMessage.myIsInGraphicsScene == true)
 			{
 				myActiveUnitsMap[aMessage.myGID]->AddToScene();
@@ -229,7 +221,7 @@ void ClientLevel::ReceiveNetworkMessage(const NetMessageSetActive& aMessage, con
 		}
 		else
 		{
-			myActiveUnitsMap[aMessage.myGID]->GetComponent<PhysicsComponent>()->RemoveFromScene();
+			myActiveUnitsMap[aMessage.myGID]->GetComponent<PhysicsComponent>()->Sleep();
 			if (aMessage.myIsInGraphicsScene == true)
 			{
 				myActiveUnitsMap[aMessage.myGID]->RemoveFromScene();

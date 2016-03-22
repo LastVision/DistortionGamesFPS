@@ -1,6 +1,6 @@
 #pragma once
 
-struct ProjectileComponentData
+struct BulletComponentData
 {
 	bool myExistsInEntity = false;
 

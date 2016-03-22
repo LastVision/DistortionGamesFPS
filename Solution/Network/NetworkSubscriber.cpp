@@ -21,3 +21,4 @@ void NetworkSubscriber::ReceiveNetworkMessage(const NetMessageRequestLevel&, con
 void NetworkSubscriber::ReceiveNetworkMessage(const NetMessageRequestStartGame&, const sockaddr_in&){};
 void NetworkSubscriber::ReceiveNetworkMessage(const NetMessageSetActive&, const sockaddr_in&){};
 void NetworkSubscriber::ReceiveNetworkMessage(const NetMessageStartGame&, const sockaddr_in&){};
+void NetworkSubscriber::ReceiveNetworkMessage(const NetMessageEnemyShooting&, const sockaddr_in&){}

@@ -18,6 +18,7 @@
 #include "NetMessageSetActive.h"
 #include "NetMessageStartGame.h"
 #include "NetMessageLevelLoaded.h"
+#include "NetMessageEnemyShooting.h"
 #include "NetMessageLevelComplete.h"
 
 #define BUFFERSIZE 512
@@ -297,6 +298,9 @@ void SharedNetworkManager::HandleMessage()
 			break;
 		case eNetMessageType::ENTITY_STATE:
 			UnpackAndHandle(NetMessageEntityState(), buffer);
+			break;
+		case eNetMessageType::ENEMY_SHOOTING:
+			UnpackAndHandle(NetMessageEnemyShooting(), buffer);
 			break;
 		default:
 			DL_ASSERT("Unhandled network message type");
