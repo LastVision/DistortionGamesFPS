@@ -45,6 +45,8 @@ void AIComponent::Update(float aDelta)
 		}
 	}
 
+	if (myEntity.GetState() != eEntityState::DIE)
+	{
 	Entity* closestPlayer = PollingStation::GetInstance()->FindClosestPlayer(myEntity.GetOrientation().GetPos(), myData.myVisionRange);
 
 	Move(aDelta, closestPlayer);
@@ -67,10 +69,13 @@ void AIComponent::Update(float aDelta)
 		}
 	}
 }
+}
 
 
 void AIComponent::Move(float aDelta, Entity* aClosestPlayer)
 {
+	if (myEntity.GetState() != eEntityState::DIE)
+	{
 	if (aClosestPlayer != nullptr)
 	{
 		myBehavior->SetTarget(aClosestPlayer->GetOrientation().GetPos());
@@ -78,7 +83,7 @@ void AIComponent::Move(float aDelta, Entity* aClosestPlayer)
 
 	CU::Vector3<float> movement(myBehavior->Update(aDelta));
 
-	if (CU::Length(movement) < 0.02f)
+  	if (CU::Length(movement) < 0.02f)
 	{
 		if (myEntity.GetState() != eEntityState::IDLE && myEntity.GetState() != eEntityState::ATTACK)
 		{
@@ -95,6 +100,7 @@ void AIComponent::Move(float aDelta, Entity* aClosestPlayer)
 	Prism::PhysicsInterface::GetInstance()->Move(myEntity.GetComponent<PhysicsComponent>()->GetCapsuleControllerId(), movement, 0.05f, aDelta);
 
 	SetOrientation(CU::GetNormalized(movement));
+}
 }
 
 void AIComponent::SetOrientation(const CU::Vector3<float>& aLookInDirection)
@@ -124,7 +130,7 @@ void AIComponent::SetOrientation(const CU::Vector3<float>& aLookInDirection)
 
 void AIComponent::Shoot(Entity* aClosestPlayer)
 {
-	if (myBulletIndex > myBullets.Size()-1)
+	if (myBulletIndex > myBullets.Size() - 1)
 	{
 		myBulletIndex = 0;
 	}
