@@ -101,9 +101,6 @@
     <ClCompile Include="GrenadeComponent.cpp">
       <Filter>Component</Filter>
     </ClCompile>
-    <ClCompile Include="ProjectileComponent.cpp">
-      <Filter>Component</Filter>
-    </ClCompile>
     <ClCompile Include="ArriveBehavior.cpp">
       <Filter>Behavior</Filter>
     </ClCompile>
@@ -115,6 +112,9 @@
     </ClCompile>
     <ClCompile Include="EvadeBehavior.cpp">
       <Filter>Behavior</Filter>
+    </ClCompile>
+    <ClCompile Include="BulletComponent.cpp">
+      <Filter>Component</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -234,12 +234,6 @@
     <ClInclude Include="GrenadeComponentData.h">
       <Filter>EntityFactory\EntityData\ComponentData</Filter>
     </ClInclude>
-    <ClInclude Include="ProjectileComponent.h">
-      <Filter>Component</Filter>
-    </ClInclude>
-    <ClInclude Include="ProjectileComponentData.h">
-      <Filter>EntityFactory\EntityData\ComponentData</Filter>
-    </ClInclude>
     <ClInclude Include="AIComponentData.h">
       <Filter>EntityFactory\EntityData\ComponentData</Filter>
     </ClInclude>
@@ -254,6 +248,12 @@
     </ClInclude>
     <ClInclude Include="EvadeBehavior.h">
       <Filter>Behavior</Filter>
+    </ClInclude>
+    <ClInclude Include="BulletComponent.h">
+      <Filter>Component</Filter>
+    </ClInclude>
+    <ClInclude Include="BulletComponentData.h">
+      <Filter>EntityFactory\EntityData\ComponentData</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

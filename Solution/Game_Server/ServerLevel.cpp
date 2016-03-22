@@ -14,7 +14,7 @@
 #include <NetworkComponent.h>
 #include <PhysicsInterface.h>
 #include <PhysicsComponent.h>
-#include <ProjectileComponent.h>
+#include <BulletComponent.h>
 #include "ServerNetworkManager.h"
 #include <TriggerComponent.h>
 #include <PostMaster.h>
@@ -87,7 +87,7 @@ void ServerLevel::CollisionCallback(PhysicsComponent* aFirst, PhysicsComponent* 
 	case eEntityType::BULLET:
 		if (second.GetComponent<HealthComponent>() != nullptr)
 		{
-			second.GetComponent<HealthComponent>()->TakeDamage(first.GetComponent<ProjectileComponent>()->GetDamage());
+			second.GetComponent<HealthComponent>()->TakeDamage(first.GetComponent<BulletComponent>()->GetDamage());
 		}
 		first.Kill();
 		break;

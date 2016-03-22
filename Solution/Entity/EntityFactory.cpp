@@ -152,9 +152,9 @@ void EntityFactory::LoadEntity(const char* aEntityPath)
 		{
 			myComponentLoader->LoadPhysicsComponent(entityDocument, e, newData.myPhysicsData);
 		}
-		else if (elementName == CU::ToLower("ProjectileComponent"))
+		else if (elementName == CU::ToLower("BulletComponent"))
 		{
-			myComponentLoader->LoadProjectileComponent(entityDocument, e, newData.myProjecileData);
+			myComponentLoader->LoadBulletComponent(entityDocument, e, newData.myProjecileData);
 		}
 		else
 		{

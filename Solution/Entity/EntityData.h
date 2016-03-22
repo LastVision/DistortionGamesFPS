@@ -12,7 +12,7 @@
 #include "ShootingComponentData.h"
 #include "TriggerComponentData.h"
 #include "UpgradeComponentData.h"
-#include "ProjectileComponentData.h"
+#include "BulletComponentData.h"
 struct EntityData
 {
 	eEntityType myType;
@@ -24,7 +24,7 @@ struct EntityData
 	InputComponentData myInputData;
 	NetworkComponentData myNetworkData;
 	GrenadeComponentData myGrenadeData;
-	ProjectileComponentData myProjecileData;
+	BulletComponentData myProjecileData;
 	PhysicsComponentData myPhysicsData;
 	ShootingComponentData myShootingData;
 	TriggerComponentData myTriggerData;

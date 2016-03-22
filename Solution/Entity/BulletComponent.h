@@ -1,13 +1,13 @@
 #pragma once
 #include "Component.h"
 #include <NetworkSubscriber.h>
-struct ProjectileComponentData;
+struct BulletComponentData;
 
-class ProjectileComponent : public Component, public NetworkSubscriber
+class BulletComponent : public Component, public NetworkSubscriber
 {
 public:
-	ProjectileComponent(Entity& anEntity, const ProjectileComponentData& aData, CU::Matrix44<float>& anOrientation);
-	~ProjectileComponent();
+	BulletComponent(Entity& anEntity, const BulletComponentData& aData, CU::Matrix44<float>& anOrientation);
+	~BulletComponent();
 
 	void Activate(const CU::Matrix44<float>& anOrientation);
 
@@ -22,19 +22,19 @@ public:
 	eComponentType GetType() override;
 
 private:
-	const ProjectileComponentData& myData;
+	const BulletComponentData& myData;
 	CU::Matrix44<float>& myOrientation;
 
 	float myLifetimeLeft;
 };
 
 
-inline eComponentType ProjectileComponent::GetTypeStatic()
+inline eComponentType BulletComponent::GetTypeStatic()
 {
 	return eComponentType::BULLET;
 }
 
-inline eComponentType ProjectileComponent::GetType()
+inline eComponentType BulletComponent::GetType()
 {
 	return GetTypeStatic();
 }

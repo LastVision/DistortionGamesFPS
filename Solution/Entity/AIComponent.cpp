@@ -7,7 +7,7 @@
 #include <NetMessageEntityState.h>
 #include <SharedNetworkManager.h>
 #include "PollingStation.h"
-#include "ProjectileComponent.h"
+#include "BulletComponent.h"
 #include "EntityFactory.h"
 #include <iostream>
 #include <NetMessageEnemyShooting.h>
@@ -141,6 +141,6 @@ void AIComponent::Shoot(Entity* aClosestPlayer)
 	SharedNetworkManager::GetInstance()->AddMessage<NetMessageEnemyShooting>(NetMessageEnemyShooting(myBullets[myBulletIndex]->GetGID()));
 	myAttackAnimationTimeCurrent = myData.myAttackAnimationTime;
 
-	myBullets[myBulletIndex]->GetComponent<ProjectileComponent>()->Activate(myEntity.GetOrientation());
+	myBullets[myBulletIndex]->GetComponent<BulletComponent>()->Activate(myEntity.GetOrientation());
 	myBulletIndex++;
 }
