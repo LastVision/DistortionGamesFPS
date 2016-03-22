@@ -13,6 +13,8 @@ public:
 	void Update(const float aDeltaTime) override;
 	void CollisionCallback(PhysicsComponent* aFirst, PhysicsComponent* aSecond, bool aHasEntered) override;
 
+	bool ChangeLevel(int& aNextLevel);
+
 	void ReceiveNetworkMessage(const NetMessageRequestConnect& aMessage, const sockaddr_in& aSenderAddress) override;
 	void ReceiveNetworkMessage(const NetMessageLevelLoaded& aMessage, const sockaddr_in& aSenderAddress) override;
 	void ReceiveNetworkMessage(const NetMessageEntityState& aMessage, const sockaddr_in& aSenderAddress) override;
@@ -24,5 +26,7 @@ private:
 	CU::GrowingArray<unsigned int> myLoadedClients;
 	bool myAllClientsLoaded;
 	MissionManager* myMissionManager;
+
+	int myNextLevel;
 };
 

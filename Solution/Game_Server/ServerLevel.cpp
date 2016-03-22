@@ -24,6 +24,7 @@
 ServerLevel::ServerLevel()
 	: myLoadedClients(16)
 	, myAllClientsLoaded(false)
+	, myNextLevel(-1)
 {
 	Prism::PhysicsInterface::Create(std::bind(&ServerLevel::CollisionCallback, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3), true);
 	ServerNetworkManager::GetInstance()->Subscribe(eNetMessageType::ON_CONNECT, this);
@@ -162,6 +163,12 @@ void ServerLevel::HandleTrigger(Entity& aFirstEntity, Entity& aSecondEntity, boo
 			case eTriggerType::MISSION:
 				myMissionManager->SetMission(firstTrigger->GetValue());
 				break;
+			case eTriggerType::LEVEL_CHANGE:
+				myNextLevel = firstTrigger->GetValue();
+				break;
+			default:
+				DL_ASSERT("Unknown trigger type.");
+				break;
 			}
 			aSecondEntity.SendNote<CollisionNote>(CollisionNote(&aFirstEntity));
 			aFirstEntity.SendNote<CollisionNote>(CollisionNote(&aSecondEntity));
@@ -184,8 +191,15 @@ void ServerLevel::HandleTrigger(Entity& aFirstEntity, Entity& aSecondEntity, boo
 			}
 		}
 	}
-	
+}
 
-
+bool ServerLevel::ChangeLevel(int& aNextLevel)
+{
+	if (myNextLevel != -1)
+	{
+		aNextLevel = myNextLevel;
+		return true;
+	}
+	return false;
 }
 
