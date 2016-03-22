@@ -7,7 +7,6 @@
 #include <EntityFactory.h>
 #include <HealthComponent.h>
 #include "MissionManager.h"
-#include <NetMessageRequestConnect.h>
 #include <NetMessageLevelLoaded.h>
 #include <NetMessageSetActive.h>
 #include <NetMessageHealthPack.h>
@@ -18,10 +17,10 @@
 #include <BulletComponent.h>
 #include "ServerNetworkManager.h"
 #include <TriggerComponent.h>
+#include <PollingStation.h>
 #include <PostMaster.h>
 #include <SetActiveMessage.h>
 
-#include <PollingStation.h>
 #include "ServerProjectileManager.h"
 
 ServerLevel::ServerLevel()
@@ -42,6 +41,9 @@ ServerLevel::ServerLevel()
 
 ServerLevel::~ServerLevel()
 {
+#ifdef THREAD_PHYSICS
+	Prism::PhysicsInterface::GetInstance()->ShutdownThread();
+#endif
 	ServerProjectileManager::Destroy();
 	PollingStation::Destroy();
 	SAFE_DELETE(myMissionManager);
@@ -107,17 +109,6 @@ void ServerLevel::CollisionCallback(PhysicsComponent* aFirst, PhysicsComponent* 
 	}
 }
 
-void ServerLevel::ReceiveNetworkMessage(const NetMessageRequestConnect&, const sockaddr_in&)
-{
-	bool isRunTime = Prism::MemoryTracker::GetInstance()->GetRunTime();
-	Prism::MemoryTracker::GetInstance()->SetRunTime(false);
-	Entity* newPlayer = EntityFactory::CreateEntity(ServerNetworkManager::GetInstance()->GetLastJoinedID(), eEntityType::UNIT, "player", nullptr, false, { 0.f, 0.f, 0.f });
-	newPlayer->Reset();
-	newPlayer->GetComponent<NetworkComponent>()->SetPlayer(true);
-	myPlayers.Add(newPlayer);
-	Prism::MemoryTracker::GetInstance()->SetRunTime(isRunTime);
-}
-
 void ServerLevel::ReceiveNetworkMessage(const NetMessageLevelLoaded& aMessage, const sockaddr_in&)
 {
 	myLoadedClients.Add(aMessage.mySenderID);
@@ -163,7 +154,7 @@ void ServerLevel::HandleTrigger(Entity& aFirstEntity, Entity& aSecondEntity, boo
 	TriggerComponent* firstTrigger = aFirstEntity.GetComponent<TriggerComponent>();
 	if (aHasEntered == true)
 	{
-		if (aSecondEntity.GetType() == eEntityType::UNIT && aSecondEntity.GetSubType() == "player")
+		if (aSecondEntity.GetType() == eEntityType::UNIT && aSecondEntity.GetSubType() == "playerserver")
 		{
 			switch (firstTrigger->GetTriggerType())
 			{
@@ -190,7 +181,7 @@ void ServerLevel::HandleTrigger(Entity& aFirstEntity, Entity& aSecondEntity, boo
 			aSecondEntity.SendNote<CollisionNote>(CollisionNote(&aFirstEntity));
 			aFirstEntity.SendNote<CollisionNote>(CollisionNote(&aSecondEntity));
 		}
-		else if (aSecondEntity.GetType() == eEntityType::UNIT && aSecondEntity.GetSubType() != "player")
+		else if (aSecondEntity.GetType() == eEntityType::UNIT && aSecondEntity.GetSubType() != "playerserver")
 		{
 			if (myMissionManager->GetCurrentMissionType() == eMissionType::DEFEND)
 			{
@@ -200,7 +191,7 @@ void ServerLevel::HandleTrigger(Entity& aFirstEntity, Entity& aSecondEntity, boo
 	}
 	else
 	{
-		if (aSecondEntity.GetType() == eEntityType::UNIT && aSecondEntity.GetSubType() != "player")
+		if (aSecondEntity.GetType() == eEntityType::UNIT && aSecondEntity.GetSubType() != "playerserver")
 		{
 			if (myMissionManager->GetCurrentMissionType() == eMissionType::DEFEND)
 			{

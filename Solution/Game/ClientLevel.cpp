@@ -62,10 +62,6 @@ ClientLevel::ClientLevel()
 
 ClientLevel::~ClientLevel()
 {
-	if (ClientNetworkManager::GetInstance()->GetGID() > 0)
-	{
-		ClientNetworkManager::GetInstance()->AddMessage(NetMessageDisconnect(ClientNetworkManager::GetInstance()->GetGID()));
-	}
 #ifdef THREAD_PHYSICS
 	Prism::PhysicsInterface::GetInstance()->ShutdownThread();
 #endif

@@ -35,9 +35,11 @@ inline NetMessageEnemyShooting::~NetMessageEnemyShooting()
 inline void NetMessageEnemyShooting::DoSerialize(StreamType& aStream)
 {
 	__super::DoSerialize(aStream);
+	SERIALIZE(aStream, myGID);
 }
 
 inline void NetMessageEnemyShooting::DoDeSerialize(StreamType& aStream)
 {
 	__super::DoDeSerialize(aStream);
+	DESERIALIZE(aStream, myGID);
 }
