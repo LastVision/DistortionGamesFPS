@@ -8,6 +8,7 @@
 #include "NetMessageRequestConnect.h"
 #include "NetMessageOnJoin.h"
 #include "NetMessageHealth.h"
+#include "NetMessageHealthPack.h"
 #include "NetMessageDisconnect.h"
 #include "NetMessageRequestLevel.h"
 #include "NetMessageRequestStartGame.h"
@@ -305,6 +306,9 @@ void SharedNetworkManager::HandleMessage()
 			break;
 		case eNetMessageType::HEALTH:
 			UnpackAndHandle(NetMessageHealth(), buffer);
+			break;
+		case eNetMessageType::HEALTH_PACK:
+			UnpackAndHandle(NetMessageHealthPack(), buffer);
 			break;
 		default:
 			DL_ASSERT("Unhandled network message type");
