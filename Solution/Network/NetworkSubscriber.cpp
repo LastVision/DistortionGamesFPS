@@ -9,6 +9,7 @@ void NetworkSubscriber::ReceiveNetworkMessage(const NetMessageDisconnect&, const
 void NetworkSubscriber::ReceiveNetworkMessage(const NetMessageEntityState&, const sockaddr_in&) {};
 void NetworkSubscriber::ReceiveNetworkMessage(const NetMessageImportantReply&, const sockaddr_in&){};
 void NetworkSubscriber::ReceiveNetworkMessage(const NetMessageLevelLoaded&, const sockaddr_in&){};
+void NetworkSubscriber::ReceiveNetworkMessage(const NetMessageLevelComplete&, const sockaddr_in&){};
 void NetworkSubscriber::ReceiveNetworkMessage(const NetMessageOnDeath&, const sockaddr_in&){};
 void NetworkSubscriber::ReceiveNetworkMessage(const NetMessageOnHit&, const sockaddr_in&){};
 void NetworkSubscriber::ReceiveNetworkMessage(const NetMessageOnJoin&, const sockaddr_in&){};

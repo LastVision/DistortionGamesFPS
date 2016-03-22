@@ -18,6 +18,7 @@
 #include "NetMessageSetActive.h"
 #include "NetMessageStartGame.h"
 #include "NetMessageLevelLoaded.h"
+#include "NetMessageLevelComplete.h"
 
 #define BUFFERSIZE 512
 
@@ -272,6 +273,9 @@ void SharedNetworkManager::HandleMessage()
 			break;
 		case eNetMessageType::LEVEL_LOADED:
 			UnpackAndHandle(NetMessageLevelLoaded(), buffer);
+			break;
+		case eNetMessageType::LEVEL_COMPLETE:
+			UnpackAndHandle(NetMessageLevelComplete(), buffer);
 			break;
 		case eNetMessageType::PING_REQUEST:
 			UnpackAndHandle(NetMessagePingRequest(), buffer);
