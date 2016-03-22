@@ -32,7 +32,7 @@ namespace Prism
 		void OnResize(int aWidth, int aHeigth);
 
 		void AddRoom(Room* aRoom);
-		void AddInstance(Instance* aInstance, bool aAlwaysRender = false);
+		void AddInstance(Instance* aInstance, bool aAlwaysRender);
 		void AddLight(DirectionalLight* aLight);
 		void AddLight(PointLight* aLight);
 		void AddLight(SpotLight* aLight);

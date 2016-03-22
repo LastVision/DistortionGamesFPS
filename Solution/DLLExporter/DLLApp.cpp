@@ -101,7 +101,7 @@ void DLLApp::LoadModel(const char* aModelFile, const char* aShaderFile)
 	myModel->LoadModel(aModelFile, aShaderFile);
 	myModelFile = aModelFile;
 	myShaderFile = aShaderFile;
-	myScene.AddInstance(myModel->GetInstance());
+	myScene.AddInstance(myModel->GetInstance(), true);
 }
 
 void DLLApp::LoadParticle(const char* aParticleFile)

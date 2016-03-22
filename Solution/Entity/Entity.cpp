@@ -208,11 +208,11 @@ void Entity::AddToScene()
 
 	if (GetComponent<GraphicsComponent>() != nullptr && GetComponent<GraphicsComponent>()->GetInstance() != nullptr)
 	{
-		myScene->AddInstance(GetComponent<GraphicsComponent>()->GetInstance());
+		myScene->AddInstance(GetComponent<GraphicsComponent>()->GetInstance(), GetComponent<GraphicsComponent>()->GetShouldAlwaysRender());
 	}
 	else if (GetComponent<AnimationComponent>() != nullptr && GetComponent<AnimationComponent>()->GetInstance() != nullptr)
 	{
-		myScene->AddInstance(GetComponent<AnimationComponent>()->GetInstance());
+		myScene->AddInstance(GetComponent<AnimationComponent>()->GetInstance(), false);
 	}
 
 	myIsInScene = true;
