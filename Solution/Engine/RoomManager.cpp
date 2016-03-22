@@ -18,6 +18,7 @@ namespace Prism
 		, myCurrentRoomIds(16)
 		, myAlwaysRenderInstances(128)
 		, myActiveInstances(4096)
+		, myAllInstances(4096)
 		, myDebugDraw(false)
 		, myTotalObjects(0)
 		, myDuplicateRooms(0)
@@ -79,6 +80,8 @@ namespace Prism
 
 	void RoomManager::Add(Instance* anInstance, bool anAlwaysRender)
 	{
+		myAllInstances.Add(anInstance);
+
 		if (anAlwaysRender == true)
 		{
 			myAlwaysRenderInstances.Add(anInstance);
@@ -137,80 +140,85 @@ namespace Prism
 		myActiveInstances.RemoveAll();
 		myCurrentRoomIds.RemoveAll();
 
-for (int i = 0; i < myPortals.Size(); ++i)
-{
-	myPortals[i]->SetAlreadyPassed(false);
-}
+		for (int i = 0; i < myPortals.Size(); ++i)
+		{
+			myPortals[i]->SetAlreadyPassed(false);
+		}
 
-int playerRoom = GetRoomId(aCamera.GetOrientation().GetPos());
-myCurrentRoomIds.Add(playerRoom);
+		int playerRoom = GetRoomId(aCamera.GetOrientation().GetPos());
+		myCurrentRoomIds.Add(playerRoom);
 
-FindActiveRooms(aCamera.GetFrustum(), aCamera.GetProjection(), playerRoom);
+		FindActiveRooms(aCamera.GetFrustum(), aCamera.GetProjection(), playerRoom);
 
-//for (int i = 0; i < myCurrentRoomIds.Size(); ++i)
-//{
-//	const Room* current(myRooms[myCurrentRoomIds[i]]);
-//	if (current->GetType() == eRoomType::ROOM)
-//	{
-//		for (int j = 0; j < current->GetPortals().Size(); ++j)
-//		{
-//			const Room* other(current->GetPortals()[j]->GetOther(current));
-//			if (myCurrentRoomIds.Find(other->GetRoomId()) == myCurrentRoomIds.FoundNone)
-//			{
-//				myCurrentRoomIds.Add(other->GetRoomId());
-//			}
-//		}
-//	}
-//}
+		//for (int i = 0; i < myCurrentRoomIds.Size(); ++i)
+		//{
+		//	const Room* current(myRooms[myCurrentRoomIds[i]]);
+		//	if (current->GetType() == eRoomType::ROOM)
+		//	{
+		//		for (int j = 0; j < current->GetPortals().Size(); ++j)
+		//		{
+		//			const Room* other(current->GetPortals()[j]->GetOther(current));
+		//			if (myCurrentRoomIds.Find(other->GetRoomId()) == myCurrentRoomIds.FoundNone)
+		//			{
+		//				myCurrentRoomIds.Add(other->GetRoomId());
+		//			}
+		//		}
+		//	}
+		//}
 
-for each (Instance* instance in myAlwaysRenderInstances)
-{
-	myActiveInstances.Add(instance);
-}
+		for each (Instance* instance in myAlwaysRenderInstances)
+		{
+			myActiveInstances.Add(instance);
+		}
 
-//for each (const InstanceInRoom& instance in myInstances)
-//{
-//	for each (int id in myCurrentRoomIds)
-//	{
-//		if (instance.myRoomId == id)
-//		{
-//			myActiveInstances.Add(instance.myInstance);
-//			break;
-//		}
-//	}
-//}
+		//for each (const InstanceInRoom& instance in myInstances)
+		//{
+		//	for each (int id in myCurrentRoomIds)
+		//	{
+		//		if (instance.myRoomId == id)
+		//		{
+		//			myActiveInstances.Add(instance.myInstance);
+		//			break;
+		//		}
+		//	}
+		//}
 
 
 
-#ifndef RELEASE_BUILD
-#ifdef SHOW_PORTAL_CULLING_DEBUG_TEXT
-//DEBUG_PRINT(playerRoom);
-DEBUG_PRINT(myActiveInstances.Size());
-//DEBUG_PRINT(myInstances.Size());
-//float renderPercentage = 100.f * float(myActiveInstances.Size())
-//	/ (myInstances.Size() + myAlwaysRenderInstances.Size());
-//DEBUG_PRINT(renderPercentage);
-for (int j = 0; j < myCurrentRoomIds.Size(); ++j)
-{
-	const std::string& roomName(myRooms[myCurrentRoomIds[j]]->GetName());
-	if (j == 0)
-	{
-		const std::string& playerRoom(roomName);
-		DEBUG_PRINT(playerRoom);
+		#ifndef RELEASE_BUILD
+		#ifdef SHOW_PORTAL_CULLING_DEBUG_TEXT
+		//DEBUG_PRINT(playerRoom);
+		DEBUG_PRINT(myActiveInstances.Size());
+		//DEBUG_PRINT(myInstances.Size());
+		//float renderPercentage = 100.f * float(myActiveInstances.Size())
+		//	/ (myInstances.Size() + myAlwaysRenderInstances.Size());
+		//DEBUG_PRINT(renderPercentage);
+		for (int j = 0; j < myCurrentRoomIds.Size(); ++j)
+		{
+			const std::string& roomName(myRooms[myCurrentRoomIds[j]]->GetName());
+			if (j == 0)
+			{
+				const std::string& playerRoom(roomName);
+				DEBUG_PRINT(playerRoom);
+			}
+			DEBUG_PRINT(roomName);
+		}
+		//if (renderPercentage > 25.f)
+		//{
+		//	for (float i = 25.f; i < renderPercentage; i += 5.f)
+		//	{
+		//		DEBUG_PRINT("WARNING, rendering huge part of level");
+
+		//	}
+		//}
+		#endif
+		#endif
+		return myActiveInstances;
 	}
-	DEBUG_PRINT(roomName);
-}
-//if (renderPercentage > 25.f)
-//{
-//	for (float i = 25.f; i < renderPercentage; i += 5.f)
-//	{
-//		DEBUG_PRINT("WARNING, rendering huge part of level");
 
-//	}
-//}
-#endif
-#endif
-return myActiveInstances;
+	const CU::GrowingArray<Instance*>& RoomManager::GetAllInstances()
+	{
+		return myAllInstances;
 	}
 
 	int RoomManager::GetRoomId(const CU::Vector3<float>& aPosition) const

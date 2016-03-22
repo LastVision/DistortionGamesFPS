@@ -34,7 +34,7 @@ InputComponent::InputComponent(Entity& anEntity, const InputComponentData& aData
 	reader.ForceReadAttribute(reader.ForceFindFirstChild(element, "eyeHeight"), "value", myHeight);
 	reader.ForceReadAttribute(reader.ForceFindFirstChild(element, "crouchHeight"), "value", myCrouchHeight);
 
-	myOrientation.SetPos(CU::Vector3<float>(20, 1.5f, 0));
+	myOrientation.SetPos(CU::Vector3<float>(0, 1.5f, 0));
 	myCamera = new Prism::Camera(myEyeOrientation);
 	reader.CloseDocument();
 

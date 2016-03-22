@@ -159,14 +159,14 @@ void ClientLevel::Render()
 {
 	if (myInitDone == true)
 	{
-	myDeferredRenderer->Render(myScene);
-	Prism::DebugDrawer::GetInstance()->RenderLinesToScreen(*myPlayer->GetComponent<InputComponent>()->GetCamera());
-	//myScene->Render();
-	//myDeferredRenderer->Render(myScene);
-	myEmitterManager->RenderEmitters();
-	myPlayer->GetComponent<FirstPersonRenderComponent>()->Render();
-	//myPlayer->GetComponent<ShootingComponent>()->Render();
-}
+		myDeferredRenderer->Render(myScene);
+		Prism::DebugDrawer::GetInstance()->RenderLinesToScreen(*myPlayer->GetComponent<InputComponent>()->GetCamera());
+		//myScene->Render();
+		//myDeferredRenderer->Render(myScene);
+		myEmitterManager->RenderEmitters();
+		myPlayer->GetComponent<FirstPersonRenderComponent>()->Render();
+		//myPlayer->GetComponent<ShootingComponent>()->Render();
+	}
 }
 
 void ClientLevel::ReceiveNetworkMessage(const NetMessageOnDeath& aMessage, const sockaddr_in&)
