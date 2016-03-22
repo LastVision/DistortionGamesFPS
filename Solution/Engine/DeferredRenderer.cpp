@@ -84,7 +84,6 @@ namespace Prism
 		myCubeMapGenerator = new CubeMapGenerator();
 	}
 
-
 	DeferredRenderer::~DeferredRenderer()
 	{
 		SAFE_DELETE(myCubeMapGenerator);
@@ -98,26 +97,12 @@ namespace Prism
 
 	void DeferredRenderer::Render(Scene* aScene)
 	{
-		ID3D11DeviceContext* context = Engine::GetInstance()->GetContex();
-		context->ClearRenderTargetView(myGBufferData.myAlbedoTexture->GetRenderTargetView(), myClearColor);
-		context->ClearRenderTargetView(myGBufferData.myNormalTexture->GetRenderTargetView(), myClearColor);
-		context->ClearRenderTargetView(myGBufferData.myDepthTexture->GetRenderTargetView(), myClearColor);
-		context->ClearRenderTargetView(myGBufferData.myMetalnessTexture->GetRenderTargetView(), myClearColor);
-		context->ClearRenderTargetView(myGBufferData.myAmbientOcclusionTexture->GetRenderTargetView(), myClearColor);
-		context->ClearRenderTargetView(myGBufferData.myRoughnessTexture->GetRenderTargetView(), myClearColor);
+		Engine::GetInstance()->RestoreViewPort();
 
-		context->ClearDepthStencilView(myDepthStencilTexture->GetDepthStencilView(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
-
-		ID3D11RenderTargetView* targets[6];
-		targets[0] = myGBufferData.myAlbedoTexture->GetRenderTargetView();
-		targets[1] = myGBufferData.myNormalTexture->GetRenderTargetView();
-		targets[2] = myGBufferData.myDepthTexture->GetRenderTargetView();
-		targets[3] = myGBufferData.myMetalnessTexture->GetRenderTargetView();
-		targets[4] = myGBufferData.myAmbientOcclusionTexture->GetRenderTargetView();
-		targets[5] = myGBufferData.myRoughnessTexture->GetRenderTargetView();
-
-		context->OMSetRenderTargets(6, targets
-			, myDepthStencilTexture->GetDepthStencilView());
+		ClearGBuffer();
+		Engine::GetInstance()->GetContex()->ClearDepthStencilView(myDepthStencilTexture->GetDepthStencilView()
+			, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
+		SetGBufferAsTarget();
 
 		aScene->Render();
 
@@ -129,28 +114,18 @@ namespace Prism
 	void DeferredRenderer::RenderCubeMap(Scene* aScene, ID3D11RenderTargetView* aRenderTarget, ID3D11DepthStencilView* aDepth,
 		D3D11_VIEWPORT* aViewPort)
 	{
+		//Engine::GetInstance()->RestoreViewPort();
 		Engine::GetInstance()->GetContex()->RSSetViewports(1, aViewPort);
-
-		ID3D11DeviceContext* context = Engine::GetInstance()->GetContex();
-		context->ClearRenderTargetView(myGBufferData.myAlbedoTexture->GetRenderTargetView(), myClearColor);
-		context->ClearRenderTargetView(myGBufferData.myNormalTexture->GetRenderTargetView(), myClearColor);
-		context->ClearRenderTargetView(myGBufferData.myDepthTexture->GetRenderTargetView(), myClearColor);
-
-		context->ClearDepthStencilView(myDepthStencilTexture->GetDepthStencilView(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
-
-		ID3D11RenderTargetView* targets[3];
-		targets[0] = myGBufferData.myAlbedoTexture->GetRenderTargetView();
-		targets[1] = myGBufferData.myNormalTexture->GetRenderTargetView();
-		targets[2] = myGBufferData.myDepthTexture->GetRenderTargetView();
-
-		context->OMSetRenderTargets(3, targets
-			, myDepthStencilTexture->GetDepthStencilView());
+		ClearGBuffer();
+		Engine::GetInstance()->GetContex()->ClearDepthStencilView(myDepthStencilTexture->GetDepthStencilView()
+			, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
+		SetGBufferAsTarget();
 
 		aScene->Render();
 
 		ActivateBuffers();
 
-		RenderDeferred(aScene, aRenderTarget, aDepth, aViewPort);
+		RenderCubemapDeferred(aScene, aRenderTarget, aDepth, aViewPort);
 	}
 
 	void DeferredRenderer::OnResize(float aWidth, float aHeight)
@@ -242,26 +217,27 @@ namespace Prism
 		}
 	}
 
-	void DeferredRenderer::RenderDeferred(Scene* aScene, ID3D11RenderTargetView* aTarget, ID3D11DepthStencilView* aDepth,
-		D3D11_VIEWPORT* aViewPort)
+	void DeferredRenderer::RenderDeferred(Scene* aScene)
+	{
+		Engine::GetInstance()->RestoreViewPort();
+
+		RenderAmbientPass(aScene);
+
+		ID3D11RenderTargetView* renderTarget = Engine::GetInstance()->GetBackbuffer();
+		Engine::GetInstance()->GetContex()->OMSetRenderTargets(1, &renderTarget, myDepthStencilTexture->GetDepthStencilView());
+
+#ifdef USE_LIGHT
+		aScene->UpdateLights();
+		RenderPointLights(aScene);
+#endif
+	}
+
+	void DeferredRenderer::RenderCubemapDeferred(Scene* aScene, ID3D11RenderTargetView* aTarget, ID3D11DepthStencilView* aDepth, D3D11_VIEWPORT* aViewPort)
 	{
 		ID3D11DeviceContext* context = Engine::GetInstance()->GetContex();
 
-		ID3D11RenderTargetView* renderTarget = Engine::GetInstance()->GetBackbuffer();
-		ID3D11DepthStencilView* depth = myDepthStencilTexture->GetDepthStencilView();
 		
-		Engine::GetInstance()->RestoreViewPort();
-		if (aTarget == nullptr && aDepth == nullptr)
-		{
-			RenderAmbientPass(aScene);
-		}
-		else
-		{
-			renderTarget = aTarget;
-			depth = aDepth;
-		}
-
-		context->OMSetRenderTargets(1, &renderTarget, depth);
+		context->OMSetRenderTargets(1, &aTarget, aDepth);
 
 #ifdef USE_LIGHT
 		aScene->UpdateLights();
@@ -273,6 +249,7 @@ namespace Prism
 	{
 		const Camera& camera = *aScene->GetCamera();
 
+		Engine::GetInstance()->RestoreViewPort();
 		myLightPass.myAlbedo->SetResource(myGBufferData.myAlbedoTexture->GetShaderView());
 		myLightPass.myNormal->SetResource(myGBufferData.myNormalTexture->GetShaderView());
 		myLightPass.myDepth->SetResource(myGBufferData.myDepthTexture->GetShaderView());
@@ -280,8 +257,8 @@ namespace Prism
 		myLightPass.myAmbientOcclusion->SetResource(myGBufferData.myAmbientOcclusionTexture->GetShaderView());
 		myLightPass.myRoughness->SetResource(myGBufferData.myRoughnessTexture->GetShaderView());
 
-		myLightPass.myInvertedProjection->SetMatrix(&CU::InverseReal(aScene->GetCamera()->GetProjection()).myMatrix[0]);
-		myLightPass.myNotInvertedView->SetMatrix(&aScene->GetCamera()->GetOrientation().myMatrix[0]);
+		myLightPass.myInvertedProjection->SetMatrix(&CU::InverseReal(camera.GetProjection()).myMatrix[0]);
+		myLightPass.myNotInvertedView->SetMatrix(&camera.GetOrientation().myMatrix[0]);
 
 
 		const CU::GrowingArray<PointLight*>& lights = aScene->GetPointLights();
@@ -409,4 +386,31 @@ namespace Prism
 			, D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE
 			, DXGI_FORMAT_R32G32B32A32_FLOAT);
 	}
+
+	void DeferredRenderer::ClearGBuffer()
+	{
+		ID3D11DeviceContext* context = Engine::GetInstance()->GetContex();
+
+		context->ClearRenderTargetView(myGBufferData.myAlbedoTexture->GetRenderTargetView(), myClearColor);
+		context->ClearRenderTargetView(myGBufferData.myNormalTexture->GetRenderTargetView(), myClearColor);
+		context->ClearRenderTargetView(myGBufferData.myDepthTexture->GetRenderTargetView(), myClearColor);
+		context->ClearRenderTargetView(myGBufferData.myMetalnessTexture->GetRenderTargetView(), myClearColor);
+		context->ClearRenderTargetView(myGBufferData.myAmbientOcclusionTexture->GetRenderTargetView(), myClearColor);
+		context->ClearRenderTargetView(myGBufferData.myRoughnessTexture->GetRenderTargetView(), myClearColor);
+	}
+
+	void DeferredRenderer::SetGBufferAsTarget()
+	{
+		ID3D11RenderTargetView* targets[6];
+		targets[0] = myGBufferData.myAlbedoTexture->GetRenderTargetView();
+		targets[1] = myGBufferData.myNormalTexture->GetRenderTargetView();
+		targets[2] = myGBufferData.myDepthTexture->GetRenderTargetView();
+		targets[3] = myGBufferData.myMetalnessTexture->GetRenderTargetView();
+		targets[4] = myGBufferData.myAmbientOcclusionTexture->GetRenderTargetView();
+		targets[5] = myGBufferData.myRoughnessTexture->GetRenderTargetView();
+
+		Engine::GetInstance()->GetContex()->OMSetRenderTargets(6, targets
+			, myDepthStencilTexture->GetDepthStencilView());
+	}
+
 }

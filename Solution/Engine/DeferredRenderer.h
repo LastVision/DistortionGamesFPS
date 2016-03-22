@@ -94,8 +94,9 @@ namespace Prism
 		void CreateVertices();
 		void ActivateBuffers();
 		void Render(Effect* aEffect);
-		void RenderDeferred(Scene* aScene, ID3D11RenderTargetView* aTarget = nullptr, ID3D11DepthStencilView* aDepth = nullptr,
-			D3D11_VIEWPORT* aViewPort = nullptr);
+		void RenderDeferred(Scene* aScene);
+		void RenderCubemapDeferred(Scene* aScene, ID3D11RenderTargetView* aTarget, ID3D11DepthStencilView* aDepth,
+			D3D11_VIEWPORT* aViewPort);
 		void RenderPointLights(Scene* aScene);
 		void RenderAmbientPass(Scene* aScene);
 		void SetAmbientTextures(bool aClearTextures);
@@ -103,6 +104,9 @@ namespace Prism
 		void SetupAmbientData();
 		void SetupLightData();
 		void SetupGBufferData();
+
+		void ClearGBuffer();
+		void SetGBufferAsTarget();
 
 		CubeMapGenerator* myCubeMapGenerator;
 		SHTextures mySHTextures;

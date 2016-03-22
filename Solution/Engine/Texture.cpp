@@ -201,6 +201,16 @@ namespace Prism
 
 		Engine::GetInstance()->SetDebugName(myShaderView, "Texture::myShaderView");
 
+		myViewPort = new D3D11_VIEWPORT();
+		ZeroMemory(myViewPort, sizeof(D3D11_VIEWPORT));
+
+		myViewPort->TopLeftX = 0;
+		myViewPort->TopLeftY = 0;
+		myViewPort->Width = 512.f;
+		myViewPort->Height = 512.f;
+		myViewPort->MinDepth = 0.f;
+		myViewPort->MaxDepth = 1.f;
+
 		return true;
 	}
 
@@ -352,13 +362,13 @@ namespace Prism
 		myViewPort->Height = aHeight;
 		myViewPort->MinDepth = 0.f;
 		myViewPort->MaxDepth = 1.f;
-
 	}
 
 
 	void Texture::Create3DTexture(float* aData, int aWidth, int aHeight, int aDepth)
 	{
-		D3D11_TEXTURE3D_DESC desc;
+		//Init with SubResource
+		/*D3D11_TEXTURE3D_DESC desc;
 		desc.Depth = aDepth;
 		desc.Width = aWidth;
 		desc.Height = aHeight;
@@ -372,7 +382,7 @@ namespace Prism
 		D3D11_SUBRESOURCE_DATA subData;
 		subData.pSysMem = &aData;
 		subData.SysMemPitch = sizeof(float) * 4 * aWidth;
-		subData.SysMemSlicePitch = sizeof(float) * 4 * aHeight * aWidth;
+		subData.SysMemSlicePitch = subData.SysMemPitch * aHeight; 
 
 		HRESULT hr = Engine::GetInstance()->GetDevice()->CreateTexture3D(&desc, &subData, &myD3D11Texture3D);
 		if (FAILED(hr))
@@ -382,6 +392,67 @@ namespace Prism
 		{
 			DL_ASSERT("FAILED TO CREATE 3D TEXTURE");
 		}
+
+		hr = Engine::GetInstance()->GetDevice()->CreateShaderResourceView(myD3D11Texture3D, NULL, &myShaderView);
+		if (FAILED(hr))
+			assert(0);*/
+
+		D3D11_TEXTURE3D_DESC desc;
+		desc.Depth = aDepth;
+		desc.Width = aWidth;
+		desc.Height = aHeight;
+		desc.MipLevels = 1;
+		desc.Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
+		desc.Usage = D3D11_USAGE_DYNAMIC;
+		desc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
+		desc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+		desc.MiscFlags = 0;
+
+		HRESULT hr = Engine::GetInstance()->GetDevice()->CreateTexture3D(&desc, NULL, &myD3D11Texture3D);
+		if (FAILED(hr))
+			assert(0);
+
+		D3D11_MAPPED_SUBRESOURCE mappedResource;
+		Engine::GetInstance()->GetContex()->Map(myD3D11Texture3D, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+
+		int vecSize = sizeof(CU::Vector4<float>);
+
+		//int dataSize =
+
+		int dataSize = vecSize * aWidth * aHeight * aDepth;
+		if (mappedResource.pData != nullptr)
+		{
+			float *data = (float*)mappedResource.pData;
+
+			memcpy(data, aData, dataSize);
+
+			/*for (int z = 0; z < aDepth; ++z)
+			{
+				int depthStart = z * mappedResource.DepthPitch;
+
+				int ownDepthStart = z * aWidth * aHeight;
+
+				for (int y = 0; y < aHeight; ++y)
+				{
+					int heightStart = y * mappedResource.RowPitch;
+
+					int ownHeightStart = y * aWidth;
+
+					for (int x = 0; x < aWidth; ++x)
+					{
+						int widthStart = x * 4 + depthStart + heightStart;
+						int index = ownDepthStart + ownHeightStart + x;
+
+						data[widthStart + 0] = aData[index + 0];
+						data[widthStart + 1] = aData[index + 1];
+						data[widthStart + 2] = aData[index + 2];
+						data[widthStart + 3] = aData[index + 3];
+					}
+				}
+			}*/
+		}
+		Engine::GetInstance()->GetContex()->Unmap(myD3D11Texture3D, 0);
+
 
 		hr = Engine::GetInstance()->GetDevice()->CreateShaderResourceView(myD3D11Texture3D, NULL, &myShaderView);
 		if (FAILED(hr))

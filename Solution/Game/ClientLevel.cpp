@@ -286,7 +286,7 @@ void ClientLevel::HandleTrigger(Entity& aFirstEntity, Entity& aSecondEntity)
 
 void ClientLevel::CreatePlayers()
 {
-	myPlayer = EntityFactory::GetInstance()->CreateEntity(ClientNetworkManager::GetInstance()->GetGID(), eEntityType::UNIT, "localplayer", myScene, true, CU::Vector3<float>(0.f, 2.f, 10.f));
+	myPlayer = EntityFactory::GetInstance()->CreateEntity(ClientNetworkManager::GetInstance()->GetGID(), eEntityType::UNIT, "localplayer", myScene, true, CU::Vector3<float>(0.f, 0.f, 0.f));
 
 	myScene->SetCamera(*myPlayer->GetComponent<InputComponent>()->GetCamera());
 
