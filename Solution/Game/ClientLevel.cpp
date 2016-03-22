@@ -44,7 +44,7 @@
 #include <EmitterMessage.h>
 
 #include <NetworkComponent.h>
-
+#include "ClientProjectileManager.h"
 ClientLevel::ClientLevel()
 	: myInstanceOrientations(16)
 	, myInstances(16)
@@ -56,7 +56,7 @@ ClientLevel::ClientLevel()
 	ClientNetworkManager::GetInstance()->Subscribe(eNetMessageType::ON_DEATH, this);
 	ClientNetworkManager::GetInstance()->Subscribe(eNetMessageType::SET_ACTIVE, this);
 	ClientNetworkManager::GetInstance()->Subscribe(eNetMessageType::ENTITY_STATE, this);
-
+	ClientProjectileManager::Create();
 	myScene = new Prism::Scene();
 }
 
@@ -71,7 +71,7 @@ ClientLevel::~ClientLevel()
 #endif
 
 	SAFE_DELETE(myEmitterManager);
-
+	ClientProjectileManager::Destroy();
 	ClientNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::ON_DEATH, this);
 	ClientNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::SET_ACTIVE, this);
 	ClientNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::ENTITY_STATE, this);

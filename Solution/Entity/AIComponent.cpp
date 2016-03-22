@@ -22,12 +22,6 @@ AIComponent::AIComponent(Entity& anEntity, const AIComponentData& aData, CU::Mat
 	, myShootTimer(2.f)
 	, myAttackAnimationTimeCurrent(0.f)
 {
-	for (int i = 0; i < myBullets.GetCapacity(); ++i)
-	{
-		Entity* bullet = EntityFactory::CreateEntity((50000 + i), eEntityType::BULLET, nullptr, false, CU::Vector3<float>(0, -10.f, 0));
-		bullet->Kill();
-		myBullets.Add(bullet);
-	}
 }
 
 AIComponent::~AIComponent()

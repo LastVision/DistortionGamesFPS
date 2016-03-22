@@ -21,6 +21,8 @@
 #include <SetActiveMessage.h>
 
 #include <PollingStation.h>
+#include "ServerProjectileManager.h"
+
 ServerLevel::ServerLevel()
 	: myLoadedClients(16)
 	, myAllClientsLoaded(false)
@@ -30,10 +32,12 @@ ServerLevel::ServerLevel()
 	ServerNetworkManager::GetInstance()->Subscribe(eNetMessageType::LEVEL_LOADED, this);
 	ServerNetworkManager::GetInstance()->Subscribe(eNetMessageType::ENTITY_STATE, this);
 	PostMaster::GetInstance()->Subscribe(eMessageType::SET_ACTIVE, this);
+	ServerProjectileManager::Create();
 }
 
 ServerLevel::~ServerLevel()
 {
+	ServerProjectileManager::Destroy();
 	PollingStation::Destroy();
 	SAFE_DELETE(myMissionManager);
 	ServerNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::ON_CONNECT, this);
