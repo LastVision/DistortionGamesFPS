@@ -5,8 +5,11 @@
 #include "ServerNetworkManager.h"
 #include "NetworkMessageTypes.h"
 #include "PostMaster.h"
+#include <Utility.h>
+#include <sstream>
 
 ServerGame::ServerGame()
+	: myTextUpdate(1.f)
 {
 }
 
@@ -28,9 +31,18 @@ bool ServerGame::Init()
 
 bool ServerGame::Update()
 {
+	myDeltaTime = myTimerManager->GetMasterTimer().GetTime().GetFrameTime();
+
+	myTextUpdate -= myDeltaTime;
+	if (myTextUpdate < 0.f)
+	{
+		std::stringstream ss;
+		ss << ServerNetworkManager::GetInstance()->GetDataSent() << " kbyte/s";
+		SetWindowText(Utility::GetConsoleHwnd(), ss.str().c_str());
+		myTextUpdate = 1.f;
+	}
 	myTimerManager->Update();
 
-	myDeltaTime = myTimerManager->GetMasterTimer().GetTime().GetFrameTime();
 
 	if (myStateStack.UpdateCurrentState(myDeltaTime) == false)
 	{

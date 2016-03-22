@@ -12,5 +12,6 @@ public:
 private:
 	ServerStateStack myStateStack;
 	float myDeltaTime;
+	float myTextUpdate;
 };
 
