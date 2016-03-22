@@ -47,6 +47,10 @@ static std::string ConvertNetworkEnumToString(eNetMessageType aType)
 		return "ENTITY STATE";
 	case eNetMessageType::ENEMY_SHOOTING:
 		return "ENEMY_SHOOTING";
+	case eNetMessageType::HEALTH:
+		return "HEALTH MESSAGE TO PLAYER";
+	case eNetMessageType::HEALTH_PACK:
+		return "HEALTHPACK MESSAGE TO SERVER PLAYER TOOK";
 	case eNetMessageType::_COUNT:
 		DL_ASSERT("_COUNT not used as regular enum value");
 	default:

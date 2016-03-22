@@ -7,9 +7,9 @@
 #include <EntityFactory.h>
 #include <HealthComponent.h>
 #include "MissionManager.h"
-#include <NetMessageRequestConnect.h>
 #include <NetMessageLevelLoaded.h>
 #include <NetMessageSetActive.h>
+#include <NetMessageHealthPack.h>
 #include <NetMessageEntityState.h>
 #include <NetworkComponent.h>
 #include <PhysicsInterface.h>
@@ -17,10 +17,10 @@
 #include <BulletComponent.h>
 #include "ServerNetworkManager.h"
 #include <TriggerComponent.h>
+#include <PollingStation.h>
 #include <PostMaster.h>
 #include <SetActiveMessage.h>
 
-#include <PollingStation.h>
 ServerLevel::ServerLevel()
 	: myLoadedClients(16)
 	, myAllClientsLoaded(false)
@@ -31,6 +31,8 @@ ServerLevel::ServerLevel()
 	ServerNetworkManager::GetInstance()->Subscribe(eNetMessageType::LEVEL_LOADED, this);
 	ServerNetworkManager::GetInstance()->Subscribe(eNetMessageType::ENTITY_STATE, this);
 	PostMaster::GetInstance()->Subscribe(eMessageType::SET_ACTIVE, this);
+
+	ServerNetworkManager::GetInstance()->Subscribe(eNetMessageType::HEALTH_PACK, this);
 }
 
 ServerLevel::~ServerLevel()
@@ -45,14 +47,15 @@ ServerLevel::~ServerLevel()
 	ServerNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::ENTITY_STATE, this);
 
 	PostMaster::GetInstance()->UnSubscribe(eMessageType::SET_ACTIVE, this);
+
+	ServerNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::HEALTH_PACK, this);
 }
 
 void ServerLevel::Init(const std::string& aMissionXMLPath)
 {
 	for each (const Connection& client in ServerNetworkManager::GetInstance()->GetClients())
 	{
-		Entity* newPlayer = EntityFactory::CreateEntity(client.myID, eEntityType::UNIT, "player", nullptr, false, { 0.f, 0.f, 0.f });
-		newPlayer->Reset();
+		Entity* newPlayer = EntityFactory::CreateEntity(client.myID, eEntityType::UNIT, "playerserver", nullptr, false, { 0.f, 0.f, 0.f });
 		newPlayer->GetComponent<NetworkComponent>()->SetPlayer(true);
 		myPlayers.Add(newPlayer);
 
@@ -98,17 +101,6 @@ void ServerLevel::CollisionCallback(PhysicsComponent* aFirst, PhysicsComponent* 
 	}
 }
 
-void ServerLevel::ReceiveNetworkMessage(const NetMessageRequestConnect&, const sockaddr_in&)
-{
-	bool isRunTime = Prism::MemoryTracker::GetInstance()->GetRunTime();
-	Prism::MemoryTracker::GetInstance()->SetRunTime(false);
-	Entity* newPlayer = EntityFactory::CreateEntity(ServerNetworkManager::GetInstance()->GetLastJoinedID(), eEntityType::UNIT, "player", nullptr, false, { 0.f, 0.f, 0.f });
-	newPlayer->Reset();
-	newPlayer->GetComponent<NetworkComponent>()->SetPlayer(true);
-	myPlayers.Add(newPlayer);
-	Prism::MemoryTracker::GetInstance()->SetRunTime(isRunTime);
-}
-
 void ServerLevel::ReceiveNetworkMessage(const NetMessageLevelLoaded& aMessage, const sockaddr_in&)
 {
 	myLoadedClients.Add(aMessage.mySenderID);
@@ -132,6 +124,11 @@ void ServerLevel::ReceiveNetworkMessage(const NetMessageEntityState& aMessage, c
 	}
 }
 
+void ServerLevel::ReceiveNetworkMessage(const NetMessageHealthPack& aMessage, const sockaddr_in&)
+{
+	myPlayers[aMessage.mySenderID - 1]->GetComponent<HealthComponent>()->Heal(aMessage.myHealAmount);
+}
+
 void ServerLevel::ReceiveMessage(const SetActiveMessage& aMessage)
 {
 	if (aMessage.myShouldActivate == true)
@@ -149,7 +146,7 @@ void ServerLevel::HandleTrigger(Entity& aFirstEntity, Entity& aSecondEntity, boo
 	TriggerComponent* firstTrigger = aFirstEntity.GetComponent<TriggerComponent>();
 	if (aHasEntered == true)
 	{
-		if (aSecondEntity.GetType() == eEntityType::UNIT && aSecondEntity.GetSubType() == "player")
+		if (aSecondEntity.GetType() == eEntityType::UNIT && aSecondEntity.GetSubType() == "playerserver")
 		{
 			switch (firstTrigger->GetTriggerType())
 			{
@@ -176,7 +173,7 @@ void ServerLevel::HandleTrigger(Entity& aFirstEntity, Entity& aSecondEntity, boo
 			aSecondEntity.SendNote<CollisionNote>(CollisionNote(&aFirstEntity));
 			aFirstEntity.SendNote<CollisionNote>(CollisionNote(&aSecondEntity));
 		}
-		else if (aSecondEntity.GetType() == eEntityType::UNIT && aSecondEntity.GetSubType() != "player")
+		else if (aSecondEntity.GetType() == eEntityType::UNIT && aSecondEntity.GetSubType() != "playerserver")
 		{
 			if (myMissionManager->GetCurrentMissionType() == eMissionType::DEFEND)
 			{
@@ -186,7 +183,7 @@ void ServerLevel::HandleTrigger(Entity& aFirstEntity, Entity& aSecondEntity, boo
 	}
 	else
 	{
-		if (aSecondEntity.GetType() == eEntityType::UNIT && aSecondEntity.GetSubType() != "player")
+		if (aSecondEntity.GetType() == eEntityType::UNIT && aSecondEntity.GetSubType() != "playerserver")
 		{
 			if (myMissionManager->GetCurrentMissionType() == eMissionType::DEFEND)
 			{

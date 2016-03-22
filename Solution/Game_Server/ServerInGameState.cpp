@@ -13,7 +13,7 @@
 
 ServerInGameState::ServerInGameState(int aLevelID)
 	: myLevelID(aLevelID)
-	, myState(eInGameStates::LEVEL_UPDATE)
+	, myState(eInGameStates::LEVEL_LOAD)
 	, myRespondedClients(16)
 {
 	myIsActiveState = false;

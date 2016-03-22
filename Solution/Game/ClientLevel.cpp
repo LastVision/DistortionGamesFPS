@@ -26,7 +26,7 @@
 #include <NetMessageEntityState.h>
 #include <NetMessageLevelLoaded.h>
 #include <NetMessageOnDeath.h>
-#include <NetMessageOnHit.h>
+#include <NetMessageHealthPack.h>
 #include <NetMessageOnJoin.h>
 #include <NetMessageRequestConnect.h>
 #include <NetMessageSetActive.h>
@@ -296,16 +296,23 @@ void ClientLevel::DebugMusic()
 
 void ClientLevel::HandleTrigger(Entity& aFirstEntity, Entity& aSecondEntity, bool aHasEntered)
 {
-	TriggerComponent* firstTrigger = aFirstEntity.GetComponent<TriggerComponent>();
-	if (firstTrigger->GetTriggerType() == eTriggerType::UPGRADE && firstTrigger->GetTriggerType() == eTriggerType::HEALTH_PACK) 
+	if (aSecondEntity.GetType() == eEntityType::PLAYER && aHasEntered == true)
 	{
-		if (aSecondEntity.GetType() == eEntityType::PLAYER)
+		TriggerComponent* firstTrigger = aFirstEntity.GetComponent<TriggerComponent>();
+		if (firstTrigger->GetTriggerType() == eTriggerType::UPGRADE)
 		{
-			aSecondEntity.SendNote<UpgradeNote>(aFirstEntity.GetComponent<UpgradeComponent>()->GetData());
+			if (aSecondEntity.GetType() == eEntityType::PLAYER)
+			{
+				aSecondEntity.SendNote<UpgradeNote>(aFirstEntity.GetComponent<UpgradeComponent>()->GetData());
+			}
 		}
+		else if (firstTrigger->GetTriggerType() == eTriggerType::HEALTH_PACK)
+		{
+			ClientNetworkManager::GetInstance()->AddMessage<NetMessageHealthPack>(NetMessageHealthPack(firstTrigger->GetValue()));
+		}
+		aSecondEntity.SendNote<CollisionNote>(CollisionNote(&aFirstEntity));
+		aFirstEntity.SendNote<CollisionNote>(CollisionNote(&aSecondEntity));
 	}
-	aSecondEntity.SendNote<CollisionNote>(CollisionNote(&aFirstEntity));
-	aFirstEntity.SendNote<CollisionNote>(CollisionNote(&aSecondEntity));
 }
 
 void ClientLevel::CreatePlayers()

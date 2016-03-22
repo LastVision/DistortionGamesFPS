@@ -37,6 +37,7 @@ public:
 	eComponentType GetType() override;
 
 	void ReceiveNetworkMessage(const NetMessageOnHit& aMessage, const sockaddr_in& aSenderAddress) override;
+	void ReceiveNetworkMessage(const NetMessageHealth& aMessage, const sockaddr_in& aSenderAddress) override;
 
 private:
 	void UpdateJoints();
@@ -71,6 +72,9 @@ private:
 	bool myFirstTimeActivateAnimation;
 	float myDisplayDamageIndicatorTimer;
 	CU::GrowingArray<ePlayerState> myIntentions;
+
+	int myMaxHealth;
+	int myCurrentHealth;
 };
 
 

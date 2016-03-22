@@ -220,7 +220,8 @@ void SharedNetworkManager::SendToSubscriber(const T& aMessage, const sockaddr_in
 		}
 	}
 	else if (static_cast<int>(aMessage.myID) != static_cast<int>(eNetMessageType::REQUEST_START_LEVEL)
-		&& static_cast<int>(aMessage.myID) != static_cast<int>(eNetMessageType::POSITION))
+		&& static_cast<int>(aMessage.myID) != static_cast<int>(eNetMessageType::POSITION)
+		&& static_cast<int>(aMessage.myID) != static_cast<int>(eNetMessageType::HEALTH))
 	{
 		DL_ASSERT("Network message sent without subscriber.");
 	}

@@ -8,6 +8,8 @@
 #include "NetMessageEntityState.h"
 #include "NetMessageRequestConnect.h"
 #include "NetMessageOnJoin.h"
+#include "NetMessageHealth.h"
+#include "NetMessageHealthPack.h"
 #include "NetMessageDisconnect.h"
 #include "NetMessageRequestLevel.h"
 #include "NetMessageRequestStartLevel.h"
@@ -305,6 +307,12 @@ void SharedNetworkManager::HandleMessage()
 			break;
 		case eNetMessageType::ENEMY_SHOOTING:
 			UnpackAndHandle(NetMessageEnemyShooting(), buffer);
+			break;
+		case eNetMessageType::HEALTH:
+			UnpackAndHandle(NetMessageHealth(), buffer);
+			break;
+		case eNetMessageType::HEALTH_PACK:
+			UnpackAndHandle(NetMessageHealthPack(), buffer);
 			break;
 		default:
 			DL_ASSERT("Unhandled network message type");

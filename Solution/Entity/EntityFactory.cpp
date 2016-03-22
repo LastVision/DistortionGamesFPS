@@ -62,7 +62,7 @@ Entity* EntityFactory::CreateEntity(unsigned int aGID, eEntityType aType, std::s
 		if (myInstance->myLoadedSubEntityData.find(aSubType) != myInstance->myLoadedSubEntityData.end())
 		{
 			Entity* newEntity = new Entity(aGID, myInstance->myLoadedSubEntityData.find(aSubType)->second, aScene, aClientSide, aPosition, aRotation
-				, aScale);
+				, aScale, aSubType);
 			newEntity->mySubType = aSubType;
 
 				
