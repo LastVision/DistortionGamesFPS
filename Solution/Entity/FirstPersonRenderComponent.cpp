@@ -16,6 +16,8 @@
 #include <SpriteProxy.h>
 #include <NetworkMessageTypes.h>
 #include <SharedNetworkManager.h>
+#include <Engine.h>
+#include <NetMessageOnHit.h>
 
 FirstPersonRenderComponent::FirstPersonRenderComponent(Entity& aEntity, Prism::Scene* aScene)
 	: Component(aEntity)
@@ -28,7 +30,7 @@ FirstPersonRenderComponent::FirstPersonRenderComponent(Entity& aEntity, Prism::S
 {
 	CU::Vector2<float> size(128.f, 128.f);
 	myCrosshair = Prism::ModelLoader::GetInstance()->LoadSprite("Data/Resource/Texture/UI/T_crosshair.dds", size, size * 0.5f);
-	CU::Vector2<float> damageSize(1920.f, 1080.f);
+	CU::Vector2<float> damageSize(Prism::Engine::GetInstance()->GetWindowSize().x, Prism::Engine::GetInstance()->GetWindowSize().y);
 	myDamageIndicator = Prism::ModelLoader::GetInstance()->LoadSprite("Data/Resource/Texture/UI/T_damage_indicator.dds", damageSize, damageSize * 0.5f);
 	myCoOpSprite = Prism::ModelLoader::GetInstance()->LoadSprite("Data/Resource/Texture/UI/T_coopmarker.dds", size, size * 0.5f);
 
@@ -264,7 +266,10 @@ void FirstPersonRenderComponent::AddIntention(ePlayerState aPlayerState, bool aC
 
 void FirstPersonRenderComponent::ReceiveNetworkMessage(const NetMessageOnHit& aMessage, const sockaddr_in& aSenderAddress)
 {
-	myDisplayDamageIndicatorTimer = 0.5f;
+	if (aMessage.myGID == myEntity.GetGID())
+	{
+		myDisplayDamageIndicatorTimer = 0.5f;
+	}
 }
 
 void FirstPersonRenderComponent::UpdateJoints()

@@ -107,5 +107,8 @@
     <ClInclude Include="NetMessageEntityState.h">
       <Filter>Messages</Filter>
     </ClInclude>
+    <ClInclude Include="NetMessageEnemyShooting.h">
+      <Filter>Messages</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

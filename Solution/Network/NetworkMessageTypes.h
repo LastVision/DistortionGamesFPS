@@ -22,6 +22,7 @@ enum class eNetMessageType
 	
 	ON_HIT,
 	ON_DEATH,
+	ENEMY_SHOOTING,
 
 	SET_ACTIVE,
 	ENTITY_STATE,
