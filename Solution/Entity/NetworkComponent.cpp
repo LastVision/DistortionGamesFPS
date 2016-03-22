@@ -23,9 +23,6 @@ NetworkComponent::NetworkComponent(Entity& anEntity, CU::Matrix44<float>& anOrie
 	, myShouldUpdate(true)
 {
 	mySendTime = NETWORK_UPDATE_INTERVAL;
-	myFirstPosition = myOrientation.GetPos();
-	mySecondPosition = { 1.f, 0.5f, -56.f };
-	mySecondPosition2 = { 0.f, 0.f, 0.f };
 	SharedNetworkManager::GetInstance()->Subscribe(eNetMessageType::POSITION, this);
 	SharedNetworkManager::GetInstance()->Subscribe(eNetMessageType::ON_HIT, this);
 }
@@ -98,58 +95,3 @@ void NetworkComponent::SetPlayer(bool aBool)
 	myIsPlayer = aBool;
 }
 
-// legacy, remove when we have AI on server
-//void NetworkComponent::ServerUpdate(float aDelta)
-//{
-//	myAlpha += aDelta * 0.25f;
-//	if (myShouldUpdate == false)
-//	{
-//		return;
-//	}
-//	mySendTime -= aDelta;
-//	if (mySendTime < 0.f)
-//	{
-//		//myServerPosition += aDelta * 5.f;
-//		if (myIsPlayer == false)
-//		{
-//			if (myEntity.GetComponent<HealthComponent>()->GetCurrentHealth() > 0)
-//			{
-//				if (myShouldReturn == false)
-//				{
-//					if (myFirstPosition.z < 0.f)
-//					{
-//						myServerPosition = CU::Math::Lerp(myFirstPosition, mySecondPosition2, myAlpha);
-//					}
-//					else
-//					{
-//						myServerPosition = CU::Math::Lerp(myFirstPosition, mySecondPosition, myAlpha);
-//					}
-//				}
-//				else
-//				{
-//					if (myFirstPosition.z < 0.f)
-//					{
-//						myServerPosition = CU::Math::Lerp(mySecondPosition2, myFirstPosition, myAlpha);
-//					}
-//					else
-//					{
-//						myServerPosition = CU::Math::Lerp(mySecondPosition, myFirstPosition, myAlpha);
-//					}
-//				}
-//				if (myAlpha >= 1)
-//				{
-//					myShouldReturn = !myShouldReturn;
-//					myAlpha = 0;
-//				}
-//			}
-//			else
-//			{
-//				SharedNetworkManager::GetInstance()->AddMessage(NetMessageOnDeath(eNetMessageType::ENEMY_ON_DEATH,myEntity.GetGID()));
-//				myShouldUpdate = false;
-//				return;
-//			}
-//		}
-//		mySendTime = NETWORK_UPDATE_INTERVAL;
-//		SharedNetworkManager::GetInstance()->AddMessage(NetMessagePosition(myServerPosition, myServerRotationY, myEntity.GetGID()));
-//	}
-//}

@@ -14,6 +14,8 @@
 #include <Scene.h>
 #include "ShootingComponent.h"
 #include <SpriteProxy.h>
+#include <NetworkMessageTypes.h>
+#include <SharedNetworkManager.h>
 
 FirstPersonRenderComponent::FirstPersonRenderComponent(Entity& aEntity, Prism::Scene* aScene)
 	: Component(aEntity)
@@ -22,10 +24,12 @@ FirstPersonRenderComponent::FirstPersonRenderComponent(Entity& aEntity, Prism::S
 	, myIntentions(8)
 	, myFirstTimeActivateAnimation(false)
 	, myCoOpPositions(8)
+	, myDisplayDamageIndicatorTimer(0)
 {
 	CU::Vector2<float> size(128.f, 128.f);
 	myCrosshair = Prism::ModelLoader::GetInstance()->LoadSprite("Data/Resource/Texture/UI/T_crosshair.dds", size, size * 0.5f);
-
+	CU::Vector2<float> damageSize(1920.f, 1080.f);
+	myDamageIndicator = Prism::ModelLoader::GetInstance()->LoadSprite("Data/Resource/Texture/UI/T_damage_indicator.dds", damageSize, damageSize * 0.5f);
 	myCoOpSprite = Prism::ModelLoader::GetInstance()->LoadSprite("Data/Resource/Texture/UI/T_coopmarker.dds", size, size * 0.5f);
 
 
@@ -71,13 +75,16 @@ FirstPersonRenderComponent::FirstPersonRenderComponent(Entity& aEntity, Prism::S
 		, shooting->GetWeapon(eWeaponType::SHOTGUN)->GetClipSize(), shooting->GetWeapon(eWeaponType::SHOTGUN)->GetAmmoInClip()
 		, shooting->GetWeapon(eWeaponType::GRENADE_LAUNCHER)->GetClipSize(), shooting->GetWeapon(eWeaponType::GRENADE_LAUNCHER)->GetAmmoInClip());
 
+	SharedNetworkManager::GetInstance()->Subscribe(eNetMessageType::ON_HIT, this);
 	
 }
 
 
 FirstPersonRenderComponent::~FirstPersonRenderComponent()
 {
+	SharedNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::ON_HIT, this);
 	SAFE_DELETE(myCrosshair);
+	SAFE_DELETE(myDamageIndicator);
 	SAFE_DELETE(my3DGUIManager);
 	SAFE_DELETE(myModel);
 	SAFE_DELETE(myCoOpSprite);
@@ -88,6 +95,10 @@ FirstPersonRenderComponent::~FirstPersonRenderComponent()
 void FirstPersonRenderComponent::Update(float aDelta)
 {
 	UpdateJoints();
+	if (myDisplayDamageIndicatorTimer >= 0.f)
+	{
+		myDisplayDamageIndicatorTimer -= aDelta;
+	}
 
 	my3DGUIManager->Update(myUIJoint, myHealthJoint, myEntity.GetComponent<HealthComponent>()->GetCurrentHealth()
 		, myEntity.GetComponent<HealthComponent>()->GetMaxHealth(), aDelta);
@@ -146,6 +157,10 @@ void FirstPersonRenderComponent::Render()
 {
 	const CU::Vector2<float>& windowSize = Prism::Engine::GetInstance()->GetWindowSize();
 	myCrosshair->Render(windowSize * 0.5f);
+	if (myDisplayDamageIndicatorTimer > 0.f)
+	{
+		myDamageIndicator->Render(windowSize * 0.5f);
+	}
 	my3DGUIManager->Render();
 
 	
@@ -245,6 +260,11 @@ void FirstPersonRenderComponent::AddIntention(ePlayerState aPlayerState, bool aC
 		}
 	}
 	myIntentions.Add(aPlayerState);
+}
+
+void FirstPersonRenderComponent::ReceiveNetworkMessage(const NetMessageOnHit& aMessage, const sockaddr_in& aSenderAddress)
+{
+	myDisplayDamageIndicatorTimer = 0.5f;
 }
 
 void FirstPersonRenderComponent::UpdateJoints()
