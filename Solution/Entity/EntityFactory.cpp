@@ -58,15 +58,15 @@ Entity* EntityFactory::CreateEntity(unsigned int aGID, eEntityType aType, std::s
 	const CU::Vector3f& aRotation, const CU::Vector3f& aScale)
 {
 
-	if (myInstance->myLoadedSubEntityData.find(aSubType) != myInstance->myLoadedSubEntityData.end())
-	{
-		Entity* newEntity = new Entity(aGID, myInstance->myLoadedSubEntityData.find(aSubType)->second, aScene, aClientSide, aPosition, aRotation
-			, aScale);
-		newEntity->mySubType = aSubType;
+		if (myInstance->myLoadedSubEntityData.find(aSubType) != myInstance->myLoadedSubEntityData.end())
+		{
+			Entity* newEntity = new Entity(aGID, myInstance->myLoadedSubEntityData.find(aSubType)->second, aScene, aClientSide, aPosition, aRotation
+				, aScale, aSubType);
+			newEntity->mySubType = aSubType;
 
-
-		return newEntity;
-	}
+				
+			return newEntity;
+		}
 	std::string errorMessage = "SubType " + aSubType + " not found.";
 	DL_ASSERT(errorMessage);
 	return nullptr;
@@ -88,7 +88,7 @@ void EntityFactory::LoadEntity(const char* aEntityPath)
 	newData.myType = EntityEnumConverter::ConvertStringToEntityType(CU::ToLower(entityType));
 
 	entityDocument.ReadAttribute(entityElement, "subType", entitySubType);
-	newData.mySubType = CU::ToLower(entitySubType);
+		newData.mySubType = CU::ToLower(entitySubType);
 
 
 	for (tinyxml2::XMLElement* e = entityDocument.FindFirstChild(entityElement); e != nullptr;

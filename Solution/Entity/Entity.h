@@ -23,7 +23,7 @@ class Entity : public NetworkSubscriber
 
 public:
 	Entity(unsigned int aGID, const EntityData& aEntityData, Prism::Scene* aScene, bool aClientSide, const CU::Vector3<float>& aStartPosition, 
-		const CU::Vector3f& aRotation, const CU::Vector3f& aScale);
+		const CU::Vector3f& aRotation, const CU::Vector3f& aScale, const std::string& aSubType = "");
 	~Entity();
 
 	void Reset();

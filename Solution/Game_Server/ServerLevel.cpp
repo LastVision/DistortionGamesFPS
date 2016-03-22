@@ -10,6 +10,7 @@
 #include <NetMessageRequestConnect.h>
 #include <NetMessageLevelLoaded.h>
 #include <NetMessageSetActive.h>
+#include <NetMessageHealthPack.h>
 #include <NetMessageEntityState.h>
 #include <NetworkComponent.h>
 #include <PhysicsInterface.h>
@@ -35,6 +36,8 @@ ServerLevel::ServerLevel()
 	PostMaster::GetInstance()->Subscribe(eMessageType::SET_ACTIVE, this);
 	ServerProjectileManager::Create();
 
+
+	ServerNetworkManager::GetInstance()->Subscribe(eNetMessageType::HEALTH_PACK, this);
 }
 
 ServerLevel::~ServerLevel()
@@ -47,14 +50,15 @@ ServerLevel::~ServerLevel()
 	ServerNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::ENTITY_STATE, this);
 
 	PostMaster::GetInstance()->UnSubscribe(eMessageType::SET_ACTIVE, this);
+
+	ServerNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::HEALTH_PACK, this);
 }
 
 void ServerLevel::Init(const std::string& aMissionXMLPath)
 {
 	for each (const Connection& client in ServerNetworkManager::GetInstance()->GetClients())
 	{
-		Entity* newPlayer = EntityFactory::CreateEntity(client.myID, eEntityType::UNIT, "player", nullptr, false, { 0.f, 0.f, 0.f });
-		newPlayer->Reset();
+		Entity* newPlayer = EntityFactory::CreateEntity(client.myID, eEntityType::UNIT, "playerserver", nullptr, false, { 0.f, 0.f, 0.f });
 		newPlayer->GetComponent<NetworkComponent>()->SetPlayer(true);
 		myPlayers.Add(newPlayer);
 
@@ -135,6 +139,11 @@ void ServerLevel::ReceiveNetworkMessage(const NetMessageEntityState& aMessage, c
 	{
 		ServerNetworkManager::GetInstance()->AddMessage<NetMessageEntityState>(aMessage, client.myID);
 	}
+}
+
+void ServerLevel::ReceiveNetworkMessage(const NetMessageHealthPack& aMessage, const sockaddr_in&)
+{
+	myPlayers[aMessage.mySenderID - 1]->GetComponent<HealthComponent>()->Heal(aMessage.myHealAmount);
 }
 
 void ServerLevel::ReceiveMessage(const SetActiveMessage& aMessage)

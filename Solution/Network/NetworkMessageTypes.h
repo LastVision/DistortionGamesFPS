@@ -21,6 +21,8 @@ enum class eNetMessageType
 	
 	POSITION,
 	
+	HEALTH,
+	HEALTH_PACK,
 	ON_HIT,
 	ON_DEATH,
 	ENEMY_SHOOTING,
