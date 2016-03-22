@@ -210,7 +210,7 @@ void ClientLevel::ReceiveNetworkMessage(const NetMessageSetActive& aMessage, con
 		}
 		else
 		{
-			myActiveUnitsMap[aMessage.myGID]->GetComponent<PhysicsComponent>()->AddToScene();
+			myActiveUnitsMap[aMessage.myGID]->GetComponent<PhysicsComponent>()->Wake();
 			if (aMessage.myIsInGraphicsScene == true)
 			{
 				myActiveUnitsMap[aMessage.myGID]->AddToScene();
@@ -229,7 +229,7 @@ void ClientLevel::ReceiveNetworkMessage(const NetMessageSetActive& aMessage, con
 		}
 		else
 		{
-			myActiveUnitsMap[aMessage.myGID]->GetComponent<PhysicsComponent>()->RemoveFromScene();
+			myActiveUnitsMap[aMessage.myGID]->GetComponent<PhysicsComponent>()->Sleep();
 			if (aMessage.myIsInGraphicsScene == true)
 			{
 				myActiveUnitsMap[aMessage.myGID]->RemoveFromScene();
