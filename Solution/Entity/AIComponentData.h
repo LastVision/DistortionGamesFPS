@@ -7,4 +7,5 @@ struct AIComponentData
 	float myVisionRange;
 	float myArriveStopRange;
 	float mySpeed;
+	float myAttackAnimationTime;
 };

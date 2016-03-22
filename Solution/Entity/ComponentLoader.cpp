@@ -20,6 +20,7 @@ void ComponentLoader::LoadAIComponent(XMLReader& aDocument, tinyxml2::XMLElement
 	aDocument.ForceReadAttribute(aDocument.ForceFindFirstChild(aSourceElement, "VisionRange"), "value", aOutputData.myVisionRange);
 	aDocument.ForceReadAttribute(aDocument.ForceFindFirstChild(aSourceElement, "ArriveStopRange"), "value", aOutputData.myArriveStopRange);
 	aDocument.ForceReadAttribute(aDocument.ForceFindFirstChild(aSourceElement, "Speed"), "value", aOutputData.mySpeed);
+	aDocument.ForceReadAttribute(aDocument.ForceFindFirstChild(aSourceElement, "AttackAnimationTime"), "value", aOutputData.myAttackAnimationTime);
 }
 
 void ComponentLoader::LoadAnimationComponent(XMLReader& aDocument, tinyxml2::XMLElement* aSourceElement, AnimationComponentData& aOutputData)

@@ -33,8 +33,7 @@ private:
 	CU::GrowingArray<Entity*> myBullets;
 	int myBulletIndex;
 
-
-
+	float myAttackAnimationTimeCurrent;
 };
 
 inline eComponentType AIComponent::GetTypeStatic()

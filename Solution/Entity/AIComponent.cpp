@@ -18,7 +18,8 @@ AIComponent::AIComponent(Entity& anEntity, const AIComponentData& aData, CU::Mat
 	, myBullets(16)
 	, myBulletIndex(0)
 	, myBehavior(new BlendedBehavior(myEntity, aData))
-	, myShootTimer(1.f)
+	, myShootTimer(2.f)
+	, myAttackAnimationTimeCurrent(0.f)
 {
 	for (int i = 0; i < myBullets.GetCapacity(); ++i)
 	{
@@ -51,7 +52,19 @@ void AIComponent::Update(float aDelta)
 	if (closestPlayer != nullptr && myShootTimer < 0.f)
 	{
 		Shoot(closestPlayer);
-		myShootTimer = 1.f;
+		myShootTimer = 2.f;
+	}
+
+	if (myEntity.GetState() == eEntityState::ATTACK)
+	{
+		myAttackAnimationTimeCurrent -= aDelta;
+
+		if (myAttackAnimationTimeCurrent <= 0.f)
+		{
+			myEntity.SetState(eEntityState::IDLE);
+			SharedNetworkManager::GetInstance()->AddMessage<NetMessageEntityState>(NetMessageEntityState(myEntity.GetState(), myEntity.GetGID()));
+			myAttackAnimationTimeCurrent = 0.f;
+		}
 	}
 }
 
@@ -65,15 +78,15 @@ void AIComponent::Move(float aDelta, Entity* aClosestPlayer)
 
 	CU::Vector3<float> movement(myBehavior->Update(aDelta));
 
-	if (CU::Length(movement) < 0.02f)
+  	if (CU::Length(movement) < 0.02f)
 	{
-		if (myEntity.GetState() != eEntityState::IDLE)
+		if (myEntity.GetState() != eEntityState::IDLE && myEntity.GetState() != eEntityState::ATTACK)
 		{
 			myEntity.SetState(eEntityState::IDLE);
 			SharedNetworkManager::GetInstance()->AddMessage<NetMessageEntityState>(NetMessageEntityState(myEntity.GetState(), myEntity.GetGID()));
 		}
 	}
-	else if (myEntity.GetState() != eEntityState::WALK)
+	else if (myEntity.GetState() != eEntityState::WALK && myEntity.GetState() != eEntityState::ATTACK)
 	{
 		myEntity.SetState(eEntityState::WALK);
 		SharedNetworkManager::GetInstance()->AddMessage<NetMessageEntityState>(NetMessageEntityState(myEntity.GetState(), myEntity.GetGID()));
@@ -115,6 +128,10 @@ void AIComponent::Shoot(Entity* aClosestPlayer)
 	{
 		myBulletIndex = 0;
 	}
+
+	myEntity.SetState(eEntityState::ATTACK);
+	SharedNetworkManager::GetInstance()->AddMessage<NetMessageEntityState>(NetMessageEntityState(myEntity.GetState(), myEntity.GetGID()));
+	myAttackAnimationTimeCurrent = myData.myAttackAnimationTime;
 	
 	myBullets[myBulletIndex]->GetComponent<ProjectileComponent>()->Activate(myEntity.GetOrientation());
 	myBulletIndex++;
