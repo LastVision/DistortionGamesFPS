@@ -24,6 +24,7 @@ namespace Prism
 	{
 	public:
 		DirectX(HWND& aHwnd, SetupInfo& aSetupInfo);
+		DirectX();
 		~DirectX();
 
 		void Present(const unsigned int aSyncInterval, const unsigned int aFlags);
@@ -36,7 +37,9 @@ namespace Prism
 		bool IsFullscreen() const;
 
 		ID3D11Device* GetDevice();
+		void SetDevice(ID3D11Device* aDevice);
 		ID3D11DeviceContext* GetContex();
+		void SetContext(ID3D11DeviceContext* aContext);
 		ID3D11DepthStencilView* GetDepthStencil();
 		ID3D11RenderTargetView* GetBackbuffer();
 		ID3D11ShaderResourceView* GetBackbufferView();
@@ -104,7 +107,7 @@ namespace Prism
 		eDepthStencil myDepthStencilState;
 		eRasterizer myRasterizerState;
 
-		HWND& myHWND;
+		HWND* myHWND;
 		SetupInfo mySetupInfo;
 	};
 }
@@ -115,8 +118,18 @@ inline ID3D11Device* Prism::DirectX::GetDevice()
 	return myDevice;
 }
 
+inline void Prism::DirectX::SetDevice(ID3D11Device* aDevice)
+{
+	myDevice = aDevice;
+}
+
 inline ID3D11DeviceContext* Prism::DirectX::GetContex()
 {
 	DL_ASSERT_EXP(myContext != nullptr, "DirectX: myContex is nullptr, HOW?!");
 	return myContext;
+}
+
+inline void Prism::DirectX::SetContext(ID3D11DeviceContext* aContext)
+{
+	myContext = aContext;
 }

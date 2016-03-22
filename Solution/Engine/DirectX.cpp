@@ -7,12 +7,16 @@
 namespace Prism
 {
 	DirectX::DirectX(HWND& aHwnd, SetupInfo& aSetupInfo)
-		: myHWND(aHwnd)
+		: myHWND(&aHwnd)
 		, mySetupInfo(aSetupInfo)
 		, myDebugInterface(nullptr)
 		, myInfoQueue(nullptr)
 	{
 		D3DSetup();
+	}
+
+	DirectX::DirectX()
+	{
 	}
 
 	DirectX::~DirectX()
@@ -229,7 +233,7 @@ namespace Prism
 		swapChainDesc.BufferDesc.RefreshRate.Numerator = 60;
 		swapChainDesc.BufferDesc.RefreshRate.Denominator = 1;
 		swapChainDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT | DXGI_USAGE_SHADER_INPUT;
-		swapChainDesc.OutputWindow = myHWND;
+		swapChainDesc.OutputWindow = *myHWND;
 		swapChainDesc.SampleDesc.Count = 1;
 		swapChainDesc.Windowed = true;
 

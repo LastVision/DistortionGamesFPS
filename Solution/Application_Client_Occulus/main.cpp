@@ -28,6 +28,7 @@ limitations under the License.
 
 // Include the Oculus SDK
 #include "OVR_CAPI_D3D.h"
+#include "GameWrapper.h"
 
 
 //------------------------------------------------------------
@@ -103,6 +104,7 @@ struct OculusTexture
 // return true to retry later (e.g. after display lost)
 static bool MainLoop(bool retryCreate)
 {
+	GameWrapper gameWrapper;
     // Initialize these to nullptr here to handle device lost failures cleanly
 	ovrTexture     * mirrorTexture = nullptr;
 	OculusTexture  * pEyeRenderTexture[2] = { nullptr, nullptr };
@@ -123,6 +125,10 @@ static bool MainLoop(bool retryCreate)
 	// Note: the mirror window can be any size, for this sample we use 1/2 the HMD resolution
     if (!DIRECTX.InitDevice(hmdDesc.Resolution.w / 2, hmdDesc.Resolution.h / 2, reinterpret_cast<LUID*>(&luid)))
         goto Done;
+
+	gameWrapper.SetContext(DIRECTX.Context);
+	gameWrapper.SetDevice(DIRECTX.Device);
+	gameWrapper.Init();
 
 	// Make the eye render buffers (caution if actual size < requested due to HW limits). 
 	ovrRecti         eyeRenderViewport[2];
@@ -231,7 +237,12 @@ static bool MainLoop(bool retryCreate)
 				                            p.M[0][2], p.M[1][2], p.M[2][2], p.M[3][2],
 				                            p.M[0][3], p.M[1][3], p.M[2][3], p.M[3][3]);
 			    XMMATRIX prod = XMMatrixMultiply(view, proj);
-			    roomScene->Render(&prod, 1, 1, 1, 1, true);
+			    //roomScene->Render(&prod, 1, 1, 1, 1, true);
+
+				CU::Matrix44<float> matrix1 = gameWrapper.ConvertMatrix(view);
+				CU::Matrix44<float> matrix2 = gameWrapper.ConvertMatrix(proj);
+
+				gameWrapper.Render(prod);
 		    }
         }
 

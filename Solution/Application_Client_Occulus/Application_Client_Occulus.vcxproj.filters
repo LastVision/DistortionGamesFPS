@@ -2,8 +2,10 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="GameWrapper.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Win32_DirectXAppUtil.h" />
+    <ClInclude Include="GameWrapper.h" />
   </ItemGroup>
 </Project>

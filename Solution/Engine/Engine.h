@@ -49,6 +49,7 @@ namespace Prism
 	{
 	public:
 		static bool Create(HWND& aHwnd, WNDPROC aWndProc, SetupInfo& aSetupInfo);
+		static bool CreateOcculus();
 		static void Destroy();
 		static Engine* GetInstance();
 		void Update(float aDeltaTime);
@@ -58,7 +59,9 @@ namespace Prism
 		void SetFullscreen(bool aFullscreen);
 
 		ID3D11Device* GetDevice();
+		void SetDevice(ID3D11Device* aDevice);
 		ID3D11DeviceContext* GetContex();
+		void SetContext(ID3D11DeviceContext* aContext);
 		ID3D11DepthStencilView* GetDepthView();
 		ID3D11RenderTargetView* GetBackbuffer();
 		ID3D11ShaderResourceView* GetBackbufferView();
@@ -112,6 +115,7 @@ namespace Prism
 		Engine();
 		~Engine();
 		bool Init(HWND& aHwnd, WNDPROC aWndProc);
+		bool InitOcculus();
 		bool WindowSetup(HWND& aHwnd, WNDPROC aWindowProc);
 		
 		bool myWireframeIsOn;

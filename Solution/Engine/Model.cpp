@@ -272,7 +272,7 @@ namespace Prism
 		surf.SetVertexCount(vertices.Size());
 		surf.SetIndexStart(0);
 		surf.SetIndexCount(indices.Size());
-		surf.SetTexture("DiffuseTexture", "Data/resources/texture/seafloor.dds", true);
+		surf.SetTexture("DiffuseTexture", "Data/resources/texture/T_missing_texture.dds", true);
 
 		mySurfaces.Add(new Surface(surf));
 
@@ -360,6 +360,21 @@ namespace Prism
 				myChildren[i]->Render(myChildTransforms[i] * aOrientation, aCameraPosition);
 			}
 		}
+	}
+
+	void Model::RenderOcculus(const CU::Matrix44<float>& aOrientation, const CU::Matrix44<float>& aViewProjection)
+	{
+		//float blendFactor[4];
+		//blendFactor[0] = 0.f;
+		//blendFactor[1] = 0.f;
+		//blendFactor[2] = 0.f;
+		//blendFactor[3] = 0.f;
+
+		//myEffect->SetBlendState(NULL, blendFactor);
+		myEffect->SetWorldMatrix(aOrientation);
+		myEffect->SetViewProjectionMatrix(aViewProjection);
+
+		BaseModel::Render();
 	}
 
 	void Model::DeActivateSurfaces()

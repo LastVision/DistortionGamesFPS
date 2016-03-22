@@ -39,6 +39,7 @@ namespace Prism
 		void SetEffect(Effect* aEffect);
 
 		void Render(const CU::Matrix44<float>& aOrientation, const CU::Vector3<float>& aCameraPosition);
+		void RenderOcculus(const CU::Matrix44<float>& aOrientation, const CU::Matrix44<float>& aViewProjection);
 
 		void DeActivateSurfaces();
 		

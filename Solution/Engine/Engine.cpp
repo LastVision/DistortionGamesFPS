@@ -85,6 +85,13 @@ namespace Prism
 		return result;
 	}
 
+	bool Engine::CreateOcculus()
+	{
+		myInstance = new Engine();
+		myInstance->InitOcculus();
+		return true;
+	}
+
 	void Engine::Destroy()
 	{
 		SAFE_DELETE(myInstance);
@@ -226,9 +233,19 @@ namespace Prism
 		return myDirectX->GetDevice();
 	}
 
+	void Engine::SetDevice(ID3D11Device* aDevice)
+	{
+		myDirectX->SetDevice(aDevice);
+	}
+
 	ID3D11DeviceContext* Engine::GetContex()
 	{
 		return myDirectX->GetContex();
+	}
+
+	void Engine::SetContext(ID3D11DeviceContext* aContext)
+	{
+		myDirectX->SetContext(aContext);
 	}
 
 	ID3D11DepthStencilView* Engine::GetDepthView()
@@ -331,6 +348,12 @@ namespace Prism
 		myMainThreadID = std::this_thread::get_id();
 
 		ENGINE_LOG("Engine Init Successful");
+		return true;
+	}
+
+	bool Engine::InitOcculus()
+	{
+		myDirectX = new DirectX();
 		return true;
 	}
 
