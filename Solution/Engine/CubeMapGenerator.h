@@ -44,7 +44,7 @@ namespace Prism
 		~CubeMapGenerator();
 
 		void GenerateSHTextures(DeferredRenderer* aRenderer, Scene* aScene, SHTextures& someTextures
-			, const CU::Vector3<float>& aMinPoint, const CU::Vector3<float>& aMaxPoint);
+			, const CU::Vector3<float>& aGridSize, const CU::Vector3<float>& aOffset);
 
 	private:
 
@@ -55,5 +55,9 @@ namespace Prism
 		Camera* myCamera;
 		CU::Matrix44<float> myCameraOrientations[6];
 		CU::Matrix44<float> myCurrentCameraOrientation;
+
+		int mySH_GRID_X;
+		int mySH_GRID_Y;
+		int mySH_GRID_Z;
 	};
 }

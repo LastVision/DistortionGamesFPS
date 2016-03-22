@@ -8,6 +8,7 @@ struct ID3DX11EffectVariable;
 struct ID3DX11EffectScalarVariable;
 struct ID3DX11EffectShaderResourceVariable;
 struct ID3DX11EffectMatrixVariable;
+struct ID3DX11EffectVectorVariable;
 
 namespace Prism
 {
@@ -44,6 +45,11 @@ namespace Prism
 		ID3DX11EffectShaderResourceVariable* mycBb = nullptr;
 		ID3DX11EffectShaderResourceVariable* mycC = nullptr;
 
+		ID3DX11EffectVectorVariable* mySHGridSizeVariable;
+		ID3DX11EffectVectorVariable* mySHGridOffsetVariable;
+
+		CU::Vector3<float> mySHGridSize;
+		CU::Vector3<float> mySHGridOffset;
 	};
 
 	struct LightPass : public EffectListener
@@ -95,11 +101,10 @@ namespace Prism
 		void ActivateBuffers();
 		void Render(Effect* aEffect);
 		void RenderDeferred(Scene* aScene);
-		void RenderCubemapDeferred(Scene* aScene, ID3D11RenderTargetView* aTarget, ID3D11DepthStencilView* aDepth,
-			D3D11_VIEWPORT* aViewPort);
+		void RenderCubemapDeferred(Scene* aScene, ID3D11RenderTargetView* aTarget, ID3D11DepthStencilView* aDepth);
 		void RenderPointLights(Scene* aScene);
 		void RenderAmbientPass(Scene* aScene);
-		void SetAmbientTextures(bool aClearTextures);
+		void SetAmbientData(bool aClearTextures);
 
 		void SetupAmbientData();
 		void SetupLightData();

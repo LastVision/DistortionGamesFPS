@@ -23,7 +23,6 @@ public:
 	~ClientLevel();
 
 	void Init(const std::string& aMissionXMLPath = "") override;
-	void Init() override;
 	void SetMinMax(const CU::Vector3<float>& aMinPoint, const CU::Vector3<float>& aMaxPoint);
 
 	void Update(const float aDeltaTime) override;

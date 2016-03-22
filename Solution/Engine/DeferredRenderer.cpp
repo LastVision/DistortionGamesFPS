@@ -31,6 +31,9 @@ namespace Prism
 		mycBb = myEffect->GetEffect()->GetVariableByName("cBb")->AsShaderResource();
 		mycC = myEffect->GetEffect()->GetVariableByName("cC")->AsShaderResource();
 
+		mySHGridSizeVariable = myEffect->GetEffect()->GetVariableByName("SHGridSize")->AsVector();
+		mySHGridOffsetVariable = myEffect->GetEffect()->GetVariableByName("SHGridOffset")->AsVector();
+
 		myInvertedProjection = myEffect->GetEffect()->GetVariableByName("InvertedProjection")->AsMatrix();
 		myNotInvertedView = myEffect->GetEffect()->GetVariableByName("NotInvertedView")->AsMatrix();
 
@@ -114,7 +117,6 @@ namespace Prism
 	void DeferredRenderer::RenderCubeMap(Scene* aScene, ID3D11RenderTargetView* aRenderTarget, ID3D11DepthStencilView* aDepth,
 		D3D11_VIEWPORT* aViewPort)
 	{
-		//Engine::GetInstance()->RestoreViewPort();
 		Engine::GetInstance()->GetContex()->RSSetViewports(1, aViewPort);
 		ClearGBuffer();
 		Engine::GetInstance()->GetContex()->ClearDepthStencilView(myDepthStencilTexture->GetDepthStencilView()
@@ -125,7 +127,7 @@ namespace Prism
 
 		ActivateBuffers();
 
-		RenderCubemapDeferred(aScene, aRenderTarget, aDepth, aViewPort);
+		RenderCubemapDeferred(aScene, aRenderTarget, aDepth);
 	}
 
 	void DeferredRenderer::OnResize(float aWidth, float aHeight)
@@ -142,7 +144,18 @@ namespace Prism
 	void DeferredRenderer::GenerateSHData(Scene* aScene
 		, const CU::Vector3<float>& aMinPoint, const CU::Vector3<float>& aMaxPoint)
 	{
-		myCubeMapGenerator->GenerateSHTextures(this, aScene, mySHTextures, aMinPoint, aMaxPoint);
+		myAmbientPass.mySHGridSize.x = CU::Math::ClosestPowerOfTwo(abs(int(aMaxPoint.x - aMinPoint.x)));
+		myAmbientPass.mySHGridSize.y = CU::Math::ClosestPowerOfTwo(abs(int(aMaxPoint.y - aMinPoint.y)));
+		myAmbientPass.mySHGridSize.z = CU::Math::ClosestPowerOfTwo(abs(int(aMaxPoint.z - aMinPoint.z)));
+		myAmbientPass.mySHGridOffset = aMinPoint;
+
+		//mySH_GRID_X = CU::Math::ClosestPowerOfTwo(abs(int(aMaxPoint.x - aMinPoint.x)));
+		//mySH_GRID_Y = CU::Math::ClosestPowerOfTwo(abs(int(aMaxPoint.y - aMinPoint.y)));
+		//mySH_GRID_Z = CU::Math::ClosestPowerOfTwo(abs(int(aMaxPoint.z - aMinPoint.z)));
+		//myCubeMapGenerator->GenerateSHTextures(this, aScene, mySHTextures, aMinPoint, aMaxPoint);
+		myCubeMapGenerator->GenerateSHTextures(this, aScene, mySHTextures, myAmbientPass.mySHGridSize, myAmbientPass.mySHGridOffset);
+
+		myAmbientPass.mySHGridOffset *= -1.f;
 	}
 
 	void DeferredRenderer::InitFullscreenQuad()
@@ -232,11 +245,10 @@ namespace Prism
 #endif
 	}
 
-	void DeferredRenderer::RenderCubemapDeferred(Scene* aScene, ID3D11RenderTargetView* aTarget, ID3D11DepthStencilView* aDepth, D3D11_VIEWPORT* aViewPort)
+	void DeferredRenderer::RenderCubemapDeferred(Scene* aScene, ID3D11RenderTargetView* aTarget
+		, ID3D11DepthStencilView* aDepth)
 	{
 		ID3D11DeviceContext* context = Engine::GetInstance()->GetContex();
-
-		
 		context->OMSetRenderTargets(1, &aTarget, aDepth);
 
 #ifdef USE_LIGHT
@@ -291,17 +303,21 @@ namespace Prism
 		context->OMSetRenderTargets(1, &backbuffer
 			, Engine::GetInstance()->GetDepthView());
 
-		SetAmbientTextures(false);
+		SetAmbientData(false);
 		myAmbientPass.myEffect->SetCameraPosition(aScene->GetCamera()->GetOrientation().GetPos());
 		myAmbientPass.myInvertedProjection->SetMatrix(&CU::InverseReal(aScene->GetCamera()->GetProjection()).myMatrix[0]);
 		myAmbientPass.myNotInvertedView->SetMatrix(&aScene->GetCamera()->GetOrientation().myMatrix[0]);
+		myAmbientPass.mySHGridSizeVariable->SetFloatVector(&myAmbientPass.mySHGridSize.x);
+		myAmbientPass.mySHGridOffsetVariable->SetFloatVector(&myAmbientPass.mySHGridOffset.x);
+		//myAmbientPass.mySHGridSizeVariable->SetRawValue(&myAmbientPass.mySHGridSize.x, 0, sizeof(float) * 3);
+		//myAmbientPass.mySHGridOffsetVariable->SetRawValue(&myAmbientPass.mySHGridOffset.x, 0, sizeof(float) * 3);
 
 		Render(myAmbientPass.myEffect);
 
-		SetAmbientTextures(true);
+		SetAmbientData(true);
 	}
 
-	void DeferredRenderer::SetAmbientTextures(bool aClearTextures)
+	void DeferredRenderer::SetAmbientData(bool aClearTextures)
 	{
 		if (aClearTextures == false)
 		{

@@ -30,30 +30,31 @@ namespace Prism
 	}
 
 	void CubeMapGenerator::GenerateSHTextures(DeferredRenderer* aRenderer, Scene* aScene, SHTextures& someTextures
-		, const CU::Vector3<float>& aMinPoint, const CU::Vector3<float>& aMaxPoint)
+		, const CU::Vector3<float>& aGridSize, const CU::Vector3<float>& aOffset)
 	{
-		const int SH_GRID_X = 8;// CU::Math::ClosestPowerOfTwo(abs(int(aMaxPoint.x - aMinPoint.x)));
-		const int SH_GRID_Y = CU::Math::ClosestPowerOfTwo(abs(int(aMaxPoint.y - aMinPoint.y)));
-		const int SH_GRID_Z = 8;// CU::Math::ClosestPowerOfTwo(abs(int(aMaxPoint.z - aMinPoint.z)));
+		mySH_GRID_X = int(aGridSize.x); //CU::Math::ClosestPowerOfTwo(abs(int(aMaxPoint.x - aMinPoint.x)));
+		mySH_GRID_Y = int(aGridSize.y); //CU::Math::ClosestPowerOfTwo(abs(int(aMaxPoint.y - aMinPoint.y)));
+		mySH_GRID_Z = int(aGridSize.z); //CU::Math::ClosestPowerOfTwo(abs(int(aMaxPoint.z - aMinPoint.z)));
 
 		//const int SH_GRID_X = 8;
 		//const int SH_GRID_Y = 8;
 		//const int SH_GRID_Z = 1;
 			
-		bool usePregenerated = true;
+		bool usePregenerated = false;
 
-		//SHGridNode gridNodes[SH_GRID_X][SH_GRID_Y][SH_GRID_Z];
-		SHGridNode*** gridNodes = new SHGridNode**[SH_GRID_X];
-		for (int x = 0; x < SH_GRID_X; ++x)
+		SHGridNode*** gridNodes = new SHGridNode**[mySH_GRID_X];
+		for (int x = 0; x < mySH_GRID_X; ++x)
 		{
-			gridNodes[x] = new SHGridNode*[SH_GRID_Y];
-			for (int y = 0; y < SH_GRID_Y; ++y)
+			gridNodes[x] = new SHGridNode*[mySH_GRID_Y];
+			for (int y = 0; y < mySH_GRID_Y; ++y)
 			{
-				gridNodes[x][y] = new SHGridNode[SH_GRID_Z];
+				gridNodes[x][y] = new SHGridNode[mySH_GRID_Z];
 			}
 		}
 
-		CU::Vector3<float> offset(aMinPoint);
+		CU::Vector3<float> offset(aOffset);
+		//CU::Vector3<float> offset(aMinPoint);
+		//CU::Vector3<float> offset = CU::Vector3<float>(-4.f, 0.5f, -4.f);
 		Texture* cubeMap = nullptr;
 
 		if (usePregenerated == true)
@@ -63,15 +64,15 @@ namespace Prism
 			//offset = CU::Vector3<float>(0.f, 0.f, 0.f);
 		}
 
-		for (int z = 0; z < SH_GRID_Z; ++z)
+		for (int z = 0; z < mySH_GRID_Z; ++z)
 		{
-			for (int y = 0; y < SH_GRID_Y; ++y)
+			for (int y = 0; y < mySH_GRID_Y; ++y)
 			{
-				for (int x = 0; x < SH_GRID_X; ++x)
+				for (int x = 0; x < mySH_GRID_X; ++x)
 				{
 					std::stringstream ss;
 					ss << "Data/SHNodes/Node_" << x << "_" << y << "_" << z << ".dds";
-					CU::Vector3<float> pos = CU::Vector3<float>(x, y, z) + offset;
+					CU::Vector3<float> pos = CU::Vector3<float>(float(x), float(y), float(z)) + offset;
 
 					if (usePregenerated == false)
 					{
@@ -83,6 +84,7 @@ namespace Prism
 					if (usePregenerated == false)
 					{
 						SAFE_DELETE(cubeMap);
+						Engine::GetInstance()->GetContex()->Flush();
 					}
 				}
 			}
@@ -93,33 +95,24 @@ namespace Prism
 			SAFE_DELETE(cubeMap);
 		}
 
-		/*CU::Vector4<float> cAr[SH_GRID_X * SH_GRID_Y * SH_GRID_Z];
-		CU::Vector4<float> cAg[SH_GRID_X * SH_GRID_Y * SH_GRID_Z];
-		CU::Vector4<float> cAb[SH_GRID_X * SH_GRID_Y * SH_GRID_Z];
-		CU::Vector4<float> cBr[SH_GRID_X * SH_GRID_Y * SH_GRID_Z];
-		CU::Vector4<float> cBg[SH_GRID_X * SH_GRID_Y * SH_GRID_Z];
-		CU::Vector4<float> cBb[SH_GRID_X * SH_GRID_Y * SH_GRID_Z];
-		CU::Vector4<float> cC[SH_GRID_X * SH_GRID_Y * SH_GRID_Z];*/
+		CU::Vector4<float>* cAr = new CU::Vector4<float>[mySH_GRID_X * mySH_GRID_Y * mySH_GRID_Z];
+		CU::Vector4<float>* cAg = new CU::Vector4<float>[mySH_GRID_X * mySH_GRID_Y * mySH_GRID_Z];
+		CU::Vector4<float>* cAb = new CU::Vector4<float>[mySH_GRID_X * mySH_GRID_Y * mySH_GRID_Z];
+		CU::Vector4<float>* cBr = new CU::Vector4<float>[mySH_GRID_X * mySH_GRID_Y * mySH_GRID_Z];
+		CU::Vector4<float>* cBg = new CU::Vector4<float>[mySH_GRID_X * mySH_GRID_Y * mySH_GRID_Z];
+		CU::Vector4<float>* cBb = new CU::Vector4<float>[mySH_GRID_X * mySH_GRID_Y * mySH_GRID_Z];
+		CU::Vector4<float>* cC  = new CU::Vector4<float>[mySH_GRID_X * mySH_GRID_Y * mySH_GRID_Z];
 
-		CU::Vector4<float>* cAr = new CU::Vector4<float>[SH_GRID_X * SH_GRID_Y * SH_GRID_Z];
-		CU::Vector4<float>* cAg = new CU::Vector4<float>[SH_GRID_X * SH_GRID_Y * SH_GRID_Z];
-		CU::Vector4<float>* cAb = new CU::Vector4<float>[SH_GRID_X * SH_GRID_Y * SH_GRID_Z];
-		CU::Vector4<float>* cBr = new CU::Vector4<float>[SH_GRID_X * SH_GRID_Y * SH_GRID_Z];
-		CU::Vector4<float>* cBg = new CU::Vector4<float>[SH_GRID_X * SH_GRID_Y * SH_GRID_Z];
-		CU::Vector4<float>* cBb = new CU::Vector4<float>[SH_GRID_X * SH_GRID_Y * SH_GRID_Z];
-		CU::Vector4<float>* cC  = new CU::Vector4<float>[SH_GRID_X * SH_GRID_Y * SH_GRID_Z];
-
-		for (int z = 0; z < SH_GRID_Z; ++z)
+		for (int z = 0; z < mySH_GRID_Z; ++z)
 		{
-			int depthStart = z * SH_GRID_X * SH_GRID_Y;
-
-			for (int y = 0; y < SH_GRID_Y; ++y)
+			for (int y = 0; y < mySH_GRID_Y; ++y)
 			{
-				int heightStart = y * SH_GRID_X;
-
-				for (int x = 0; x < SH_GRID_X; ++x)
+				for (int x = 0; x < mySH_GRID_X; ++x)
 				{
-					int index = depthStart + heightStart + x;
+					int xPrim = x;
+					int yPrim = y * mySH_GRID_X;
+					int zPrim = z * mySH_GRID_X * mySH_GRID_Y;
+					int index = xPrim + yPrim + zPrim;
 
 					cAr[index] = gridNodes[x][y][z].cAr;
 					cAg[index] = gridNodes[x][y][z].cAg;
@@ -140,13 +133,13 @@ namespace Prism
 		someTextures.cBb = new Texture();
 		someTextures.cC = new Texture();
 
-		someTextures.cAr->Create3DTexture(&cAr[0].x, SH_GRID_X, SH_GRID_Y, SH_GRID_Z);
-		someTextures.cAg->Create3DTexture(&cAg[0].x, SH_GRID_X, SH_GRID_Y, SH_GRID_Z);
-		someTextures.cAb->Create3DTexture(&cAb[0].x, SH_GRID_X, SH_GRID_Y, SH_GRID_Z);
-		someTextures.cBr->Create3DTexture(&cBr[0].x, SH_GRID_X, SH_GRID_Y, SH_GRID_Z);
-		someTextures.cBg->Create3DTexture(&cBg[0].x, SH_GRID_X, SH_GRID_Y, SH_GRID_Z);
-		someTextures.cBb->Create3DTexture(&cBb[0].x, SH_GRID_X, SH_GRID_Y, SH_GRID_Z);
-		someTextures.cC->Create3DTexture(&cC[0].x, SH_GRID_X, SH_GRID_Y, SH_GRID_Z);
+		someTextures.cAr->Create3DTexture(&cAr[0].x, mySH_GRID_X, mySH_GRID_Y, mySH_GRID_Z);
+		someTextures.cAg->Create3DTexture(&cAg[0].x, mySH_GRID_X, mySH_GRID_Y, mySH_GRID_Z);
+		someTextures.cAb->Create3DTexture(&cAb[0].x, mySH_GRID_X, mySH_GRID_Y, mySH_GRID_Z);
+		someTextures.cBr->Create3DTexture(&cBr[0].x, mySH_GRID_X, mySH_GRID_Y, mySH_GRID_Z);
+		someTextures.cBg->Create3DTexture(&cBg[0].x, mySH_GRID_X, mySH_GRID_Y, mySH_GRID_Z);
+		someTextures.cBb->Create3DTexture(&cBb[0].x, mySH_GRID_X, mySH_GRID_Y, mySH_GRID_Z);
+		someTextures.cC->Create3DTexture(&cC[0].x, mySH_GRID_X, mySH_GRID_Y, mySH_GRID_Z);
 
 		someTextures.cAr->Save3DToFile("Data/cAr.dds");
 		someTextures.cAg->Save3DToFile("Data/cAg.dds");
@@ -164,9 +157,9 @@ namespace Prism
 		SAFE_ARRAY_DELETE(cBb);
 		SAFE_ARRAY_DELETE(cC);
 
-		for (int x = 0; x < SH_GRID_X; ++x)
+		for (int x = 0; x < mySH_GRID_X; ++x)
 		{
-			for (int y = 0; y < SH_GRID_Y; ++y)
+			for (int y = 0; y < mySH_GRID_Y; ++y)
 			{
 				SAFE_ARRAY_DELETE(gridNodes[x][y]);
 			}
@@ -196,11 +189,11 @@ namespace Prism
 		
 		const Camera* sceneCamera = aScene->GetCamera();
 		Texture* cubemapTexture = new Texture();
-		//cubemapTexture->CreateCubemap(32.f, 32.f);
-		//cubemapTexture->CreateDepthStencilView(32.f, 32.f, 1);
+		cubemapTexture->CreateCubemap(32.f, 32.f);
+		cubemapTexture->CreateDepthStencilView(32.f, 32.f, 1);
 
-		cubemapTexture->CreateCubemap(512.f, 512.f);
-		cubemapTexture->CreateDepthStencilView(512.f, 512.f, 1);
+		//cubemapTexture->CreateCubemap(512.f, 512.f);
+		//cubemapTexture->CreateDepthStencilView(512.f, 512.f, 1);
 
 
 		ID3D11DeviceContext* context = Engine::GetInstance()->GetContex();
@@ -253,7 +246,7 @@ namespace Prism
 
 		CU::Vector4<float> coeff[3];
 
-		static const float s_fSqrtPI = ((float)sqrtf(M_PI));
+		static const float s_fSqrtPI = ((float)sqrt(M_PI));
 		const float fC0 = 1.0f / (2.0f*s_fSqrtPI);
 		const float fC1 = (float)sqrt(3.0f) / (3.0f*s_fSqrtPI);
 		const float fC2 = (float)sqrt(15.0f) / (8.0f*s_fSqrtPI);
