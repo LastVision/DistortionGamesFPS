@@ -7,6 +7,13 @@ enum class eWeaponType
 	GRENADE_LAUNCHER
 };
 
+enum class eMissionType
+{
+	NONE,
+	KILL_X,
+	DEFEND,
+};
+
 enum class eActionEventType
 {
 	LOCK,
@@ -30,6 +37,7 @@ enum eEntityType
 	TRIGGER = 8,
 	PLAYER = 16,
 	EXPLOSION = 32,
+	BULLET = 64,
 	_COUNT,
 };
 
@@ -104,7 +112,7 @@ enum class ePropType
 
 };
 
-enum class eEntityState : int
+enum class eEntityState : unsigned char
 {
 	IDLE,
 	WALK,
@@ -141,7 +149,7 @@ enum class eComponentType
 	GRAPHICS,
 	HEALTH,
 	NETWORK,
-	PROJECTILE,
+	GRENADE,
 	TRIGGER,
 	INPUT,
 	SHOOTING,
@@ -149,6 +157,7 @@ enum class eComponentType
 	PHYSICS,
 	UPGRADE,
 	AI,
+	BULLET,
 	_COUNT,
 };
 

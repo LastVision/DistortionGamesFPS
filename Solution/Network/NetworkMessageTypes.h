@@ -20,12 +20,11 @@ enum class eNetMessageType
 	
 	POSITION,
 	
-	PLAYER_ON_HIT,
-	ENEMY_ON_HIT,
-	PLAYER_ON_DEATH,
-	ENEMY_ON_DEATH,
+	ON_HIT,
+	ON_DEATH,
 
 	SET_ACTIVE,
+	ENTITY_STATE,
 
 	_COUNT,
 };
@@ -63,4 +62,6 @@ inline OtherClients::OtherClients(const std::string& aName, unsigned int anID)
 	: myName(aName)
 	, myID(anID)
 {
+	int apa = 4;
+	apa++;
 }

@@ -144,7 +144,7 @@ void Pistol::HandleRaycast(PhysicsComponent* aComponent, const CU::Vector3<float
 
 		//SharedNetworkManager::GetInstance()->AddMessage(NetMessageOnHit(float(myDamage), aComponent->GetEntity().GetGID()));
 		
-		SharedNetworkManager::GetInstance()->AddMessage(NetMessageOnHit(eNetMessageType::ENEMY_ON_HIT, float(myDamage), aComponent->GetEntity().GetGID()));
+		SharedNetworkManager::GetInstance()->AddMessage(NetMessageOnHit(myDamage, aComponent->GetEntity().GetGID()));
 		
 	}
 }

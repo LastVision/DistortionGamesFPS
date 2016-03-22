@@ -3,15 +3,18 @@
 #include <Entity.h>
 #include <EntityFactory.h>
 #include <MathHelper.h>
+#include <NetworkComponent.h>
+#include <PhysicsComponent.h>
+#include <PhysicsInterface.h>
+#include <PollingStation.h>
 #include "ServerLevel.h"
 #include "ServerLevelFactory.h"
-#include <PhysicsInterface.h>
-#include <XMLReader.h>
 #include <TriggerComponent.h>
-#include <NetworkComponent.h>
+#include <XMLReader.h>
 
 ServerLevelFactory::ServerLevelFactory(const std::string& aLevelListPath)
 	: SharedLevelFactory(aLevelListPath)
+	, myMissionXMLPath("")
 {
 }
 
@@ -36,7 +39,7 @@ ServerLevel* ServerLevelFactory::LoadCurrentLevel()
 {
 	myCurrentLevel = new ServerLevel();
 	ReadLevel(myLevelPaths[myCurrentID]);
-	myCurrentLevel->Init();
+	myCurrentLevel->Init(myMissionXMLPath);
 #ifdef THREAD_PHYSICS
 	Prism::PhysicsInterface::GetInstance()->InitThread();
 #endif
@@ -50,6 +53,8 @@ void ServerLevelFactory::ReadLevel(const std::string& aLevelPath)
 	reader.OpenDocument(aLevelPath);
 	tinyxml2::XMLElement* levelElement = reader.ForceFindFirstChild("root");
 	levelElement = reader.ForceFindFirstChild(levelElement, "scene");
+
+	reader.ForceReadAttribute(reader.ForceFindFirstChild(levelElement, "missionXML"), "path", myMissionXMLPath);
 
 	LoadRooms(reader, levelElement);
 	LoadProps(reader, levelElement);
@@ -153,6 +158,10 @@ void ServerLevelFactory::LoadUnits(XMLReader& aReader, tinyxml2::XMLElement* aEl
 		newEntity->Reset();
 
 		myCurrentLevel->AddEnemy(newEntity);
+
+
+
+		PollingStation::GetInstance()->AddEntity(newEntity);
 	}
 }
 
@@ -179,7 +188,7 @@ void ServerLevelFactory::LoadTriggers(XMLReader& aReader, tinyxml2::XMLElement* 
 		triggerRotation.y = CU::Math::DegreeToRad(triggerRotation.y);
 		triggerRotation.z = CU::Math::DegreeToRad(triggerRotation.z);
 
-		Entity* newEntity = EntityFactory::CreateEntity(gid, eEntityType::UNIT, triggerType, nullptr, false, triggerPosition, triggerRotation, triggerScale);
+		Entity* newEntity = EntityFactory::CreateEntity(gid, eEntityType::TRIGGER, triggerType, nullptr, false, triggerPosition, triggerRotation, triggerScale);
 
 		if (newEntity->GetComponent<TriggerComponent>()->IsClientSide() == false)
 		{
@@ -190,6 +199,10 @@ void ServerLevelFactory::LoadTriggers(XMLReader& aReader, tinyxml2::XMLElement* 
 			//	myIDCount++;
 			//	newEntity->GetComponent<NetworkComponent>()->SetNetworkID(myIDCount);
 			//}
+			if (newEntity->GetComponent<TriggerComponent>()->GetIsActiveFromStart() == false)
+			{
+				newEntity->GetComponent<PhysicsComponent>()->RemoveFromScene();
+			}
 		}
 		else
 		{

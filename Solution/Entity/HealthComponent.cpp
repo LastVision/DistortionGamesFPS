@@ -15,12 +15,12 @@ HealthComponent::HealthComponent(Entity& anEntity, const HealthComponentData& so
 	, myData(someData)
 	, myCurrentHealth(someData.myMaxHealth)
 {
-	SharedNetworkManager::GetInstance()->Subscribe(eNetMessageType::ENEMY_ON_HIT, this);
+	SharedNetworkManager::GetInstance()->Subscribe(eNetMessageType::ON_HIT, this);
 }
 
 HealthComponent::~HealthComponent()
 {
-	SharedNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::ENEMY_ON_HIT, this);
+	SharedNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::ON_HIT, this);
 }
 
 void HealthComponent::ReceiveNote(const DamageNote& aNote)
@@ -44,14 +44,16 @@ void HealthComponent::ReceiveNote(const CollisionNote& aNote)
 void HealthComponent::TakeDamage(int aDamage)
 {
 	myCurrentHealth -= aDamage;
+
+	if (myEntity.GetIsClient() == false)
+	{
+		SharedNetworkManager::GetInstance()->AddMessage(NetMessageOnHit(aDamage, myEntity.GetGID()));
+	}
+
 	if (myCurrentHealth <= 0)
 	{
 		myCurrentHealth = 0;
 		myEntity.Kill();
-		if (myEntity.GetIsClient() == false)
-		{
-			PostMaster::GetInstance()->SendMessage(EnemyKilledMessage());
-		}
 	}
 }
 

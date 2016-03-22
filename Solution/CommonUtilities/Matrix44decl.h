@@ -29,6 +29,10 @@ namespace CU
 
 		void SetPos(const CU::Vector3<T>& aPos);
 		void SetPos(const CU::Vector4<T>& aPos);
+
+		void SetForward(const CU::Vector3<T>& aForward);
+		void SetUp(const CU::Vector3<T>& anUp);
+		void SetRight(const CU::Vector3<T>& aRight);
 		
 		void NormalizeRotationVectors();
 
@@ -37,6 +41,7 @@ namespace CU
 		CU::Vector3<T> GetForward() const;
 		CU::Vector3<T> GetUp() const;
 		CU::Vector3<T> GetRight() const;
+
 
 		inline Matrix44<T> operator=(const Matrix44<T>& aMatrix)
 		{

@@ -23,6 +23,7 @@ public:
 	Prism::Instance* GetInstance();
 	static eComponentType GetTypeStatic();
 	eComponentType GetType() override;
+	bool GetShouldAlwaysRender() const;
 
 	void SetPosition(const CU::Vector3<float>& aPosition);
 	void SetRotation(const CU::Vector3<float>& aRotation);

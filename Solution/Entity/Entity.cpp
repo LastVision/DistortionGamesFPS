@@ -6,19 +6,23 @@
 #include "GraphicsComponent.h"
 #include "HealthComponent.h"
 #include "InputComponent.h"
+#include <NetMessageOnDeath.h>
 #include "NetworkComponent.h"
 #include "PhysicsComponent.h"
+#include "PollingStation.h"
 #include "GrenadeComponent.h"
 #include <Scene.h>
 #include <Instance.h>
 #include <EmitterMessage.h>
 #include <PostMaster.h>
+#include <SharedNetworkManager.h>
 #include "ShootingComponent.h"
 #include "TriggerComponent.h"
 #include "UpgradeComponent.h"
+#include "ProjectileComponent.h"
 
 Entity::Entity(unsigned int aGID, const EntityData& aEntityData, Prism::Scene* aScene, bool aClientSide, const CU::Vector3<float>& aStartPosition,
-		const CU::Vector3f& aRotation, const CU::Vector3f& aScale)
+	const CU::Vector3f& aRotation, const CU::Vector3f& aScale)
 	: myGID(aGID)
 	, myScene(aScene)
 	, myEntityData(aEntityData)
@@ -33,7 +37,7 @@ Entity::Entity(unsigned int aGID, const EntityData& aEntityData, Prism::Scene* a
 	myOrientation.SetPos(aStartPosition);
 
 	SetRotation(aRotation);
-	
+
 
 	if (myScene != nullptr)
 	{
@@ -76,9 +80,9 @@ Entity::Entity(unsigned int aGID, const EntityData& aEntityData, Prism::Scene* a
 		myComponents[static_cast<int>(eComponentType::AI)] = new AIComponent(*this, aEntityData.myAIComponentData, myOrientation);
 	}
 
-	if (aEntityData.myProjecileData.myExistsInEntity == true)
+	if (aEntityData.myGrenadeData.myExistsInEntity == true)
 	{
-		myComponents[static_cast<int>(eComponentType::PROJECTILE)] = new GrenadeComponent(*this, aEntityData.myProjecileData, aScene);
+		myComponents[static_cast<int>(eComponentType::GRENADE)] = new GrenadeComponent(*this, aEntityData.myGrenadeData, aScene);
 	}
 
 	if (aEntityData.myNetworkData.myExistsInEntity == true)
@@ -119,13 +123,19 @@ Entity::Entity(unsigned int aGID, const EntityData& aEntityData, Prism::Scene* a
 			GetComponent<ShootingComponent>()->Init(aScene);
 		}
 	}
-	
+	if (aEntityData.myProjecileData.myExistsInEntity == true)
+	{
+		myComponents[static_cast<int>(eComponentType::BULLET)] = new ProjectileComponent(*this, aEntityData.myProjecileData, myOrientation);
+	}
 
 	Reset();
+	SharedNetworkManager::GetInstance()->Subscribe(eNetMessageType::ON_DEATH, this);
+
 };
 
 Entity::~Entity()
 {
+	SharedNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::ON_DEATH, this);
 	//if (myIsInScene == true)
 	//{
 	//	RemoveFromScene();		
@@ -144,6 +154,11 @@ Entity::~Entity()
 void Entity::Reset()
 {
 	myAlive = true;
+
+	if (myIsClientSide == false && mySubType == "player")
+	{
+		PollingStation::GetInstance()->AddEntity(this);
+	}
 
 	for (int i = 0; i < static_cast<int>(eComponentType::_COUNT); ++i)
 	{
@@ -193,13 +208,13 @@ void Entity::AddToScene()
 
 	if (GetComponent<GraphicsComponent>() != nullptr && GetComponent<GraphicsComponent>()->GetInstance() != nullptr)
 	{
-		myScene->AddInstance(GetComponent<GraphicsComponent>()->GetInstance());
+		myScene->AddInstance(GetComponent<GraphicsComponent>()->GetInstance(), GetComponent<GraphicsComponent>()->GetShouldAlwaysRender());
 	}
 	else if (GetComponent<AnimationComponent>() != nullptr && GetComponent<AnimationComponent>()->GetInstance() != nullptr)
 	{
-		myScene->AddInstance(GetComponent<AnimationComponent>()->GetInstance());
+		myScene->AddInstance(GetComponent<AnimationComponent>()->GetInstance(), false);
 	}
-	
+
 	myIsInScene = true;
 }
 
@@ -242,15 +257,33 @@ void Entity::Kill(bool aRemoveFromPhysics)
 	if (myIsInScene == true)
 	{
 		RemoveFromScene();
-		if (aRemoveFromPhysics == true && myEntityData.myPhysicsData.myExistsInEntity == true)
-		{
-			GetComponent<PhysicsComponent>()->RemoveFromScene();
-		}
 		myIsInScene = false;
+	}
+
+	if (myIsClientSide == false)
+	{
+		SharedNetworkManager::GetInstance()->AddMessage(NetMessageOnDeath(myGID));
+		if (mySubType == "player")
+		{
+			PollingStation::GetInstance()->RemovePlayer(this);
+		}
+	}
+
+	if (aRemoveFromPhysics == true && myEntityData.myPhysicsData.myExistsInEntity == true)
+	{
+		GetComponent<PhysicsComponent>()->RemoveFromScene();
 	}
 }
 
 bool Entity::GetIsClient()
 {
 	return myIsClientSide;
+}
+
+void Entity::ReceiveNetworkMessage(const NetMessageOnDeath& aMessage, const sockaddr_in& aSenderAddress)
+{
+	if (aMessage.myGID == myGID)
+	{
+		Kill();
+	}
 }

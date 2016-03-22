@@ -2,6 +2,8 @@
 
 class Entity;
 
+struct AIComponentData;
+
 class Behavior
 {
 public:
@@ -12,12 +14,13 @@ public:
 	virtual bool GetDone() const;
 
 protected:
-	Behavior(const Entity& anEntity);
+	Behavior(const Entity& anEntity, const AIComponentData& aData);
 	void operator=(Behavior&) = delete;
 
 	CU::Vector3<float> myVelocity;
 	CU::Vector3<float> myTarget;
 	const Entity& myEntity;
+	const AIComponentData& myData;
 	const float myMaxSpeed;
 	bool myDone;
 };

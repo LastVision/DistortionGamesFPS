@@ -6,6 +6,7 @@
 #include "HealthComponentData.h"
 #include "NetworkComponentData.h"
 #include "PhysicsComponentData.h"
+#include "ProjectileComponentData.h"
 #include "ShootingComponentData.h"
 #include "TriggerComponentData.h"
 #include "UpgradeComponentData.h"
@@ -14,9 +15,12 @@
 
 void ComponentLoader::LoadAIComponent(XMLReader& aDocument, tinyxml2::XMLElement* aSourceElement, AIComponentData& aOutputData)
 {
-	aDocument;
-	aSourceElement;
 	aOutputData.myExistsInEntity = true;
+
+	aDocument.ForceReadAttribute(aDocument.ForceFindFirstChild(aSourceElement, "VisionRange"), "value", aOutputData.myVisionRange);
+	aDocument.ForceReadAttribute(aDocument.ForceFindFirstChild(aSourceElement, "ArriveStopRange"), "value", aOutputData.myArriveStopRange);
+	aDocument.ForceReadAttribute(aDocument.ForceFindFirstChild(aSourceElement, "Speed"), "value", aOutputData.mySpeed);
+	aDocument.ForceReadAttribute(aDocument.ForceFindFirstChild(aSourceElement, "AttackAnimationTime"), "value", aOutputData.myAttackAnimationTime);
 }
 
 void ComponentLoader::LoadAnimationComponent(XMLReader& aDocument, tinyxml2::XMLElement* aSourceElement, AnimationComponentData& aOutputData)
@@ -170,6 +174,7 @@ void ComponentLoader::LoadTriggerComponent(XMLReader& aDocument, tinyxml2::XMLEl
 			aDocument.ReadAttribute(e, "value", aOutputData.myValue);
 			aDocument.ReadAttribute(e, "oneTimeTrigger", aOutputData.myIsOneTime);
 			aDocument.ForceReadAttribute(e, "isClientSide", aOutputData.myIsClientSide);
+			aDocument.ReadAttribute(e, "activeFromStart", aOutputData.myIsActiveFromStart);
 
 			aOutputData.myTriggerType = ConvertToTriggerEnum(name);
 		}
@@ -256,6 +261,15 @@ void ComponentLoader::LoadUpgradeComponent(XMLReader& aDocument, tinyxml2::XMLEl
 	}
 
 	aOutputData.myExistsInEntity = true;
+}
+
+void ComponentLoader::LoadProjectileComponent(XMLReader& aDocument, tinyxml2::XMLElement* aSourceElement, ProjectileComponentData& aOutputData)
+{
+	aOutputData.myExistsInEntity = true;
+
+	aDocument.ForceReadAttribute(aDocument.ForceFindFirstChild(aSourceElement, "Damage"), "value", aOutputData.myDamage);
+	aDocument.ForceReadAttribute(aDocument.ForceFindFirstChild(aSourceElement, "Speed"), "value", aOutputData.mySpeed);
+	aDocument.ForceReadAttribute(aDocument.ForceFindFirstChild(aSourceElement, "Lifetime"), "value", aOutputData.myLifetime);
 }
 
 void ComponentLoader::LoadFirstPersonRenderComponent(XMLReader& aDocument, tinyxml2::XMLElement* aSourceElement, FirstPersonRenderComponentData& aOutputData)

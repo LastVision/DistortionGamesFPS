@@ -3,13 +3,13 @@
 #include "BlendedBehavior.h"
 #include "EvadeBehavior.h"
 
-BlendedBehavior::BlendedBehavior(const Entity& anEntity)
-	: Behavior(anEntity)
+BlendedBehavior::BlendedBehavior(const Entity& anEntity, const AIComponentData& aData)
+	: Behavior(anEntity, aData)
 	, myBehaviors(8)
 	, myMaxAcceleration(100000.f)
 {
-	myBehaviors.Add(new ArriveBehavior(myEntity));
-	myBehaviors.Add(new EvadeBehavior(myEntity));
+	myBehaviors.Add(new ArriveBehavior(myEntity, myData));
+	//myBehaviors.Add(new EvadeBehavior(myEntity));
 }
 
 

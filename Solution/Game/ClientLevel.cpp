@@ -23,6 +23,7 @@
 
 #include <NetMessageConnectReply.h>
 #include <NetMessageDisconnect.h>
+#include <NetMessageEntityState.h>
 #include <NetMessageLevelLoaded.h>
 #include <NetMessageOnDeath.h>
 #include <NetMessageOnHit.h>
@@ -51,15 +52,15 @@ ClientLevel::ClientLevel()
 	, myPointLights(64)
 	, myInitDone(false)
 {
-	Prism::PhysicsInterface::Create(std::bind(&ClientLevel::CollisionCallback, this, std::placeholders::_1, std::placeholders::_2), false);
+	Prism::PhysicsInterface::Create(std::bind(&ClientLevel::CollisionCallback, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3), false);
 	PostMaster::GetInstance()->Subscribe(eMessageType::NETWORK_ADD_PLAYER, this);
 	PostMaster::GetInstance()->Subscribe(eMessageType::NETWORK_REMOVE_PLAYER, this);
 	PostMaster::GetInstance()->Subscribe(eMessageType::NETWORK_ADD_ENEMY, this);
 	PostMaster::GetInstance()->Subscribe(eMessageType::NETWORK_ON_DEATH, this);
 
-	ClientNetworkManager::GetInstance()->Subscribe(eNetMessageType::ENEMY_ON_DEATH, this);
-	ClientNetworkManager::GetInstance()->Subscribe(eNetMessageType::PLAYER_ON_DEATH, this);
+	ClientNetworkManager::GetInstance()->Subscribe(eNetMessageType::ON_DEATH, this);
 	ClientNetworkManager::GetInstance()->Subscribe(eNetMessageType::SET_ACTIVE, this);
+	ClientNetworkManager::GetInstance()->Subscribe(eNetMessageType::ENTITY_STATE, this);
 
 	myScene = new Prism::Scene();
 }
@@ -80,9 +81,9 @@ ClientLevel::~ClientLevel()
 	PostMaster::GetInstance()->UnSubscribe(eMessageType::NETWORK_ADD_ENEMY, this);
 	PostMaster::GetInstance()->UnSubscribe(eMessageType::NETWORK_ON_DEATH, this);
 
-	ClientNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::ENEMY_ON_DEATH, this);
-	ClientNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::PLAYER_ON_DEATH, this);
+	ClientNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::ON_DEATH, this);
 	ClientNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::SET_ACTIVE, this);
+	ClientNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::ENTITY_STATE, this);
 
 	myInstances.DeleteAll();
 	myPointLights.DeleteAll();
@@ -95,7 +96,7 @@ ClientLevel::~ClientLevel()
 	Prism::Audio::AudioInterface::GetInstance()->PostEvent("StopSecondLayer", 0);
 }
 
-void ClientLevel::Init()
+void ClientLevel::Init(const std::string&)
 {
 	CreatePlayers();
 
@@ -137,18 +138,6 @@ void ClientLevel::Update(const float aDeltaTime)
 	myPlayer->Update(aDeltaTime);
 	myEmitterManager->UpdateEmitters(aDeltaTime, CU::Matrix44f());
 
-	if (CU::InputWrapper::GetInstance()->KeyDown(DIK_T))
-	{
-		ClientNetworkManager::GetInstance()->AddMessage(NetMessageOnHit(eNetMessageType::PLAYER_ON_HIT, 5.f, 17));
-	}
-
-	if (CU::InputWrapper::GetInstance()->KeyDown(DIK_J))
-	{
-		for (unsigned int i = 0; i < 8; ++i)
-		{
-			ClientNetworkManager::GetInstance()->AddMessage(NetMessageOnHit(eNetMessageType::PLAYER_ON_HIT, 5.f, i));
-		}
-	}
 	if (CU::InputWrapper::GetInstance()->KeyDown(DIK_I))
 	{
 		ClientNetworkManager::GetInstance()->AddMessage(NetMessageDisconnect(ClientNetworkManager::GetInstance()->GetGID()));
@@ -178,14 +167,14 @@ void ClientLevel::Render()
 {
 	if (myInitDone == true)
 	{
-		myDeferredRenderer->Render(myScene);
-		Prism::DebugDrawer::GetInstance()->RenderLinesToScreen(*myPlayer->GetComponent<InputComponent>()->GetCamera());
-		//myScene->Render();
-		//myDeferredRenderer->Render(myScene);
-		myEmitterManager->RenderEmitters();
-		myPlayer->GetComponent<FirstPersonRenderComponent>()->Render();
-		//myPlayer->GetComponent<ShootingComponent>()->Render();
-	}
+	myDeferredRenderer->Render(myScene);
+	Prism::DebugDrawer::GetInstance()->RenderLinesToScreen(*myPlayer->GetComponent<InputComponent>()->GetCamera());
+	//myScene->Render();
+	//myDeferredRenderer->Render(myScene);
+	myEmitterManager->RenderEmitters();
+	myPlayer->GetComponent<FirstPersonRenderComponent>()->Render();
+	//myPlayer->GetComponent<ShootingComponent>()->Render();
+}
 }
 
 void ClientLevel::ReceiveNetworkMessage(const NetMessageOnDeath& aMessage, const sockaddr_in&)
@@ -205,7 +194,9 @@ void ClientLevel::ReceiveNetworkMessage(const NetMessageSetActive& aMessage, con
 {
 	if (myActiveEntitiesMap.find(aMessage.myGID) == myActiveEntitiesMap.end())
 	{
-		DL_ASSERT("GID NOT FOUND IN CLIENT LEVEL!");
+		//DL_ASSERT("GID NOT FOUND IN CLIENT LEVEL!");
+		int triggerWillNotDoAnythingOnClient = 0;
+		return;
 	}
 
 	if (aMessage.myShouldActivate == true)
@@ -220,13 +211,28 @@ void ClientLevel::ReceiveNetworkMessage(const NetMessageSetActive& aMessage, con
 	}
 }
 
+void ClientLevel::ReceiveNetworkMessage(const NetMessageEntityState& aMessage, const sockaddr_in&)
+{
+	if (aMessage.myGID == myPlayer->GetGID())
+	{
+		return;
+	}
+
+	if (myActiveUnitsMap.find(aMessage.myGID) == myActiveUnitsMap.end())
+	{
+		DL_ASSERT("ENTITY GID NOT FOUND IN CLIENT LEVEL!");
+	}
+
+	myActiveUnitsMap[aMessage.myGID]->SetState(static_cast<eEntityState>(aMessage.myEntityState));
+}
+
 void ClientLevel::AddLight(Prism::PointLight* aLight)
 {
 	myPointLights.Add(aLight);
 	myScene->AddLight(aLight);
 }
 
-void ClientLevel::CollisionCallback(PhysicsComponent* aFirst, PhysicsComponent* aSecond)
+void ClientLevel::CollisionCallback(PhysicsComponent* aFirst, PhysicsComponent* aSecond, bool aHasEntered)
 {
 	Entity& first = aFirst->GetEntity();
 	Entity& second = aSecond->GetEntity();
@@ -234,10 +240,13 @@ void ClientLevel::CollisionCallback(PhysicsComponent* aFirst, PhysicsComponent* 
 	switch (first.GetType())
 	{
 	case eEntityType::TRIGGER:
-		HandleTrigger(first, second);
+		HandleTrigger(first, second, aHasEntered);
 		break;
 	case eEntityType::EXPLOSION:
-		HandleExplosion(first, second);
+		if (aHasEntered == true)
+		{
+			//HandleExplosion(first, second);
+		}
 		break;
 	}
 }
@@ -270,7 +279,7 @@ void ClientLevel::DebugMusic()
 	}
 }
 
-void ClientLevel::HandleTrigger(Entity& aFirstEntity, Entity& aSecondEntity)
+void ClientLevel::HandleTrigger(Entity& aFirstEntity, Entity& aSecondEntity, bool aHasEntered)
 {
 	TriggerComponent* firstTrigger = aFirstEntity.GetComponent<TriggerComponent>();
 	if (firstTrigger->GetTriggerType() == eTriggerType::UPGRADE && firstTrigger->GetTriggerType() == eTriggerType::HEALTH_PACK) 
@@ -297,5 +306,6 @@ void ClientLevel::CreatePlayers()
 		newPlayer->AddToScene();
 		newPlayer->Reset();
 		myPlayers.Add(newPlayer);
+		myActiveUnitsMap[newPlayer->GetGID()] = newPlayer;
 	}
 }

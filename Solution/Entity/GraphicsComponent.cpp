@@ -52,6 +52,11 @@ void GraphicsComponent::Update(float aDeltaTime)
 	aDeltaTime;
 }
 
+bool GraphicsComponent::GetShouldAlwaysRender() const
+{
+	return myComponentData.myAlwaysRender;
+}
+
 void GraphicsComponent::SetPosition(const CU::Vector3<float>& aPosition)
 {
 	myEntity.myOrientation.SetPos(aPosition);

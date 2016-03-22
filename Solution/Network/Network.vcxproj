@@ -86,9 +86,11 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="ClientNetwork.h" />
+    <ClInclude Include="ConvertNetworkEnumToString.h" />
     <ClInclude Include="NetImportantMessage.h" />
     <ClInclude Include="NetMessage.h" />
     <ClInclude Include="NetMessageConnectReply.h" />
+    <ClInclude Include="NetMessageEntityState.h" />
     <ClInclude Include="NetMessageRequestConnect.h" />
     <ClInclude Include="NetMessageDisconnect.h" />
     <ClInclude Include="NetMessageImportantReply.h" />

@@ -13,19 +13,19 @@ public:
 	SharedLevel();
 	virtual ~SharedLevel();
 
-	virtual void Init() = 0;
+	virtual void Init(const std::string& aMissionXMLPath) = 0;
 
 	void AddEntity(Entity* aEntity);
 	void AddEnemy(Entity* anEntity);
 
 	virtual void Update(const float aDeltaTime);
 
-	virtual void CollisionCallback(PhysicsComponent* aFirst, PhysicsComponent* aSecond) = 0;
+	virtual void CollisionCallback(PhysicsComponent* aFirst, PhysicsComponent* aSecond, bool aHasEntered) = 0;
 
 	void CleanUp();
 
 protected:
-	virtual void HandleTrigger(Entity& aFirstEntity, Entity& aSecondEntity) = 0;
+	virtual void HandleTrigger(Entity& aFirstEntity, Entity& aSecondEntity, bool aHasEntered) = 0;
 	void HandleExplosion(Entity& aFirstEntity, Entity& aSecondEntity);
 
 	CU::GrowingArray<Entity*> myActiveEntities;
@@ -35,5 +35,7 @@ protected:
 	CU::GrowingArray<Entity*> myPlayers;
 
 	std::unordered_map<unsigned int, Entity*> myActiveEntitiesMap;
+
+	std::unordered_map<unsigned int, Entity*> myActiveUnitsMap;
 };
 

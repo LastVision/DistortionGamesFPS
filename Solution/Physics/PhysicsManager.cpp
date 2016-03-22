@@ -35,7 +35,7 @@
 
 namespace Prism
 {
-	PhysicsManager::PhysicsManager(std::function<void(PhysicsComponent*, PhysicsComponent*)> anOnTriggerCallback, bool aIsServer)
+	PhysicsManager::PhysicsManager(std::function<void(PhysicsComponent*, PhysicsComponent*, bool)> anOnTriggerCallback, bool aIsServer)
 		: myPhysicsComponentCallbacks(4096)
 		, myOnTriggerCallback(anOnTriggerCallback)
 #ifdef THREAD_PHYSICS
@@ -330,7 +330,7 @@ namespace Prism
 		for (int i = 0; i < myOnTriggerResults[myCurrentIndex ^ 1].Size(); ++i)
 		{
 
-			myOnTriggerCallback(myOnTriggerResults[myCurrentIndex ^ 1][i].myFirstPhysicsComponent, myOnTriggerResults[myCurrentIndex ^ 1][i].mySecondPhysicsComponent);
+			myOnTriggerCallback(myOnTriggerResults[myCurrentIndex ^ 1][i].myFirstPhysicsComponent, myOnTriggerResults[myCurrentIndex ^ 1][i].mySecondPhysicsComponent, myOnTriggerResults[myCurrentIndex ^ 1][i].myHasEntered);
 		}
 		myOnTriggerResults[myCurrentIndex ^ 1].RemoveAll();
 
@@ -376,7 +376,12 @@ namespace Prism
 			if (pairs.status == physx::PxPairFlag::Enum::eNOTIFY_TOUCH_FOUND)
 			{
 				myOnTriggerResults[myCurrentIndex].Add(OnTriggerResult(static_cast<PhysicsComponent*>(pairs.triggerActor->userData)
-					, static_cast<PhysicsComponent*>(pairs.otherActor->userData)));
+					, static_cast<PhysicsComponent*>(pairs.otherActor->userData), true));
+			}
+			else if (pairs.status == physx::PxPairFlag::Enum::eNOTIFY_TOUCH_LOST)
+			{
+				myOnTriggerResults[myCurrentIndex].Add(OnTriggerResult(static_cast<PhysicsComponent*>(pairs.triggerActor->userData)
+					, static_cast<PhysicsComponent*>(pairs.otherActor->userData), false));
 			}
 		}
 	}

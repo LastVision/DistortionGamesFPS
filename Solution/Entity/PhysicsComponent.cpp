@@ -60,10 +60,15 @@ void PhysicsComponent::Reset()
 	{
 		Prism::PhysicsInterface::GetInstance()->SetVelocity(myDynamicBody, CU::Vector3<float>(0, 0, 0));
 	}
+	else if (myPhysicsType == ePhysics::KINEMATIC || myPhysicsType == ePhysics::PHANTOM)
+	{
+		AddToScene();
+	}
 }
 
 void PhysicsComponent::Sleep()
 {
+	DL_ASSERT_EXP(myDynamicBody != nullptr, "Can't sleep non-dynamic body.");
 	if (myDynamicBody != nullptr)
 	{
 		Prism::PhysicsInterface::GetInstance()->Sleep(myDynamicBody);
@@ -72,6 +77,7 @@ void PhysicsComponent::Sleep()
 
 void PhysicsComponent::Wake()
 {
+	DL_ASSERT_EXP(myDynamicBody != nullptr, "Can't wake non-dynamic body.");
 	if (myDynamicBody != nullptr)
 	{
 		Prism::PhysicsInterface::GetInstance()->Wake(myDynamicBody);

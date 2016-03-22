@@ -5,7 +5,7 @@ class NetMessageOnDeath : public NetImportantMessage
 {
 public:
 	NetMessageOnDeath();
-	NetMessageOnDeath(eNetMessageType aType, const unsigned int aGID);
+	NetMessageOnDeath(const unsigned int aGID);
 	~NetMessageOnDeath();
 
 	unsigned int myGID;
@@ -14,14 +14,14 @@ private:
 	void DoDeSerialize(StreamType& aStream) override;
 };
 
-inline NetMessageOnDeath::NetMessageOnDeath(eNetMessageType aType, const unsigned int aGID)
-	: NetImportantMessage(aType)
+inline NetMessageOnDeath::NetMessageOnDeath(const unsigned int aGID)
+	: NetImportantMessage(eNetMessageType::ON_DEATH)
 	, myGID(aGID)
 {
 }
 
 inline NetMessageOnDeath::NetMessageOnDeath()
-	: NetImportantMessage(eNetMessageType::ENEMY_ON_DEATH)
+	: NetImportantMessage(eNetMessageType::ON_DEATH)
 {
 }
 

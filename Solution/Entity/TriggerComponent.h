@@ -20,6 +20,7 @@ public:
 	eTriggerType GetTriggerType() const;
 	int GetValue() const;
 	bool IsClientSide() const;
+	bool GetIsActiveFromStart() const;
 
 private:
 

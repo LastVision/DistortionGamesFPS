@@ -22,6 +22,7 @@ public:
 	ClientLevel();
 	~ClientLevel();
 
+	void Init(const std::string& aMissionXMLPath = "") override;
 	void Init() override;
 	void SetMinMax(const CU::Vector3<float>& aMinPoint, const CU::Vector3<float>& aMaxPoint);
 
@@ -32,13 +33,14 @@ public:
 
 	void ReceiveNetworkMessage(const NetMessageOnDeath& aMessage, const sockaddr_in& aSenderAddress) override;
 	void ReceiveNetworkMessage(const NetMessageSetActive& aMessage, const sockaddr_in& aSenderAddress) override;
+	void ReceiveNetworkMessage(const NetMessageEntityState& aMessage, const sockaddr_in& aSenderAddress) override;
 
 	void AddLight(Prism::PointLight* aLight);
-	void CollisionCallback(PhysicsComponent* aFirst, PhysicsComponent* aSecond) override;
+	void CollisionCallback(PhysicsComponent* aFirst, PhysicsComponent* aSecond, bool aHasEntered) override;
 	void DebugMusic();
 
 private:
-	void HandleTrigger(Entity& aFirstEntity, Entity& aSecondEntity) override;
+	void HandleTrigger(Entity& aFirstEntity, Entity& aSecondEntity, bool aHasEntered) override;
 	void CreatePlayers();
 	Prism::Scene* myScene;
 	Prism::DeferredRenderer* myDeferredRenderer;

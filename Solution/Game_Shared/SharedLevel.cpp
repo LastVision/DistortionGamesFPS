@@ -43,6 +43,7 @@ void SharedLevel::AddEntity(Entity* aEntity)
 void SharedLevel::AddEnemy(Entity* anEntity)
 {
 	myActiveEnemies.Add(anEntity);
+	myActiveUnitsMap[anEntity->GetGID()] = anEntity;
 }
 
 void SharedLevel::Update(const float aDeltaTime)

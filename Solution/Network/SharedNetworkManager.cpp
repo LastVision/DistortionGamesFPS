@@ -4,6 +4,7 @@
 #include "NetMessage.h"
 #include "NetMessageImportantReply.h"
 #include "NetMessageConnectReply.h"
+#include "NetMessageEntityState.h"
 #include "NetMessageRequestConnect.h"
 #include "NetMessageOnJoin.h"
 #include "NetMessageDisconnect.h"
@@ -281,16 +282,17 @@ void SharedNetworkManager::HandleMessage()
 		case eNetMessageType::POSITION:
 			UnpackAndHandle(NetMessagePosition(), buffer);
 			break;
-		case eNetMessageType::PLAYER_ON_HIT:
-		case eNetMessageType::ENEMY_ON_HIT:
+		case eNetMessageType::ON_HIT:
 			UnpackAndHandle(NetMessageOnHit(), buffer);
 			break;
-		case eNetMessageType::PLAYER_ON_DEATH:
-		case eNetMessageType::ENEMY_ON_DEATH:
+		case eNetMessageType::ON_DEATH:
 			UnpackAndHandle(NetMessageOnDeath(), buffer);
 			break;
 		case eNetMessageType::SET_ACTIVE:
 			UnpackAndHandle(NetMessageSetActive(), buffer);
+			break;
+		case eNetMessageType::ENTITY_STATE:
+			UnpackAndHandle(NetMessageEntityState(), buffer);
 			break;
 		default:
 			DL_ASSERT("Unhandled network message type");

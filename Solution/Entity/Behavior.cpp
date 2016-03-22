@@ -1,11 +1,12 @@
 #include "stdafx.h"
 #include "Behavior.h"
+#include "AIComponentData.h"
 
-
-Behavior::Behavior(const Entity& anEntity)
+Behavior::Behavior(const Entity& anEntity, const AIComponentData& aData)
 	: myEntity(anEntity)
+	, myData(aData)
 	, myDone(false)
-	, myMaxSpeed(0.13f)
+	, myMaxSpeed(aData.mySpeed)
 {
 }
 

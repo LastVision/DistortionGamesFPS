@@ -9,6 +9,7 @@
 #include "InputComponentData.h"
 #include <InputWrapper.h>
 #include <NetMessagePosition.h>
+#include <NetMessageEntityState.h>
 #include "NetworkComponent.h"
 #include <PostMaster.h>
 #include <PhysicsInterface.h>
@@ -42,6 +43,9 @@ InputComponent::InputComponent(Entity& anEntity, const InputComponentData& aData
 
 	mySendTime = 3;
 
+	
+
+
 	//myCapsuleControllerId = Prism::PhysicsInterface::GetInstance()->CreatePlayerController(myOrientation.GetPos());
 }
 
@@ -52,6 +56,11 @@ InputComponent::~InputComponent()
 
 void InputComponent::Update(float aDelta)
 {
+	if (myEntity.IsAlive() == false)
+	{
+		return;
+	}
+
 	if (CU::InputWrapper::GetInstance()->KeyDown(DIK_H) == true)
 	{
 		myEntity.SendNote<DamageNote>(DamageNote(1));
@@ -161,6 +170,19 @@ void InputComponent::UpdateMovement(float aDelta)
 		movement.x += 1.f;
 	}
 
+	if (CU::Length(movement) < 0.02f)
+	{
+		if (myEntity.GetState() != eEntityState::IDLE)
+		{
+			myEntity.SetState(eEntityState::IDLE);
+			SharedNetworkManager::GetInstance()->AddMessage<NetMessageEntityState>(NetMessageEntityState(myEntity.GetState(), myEntity.GetGID()));
+		}
+	}
+	else if (myEntity.GetState() != eEntityState::WALK)
+	{
+		myEntity.SetState(eEntityState::WALK);
+		SharedNetworkManager::GetInstance()->AddMessage<NetMessageEntityState>(NetMessageEntityState(myEntity.GetState(), myEntity.GetGID()));
+	}
 
 	movement = movement * myOrientation;
 

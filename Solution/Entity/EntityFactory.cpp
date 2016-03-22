@@ -6,7 +6,7 @@
 #include "EntityEnumConverter.h"
 #include <string>
 
-
+#include "PollingStation.h"
 EntityFactory* EntityFactory::myInstance = nullptr;
 
 EntityFactory* EntityFactory::GetInstance()
@@ -64,6 +64,8 @@ Entity* EntityFactory::CreateEntity(unsigned int aGID, eEntityType aType, std::s
 			Entity* newEntity = new Entity(aGID, myInstance->myLoadedSubEntityData.find(aSubType)->second, aScene, aClientSide, aPosition, aRotation
 				, aScale);
 			newEntity->mySubType = aSubType;
+
+				
 			return newEntity;
 		}
 	}
@@ -116,7 +118,7 @@ void EntityFactory::LoadEntity(const char* aEntityPath)
 		}
 		else if (elementName == CU::ToLower("GrenadeComponent"))
 		{
-			myComponentLoader->LoadGrenadeComponent(entityDocument, e, newData.myProjecileData);
+			myComponentLoader->LoadGrenadeComponent(entityDocument, e, newData.myGrenadeData);
 		}
 		else if (elementName == CU::ToLower("NetworkComponent"))
 		{
@@ -149,6 +151,10 @@ void EntityFactory::LoadEntity(const char* aEntityPath)
 		else if (elementName == CU::ToLower("PhysicsComponent"))
 		{
 			myComponentLoader->LoadPhysicsComponent(entityDocument, e, newData.myPhysicsData);
+		}
+		else if (elementName == CU::ToLower("ProjectileComponent"))
+		{
+			myComponentLoader->LoadProjectileComponent(entityDocument, e, newData.myProjecileData);
 		}
 		else
 		{

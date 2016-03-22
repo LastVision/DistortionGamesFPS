@@ -6,33 +6,25 @@ class NetMessageOnHit :
 {
 public:
 	NetMessageOnHit();
-	NetMessageOnHit(float aDamage, unsigned int aGID);
-	NetMessageOnHit(eNetMessageType aType, float aDamage, unsigned int aGID);
+	NetMessageOnHit(int aDamage, unsigned int aGID);
 	~NetMessageOnHit();
 
-	float myDamage;
+	int myDamage;
 	unsigned int myGID;
 private:
 	void DoSerialize(StreamType& aStream) override;
 	void DoDeSerialize(StreamType& aStream) override;
 };
 
-inline NetMessageOnHit::NetMessageOnHit(eNetMessageType aType, float aDamage, unsigned int aGID)
-	: NetMessage(aType)
-	, myDamage(aDamage)
-	, myGID(aGID)
-{
-}
-
-inline NetMessageOnHit::NetMessageOnHit(float aDamage, unsigned int aGID)
-	: NetMessage(eNetMessageType::ENEMY_ON_HIT)
-	, myDamage(aDamage)
-	, myGID(aGID)
-{
-}
-
 inline NetMessageOnHit::NetMessageOnHit()
-	: NetMessage(eNetMessageType::ENEMY_ON_HIT)
+	: NetMessage(eNetMessageType::ON_HIT)
+{
+}
+
+inline NetMessageOnHit::NetMessageOnHit(int aDamage, unsigned int aGID)
+	: NetMessage(eNetMessageType::ON_HIT)
+	, myDamage(aDamage)
+	, myGID(aGID)
 {
 }
 

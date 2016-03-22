@@ -1,13 +1,10 @@
 #include "stdafx.h"
 #include "ArriveBehavior.h"
+#include "AIComponentData.h"
 
-
-ArriveBehavior::ArriveBehavior(const Entity& anEntity)
-	: Behavior(anEntity)
+ArriveBehavior::ArriveBehavior(const Entity& anEntity, const AIComponentData& aData)
+	: Behavior(anEntity, aData)
 	, myTimeToTarget(0.1f)
-	, mySlowRadius(4.0f)
-	, myTargetRadius(3.f)
-	, myMaxAcceleration(100000.f)
 	, myActive(false)
 {
 }
@@ -28,41 +25,31 @@ const CU::Vector3<float>& ArriveBehavior::Update(float)
 
 
 	CU::Vector3<float> direction = myTarget - myEntity.GetOrientation().GetPos();
-	float distance = CU::Length(direction);
+	float distance2 = CU::Length2(direction);
 
-	if (distance > myTargetRadius)
+	float targetSpeed = myData.mySpeed;
+	if (distance2 > myData.myArriveStopRange * myData.myArriveStopRange)
 	{
 		myDone = false;
 	}
 	else
 	{
+		targetSpeed = 0.00001f;
 		myDone = true;
 	}
 
-	float targetSpeed;
-	if (distance > mySlowRadius)
-	{
-		targetSpeed = myMaxSpeed;
-	}
-	else
-	{
-		targetSpeed = myMaxSpeed * distance / mySlowRadius;
-	}
+	//if (distance2 > mySlowRadius)
+	//{
+	//	targetSpeed = myMaxSpeed;
+	//}
+	//else
+	//{
+	//	targetSpeed = myMaxSpeed * distance / mySlowRadius;
+	//}
 
 	myVelocity = direction;
 	CU::Normalize(myVelocity);
 	myVelocity *= targetSpeed;
 
 	return myVelocity;
-
-	//myAcceleration = targetVelocity - myEntity.GetVelocity();
-	//myAcceleration /= myTimeToTarget;
-
-	//if (CU::Length2(myAcceleration) > myMaxAcceleration * myMaxAcceleration)
-	//{
-	//	CU::Normalize(myAcceleration);
-	//	myAcceleration *= myMaxAcceleration;
-	//}
-
-	//return myAcceleration;
 }

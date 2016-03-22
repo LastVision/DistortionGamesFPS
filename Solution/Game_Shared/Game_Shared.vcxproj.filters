@@ -16,11 +16,11 @@
     <ClInclude Include="SharedLevelFactory.h">
       <Filter>Level\Factory</Filter>
     </ClInclude>
-    <ClInclude Include="SharedLevel.h">
-      <Filter>Level</Filter>
-    </ClInclude>
     <ClInclude Include="stdafx.h">
       <Filter>Precompile</Filter>
+    </ClInclude>
+    <ClInclude Include="SharedLevel.h">
+      <Filter>Level</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
