@@ -12,14 +12,11 @@ public:
 	static void Create();
 	static void Destroy();
 	static ClientProjectileManager* GetInstance();
-
-
 	void CreateBullets(Prism::Scene* aScene) override;
 
 private:
 	ClientProjectileManager();
 	~ClientProjectileManager();
-	static ClientProjectileManager* myInstance;
 
 };
 

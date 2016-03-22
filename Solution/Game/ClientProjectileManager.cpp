@@ -2,7 +2,6 @@
 #include "ClientProjectileManager.h"
 #include <EntityFactory.h>
 
-ClientProjectileManager* ClientProjectileManager::myInstance = nullptr;
 
 ClientProjectileManager::ClientProjectileManager()
 {
@@ -31,14 +30,14 @@ void ClientProjectileManager::Destroy()
 ClientProjectileManager* ClientProjectileManager::GetInstance()
 {
 	DL_ASSERT_EXP(myInstance != nullptr, "ClientProjectileManager were null!");
-	return myInstance;
+	return static_cast<ClientProjectileManager*>(myInstance);
 }
 
 void ClientProjectileManager::CreateBullets(Prism::Scene* aScene)
 {
 	for (int i = 0; i < myBullets.GetCapacity(); ++i)
 	{
-		Entity* bullet = EntityFactory::CreateEntity((50000 + i), eEntityType::BULLET, aScene, true, CU::Vector3<float>(0, -10.f, 0));
+		Entity* bullet = EntityFactory::CreateEntity((50000 + i), eEntityType::BULLET, "bulletclient", aScene, true, CU::Vector3<float>(0, -10.f, 0));
 		bullet->Kill();
 		myBullets.Add(bullet);
 	}

@@ -9,13 +9,21 @@ namespace Prism
 class SharedProjectileManager
 {
 public:
+	~SharedProjectileManager();
 	virtual void CreateBullets(Prism::Scene* aScene) = 0;
+	static SharedProjectileManager* GetInstance();
+	int GetBulletIndex();
+	Entity* RequestBullet();
+	void Update(float aDeltaTime);
 
 protected:
 	SharedProjectileManager();
-	~SharedProjectileManager();
 	CU::GrowingArray<Entity*> myBullets;
+	CU::GrowingArray<Entity*> myLiveBullets;
 
+	static SharedProjectileManager* myInstance;
+
+	int myBulletIndex;
 
 };
 

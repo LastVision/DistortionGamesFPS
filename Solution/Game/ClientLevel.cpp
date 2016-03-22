@@ -102,6 +102,8 @@ void ClientLevel::Init(const std::string&)
 	Prism::Audio::AudioInterface::GetInstance()->PostEvent("PlayBackground", 0);
 	Prism::Audio::AudioInterface::GetInstance()->PostEvent("PlayFirstLayer", 0);
 	Prism::Audio::AudioInterface::GetInstance()->PostEvent("PlaySecondLayer", 0);
+	ClientProjectileManager::GetInstance()->CreateBullets(myScene);
+
 }
 
 void ClientLevel::Update(const float aDeltaTime)
@@ -111,7 +113,7 @@ void ClientLevel::Update(const float aDeltaTime)
 		myInitDone = true;
 		ClientNetworkManager::GetInstance()->AddMessage(NetMessageLevelLoaded());
 	}
-
+	ClientProjectileManager::GetInstance()->Update(aDeltaTime);
 	//if (CU::InputWrapper::GetInstance()->KeyDown(DIK_U))
 	//{
 	//	myActiveEnemies.GetLast()->SetState(eEntityState::WALK);

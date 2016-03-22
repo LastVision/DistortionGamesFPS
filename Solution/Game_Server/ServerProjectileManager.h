@@ -18,7 +18,6 @@ public:
 private:
 	ServerProjectileManager();
 	~ServerProjectileManager();
-	static ServerProjectileManager* myInstance;
 
 };
 

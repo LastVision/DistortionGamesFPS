@@ -34,6 +34,7 @@ ServerLevel::ServerLevel()
 	ServerNetworkManager::GetInstance()->Subscribe(eNetMessageType::ENTITY_STATE, this);
 	PostMaster::GetInstance()->Subscribe(eMessageType::SET_ACTIVE, this);
 	ServerProjectileManager::Create();
+
 }
 
 ServerLevel::~ServerLevel()
@@ -59,6 +60,8 @@ void ServerLevel::Init(const std::string& aMissionXMLPath)
 
 		myMissionManager = new MissionManager(aMissionXMLPath);
 	}
+	ServerProjectileManager::GetInstance()->CreateBullets(nullptr);
+
 }
 
 void ServerLevel::Update(const float aDeltaTime)
@@ -67,6 +70,7 @@ void ServerLevel::Update(const float aDeltaTime)
 	{
 		__super::Update(aDeltaTime);
 		myMissionManager->Update(aDeltaTime);
+		ServerProjectileManager::GetInstance()->Update(aDeltaTime);
 		//	PollingStation::GetInstance()->FindClosestEntityToEntity(*myPlayers[0]);
 
 		Prism::PhysicsInterface::GetInstance()->EndFrame();

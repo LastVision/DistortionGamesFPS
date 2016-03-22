@@ -5,12 +5,9 @@
 #include <EntityFactory.h>
 #include <DL_Debug.h>
 
-ServerProjectileManager* ServerProjectileManager::myInstance = nullptr;
-
 ServerProjectileManager::ServerProjectileManager()
 {
 }
-
 
 ServerProjectileManager::~ServerProjectileManager()
 {
@@ -34,14 +31,14 @@ void ServerProjectileManager::Destroy()
 ServerProjectileManager* ServerProjectileManager::GetInstance()
 {
 	DL_ASSERT_EXP(myInstance != nullptr, "ServerProjectileManager were null!");
-	return myInstance;
+	return static_cast<ServerProjectileManager*>(myInstance);
 }
 
 void ServerProjectileManager::CreateBullets(Prism::Scene* aScene)
 {
 	for (int i = 0; i < myBullets.GetCapacity(); ++i)
 	{
-		Entity* bullet = EntityFactory::CreateEntity((50000 + i), eEntityType::BULLET, aScene, false, CU::Vector3<float>(0, -10.f, 0));
+		Entity* bullet = EntityFactory::CreateEntity((50000 + i), eEntityType::BULLET, "bulletserver", aScene, false, CU::Vector3<float>(0, -10.f, 0));
 		bullet->Kill();
 		myBullets.Add(bullet);
 	}

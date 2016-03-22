@@ -57,17 +57,15 @@ Entity* EntityFactory::CreateEntity(unsigned int aGID, eEntityType aType, Prism:
 Entity* EntityFactory::CreateEntity(unsigned int aGID, eEntityType aType, std::string aSubType, Prism::Scene* aScene, bool aClientSide, const CU::Vector3f& aPosition,
 	const CU::Vector3f& aRotation, const CU::Vector3f& aScale)
 {
-	if (aType == eEntityType::PROP || aType == eEntityType::UNIT || aType == eEntityType::TRIGGER || aType == eEntityType::PLAYER)
-	{
-		if (myInstance->myLoadedSubEntityData.find(aSubType) != myInstance->myLoadedSubEntityData.end())
-		{
-			Entity* newEntity = new Entity(aGID, myInstance->myLoadedSubEntityData.find(aSubType)->second, aScene, aClientSide, aPosition, aRotation
-				, aScale);
-			newEntity->mySubType = aSubType;
 
-				
-			return newEntity;
-		}
+	if (myInstance->myLoadedSubEntityData.find(aSubType) != myInstance->myLoadedSubEntityData.end())
+	{
+		Entity* newEntity = new Entity(aGID, myInstance->myLoadedSubEntityData.find(aSubType)->second, aScene, aClientSide, aPosition, aRotation
+			, aScale);
+		newEntity->mySubType = aSubType;
+
+
+		return newEntity;
 	}
 	std::string errorMessage = "SubType " + aSubType + " not found.";
 	DL_ASSERT(errorMessage);
@@ -85,13 +83,12 @@ void EntityFactory::LoadEntity(const char* aEntityPath)
 	EntityData newData;
 	std::string entityType;
 	std::string entitySubType;
+	newData.mySubType = "";
 	entityDocument.ForceReadAttribute(entityElement, "type", entityType);
 	newData.myType = EntityEnumConverter::ConvertStringToEntityType(CU::ToLower(entityType));
-	if (newData.myType == eEntityType::PROP || newData.myType == eEntityType::UNIT || newData.myType == eEntityType::TRIGGER || newData.myType == eEntityType::PLAYER)
-	{
-		entityDocument.ForceReadAttribute(entityElement, "subType", entitySubType);
-		newData.mySubType = CU::ToLower(entitySubType);
-	}
+
+	entityDocument.ReadAttribute(entityElement, "subType", entitySubType);
+	newData.mySubType = CU::ToLower(entitySubType);
 
 
 	for (tinyxml2::XMLElement* e = entityDocument.FindFirstChild(entityElement); e != nullptr;
@@ -163,7 +160,7 @@ void EntityFactory::LoadEntity(const char* aEntityPath)
 			DL_ASSERT(errorMessage.c_str());
 		}
 	}
-	if (newData.myType == eEntityType::PROP || newData.myType == eEntityType::UNIT || newData.myType == eEntityType::TRIGGER || newData.myType == eEntityType::PLAYER)
+	if (newData.mySubType != "")
 	{
 		myLoadedSubEntityData[newData.mySubType] = newData;
 	}
