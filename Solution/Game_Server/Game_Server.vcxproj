@@ -91,6 +91,7 @@
     <ClInclude Include="ServerLevelFactory.h" />
     <ClInclude Include="ServerLobbyState.h" />
     <ClInclude Include="ServerNetworkManager.h" />
+    <ClInclude Include="ServerProjectileManager.h" />
     <ClInclude Include="ServerState.h" />
     <ClInclude Include="ServerStateStack.h" />
     <ClInclude Include="ServerStateStackProxy.h" />
@@ -108,6 +109,7 @@
     <ClCompile Include="ServerLevelFactory.cpp" />
     <ClCompile Include="ServerLobbyState.cpp" />
     <ClCompile Include="ServerNetworkManager.cpp" />
+    <ClCompile Include="ServerProjectileManager.cpp" />
     <ClCompile Include="ServerStateStack.cpp" />
     <ClCompile Include="ServerStateStackProxy.cpp" />
     <ClCompile Include="stdafx.cpp">
