@@ -10,6 +10,7 @@
 #include "ProjectileComponent.h"
 #include "EntityFactory.h"
 #include <iostream>
+#include <NetMessageEnemyShooting.h>
 
 AIComponent::AIComponent(Entity& anEntity, const AIComponentData& aData, CU::Matrix44<float>& anOrientation)
 	: Component(anEntity)
@@ -137,7 +138,7 @@ void AIComponent::Shoot(Entity* aClosestPlayer)
 
 	myEntity.SetState(eEntityState::ATTACK);
 	SharedNetworkManager::GetInstance()->AddMessage<NetMessageEntityState>(NetMessageEntityState(myEntity.GetState(), myEntity.GetGID()));
-	//SharedNetworkManager::GetInstance()->AddMessage<NetMessageEnemyShooting>()
+	SharedNetworkManager::GetInstance()->AddMessage<NetMessageEnemyShooting>(NetMessageEnemyShooting(myBullets[myBulletIndex]->GetGID()));
 	myAttackAnimationTimeCurrent = myData.myAttackAnimationTime;
 
 	myBullets[myBulletIndex]->GetComponent<ProjectileComponent>()->Activate(myEntity.GetOrientation());

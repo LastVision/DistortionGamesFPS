@@ -26,16 +26,11 @@
 ServerNetworkManager::ServerNetworkManager()
 	: myAllowNewConnections(false)
 {
-	PostMaster::GetInstance()->Subscribe(eMessageType::NETWORK_ADD_ENEMY, this);
-	PostMaster::GetInstance()->Subscribe(eMessageType::NETWORK_SEND_POSITION, this);
-	PostMaster::GetInstance()->Subscribe(eMessageType::NETWORK_ON_DEATH, this);
+	
 }
 
 ServerNetworkManager::~ServerNetworkManager()
 {
-	PostMaster::GetInstance()->UnSubscribe(eMessageType::NETWORK_ADD_ENEMY, this);
-	PostMaster::GetInstance()->UnSubscribe(eMessageType::NETWORK_SEND_POSITION, this);
-	PostMaster::GetInstance()->UnSubscribe(eMessageType::NETWORK_ON_DEATH, this);
 
 	UnSubscribe(eNetMessageType::POSITION, this);
 	UnSubscribe(eNetMessageType::PING_REPLY, this);

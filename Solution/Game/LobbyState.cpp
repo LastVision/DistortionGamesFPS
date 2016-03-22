@@ -81,7 +81,6 @@ const eStateStatus LobbyState::Update(const float& aDeltaTime)
 	if (myLevelToStart != -1)
 	{
 		PostMaster::GetInstance()->UnSubscribe(eMessageType::ON_CLICK, this);
-		PostMaster::GetInstance()->UnSubscribe(eMessageType::NETWORK_START_GAME, this);
 		SET_RUNTIME(false);
 		myStateStack->PushSubGameState(new InGameState(myLevelToStart));
 	}

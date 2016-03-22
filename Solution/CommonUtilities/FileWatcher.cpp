@@ -20,6 +20,8 @@ namespace CU
 		{
 			Sleep(1);
 		}
+
+		SAFE_DELETE(myThread);
 	}
 
 	void FileWatcher::FlushChanges()

@@ -74,6 +74,7 @@ namespace Prism
 
 	DeferredRenderer::~DeferredRenderer()
 	{
+		SAFE_DELETE(myDepthStencilTexture);
 		SAFE_DELETE(myGBufferData.myAlbedoTexture);
 		SAFE_DELETE(myGBufferData.myNormalTexture);
 		SAFE_DELETE(myGBufferData.myDepthTexture);
