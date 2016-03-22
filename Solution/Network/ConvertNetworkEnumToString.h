@@ -27,6 +27,8 @@ static std::string ConvertNetworkEnumToString(eNetMessageType aType)
 		return "START GAME";
 	case eNetMessageType::LEVEL_LOADED:
 		return "LEVEL LOADED";
+	case eNetMessageType::LEVEL_COMPLETE:
+		return "LEVEL COMPLETE";
 	case eNetMessageType::PING_REQUEST:
 		return "PING REQUEST";
 	case eNetMessageType::PING_REPLY:

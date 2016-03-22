@@ -38,6 +38,12 @@ const eStateStatus ServerInGameState::Update(const float aDeltaTime)
 {
 	myLevel->Update(aDeltaTime);
 
+	int nextLevel;
+	if (myLevel->ChangeLevel(nextLevel) == true)
+	{
+
+	}
+
 	return myStateStatus;
 }
 

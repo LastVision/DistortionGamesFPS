@@ -128,5 +128,9 @@ void CU::TimerManager::CapFrameRate(float aFrameRate)
 		float frameTime = float(GetTime());
 		frameTime /= 1000000.f;
 		waitTime = frameTime;
+		if (waitTime + 0.002f < capTime)
+		{
+			Sleep(1);
+		}
 	}
 }
