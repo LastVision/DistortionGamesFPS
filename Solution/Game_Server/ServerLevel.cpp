@@ -150,12 +150,12 @@ void ServerLevel::HandleTrigger(Entity& aFirstEntity, Entity& aSecondEntity, boo
 			switch (firstTrigger->GetTriggerType())
 			{
 			case eTriggerType::UNLOCK:
-				SharedNetworkManager::GetInstance()->AddMessage(NetMessageSetActive(false, firstTrigger->GetValue()));
+				SharedNetworkManager::GetInstance()->AddMessage(NetMessageSetActive(false, true, firstTrigger->GetValue()));
 				myActiveEntitiesMap[firstTrigger->GetValue()]->GetComponent<PhysicsComponent>()->RemoveFromScene();
 				// do "open" animation
 				break;
 			case eTriggerType::LOCK:
-				SharedNetworkManager::GetInstance()->AddMessage(NetMessageSetActive(true, firstTrigger->GetValue()));
+				SharedNetworkManager::GetInstance()->AddMessage(NetMessageSetActive(true, true, firstTrigger->GetValue()));
 				myActiveEntitiesMap[firstTrigger->GetValue()]->GetComponent<PhysicsComponent>()->AddToScene();
 				// do "close" animation
 				break;

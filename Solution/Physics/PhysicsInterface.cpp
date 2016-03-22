@@ -163,14 +163,29 @@ namespace Prism
 		myManager->Remove(aStatic, aData);
 	}
 
+	void PhysicsInterface::Remove(int aCapsuleID)
+	{
+		myManager->Remove(aCapsuleID);
+	}
+
 	void PhysicsInterface::Sleep(physx::PxRigidDynamic* aDynamic)
 	{
 		myManager->Sleep(aDynamic);
 	}
 
+	void PhysicsInterface::Sleep(int aCapsuleID)
+	{
+		myManager->Sleep(aCapsuleID);
+	}
+
 	void PhysicsInterface::Wake(physx::PxRigidDynamic* aDynamic)
 	{
 		myManager->Wake(aDynamic);
+	}
+
+	void PhysicsInterface::Wake(int aCapsuleID)
+	{
+		myManager->Wake(aCapsuleID);
 	}
 
 	PhysicsInterface::PhysicsInterface(std::function<void(PhysicsComponent*, PhysicsComponent*, bool)> anOnTriggerCallback, bool aIsServer)
