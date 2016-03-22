@@ -45,25 +45,28 @@ void AIComponent::Update(float aDelta)
 		}
 	}
 
-	Entity* closestPlayer = PollingStation::GetInstance()->FindClosestPlayer(myEntity.GetOrientation().GetPos(), myData.myVisionRange);
-
-	Move(aDelta, closestPlayer);
-	myShootTimer -= aDelta;
-	if (closestPlayer != nullptr && myShootTimer < 0.f)
+	if (myEntity.GetState() != eEntityState::DIE)
 	{
-		Shoot(closestPlayer);
-		myShootTimer = 2.f;
-	}
+		Entity* closestPlayer = PollingStation::GetInstance()->FindClosestPlayer(myEntity.GetOrientation().GetPos(), myData.myVisionRange);
 
-	if (myEntity.GetState() == eEntityState::ATTACK)
-	{
-		myAttackAnimationTimeCurrent -= aDelta;
-
-		if (myAttackAnimationTimeCurrent <= 0.f)
+		Move(aDelta, closestPlayer);
+		myShootTimer -= aDelta;
+		if (closestPlayer != nullptr && myShootTimer < 0.f)
 		{
-			myEntity.SetState(eEntityState::IDLE);
-			SharedNetworkManager::GetInstance()->AddMessage<NetMessageEntityState>(NetMessageEntityState(myEntity.GetState(), myEntity.GetGID()));
-			myAttackAnimationTimeCurrent = 0.f;
+			Shoot(closestPlayer);
+			myShootTimer = 2.f;
+		}
+
+		if (myEntity.GetState() == eEntityState::ATTACK)
+		{
+			myAttackAnimationTimeCurrent -= aDelta;
+
+			if (myAttackAnimationTimeCurrent <= 0.f)
+			{
+				myEntity.SetState(eEntityState::IDLE);
+				SharedNetworkManager::GetInstance()->AddMessage<NetMessageEntityState>(NetMessageEntityState(myEntity.GetState(), myEntity.GetGID()));
+				myAttackAnimationTimeCurrent = 0.f;
+			}
 		}
 	}
 }
@@ -71,30 +74,33 @@ void AIComponent::Update(float aDelta)
 
 void AIComponent::Move(float aDelta, Entity* aClosestPlayer)
 {
-	if (aClosestPlayer != nullptr)
+	if (myEntity.GetState() != eEntityState::DIE)
 	{
-		myBehavior->SetTarget(aClosestPlayer->GetOrientation().GetPos());
-	}
-
-	CU::Vector3<float> movement(myBehavior->Update(aDelta));
-
-  	if (CU::Length(movement) < 0.02f)
-	{
-		if (myEntity.GetState() != eEntityState::IDLE && myEntity.GetState() != eEntityState::ATTACK)
+		if (aClosestPlayer != nullptr)
 		{
-			myEntity.SetState(eEntityState::IDLE);
+			myBehavior->SetTarget(aClosestPlayer->GetOrientation().GetPos());
+		}
+
+		CU::Vector3<float> movement(myBehavior->Update(aDelta));
+
+		if (CU::Length(movement) < 0.02f)
+		{
+			if (myEntity.GetState() != eEntityState::IDLE && myEntity.GetState() != eEntityState::ATTACK)
+			{
+				myEntity.SetState(eEntityState::IDLE);
+				SharedNetworkManager::GetInstance()->AddMessage<NetMessageEntityState>(NetMessageEntityState(myEntity.GetState(), myEntity.GetGID()));
+			}
+		}
+		else if (myEntity.GetState() != eEntityState::WALK && myEntity.GetState() != eEntityState::ATTACK)
+		{
+			myEntity.SetState(eEntityState::WALK);
 			SharedNetworkManager::GetInstance()->AddMessage<NetMessageEntityState>(NetMessageEntityState(myEntity.GetState(), myEntity.GetGID()));
 		}
-	}
-	else if (myEntity.GetState() != eEntityState::WALK && myEntity.GetState() != eEntityState::ATTACK)
-	{
-		myEntity.SetState(eEntityState::WALK);
-		SharedNetworkManager::GetInstance()->AddMessage<NetMessageEntityState>(NetMessageEntityState(myEntity.GetState(), myEntity.GetGID()));
-	}
 
-	Prism::PhysicsInterface::GetInstance()->Move(myEntity.GetComponent<PhysicsComponent>()->GetCapsuleControllerId(), movement, 0.05f, aDelta);
+		Prism::PhysicsInterface::GetInstance()->Move(myEntity.GetComponent<PhysicsComponent>()->GetCapsuleControllerId(), movement, 0.05f, aDelta);
 
-	SetOrientation(CU::GetNormalized(movement));
+		SetOrientation(CU::GetNormalized(movement));
+	}
 }
 
 void AIComponent::SetOrientation(const CU::Vector3<float>& aLookInDirection)
@@ -124,7 +130,7 @@ void AIComponent::SetOrientation(const CU::Vector3<float>& aLookInDirection)
 
 void AIComponent::Shoot(Entity* aClosestPlayer)
 {
-	if (myBulletIndex > myBullets.Size()-1)
+	if (myBulletIndex > myBullets.Size() - 1)
 	{
 		myBulletIndex = 0;
 	}
@@ -132,7 +138,7 @@ void AIComponent::Shoot(Entity* aClosestPlayer)
 	myEntity.SetState(eEntityState::ATTACK);
 	SharedNetworkManager::GetInstance()->AddMessage<NetMessageEntityState>(NetMessageEntityState(myEntity.GetState(), myEntity.GetGID()));
 	myAttackAnimationTimeCurrent = myData.myAttackAnimationTime;
-	
+
 	myBullets[myBulletIndex]->GetComponent<ProjectileComponent>()->Activate(myEntity.GetOrientation());
 	myBulletIndex++;
 }

@@ -44,7 +44,7 @@ static std::string ConvertNetworkEnumToString(eNetMessageType aType)
 	case eNetMessageType::_COUNT:
 		DL_ASSERT("_COUNT not used as regular enum value");
 	default:
-		DL_ASSERT(CU::Concatenate("Unknown eNetMessageType: %i", aType));
+		DL_ASSERT(CU::Concatenate("Unknown eNetMessageType: %i", int(aType)));
 	}
 	return "NOT VALID";
 }

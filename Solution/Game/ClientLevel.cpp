@@ -134,19 +134,6 @@ void ClientLevel::Update(const float aDeltaTime)
 	myPlayer->Update(aDeltaTime);
 	myEmitterManager->UpdateEmitters(aDeltaTime, CU::Matrix44f());
 
-	if (CU::InputWrapper::GetInstance()->KeyDown(DIK_T))
-	{
-		ClientNetworkManager::GetInstance()->AddMessage(NetMessageOnHit(5, 17));
-	}
-
-	if (CU::InputWrapper::GetInstance()->KeyDown(DIK_J))
-	{
-		for (unsigned int i = 0; i < 8; ++i)
-		{
-			ClientNetworkManager::GetInstance()->AddMessage(NetMessageOnHit(5, i));
-		}
-	}
-
 	if (CU::InputWrapper::GetInstance()->KeyDown(DIK_I))
 	{
 		ClientNetworkManager::GetInstance()->AddMessage(NetMessageDisconnect(ClientNetworkManager::GetInstance()->GetGID()));

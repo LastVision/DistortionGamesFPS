@@ -15,7 +15,7 @@ namespace Prism
 	class SpriteProxy;
 }
 
-class FirstPersonRenderComponent : public Component
+class FirstPersonRenderComponent : public Component, public NetworkSubscriber
 {
 public:
 	FirstPersonRenderComponent(Entity& aEntity, Prism::Scene* aScene);
@@ -36,6 +36,8 @@ public:
 	static eComponentType GetTypeStatic();
 	eComponentType GetType() override;
 
+	void ReceiveNetworkMessage(const NetMessageOnHit& aMessage, const sockaddr_in& aSenderAddress) override;
+
 private:
 	void UpdateJoints();
 
@@ -43,6 +45,7 @@ private:
 	Prism::Instance* myModel;
 	GUI::GUIManager3D* my3DGUIManager;
 	Prism::SpriteProxy* myCrosshair;
+	Prism::SpriteProxy* myDamageIndicator;
 
 	Prism::SpriteProxy* myCoOpSprite;
 	CU::GrowingArray<CU::Vector3<float>> myCoOpPositions;
@@ -66,7 +69,7 @@ private:
 	CU::Matrix44<float> myUIJoint;
 	CU::Matrix44<float> myHealthJoint;
 	bool myFirstTimeActivateAnimation;
-
+	float myDisplayDamageIndicatorTimer;
 	CU::GrowingArray<ePlayerState> myIntentions;
 };
 
