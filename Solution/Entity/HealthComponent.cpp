@@ -5,6 +5,7 @@
 #include "HealthComponent.h"
 #include "HealthComponentData.h"
 #include "HealthNote.h"
+#include <NetMessageHealth.h>
 #include <NetMessageOnHit.h>
 #include <NetMessageEntityState.h>
 #include <NetMessageSetActive.h>
@@ -19,6 +20,10 @@ HealthComponent::HealthComponent(Entity& anEntity, const HealthComponentData& so
 	, myCurrentHealth(someData.myMaxHealth)
 {
 	SharedNetworkManager::GetInstance()->Subscribe(eNetMessageType::ON_HIT, this);
+	if (myEntity.GetSubType() == "playerserver")
+	{
+		SharedNetworkManager::GetInstance()->AddMessage<NetMessageHealth>(NetMessageHealth(someData.myMaxHealth, myCurrentHealth), myEntity.GetGID());
+	}
 }
 
 HealthComponent::~HealthComponent()
@@ -41,13 +46,17 @@ void HealthComponent::ReceiveNote(const CollisionNote& aNote)
 	if (aNote.myOther->GetComponent<TriggerComponent>()->GetTriggerType() == eTriggerType::HEALTH_PACK)
 	{
 		Heal(aNote.myOther->GetComponent<TriggerComponent>()->GetValue());
+
 	}
 }
 
 void HealthComponent::TakeDamage(int aDamage)
 {
 	myCurrentHealth -= aDamage;
-
+	if (myEntity.GetSubType() == "playerserver")
+	{
+		SharedNetworkManager::GetInstance()->AddMessage<NetMessageHealth>(NetMessageHealth(myData.myMaxHealth, myCurrentHealth), myEntity.GetGID());
+	}
 	if (myEntity.GetIsClient() == false)
 	{
 		SharedNetworkManager::GetInstance()->AddMessage(NetMessageOnHit(aDamage, myEntity.GetGID()));
@@ -82,6 +91,10 @@ void HealthComponent::Heal(int anAmount)
 	if (myCurrentHealth > myData.myMaxHealth)
 	{
 		myCurrentHealth = myData.myMaxHealth;
+	}
+	if (myEntity.GetSubType() == "playerserver")
+	{
+		SharedNetworkManager::GetInstance()->AddMessage<NetMessageHealth>(NetMessageHealth(myData.myMaxHealth, myCurrentHealth), myEntity.GetGID());
 	}
 }
 

@@ -11,6 +11,7 @@
 #include <Instance.h>
 #include "InputComponent.h"
 #include <ModelLoader.h>
+#include <NetMessageHealth.h>
 #include <Scene.h>
 #include "ShootingComponent.h"
 #include <SpriteProxy.h>
@@ -27,6 +28,8 @@ FirstPersonRenderComponent::FirstPersonRenderComponent(Entity& aEntity, Prism::S
 	, myFirstTimeActivateAnimation(false)
 	, myCoOpPositions(8)
 	, myDisplayDamageIndicatorTimer(0)
+	, myMaxHealth(10)
+	, myCurrentHealth(myMaxHealth)
 {
 	CU::Vector2<float> size(128.f, 128.f);
 	myCrosshair = Prism::ModelLoader::GetInstance()->LoadSprite("Data/Resource/Texture/UI/T_crosshair.dds", size, size * 0.5f);
@@ -78,6 +81,7 @@ FirstPersonRenderComponent::FirstPersonRenderComponent(Entity& aEntity, Prism::S
 		, shooting->GetWeapon(eWeaponType::GRENADE_LAUNCHER)->GetClipSize(), shooting->GetWeapon(eWeaponType::GRENADE_LAUNCHER)->GetAmmoInClip());
 
 	SharedNetworkManager::GetInstance()->Subscribe(eNetMessageType::ON_HIT, this);
+	SharedNetworkManager::GetInstance()->Subscribe(eNetMessageType::HEALTH, this);
 	
 }
 
@@ -85,6 +89,7 @@ FirstPersonRenderComponent::FirstPersonRenderComponent(Entity& aEntity, Prism::S
 FirstPersonRenderComponent::~FirstPersonRenderComponent()
 {
 	SharedNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::ON_HIT, this);
+	SharedNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::HEALTH, this);
 	SAFE_DELETE(myCrosshair);
 	SAFE_DELETE(myDamageIndicator);
 	SAFE_DELETE(my3DGUIManager);
@@ -102,8 +107,8 @@ void FirstPersonRenderComponent::Update(float aDelta)
 		myDisplayDamageIndicatorTimer -= aDelta;
 	}
 
-	my3DGUIManager->Update(myUIJoint, myHealthJoint, myEntity.GetComponent<HealthComponent>()->GetCurrentHealth()
-		, myEntity.GetComponent<HealthComponent>()->GetMaxHealth(), aDelta);
+	my3DGUIManager->Update(myUIJoint, myHealthJoint, myCurrentHealth
+		, myMaxHealth, aDelta);
 
 
 
@@ -264,12 +269,18 @@ void FirstPersonRenderComponent::AddIntention(ePlayerState aPlayerState, bool aC
 	myIntentions.Add(aPlayerState);
 }
 
-void FirstPersonRenderComponent::ReceiveNetworkMessage(const NetMessageOnHit& aMessage, const sockaddr_in& aSenderAddress)
+void FirstPersonRenderComponent::ReceiveNetworkMessage(const NetMessageOnHit& aMessage, const sockaddr_in&)
 {
 	if (aMessage.myGID == myEntity.GetGID())
 	{
 		myDisplayDamageIndicatorTimer = 0.5f;
 	}
+}
+
+void FirstPersonRenderComponent::ReceiveNetworkMessage(const NetMessageHealth& aMessage, const sockaddr_in&)
+{
+	myMaxHealth = aMessage.myMaxHealth;
+	myCurrentHealth = aMessage.myCurrentHealth;
 }
 
 void FirstPersonRenderComponent::UpdateJoints()

@@ -47,8 +47,7 @@ void ServerLevel::Init(const std::string& aMissionXMLPath)
 {
 	for each (const Connection& client in ServerNetworkManager::GetInstance()->GetClients())
 	{
-		Entity* newPlayer = EntityFactory::CreateEntity(client.myID, eEntityType::UNIT, "player", nullptr, false, { 0.f, 0.f, 0.f });
-		newPlayer->Reset();
+		Entity* newPlayer = EntityFactory::CreateEntity(client.myID, eEntityType::UNIT, "playerserver", nullptr, false, { 0.f, 0.f, 0.f });
 		newPlayer->GetComponent<NetworkComponent>()->SetPlayer(true);
 		myPlayers.Add(newPlayer);
 

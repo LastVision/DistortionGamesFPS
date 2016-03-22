@@ -29,7 +29,7 @@ PollingStation::~PollingStation()
 
 void PollingStation::AddEntity(Entity* anEntity)
 {
-	if (anEntity->GetSubType() == "player")
+	if (anEntity->GetSubType() == "playerserver")
 	{
 		DL_ASSERT_EXP(myPlayers.Find(anEntity) == myPlayers.FoundNone, "Can't add player twice.");
 		myPlayers.Add(anEntity);
@@ -54,7 +54,7 @@ Entity* PollingStation::FindClosestEntityToEntity(const Entity& anEntity)
 
 	CU::GrowingArray<Entity*>& entities = myPlayers;
 
-	if (anEntity.GetSubType() == "player")
+	if (anEntity.GetSubType() == "playerserver")
 	{
 		entities = myEnemies;
 	}
