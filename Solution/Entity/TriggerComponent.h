@@ -14,6 +14,8 @@ public:
 
 	void ReceiveNote(const CollisionNote& aNote) override;
 
+	void Activate();
+
 	static eComponentType GetTypeStatic();
 	eComponentType GetType() override;
 
@@ -27,10 +29,13 @@ public:
 private:
 
 	const TriggerComponentData& myData;
-	int myRespawnValue;
 	eTriggerType myTriggerType;
 
 	bool myHasTriggered;
+	int myPlayersInside;
+	
+	int myRespawnValue;
+	float myRespawnTime;
 };
 
 inline eComponentType TriggerComponent::GetTypeStatic()
