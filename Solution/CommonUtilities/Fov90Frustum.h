@@ -12,7 +12,7 @@ namespace CU
 			Fov90Frustum(float aNear, float aFar);
 			bool Inside(const Vector3<float>& aPos, float aRadius) const;
 			bool Inside(const Vector3<float>& aPos, float aRadius, int& aFailPlaneOut) const;
-			//bool AABBInside(const Vector3<float>& someMinValues, const Vector3<float>& someMaxValues) const;
+			bool CheckAABBInside(const CU::Vector3<float>& someMinValues, const CU::Vector3<float>& someMaxValues) const;
 			void Resize(const CU::Vector3<float>& aBottomLeft, const CU::Vector3<float>& aTopRight);
 			void ResizeLeft(const CU::Vector3<float>& aLeft);
 			void ResizeRight(const CU::Vector3<float>& aRight);
@@ -20,14 +20,18 @@ namespace CU
 
 			void OnResize(float aNearPlane, float aFarPlane);
 
+			void CalcWorldPlanes(const CU::Matrix44<float>& anOrientation);
+
 			CU::PlaneVolume<float> myVolume;
+			CU::PlaneVolume<float> myWorldVolume;
 			float myNear;
 			float myFar;
 		};
 	}
 
-	inline Intersection::Fov90Frustum::Fov90Frustum(float, float aFar) :
-		myVolume(CU::GrowingArray<CU::Plane<float>>())
+	inline Intersection::Fov90Frustum::Fov90Frustum(float, float aFar)
+		: myVolume(CU::GrowingArray<CU::Plane<float>>())
+		, myWorldVolume(CU::GrowingArray<CU::Plane<float>>())
 	{
 		myNear = 0;
 		myFar = aFar;
@@ -44,6 +48,7 @@ namespace CU
 		CU::Plane<float> down(CU::Vector3<float>(0, 0, 0), CU::Vector3<float>(0, -rotated45, -rotated45));
 
 		myVolume.myPlanes.Init(6);
+		myWorldVolume.myPlanes.Init(6);
 
 		myVolume.AddPlane(right);
 		myVolume.AddPlane(left);
@@ -69,6 +74,11 @@ namespace CU
 			return true;
 		}
 		return false;
+	}
+
+	inline bool CU::Intersection::Fov90Frustum::CheckAABBInside(const CU::Vector3<float>& someMinValues, const CU::Vector3<float>& someMaxValues) const
+	{
+		return myWorldVolume.CheckAABBInside(someMinValues, someMaxValues);
 	}
 
 	//inline bool CU::Intersection::Fov90Frustum::AABBInside(const Vector3<float>& someMinValues, const Vector3<float>& someMaxValues) const
@@ -134,7 +144,14 @@ namespace CU
 		CU::Vector3<float> x(1.f, 0, 0);
 		CU::Vector3<float> y(0, 1.f, 0);
 		CU::Vector3<float> z(0, 0, 1.f);
-		myVolume.myPlanes[1].InitWith3Points(zero, aLeft, -y);
+		CU::Plane<float> newPlane;
+		newPlane.InitWith3Points(zero, aLeft, -y);
+
+		if (newPlane.myABCD.z > myVolume.myPlanes[1].myABCD.z)
+		{
+			myVolume.myPlanes[1] = newPlane;
+		}
+		//myVolume.myPlanes[1].InitWith3Points(zero, aLeft, -y);
 	}
 
 	inline void CU::Intersection::Fov90Frustum::ResizeRight(const CU::Vector3<float>& aRight)
@@ -144,7 +161,15 @@ namespace CU
 		CU::Vector3<float> x(1.f, 0, 0);
 		CU::Vector3<float> y(0, 1.f, 0);
 		CU::Vector3<float> z(0, 0, 1.f);
-		myVolume.myPlanes[0].InitWith3Points(zero, aRight, y);
+
+		CU::Plane<float> newPlane;
+		newPlane.InitWith3Points(zero, aRight, y);
+
+		if (newPlane.myABCD.z > myVolume.myPlanes[0].myABCD.z)
+		{
+			myVolume.myPlanes[0] = newPlane;
+		}
+		//myVolume.myPlanes[0].InitWith3Points(zero, aRight, y);
 	}
 
 	inline void CU::Intersection::Fov90Frustum::OnResize(float, float aFarPlane)
@@ -169,5 +194,10 @@ namespace CU
 		myVolume.AddPlane(down);
 		myVolume.AddPlane(nearPlane);
 		myVolume.AddPlane(farPlane);
+	}
+
+	inline void CU::Intersection::Fov90Frustum::CalcWorldPlanes(const CU::Matrix44<float>& anOrientation)
+	{
+		myWorldVolume.CalcWorldPlanes(myVolume, anOrientation);
 	}
 }

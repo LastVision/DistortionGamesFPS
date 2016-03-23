@@ -16,16 +16,19 @@ namespace Prism
 		const CU::Vector3<float>& GetCornerMax() const;
 
 		void Update();
-		void Resize(Portal* aPortal, const CU::Matrix44<float>& aProjection, bool aDebugDraw);
+		void Resize(Portal* aPortal, const CU::Matrix44<float>& aCameraOrientation, bool aDebugDraw);
 
 		bool Inside(const CU::Vector3<float>& aPosition, float aRadius) const;
 		bool Inside(const CU::Vector3<float>& aPosition, float aRadius, int& aFailPlaneOut, bool& aPointBehind) const;
+		bool CheckAABBInside(const CU::Vector3<float>& someMinValues, const CU::Vector3<float>& someMaxValues) const;
 
 		void OnResize(float aNearPlane, float aFarPlane);
 
 		const CU::Matrix44<float>& GetOrientation() const;
 		CU::Vector3<float> GetBottomLeft() const;
 		CU::Vector3<float> GetTopRight() const;
+
+		void CalcWorldPlanes();
 
 	private:
 		void operator=(Frustum&) = delete;

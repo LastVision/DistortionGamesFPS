@@ -14,7 +14,7 @@ void Prism::Frustum::Update()
 	myOrientationInverted = CU::InverseSimple(myOrientation);
 }
 
-void Prism::Frustum::Resize(Portal* aPortal, const CU::Matrix44<float>& aProjection, bool aDebugDraw)
+void Prism::Frustum::Resize(Portal* aPortal, const CU::Matrix44<float>& aCameraOrientation, bool aDebugDraw)
 {
 	//bool resize(true);
 	//for (int i = 0; i < 4; ++i)
@@ -41,29 +41,52 @@ void Prism::Frustum::Resize(Portal* aPortal, const CU::Matrix44<float>& aProject
 		int leftId(0);
 		int rightId(0);
 
-		CU::Vector4<float> left(CU::Vector4<float>(aPortal->GetPoint(0), 1.f) * myOrientationInverted);// *aProjection);
-		CU::Vector4<float> right(CU::Vector4<float>(aPortal->GetPoint(0), 1.f) * myOrientationInverted);// *aProjection);
 
-		left = left * aProjection;
-		right = right * aProjection;
+		//left = left * aProjection;
+		//right = right * aProjection;
 
-		left /= left.w;
-		right /= right.w;
+		//left /= left.w;
+		//right /= right.w;
 
-		for (int i = 1; i < 4; ++i)
+		//CU::Vector4<float> left;// *aProjection);
+		//CU::Vector4<float> right;// *aProjection);
+		float minAngle = FLT_MAX;
+		float maxAngle = -FLT_MAX;
+
+		for (int i = 0; i < 4; ++i)
 		{
-			CU::Vector4<float> current(CU::Vector4<float>(aPortal->GetPoint(i), 1.f) * myOrientationInverted);
-			current = current * aProjection;
-			current /= current.w;
-			if (current.x < left.x)
+			//CU::Vector4<float> current(CU::Vector4<float>(aPortal->GetPoint(i), 1.f) * myOrientationInverted);
+
+			//CU::Vec
+			//current = current * aProjection;
+			//current /= current.w;
+
+			static CU::Vector3<float> y(0, 1.f, 0);
+			static CU::Vector3<float> z(0, 0, 1.f);
+
+			CU::Vector3<float> toPoint(aPortal->GetPoint(i) - myOrientation.GetPos());
+			CU::Normalize(toPoint);
+
+			CU::Vector3<float> forward(myOrientation.GetForward());
+			//forward.y = 0;
+			//CU::Normalize(forward);
+
+			float angle = acosf(CU::Dot(forward, toPoint));
+			CU::Vector3<float> cross = CU::Cross(forward, toPoint);
+			if (CU::Dot(y, cross) < 0)
 			{
-				leftId = i;
-				left = current;
+				angle = -angle;
 			}
-			if (current.x > right.x)
+
+			if (angle < minAngle)
 			{
+				minAngle = angle;
+				leftId = i;
+			}
+			if (angle > maxAngle)
+			{
+				maxAngle = angle;
 				rightId = i;
-				right = current;
 			}
 		}
 
@@ -120,8 +143,18 @@ bool Prism::Frustum::Inside(const CU::Vector3<float>& aPosition, float aRadius, 
 	return myIntersectionFrustum.Inside({ position.x, position.y, position.z }, aRadius, aFailPlaneOut);
 }
 
+bool Prism::Frustum::CheckAABBInside(const CU::Vector3<float>& someMinValues, const CU::Vector3<float>& someMaxValues) const
+{
+	return myIntersectionFrustum.CheckAABBInside(someMinValues, someMaxValues);
+}
+
 void Prism::Frustum::OnResize(float aNearPlane, float aFarPlane)
 {
 	myIntersectionFrustum.OnResize(aNearPlane, aFarPlane);
 	Update();
+}
+
+void Prism::Frustum::CalcWorldPlanes()
+{
+	myIntersectionFrustum.CalcWorldPlanes(myOrientation);
 }
