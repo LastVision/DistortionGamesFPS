@@ -117,7 +117,7 @@ void PollingStation::HasDied(Entity* anEntity)
 	}
 	else
 	{
-		DL_ASSERT("No handle for enemy death yet.");
+		//DL_ASSERT("No handle for enemy death yet.");
 		//handle dead enemies here
 	}
 }
