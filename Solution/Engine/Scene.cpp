@@ -73,13 +73,10 @@ namespace Prism
 		myRoomManager->Add(aRoom);
 	}
 
-	void Scene::AddInstance(Instance* aInstance, bool aAlwaysRender)
+	void Scene::AddInstance(Instance* aInstance, eObjectRoomType aRoomType)
 	{
-		if (myRoomManager == nullptr)
-		{
-			int apa = 5;
-		}
-		myRoomManager->Add(aInstance, aAlwaysRender);
+		DL_ASSERT_EXP(myRoomManager != nullptr, "No Room manager");
+		myRoomManager->Add(aInstance, aRoomType);
 	}
 
 	void Scene::AddLight(DirectionalLight* aLight)

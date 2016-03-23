@@ -223,7 +223,9 @@ void SharedNetworkManager::SendToSubscriber(const T& aMessage, const sockaddr_in
 		&& static_cast<int>(aMessage.myID) != static_cast<int>(eNetMessageType::POSITION)
 		&& static_cast<int>(aMessage.myID) != static_cast<int>(eNetMessageType::HEALTH)
 		&& static_cast<int>(aMessage.myID) != static_cast<int>(eNetMessageType::ENTITY_STATE)
-		&& static_cast<int>(aMessage.myID) != static_cast<int>(eNetMessageType::SET_ACTIVE))
+		&& static_cast<int>(aMessage.myID) != static_cast<int>(eNetMessageType::SET_ACTIVE)
+		&& static_cast<int>(aMessage.myID) != static_cast<int>(eNetMessageType::ON_DEATH)
+		&& static_cast<int>(aMessage.myID) != static_cast<int>(eNetMessageType::ON_HIT))
 	{
 		DL_ASSERT("Network message sent without subscriber.");
 	}

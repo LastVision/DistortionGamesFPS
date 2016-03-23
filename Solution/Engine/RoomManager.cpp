@@ -77,9 +77,10 @@ namespace Prism
 		//}
 	}
 
-	void RoomManager::Add(Instance* anInstance, bool anAlwaysRender)
+	void RoomManager::Add(Instance* anInstance, eObjectRoomType aRoomType)
 	{
-		if (anAlwaysRender == true)
+		DL_ASSERT_EXP(aRoomType != eObjectRoomType::NONE, "Can't add object room type NONE to Room Manager.");
+		if (aRoomType != eObjectRoomType::STATIC)
 		{
 			myAlwaysRenderInstances.Add(anInstance);
 		}
