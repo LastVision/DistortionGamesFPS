@@ -67,13 +67,16 @@ void HealthComponent::TakeDamage(int aDamage)
 	if (myCurrentHealth <= 0)
 	{
 		myCurrentHealth = 0;
-		//myEntity.Kill();
 
 		if (myEntity.GetIsClient() == false)
 		{	
 			if (myEntity.GetSubType() == "playerserver")
 			{
 				PostMaster::GetInstance()->SendMessage<RespawnTriggerMessage>(RespawnTriggerMessage(myEntity.GetGID()));
+			}
+			else
+			{
+				PostMaster::GetInstance()->SendMessage(EnemyKilledMessage());
 			}
 			myEntity.SetState(eEntityState::DIE);
 			SharedNetworkManager::GetInstance()->AddMessage<NetMessageEntityState>(NetMessageEntityState(myEntity.GetState(), myEntity.GetGID()));
