@@ -58,6 +58,7 @@ enum class eTriggerType : int
 	UNLOCK,
 	LOCK,
 	MISSION,
+	RESPAWN,
 	_COUNT,
 };
 
