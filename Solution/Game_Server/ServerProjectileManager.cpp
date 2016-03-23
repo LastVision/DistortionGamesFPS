@@ -43,3 +43,13 @@ void ServerProjectileManager::CreateBullets(Prism::Scene* aScene)
 		myBullets.Add(bullet);
 	}
 }
+
+void ServerProjectileManager::CreateGrenades(Prism::Scene* aScene)
+{
+	for (int i = 0; i < myGrenades.GetCapacity(); ++i)
+	{
+		Entity* grenade = EntityFactory::CreateEntity((60000 + i), eEntityType::GRENADE, "server", aScene, false, CU::Vector3<float>(0, -10.f, 0));
+		grenade->Kill();
+		myGrenades.Add(grenade);
+	}
+}

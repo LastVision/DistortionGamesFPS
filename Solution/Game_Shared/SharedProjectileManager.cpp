@@ -7,6 +7,10 @@ SharedProjectileManager* SharedProjectileManager::myInstance = nullptr;
 SharedProjectileManager::SharedProjectileManager()
 	: myBullets(128)
 	, myLiveBullets(128)
+	, myGrenades(128)
+	, myLiveGrenades(128)
+	, myBulletIndex(0)
+	, myGrenadeIndex(0)
 {
 }
 
@@ -14,6 +18,8 @@ SharedProjectileManager::~SharedProjectileManager()
 {
 	myLiveBullets.RemoveAll();
 	myBullets.DeleteAll();
+	myGrenades.DeleteAll();
+	myLiveGrenades.RemoveAll();
 }
 
 SharedProjectileManager* SharedProjectileManager::GetInstance()
@@ -53,4 +59,29 @@ void SharedProjectileManager::Update(float aDeltaTime)
 			myLiveBullets.RemoveCyclicAtIndex(i);
 		}
 	}
+
+	for (int i = myLiveGrenades.Size() - 1; i >= 0; --i)
+	{
+		if (myLiveGrenades[i]->IsAlive() == true)
+		{
+			myLiveGrenades[i]->Update(aDeltaTime);
+		}
+		else
+		{
+			myLiveGrenades.RemoveCyclicAtIndex(i);
+		}
+	}
+}
+
+Entity* SharedProjectileManager::RequestGrenade()
+{
+	if (myGrenadeIndex >= myGrenades.Size())
+	{
+		myGrenadeIndex = 0;
+	}
+
+	Entity* toReturn = myGrenades[myGrenadeIndex];
+	++myGrenadeIndex;
+	myLiveGrenades.Add(toReturn);
+	return toReturn;
 }
