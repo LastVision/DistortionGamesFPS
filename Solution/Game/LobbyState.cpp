@@ -8,9 +8,9 @@
 #include <InputWrapper.h>
 #include "LobbyState.h"
 #include <NetMessageDisconnect.h>
-#include <NetMessageStartGame.h>
+#include <NetMessageLoadLevel.h>
 #include <NetMessageRequestLevel.h>
-#include <NetMessageRequestStartGame.h>
+#include <NetMessageRequestStartLevel.h>
 #include <OnClickMessage.h>
 #include <OnRadioButtonMessage.h>
 #include <PostMaster.h>
@@ -28,13 +28,13 @@ LobbyState::~LobbyState()
 	SAFE_DELETE(myGUIManager);
 	myCursor = nullptr;
 	PostMaster::GetInstance()->UnSubscribe(eMessageType::ON_CLICK, this);
-	SharedNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::START_GAME, this);
+	SharedNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::LOAD_LEVEL, this);
 }
 
 void LobbyState::InitState(StateStackProxy* aStateStackProxy, GUI::Cursor* aCursor)
 {
 	PostMaster::GetInstance()->Subscribe(eMessageType::ON_CLICK, this);
-	SharedNetworkManager::GetInstance()->Subscribe(eNetMessageType::START_GAME, this);
+	SharedNetworkManager::GetInstance()->Subscribe(eNetMessageType::LOAD_LEVEL, this);
 	myCursor = aCursor;
 	myIsActiveState = true;
 	myIsLetThrough = false;
@@ -75,12 +75,14 @@ const eStateStatus LobbyState::Update(const float& aDeltaTime)
 
 	if (CU::InputWrapper::GetInstance()->KeyDown(DIK_SPACE) == true)
 	{
-		ClientNetworkManager::GetInstance()->AddMessage(NetMessageRequestStartGame());
+		ClientNetworkManager::GetInstance()->AddMessage(NetMessageRequestStartLevel());
 	}
 
 	if (myLevelToStart != -1)
 	{
 		PostMaster::GetInstance()->UnSubscribe(eMessageType::ON_CLICK, this);
+		SharedNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::LOAD_LEVEL, this);
+
 		SET_RUNTIME(false);
 		myStateStack->PushSubGameState(new InGameState(myLevelToStart));
 	}
@@ -108,7 +110,7 @@ void LobbyState::ReceiveMessage(const OnClickMessage& aMessage)
 		switch (aMessage.myEvent)
 		{
 		case eOnClickEvent::START_GAME:
-			ClientNetworkManager::GetInstance()->AddMessage(NetMessageRequestStartGame());
+			ClientNetworkManager::GetInstance()->AddMessage(NetMessageRequestStartLevel());
 			break;
 		default:
 			DL_ASSERT("Unknown event.");
@@ -124,7 +126,7 @@ void LobbyState::ReceiveMessage(const OnRadioButtonMessage& aMessage)
 	ClientNetworkManager::GetInstance()->AddMessage(NetMessageRequestLevel(aMessage.myID));
 }
 
-void LobbyState::ReceiveNetworkMessage(const NetMessageStartGame& aMessage, const sockaddr_in&)
+void LobbyState::ReceiveNetworkMessage(const NetMessageLoadLevel& aMessage, const sockaddr_in&)
 {
 	myLevelToStart = aMessage.myLevelID;
 }

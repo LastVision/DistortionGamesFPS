@@ -45,7 +45,7 @@
 #include <EmitterMessage.h>
 
 #include <NetworkComponent.h>
-
+#include "ClientProjectileManager.h"
 ClientLevel::ClientLevel()
 	: myInstanceOrientations(16)
 	, myInstances(16)
@@ -57,22 +57,18 @@ ClientLevel::ClientLevel()
 	ClientNetworkManager::GetInstance()->Subscribe(eNetMessageType::ON_DEATH, this);
 	ClientNetworkManager::GetInstance()->Subscribe(eNetMessageType::SET_ACTIVE, this);
 	ClientNetworkManager::GetInstance()->Subscribe(eNetMessageType::ENTITY_STATE, this);
-
+	ClientProjectileManager::Create();
 	myScene = new Prism::Scene();
 }
 
 ClientLevel::~ClientLevel()
 {
-	if (ClientNetworkManager::GetInstance()->GetGID() > 0)
-	{
-		ClientNetworkManager::GetInstance()->AddMessage(NetMessageDisconnect(ClientNetworkManager::GetInstance()->GetGID()));
-	}
 #ifdef THREAD_PHYSICS
 	Prism::PhysicsInterface::GetInstance()->ShutdownThread();
 #endif
 
 	SAFE_DELETE(myEmitterManager);
-
+	ClientProjectileManager::Destroy();
 	ClientNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::ON_DEATH, this);
 	ClientNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::SET_ACTIVE, this);
 	ClientNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::ENTITY_STATE, this);
@@ -103,6 +99,8 @@ void ClientLevel::Init(const std::string&)
 	Prism::Audio::AudioInterface::GetInstance()->PostEvent("PlayBackground", 0);
 	Prism::Audio::AudioInterface::GetInstance()->PostEvent("PlayFirstLayer", 0);
 	Prism::Audio::AudioInterface::GetInstance()->PostEvent("PlaySecondLayer", 0);
+	ClientProjectileManager::GetInstance()->CreateBullets(myScene);
+
 }
 
 void ClientLevel::SetMinMax(const CU::Vector3<float>& aMinPoint, const CU::Vector3<float>& aMaxPoint)
@@ -122,8 +120,15 @@ void ClientLevel::Update(const float aDeltaTime)
 		myDeferredRenderer->GenerateSHData(myScene, myMinPoint, myMaxPoint);
 		RESET_RUNTIME;
 	}
-
-	
+	ClientProjectileManager::GetInstance()->Update(aDeltaTime);
+	//if (CU::InputWrapper::GetInstance()->KeyDown(DIK_U))
+	//{
+	//	myActiveEnemies.GetLast()->SetState(eEntityState::WALK);
+	//}
+	//if (CU::InputWrapper::GetInstance()->KeyDown(DIK_Y))
+	//{
+	//	myActiveEnemies.GetLast()->SetState(eEntityState::ATTACK);
+	//}
 
 	SharedLevel::Update(aDeltaTime);
 	myPlayer->GetComponent<FirstPersonRenderComponent>()->UpdateCoOpPositions(myPlayers);
@@ -159,14 +164,14 @@ void ClientLevel::Render()
 {
 	if (myInitDone == true)
 	{
-		myDeferredRenderer->Render(myScene);
-		Prism::DebugDrawer::GetInstance()->RenderLinesToScreen(*myPlayer->GetComponent<InputComponent>()->GetCamera());
-		//myScene->Render();
-		//myDeferredRenderer->Render(myScene);
-		myEmitterManager->RenderEmitters();
-		myPlayer->GetComponent<FirstPersonRenderComponent>()->Render();
-		//myPlayer->GetComponent<ShootingComponent>()->Render();
-	}
+	myDeferredRenderer->Render(myScene);
+	Prism::DebugDrawer::GetInstance()->RenderLinesToScreen(*myPlayer->GetComponent<InputComponent>()->GetCamera());
+	//myScene->Render();
+	//myDeferredRenderer->Render(myScene);
+	myEmitterManager->RenderEmitters();
+	myPlayer->GetComponent<FirstPersonRenderComponent>()->Render();
+	//myPlayer->GetComponent<ShootingComponent>()->Render();
+}
 }
 
 void ClientLevel::ReceiveNetworkMessage(const NetMessageOnDeath& aMessage, const sockaddr_in&)
@@ -185,6 +190,19 @@ void ClientLevel::ReceiveNetworkMessage(const NetMessageOnDeath& aMessage, const
 void ClientLevel::ReceiveNetworkMessage(const NetMessageSetActive& aMessage, const sockaddr_in&)
 {
 	bool useEntityMap = true;
+
+	if (aMessage.myGID == myPlayer->GetGID())
+	{
+		if (aMessage.myShouldActivate == true)
+		{
+			myPlayer->GetComponent<PhysicsComponent>()->Wake();
+		}
+		else
+		{
+			myPlayer->GetComponent<PhysicsComponent>()->Sleep();
+		}
+		return;
+	}
 
 	if (myActiveEntitiesMap.find(aMessage.myGID) == myActiveEntitiesMap.end())
 	{
@@ -241,6 +259,14 @@ void ClientLevel::ReceiveNetworkMessage(const NetMessageEntityState& aMessage, c
 {
 	if (aMessage.myGID == myPlayer->GetGID())
 	{
+		if (static_cast<eEntityState>(aMessage.myEntityState) == eEntityState::DIE)
+		{
+			myPlayer->SetState(static_cast<eEntityState>(aMessage.myEntityState));
+		}
+		else if (myPlayer->GetState() == eEntityState::DIE)
+		{
+			myPlayer->SetState(static_cast<eEntityState>(aMessage.myEntityState));
+		}
 		return;
 	}
 

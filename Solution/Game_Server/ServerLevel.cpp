@@ -7,7 +7,6 @@
 #include <EntityFactory.h>
 #include <HealthComponent.h>
 #include "MissionManager.h"
-#include <NetMessageRequestConnect.h>
 #include <NetMessageLevelLoaded.h>
 #include <NetMessageSetActive.h>
 #include <NetMessageHealthPack.h>
@@ -18,26 +17,37 @@
 #include <BulletComponent.h>
 #include "ServerNetworkManager.h"
 #include <TriggerComponent.h>
+#include <PollingStation.h>
 #include <PostMaster.h>
 #include <SetActiveMessage.h>
+#include <RespawnTriggerMessage.h>
 
-#include <PollingStation.h>
+#include "ServerProjectileManager.h"
+
 ServerLevel::ServerLevel()
 	: myLoadedClients(16)
 	, myAllClientsLoaded(false)
 	, myNextLevel(-1)
+	, myRespawnTriggers(16)
 {
 	Prism::PhysicsInterface::Create(std::bind(&ServerLevel::CollisionCallback, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3), true);
 	ServerNetworkManager::GetInstance()->Subscribe(eNetMessageType::ON_CONNECT, this);
 	ServerNetworkManager::GetInstance()->Subscribe(eNetMessageType::LEVEL_LOADED, this);
 	ServerNetworkManager::GetInstance()->Subscribe(eNetMessageType::ENTITY_STATE, this);
 	PostMaster::GetInstance()->Subscribe(eMessageType::SET_ACTIVE, this);
+	ServerProjectileManager::Create();
+	PostMaster::GetInstance()->Subscribe(eMessageType::RESPAWN_TRIGGER, this);
+
 
 	ServerNetworkManager::GetInstance()->Subscribe(eNetMessageType::HEALTH_PACK, this);
 }
 
 ServerLevel::~ServerLevel()
 {
+#ifdef THREAD_PHYSICS
+	Prism::PhysicsInterface::GetInstance()->ShutdownThread();
+#endif
+	ServerProjectileManager::Destroy();
 	PollingStation::Destroy();
 	SAFE_DELETE(myMissionManager);
 	ServerNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::ON_CONNECT, this);
@@ -45,20 +55,29 @@ ServerLevel::~ServerLevel()
 	ServerNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::ENTITY_STATE, this);
 
 	PostMaster::GetInstance()->UnSubscribe(eMessageType::SET_ACTIVE, this);
+	PostMaster::GetInstance()->UnSubscribe(eMessageType::RESPAWN_TRIGGER, this);
 
 	ServerNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::HEALTH_PACK, this);
 }
 
 void ServerLevel::Init(const std::string& aMissionXMLPath)
 {
-	for each (const Connection& client in ServerNetworkManager::GetInstance()->GetClients())
+	for (int i = 0; i < ServerNetworkManager::GetInstance()->GetClients().Size(); ++i)
 	{
+		const Connection& client = ServerNetworkManager::GetInstance()->GetClients()[i];
+
 		Entity* newPlayer = EntityFactory::CreateEntity(client.myID, eEntityType::UNIT, "playerserver", nullptr, false, { 0.f, 0.f, 0.f });
 		newPlayer->GetComponent<NetworkComponent>()->SetPlayer(true);
 		myPlayers.Add(newPlayer);
 
+		Entity* newRespawnTrigger = EntityFactory::CreateEntity(99983 + i, eEntityType::TRIGGER, "respawn", nullptr, false, { 0.f, -1.f, 0.f });
+		newRespawnTrigger->GetComponent<TriggerComponent>()->SetRespawnValue(i + 1);
+		myRespawnTriggers.Add(newRespawnTrigger);
+
 		myMissionManager = new MissionManager(aMissionXMLPath);
 	}
+	ServerProjectileManager::GetInstance()->CreateBullets(nullptr);
+
 }
 
 void ServerLevel::Update(const float aDeltaTime)
@@ -67,6 +86,7 @@ void ServerLevel::Update(const float aDeltaTime)
 	{
 		__super::Update(aDeltaTime);
 		myMissionManager->Update(aDeltaTime);
+		ServerProjectileManager::GetInstance()->Update(aDeltaTime);
 		//	PollingStation::GetInstance()->FindClosestEntityToEntity(*myPlayers[0]);
 
 		Prism::PhysicsInterface::GetInstance()->EndFrame();
@@ -97,17 +117,6 @@ void ServerLevel::CollisionCallback(PhysicsComponent* aFirst, PhysicsComponent* 
 		first.Kill();
 		break;
 	}
-}
-
-void ServerLevel::ReceiveNetworkMessage(const NetMessageRequestConnect&, const sockaddr_in&)
-{
-	bool isRunTime = Prism::MemoryTracker::GetInstance()->GetRunTime();
-	Prism::MemoryTracker::GetInstance()->SetRunTime(false);
-	Entity* newPlayer = EntityFactory::CreateEntity(ServerNetworkManager::GetInstance()->GetLastJoinedID(), eEntityType::UNIT, "player", nullptr, false, { 0.f, 0.f, 0.f });
-	newPlayer->Reset();
-	newPlayer->GetComponent<NetworkComponent>()->SetPlayer(true);
-	myPlayers.Add(newPlayer);
-	Prism::MemoryTracker::GetInstance()->SetRunTime(isRunTime);
 }
 
 void ServerLevel::ReceiveNetworkMessage(const NetMessageLevelLoaded& aMessage, const sockaddr_in&)
@@ -150,12 +159,18 @@ void ServerLevel::ReceiveMessage(const SetActiveMessage& aMessage)
 	}
 }
 
+void ServerLevel::ReceiveMessage(const RespawnTriggerMessage& aMessage)
+{
+	myRespawnTriggers[aMessage.myGID - 1]->GetComponent<PhysicsComponent>()->AddToScene();
+	myRespawnTriggers[aMessage.myGID - 1]->GetComponent<PhysicsComponent>()->TeleportToPosition(myPlayers[aMessage.myGID - 1]->GetOrientation().GetPos());
+}
+
 void ServerLevel::HandleTrigger(Entity& aFirstEntity, Entity& aSecondEntity, bool aHasEntered)
 {
 	TriggerComponent* firstTrigger = aFirstEntity.GetComponent<TriggerComponent>();
 	if (aHasEntered == true)
 	{
-		if (aSecondEntity.GetType() == eEntityType::UNIT && aSecondEntity.GetSubType() == "player")
+		if (aSecondEntity.GetType() == eEntityType::UNIT && aSecondEntity.GetSubType() == "playerserver")
 		{
 			switch (firstTrigger->GetTriggerType())
 			{
@@ -175,6 +190,13 @@ void ServerLevel::HandleTrigger(Entity& aFirstEntity, Entity& aSecondEntity, boo
 			case eTriggerType::LEVEL_CHANGE:
 				myNextLevel = firstTrigger->GetValue();
 				break;
+			case eTriggerType::RESPAWN:
+				myPlayers[firstTrigger->GetRespawnValue() - 1]->GetComponent<HealthComponent>()->Heal(myPlayers[firstTrigger->GetRespawnValue() - 1]->GetComponent<HealthComponent>()->GetMaxHealth());
+				myPlayers[firstTrigger->GetRespawnValue() - 1]->SetState(eEntityState::IDLE);
+				SharedNetworkManager::GetInstance()->AddMessage<NetMessageEntityState>(NetMessageEntityState(eEntityState::IDLE, firstTrigger->GetRespawnValue()), firstTrigger->GetRespawnValue() - 1);
+				myRespawnTriggers[firstTrigger->GetRespawnValue() - 1]->GetComponent<PhysicsComponent>()->RemoveFromScene();
+				myPlayers[firstTrigger->GetRespawnValue() - 1]->GetComponent<PhysicsComponent>()->Wake();
+				break;
 			default:
 				DL_ASSERT("Unknown trigger type.");
 				break;
@@ -182,7 +204,7 @@ void ServerLevel::HandleTrigger(Entity& aFirstEntity, Entity& aSecondEntity, boo
 			aSecondEntity.SendNote<CollisionNote>(CollisionNote(&aFirstEntity));
 			aFirstEntity.SendNote<CollisionNote>(CollisionNote(&aSecondEntity));
 		}
-		else if (aSecondEntity.GetType() == eEntityType::UNIT && aSecondEntity.GetSubType() != "player")
+		else if (aSecondEntity.GetType() == eEntityType::UNIT && aSecondEntity.GetSubType() != "playerserver")
 		{
 			if (myMissionManager->GetCurrentMissionType() == eMissionType::DEFEND)
 			{
@@ -192,7 +214,7 @@ void ServerLevel::HandleTrigger(Entity& aFirstEntity, Entity& aSecondEntity, boo
 	}
 	else
 	{
-		if (aSecondEntity.GetType() == eEntityType::UNIT && aSecondEntity.GetSubType() != "player")
+		if (aSecondEntity.GetType() == eEntityType::UNIT && aSecondEntity.GetSubType() != "playerserver")
 		{
 			if (myMissionManager->GetCurrentMissionType() == eMissionType::DEFEND)
 			{

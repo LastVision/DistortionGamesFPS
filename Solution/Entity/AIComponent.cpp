@@ -11,6 +11,7 @@
 #include "EntityFactory.h"
 #include <iostream>
 #include <NetMessageEnemyShooting.h>
+#include <SharedProjectileManager.h>
 
 AIComponent::AIComponent(Entity& anEntity, const AIComponentData& aData, CU::Matrix44<float>& anOrientation)
 	: Component(anEntity)
@@ -22,12 +23,6 @@ AIComponent::AIComponent(Entity& anEntity, const AIComponentData& aData, CU::Mat
 	, myShootTimer(2.f)
 	, myAttackAnimationTimeCurrent(0.f)
 {
-	for (int i = 0; i < myBullets.GetCapacity(); ++i)
-	{
-		Entity* bullet = EntityFactory::CreateEntity((50000 + i), eEntityType::BULLET, nullptr, false, CU::Vector3<float>(0, -10.f, 0));
-		bullet->Kill();
-		myBullets.Add(bullet);
-	}
 }
 
 AIComponent::~AIComponent()
@@ -131,16 +126,12 @@ void AIComponent::SetOrientation(const CU::Vector3<float>& aLookInDirection)
 
 void AIComponent::Shoot(Entity* aClosestPlayer)
 {
-	if (myBulletIndex > myBullets.Size() - 1)
-	{
-		myBulletIndex = 0;
-	}
+	aClosestPlayer;
 
 	myEntity.SetState(eEntityState::ATTACK);
 	SharedNetworkManager::GetInstance()->AddMessage<NetMessageEntityState>(NetMessageEntityState(myEntity.GetState(), myEntity.GetGID()));
-	SharedNetworkManager::GetInstance()->AddMessage<NetMessageEnemyShooting>(NetMessageEnemyShooting(myBullets[myBulletIndex]->GetGID()));
+	Entity* requestedBullet = SharedProjectileManager::GetInstance()->RequestBullet();
+	SharedNetworkManager::GetInstance()->AddMessage<NetMessageEnemyShooting>(NetMessageEnemyShooting(requestedBullet->GetGID()));
 	myAttackAnimationTimeCurrent = myData.myAttackAnimationTime;
-
-	myBullets[myBulletIndex]->GetComponent<BulletComponent>()->Activate(myEntity.GetOrientation());
-	myBulletIndex++;
+	requestedBullet->GetComponent<BulletComponent>()->Activate(myEntity.GetOrientation());
 }

@@ -15,11 +15,11 @@ public:
 
 	bool ChangeLevel(int& aNextLevel);
 
-	void ReceiveNetworkMessage(const NetMessageRequestConnect& aMessage, const sockaddr_in& aSenderAddress) override;
 	void ReceiveNetworkMessage(const NetMessageLevelLoaded& aMessage, const sockaddr_in& aSenderAddress) override;
 	void ReceiveNetworkMessage(const NetMessageEntityState& aMessage, const sockaddr_in& aSenderAddress) override;
 	void ReceiveNetworkMessage(const NetMessageHealthPack& aMessage, const sockaddr_in& aSenderAddress) override;
 	void ReceiveMessage(const SetActiveMessage& aMessage) override;
+	void ReceiveMessage(const RespawnTriggerMessage& aMessage) override;
 
 private:
 	void HandleTrigger(Entity& aFirstEntity, Entity& aSecondEntity, bool aHasEntered) override;
@@ -27,6 +27,7 @@ private:
 	CU::GrowingArray<unsigned int> myLoadedClients;
 	bool myAllClientsLoaded;
 	MissionManager* myMissionManager;
+	CU::GrowingArray<Entity*> myRespawnTriggers;
 
 	int myNextLevel;
 };

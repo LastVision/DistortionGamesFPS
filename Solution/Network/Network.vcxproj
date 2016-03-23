@@ -89,6 +89,7 @@
     <ClInclude Include="ConvertNetworkEnumToString.h" />
     <ClInclude Include="NetImportantMessage.h" />
     <ClInclude Include="NetMessage.h" />
+    <ClInclude Include="NetMessageAllClientsComplete.h" />
     <ClInclude Include="NetMessageConnectReply.h" />
     <ClInclude Include="NetMessageEnemyShooting.h" />
     <ClInclude Include="NetMessageEntityState.h" />
@@ -106,9 +107,9 @@
     <ClInclude Include="NetMessagePingRequest.h" />
     <ClInclude Include="NetMessagePosition.h" />
     <ClInclude Include="NetMessageRequestLevel.h" />
-    <ClInclude Include="NetMessageRequestStartGame.h" />
+    <ClInclude Include="NetMessageRequestStartLevel.h" />
     <ClInclude Include="NetMessageSetActive.h" />
-    <ClInclude Include="NetMessageStartGame.h" />
+    <ClInclude Include="NetMessageLoadLevel.h" />
     <ClInclude Include="NetworkMessageTypes.h" />
     <ClInclude Include="NetworkSubscriber.h" />
     <ClInclude Include="SerializeHelper.h" />

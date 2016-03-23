@@ -15,9 +15,6 @@ public:
 
 	int GetDamage() const;
 
-	void ReceiveNetworkMessage(const NetMessageEnemyShooting& aMessage, const sockaddr_in& aSenderAddress) override;
-
-
 	static eComponentType GetTypeStatic();
 	eComponentType GetType() override;
 

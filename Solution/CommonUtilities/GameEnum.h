@@ -20,6 +20,14 @@ enum class eActionEventType
 	UNLOCK,
 };
 
+enum class eInGameStates
+{
+	LEVEL_UPDATE,
+	LEVEL_COMPLETE,
+	LEVEL_COMPLETE_ALL_CLIENTS_RESPONDED,
+	LEVEL_LOAD,
+	LEVEL_WAIT_FOR_OTHER,
+};
 
 enum eOwnerType
 {
@@ -50,6 +58,7 @@ enum class eTriggerType : int
 	UNLOCK,
 	LOCK,
 	MISSION,
+	RESPAWN,
 	_COUNT,
 };
 
