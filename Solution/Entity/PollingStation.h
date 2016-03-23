@@ -16,6 +16,8 @@ public:
 
 	const CU::GrowingArray<Entity*>& GetPlayers() const;
 
+	void HasDied(Entity* anEntity);
+
 private:
 	PollingStation();
 	~PollingStation();

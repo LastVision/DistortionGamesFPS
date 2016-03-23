@@ -42,6 +42,8 @@ bool GrenadeLauncher::Shoot(const CU::Matrix44<float>& aOrientation)
 {
 	if (myAmmoInClip > 0 && myShootTimer <= 0.f && myBullets.Size() < 1024)
 	{
+		//Skicka grenademessage(aOrientation.GetForward());
+
 		ShootAtDirection(aOrientation);
 		myAmmoInClip -= 1;
 		myShootTimer = myShootTime;
