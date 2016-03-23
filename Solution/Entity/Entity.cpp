@@ -17,6 +17,7 @@
 #include <PostMaster.h>
 #include <SharedNetworkManager.h>
 #include "ShootingComponent.h"
+#include "SpawnpointComponent.h"
 #include "TriggerComponent.h"
 #include "UpgradeComponent.h"
 #include "BulletComponent.h"
@@ -40,19 +41,23 @@ Entity::Entity(unsigned int aGID, const EntityData& aEntityData, Prism::Scene* a
 	SetRotation(aRotation);
 
 
+	myRoomType = eObjectRoomType::NOT_USED_ON_SERVER;
 	if (myScene != nullptr)
 	{
+		myRoomType = eObjectRoomType::NONE;
 		if (aEntityData.myAnimationData.myExistsInEntity == true)
 		{
 			myComponents[static_cast<int>(eComponentType::ANIMATION)] = new AnimationComponent(*this, aEntityData.myAnimationData);
 			//GetComponent<AnimationComponent>()->SetRotation(aRotation);
 			GetComponent<AnimationComponent>()->SetScale(aScale);
+			myRoomType = aEntityData.myAnimationData.myRoomType;
 		}
 		else if (aEntityData.myGraphicsData.myExistsInEntity == true)
 		{
 			myComponents[static_cast<int>(eComponentType::GRAPHICS)] = new GraphicsComponent(*this, aEntityData.myGraphicsData);
 			//GetComponent<GraphicsComponent>()->SetRotation(aRotation);
 			GetComponent<GraphicsComponent>()->SetScale(aScale);
+			myRoomType = aEntityData.myGraphicsData.myRoomType;
 		}
 	}
 
@@ -127,6 +132,10 @@ Entity::Entity(unsigned int aGID, const EntityData& aEntityData, Prism::Scene* a
 	if (aEntityData.myProjecileData.myExistsInEntity == true)
 	{
 		myComponents[static_cast<int>(eComponentType::BULLET)] = new BulletComponent(*this, aEntityData.myProjecileData, myOrientation);
+	}
+	if (aEntityData.mySpawnpointData.myExistsInEntity == true)
+	{
+		myComponents[static_cast<int>(eComponentType::SPAWNPOINT)] = new SpawnpointComponent(*this, aEntityData.mySpawnpointData);
 	}
 
 	Reset();
@@ -209,11 +218,11 @@ void Entity::AddToScene()
 
 	if (GetComponent<GraphicsComponent>() != nullptr && GetComponent<GraphicsComponent>()->GetInstance() != nullptr)
 	{
-		myScene->AddInstance(GetComponent<GraphicsComponent>()->GetInstance(), GetComponent<GraphicsComponent>()->GetShouldAlwaysRender());
+		myScene->AddInstance(GetComponent<GraphicsComponent>()->GetInstance(), myRoomType);
 	}
 	else if (GetComponent<AnimationComponent>() != nullptr && GetComponent<AnimationComponent>()->GetInstance() != nullptr)
 	{
-		myScene->AddInstance(GetComponent<AnimationComponent>()->GetInstance(), false);
+		myScene->AddInstance(GetComponent<AnimationComponent>()->GetInstance(), myRoomType);
 	}
 
 	myIsInScene = true;

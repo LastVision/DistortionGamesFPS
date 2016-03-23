@@ -11,6 +11,7 @@ enum class eMessageType
 	ENEMY_KILLED,
 	DEFEND_TOUCH,
 	RESPAWN_TRIGGER,
+	RESPAWN,
 
 	
 	COUNT,

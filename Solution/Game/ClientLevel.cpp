@@ -373,9 +373,10 @@ void ClientLevel::HandleTrigger(Entity& aFirstEntity, Entity& aSecondEntity, boo
 		{
 			ClientNetworkManager::GetInstance()->AddMessage<NetMessageHealthPack>(NetMessageHealthPack(firstTrigger->GetValue()));
 		}
-		aSecondEntity.SendNote<CollisionNote>(CollisionNote(&aFirstEntity));
-		aFirstEntity.SendNote<CollisionNote>(CollisionNote(&aSecondEntity));
+		aSecondEntity.SendNote<CollisionNote>(CollisionNote(&aFirstEntity, aHasEntered));
 	}
+
+	aFirstEntity.SendNote<CollisionNote>(CollisionNote(&aSecondEntity, aHasEntered));
 }
 
 void ClientLevel::CreatePlayers()

@@ -116,6 +116,9 @@
     <ClCompile Include="BulletComponent.cpp">
       <Filter>Component</Filter>
     </ClCompile>
+    <ClCompile Include="SpawnpointComponent.cpp">
+      <Filter>Component</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
@@ -253,6 +256,12 @@
       <Filter>Component</Filter>
     </ClInclude>
     <ClInclude Include="BulletComponentData.h">
+      <Filter>EntityFactory\EntityData\ComponentData</Filter>
+    </ClInclude>
+    <ClInclude Include="SpawnpointComponent.h">
+      <Filter>Component</Filter>
+    </ClInclude>
+    <ClInclude Include="SpawnpointComponentData.h">
       <Filter>EntityFactory\EntityData\ComponentData</Filter>
     </ClInclude>
   </ItemGroup>

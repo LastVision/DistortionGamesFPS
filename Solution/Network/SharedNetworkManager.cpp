@@ -57,7 +57,7 @@ void SharedNetworkManager::Initiate()
 	}
 	Subscribe(eNetMessageType::IMPORTANT_REPLY, this);
 
-
+	myAllowSendWithoutSubscribers = false;
 }
 
 void SharedNetworkManager::StartNetwork(unsigned int /*aPortNum*/)
@@ -236,6 +236,11 @@ unsigned short SharedNetworkManager::GetResponsTime() const
 double SharedNetworkManager::GetDataSent() const
 {
 	return myDataToPrint / 1024;
+}
+
+void SharedNetworkManager::AllowSendWithoutSubscriber(bool aAllow)
+{
+	myAllowSendWithoutSubscribers = aAllow;
 }
 
 void SharedNetworkManager::AddNetworkMessage(std::vector<char> aBuffer, unsigned int aTargetID)

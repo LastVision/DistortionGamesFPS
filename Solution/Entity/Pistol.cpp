@@ -59,27 +59,27 @@ void Pistol::Init(Prism::Scene* aScene, const CU::Matrix44<float>& aOrientation)
 	Prism::ModelProxy* model = Prism::ModelLoader::GetInstance()->LoadModel("Data/Resource/Model/Muzzleflash/SM_muzzleflash0.fbx"
 		, "Data/Resource/Shader/S_effect_pbl_deferred.fx");
 	myMuzzleflash[0] = new Prism::Instance(*model, *myOrientation);
-	aScene->AddInstance(myMuzzleflash[0], true);
+	aScene->AddInstance(myMuzzleflash[0], eObjectRoomType::ALWAYS_RENDER);
 
 	model = Prism::ModelLoader::GetInstance()->LoadModel("Data/Resource/Model/Muzzleflash/SM_muzzleflash1.fbx"
 		, "Data/Resource/Shader/S_effect_pbl_deferred.fx");
 	myMuzzleflash[1] = new Prism::Instance(*model, *myOrientation);
-	aScene->AddInstance(myMuzzleflash[1], true);
+	aScene->AddInstance(myMuzzleflash[1], eObjectRoomType::ALWAYS_RENDER);
 
 	model = Prism::ModelLoader::GetInstance()->LoadModel("Data/Resource/Model/Muzzleflash/SM_muzzleflash2.fbx"
 		, "Data/Resource/Shader/S_effect_pbl_deferred.fx");
 	myMuzzleflash[2] = new Prism::Instance(*model, *myOrientation);
-	aScene->AddInstance(myMuzzleflash[2], true);
+	aScene->AddInstance(myMuzzleflash[2], eObjectRoomType::ALWAYS_RENDER);
 
 	model = Prism::ModelLoader::GetInstance()->LoadModel("Data/Resource/Model/Muzzleflash/SM_muzzleflash3.fbx"
 		, "Data/Resource/Shader/S_effect_pbl_deferred.fx");
 	myMuzzleflash[3] = new Prism::Instance(*model, *myOrientation);
-	aScene->AddInstance(myMuzzleflash[3], true);
+	aScene->AddInstance(myMuzzleflash[3], eObjectRoomType::ALWAYS_RENDER);
 
 	model = Prism::ModelLoader::GetInstance()->LoadModel("Data/Resource/Model/Muzzleflash/SM_muzzleflash4.fbx"
 		, "Data/Resource/Shader/S_effect_pbl_deferred.fx");
 	myMuzzleflash[4] = new Prism::Instance(*model, *myOrientation);
-	aScene->AddInstance(myMuzzleflash[4], true);
+	aScene->AddInstance(myMuzzleflash[4], eObjectRoomType::ALWAYS_RENDER);
 }
 
 bool Pistol::Shoot(const CU::Matrix44<float>& aOrientation)
