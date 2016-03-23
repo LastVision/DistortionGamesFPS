@@ -38,6 +38,8 @@ public:
 	unsigned short GetResponsTime() const;
 	double GetDataSent() const;
 
+	void AllowSendWithoutSubscriber(bool aAllow);
+
 	void SwapBuffer();
 
 	void ReceieveIsDone();
@@ -129,6 +131,8 @@ protected:
 
 	CU::StaticArray<CU::GrowingArray<NetworkSubscriberInfo>, static_cast<int>(eNetMessageType::_COUNT)> mySubscribers;
 
+	bool myAllowSendWithoutSubscribers;
+
 	bool myIsServer;
 	bool myIsOnline;
 
@@ -219,13 +223,7 @@ void SharedNetworkManager::SendToSubscriber(const T& aMessage, const sockaddr_in
 			subscribers[i].myNetworkSubscriber->ReceiveNetworkMessage(aMessage, aSenderAddress);
 		}
 	}
-	else if (static_cast<int>(aMessage.myID) != static_cast<int>(eNetMessageType::REQUEST_START_LEVEL)
-		&& static_cast<int>(aMessage.myID) != static_cast<int>(eNetMessageType::POSITION)
-		&& static_cast<int>(aMessage.myID) != static_cast<int>(eNetMessageType::HEALTH)
-		&& static_cast<int>(aMessage.myID) != static_cast<int>(eNetMessageType::ENTITY_STATE)
-		&& static_cast<int>(aMessage.myID) != static_cast<int>(eNetMessageType::SET_ACTIVE)
-		&& static_cast<int>(aMessage.myID) != static_cast<int>(eNetMessageType::ON_DEATH)
-		&& static_cast<int>(aMessage.myID) != static_cast<int>(eNetMessageType::ON_HIT))
+	else if (myAllowSendWithoutSubscribers == false)
 	{
 		DL_ASSERT("Network message sent without subscriber.");
 	}

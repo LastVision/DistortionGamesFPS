@@ -185,6 +185,7 @@ void InGameState::ReceiveNetworkMessage(const NetMessageAllClientsComplete& aMes
 void InGameState::ReceiveNetworkMessage(const NetMessageLevelComplete&, const sockaddr_in&)
 {
 	ClientNetworkManager::GetInstance()->AddMessage(NetMessageLevelComplete());
+	ClientNetworkManager::GetInstance()->AllowSendWithoutSubscriber(true);
 	SAFE_DELETE(myLevel);
 	myLevelComplete = true;
 }
@@ -194,6 +195,7 @@ void InGameState::ReceiveNetworkMessage(const NetMessageLoadLevel& aMessage, con
 	DL_ASSERT_EXP(myLevel == nullptr, "Level has to be nullptr here");
 	SET_RUNTIME(false);
 	myLevel = static_cast<ClientLevel*>(myLevelFactory->LoadLevel(aMessage.myLevelID));
+	ClientNetworkManager::GetInstance()->AllowSendWithoutSubscriber(false);
 	ClientNetworkManager::GetInstance()->AddMessage(NetMessageLevelLoaded());
 }
 
