@@ -46,6 +46,7 @@ enum eEntityType
 	PLAYER = 16,
 	EXPLOSION = 32,
 	BULLET = 64,
+	SPAWNPOINT = 128,
 	_COUNT,
 };
 
