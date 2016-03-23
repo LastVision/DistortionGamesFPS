@@ -53,7 +53,7 @@ void GrenadeLauncher::Reload()
 {
 	int ammoLeft = myAmmoTotal;
 	myAmmoTotal -= min(ammoLeft, myClipSize - myAmmoInClip);
-	myAmmoInClip = myClipSize;
+	myAmmoInClip = min(myClipSize, myAmmoTotal);
 }
 
 void GrenadeLauncher::Update(float aDelta)
