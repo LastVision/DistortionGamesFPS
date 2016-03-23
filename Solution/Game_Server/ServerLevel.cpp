@@ -21,6 +21,8 @@
 #include <PostMaster.h>
 #include <SetActiveMessage.h>
 
+#include "ServerProjectileManager.h"
+
 ServerLevel::ServerLevel()
 	: myLoadedClients(16)
 	, myAllClientsLoaded(false)
@@ -31,6 +33,8 @@ ServerLevel::ServerLevel()
 	ServerNetworkManager::GetInstance()->Subscribe(eNetMessageType::LEVEL_LOADED, this);
 	ServerNetworkManager::GetInstance()->Subscribe(eNetMessageType::ENTITY_STATE, this);
 	PostMaster::GetInstance()->Subscribe(eMessageType::SET_ACTIVE, this);
+	ServerProjectileManager::Create();
+
 
 	ServerNetworkManager::GetInstance()->Subscribe(eNetMessageType::HEALTH_PACK, this);
 }
@@ -40,6 +44,7 @@ ServerLevel::~ServerLevel()
 #ifdef THREAD_PHYSICS
 	Prism::PhysicsInterface::GetInstance()->ShutdownThread();
 #endif
+	ServerProjectileManager::Destroy();
 	PollingStation::Destroy();
 	SAFE_DELETE(myMissionManager);
 	ServerNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::ON_CONNECT, this);
@@ -61,6 +66,8 @@ void ServerLevel::Init(const std::string& aMissionXMLPath)
 
 		myMissionManager = new MissionManager(aMissionXMLPath);
 	}
+	ServerProjectileManager::GetInstance()->CreateBullets(nullptr);
+
 }
 
 void ServerLevel::Update(const float aDeltaTime)
@@ -69,6 +76,7 @@ void ServerLevel::Update(const float aDeltaTime)
 	{
 		__super::Update(aDeltaTime);
 		myMissionManager->Update(aDeltaTime);
+		ServerProjectileManager::GetInstance()->Update(aDeltaTime);
 		//	PollingStation::GetInstance()->FindClosestEntityToEntity(*myPlayers[0]);
 
 		Prism::PhysicsInterface::GetInstance()->EndFrame();

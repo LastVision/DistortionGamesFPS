@@ -44,7 +44,7 @@
 #include <EmitterMessage.h>
 
 #include <NetworkComponent.h>
-
+#include "ClientProjectileManager.h"
 ClientLevel::ClientLevel()
 	: myInstanceOrientations(16)
 	, myInstances(16)
@@ -56,7 +56,7 @@ ClientLevel::ClientLevel()
 	ClientNetworkManager::GetInstance()->Subscribe(eNetMessageType::ON_DEATH, this);
 	ClientNetworkManager::GetInstance()->Subscribe(eNetMessageType::SET_ACTIVE, this);
 	ClientNetworkManager::GetInstance()->Subscribe(eNetMessageType::ENTITY_STATE, this);
-
+	ClientProjectileManager::Create();
 	myScene = new Prism::Scene();
 }
 
@@ -67,7 +67,7 @@ ClientLevel::~ClientLevel()
 #endif
 
 	SAFE_DELETE(myEmitterManager);
-
+	ClientProjectileManager::Destroy();
 	ClientNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::ON_DEATH, this);
 	ClientNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::SET_ACTIVE, this);
 	ClientNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::ENTITY_STATE, this);
@@ -98,6 +98,8 @@ void ClientLevel::Init(const std::string&)
 	Prism::Audio::AudioInterface::GetInstance()->PostEvent("PlayBackground", 0);
 	Prism::Audio::AudioInterface::GetInstance()->PostEvent("PlayFirstLayer", 0);
 	Prism::Audio::AudioInterface::GetInstance()->PostEvent("PlaySecondLayer", 0);
+	ClientProjectileManager::GetInstance()->CreateBullets(myScene);
+
 }
 
 void ClientLevel::Update(const float aDeltaTime)
@@ -107,7 +109,7 @@ void ClientLevel::Update(const float aDeltaTime)
 		myInitDone = true;
 		ClientNetworkManager::GetInstance()->AddMessage(NetMessageLevelLoaded());
 	}
-
+	ClientProjectileManager::GetInstance()->Update(aDeltaTime);
 	//if (CU::InputWrapper::GetInstance()->KeyDown(DIK_U))
 	//{
 	//	myActiveEnemies.GetLast()->SetState(eEntityState::WALK);
