@@ -15,6 +15,7 @@ public:
 	static ServerProjectileManager* GetInstance();
 
 	void CreateBullets(Prism::Scene* aScene = nullptr) override;
+	void CreateGrenades(Prism::Scene* aScene = nullptr) override;
 private:
 	ServerProjectileManager();
 	~ServerProjectileManager();
