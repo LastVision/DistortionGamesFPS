@@ -14,6 +14,8 @@ public:
 	static SharedProjectileManager* GetInstance();
 	int GetBulletIndex();
 	Entity* RequestBullet();
+	Entity* RequestBullet(unsigned int aGID);
+	void ActivateBullet(Entity* anEntity);
 	void Update(float aDeltaTime);
 
 protected:

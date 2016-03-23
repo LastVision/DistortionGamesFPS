@@ -30,6 +30,7 @@
 #include <NetMessageOnJoin.h>
 #include <NetMessageRequestConnect.h>
 #include <NetMessageSetActive.h>
+#include <NetMessageEnemyShooting.h>
 
 #include "ClientNetworkManager.h"
 #include "DeferredRenderer.h"
@@ -56,6 +57,8 @@ ClientLevel::ClientLevel()
 	ClientNetworkManager::GetInstance()->Subscribe(eNetMessageType::ON_DEATH, this);
 	ClientNetworkManager::GetInstance()->Subscribe(eNetMessageType::SET_ACTIVE, this);
 	ClientNetworkManager::GetInstance()->Subscribe(eNetMessageType::ENTITY_STATE, this);
+	ClientNetworkManager::GetInstance()->Subscribe(eNetMessageType::ENEMY_SHOOTING, this);
+
 	ClientProjectileManager::Create();
 	myScene = new Prism::Scene();
 }
@@ -71,6 +74,7 @@ ClientLevel::~ClientLevel()
 	ClientNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::ON_DEATH, this);
 	ClientNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::SET_ACTIVE, this);
 	ClientNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::ENTITY_STATE, this);
+	ClientNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::ENEMY_SHOOTING, this);
 
 	myInstances.DeleteAll();
 	myPointLights.DeleteAll();
@@ -262,6 +266,13 @@ void ClientLevel::ReceiveNetworkMessage(const NetMessageEntityState& aMessage, c
 	}
 
 	myActiveUnitsMap[aMessage.myGID]->SetState(static_cast<eEntityState>(aMessage.myEntityState));
+}
+
+void ClientLevel::ReceiveNetworkMessage(const NetMessageEnemyShooting& aMessage, const sockaddr_in& aSenderAddress)
+{
+	Entity* requestedBullet = ClientProjectileManager::GetInstance()->RequestBullet(aMessage.myGID);
+	requestedBullet->AddToScene();
+	ClientProjectileManager::GetInstance()->ActivateBullet(requestedBullet);
 }
 
 void ClientLevel::AddLight(Prism::PointLight* aLight)

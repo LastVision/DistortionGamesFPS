@@ -41,7 +41,7 @@ void BulletComponent::Update(float aDelta)
 	}
 	myOrientation.SetPos(myOrientation.GetPos() + CU::Vector3<float>(0, 0, myData.mySpeed * aDelta) * myOrientation);
 	myEntity.GetComponent<PhysicsComponent>()->TeleportToPosition(myEntity.GetOrientation().GetPos());
-	SharedNetworkManager::GetInstance()->AddMessage(NetMessagePosition(myEntity.GetOrientation().GetPos(),0.f,myEntity.GetGID()));
+	SharedNetworkManager::GetInstance()->AddMessage(NetMessagePosition(myEntity.GetOrientation().GetPos(), 0.f, myEntity.GetGID()));
 }
 
 int BulletComponent::GetDamage() const

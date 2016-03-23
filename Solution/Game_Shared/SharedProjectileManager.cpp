@@ -40,6 +40,24 @@ Entity* SharedProjectileManager::RequestBullet()
 	return toReturn;
 }
 
+Entity* SharedProjectileManager::RequestBullet(unsigned int aGID)
+{
+	for each (Entity* bullet in myBullets)
+	{
+		if (bullet->GetGID() == aGID)
+		{
+			myLiveBullets.Add(bullet);
+			return bullet;
+		}
+	}
+	return nullptr;
+}
+
+void SharedProjectileManager::ActivateBullet(Entity* anEntity)
+{
+	anEntity->Reset();
+}
+
 void SharedProjectileManager::Update(float aDeltaTime)
 {
 	for (int i = myLiveBullets.Size() - 1; i >= 0; --i)
