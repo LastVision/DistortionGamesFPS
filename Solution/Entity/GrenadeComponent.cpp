@@ -2,8 +2,11 @@
 #include "Entity.h"
 #include "EntityFactory.h"
 #include "GrenadeComponent.h"
+#include <NetMessagePosition.h>
+#include <NetMessageExplosion.h>
 #include "PhysicsComponent.h"
 #include <PostMaster.h>
+#include <SharedNetworkManager.h>
 
 GrenadeComponent::GrenadeComponent(Entity& aEntity, const GrenadeComponentData& aComponentData
 	, Prism::Scene* aScene)
@@ -15,7 +18,8 @@ GrenadeComponent::GrenadeComponent(Entity& aEntity, const GrenadeComponentData& 
 	, myShouldDeleteExplosion(false)
 	, myShouldReallyDeleteExplosion(false)
 {
-	myExplosion = EntityFactory::CreateEntity((20000), eEntityType::EXPLOSION, aScene, true, CU::Vector3<float>());
+	myExplosion = EntityFactory::CreateEntity((myEntity.GetGID() + 1), eEntityType::EXPLOSION, aScene, true, CU::Vector3<float>());
+	myExplosion->GetComponent<PhysicsComponent>()->RemoveFromScene();
 }
 
 GrenadeComponent::~GrenadeComponent()
@@ -38,16 +42,18 @@ void GrenadeComponent::Update(float aDelta)
 	}
 	if (myShouldBeUpdated == true)
 	{
+		SharedNetworkManager::GetInstance()->AddMessage<NetMessagePosition>(NetMessagePosition(myEntity.GetOrientation().GetPos(), 0.f, myEntity.GetGID()));
 		myTimeUntilExplode -= aDelta;
 		if (myTimeUntilExplode <= 0.f)
 		{
-			myEntity.RemoveFromScene();
+			//myEntity.RemoveFromScene();
 			myEntity.GetComponent<PhysicsComponent>()->Sleep();
 
 			myShouldDeleteExplosion = true;
 
-			myExplosion->GetComponent<PhysicsComponent>()->AddToScene();
+ 			myExplosion->GetComponent<PhysicsComponent>()->AddToScene();
 			myExplosion->GetComponent<PhysicsComponent>()->TeleportToPosition(myEntity.GetOrientation().GetPos());
+			SharedNetworkManager::GetInstance()->AddMessage<NetMessageExplosion>(NetMessageExplosion(myEntity.GetOrientation().GetPos(), myExplosion->GetGID()));
 		}
 	}
 }
@@ -62,7 +68,8 @@ void GrenadeComponent::Activate(unsigned int aShooterGID)
 
 	if (myEntity.IsInScene() == false)
 	{
-		myEntity.AddToScene();
-		myEntity.GetComponent<PhysicsComponent>()->Wake();
+		//myEntity.AddToScene();
 	}
+	//myEntity.GetComponent<PhysicsComponent>()->AddToScene();
+	myEntity.GetComponent<PhysicsComponent>()->Wake();
 }

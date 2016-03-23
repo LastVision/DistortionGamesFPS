@@ -7,6 +7,7 @@ NetworkSubscriber::~NetworkSubscriber(){}
 void NetworkSubscriber::ReceiveNetworkMessage(const NetMessageConnectReply&, const sockaddr_in&){}
 void NetworkSubscriber::ReceiveNetworkMessage(const NetMessageDisconnect&, const sockaddr_in&){}
 void NetworkSubscriber::ReceiveNetworkMessage(const NetMessageEntityState&, const sockaddr_in&) {}
+void NetworkSubscriber::ReceiveNetworkMessage(const NetMessageExplosion&, const sockaddr_in&) {}
 void NetworkSubscriber::ReceiveNetworkMessage(const NetMessageImportantReply&, const sockaddr_in&){}
 void NetworkSubscriber::ReceiveNetworkMessage(const NetMessageLevelLoaded&, const sockaddr_in&){}
 void NetworkSubscriber::ReceiveNetworkMessage(const NetMessageLevelComplete&, const sockaddr_in&){}
@@ -22,6 +23,7 @@ void NetworkSubscriber::ReceiveNetworkMessage(const NetMessagePosition&, const s
 void NetworkSubscriber::ReceiveNetworkMessage(const NetMessageRequestConnect&, const sockaddr_in&){}
 void NetworkSubscriber::ReceiveNetworkMessage(const NetMessageRequestLevel&, const sockaddr_in&){}
 void NetworkSubscriber::ReceiveNetworkMessage(const NetMessageRequestStartLevel&, const sockaddr_in&){}
+void NetworkSubscriber::ReceiveNetworkMessage(const NetMessageShootGrenade&, const sockaddr_in&){}
 void NetworkSubscriber::ReceiveNetworkMessage(const NetMessageSetActive&, const sockaddr_in&){}
 void NetworkSubscriber::ReceiveNetworkMessage(const NetMessageLoadLevel&, const sockaddr_in&){}
 void NetworkSubscriber::ReceiveNetworkMessage(const NetMessageEnemyShooting&, const sockaddr_in&){}

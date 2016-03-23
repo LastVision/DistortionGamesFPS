@@ -18,6 +18,8 @@
 #include "NetMessagePosition.h"
 #include "NetMessageOnHit.h"
 #include "NetMessageOnDeath.h"
+#include "NetMessageExplosion.h"
+#include "NetMessageShootGrenade.h"
 #include "NetMessageSetActive.h"
 #include "NetMessageLoadLevel.h"
 #include "NetMessageLevelLoaded.h"
@@ -313,6 +315,12 @@ void SharedNetworkManager::HandleMessage()
 			break;
 		case eNetMessageType::HEALTH_PACK:
 			UnpackAndHandle(NetMessageHealthPack(), buffer);
+			break;
+		case eNetMessageType::SHOOT_GRENADE:
+			UnpackAndHandle(NetMessageShootGrenade(), buffer);
+			break;
+		case eNetMessageType::EXPLOSION:
+			UnpackAndHandle(NetMessageExplosion(), buffer);
 			break;
 		default:
 			DL_ASSERT("Unhandled network message type");
