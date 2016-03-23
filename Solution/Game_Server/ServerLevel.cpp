@@ -5,12 +5,14 @@
 #include <DefendTouchMessage.h>
 #include <Entity.h>
 #include <EntityFactory.h>
+#include <GrenadeComponent.h>
 #include <HealthComponent.h>
 #include "MissionManager.h"
 #include <NetMessageLevelLoaded.h>
 #include <NetMessageSetActive.h>
 #include <NetMessageHealthPack.h>
 #include <NetMessageEntityState.h>
+#include <NetMessageShootGrenade.h>
 #include <NetworkComponent.h>
 #include <PhysicsInterface.h>
 #include <PhysicsComponent.h>
@@ -35,6 +37,7 @@ ServerLevel::ServerLevel()
 	ServerNetworkManager::GetInstance()->Subscribe(eNetMessageType::ON_CONNECT, this);
 	ServerNetworkManager::GetInstance()->Subscribe(eNetMessageType::LEVEL_LOADED, this);
 	ServerNetworkManager::GetInstance()->Subscribe(eNetMessageType::ENTITY_STATE, this);
+	ServerNetworkManager::GetInstance()->Subscribe(eNetMessageType::SHOOT_GRENADE, this);
 	PostMaster::GetInstance()->Subscribe(eMessageType::SET_ACTIVE, this);
 	ServerProjectileManager::Create();
 	PostMaster::GetInstance()->Subscribe(eMessageType::RESPAWN_TRIGGER, this);
@@ -54,6 +57,7 @@ ServerLevel::~ServerLevel()
 	ServerNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::ON_CONNECT, this);
 	ServerNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::LEVEL_LOADED, this);
 	ServerNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::ENTITY_STATE, this);
+	ServerNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::SHOOT_GRENADE, this);
 
 	PostMaster::GetInstance()->UnSubscribe(eMessageType::SET_ACTIVE, this);
 	PostMaster::GetInstance()->UnSubscribe(eMessageType::RESPAWN_TRIGGER, this);
@@ -79,6 +83,7 @@ void ServerLevel::Init(const std::string& aMissionXMLPath)
 		myMissionManager = new MissionManager(aMissionXMLPath);
 	}
 	ServerProjectileManager::GetInstance()->CreateBullets(nullptr);
+	ServerProjectileManager::GetInstance()->CreateGrenades(nullptr);
 
 }
 
@@ -152,6 +157,22 @@ void ServerLevel::ReceiveNetworkMessage(const NetMessageEntityState& aMessage, c
 void ServerLevel::ReceiveNetworkMessage(const NetMessageHealthPack& aMessage, const sockaddr_in&)
 {
 	myPlayers[aMessage.mySenderID - 1]->GetComponent<HealthComponent>()->Heal(aMessage.myHealAmount);
+}
+
+void ServerLevel::ReceiveNetworkMessage(const NetMessageShootGrenade& aMessage, const sockaddr_in&)
+{
+	Entity* bullet = ServerProjectileManager::GetInstance()->RequestGrenade();
+	CU::Matrix44<float> playerOrientation = myPlayers[aMessage.mySenderID - 1]->GetOrientation();
+
+	bullet->Reset();
+	CU::Vector3<float> pos = playerOrientation.GetPos();
+	pos.y += 1.5f;
+	bullet->GetComponent<PhysicsComponent>()->TeleportToPosition(pos);
+	bullet->GetComponent<GrenadeComponent>()->Activate(aMessage.mySenderID);
+	bullet->GetComponent<PhysicsComponent>()->AddForce(playerOrientation.GetForward(), float(aMessage.myForceStrength));
+
+	//Skicka samma meddelande till clienten
+	SharedNetworkManager::GetInstance()->AddMessage<NetMessageShootGrenade>(NetMessageShootGrenade(aMessage.myForceStrength));
 }
 
 void ServerLevel::ReceiveMessage(const SetActiveMessage& aMessage)

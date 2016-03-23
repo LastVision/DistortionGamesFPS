@@ -24,7 +24,8 @@ PhysicsComponent::PhysicsComponent(Entity& aEntity, const PhysicsComponentData& 
 	myPhysicsType = aPhysicsComponentData.myPhysicsType;
 
 	bool shouldAddToPhysicsScene = true;
-	if (myEntity.GetType() == eEntityType::EXPLOSION)
+	if (myEntity.GetType() == eEntityType::EXPLOSION || myEntity.GetSubType() == "respawn"
+		|| myEntity.GetType() == eEntityType::BULLET)
 	{
 		shouldAddToPhysicsScene = false;
 	}
@@ -65,10 +66,6 @@ void PhysicsComponent::Reset()
 	if (myDynamicBody != nullptr && myPhysicsType != ePhysics::KINEMATIC)
 	{
 		Prism::PhysicsInterface::GetInstance()->SetVelocity(myDynamicBody, CU::Vector3<float>(0, 0, 0));
-	}
-	else if (myPhysicsType == ePhysics::KINEMATIC || myPhysicsType == ePhysics::PHANTOM)
-	{
-		AddToScene();
 	}
 }
 
@@ -127,6 +124,12 @@ float* PhysicsComponent::GetOrientation()
 void PhysicsComponent::UpdateOrientation()
 {
 	DL_ASSERT_EXP(myPhysicsType == ePhysics::DYNAMIC, "Cant update Orientation on STATIC PhysEntities");
+
+	if (myEntity.GetGID() == 60000)
+	{
+		int apa = 5;
+		apa;
+	}
 	
 	if (myIsAwake == true)
 	{

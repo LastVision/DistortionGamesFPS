@@ -122,5 +122,9 @@
     <ClInclude Include="NetMessageHealthPack.h">
       <Filter>Messages</Filter>
     </ClInclude>
+    <ClInclude Include="NetMessageShootGrenade.h">
+      <Filter>Messages</Filter>
+    </ClInclude>
+    <ClInclude Include="NetMessageExplosion.h" />
   </ItemGroup>
 </Project>
