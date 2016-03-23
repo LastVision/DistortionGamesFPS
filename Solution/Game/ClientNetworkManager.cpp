@@ -14,7 +14,7 @@
 #include <NetMessagePingReply.h>
 #include <NetMessagePosition.h>
 #include <NetMessageOnDeath.h>
-#include <NetMessageStartGame.h>
+#include <NetMessageLoadLevel.h>
 
 #define BUFFERSIZE 512
 

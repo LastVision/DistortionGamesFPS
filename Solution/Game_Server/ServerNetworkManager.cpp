@@ -12,7 +12,7 @@
 #include <NetMessageOnJoin.h>
 #include <NetMessageDisconnect.h>
 #include <NetMessageRequestLevel.h>
-#include <NetMessageRequestStartGame.h>
+#include <NetMessageRequestStartLevel.h>
 #include <NetMessagePingRequest.h>
 #include <NetMessagePingReply.h>
 #include <NetMessagePosition.h>

@@ -21,14 +21,16 @@ static std::string ConvertNetworkEnumToString(eNetMessageType aType)
 		return "ON DISCONNECT";
 	case eNetMessageType::REQUEST_LEVEL:
 		return "REQUEST LEVEL";
-	case eNetMessageType::REQUEST_START_GAME:
+	case eNetMessageType::REQUEST_START_LEVEL:
 		return "REQUEST START GAME";
-	case eNetMessageType::START_GAME:
+	case eNetMessageType::LOAD_LEVEL:
 		return "START GAME";
 	case eNetMessageType::LEVEL_LOADED:
 		return "LEVEL LOADED";
 	case eNetMessageType::LEVEL_COMPLETE:
 		return "LEVEL COMPLETE";
+	case eNetMessageType::ALL_CLIENTS_COMPLETE:
+		return "ALL CLIENTS COMPLETE";
 	case eNetMessageType::PING_REQUEST:
 		return "PING REQUEST";
 	case eNetMessageType::PING_REPLY:

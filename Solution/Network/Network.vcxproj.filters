@@ -82,12 +82,6 @@
     <ClInclude Include="NetMessageRequestLevel.h">
       <Filter>Messages</Filter>
     </ClInclude>
-    <ClInclude Include="NetMessageRequestStartGame.h">
-      <Filter>Messages</Filter>
-    </ClInclude>
-    <ClInclude Include="NetMessageStartGame.h">
-      <Filter>Messages</Filter>
-    </ClInclude>
     <ClInclude Include="NetMessageLevelLoaded.h">
       <Filter>Messages</Filter>
     </ClInclude>
@@ -111,6 +105,15 @@
       <Filter>Messages</Filter>
     </ClInclude>
     <ClInclude Include="NetMessageLevelComplete.h">
+      <Filter>Messages</Filter>
+    </ClInclude>
+    <ClInclude Include="NetMessageAllClientsComplete.h">
+      <Filter>Messages</Filter>
+    </ClInclude>
+    <ClInclude Include="NetMessageRequestStartLevel.h">
+      <Filter>Messages</Filter>
+    </ClInclude>
+    <ClInclude Include="NetMessageLoadLevel.h">
       <Filter>Messages</Filter>
     </ClInclude>
     <ClInclude Include="NetMessageHealth.h">

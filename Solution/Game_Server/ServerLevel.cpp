@@ -7,7 +7,6 @@
 #include <EntityFactory.h>
 #include <HealthComponent.h>
 #include "MissionManager.h"
-#include <NetMessageRequestConnect.h>
 #include <NetMessageLevelLoaded.h>
 #include <NetMessageSetActive.h>
 #include <NetMessageHealthPack.h>
@@ -18,11 +17,13 @@
 #include <BulletComponent.h>
 #include "ServerNetworkManager.h"
 #include <TriggerComponent.h>
+#include <PollingStation.h>
 #include <PostMaster.h>
 #include <SetActiveMessage.h>
 #include <RespawnTriggerMessage.h>
 
-#include <PollingStation.h>
+#include "ServerProjectileManager.h"
+
 ServerLevel::ServerLevel()
 	: myLoadedClients(16)
 	, myAllClientsLoaded(false)
@@ -34,13 +35,19 @@ ServerLevel::ServerLevel()
 	ServerNetworkManager::GetInstance()->Subscribe(eNetMessageType::LEVEL_LOADED, this);
 	ServerNetworkManager::GetInstance()->Subscribe(eNetMessageType::ENTITY_STATE, this);
 	PostMaster::GetInstance()->Subscribe(eMessageType::SET_ACTIVE, this);
+	ServerProjectileManager::Create();
 	PostMaster::GetInstance()->Subscribe(eMessageType::RESPAWN_TRIGGER, this);
+
 
 	ServerNetworkManager::GetInstance()->Subscribe(eNetMessageType::HEALTH_PACK, this);
 }
 
 ServerLevel::~ServerLevel()
 {
+#ifdef THREAD_PHYSICS
+	Prism::PhysicsInterface::GetInstance()->ShutdownThread();
+#endif
+	ServerProjectileManager::Destroy();
 	PollingStation::Destroy();
 	SAFE_DELETE(myMissionManager);
 	ServerNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::ON_CONNECT, this);
@@ -69,17 +76,8 @@ void ServerLevel::Init(const std::string& aMissionXMLPath)
 
 		myMissionManager = new MissionManager(aMissionXMLPath);
 	}
-	//for each (const Connection& client in ServerNetworkManager::GetInstance()->GetClients())
-	//{
-	//	Entity* newPlayer = EntityFactory::CreateEntity(client.myID, eEntityType::UNIT, "playerserver", nullptr, false, { 0.f, 0.f, 0.f });
-	//	newPlayer->GetComponent<NetworkComponent>()->SetPlayer(true);
-	//	myPlayers.Add(newPlayer);
+	ServerProjectileManager::GetInstance()->CreateBullets(nullptr);
 
-	//	Entity* newRespawnTrigger = EntityFactory::CreateEntity()
-	//	myRespawnTriggers.Add()
-
-	//	myMissionManager = new MissionManager(aMissionXMLPath);
-	//}
 }
 
 void ServerLevel::Update(const float aDeltaTime)
@@ -88,6 +86,7 @@ void ServerLevel::Update(const float aDeltaTime)
 	{
 		__super::Update(aDeltaTime);
 		myMissionManager->Update(aDeltaTime);
+		ServerProjectileManager::GetInstance()->Update(aDeltaTime);
 		//	PollingStation::GetInstance()->FindClosestEntityToEntity(*myPlayers[0]);
 
 		Prism::PhysicsInterface::GetInstance()->EndFrame();
@@ -118,17 +117,6 @@ void ServerLevel::CollisionCallback(PhysicsComponent* aFirst, PhysicsComponent* 
 		first.Kill();
 		break;
 	}
-}
-
-void ServerLevel::ReceiveNetworkMessage(const NetMessageRequestConnect&, const sockaddr_in&)
-{
-	bool isRunTime = Prism::MemoryTracker::GetInstance()->GetRunTime();
-	Prism::MemoryTracker::GetInstance()->SetRunTime(false);
-	Entity* newPlayer = EntityFactory::CreateEntity(ServerNetworkManager::GetInstance()->GetLastJoinedID(), eEntityType::UNIT, "playerserver", nullptr, false, { 0.f, 0.f, 0.f });
-	newPlayer->Reset();
-	newPlayer->GetComponent<NetworkComponent>()->SetPlayer(true);
-	myPlayers.Add(newPlayer);
-	Prism::MemoryTracker::GetInstance()->SetRunTime(isRunTime);
 }
 
 void ServerLevel::ReceiveNetworkMessage(const NetMessageLevelLoaded& aMessage, const sockaddr_in&)

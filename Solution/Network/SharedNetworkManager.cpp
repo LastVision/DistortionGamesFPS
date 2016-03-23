@@ -2,6 +2,7 @@
 #include "SharedNetworkManager.h"
 
 #include "NetMessage.h"
+#include "NetMessageAllClientsComplete.h"
 #include "NetMessageImportantReply.h"
 #include "NetMessageConnectReply.h"
 #include "NetMessageEntityState.h"
@@ -11,14 +12,14 @@
 #include "NetMessageHealthPack.h"
 #include "NetMessageDisconnect.h"
 #include "NetMessageRequestLevel.h"
-#include "NetMessageRequestStartGame.h"
+#include "NetMessageRequestStartLevel.h"
 #include "NetMessagePingRequest.h"
 #include "NetMessagePingReply.h"
 #include "NetMessagePosition.h"
 #include "NetMessageOnHit.h"
 #include "NetMessageOnDeath.h"
 #include "NetMessageSetActive.h"
-#include "NetMessageStartGame.h"
+#include "NetMessageLoadLevel.h"
 #include "NetMessageLevelLoaded.h"
 #include "NetMessageEnemyShooting.h"
 #include "NetMessageLevelComplete.h"
@@ -268,17 +269,20 @@ void SharedNetworkManager::HandleMessage()
 		case eNetMessageType::REQUEST_LEVEL:
 			UnpackAndHandle(NetMessageRequestLevel(), buffer);
 			break;
-		case eNetMessageType::REQUEST_START_GAME:
-			UnpackAndHandle(NetMessageRequestStartGame(), buffer);
+		case eNetMessageType::REQUEST_START_LEVEL:
+			UnpackAndHandle(NetMessageRequestStartLevel(), buffer);
 			break;
-		case eNetMessageType::START_GAME:
-			UnpackAndHandle(NetMessageStartGame(), buffer);
+		case eNetMessageType::LOAD_LEVEL:
+			UnpackAndHandle(NetMessageLoadLevel(), buffer);
 			break;
 		case eNetMessageType::LEVEL_LOADED:
 			UnpackAndHandle(NetMessageLevelLoaded(), buffer);
 			break;
 		case eNetMessageType::LEVEL_COMPLETE:
 			UnpackAndHandle(NetMessageLevelComplete(), buffer);
+			break;
+		case eNetMessageType::ALL_CLIENTS_COMPLETE:
+			UnpackAndHandle(NetMessageAllClientsComplete(), buffer);
 			break;
 		case eNetMessageType::PING_REQUEST:
 			UnpackAndHandle(NetMessagePingRequest(), buffer);
