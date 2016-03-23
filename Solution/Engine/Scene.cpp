@@ -75,6 +75,10 @@ namespace Prism
 
 	void Scene::AddInstance(Instance* aInstance, bool aAlwaysRender)
 	{
+		if (myRoomManager == nullptr)
+		{
+			int apa = 5;
+		}
 		myRoomManager->Add(aInstance, aAlwaysRender);
 	}
 

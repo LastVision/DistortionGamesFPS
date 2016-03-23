@@ -10,6 +10,7 @@
 #include <NetMessageEntityState.h>
 #include <NetMessageSetActive.h>
 #include "PhysicsComponent.h"
+#include "PollingStation.h"
 #include <PostMaster.h>
 #include <SharedNetworkManager.h>
 #include <RespawnTriggerMessage.h>
@@ -78,6 +79,7 @@ void HealthComponent::TakeDamage(int aDamage)
 			SharedNetworkManager::GetInstance()->AddMessage<NetMessageEntityState>(NetMessageEntityState(myEntity.GetState(), myEntity.GetGID()));
 			SharedNetworkManager::GetInstance()->AddMessage<NetMessageSetActive>(NetMessageSetActive(false, false, myEntity.GetGID()));
 			myEntity.GetComponent<PhysicsComponent>()->Sleep();
+			PollingStation::GetInstance()->HasDied(&myEntity);
 		}
 	}
 }
