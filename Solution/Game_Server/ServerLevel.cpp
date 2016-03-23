@@ -225,6 +225,9 @@ void ServerLevel::HandleTrigger(Entity& aFirstEntity, Entity& aSecondEntity, boo
 				// do "close" animation
 				break;
 			case eTriggerType::MISSION:
+#ifndef RELEASE_BUILD
+				printf("MissionTrigger with GID: %i entered by: %s with GID: %i", aFirstEntity.GetGID(), aSecondEntity.GetSubType(), aSecondEntity.GetGID());
+#endif
 				myMissionManager->SetMission(firstTrigger->GetValue());
 				break;
 			case eTriggerType::LEVEL_CHANGE:
