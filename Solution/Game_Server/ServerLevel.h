@@ -19,6 +19,7 @@ public:
 	void ReceiveNetworkMessage(const NetMessageEntityState& aMessage, const sockaddr_in& aSenderAddress) override;
 	void ReceiveNetworkMessage(const NetMessageHealthPack& aMessage, const sockaddr_in& aSenderAddress) override;
 	void ReceiveMessage(const SetActiveMessage& aMessage) override;
+	void ReceiveMessage(const RespawnMessage &aMessage) override;
 	void ReceiveMessage(const RespawnTriggerMessage& aMessage) override;
 
 private:

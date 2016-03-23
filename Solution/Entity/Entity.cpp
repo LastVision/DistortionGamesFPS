@@ -17,6 +17,7 @@
 #include <PostMaster.h>
 #include <SharedNetworkManager.h>
 #include "ShootingComponent.h"
+#include "SpawnpointComponent.h"
 #include "TriggerComponent.h"
 #include "UpgradeComponent.h"
 #include "BulletComponent.h"
@@ -131,6 +132,10 @@ Entity::Entity(unsigned int aGID, const EntityData& aEntityData, Prism::Scene* a
 	if (aEntityData.myProjecileData.myExistsInEntity == true)
 	{
 		myComponents[static_cast<int>(eComponentType::BULLET)] = new BulletComponent(*this, aEntityData.myProjecileData, myOrientation);
+	}
+	if (aEntityData.mySpawnpointData.myExistsInEntity == true)
+	{
+		myComponents[static_cast<int>(eComponentType::SPAWNPOINT)] = new SpawnpointComponent(*this, aEntityData.mySpawnpointData);
 	}
 
 	Reset();
