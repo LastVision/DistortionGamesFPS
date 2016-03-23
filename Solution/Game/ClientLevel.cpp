@@ -177,6 +177,19 @@ void ClientLevel::ReceiveNetworkMessage(const NetMessageSetActive& aMessage, con
 {
 	bool useEntityMap = true;
 
+	if (aMessage.myGID == myPlayer->GetGID())
+	{
+		if (aMessage.myShouldActivate == true)
+		{
+			myPlayer->GetComponent<PhysicsComponent>()->Wake();
+		}
+		else
+		{
+			myPlayer->GetComponent<PhysicsComponent>()->Sleep();
+		}
+		return;
+	}
+
 	if (myActiveEntitiesMap.find(aMessage.myGID) == myActiveEntitiesMap.end())
 	{
 		useEntityMap = false;
@@ -232,6 +245,14 @@ void ClientLevel::ReceiveNetworkMessage(const NetMessageEntityState& aMessage, c
 {
 	if (aMessage.myGID == myPlayer->GetGID())
 	{
+		if (static_cast<eEntityState>(aMessage.myEntityState) == eEntityState::DIE)
+		{
+			myPlayer->SetState(static_cast<eEntityState>(aMessage.myEntityState));
+		}
+		else if (myPlayer->GetState() == eEntityState::DIE)
+		{
+			myPlayer->SetState(static_cast<eEntityState>(aMessage.myEntityState));
+		}
 		return;
 	}
 

@@ -43,7 +43,7 @@ InputComponent::InputComponent(Entity& anEntity, const InputComponentData& aData
 
 	mySendTime = 3;
 
-	
+
 
 
 	//myCapsuleControllerId = Prism::PhysicsInterface::GetInstance()->CreatePlayerController(myOrientation.GetPos());
@@ -63,22 +63,31 @@ void InputComponent::Update(float aDelta)
 
 	myPrevOrientation = myOrientation;
 
-	UpdateMovement(aDelta);
-	myEyeOrientation = myOrientation;
-
-	CU::Vector3<float> position(myOrientation.GetPos());
-
-	if (CU::InputWrapper::GetInstance()->KeyIsPressed(DIK_LCONTROL) == true)
+	if (myEntity.GetState() != eEntityState::DIE)
 	{
-		position.y += myCrouchHeight;
+		UpdateMovement(aDelta);
+
+		myEyeOrientation = myOrientation;
+
+		CU::Vector3<float> position(myOrientation.GetPos());
+
+		if (CU::InputWrapper::GetInstance()->KeyIsPressed(DIK_LCONTROL) == true)
+		{
+			position.y += myCrouchHeight;
+		}
+		else
+		{
+			position.y += myHeight;
+		}
+
+		myEyeOrientation.SetPos(position);
 	}
 	else
 	{
-		position.y += myHeight;
+		CU::Vector3<float> diePosition = myEyeOrientation.GetPos();
+		diePosition.y = 0.25f;
+		myEyeOrientation.SetPos(diePosition);
 	}
-
-	myEyeOrientation.SetPos(position);
-
 	CU::Vector3<float> playerPos(myOrientation.GetPos());
 	DEBUG_PRINT(playerPos);
 
@@ -194,7 +203,7 @@ void InputComponent::UpdateMovement(float aDelta)
 			shouldDecreaseEnergy = false;
 		}
 	}
-	
+
 	if (shouldDecreaseEnergy == true)
 	{
 		mySprintEnergy -= myData.mySprintDecrease * aDelta;

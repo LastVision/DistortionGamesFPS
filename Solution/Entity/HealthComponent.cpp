@@ -12,6 +12,7 @@
 #include "PhysicsComponent.h"
 #include <PostMaster.h>
 #include <SharedNetworkManager.h>
+#include <RespawnTriggerMessage.h>
 #include "TriggerComponent.h"
 
 HealthComponent::HealthComponent(Entity& anEntity, const HealthComponentData& someData)
@@ -68,7 +69,11 @@ void HealthComponent::TakeDamage(int aDamage)
 		//myEntity.Kill();
 
 		if (myEntity.GetIsClient() == false)
-		{
+		{	
+			if (myEntity.GetSubType() == "playerserver")
+			{
+				PostMaster::GetInstance()->SendMessage<RespawnTriggerMessage>(RespawnTriggerMessage(myEntity.GetGID()));
+			}
 			myEntity.SetState(eEntityState::DIE);
 			SharedNetworkManager::GetInstance()->AddMessage<NetMessageEntityState>(NetMessageEntityState(myEntity.GetState(), myEntity.GetGID()));
 			SharedNetworkManager::GetInstance()->AddMessage<NetMessageSetActive>(NetMessageSetActive(false, false, myEntity.GetGID()));

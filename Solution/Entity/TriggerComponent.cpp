@@ -11,6 +11,7 @@ TriggerComponent::TriggerComponent(Entity& anEntity, const TriggerComponentData&
 	, myData(someData)
 	, myTriggerType(eTriggerType(someData.myTriggerType))
 	, myHasTriggered(false)
+	, myRespawnValue(-1)
 {
 }
 
