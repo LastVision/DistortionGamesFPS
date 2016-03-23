@@ -10,6 +10,7 @@
 #include "NetworkComponentData.h"
 #include "GrenadeComponentData.h"
 #include "ShootingComponentData.h"
+#include "SpawnpointComponentData.h"
 #include "TriggerComponentData.h"
 #include "UpgradeComponentData.h"
 #include "BulletComponentData.h"
@@ -27,6 +28,7 @@ struct EntityData
 	BulletComponentData myProjecileData;
 	PhysicsComponentData myPhysicsData;
 	ShootingComponentData myShootingData;
+	SpawnpointComponentData mySpawnpointData;
 	TriggerComponentData myTriggerData;
 	UpgradeComponentData myUpgradeData;
 

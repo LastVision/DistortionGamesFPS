@@ -137,6 +137,10 @@ void EntityFactory::LoadEntity(const char* aEntityPath)
 		{
 			myComponentLoader->LoadShootingComponent(entityDocument, e, newData.myShootingData);
 		}
+		else if (elementName == CU::ToLower("SpawnpointComponent"))
+		{
+			myComponentLoader->LoadSpawnpointComponent(entityDocument, e, newData.mySpawnpointData);
+		}
 		else if (elementName == CU::ToLower("UpgradeComponent"))
 		{
 			myComponentLoader->LoadUpgradeComponent(entityDocument, e, newData.myUpgradeData);

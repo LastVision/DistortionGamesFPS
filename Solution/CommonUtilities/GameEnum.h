@@ -168,6 +168,7 @@ enum class eComponentType
 	UPGRADE,
 	AI,
 	BULLET,
+	SPAWNPOINT,
 	_COUNT,
 };
 
