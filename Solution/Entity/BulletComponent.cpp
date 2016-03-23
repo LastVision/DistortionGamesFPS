@@ -29,7 +29,6 @@ void BulletComponent::Activate(const CU::Matrix44<float>& anOrientation)
 	myOrientation = anOrientation;
 	myOrientation.SetPos(myOrientation.GetPos() + CU::Vector3<float>(0, 0, 1.f) * myOrientation + CU::Vector3<float>(0, 1.f, 0));
 	//myEntity.GetComponent<PhysicsComponent>()->Wake();
-
 }
 
 void BulletComponent::Update(float aDelta)

@@ -46,6 +46,7 @@
 
 #include <NetworkComponent.h>
 #include "ClientProjectileManager.h"
+#include "ClientUnitManager.h"
 ClientLevel::ClientLevel()
 	: myInstanceOrientations(16)
 	, myInstances(16)
@@ -60,6 +61,7 @@ ClientLevel::ClientLevel()
 	ClientNetworkManager::GetInstance()->Subscribe(eNetMessageType::ENEMY_SHOOTING, this);
 
 	ClientProjectileManager::Create();
+	ClientUnitManager::Create();
 	myScene = new Prism::Scene();
 }
 
@@ -71,6 +73,7 @@ ClientLevel::~ClientLevel()
 
 	SAFE_DELETE(myEmitterManager);
 	ClientProjectileManager::Destroy();
+	ClientUnitManager::Destroy();
 	ClientNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::ON_DEATH, this);
 	ClientNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::SET_ACTIVE, this);
 	ClientNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::ENTITY_STATE, this);
@@ -114,6 +117,7 @@ void ClientLevel::Update(const float aDeltaTime)
 		ClientNetworkManager::GetInstance()->AddMessage(NetMessageLevelLoaded());
 	}
 	ClientProjectileManager::GetInstance()->Update(aDeltaTime);
+	ClientUnitManager::GetInstance()->Update(aDeltaTime);
 	//if (CU::InputWrapper::GetInstance()->KeyDown(DIK_U))
 	//{
 	//	myActiveEnemies.GetLast()->SetState(eEntityState::WALK);
@@ -122,6 +126,10 @@ void ClientLevel::Update(const float aDeltaTime)
 	//{
 	//	myActiveEnemies.GetLast()->SetState(eEntityState::ATTACK);
 	//}
+	if (CU::InputWrapper::GetInstance()->KeyDown(DIK_B) == true)
+	{
+		ClientNetworkManager::GetInstance()->AddMessage(NetMessageSetActive(true, false, 17));
+	}
 
 	SharedLevel::Update(aDeltaTime);
 	myPlayer->GetComponent<FirstPersonRenderComponent>()->UpdateCoOpPositions(myPlayers);

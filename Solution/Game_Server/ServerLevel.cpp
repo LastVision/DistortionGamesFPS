@@ -1,3 +1,4 @@
+
 #include "stdafx.h"
 #include "ServerLevel.h"
 
@@ -23,6 +24,7 @@
 #include <RespawnTriggerMessage.h>
 
 #include "ServerProjectileManager.h"
+#include "ServerUnitManager.h"
 
 ServerLevel::ServerLevel()
 	: myLoadedClients(16)
@@ -31,15 +33,19 @@ ServerLevel::ServerLevel()
 	, myRespawnTriggers(16)
 {
 	Prism::PhysicsInterface::Create(std::bind(&ServerLevel::CollisionCallback, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3), true);
+
 	ServerNetworkManager::GetInstance()->Subscribe(eNetMessageType::ON_CONNECT, this);
 	ServerNetworkManager::GetInstance()->Subscribe(eNetMessageType::LEVEL_LOADED, this);
 	ServerNetworkManager::GetInstance()->Subscribe(eNetMessageType::ENTITY_STATE, this);
+	ServerNetworkManager::GetInstance()->Subscribe(eNetMessageType::HEALTH_PACK, this);
+
 	PostMaster::GetInstance()->Subscribe(eMessageType::SET_ACTIVE, this);
-	ServerProjectileManager::Create();
 	PostMaster::GetInstance()->Subscribe(eMessageType::RESPAWN_TRIGGER, this);
 
+	ServerProjectileManager::Create();
+	ServerUnitManager::Create();
 
-	ServerNetworkManager::GetInstance()->Subscribe(eNetMessageType::HEALTH_PACK, this);
+
 }
 
 ServerLevel::~ServerLevel()
@@ -48,6 +54,7 @@ ServerLevel::~ServerLevel()
 	Prism::PhysicsInterface::GetInstance()->ShutdownThread();
 #endif
 	ServerProjectileManager::Destroy();
+	ServerUnitManager::Destroy();
 	PollingStation::Destroy();
 	SAFE_DELETE(myMissionManager);
 	ServerNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::ON_CONNECT, this);
@@ -87,6 +94,7 @@ void ServerLevel::Update(const float aDeltaTime)
 		__super::Update(aDeltaTime);
 		myMissionManager->Update(aDeltaTime);
 		ServerProjectileManager::GetInstance()->Update(aDeltaTime);
+		ServerUnitManager::GetInstance()->Update(aDeltaTime);
 		//	PollingStation::GetInstance()->FindClosestEntityToEntity(*myPlayers[0]);
 
 		Prism::PhysicsInterface::GetInstance()->EndFrame();

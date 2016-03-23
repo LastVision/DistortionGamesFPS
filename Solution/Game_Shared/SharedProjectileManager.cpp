@@ -5,8 +5,8 @@
 SharedProjectileManager* SharedProjectileManager::myInstance = nullptr;
 
 SharedProjectileManager::SharedProjectileManager()
-	: myBullets(128)
-	, myLiveBullets(128)
+	: myBullets(64)
+	, myLiveBullets(64)
 	, myGrenades(128)
 	, myLiveGrenades(128)
 	, myBulletIndex(0)

@@ -9,6 +9,7 @@
 #include <PollingStation.h>
 #include "ServerLevel.h"
 #include "ServerLevelFactory.h"
+#include "ServerUnitManager.h"
 #include <TriggerComponent.h>
 #include <XMLReader.h>
 
@@ -59,7 +60,8 @@ void ServerLevelFactory::ReadLevel(const std::string& aLevelPath)
 	LoadRooms(reader, levelElement);
 	LoadProps(reader, levelElement);
 	LoadDoors(reader, levelElement);
-	LoadUnits(reader, levelElement);
+	//LoadUnits(reader, levelElement);
+	LoadSpawnpoint(reader, levelElement);
 	LoadTriggers(reader, levelElement);
 
 	reader.CloseDocument();
@@ -208,5 +210,35 @@ void ServerLevelFactory::LoadTriggers(XMLReader& aReader, tinyxml2::XMLElement* 
 		{
 			SAFE_DELETE(newEntity);
 		}
+	}
+}
+
+void ServerLevelFactory::LoadSpawnpoint(XMLReader& aReader, tinyxml2::XMLElement* anElement)
+{
+	ServerUnitManager::GetInstance()->CreateUnits(nullptr);
+
+	for (tinyxml2::XMLElement* entityElement = aReader.FindFirstChild(anElement, "spawnpoint"); entityElement != nullptr;
+		entityElement = aReader.FindNextElement(entityElement, "spawnpoint"))
+	{
+		std::string spawnpointType;
+		aReader.ForceReadAttribute(entityElement, "type", spawnpointType);
+		spawnpointType = CU::ToLower(spawnpointType);
+
+		CU::Vector3f serverPosition;
+
+		unsigned int gid(UINT32_MAX);
+
+		ReadGID(aReader, entityElement, gid);
+
+		//Read bound to trigger
+
+		tinyxml2::XMLElement* propElement = aReader.ForceFindFirstChild(entityElement, "position");
+		aReader.ForceReadAttribute(propElement, "x", "y", "z", serverPosition);
+
+		Entity* newEntity = EntityFactory::CreateEntity(gid, eEntityType::SPAWNPOINT, spawnpointType, nullptr, false
+			, serverPosition);
+		newEntity->Reset();
+
+		myCurrentLevel->AddEntity(newEntity);
 	}
 }
