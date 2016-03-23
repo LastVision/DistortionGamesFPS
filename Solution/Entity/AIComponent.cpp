@@ -126,6 +126,8 @@ void AIComponent::SetOrientation(const CU::Vector3<float>& aLookInDirection)
 
 void AIComponent::Shoot(Entity* aClosestPlayer)
 {
+	aClosestPlayer;
+
 	myEntity.SetState(eEntityState::ATTACK);
 	SharedNetworkManager::GetInstance()->AddMessage<NetMessageEntityState>(NetMessageEntityState(myEntity.GetState(), myEntity.GetGID()));
 	Entity* requestedBullet = SharedProjectileManager::GetInstance()->RequestBullet();

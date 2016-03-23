@@ -281,7 +281,7 @@ bool Entity::GetIsClient()
 	return myIsClientSide;
 }
 
-void Entity::ReceiveNetworkMessage(const NetMessageOnDeath& aMessage, const sockaddr_in& aSenderAddress)
+void Entity::ReceiveNetworkMessage(const NetMessageOnDeath& aMessage, const sockaddr_in&)
 {
 	if (aMessage.myGID == myGID)
 	{

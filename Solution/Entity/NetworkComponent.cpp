@@ -76,7 +76,7 @@ void NetworkComponent::Update(float aDelta)
 	myOrientation.SetPos(newPos);
 }
 
-void NetworkComponent::ReceiveNetworkMessage(const NetMessagePosition& aMessage, const sockaddr_in& aSenderAddress)
+void NetworkComponent::ReceiveNetworkMessage(const NetMessagePosition& aMessage, const sockaddr_in&)
 {
 	if (aMessage.myGID == myEntity.GetGID())
 	{
@@ -88,7 +88,7 @@ void NetworkComponent::ReceiveNetworkMessage(const NetMessagePosition& aMessage,
 	}
 }
 
-void NetworkComponent::ReceiveNetworkMessage(const NetMessageOnHit& aMessage, const sockaddr_in& aSenderAddress)
+void NetworkComponent::ReceiveNetworkMessage(const NetMessageOnHit& aMessage, const sockaddr_in&)
 {
 	if (myEntity.GetIsClient() == false && myEntity.GetGID() == aMessage.myGID)
 	{
@@ -101,7 +101,7 @@ void NetworkComponent::SetPlayer(bool aBool)
 	myIsPlayer = aBool;
 }
 
-void NetworkComponent::ReceiveNetworkMessage(const NetMessageEnemyShooting& aMessage, const sockaddr_in& aSenderAddress)
+void NetworkComponent::ReceiveNetworkMessage(const NetMessageEnemyShooting& aMessage, const sockaddr_in& )
 {
 	if (myEntity.GetIsClient() == true && aMessage.myGID == myEntity.GetGID())
 	{
