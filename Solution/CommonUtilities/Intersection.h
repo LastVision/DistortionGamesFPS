@@ -25,7 +25,8 @@ namespace CU
 		bool AABBvsAABB(const Vector3<float>& aMin1, const Vector3<float>& aMax1, const Vector3<float>& aMin2, const Vector3<float>& aMax2);
 		bool PointInsideSphere(Sphere aSphere, CU::Vector3<float> aPoint);
 		bool SphereVsSphere(Sphere aSphere, Sphere aOtherSphere);
-		bool PointInsideAABB(AABB aAABB, CU::Vector3<float> aPoint);
+		bool PointInsideAABB(const AABB& aAABB, const CU::Vector3<float>& aPoint);
+		bool SphereInsideAABB(const AABB& aAABB, const CU::Vector3<float>& aPoint, float aRadius);
 		bool LineVsSphere(LineSegment3D aLineSegment3D, Sphere aSphere, CU::Vector3<float>& aIntersectionPoint);
 		int PlaneVsSphere(CU::Plane<float> aPlane, Sphere aSphere);
 		bool SwepthSphereVsSphere(LineSegment3D aLineSegment3D, float aRadius, Sphere aSphere);
@@ -268,7 +269,7 @@ namespace CU
 		return false;
 	}
 
-	inline bool Intersection::PointInsideAABB(AABB aAABB, CU::Vector3<float> aPoint)
+	inline bool Intersection::PointInsideAABB(const AABB& aAABB, const CU::Vector3<float>& aPoint)
 	{
 		if (aPoint.x > aAABB.myMaxPos.x) return false;
 		if (aPoint.x < aAABB.myMinPos.x) return false;
@@ -276,6 +277,18 @@ namespace CU
 		if (aPoint.y < aAABB.myMinPos.y) return false;
 		if (aPoint.z > aAABB.myMaxPos.z) return false;
 		if (aPoint.z < aAABB.myMinPos.z) return false;
+
+		return true;
+	}
+
+	inline bool Intersection::SphereInsideAABB(const AABB& aAABB, const CU::Vector3<float>& aPoint, float aRadius)
+	{
+		if (aPoint.x > aAABB.myMaxPos.x + aRadius) return false;
+		if (aPoint.x < aAABB.myMinPos.x - aRadius) return false;
+		if (aPoint.y > aAABB.myMaxPos.y + aRadius) return false;
+		if (aPoint.y < aAABB.myMinPos.y - aRadius) return false;
+		if (aPoint.z > aAABB.myMaxPos.z + aRadius) return false;
+		if (aPoint.z < aAABB.myMinPos.z - aRadius) return false;
 
 		return true;
 	}

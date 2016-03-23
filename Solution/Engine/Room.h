@@ -17,7 +17,7 @@ namespace Prism
 		Room(const CU::Vector3<float>& aPosition, const CU::Vector3<float>& aScale, const std::string& aName, eRoomType aType);
 		~Room();
 
-		bool Inside(const CU::Vector3<float>& aPosition) const;
+		bool Inside(const CU::Vector3<float>& aPosition, float aRadius) const;
 		bool Collide(const Room& aRoom) const;
 
 		const CU::Intersection::AABB& GetAABB() const;
