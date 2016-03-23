@@ -9,7 +9,7 @@ namespace Prism
 class SharedProjectileManager
 {
 public:
-	~SharedProjectileManager();
+	virtual ~SharedProjectileManager();
 	virtual void CreateBullets(Prism::Scene* aScene) = 0;
 	static SharedProjectileManager* GetInstance();
 	int GetBulletIndex();
