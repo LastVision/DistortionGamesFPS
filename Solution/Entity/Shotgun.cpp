@@ -54,7 +54,7 @@ void Shotgun::Reload()
 {
 	int ammoLeft = myAmmoTotal;
 	myAmmoTotal -= min(ammoLeft, myClipSize - myAmmoInClip);
-	myAmmoInClip = myClipSize;
+	myAmmoInClip = min(myClipSize, myAmmoTotal);
 }
 
 void Shotgun::Update(float aDelta)

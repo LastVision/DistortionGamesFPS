@@ -190,12 +190,12 @@ void ClientNetworkManager::ReceiveNetworkMessage(const NetMessageConnectReply& a
 	}
 }
 
-void ClientNetworkManager::ReceiveNetworkMessage(const NetMessageRequestConnect& aMessage, const sockaddr_in&)
+void ClientNetworkManager::ReceiveNetworkMessage(const NetMessageRequestConnect&, const sockaddr_in&)
 {
 	DL_ASSERT("Should not happen");
 }
 
-void ClientNetworkManager::ReceiveNetworkMessage(const NetMessageOnJoin& aMessage, const sockaddr_in& aSenderAddress)
+void ClientNetworkManager::ReceiveNetworkMessage(const NetMessageOnJoin& aMessage, const sockaddr_in& )
 {
 	if (aMessage.myOtherClientID != myGID)
 	{

@@ -12,6 +12,8 @@ SharedProjectileManager::SharedProjectileManager()
 
 SharedProjectileManager::~SharedProjectileManager()
 {
+	myLiveBullets.RemoveAll();
+	myBullets.DeleteAll();
 }
 
 SharedProjectileManager* SharedProjectileManager::GetInstance()

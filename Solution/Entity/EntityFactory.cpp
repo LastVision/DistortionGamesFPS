@@ -54,7 +54,7 @@ Entity* EntityFactory::CreateEntity(unsigned int aGID, eEntityType aType, Prism:
 	return nullptr;
 }
 
-Entity* EntityFactory::CreateEntity(unsigned int aGID, eEntityType aType, std::string aSubType, Prism::Scene* aScene, bool aClientSide, const CU::Vector3f& aPosition,
+Entity* EntityFactory::CreateEntity(unsigned int aGID, eEntityType, std::string aSubType, Prism::Scene* aScene, bool aClientSide, const CU::Vector3f& aPosition,
 	const CU::Vector3f& aRotation, const CU::Vector3f& aScale)
 {
 

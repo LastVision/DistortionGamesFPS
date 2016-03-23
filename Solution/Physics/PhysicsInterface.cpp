@@ -132,6 +132,7 @@ namespace Prism
 
 	void PhysicsInterface::SubscribeToTriggers(physx::PxSimulationEventCallback* aSubscriber)
 	{
+		aSubscriber;
 		//myManager->SubscribeToTriggers(aSubscriber);
 	}
 
