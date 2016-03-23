@@ -23,7 +23,7 @@ namespace Prism
 
 	private:
 		int GetRoomId(const CU::Vector3<float>& aPosition) const;
-		void FindActiveRooms(Frustum aFrustum, const CU::Matrix44<float>& aProjection, int aRoomId, Portal* anArrivePortal = nullptr);
+		void FindActiveRooms(Frustum aFrustum, const CU::Matrix44<float>& aCameraOrientation, int aRoomId, Portal* anArrivePortal = nullptr);
 		bool AnyOutsidePlane(int somePlaneIndices[4], int aPlaneIndex) const;
 		bool AllPointsBehind(bool somePoints[4]) const;
 
@@ -40,7 +40,6 @@ namespace Prism
 
 		CU::GrowingArray<Room*> myRooms;
 		CU::GrowingArray<Portal*> myPortals;
-		CU::GrowingArray<int> myCurrentRoomIds;
 
 		CU::GrowingArray<Instance*> myAlwaysRenderInstances;
 		CU::GrowingArray<Instance*> myActiveInstances;
