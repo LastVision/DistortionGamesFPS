@@ -223,6 +223,36 @@ void ComponentLoader::LoadShootingComponent(XMLReader& aDocument, tinyxml2::XMLE
 	aOutputData.myExistsInEntity = true;
 }
 
+void ComponentLoader::LoadSpawnpointComponent(XMLReader& aDocument, tinyxml2::XMLElement* aSourceElement, SpawnpointComponentData& aOutputData)
+{
+	aOutputData.myExistsInEntity = true;
+	aOutputData.myUnitTypes.Init(8);
+	aDocument;
+	aSourceElement;
+	for (tinyxml2::XMLElement* e = aDocument.FindFirstChild(aSourceElement); e != nullptr; e = aDocument.FindNextElement(e))
+	{
+		std::string elementName = CU::ToLower(e->Name());
+		if (elementName == CU::ToLower("SpawnUnitType"))
+		{
+			std::string toAdd;
+			aDocument.ForceReadAttribute(e, "type", toAdd);
+			aOutputData.myUnitTypes.Add(toAdd);
+		}
+		else if (elementName == CU::ToLower("SpawnpointLifetime"))
+		{
+			aDocument.ForceReadAttribute(e, "value", aOutputData.mySpawnpointLifetime);
+		}
+		else if (elementName == CU::ToLower("SpawnInterval"))
+		{
+			aDocument.ForceReadAttribute(e, "value", aOutputData.mySpawnInterval);
+		}
+		else if (elementName == CU::ToLower("SpawnPerInterval"))
+		{
+			aDocument.ForceReadAttribute(e, "value", aOutputData.mySpawnPerInterval);
+		}
+	}
+}
+
 void ComponentLoader::LoadUpgradeComponent(XMLReader& aDocument, tinyxml2::XMLElement* aSourceElement, UpgradeComponentData& aOutputData)
 {
 	for (tinyxml2::XMLElement* e = aDocument.FindFirstChild(aSourceElement); e != nullptr; e = aDocument.FindNextElement(e))
