@@ -21,11 +21,13 @@ public:
 	int GetValue() const;
 	bool IsClientSide() const;
 	bool GetIsActiveFromStart() const;
+	void SetRespawnValue(int aValue);
+	int GetRespawnValue() const;
 
 private:
 
 	const TriggerComponentData& myData;
-
+	int myRespawnValue;
 	eTriggerType myTriggerType;
 
 	bool myHasTriggered;
@@ -44,4 +46,14 @@ inline eComponentType TriggerComponent::GetType()
 inline eTriggerType TriggerComponent::GetTriggerType() const
 {
 	return myTriggerType;
+}
+
+inline void TriggerComponent::SetRespawnValue(int aValue)
+{
+	myRespawnValue = aValue;
+}
+
+inline int TriggerComponent::GetRespawnValue() const
+{
+	return myRespawnValue;
 }

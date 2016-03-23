@@ -58,5 +58,8 @@
     <ClInclude Include="DefendTouchMessage.h">
       <Filter>Message</Filter>
     </ClInclude>
+    <ClInclude Include="RespawnTriggerMessage.h">
+      <Filter>Message</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

@@ -10,6 +10,7 @@ struct OnRadioButtonMessage;
 struct ResizeMessage;
 struct StartGameMessage;
 struct SetActiveMessage;
+struct RespawnTriggerMessage;
 struct Message;
 
 class Subscriber
@@ -29,5 +30,6 @@ public:
 	virtual void ReceiveMessage(const ResizeMessage& aMessage);
 	virtual void ReceiveMessage(const StartGameMessage& aMessage);
 	virtual void ReceiveMessage(const SetActiveMessage& aMessage);
+	virtual void ReceiveMessage(const RespawnTriggerMessage& aMessage);
 };
 
