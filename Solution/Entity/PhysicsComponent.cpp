@@ -171,7 +171,6 @@ void PhysicsComponent::SetVelocity(const CU::Vector3<float>& aVelocity)
 void PhysicsComponent::TeleportToPosition(const CU::Vector3<float>& aPosition)
 {
 	DL_ASSERT_EXP(myPhysicsType != ePhysics::STATIC, "Cant add Force to STATIC objects");
-	DL_ASSERT_EXP(myIsAwake == true, "Add force on sleeping object");
 
 	if (myDynamicBody != nullptr)
 	{
