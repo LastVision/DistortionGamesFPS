@@ -33,11 +33,12 @@ void ServerUnitManager::CreateUnits(Prism::Scene* aScene)
 		}
 	}
 	int index = 51000;
+	CU::Vector3<float> pos;
 	for (int j = 0; j < types.Size(); ++j)
 	{
 		for (int i = 0; i < myUnits.GetCapacity(); ++i)
 		{
-			Entity* unit = EntityFactory::CreateEntity(index++, eEntityType::UNIT, CU::ToLower(types[j]), aScene, false, CU::Vector3<float>());
+			Entity* unit = EntityFactory::CreateEntity(index++, eEntityType::UNIT, CU::ToLower(types[j]), aScene, false, { pos.x, -pos.y + 5 * (j* i), pos.z });
 			unit->Kill();
 			myUnits.Add(unit);
 		}

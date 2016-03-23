@@ -16,7 +16,7 @@ namespace Prism
 
 		void Add(Room* aRoom);
 		void CalcPortals();
-		void Add(Instance* anInstance, bool anAlwaysRender);
+		void Add(Instance* anInstance, eObjectRoomType aRoomType);
 		void Remove(Instance* anInstance);
 
 		const CU::GrowingArray<Instance*>& GetActiveInstances(const Camera& aCamera);

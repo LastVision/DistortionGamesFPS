@@ -29,6 +29,15 @@ enum class eInGameStates
 	LEVEL_WAIT_FOR_OTHER,
 };
 
+enum class eObjectRoomType
+{
+	NONE,
+	NOT_USED_ON_SERVER,
+	ALWAYS_RENDER,
+	DYNAMIC,
+	STATIC,
+};
+
 enum eOwnerType
 {
 	NOT_USED = -1,

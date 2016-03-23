@@ -41,5 +41,7 @@ public:
 	void LoadBulletComponent(XMLReader& aDocument, tinyxml2::XMLElement* aSourceElement, BulletComponentData& aOutputData);
 private:
 
+	eObjectRoomType LoadRoomType(XMLReader& aDocument, tinyxml2::XMLElement* aSourceElement);
+
 	int ConvertToTriggerEnum(std::string aName);
 };

@@ -17,7 +17,7 @@ public:
 	Entity* RequestBullet();
 	Entity* RequestBullet(unsigned int aGID);
 	void ActivateBullet(Entity* anEntity);
-	void Update(float aDeltaTime);
+	virtual void Update(float aDeltaTime);
 	Entity* RequestGrenade();
 
 protected:

@@ -93,6 +93,7 @@
     <ClInclude Include="NetMessageConnectReply.h" />
     <ClInclude Include="NetMessageEnemyShooting.h" />
     <ClInclude Include="NetMessageEntityState.h" />
+    <ClInclude Include="NetMessageExplosion.h" />
     <ClInclude Include="NetMessageHealth.h" />
     <ClInclude Include="NetMessageHealthPack.h" />
     <ClInclude Include="NetMessageLevelComplete.h" />
@@ -110,6 +111,7 @@
     <ClInclude Include="NetMessageRequestStartLevel.h" />
     <ClInclude Include="NetMessageSetActive.h" />
     <ClInclude Include="NetMessageLoadLevel.h" />
+    <ClInclude Include="NetMessageShootGrenade.h" />
     <ClInclude Include="NetworkMessageTypes.h" />
     <ClInclude Include="NetworkSubscriber.h" />
     <ClInclude Include="SerializeHelper.h" />

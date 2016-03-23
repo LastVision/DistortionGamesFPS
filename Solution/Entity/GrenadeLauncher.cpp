@@ -6,6 +6,8 @@
 #include "PhysicsComponent.h"
 #include <PhysicsInterface.h>
 #include "GrenadeComponent.h"
+#include <NetMessageShootGrenade.h>
+#include <SharedNetworkManager.h>
 
 GrenadeLauncher::GrenadeLauncher(Prism::Scene* aScene, unsigned int aEntityGID)
 	: Weapon(eWeaponType::GRENADE_LAUNCHER, "grenadelauncher")
@@ -27,7 +29,7 @@ GrenadeLauncher::GrenadeLauncher(Prism::Scene* aScene, unsigned int aEntityGID)
 
 	for (int i = 0; i < myMaxGrenades; ++i)
 	{
-		Entity* bullet = EntityFactory::CreateEntity((100000 + i), eEntityType::GRENADE, myScene, true, CU::Vector3<float>());
+		Entity* bullet = EntityFactory::CreateEntity((60000 + i), eEntityType::GRENADE, myScene, true, CU::Vector3<float>());
 		myBullets.Add(bullet);
 		bullet->GetComponent<PhysicsComponent>()->Sleep();
 	}
@@ -43,8 +45,9 @@ bool GrenadeLauncher::Shoot(const CU::Matrix44<float>& aOrientation)
 	if (myAmmoInClip > 0 && myShootTimer <= 0.f && myBullets.Size() < 1024)
 	{
 		//Skicka grenademessage(aOrientation.GetForward());
+		SharedNetworkManager::GetInstance()->AddMessage<NetMessageShootGrenade>(NetMessageShootGrenade(myForceStrength));
 
-		ShootAtDirection(aOrientation);
+		//ShootAtDirection(aOrientation);
 		myAmmoInClip -= 1;
 		myShootTimer = myShootTime;
 		return true;

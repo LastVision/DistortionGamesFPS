@@ -40,7 +40,7 @@ FirstPersonRenderComponent::FirstPersonRenderComponent(Entity& aEntity, Prism::S
 
 	Prism::ModelProxy* model = Prism::ModelLoader::GetInstance()->LoadModelAnimated("Data/Resource/Model/First_person/Pistol/SK_arm_pistol_idle.fbx", "Data/Resource/Shader/S_effect_pbl_animated.fx");
 	myModel = new Prism::Instance(*model, myInputComponentEyeOrientation);
-	aScene->AddInstance(myModel, true);
+	aScene->AddInstance(myModel, eObjectRoomType::ALWAYS_RENDER);
 
 	AddAnimation(ePlayerState::PISTOL_IDLE, "Data/Resource/Model/First_person/Pistol/SK_arm_pistol_idle.fbx", true, true);
 	AddAnimation(ePlayerState::PISTOL_HOLSTER, "Data/Resource/Model/First_person/Pistol/SK_arm_pistol_holster.fbx", false, true);
