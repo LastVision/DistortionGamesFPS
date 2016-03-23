@@ -208,7 +208,7 @@ void ClientLevel::ReceiveNetworkMessage(const NetMessageSetActive& aMessage, con
 		useEntityMap = false;
 		//DL_ASSERT("GID NOT FOUND IN CLIENT LEVEL!");
 	}
-	else if (myActiveUnitsMap.find(aMessage.myGID) == myActiveUnitsMap.end())
+	if (useEntityMap == false && myActiveUnitsMap.find(aMessage.myGID) == myActiveUnitsMap.end())
 	{
 		int triggerWillNotDoAnythingOnClient = 0;
 		return;
