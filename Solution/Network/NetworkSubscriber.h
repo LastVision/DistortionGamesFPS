@@ -21,6 +21,7 @@ class NetMessageSetLevel;
 class NetMessageRequestStartLevel;
 class NetMessageShootGrenade;
 class NetMessageSetActive;
+class NetMessageText;
 class NetMessageLoadLevel;
 class NetMessageEnemyShooting;
 
@@ -51,6 +52,7 @@ public:
 	virtual void ReceiveNetworkMessage(const NetMessageRequestStartLevel& aMessage, const sockaddr_in& aSenderAddress);
 	virtual void ReceiveNetworkMessage(const NetMessageShootGrenade& aMessage, const sockaddr_in& aSenderAddress);
 	virtual void ReceiveNetworkMessage(const NetMessageSetActive& aMessage, const sockaddr_in& aSenderAddress);
+	virtual void ReceiveNetworkMessage(const NetMessageText& aMessage, const sockaddr_in& aSenderAddress);
 	virtual void ReceiveNetworkMessage(const NetMessageLoadLevel& aMessage, const sockaddr_in& aSenderAddress);
 	virtual void ReceiveNetworkMessage(const NetMessageEnemyShooting& aMessage, const sockaddr_in& aSenderAddress);
 };

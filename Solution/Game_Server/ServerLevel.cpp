@@ -13,6 +13,7 @@
 #include <NetMessageHealthPack.h>
 #include <NetMessageEntityState.h>
 #include <NetMessageShootGrenade.h>
+#include <NetMessageText.h>
 #include <NetworkComponent.h>
 #include <PhysicsInterface.h>
 #include <PhysicsComponent.h>
@@ -218,17 +219,29 @@ void ServerLevel::HandleTrigger(Entity& aFirstEntity, Entity& aSecondEntity, boo
 				SharedNetworkManager::GetInstance()->AddMessage(NetMessageSetActive(false, true, firstTrigger->GetValue()));
 				myActiveEntitiesMap[firstTrigger->GetValue()]->GetComponent<PhysicsComponent>()->RemoveFromScene();
 				// do "open" animation
+				for each (const Connection& client in ServerNetworkManager::GetInstance()->GetClients())
+				{
+					ServerNetworkManager::GetInstance()->AddMessage<NetMessageText>(NetMessageText("Unlocked"), client.myID);
+				}
 				break;
 			case eTriggerType::LOCK:
 				SharedNetworkManager::GetInstance()->AddMessage(NetMessageSetActive(true, true, firstTrigger->GetValue()));
 				myActiveEntitiesMap[firstTrigger->GetValue()]->GetComponent<PhysicsComponent>()->AddToScene();
 				// do "close" animation
+				for each (const Connection& client in ServerNetworkManager::GetInstance()->GetClients())
+				{
+					ServerNetworkManager::GetInstance()->AddMessage<NetMessageText>(NetMessageText("Locked"), client.myID);
+				}
 				break;
 			case eTriggerType::MISSION:
 #ifndef RELEASE_BUILD
 				printf("MissionTrigger with GID: %i entered by: %s with GID: %i", aFirstEntity.GetGID(), aSecondEntity.GetSubType(), aSecondEntity.GetGID());
 #endif
 				myMissionManager->SetMission(firstTrigger->GetValue());
+				for each (const Entity* player in myPlayers)
+				{
+					ServerNetworkManager::GetInstance()->AddMessage<NetMessageText>(NetMessageText("Mission"), player->GetGID() - 1);
+				}
 				break;
 			case eTriggerType::LEVEL_CHANGE:
 				myNextLevel = firstTrigger->GetValue();
@@ -245,6 +258,10 @@ void ServerLevel::HandleTrigger(Entity& aFirstEntity, Entity& aSecondEntity, boo
 		}
 		else if (aSecondEntity.GetType() == eEntityType::UNIT && aSecondEntity.GetSubType() != "playerserver")
 		{
+			for each (const Connection& client in ServerNetworkManager::GetInstance()->GetClients())
+			{
+				ServerNetworkManager::GetInstance()->AddMessage<NetMessageText>(NetMessageText("Unit entered"), client.myID);
+			}
 			if (myMissionManager->GetCurrentMissionType() == eMissionType::DEFEND)
 			{
 				PostMaster::GetInstance()->SendMessage<DefendTouchMessage>(DefendTouchMessage(true));
@@ -255,6 +272,10 @@ void ServerLevel::HandleTrigger(Entity& aFirstEntity, Entity& aSecondEntity, boo
 	{
 		if (aSecondEntity.GetType() == eEntityType::UNIT && aSecondEntity.GetSubType() != "playerserver")
 		{
+			for each (const Connection& client in ServerNetworkManager::GetInstance()->GetClients())
+			{
+				ServerNetworkManager::GetInstance()->AddMessage<NetMessageText>(NetMessageText("Unit left"), client.myID);
+			}
 			if (myMissionManager->GetCurrentMissionType() == eMissionType::DEFEND)
 			{
 				PostMaster::GetInstance()->SendMessage<DefendTouchMessage>(DefendTouchMessage(false));
