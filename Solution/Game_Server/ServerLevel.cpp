@@ -219,49 +219,30 @@ void ServerLevel::HandleTrigger(Entity& aFirstEntity, Entity& aSecondEntity, boo
 				SharedNetworkManager::GetInstance()->AddMessage(NetMessageSetActive(false, true, firstTrigger->GetValue()));
 				myActiveEntitiesMap[firstTrigger->GetValue()]->GetComponent<PhysicsComponent>()->RemoveFromScene();
 				// do "open" animation
-				for each (const Connection& client in ServerNetworkManager::GetInstance()->GetClients())
-				{
-					ServerNetworkManager::GetInstance()->AddMessage<NetMessageText>(NetMessageText("Unlocked"), client.myID);
-				}
+				SendTextMessageToClients("Unlocked door");
 				break;
 			case eTriggerType::LOCK:
 				SharedNetworkManager::GetInstance()->AddMessage(NetMessageSetActive(true, true, firstTrigger->GetValue()));
 				myActiveEntitiesMap[firstTrigger->GetValue()]->GetComponent<PhysicsComponent>()->AddToScene();
 				// do "close" animation
-				for each (const Connection& client in ServerNetworkManager::GetInstance()->GetClients())
-				{
-					ServerNetworkManager::GetInstance()->AddMessage<NetMessageText>(NetMessageText("Locked"), client.myID);
-				}
+				SendTextMessageToClients("Locked door");
 				break;
 			case eTriggerType::MISSION:
 #ifndef RELEASE_BUILD
 				printf("MissionTrigger with GID: %i entered by: %s with GID: %i", aFirstEntity.GetGID(), aSecondEntity.GetSubType(), aSecondEntity.GetGID());
 #endif
 				myMissionManager->SetMission(firstTrigger->GetValue());
-				for each (const Entity* player in myPlayers)
-				{
-					ServerNetworkManager::GetInstance()->AddMessage<NetMessageText>(NetMessageText("Mission"), player->GetGID() - 1);
-				}
+				SendTextMessageToClients("Mission activated");
 				break;
 			case eTriggerType::LEVEL_CHANGE:
 				myNextLevel = firstTrigger->GetValue();
 				break;
-			//case eTriggerType::RESPAWN:
-			//	myPlayers[firstTrigger->GetRespawnValue() - 1]->GetComponent<HealthComponent>()->Heal(myPlayers[firstTrigger->GetRespawnValue() - 1]->GetComponent<HealthComponent>()->GetMaxHealth());
-			//	myPlayers[firstTrigger->GetRespawnValue() - 1]->SetState(eEntityState::IDLE);
-			//	SharedNetworkManager::GetInstance()->AddMessage<NetMessageEntityState>(NetMessageEntityState(eEntityState::IDLE, firstTrigger->GetRespawnValue()), firstTrigger->GetRespawnValue() - 1);
-			//	myRespawnTriggers[firstTrigger->GetRespawnValue() - 1]->GetComponent<PhysicsComponent>()->RemoveFromScene();
-			//	myPlayers[firstTrigger->GetRespawnValue() - 1]->GetComponent<PhysicsComponent>()->Wake();
-			//	break;
 			}
 			aSecondEntity.SendNote<CollisionNote>(CollisionNote(&aFirstEntity, aHasEntered));
 		}
 		else if (aSecondEntity.GetType() == eEntityType::UNIT && aSecondEntity.GetSubType() != "playerserver")
 		{
-			for each (const Connection& client in ServerNetworkManager::GetInstance()->GetClients())
-			{
-				ServerNetworkManager::GetInstance()->AddMessage<NetMessageText>(NetMessageText("Unit entered"), client.myID);
-			}
+			SendTextMessageToClients("A unit entered defend zone");
 			if (myMissionManager->GetCurrentMissionType() == eMissionType::DEFEND)
 			{
 				PostMaster::GetInstance()->SendMessage<DefendTouchMessage>(DefendTouchMessage(true));
@@ -272,10 +253,7 @@ void ServerLevel::HandleTrigger(Entity& aFirstEntity, Entity& aSecondEntity, boo
 	{
 		if (aSecondEntity.GetType() == eEntityType::UNIT && aSecondEntity.GetSubType() != "playerserver")
 		{
-			for each (const Connection& client in ServerNetworkManager::GetInstance()->GetClients())
-			{
-				ServerNetworkManager::GetInstance()->AddMessage<NetMessageText>(NetMessageText("Unit left"), client.myID);
-			}
+			SendTextMessageToClients("A unit left defend zone");
 			if (myMissionManager->GetCurrentMissionType() == eMissionType::DEFEND)
 			{
 				PostMaster::GetInstance()->SendMessage<DefendTouchMessage>(DefendTouchMessage(false));
@@ -283,6 +261,14 @@ void ServerLevel::HandleTrigger(Entity& aFirstEntity, Entity& aSecondEntity, boo
 		}
 	}
 	aFirstEntity.SendNote<CollisionNote>(CollisionNote(&aSecondEntity, aHasEntered));
+}
+
+void ServerLevel::SendTextMessageToClients(const std::string& aText, float)
+{
+	for each (const Connection& client in ServerNetworkManager::GetInstance()->GetClients())
+	{
+		ServerNetworkManager::GetInstance()->AddMessage(NetMessageText(aText), client.myID);
+	}
 }
 
 bool ServerLevel::ChangeLevel(int& aNextLevel)

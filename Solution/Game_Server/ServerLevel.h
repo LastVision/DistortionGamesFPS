@@ -25,6 +25,8 @@ public:
 
 private:
 	void HandleTrigger(Entity& aFirstEntity, Entity& aSecondEntity, bool aHasEntered) override;
+	void SendTextMessageToClients(const std::string& aText, float aTime = 5.f);
+
 	unsigned int myEntityIDCount;
 	CU::GrowingArray<unsigned int> myLoadedClients;
 	bool myAllClientsLoaded;
