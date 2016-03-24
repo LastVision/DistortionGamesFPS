@@ -240,6 +240,7 @@ void ClientLevelFactory::LoadTriggers(XMLReader& aReader, tinyxml2::XMLElement* 
 				newEntity->GetComponent<PhysicsComponent>()->RemoveFromScene();
 				newEntity->RemoveComponent(eComponentType::TRIGGER);
 				newEntity->RemoveComponent(eComponentType::PHYSICS);
+				myCurrentLevel->AddEntity(newEntity);
 			}
 			else
 			{

@@ -235,7 +235,10 @@ void ClientLevel::ReceiveNetworkMessage(const NetMessageSetActive& aMessage, con
 	{
 		if (useEntityMap == true)
 		{
-			myActiveEntitiesMap[aMessage.myGID]->GetComponent<PhysicsComponent>()->RemoveFromScene();
+			if (myActiveEntitiesMap[aMessage.myGID]->GetComponent<PhysicsComponent>() != nullptr)
+			{
+				myActiveEntitiesMap[aMessage.myGID]->GetComponent<PhysicsComponent>()->RemoveFromScene();
+			}
 			if (aMessage.myIsInGraphicsScene == true)
 			{
 				myActiveEntitiesMap[aMessage.myGID]->RemoveFromScene();
