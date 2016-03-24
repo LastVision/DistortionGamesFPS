@@ -503,7 +503,7 @@ namespace Prism
 		myDebugConnection->release();
 	}
 
-	int PhysicsManager::CreatePlayerController(const CU::Vector3<float>& aStartPosition, PhysicsComponent* aComponent)
+	int PhysicsManager::CreatePlayerController(const CU::Vector3<float>& aStartPosition, PhysicsComponent* aComponent, bool aShouldAddToScene)
 	{
 		physx::PxCapsuleControllerDesc controllerDesc;
 
@@ -521,6 +521,11 @@ namespace Prism
 		myControllerPositions[1].Add(aStartPosition);
 		myMoveJobs[0].Add(MoveJob());
 		myMoveJobs[1].Add(MoveJob());
+
+		if (aShouldAddToScene == false)
+		{
+			myScene->removeActor(*myControllerManager->getController(myControllerManager->getNbControllers() - 1)->getActor());
+		}
 		return myControllerManager->getNbControllers() - 1;
 	}
 
