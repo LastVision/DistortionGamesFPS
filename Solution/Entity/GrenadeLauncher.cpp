@@ -40,12 +40,12 @@ GrenadeLauncher::~GrenadeLauncher()
 	myBullets.DeleteAll();
 }
 
-bool GrenadeLauncher::Shoot(const CU::Matrix44<float>& aOrientation)
+bool GrenadeLauncher::Shoot(const CU::Matrix44<float>&)
 {
 	if (myAmmoInClip > 0 && myShootTimer <= 0.f && myBullets.Size() < 1024)
 	{
 		//Skicka grenademessage(aOrientation.GetForward());
-		SharedNetworkManager::GetInstance()->AddMessage<NetMessageShootGrenade>(NetMessageShootGrenade(myForceStrength));
+		SharedNetworkManager::GetInstance()->AddMessage<NetMessageShootGrenade>(NetMessageShootGrenade(int(myForceStrength)));
 
 		//ShootAtDirection(aOrientation);
 		myAmmoInClip -= 1;
