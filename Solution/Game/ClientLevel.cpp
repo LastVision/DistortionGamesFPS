@@ -50,6 +50,8 @@
 
 #include <NetworkComponent.h>
 #include "ClientProjectileManager.h"
+#include "TextEventManager.h"
+
 ClientLevel::ClientLevel()
 	: myInstanceOrientations(16)
 	, myInstances(16)
@@ -114,6 +116,8 @@ void ClientLevel::Init(const std::string&)
 	ClientProjectileManager::GetInstance()->CreateGrenades(myScene);
 	ClientProjectileManager::GetInstance()->CreateExplosions();
 
+	myTextManager = new TextEventManager(myPlayer->GetComponent<InputComponent>()->GetCamera());
+
 }
 
 void ClientLevel::SetMinMax(const CU::Vector3<float>& aMinPoint, const CU::Vector3<float>& aMaxPoint)
@@ -176,20 +180,24 @@ void ClientLevel::Update(const float aDeltaTime)
 
 	ClientNetworkManager::GetInstance()->Update(aDeltaTime);
 
+	myTextManager->Update(aDeltaTime);
+
 }
 
 void ClientLevel::Render()
 {
 	if (myInitDone == true)
 	{
-	myDeferredRenderer->Render(myScene);
-	Prism::DebugDrawer::GetInstance()->RenderLinesToScreen(*myPlayer->GetComponent<InputComponent>()->GetCamera());
-	//myScene->Render();
-	//myDeferredRenderer->Render(myScene);
-	myEmitterManager->RenderEmitters();
-	myPlayer->GetComponent<FirstPersonRenderComponent>()->Render();
-	//myPlayer->GetComponent<ShootingComponent>()->Render();
-}
+		myDeferredRenderer->Render(myScene);
+		Prism::DebugDrawer::GetInstance()->RenderLinesToScreen(*myPlayer->GetComponent<InputComponent>()->GetCamera());
+		//myScene->Render();
+		//myDeferredRenderer->Render(myScene);
+		myEmitterManager->RenderEmitters();
+		myPlayer->GetComponent<FirstPersonRenderComponent>()->Render();
+		//myPlayer->GetComponent<ShootingComponent>()->Render();
+
+		myTextManager->Render();
+	}
 }
 
 void ClientLevel::ReceiveNetworkMessage(const NetMessageOnDeath& aMessage, const sockaddr_in&)
@@ -306,7 +314,7 @@ void ClientLevel::ReceiveNetworkMessage(const NetMessageEnemyShooting& aMessage,
 
 void ClientLevel::ReceiveNetworkMessage(const NetMessageShootGrenade&, const sockaddr_in&)
 {
- 	Entity* bullet = ClientProjectileManager::GetInstance()->RequestGrenade();
+	Entity* bullet = ClientProjectileManager::GetInstance()->RequestGrenade();
 	CU::Matrix44<float> playerOrientation = myPlayer->GetOrientation();
 	bullet->AddToScene();
 	bullet->GetComponent<PhysicsComponent>()->AddToScene();
