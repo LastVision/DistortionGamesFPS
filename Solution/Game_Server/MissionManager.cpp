@@ -40,6 +40,14 @@ void MissionManager::Update(float aDeltaTime)
 void MissionManager::SetMission(int aId)
 {
 	myCurrentMission = myMissions[aId];
+	if (myCurrentMission->GetMissionType() == eMissionType::DEFEND)
+	{
+		printf("Defend Mission started");
+	}
+	else if (myCurrentMission->GetMissionType() == eMissionType::KILL_X)
+	{
+		printf("KillX Mission started");
+	}
 }
 
 eMissionType MissionManager::GetCurrentMissionType() const
