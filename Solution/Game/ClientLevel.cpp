@@ -179,8 +179,10 @@ void ClientLevel::Update(const float aDeltaTime)
 
 	ClientNetworkManager::GetInstance()->Update(aDeltaTime);
 
-	myTextManager->Update(aDeltaTime);
-
+	if (myTextManager != nullptr)
+	{
+		myTextManager->Update(aDeltaTime);
+	}
 }
 
 void ClientLevel::Render()
@@ -195,7 +197,10 @@ void ClientLevel::Render()
 		myPlayer->GetComponent<FirstPersonRenderComponent>()->Render();
 		//myPlayer->GetComponent<ShootingComponent>()->Render();
 
-		myTextManager->Render();
+		if (myTextManager != nullptr)
+		{
+			myTextManager->Render();
+		}
 	}
 }
 
