@@ -5,13 +5,13 @@ struct UpgradeComponentData
 {
 	bool myExistsInEntity = false;
 	
-	float myShootTimeModifier;
-	float myMinSpreadRotation;
-	float myMaxSpreadRotation;
+	float myShootTimeModifier = 0.f;
+	float myMinSpreadRotation = 0.f;
+	float myMaxSpreadRotation = 0.f;
 
-	int myClipSizeModifier;
-	int myAmmoTotalModifier;
-	int myDamageModifier;
+	int myClipSizeModifier = 0;
+	int myAmmoTotalModifier = 0;
+	int myDamageModifier = 0;
 	
 	eWeaponType myWeaponType;
 };
