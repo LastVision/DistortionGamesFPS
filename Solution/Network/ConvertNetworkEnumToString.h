@@ -59,6 +59,8 @@ static std::string ConvertNetworkEnumToString(eNetMessageType aType)
 		return "ACTIVATE_SPAWNPOINT ON SERVER";
 	case eNetMessageType::ACTIVATE_UNIT:
 		return "ACTIVATE_UNIT ON CLIENT";
+	case eNetMessageType::TEXT:
+		return "TEXT TO CLIENT";
 	case eNetMessageType::_COUNT:
 		DL_ASSERT("_COUNT not used as regular enum value");
 	default:

@@ -15,6 +15,7 @@ namespace Prism
 }
 
 class EmitterManager;
+class TextEventManager;
 
 class ClientLevel : public SharedLevel
 {
@@ -58,6 +59,8 @@ private:
 	CU::Vector3<float> myMinPoint;
 	CU::Vector3<float> myMaxPoint;
 	std::string myName;
+
+	TextEventManager* myTextManager;
 };
 
 inline Prism::Scene* ClientLevel::GetScene()

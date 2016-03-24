@@ -19,12 +19,15 @@ public:
 	void ReceiveNetworkMessage(const NetMessageEntityState& aMessage, const sockaddr_in& aSenderAddress) override;
 	void ReceiveNetworkMessage(const NetMessageHealthPack& aMessage, const sockaddr_in& aSenderAddress) override;
 	void ReceiveNetworkMessage(const NetMessageShootGrenade& aMessage, const sockaddr_in& aSenderAddress) override;
+	void ReceiveMessage(const SendTextToClientsMessage& aMessage) override;
 	void ReceiveMessage(const SetActiveMessage& aMessage) override;
 	void ReceiveMessage(const RespawnMessage &aMessage) override;
 	void ReceiveMessage(const RespawnTriggerMessage& aMessage) override;
 
 private:
 	void HandleTrigger(Entity& aFirstEntity, Entity& aSecondEntity, bool aHasEntered) override;
+	void SendTextMessageToClients(const std::string& aText, float aTime = 5.f);
+
 	unsigned int myEntityIDCount;
 	CU::GrowingArray<unsigned int> myLoadedClients;
 	bool myAllClientsLoaded;

@@ -18,6 +18,7 @@ namespace CU
 namespace Prism
 {
 	class Sprite;
+	class TextProxy;
 }
 
 namespace GUI
@@ -57,4 +58,6 @@ private:
 
 	bool myLevelComplete;
 	bool myCanStartNextLevel;
+
+	Prism::TextProxy* myText;
 };

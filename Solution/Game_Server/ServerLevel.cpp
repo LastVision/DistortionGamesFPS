@@ -13,7 +13,9 @@
 #include <NetMessageSetActive.h>
 #include <NetMessageHealthPack.h>
 #include <NetMessageEntityState.h>
+#include <SendTextToClientsMessage.h>
 #include <NetMessageShootGrenade.h>
+#include <NetMessageText.h>
 #include <NetworkComponent.h>
 #include <PhysicsInterface.h>
 #include <PhysicsComponent.h>
@@ -46,6 +48,7 @@ ServerLevel::ServerLevel()
 	PostMaster::GetInstance()->Subscribe(eMessageType::SET_ACTIVE, this);
 	PostMaster::GetInstance()->Subscribe(eMessageType::RESPAWN_TRIGGER, this);
 	PostMaster::GetInstance()->Subscribe(eMessageType::RESPAWN, this);
+	PostMaster::GetInstance()->Subscribe(eMessageType::SEND_TEXT_TO_CLIENTS, this);
 
 	ServerProjectileManager::Create();
 	ServerUnitManager::Create();
@@ -70,6 +73,7 @@ ServerLevel::~ServerLevel()
 	PostMaster::GetInstance()->UnSubscribe(eMessageType::SET_ACTIVE, this);
 	PostMaster::GetInstance()->UnSubscribe(eMessageType::RESPAWN_TRIGGER, this);
 	PostMaster::GetInstance()->UnSubscribe(eMessageType::RESPAWN, this);
+	PostMaster::GetInstance()->UnSubscribe(eMessageType::SEND_TEXT_TO_CLIENTS, this);
 
 }
 
@@ -183,6 +187,11 @@ void ServerLevel::ReceiveNetworkMessage(const NetMessageShootGrenade& aMessage, 
 	SharedNetworkManager::GetInstance()->AddMessage<NetMessageShootGrenade>(NetMessageShootGrenade(aMessage.myForceStrength));
 }
 
+void ServerLevel::ReceiveMessage(const SendTextToClientsMessage& aMessage)
+{
+	SendTextMessageToClients(aMessage.myText);
+}
+
 void ServerLevel::ReceiveMessage(const SetActiveMessage& aMessage)
 {
 	if (aMessage.myShouldActivate == true)
@@ -223,38 +232,36 @@ void ServerLevel::HandleTrigger(Entity& aFirstEntity, Entity& aSecondEntity, boo
 			switch (firstTrigger->GetTriggerType())
 			{
 			case eTriggerType::UNLOCK:
+				printf("UnlockTrigger with GID: %i entered by: %s with GID: %i \n", aFirstEntity.GetGID(), aSecondEntity.GetSubType().c_str(), aSecondEntity.GetGID());
 				SharedNetworkManager::GetInstance()->AddMessage(NetMessageSetActive(false, true, firstTrigger->GetValue()));
 				myActiveEntitiesMap[firstTrigger->GetValue()]->GetComponent<PhysicsComponent>()->RemoveFromScene();
 				// do "open" animation
+				SendTextMessageToClients("Unlocked door");
 				break;
 			case eTriggerType::LOCK:
+				printf("LockTrigger with GID: %i entered by: %s with GID: %i \n", aFirstEntity.GetGID(), aSecondEntity.GetSubType().c_str(), aSecondEntity.GetGID());
 				SharedNetworkManager::GetInstance()->AddMessage(NetMessageSetActive(true, true, firstTrigger->GetValue()));
 				myActiveEntitiesMap[firstTrigger->GetValue()]->GetComponent<PhysicsComponent>()->AddToScene();
 				// do "close" animation
+				SendTextMessageToClients("Locked door");
 				break;
 			case eTriggerType::MISSION:
-#ifndef RELEASE_BUILD
-				printf("MissionTrigger with GID: %i entered by: %s with GID: %i", aFirstEntity.GetGID(), aSecondEntity.GetSubType(), aSecondEntity.GetGID());
-#endif
+				printf("MissionTrigger with GID: %i entered by: %s with GID: %i \n", aFirstEntity.GetGID(), aSecondEntity.GetSubType().c_str(), aSecondEntity.GetGID());
 				myMissionManager->SetMission(firstTrigger->GetValue());
+				SendTextMessageToClients("Mission activated");
 				break;
 			case eTriggerType::LEVEL_CHANGE:
 				myNextLevel = firstTrigger->GetValue();
 				break;
-			//case eTriggerType::RESPAWN:
-			//	myPlayers[firstTrigger->GetRespawnValue() - 1]->GetComponent<HealthComponent>()->Heal(myPlayers[firstTrigger->GetRespawnValue() - 1]->GetComponent<HealthComponent>()->GetMaxHealth());
-			//	myPlayers[firstTrigger->GetRespawnValue() - 1]->SetState(eEntityState::IDLE);
-			//	SharedNetworkManager::GetInstance()->AddMessage<NetMessageEntityState>(NetMessageEntityState(eEntityState::IDLE, firstTrigger->GetRespawnValue()), firstTrigger->GetRespawnValue() - 1);
-			//	myRespawnTriggers[firstTrigger->GetRespawnValue() - 1]->GetComponent<PhysicsComponent>()->RemoveFromScene();
-			//	myPlayers[firstTrigger->GetRespawnValue() - 1]->GetComponent<PhysicsComponent>()->Wake();
-			//	break;
 			}
 			aSecondEntity.SendNote<CollisionNote>(CollisionNote(&aFirstEntity, aHasEntered));
 		}
 		else if (aSecondEntity.GetType() == eEntityType::UNIT && aSecondEntity.GetSubType() != "playerserver")
 		{
+			SendTextMessageToClients("A unit entered defend zone");
 			if (myMissionManager->GetCurrentMissionType() == eMissionType::DEFEND)
 			{
+				printf("DefendTrigger with GID: %i entered by: %s with GID: %i \n", aFirstEntity.GetGID(), aSecondEntity.GetSubType().c_str(), aSecondEntity.GetGID());
 				PostMaster::GetInstance()->SendMessage<DefendTouchMessage>(DefendTouchMessage(true));
 			}
 		}
@@ -263,13 +270,23 @@ void ServerLevel::HandleTrigger(Entity& aFirstEntity, Entity& aSecondEntity, boo
 	{
 		if (aSecondEntity.GetType() == eEntityType::UNIT && aSecondEntity.GetSubType() != "playerserver")
 		{
+			SendTextMessageToClients("A unit left defend zone");
 			if (myMissionManager->GetCurrentMissionType() == eMissionType::DEFEND)
 			{
+				printf("DefendTrigger with GID: %i exited by: %s with GID: %i \n", aFirstEntity.GetGID(), aSecondEntity.GetSubType().c_str(), aSecondEntity.GetGID());
 				PostMaster::GetInstance()->SendMessage<DefendTouchMessage>(DefendTouchMessage(false));
 			}
 		}
 	}
 	aFirstEntity.SendNote<CollisionNote>(CollisionNote(&aSecondEntity, aHasEntered));
+}
+
+void ServerLevel::SendTextMessageToClients(const std::string& aText, float)
+{
+	for each (const Connection& client in ServerNetworkManager::GetInstance()->GetClients())
+	{
+		ServerNetworkManager::GetInstance()->AddMessage(NetMessageText(aText), client.myID);
+	}
 }
 
 bool ServerLevel::ChangeLevel(int& aNextLevel)

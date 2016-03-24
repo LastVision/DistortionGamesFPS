@@ -27,6 +27,7 @@
 #include "NetMessageLevelLoaded.h"
 #include "NetMessageEnemyShooting.h"
 #include "NetMessageLevelComplete.h"
+#include "NetMessageText.h"
 
 #define BUFFERSIZE 512
 
@@ -325,6 +326,9 @@ void SharedNetworkManager::HandleMessage()
 			break;
 		case eNetMessageType::SHOOT_GRENADE:
 			UnpackAndHandle(NetMessageShootGrenade(), buffer);
+			break;
+		case eNetMessageType::TEXT:
+			UnpackAndHandle(NetMessageText(), buffer);
 			break;
 		case eNetMessageType::EXPLOSION:
 			UnpackAndHandle(NetMessageExplosion(), buffer);

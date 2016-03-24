@@ -8,6 +8,7 @@
 #include <FadeMessage.h>
 #include "InGameState.h"
 #include <InputWrapper.h>
+#include <ModelLoader.h>
 #include "ServerSelectState.h"
 #include <NetMessageAllClientsComplete.h>
 #include <NetMessageLevelComplete.h>
@@ -18,7 +19,7 @@
 #include <PostMaster.h>
 #include <ScriptSystem.h>
 #include <VTuneApi.h>
-
+#include <TextProxy.h>
 #include <Cursor.h>
 #include "ClientNetworkManager.h"
 
@@ -57,6 +58,9 @@ void InGameState::InitState(StateStackProxy* aStateStackProxy, GUI::Cursor* aCur
 	//myLevel = static_cast<ClientLevel*>(myLevelFactory->LoadLevel(myLevelToLoad));
 
 	myIsActiveState = true;
+
+	myText = Prism::ModelLoader::GetInstance()->LoadText(Prism::Engine::GetInstance()->GetFont(Prism::eFont::CONSOLE));
+	myText->SetPosition(CU::Vector2<float>(800.f, 800.f));
 
 	PostMaster::GetInstance()->Subscribe(eMessageType::GAME_STATE, this);
 	ClientNetworkManager::GetInstance()->Subscribe(eNetMessageType::LEVEL_COMPLETE, this);
@@ -117,11 +121,15 @@ const eStateStatus InGameState::Update(const float& aDeltaTime)
 		if (myCanStartNextLevel == true)
 		{
 			DEBUG_PRINT("Press space to continue!");
-
+			myText->SetText("Level Complete or Game Over\nPress space to continue");
 			if (CU::InputWrapper::GetInstance()->KeyDown(DIK_SPACE) == true)
 			{
 				ClientNetworkManager::GetInstance()->AddMessage(NetMessageRequestStartLevel());
 			}
+		}
+		else
+		{
+			myText->SetText("Level Complete or Game Over");
 		}
 	}
 	else
@@ -144,6 +152,10 @@ void InGameState::Render()
 	if (myLevelComplete == false)
 	{
 		myLevel->Render();
+	}
+	else
+	{
+		myText->Render();
 	}
 
 	VTUNE_EVENT_END();

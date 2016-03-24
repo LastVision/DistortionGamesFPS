@@ -9,6 +9,7 @@ struct OnClickMessage;
 struct OnRadioButtonMessage;
 struct ResizeMessage;
 struct StartGameMessage;
+struct SendTextToClientsMessage;
 struct SetActiveMessage;
 struct RespawnMessage;
 struct RespawnTriggerMessage;
@@ -30,6 +31,7 @@ public:
 	virtual void ReceiveMessage(const OnRadioButtonMessage& aMessage);
 	virtual void ReceiveMessage(const ResizeMessage& aMessage);
 	virtual void ReceiveMessage(const StartGameMessage& aMessage);
+	virtual void ReceiveMessage(const SendTextToClientsMessage& aMessage);
 	virtual void ReceiveMessage(const SetActiveMessage& aMessage);
 	virtual void ReceiveMessage(const RespawnMessage& aMessage);
 	virtual void ReceiveMessage(const RespawnTriggerMessage& aMessage);

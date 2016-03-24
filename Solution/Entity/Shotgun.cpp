@@ -1,5 +1,6 @@
 #include "stdafx.h"
 
+#include <AudioInterface.h>
 #include "DamageNote.h"
 #include "Entity.h"
 #include <EmitterMessage.h>
@@ -45,6 +46,7 @@ bool Shotgun::Shoot(const CU::Matrix44<float>& aOrientation)
 		ShootRowAround(aOrientation, CU::Vector3<float>(0, 0, 1.f) * (CU::Matrix44<float>::CreateRotateAroundX(CU::Math::RandomRange(myMinSpreadRotation, myMaxSpreadRotation)) * aOrientation));
 		myAmmoInClip -= 1;
 		myShootTimer = myShootTime;
+		Prism::Audio::AudioInterface::GetInstance()->PostEvent("Play_Shotgun", 0);
 		return true;
 	}
 	return false;

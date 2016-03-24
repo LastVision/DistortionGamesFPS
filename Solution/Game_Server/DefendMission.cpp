@@ -51,4 +51,5 @@ bool DefendMission::Update(float aDeltaTime)
 void DefendMission::AddValue(int aValue)
 {
 	myEnemiesInside += aValue;
+	printf("%i inside defendtrigger \n", myEnemiesInside);
 }
