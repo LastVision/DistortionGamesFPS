@@ -8,6 +8,10 @@
 #include "SharedUnitManager.h"
 
 #include <NetMessageSetActive.h>
+#include <SharedNetworkManager.h>
+#include <NetMessageActivateSpawnpoint.h>
+#include <NetMessageActivateUnit.h>
+
 
 SpawnpointComponent::SpawnpointComponent(Entity& anEntity, const SpawnpointComponentData& aSpawnpointComponentData)
 	: Component(anEntity)
@@ -15,7 +19,7 @@ SpawnpointComponent::SpawnpointComponent(Entity& anEntity, const SpawnpointCompo
 	, myIsActive(false)
 	, myUnits(512)
 {
-
+	SharedNetworkManager::GetInstance()->Subscribe(eNetMessageType::ACTIVATE_SPAWNPOINT, this);
 
 	myUnitCount = (myData.mySpawnPerInterval * myData.mySpawnpointLifetime) / myData.mySpawnInterval;
 	mySpawnTimer = myData.mySpawnInterval;
@@ -24,9 +28,14 @@ SpawnpointComponent::SpawnpointComponent(Entity& anEntity, const SpawnpointCompo
 	for (unsigned int i = 0; i < myUnitCount; ++i)
 	{
 		int randomType = CU::Math::RandomRange(0, aSpawnpointComponentData.myUnitTypes.Size());
-		myUnits.Add(SharedUnitManager::GetInstance()->RequestUnit(myData.myUnitTypes[randomType]));
+		std::string server = "";
+		if (myEntity.GetIsClient() == false)
+		{
+			server = "Server";
+		}
+		Entity* toAdd = SharedUnitManager::GetInstance()->RequestUnit(myData.myUnitTypes[randomType] + server);
+		myUnits.Add(toAdd);
 	}
-
 
 }
 
@@ -34,6 +43,7 @@ SpawnpointComponent::SpawnpointComponent(Entity& anEntity, const SpawnpointCompo
 SpawnpointComponent::~SpawnpointComponent()
 {
 	myUnits.RemoveAll();
+	SharedNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::ACTIVATE_SPAWNPOINT, this);
 }
 
 void SpawnpointComponent::Update(float aDelta)
@@ -61,10 +71,12 @@ void SpawnpointComponent::Activate()
 
 void SpawnpointComponent::DeActivate()
 {
+	myUnitIndex = 0;
+	myActiveCount = 0;
 	myIsActive = false;
 }
 
-void SpawnpointComponent::ReceiveNetworkMessage(const NetMessageSetActive& aMessage, const sockaddr_in&)
+void SpawnpointComponent::ReceiveNetworkMessage(const NetMessageActivateSpawnpoint& aMessage, const sockaddr_in&)
 {
 	if (myEntity.GetGID() == aMessage.myGID)
 	{
@@ -89,8 +101,12 @@ void SpawnpointComponent::SpawnUnit(float aDelta)
 		{
 			if (myActiveCount < myUnitCount)
 			{
-				SharedUnitManager::GetInstance()->ActivateUnit(myUnits[myUnitIndex]);
+				CU::Vector3<float> spawnPosition = myEntity.GetOrientation().GetPos();
+				spawnPosition.x + 5 * i;
+				SharedUnitManager::GetInstance()->ActivateUnit(myUnits[myUnitIndex], spawnPosition);
+				SharedNetworkManager::GetInstance()->AddMessage(NetMessageActivateUnit(myUnits[myUnitIndex]->GetGID(), spawnPosition));
 				myUnitIndex++;
+				myActiveCount++;
 			}
 		}
 		mySpawnTimer = myData.mySpawnInterval;

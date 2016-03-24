@@ -58,8 +58,8 @@ void ClientLevelFactory::ReadLevel(const std::string& aLevelPath)
 	LoadProps(reader, levelElement);
 	LoadDoors(reader, levelElement);
 	//LoadUnits(reader, levelElement);
+	ClientUnitManager::GetInstance()->CreateUnits(myCurrentLevel->GetScene());
 
-	LoadSpawnpoint(reader, levelElement);
 	LoadTriggers(reader, levelElement);
 	LoadLights(reader, levelElement);
 
@@ -273,8 +273,3 @@ void ClientLevelFactory::LoadLights(XMLReader& aReader, tinyxml2::XMLElement* aE
 	}
 }
 
-void ClientLevelFactory::LoadSpawnpoint(XMLReader& aReader, tinyxml2::XMLElement* anElement)
-{
-	ClientUnitManager::GetInstance()->CreateUnits(myCurrentLevel->GetScene());
-	//Don't ask. Ever... k. L.S... tell Daniel about it.
-}

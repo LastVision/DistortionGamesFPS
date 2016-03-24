@@ -44,6 +44,9 @@ void ServerUnitManager::CreateUnits(Prism::Scene* aScene)
 			myUnits.Add(unit);
 		}
 	}
+
+	AddToMap();
+
 }
 
 ServerUnitManager* ServerUnitManager::GetInstance()

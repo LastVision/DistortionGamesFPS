@@ -126,5 +126,11 @@
       <Filter>Messages</Filter>
     </ClInclude>
     <ClInclude Include="NetMessageExplosion.h" />
+    <ClInclude Include="NetMessageActivateSpawnpoint.h">
+      <Filter>Messages</Filter>
+    </ClInclude>
+    <ClInclude Include="NetMessageActivateUnit.h">
+      <Filter>Messages</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

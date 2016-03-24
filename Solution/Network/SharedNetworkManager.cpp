@@ -2,6 +2,8 @@
 #include "SharedNetworkManager.h"
 
 #include "NetMessage.h"
+#include "NetMessageActivateSpawnpoint.h"
+#include "NetMessageActivateUnit.h"
 #include "NetMessageAllClientsComplete.h"
 #include "NetMessageImportantReply.h"
 #include "NetMessageConnectReply.h"
@@ -326,6 +328,12 @@ void SharedNetworkManager::HandleMessage()
 			break;
 		case eNetMessageType::EXPLOSION:
 			UnpackAndHandle(NetMessageExplosion(), buffer);
+			break;
+		case eNetMessageType::ACTIVATE_SPAWNPOINT:
+			UnpackAndHandle(NetMessageActivateSpawnpoint(), buffer);
+			break;
+		case eNetMessageType::ACTIVATE_UNIT:
+			UnpackAndHandle(NetMessageActivateUnit(), buffer);
 			break;
 		default:
 			DL_ASSERT("Unhandled network message type");

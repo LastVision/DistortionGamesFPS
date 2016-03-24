@@ -89,6 +89,8 @@
     <ClInclude Include="ConvertNetworkEnumToString.h" />
     <ClInclude Include="NetImportantMessage.h" />
     <ClInclude Include="NetMessage.h" />
+    <ClInclude Include="NetMessageActivateSpawnpoint.h" />
+    <ClInclude Include="NetMessageActivateUnit.h" />
     <ClInclude Include="NetMessageAllClientsComplete.h" />
     <ClInclude Include="NetMessageConnectReply.h" />
     <ClInclude Include="NetMessageEnemyShooting.h" />

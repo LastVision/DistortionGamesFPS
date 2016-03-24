@@ -2,14 +2,19 @@
 #include "ClientUnitManager.h"
 #include <EntityFactory.h>
 #include <PhysicsComponent.h>
+#include <NetMessageActivateUnit.h>
+#include "ClientNetworkManager.h"
+#include "NetMessageEntityState.h"
 
 ClientUnitManager::ClientUnitManager()
 {
+	ClientNetworkManager::GetInstance()->Subscribe(eNetMessageType::ACTIVATE_UNIT, this);
 }
 
 
 ClientUnitManager::~ClientUnitManager()
 {
+	ClientNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::ACTIVATE_UNIT, this);
 }
 
 void ClientUnitManager::CreateUnits(Prism::Scene* aScene)
@@ -41,12 +46,31 @@ void ClientUnitManager::CreateUnits(Prism::Scene* aScene)
 		}
 	}
 
+	AddToMap();
+
 }
 
 ClientUnitManager* ClientUnitManager::GetInstance()
 {
 	DL_ASSERT_EXP(myInstance != nullptr, "ClientUnitManager doesn't exist. Please create it before getting it!");
 	return static_cast<ClientUnitManager*>(myInstance);
+}
+
+void ClientUnitManager::ReceiveNetworkMessage(const NetMessageActivateUnit& aMessage, const sockaddr_in&)
+{
+	Entity* toActivate = RequestUnit(aMessage.myGID);
+	if (toActivate != nullptr)
+	{
+		ActivateUnit(toActivate, aMessage.myPosition);
+	}
+}
+
+void ClientUnitManager::ReceiveNetworkMessage(const NetMessageEntityState& aMessage, const sockaddr_in&)
+{
+	if (myUnitsMap.find(aMessage.myGID) != myUnitsMap.end())
+	{
+		myUnitsMap[aMessage.myGID]->SetState(static_cast<eEntityState>(aMessage.myEntityState));
+	}
 }
 
 void ClientUnitManager::Create()

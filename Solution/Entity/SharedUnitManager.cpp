@@ -3,6 +3,7 @@
 #include "Entity.h"
 #include <Utility.h>
 #include "PhysicsComponent.h"
+#include <CommonHelper.h>
 
 SharedUnitManager* SharedUnitManager::myInstance = nullptr;
 
@@ -34,23 +35,27 @@ void SharedUnitManager::Update(float aDeltaTime)
 		}
 		else
 		{
+			myActiveUnits[i]->RemoveFromScene();
 			myActiveUnits.RemoveCyclicAtIndex(i);
 		}
 	}
 }
 
-void SharedUnitManager::ActivateUnit(Entity* aUnit)
+void SharedUnitManager::ActivateUnit(Entity* aUnit, const CU::Vector3<float>& aPosition)
 {
 	aUnit->Reset();
 	if (aUnit->GetIsClient() == false)
 	{
 		aUnit->GetComponent<PhysicsComponent>()->Wake();
+		aUnit->GetComponent<PhysicsComponent>()->AddToScene();
 	}
 	else
 	{
+		aUnit->AddToScene();
 		aUnit->GetComponent<PhysicsComponent>()->AddToScene();
 	}
-
+	
+	aUnit->GetComponent<PhysicsComponent>()->TeleportToPosition(aPosition);
 	myActiveUnits.Add(aUnit);
 }
 
@@ -63,7 +68,7 @@ Entity* SharedUnitManager::RequestUnit(const std::string& aUnitType)
 			myUnitIndex = 0;
 		}
 
-		if (myUnits[myUnitIndex]->GetSubType() == aUnitType && myUnits[myUnitIndex]->IsAlive() == false)
+		if (myUnits[myUnitIndex]->GetSubType() == CU::ToLower(aUnitType) && myUnits[myUnitIndex]->IsAlive() == false)
 		{
 			Entity* toReturn = myUnits[myUnitIndex];
 			myUnitIndex++;
@@ -78,11 +83,19 @@ Entity* SharedUnitManager::RequestUnit(const std::string& aUnitType)
 }
 
 
+void SharedUnitManager::AddToMap()
+{
+	for (unsigned int i = 0; i < myUnits.Size(); ++i)
+	{
+		myUnitsMap[myUnits[i]->GetGID()] = myUnits[i];
+	}
+}
+
 Entity* SharedUnitManager::SearchForUnit(const std::string& aUnitType)
 {
 	for (int i = myUnitIndex; i < myUnits.Size(); ++i)
 	{
-		if (myUnits[i]->GetSubType() == aUnitType && myUnits[i]->IsAlive() == false)
+		if (myUnits[i]->GetSubType() == CU::ToLower(aUnitType) && myUnits[i]->IsAlive() == false)
 		{
 			return myUnits[i];
 		}

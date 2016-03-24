@@ -84,6 +84,8 @@ void SharedLevelFactory::ReadLevel(const std::string& aLevelPath)
 	reader.CloseDocument();
 }
 
+void SharedLevelFactory::LoadSpawnpoint(XMLReader&, tinyxml2::XMLElement*){}
+
 void SharedLevelFactory::ReadGID(XMLReader& aReader, tinyxml2::XMLElement* aElement, unsigned int& aOutGID)
 {
 	tinyxml2::XMLElement* element = aReader.ForceFindFirstChild(aElement, "gid");

@@ -55,6 +55,10 @@ static std::string ConvertNetworkEnumToString(eNetMessageType aType)
 		return "CLIENT SHOOT GRENADE TO SERVER";
 	case eNetMessageType::EXPLOSION:
 		return "EXPLOSION TO CLIENT";
+	case eNetMessageType::ACTIVATE_SPAWNPOINT:
+		return "ACTIVATE_SPAWNPOINT ON SERVER";
+	case eNetMessageType::ACTIVATE_UNIT:
+		return "ACTIVATE_UNIT ON CLIENT";
 	case eNetMessageType::_COUNT:
 		DL_ASSERT("_COUNT not used as regular enum value");
 	default:

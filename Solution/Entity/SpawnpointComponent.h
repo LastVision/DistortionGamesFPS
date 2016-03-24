@@ -15,7 +15,7 @@ public:
 	void Activate();
 	void DeActivate();
 
-	void ReceiveNetworkMessage(const NetMessageSetActive& aMessage, const sockaddr_in& aSenderAddress) override;
+	void ReceiveNetworkMessage(const NetMessageActivateSpawnpoint& aMessage, const sockaddr_in& aSenderAddress) override;
 
 private:
 
@@ -23,6 +23,8 @@ private:
 
 	const SpawnpointComponentData& myData;
 	CU::GrowingArray<Entity*> myUnits;
+
+
 	int myUnitCount;
 	int myActiveCount;
 	int myUnitIndex;

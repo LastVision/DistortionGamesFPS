@@ -50,6 +50,7 @@
 #include <NetworkComponent.h>
 #include "ClientProjectileManager.h"
 #include "ClientUnitManager.h"
+#include <NetMessageActivateSpawnpoint.h>
 ClientLevel::ClientLevel()
 	: myInstanceOrientations(16)
 	, myInstances(16)
@@ -137,7 +138,7 @@ void ClientLevel::Update(const float aDeltaTime)
 	//}
 	if (CU::InputWrapper::GetInstance()->KeyDown(DIK_B) == true)
 	{
-		ClientNetworkManager::GetInstance()->AddMessage(NetMessageSetActive(true, false, 17));
+		ClientNetworkManager::GetInstance()->AddMessage(NetMessageActivateSpawnpoint(17));
 	}
 
 	SharedLevel::Update(aDeltaTime);
@@ -277,9 +278,8 @@ void ClientLevel::ReceiveNetworkMessage(const NetMessageEntityState& aMessage, c
 
 	if (myActiveUnitsMap.find(aMessage.myGID) == myActiveUnitsMap.end())
 	{
-		DL_ASSERT("ENTITY GID NOT FOUND IN CLIENT LEVEL!");
+		return;
 	}
-
 	myActiveUnitsMap[aMessage.myGID]->SetState(static_cast<eEntityState>(aMessage.myEntityState));
 }
 
@@ -292,7 +292,7 @@ void ClientLevel::ReceiveNetworkMessage(const NetMessageEnemyShooting& aMessage,
 
 void ClientLevel::ReceiveNetworkMessage(const NetMessageShootGrenade&, const sockaddr_in&)
 {
- 	Entity* bullet = ClientProjectileManager::GetInstance()->RequestGrenade();
+	Entity* bullet = ClientProjectileManager::GetInstance()->RequestGrenade();
 	CU::Matrix44<float> playerOrientation = myPlayer->GetOrientation();
 	bullet->AddToScene();
 	bullet->GetComponent<PhysicsComponent>()->AddToScene();
