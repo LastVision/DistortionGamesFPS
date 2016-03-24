@@ -164,6 +164,7 @@ void ClientLevel::Update(const float aDeltaTime)
 	myPlayer->GetComponent<FirstPersonRenderComponent>()->UpdateCoOpPositions(myPlayers);
 	myPlayer->Update(aDeltaTime);
 	myEmitterManager->UpdateEmitters(aDeltaTime, CU::Matrix44f());
+	myTextManager->Update(aDeltaTime);
 
 	if (CU::InputWrapper::GetInstance()->KeyDown(DIK_I))
 	{
@@ -188,7 +189,6 @@ void ClientLevel::Update(const float aDeltaTime)
 
 	ClientNetworkManager::GetInstance()->Update(aDeltaTime);
 
-	//myTextManager->Update(aDeltaTime);
 
 }
 
@@ -204,7 +204,7 @@ void ClientLevel::Render()
 		myPlayer->GetComponent<FirstPersonRenderComponent>()->Render();
 		//myPlayer->GetComponent<ShootingComponent>()->Render();
 
-		//myTextManager->Render();
+		myTextManager->Render();
 	}
 }
 
@@ -356,7 +356,6 @@ void ClientLevel::CollisionCallback(PhysicsComponent* aFirst, PhysicsComponent* 
 		HandleTrigger(first, second, aHasEntered);
 		break;
 	case eEntityType::EXPLOSION:
-		myTextManager->AddNotification("explosion");
 		if (aHasEntered == true)
 		{
 			HandleExplosion(first, second);
