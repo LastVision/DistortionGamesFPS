@@ -27,7 +27,8 @@ NetworkComponent::NetworkComponent(Entity& anEntity, CU::Matrix44<float>& anOrie
 	mySendTime = NETWORK_UPDATE_INTERVAL;
 	SharedNetworkManager::GetInstance()->Subscribe(eNetMessageType::POSITION, this);
 	SharedNetworkManager::GetInstance()->Subscribe(eNetMessageType::ON_HIT, this);
-
+	myPrevPosition = anOrientation.GetPos();
+	myServerPosition = anOrientation.GetPos();
 }
 
 

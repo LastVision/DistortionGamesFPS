@@ -155,7 +155,7 @@ namespace Prism
 		//mySH_GRID_Z = CU::Math::ClosestPowerOfTwo(abs(int(aMaxPoint.z - aMinPoint.z)));
 		//myCubeMapGenerator->GenerateSHTextures(this, aScene, mySHTextures, aMinPoint, aMaxPoint);
 		myCubeMapGenerator->GenerateSHTextures(this, aScene, mySHTextures, myAmbientPass.mySHGridSize
-			, myAmbientPass.mySHGridOffset, 2.f, aName);
+			, myAmbientPass.mySHGridOffset, 4.f, aName);
 
 		myAmbientPass.mySHGridOffset *= -1.f;
 	}
