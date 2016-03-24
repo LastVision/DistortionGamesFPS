@@ -367,6 +367,10 @@ int ComponentLoader::ConvertToTriggerEnum(std::string aName)
 	{
 		return static_cast<int>(eTriggerType::RESPAWN);
 	}
+	else if (aName == "spawntrigger")
+	{
+		return static_cast<int>(eTriggerType::ENEMY_SPAWN);
+	}
 
 	DL_ASSERT("[ComponentLoader] No trigger type in trigger component named " + aName);
 	return static_cast<int>(eTriggerType::_COUNT);

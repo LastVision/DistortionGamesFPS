@@ -2,6 +2,8 @@
 #include "SharedNetworkManager.h"
 
 #include "NetMessage.h"
+#include "NetMessageActivateSpawnpoint.h"
+#include "NetMessageActivateUnit.h"
 #include "NetMessageAllClientsComplete.h"
 #include "NetMessageImportantReply.h"
 #include "NetMessageConnectReply.h"
@@ -48,6 +50,7 @@ void SharedNetworkManager::Initiate()
 	mySendBuffer[0].Init(16384);
 	mySendBuffer[1].Init(16384);
 	myImportantMessagesBuffer.Init(16384);
+	myImportantReceivedMessages.Init(16384);
 	myImportantID = 0;
 	myPingTime = 0.f;
 	myReceieveIsDone = true;
@@ -87,7 +90,6 @@ SharedNetworkManager::SharedNetworkManager()
 	, myIsRunning(false)
 	, myCurrentBuffer(0)
 	, myCurrentSendBuffer(0)
-	, myImportantReceivedMessages(64)
 {
 }
 
@@ -330,6 +332,12 @@ void SharedNetworkManager::HandleMessage()
 			break;
 		case eNetMessageType::EXPLOSION:
 			UnpackAndHandle(NetMessageExplosion(), buffer);
+			break;
+		case eNetMessageType::ACTIVATE_SPAWNPOINT:
+			UnpackAndHandle(NetMessageActivateSpawnpoint(), buffer);
+			break;
+		case eNetMessageType::ACTIVATE_UNIT:
+			UnpackAndHandle(NetMessageActivateUnit(), buffer);
 			break;
 		default:
 			DL_ASSERT("Unhandled network message type");

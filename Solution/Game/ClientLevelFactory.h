@@ -29,5 +29,6 @@ private:
 	void LoadTriggers(XMLReader& aReader, tinyxml2::XMLElement* aElement) override;
 	void LoadLights(XMLReader& aReader, tinyxml2::XMLElement* aElement);
 
+
 	ClientLevel* myCurrentLevel;
 };

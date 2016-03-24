@@ -87,7 +87,6 @@
     <ClInclude Include="SharedLevel.h" />
     <ClInclude Include="SharedLevelFactory.h" />
     <ClInclude Include="SharedProjectileManager.h" />
-    <ClInclude Include="SharedUnitManager.h" />
     <ClInclude Include="stdafx.h" />
   </ItemGroup>
   <ItemGroup>
@@ -95,7 +94,6 @@
     <ClCompile Include="SharedLevel.cpp" />
     <ClCompile Include="SharedLevelFactory.cpp" />
     <ClCompile Include="SharedProjectileManager.cpp" />
-    <ClCompile Include="SharedUnitManager.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>

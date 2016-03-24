@@ -66,6 +66,7 @@ namespace Prism
 		void SetVelocity(physx::PxRigidDynamic* aDynamicBody, const CU::Vector3<float>& aVelocity);
 		void TeleportToPosition(physx::PxRigidDynamic* aDynamicBody, const CU::Vector3<float>& aPosition);
 		void TeleportToPosition(physx::PxRigidStatic * aStaticBody, const CU::Vector3<float>& aPosition);
+		void TeleportToPosition(int aID, const CU::Vector3<float>& aPosition);
 		void MoveToPosition(physx::PxRigidDynamic* aDynamicBody, const CU::Vector3<float>& aPosition);
 
 		void onConstraintBreak(physx::PxConstraintInfo*, physx::PxU32) override {};
@@ -234,14 +235,24 @@ namespace Prism
 			PositionJob()
 				: myRigidBody(nullptr)
 				, myType(PositionJobType::NONE)
+				, myID(-1)
 			{}
 
 			PositionJob(physx::PxRigidActor* aRigidBody, const CU::Vector3<float>& aPosition, PositionJobType aType)
 				: myRigidBody(aRigidBody)
 				, myPosition(aPosition)
 				, myType(aType)
+				, myID(-1)
 			{}
 
+			PositionJob(int aID, const CU::Vector3<float>& aPosition, PositionJobType aType)
+				: myRigidBody(nullptr)
+				, myPosition(aPosition)
+				, myType(aType)
+				, myID(aID)
+			{}
+
+			int myID;
 			physx::PxRigidActor* myRigidBody;
 			CU::Vector3<float> myPosition;
 			PositionJobType myType;

@@ -3,10 +3,11 @@
 #include "PhysicsComponent.h"
 #include "PhysicsComponentData.h"
 #include <PhysicsInterface.h>
+#include <CommonHelper.h>
 
 
 PhysicsComponent::PhysicsComponent(Entity& aEntity, const PhysicsComponentData& aPhysicsComponentData
-	, const std::string& aFBXPath)
+		, const std::string& aFBXPath)
 	: Component(aEntity)
 	, myData(aPhysicsComponentData)
 	, myIsAwake(true)
@@ -25,7 +26,8 @@ PhysicsComponent::PhysicsComponent(Entity& aEntity, const PhysicsComponentData& 
 
 	bool shouldAddToPhysicsScene = true;
 	if (myEntity.GetType() == eEntityType::EXPLOSION || myEntity.GetSubType() == "respawn"
-		|| myEntity.GetType() == eEntityType::BULLET)
+		|| myEntity.GetType() == eEntityType::BULLET || myEntity.GetSubType() == CU::ToLower("gunDroidServer")
+		|| myEntity.GetSubType() == "gundroid")
 	{
 		shouldAddToPhysicsScene = false;
 	}
@@ -130,7 +132,7 @@ void PhysicsComponent::UpdateOrientation()
 		int apa = 5;
 		apa;
 	}
-	
+
 	if (myIsAwake == true)
 	{
 		Prism::PhysicsInterface::GetInstance()->UpdateOrientation(myDynamicBody, myShapes, myThread4x4Float);
@@ -144,7 +146,7 @@ void PhysicsComponent::UpdateOrientation()
 void PhysicsComponent::UpdateOrientationStatic()
 {
 	DL_ASSERT_EXP(myPhysicsType == ePhysics::PHANTOM, "Cant update Orientation Static on other types of PhysEntities");
-	
+
 	if (myIsAwake == true)
 	{
 		Prism::PhysicsInterface::GetInstance()->UpdateOrientation(myStaticBody, myShapes, myThread4x4Float);

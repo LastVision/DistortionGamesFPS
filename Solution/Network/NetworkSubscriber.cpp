@@ -28,3 +28,5 @@ void NetworkSubscriber::ReceiveNetworkMessage(const NetMessageSetActive&, const 
 void NetworkSubscriber::ReceiveNetworkMessage(const NetMessageText&, const sockaddr_in&){}
 void NetworkSubscriber::ReceiveNetworkMessage(const NetMessageLoadLevel&, const sockaddr_in&){}
 void NetworkSubscriber::ReceiveNetworkMessage(const NetMessageEnemyShooting&, const sockaddr_in&){}
+void NetworkSubscriber::ReceiveNetworkMessage(const NetMessageActivateSpawnpoint&, const sockaddr_in&){}
+void NetworkSubscriber::ReceiveNetworkMessage(const NetMessageActivateUnit&, const sockaddr_in&){}

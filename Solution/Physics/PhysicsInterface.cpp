@@ -90,6 +90,11 @@ namespace Prism
 		myManager->TeleportToPosition(aStaticBody, aPosition);
 	}
 
+	void PhysicsInterface::TeleportToPosition(int aID, const CU::Vector3<float>& aPosition)
+	{
+		myManager->TeleportToPosition(aID, aPosition);
+	}
+
 	void PhysicsInterface::MoveToPosition(physx::PxRigidDynamic* aDynamicBody, const CU::Vector3<float>& aPosition)
 	{
 		myManager->MoveToPosition(aDynamicBody, aPosition);

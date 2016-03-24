@@ -1,3 +1,4 @@
+
 #include "stdafx.h"
 #include "ServerLevel.h"
 
@@ -26,8 +27,10 @@
 #include <SetActiveMessage.h>
 #include <RespawnMessage.h>
 #include <RespawnTriggerMessage.h>
+#include <ActivateSpawnpointMessage.h>
 
 #include "ServerProjectileManager.h"
+#include "ServerUnitManager.h"
 
 ServerLevel::ServerLevel()
 	: myLoadedClients(16)
@@ -36,17 +39,21 @@ ServerLevel::ServerLevel()
 	, myRespawnTriggers(16)
 {
 	Prism::PhysicsInterface::Create(std::bind(&ServerLevel::CollisionCallback, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3), true);
+
 	ServerNetworkManager::GetInstance()->Subscribe(eNetMessageType::ON_CONNECT, this);
 	ServerNetworkManager::GetInstance()->Subscribe(eNetMessageType::LEVEL_LOADED, this);
 	ServerNetworkManager::GetInstance()->Subscribe(eNetMessageType::ENTITY_STATE, this);
 	ServerNetworkManager::GetInstance()->Subscribe(eNetMessageType::SHOOT_GRENADE, this);
+	ServerNetworkManager::GetInstance()->Subscribe(eNetMessageType::HEALTH_PACK, this);
+
 	PostMaster::GetInstance()->Subscribe(eMessageType::SET_ACTIVE, this);
-	ServerProjectileManager::Create();
 	PostMaster::GetInstance()->Subscribe(eMessageType::RESPAWN_TRIGGER, this);
 	PostMaster::GetInstance()->Subscribe(eMessageType::RESPAWN, this);
 	PostMaster::GetInstance()->Subscribe(eMessageType::SEND_TEXT_TO_CLIENTS, this);
 
-	ServerNetworkManager::GetInstance()->Subscribe(eNetMessageType::HEALTH_PACK, this);
+	ServerProjectileManager::Create();
+	ServerUnitManager::Create();
+
 }
 
 ServerLevel::~ServerLevel()
@@ -55,19 +62,20 @@ ServerLevel::~ServerLevel()
 	Prism::PhysicsInterface::GetInstance()->ShutdownThread();
 #endif
 	ServerProjectileManager::Destroy();
+	ServerUnitManager::Destroy();
 	PollingStation::Destroy();
 	SAFE_DELETE(myMissionManager);
 	ServerNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::ON_CONNECT, this);
 	ServerNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::LEVEL_LOADED, this);
 	ServerNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::ENTITY_STATE, this);
 	ServerNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::SHOOT_GRENADE, this);
+	ServerNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::HEALTH_PACK, this);
 
 	PostMaster::GetInstance()->UnSubscribe(eMessageType::SET_ACTIVE, this);
 	PostMaster::GetInstance()->UnSubscribe(eMessageType::RESPAWN_TRIGGER, this);
 	PostMaster::GetInstance()->UnSubscribe(eMessageType::RESPAWN, this);
 	PostMaster::GetInstance()->UnSubscribe(eMessageType::SEND_TEXT_TO_CLIENTS, this);
 
-	ServerNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::HEALTH_PACK, this);
 }
 
 void ServerLevel::Init(const std::string& aMissionXMLPath)
@@ -98,6 +106,7 @@ void ServerLevel::Update(const float aDeltaTime)
 		__super::Update(aDeltaTime);
 		myMissionManager->Update(aDeltaTime);
 		ServerProjectileManager::GetInstance()->Update(aDeltaTime);
+		ServerUnitManager::GetInstance()->Update(aDeltaTime);
 		//	PollingStation::GetInstance()->FindClosestEntityToEntity(*myPlayers[0]);
 
 		Prism::PhysicsInterface::GetInstance()->EndFrame();
@@ -244,6 +253,9 @@ void ServerLevel::HandleTrigger(Entity& aFirstEntity, Entity& aSecondEntity, boo
 				break;
 			case eTriggerType::LEVEL_CHANGE:
 				myNextLevel = firstTrigger->GetValue();
+				break;
+			case eTriggerType::ENEMY_SPAWN:
+				PostMaster::GetInstance()->SendMessage(ActivateSpawnpointMessage(firstTrigger->GetEntity().GetGID()));
 				break;
 			}
 			aSecondEntity.SendNote<CollisionNote>(CollisionNote(&aFirstEntity, aHasEntered));

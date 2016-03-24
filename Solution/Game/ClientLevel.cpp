@@ -50,6 +50,8 @@
 
 #include <NetworkComponent.h>
 #include "ClientProjectileManager.h"
+#include "ClientUnitManager.h"
+#include <NetMessageActivateSpawnpoint.h>
 #include "TextEventManager.h"
 
 ClientLevel::ClientLevel()
@@ -68,6 +70,7 @@ ClientLevel::ClientLevel()
 	ClientNetworkManager::GetInstance()->Subscribe(eNetMessageType::EXPLOSION, this);
 
 	ClientProjectileManager::Create();
+	ClientUnitManager::Create();
 	myScene = new Prism::Scene();
 }
 
@@ -79,6 +82,7 @@ ClientLevel::~ClientLevel()
 
 	SAFE_DELETE(myEmitterManager);
 	ClientProjectileManager::Destroy();
+	ClientUnitManager::Destroy();
 	ClientNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::ON_DEATH, this);
 	ClientNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::SET_ACTIVE, this);
 	ClientNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::ENTITY_STATE, this);
@@ -142,6 +146,7 @@ void ClientLevel::Update(const float aDeltaTime)
 		RESET_RUNTIME;
 	}
 	ClientProjectileManager::GetInstance()->Update(aDeltaTime);
+	ClientUnitManager::GetInstance()->Update(aDeltaTime);
 	//if (CU::InputWrapper::GetInstance()->KeyDown(DIK_U))
 	//{
 	//	myActiveEnemies.GetLast()->SetState(eEntityState::WALK);
@@ -150,11 +155,16 @@ void ClientLevel::Update(const float aDeltaTime)
 	//{
 	//	myActiveEnemies.GetLast()->SetState(eEntityState::ATTACK);
 	//}
+	if (CU::InputWrapper::GetInstance()->KeyDown(DIK_B) == true)
+	{
+		ClientNetworkManager::GetInstance()->AddMessage(NetMessageActivateSpawnpoint(17));
+	}
 
 	SharedLevel::Update(aDeltaTime);
 	myPlayer->GetComponent<FirstPersonRenderComponent>()->UpdateCoOpPositions(myPlayers);
 	myPlayer->Update(aDeltaTime);
 	myEmitterManager->UpdateEmitters(aDeltaTime, CU::Matrix44f());
+	myTextManager->Update(aDeltaTime);
 
 	if (CU::InputWrapper::GetInstance()->KeyDown(DIK_I))
 	{
@@ -179,7 +189,6 @@ void ClientLevel::Update(const float aDeltaTime)
 
 	ClientNetworkManager::GetInstance()->Update(aDeltaTime);
 
-	//myTextManager->Update(aDeltaTime);
 
 }
 
@@ -195,7 +204,7 @@ void ClientLevel::Render()
 		myPlayer->GetComponent<FirstPersonRenderComponent>()->Render();
 		//myPlayer->GetComponent<ShootingComponent>()->Render();
 
-		//myTextManager->Render();
+		myTextManager->Render();
 	}
 }
 
@@ -298,9 +307,8 @@ void ClientLevel::ReceiveNetworkMessage(const NetMessageEntityState& aMessage, c
 
 	if (myActiveUnitsMap.find(aMessage.myGID) == myActiveUnitsMap.end())
 	{
-		DL_ASSERT("ENTITY GID NOT FOUND IN CLIENT LEVEL!");
+		return;
 	}
-
 	myActiveUnitsMap[aMessage.myGID]->SetState(static_cast<eEntityState>(aMessage.myEntityState));
 }
 
@@ -348,7 +356,6 @@ void ClientLevel::CollisionCallback(PhysicsComponent* aFirst, PhysicsComponent* 
 		HandleTrigger(first, second, aHasEntered);
 		break;
 	case eEntityType::EXPLOSION:
-		myTextManager->AddNotification("explosion");
 		if (aHasEntered == true)
 		{
 			HandleExplosion(first, second);
@@ -387,28 +394,30 @@ void ClientLevel::DebugMusic()
 
 void ClientLevel::HandleTrigger(Entity& aFirstEntity, Entity& aSecondEntity, bool aHasEntered)
 {
-	if (aSecondEntity.GetType() == eEntityType::PLAYER && aHasEntered == true)
+	if (aSecondEntity.GetType() == eEntityType::PLAYER)
 	{
-		TriggerComponent* firstTrigger = aFirstEntity.GetComponent<TriggerComponent>();
-		if (firstTrigger->GetTriggerType() == eTriggerType::UPGRADE)
+		if (aHasEntered == true)
 		{
-			myTextManager->AddNotification("upgrade");
-			if (aSecondEntity.GetType() == eEntityType::PLAYER)
+			TriggerComponent* firstTrigger = aFirstEntity.GetComponent<TriggerComponent>();
+			if (firstTrigger->GetTriggerType() == eTriggerType::UPGRADE)
 			{
-				aSecondEntity.SendNote<UpgradeNote>(aFirstEntity.GetComponent<UpgradeComponent>()->GetData());
-				Prism::Audio::AudioInterface::GetInstance()->PostEvent("FadeInFirstLayer", 0);
+				myTextManager->AddNotification("upgrade");
+				if (aSecondEntity.GetType() == eEntityType::PLAYER)
+				{
+					aSecondEntity.SendNote<UpgradeNote>(aFirstEntity.GetComponent<UpgradeComponent>()->GetData());
+					Prism::Audio::AudioInterface::GetInstance()->PostEvent("FadeInFirstLayer", 0);
+				}
 			}
+			else if (firstTrigger->GetTriggerType() == eTriggerType::HEALTH_PACK)
+			{
+				myTextManager->AddNotification("healthpack");
+				ClientNetworkManager::GetInstance()->AddMessage<NetMessageHealthPack>(NetMessageHealthPack(firstTrigger->GetValue()));
+				Prism::Audio::AudioInterface::GetInstance()->PostEvent("FadeInSecondLayer", 0);
+			}
+			aSecondEntity.SendNote<CollisionNote>(CollisionNote(&aFirstEntity, aHasEntered));
 		}
-		else if (firstTrigger->GetTriggerType() == eTriggerType::HEALTH_PACK)
-		{
-			myTextManager->AddNotification("healthpack");
-			ClientNetworkManager::GetInstance()->AddMessage<NetMessageHealthPack>(NetMessageHealthPack(firstTrigger->GetValue()));
-			Prism::Audio::AudioInterface::GetInstance()->PostEvent("FadeInSecondLayer", 0);
-		}
-		aSecondEntity.SendNote<CollisionNote>(CollisionNote(&aFirstEntity, aHasEntered));
+		aFirstEntity.SendNote<CollisionNote>(CollisionNote(&aSecondEntity, aHasEntered));
 	}
-
-	aFirstEntity.SendNote<CollisionNote>(CollisionNote(&aSecondEntity, aHasEntered));
 }
 
 void ClientLevel::CreatePlayers()
