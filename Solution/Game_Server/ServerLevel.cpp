@@ -224,21 +224,21 @@ void ServerLevel::HandleTrigger(Entity& aFirstEntity, Entity& aSecondEntity, boo
 			switch (firstTrigger->GetTriggerType())
 			{
 			case eTriggerType::UNLOCK:
+				printf("UnlockTrigger with GID: %i entered by: %s with GID: %i \n", aFirstEntity.GetGID(), aSecondEntity.GetSubType().c_str(), aSecondEntity.GetGID());
 				SharedNetworkManager::GetInstance()->AddMessage(NetMessageSetActive(false, true, firstTrigger->GetValue()));
 				myActiveEntitiesMap[firstTrigger->GetValue()]->GetComponent<PhysicsComponent>()->RemoveFromScene();
 				// do "open" animation
 				SendTextMessageToClients("Unlocked door");
 				break;
 			case eTriggerType::LOCK:
+				printf("LockTrigger with GID: %i entered by: %s with GID: %i \n", aFirstEntity.GetGID(), aSecondEntity.GetSubType().c_str(), aSecondEntity.GetGID());
 				SharedNetworkManager::GetInstance()->AddMessage(NetMessageSetActive(true, true, firstTrigger->GetValue()));
 				myActiveEntitiesMap[firstTrigger->GetValue()]->GetComponent<PhysicsComponent>()->AddToScene();
 				// do "close" animation
 				SendTextMessageToClients("Locked door");
 				break;
 			case eTriggerType::MISSION:
-#ifndef RELEASE_BUILD
-				printf("MissionTrigger with GID: %i entered by: %s with GID: %i", aFirstEntity.GetGID(), aSecondEntity.GetSubType(), aSecondEntity.GetGID());
-#endif
+				printf("MissionTrigger with GID: %i entered by: %s with GID: %i \n", aFirstEntity.GetGID(), aSecondEntity.GetSubType().c_str(), aSecondEntity.GetGID());
 				myMissionManager->SetMission(firstTrigger->GetValue());
 				SendTextMessageToClients("Mission activated");
 				break;
@@ -253,6 +253,7 @@ void ServerLevel::HandleTrigger(Entity& aFirstEntity, Entity& aSecondEntity, boo
 			SendTextMessageToClients("A unit entered defend zone");
 			if (myMissionManager->GetCurrentMissionType() == eMissionType::DEFEND)
 			{
+				printf("DefendTrigger with GID: %i entered by: %s with GID: %i \n", aFirstEntity.GetGID(), aSecondEntity.GetSubType().c_str(), aSecondEntity.GetGID());
 				PostMaster::GetInstance()->SendMessage<DefendTouchMessage>(DefendTouchMessage(true));
 			}
 		}
@@ -264,6 +265,7 @@ void ServerLevel::HandleTrigger(Entity& aFirstEntity, Entity& aSecondEntity, boo
 			SendTextMessageToClients("A unit left defend zone");
 			if (myMissionManager->GetCurrentMissionType() == eMissionType::DEFEND)
 			{
+				printf("DefendTrigger with GID: %i exited by: %s with GID: %i \n", aFirstEntity.GetGID(), aSecondEntity.GetSubType().c_str(), aSecondEntity.GetGID());
 				PostMaster::GetInstance()->SendMessage<DefendTouchMessage>(DefendTouchMessage(false));
 			}
 		}
