@@ -13,7 +13,7 @@
 #include <NetMessageLevelComplete.h>
 #include <NetMessageLevelLoaded.h>
 #include <NetMessageLoadLevel.h>
-#include <NetMessageRequestLevel.h>
+#include <NetMessageSetLevel.h>
 #include <NetMessageRequestStartLevel.h>
 #include <PostMaster.h>
 #include <ScriptSystem.h>
@@ -79,21 +79,21 @@ const eStateStatus InGameState::Update(const float& aDeltaTime)
 
 	//if (CU::InputWrapper::GetInstance()->KeyDown(DIK_NUMPAD1))
 	//{
-	//	ClientNetworkManager::GetInstance()->AddMessage(NetMessageRequestLevel(0));
+	//	ClientNetworkManager::GetInstance()->AddMessage(NetMessageSetLevel(0));
 	//	//SET_RUNTIME(false);
 	//	//SAFE_DELETE(myLevel);
 	//	//myLevel = static_cast<ClientLevel*>(myLevelFactory->LoadLevel(0));
 	//}
 	//else if (CU::InputWrapper::GetInstance()->KeyDown(DIK_NUMPAD2))
 	//{
-	//	ClientNetworkManager::GetInstance()->AddMessage(NetMessageRequestLevel(1));
+	//	ClientNetworkManager::GetInstance()->AddMessage(NetMessageSetLevel(1));
 	//	//SET_RUNTIME(false);
 	//	//SAFE_DELETE(myLevel);
 	//	//myLevel = static_cast<ClientLevel*>(myLevelFactory->LoadLevel(1));
 	//}
 	//else if (CU::InputWrapper::GetInstance()->KeyDown(DIK_NUMPAD3))
 	//{
-	//	ClientNetworkManager::GetInstance()->AddMessage(NetMessageRequestLevel(2));
+	//	ClientNetworkManager::GetInstance()->AddMessage(NetMessageSetLevel(2));
 	//	//SET_RUNTIME(false);
 	//	//SAFE_DELETE(myLevel);
 	//	//myLevel = static_cast<ClientLevel*>(myLevelFactory->LoadLevel(2));

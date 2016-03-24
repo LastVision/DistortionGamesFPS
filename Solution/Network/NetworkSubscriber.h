@@ -17,7 +17,7 @@ class NetMessagePingReply;
 class NetMessagePingRequest;
 class NetMessagePosition;
 class NetMessageRequestConnect;
-class NetMessageRequestLevel;
+class NetMessageSetLevel;
 class NetMessageRequestStartLevel;
 class NetMessageShootGrenade;
 class NetMessageSetActive;
@@ -47,7 +47,7 @@ public:
 	virtual void ReceiveNetworkMessage(const NetMessagePingRequest& aMessage, const sockaddr_in& aSenderAddress);
 	virtual void ReceiveNetworkMessage(const NetMessagePosition& aMessage, const sockaddr_in& aSenderAddress);
 	virtual void ReceiveNetworkMessage(const NetMessageRequestConnect& aMessage, const sockaddr_in& aSenderAddress);
-	virtual void ReceiveNetworkMessage(const NetMessageRequestLevel& aMessage, const sockaddr_in& aSenderAddress);
+	virtual void ReceiveNetworkMessage(const NetMessageSetLevel& aMessage, const sockaddr_in& aSenderAddress);
 	virtual void ReceiveNetworkMessage(const NetMessageRequestStartLevel& aMessage, const sockaddr_in& aSenderAddress);
 	virtual void ReceiveNetworkMessage(const NetMessageShootGrenade& aMessage, const sockaddr_in& aSenderAddress);
 	virtual void ReceiveNetworkMessage(const NetMessageSetActive& aMessage, const sockaddr_in& aSenderAddress);
