@@ -44,7 +44,8 @@ namespace Prism
 		~CubeMapGenerator();
 
 		void GenerateSHTextures(DeferredRenderer* aRenderer, Scene* aScene, SHTextures& someTextures
-			, const CU::Vector3<float>& aGridSize, const CU::Vector3<float>& aOffset);
+			, const CU::Vector3<float>& aGridSize, const CU::Vector3<float>& aOffset, float aNodeSize
+			, const std::string& aName);
 
 	private:
 

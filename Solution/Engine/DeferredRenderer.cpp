@@ -143,7 +143,7 @@ namespace Prism
 	}
 
 	void DeferredRenderer::GenerateSHData(Scene* aScene
-		, const CU::Vector3<float>& aMinPoint, const CU::Vector3<float>& aMaxPoint)
+		, const CU::Vector3<float>& aMinPoint, const CU::Vector3<float>& aMaxPoint, const std::string& aName)
 	{
 		myAmbientPass.mySHGridSize.x = CU::Math::ClosestPowerOfTwo(abs(int(aMaxPoint.x - aMinPoint.x)));
 		myAmbientPass.mySHGridSize.y = CU::Math::ClosestPowerOfTwo(abs(int(aMaxPoint.y - aMinPoint.y)));
@@ -154,7 +154,8 @@ namespace Prism
 		//mySH_GRID_Y = CU::Math::ClosestPowerOfTwo(abs(int(aMaxPoint.y - aMinPoint.y)));
 		//mySH_GRID_Z = CU::Math::ClosestPowerOfTwo(abs(int(aMaxPoint.z - aMinPoint.z)));
 		//myCubeMapGenerator->GenerateSHTextures(this, aScene, mySHTextures, aMinPoint, aMaxPoint);
-		myCubeMapGenerator->GenerateSHTextures(this, aScene, mySHTextures, myAmbientPass.mySHGridSize, myAmbientPass.mySHGridOffset);
+		myCubeMapGenerator->GenerateSHTextures(this, aScene, mySHTextures, myAmbientPass.mySHGridSize
+			, myAmbientPass.mySHGridOffset, 2.f, aName);
 
 		myAmbientPass.mySHGridOffset *= -1.f;
 	}

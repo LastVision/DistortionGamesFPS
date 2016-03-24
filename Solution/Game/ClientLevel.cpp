@@ -109,6 +109,11 @@ void ClientLevel::SetMinMax(const CU::Vector3<float>& aMinPoint, const CU::Vecto
 	myMaxPoint = aMaxPoint;
 }
 
+void ClientLevel::SetName(const std::string& aName)
+{
+	myName = aName;
+}
+
 void ClientLevel::Update(const float aDeltaTime)
 {
 	if (myInitDone == false && Prism::PhysicsInterface::GetInstance()->GetInitDone() == true)
@@ -117,7 +122,7 @@ void ClientLevel::Update(const float aDeltaTime)
 		ClientNetworkManager::GetInstance()->AddMessage(NetMessageLevelLoaded());
 
 		SET_RUNTIME(false);
-		myDeferredRenderer->GenerateSHData(myScene, myMinPoint, myMaxPoint);
+		myDeferredRenderer->GenerateSHData(myScene, myMinPoint, myMaxPoint, myName);
 		RESET_RUNTIME;
 	}
 	ClientProjectileManager::GetInstance()->Update(aDeltaTime);

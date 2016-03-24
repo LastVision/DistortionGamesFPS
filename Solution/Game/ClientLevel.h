@@ -24,6 +24,7 @@ public:
 
 	void Init(const std::string& aMissionXMLPath = "") override;
 	void SetMinMax(const CU::Vector3<float>& aMinPoint, const CU::Vector3<float>& aMaxPoint);
+	void SetName(const std::string& aName);
 
 	void Update(const float aDeltaTime) override;
 	void Render();
@@ -54,6 +55,7 @@ private:
 
 	CU::Vector3<float> myMinPoint;
 	CU::Vector3<float> myMaxPoint;
+	std::string myName;
 };
 
 inline Prism::Scene* ClientLevel::GetScene()

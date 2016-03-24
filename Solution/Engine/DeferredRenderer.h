@@ -82,7 +82,7 @@ namespace Prism
 		void OnResize(float aWidth, float aHeight);
 
 		void GenerateSHData(Scene* aScene
-			, const CU::Vector3<float>& aMinPoint, const CU::Vector3<float>& aMaxPoint);
+			, const CU::Vector3<float>& aMinPoint, const CU::Vector3<float>& aMaxPoint, const std::string& aName);
 
 	private:
 		struct GBufferData
