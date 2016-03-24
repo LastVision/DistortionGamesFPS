@@ -21,9 +21,9 @@ namespace Prism
 		myInstances.RemoveAll();
 	}
 
-	bool Room::Inside(const CU::Vector3<float>& aPosition) const
+	bool Room::Inside(const CU::Vector3<float>& aPosition, float aRadius) const
 	{
-		return CU::Intersection::PointInsideAABB(myAABB, aPosition);
+		return CU::Intersection::SphereInsideAABB(myAABB, aPosition, aRadius);
 	}
 
 	bool Room::Collide(const Room& aRoom) const

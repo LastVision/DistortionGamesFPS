@@ -1,5 +1,6 @@
 #pragma once
 #include "Component.h"
+#include "BoneName.h"
 
 namespace Prism
 {
@@ -36,6 +37,9 @@ public:
 
 	Prism::Animation* GetCurrent() const;
 
+	void AddWeaponToScene(Prism::Scene* aScene);
+	void RemoveWeaponFromScene(Prism::Scene* aScene);
+
 private:
 	void PlayAnimation(eEntityState aAnimationState);
 	struct AnimationData
@@ -52,12 +56,29 @@ private:
 		float myElapsedTime;
 	};
 
+
+
 	Prism::Instance* myInstance;
 	float myCullingRadius;
 	CU::StaticArray<AnimationData, int(eEntityState::_COUNT)> myAnimations;
 	eEntityState myPrevEntityState;
 
 	const AnimationComponentData myComponentData;
+
+
+	Prism::Instance* myWeapon;
+	bool myIsEnemy;
+	CU::Matrix44<float> myWeaponJoint;
+	struct EnemyAnimationBone
+	{
+		GUIBone myWeaponBone;
+
+		bool IsValid()
+		{
+			return myWeaponBone.IsValid();
+		}
+	};
+	CU::StaticArray<EnemyAnimationBone, int(eEntityState::_COUNT)> myEnemyAnimations;
 };
 
 inline Prism::Instance* AnimationComponent::GetInstance()

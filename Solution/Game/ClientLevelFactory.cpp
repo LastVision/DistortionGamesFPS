@@ -5,6 +5,7 @@
 #include "ClientLevelFactory.h"
 #include <PhysicsComponent.h>
 #include <PhysicsInterface.h>
+#include <GraphicsComponent.h>
 #include <PointLight.h>
 #include <Room.h>
 #include <RoomManager.h>
@@ -239,7 +240,17 @@ void ClientLevelFactory::LoadTriggers(XMLReader& aReader, tinyxml2::XMLElement* 
 		}
 		else
 		{
-			SAFE_DELETE(newEntity);
+			if (newEntity->GetComponent<GraphicsComponent>() != nullptr)
+			{
+				newEntity->AddToScene();
+				newEntity->GetComponent<PhysicsComponent>()->RemoveFromScene();
+				newEntity->RemoveComponent(eComponentType::TRIGGER);
+				newEntity->RemoveComponent(eComponentType::PHYSICS);
+			}
+			else
+			{
+				SAFE_DELETE(newEntity);
+			}
 		}
 	}
 }

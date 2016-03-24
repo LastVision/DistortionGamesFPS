@@ -24,7 +24,7 @@ bool KillXMission::Update(float aDeltaTime)
 		return false;
 
 	}
-	else if (myEnemiesKilled <= myAmountToKill)
+	else if (myEnemiesKilled < myAmountToKill)
 	{
 		if (myMissionEvents.Size() > 0)
 		{

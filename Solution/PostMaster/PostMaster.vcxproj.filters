@@ -61,5 +61,8 @@
     <ClInclude Include="RespawnTriggerMessage.h">
       <Filter>Message</Filter>
     </ClInclude>
+    <ClInclude Include="RespawnMessage.h">
+      <Filter>Message</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

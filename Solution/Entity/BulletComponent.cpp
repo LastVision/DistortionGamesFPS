@@ -28,7 +28,7 @@ void BulletComponent::Activate(const CU::Matrix44<float>& anOrientation)
 	myLifetimeLeft = myData.myLifetime;
 	myOrientation = anOrientation;
 	myOrientation.SetPos(myOrientation.GetPos() + CU::Vector3<float>(0, 0, 1.f) * myOrientation + CU::Vector3<float>(0, 1.f, 0));
-	//myEntity.GetComponent<PhysicsComponent>()->Wake();
+	myEntity.GetComponent<PhysicsComponent>()->AddToScene();
 
 }
 
@@ -37,11 +37,11 @@ void BulletComponent::Update(float aDelta)
 	myLifetimeLeft -= aDelta;
 	if (myLifetimeLeft < 0)
 	{
-		myEntity.Kill();
+		myEntity.Kill(true);
 	}
 	myOrientation.SetPos(myOrientation.GetPos() + CU::Vector3<float>(0, 0, myData.mySpeed * aDelta) * myOrientation);
 	myEntity.GetComponent<PhysicsComponent>()->TeleportToPosition(myEntity.GetOrientation().GetPos());
-	SharedNetworkManager::GetInstance()->AddMessage(NetMessagePosition(myEntity.GetOrientation().GetPos(),0.f,myEntity.GetGID()));
+	SharedNetworkManager::GetInstance()->AddMessage(NetMessagePosition(myEntity.GetOrientation().GetPos(), 0.f, myEntity.GetGID()));
 }
 
 int BulletComponent::GetDamage() const

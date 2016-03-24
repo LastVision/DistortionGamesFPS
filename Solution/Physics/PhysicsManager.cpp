@@ -59,8 +59,8 @@ namespace Prism
 		myVelocityJobs[1].Init(64);
 		myPositionJobs[0].Init(256);
 		myPositionJobs[1].Init(256);
-		myOnTriggerResults[0].Init(64);
-		myOnTriggerResults[1].Init(64);
+		myOnTriggerResults[0].Init(256);
+		myOnTriggerResults[1].Init(256);
 		myActorsToAdd[0].Init(128);
 		myActorsToAdd[1].Init(128);
 		myActorsToRemove[0].Init(128);
@@ -272,6 +272,15 @@ namespace Prism
 			// do something useful..
 		}
 
+		for (int i = 0; i < myActorsToAdd[myCurrentIndex ^ 1].Size(); ++i)
+		{
+			if (myActorsToAdd[myCurrentIndex ^ 1][i]->getScene() == nullptr)
+			{
+				GetScene()->addActor(*myActorsToAdd[myCurrentIndex ^ 1][i]);
+			}
+		}
+		myActorsToAdd[myCurrentIndex ^ 1].RemoveAll();
+
 		myInitDone = true;
 
 		for (int i = 0; i < myMoveJobs[myCurrentIndex ^ 1].Size(); ++i)
@@ -343,14 +352,7 @@ namespace Prism
 		}
 		myActorsToSleep[myCurrentIndex ^ 1].RemoveAll();
 
-		for (int i = 0; i < myActorsToAdd[myCurrentIndex ^ 1].Size(); ++i)
-		{
-			if (myActorsToAdd[myCurrentIndex ^ 1][i]->getScene() == nullptr)
-			{
-				GetScene()->addActor(*myActorsToAdd[myCurrentIndex ^ 1][i]);
-			}
-		}
-		myActorsToAdd[myCurrentIndex ^ 1].RemoveAll();
+
 
 		for (int i = 0; i < myActorsToRemove[myCurrentIndex ^ 1].Size(); ++i)
 		{
@@ -373,6 +375,7 @@ namespace Prism
 		{
 			const physx::PxTriggerPair& pairs = somePairs[i];
 
+			SET_RUNTIME(false);
 			if (pairs.status == physx::PxPairFlag::Enum::eNOTIFY_TOUCH_FOUND)
 			{
 				myOnTriggerResults[myCurrentIndex].Add(OnTriggerResult(static_cast<PhysicsComponent*>(pairs.triggerActor->userData)
@@ -383,6 +386,7 @@ namespace Prism
 				myOnTriggerResults[myCurrentIndex].Add(OnTriggerResult(static_cast<PhysicsComponent*>(pairs.triggerActor->userData)
 					, static_cast<PhysicsComponent*>(pairs.otherActor->userData), false));
 			}
+			RESET_RUNTIME;
 		}
 	}
 
@@ -499,7 +503,7 @@ namespace Prism
 		myDebugConnection->release();
 	}
 
-	int PhysicsManager::CreatePlayerController(const CU::Vector3<float>& aStartPosition, PhysicsComponent* aComponent)
+	int PhysicsManager::CreatePlayerController(const CU::Vector3<float>& aStartPosition, PhysicsComponent* aComponent, bool aShouldAddToScene)
 	{
 		physx::PxCapsuleControllerDesc controllerDesc;
 
@@ -517,6 +521,11 @@ namespace Prism
 		myControllerPositions[1].Add(aStartPosition);
 		myMoveJobs[0].Add(MoveJob());
 		myMoveJobs[1].Add(MoveJob());
+
+		if (aShouldAddToScene == false)
+		{
+			myScene->removeActor(*myControllerManager->getController(myControllerManager->getNbControllers() - 1)->getActor());
+		}
 		return myControllerManager->getNbControllers() - 1;
 	}
 
@@ -737,6 +746,11 @@ namespace Prism
 	void PhysicsManager::Add(physx::PxRigidStatic* aStatic)
 	{
 		myActorsToAdd[myCurrentIndex].Add(aStatic);
+	}
+
+	void PhysicsManager::Add(int aCapsuleID)
+	{
+		myScene->addActor(*myControllerManager->getController(aCapsuleID)->getActor());
 	}
 
 	void PhysicsManager::Remove(physx::PxRigidDynamic* aDynamic, const PhysicsComponentData& aData)

@@ -28,13 +28,17 @@
 #include <NetMessageOnDeath.h>
 #include <NetMessageHealthPack.h>
 #include <NetMessageOnJoin.h>
+#include <NetMessageExplosion.h>
 #include <NetMessageRequestConnect.h>
+#include <NetMessageShootGrenade.h>
 #include <NetMessageSetActive.h>
+#include <NetMessageEnemyShooting.h>
 
 #include "ClientNetworkManager.h"
 #include "DeferredRenderer.h"
 #include <CubeMapGenerator.h>
 #include <PointLight.h>
+#include <GrenadeComponent.h>
 
 #include <PhysicsInterface.h>
 #include <PostMaster.h>
@@ -57,6 +61,10 @@ ClientLevel::ClientLevel()
 	ClientNetworkManager::GetInstance()->Subscribe(eNetMessageType::ON_DEATH, this);
 	ClientNetworkManager::GetInstance()->Subscribe(eNetMessageType::SET_ACTIVE, this);
 	ClientNetworkManager::GetInstance()->Subscribe(eNetMessageType::ENTITY_STATE, this);
+	ClientNetworkManager::GetInstance()->Subscribe(eNetMessageType::ENEMY_SHOOTING, this);
+	ClientNetworkManager::GetInstance()->Subscribe(eNetMessageType::SHOOT_GRENADE, this);
+	ClientNetworkManager::GetInstance()->Subscribe(eNetMessageType::EXPLOSION, this);
+
 	ClientProjectileManager::Create();
 	myScene = new Prism::Scene();
 }
@@ -72,6 +80,9 @@ ClientLevel::~ClientLevel()
 	ClientNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::ON_DEATH, this);
 	ClientNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::SET_ACTIVE, this);
 	ClientNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::ENTITY_STATE, this);
+	ClientNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::ENEMY_SHOOTING, this);
+	ClientNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::SHOOT_GRENADE, this);
+	ClientNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::EXPLOSION, this);
 
 	myInstances.DeleteAll();
 	myPointLights.DeleteAll();
@@ -100,6 +111,8 @@ void ClientLevel::Init(const std::string&)
 	Prism::Audio::AudioInterface::GetInstance()->PostEvent("PlayFirstLayer", 0);
 	Prism::Audio::AudioInterface::GetInstance()->PostEvent("PlaySecondLayer", 0);
 	ClientProjectileManager::GetInstance()->CreateBullets(myScene);
+	ClientProjectileManager::GetInstance()->CreateGrenades(myScene);
+	ClientProjectileManager::GetInstance()->CreateExplosions();
 
 }
 
@@ -212,11 +225,9 @@ void ClientLevel::ReceiveNetworkMessage(const NetMessageSetActive& aMessage, con
 	if (myActiveEntitiesMap.find(aMessage.myGID) == myActiveEntitiesMap.end())
 	{
 		useEntityMap = false;
-		//DL_ASSERT("GID NOT FOUND IN CLIENT LEVEL!");
 	}
-	else if (myActiveUnitsMap.find(aMessage.myGID) == myActiveUnitsMap.end())
+	if (useEntityMap == false && myActiveUnitsMap.find(aMessage.myGID) == myActiveUnitsMap.end())
 	{
-		int triggerWillNotDoAnythingOnClient = 0;
 		return;
 	}
 
@@ -283,6 +294,33 @@ void ClientLevel::ReceiveNetworkMessage(const NetMessageEntityState& aMessage, c
 	myActiveUnitsMap[aMessage.myGID]->SetState(static_cast<eEntityState>(aMessage.myEntityState));
 }
 
+void ClientLevel::ReceiveNetworkMessage(const NetMessageEnemyShooting& aMessage, const sockaddr_in&)
+{
+	Entity* requestedBullet = ClientProjectileManager::GetInstance()->RequestBullet(aMessage.myGID);
+	requestedBullet->AddToScene();
+	ClientProjectileManager::GetInstance()->ActivateBullet(requestedBullet);
+}
+
+void ClientLevel::ReceiveNetworkMessage(const NetMessageShootGrenade&, const sockaddr_in&)
+{
+ 	Entity* bullet = ClientProjectileManager::GetInstance()->RequestGrenade();
+	CU::Matrix44<float> playerOrientation = myPlayer->GetOrientation();
+	bullet->AddToScene();
+	bullet->GetComponent<PhysicsComponent>()->AddToScene();
+	bullet->Reset();
+	CU::Vector3<float> pos = playerOrientation.GetPos();
+	pos.y += 1.5f;
+	//bullet->GetComponent<PhysicsComponent>()->TeleportToPosition(pos);
+	//bullet->GetComponent<GrenadeComponent>()->Activate(aMessage.mySenderID);
+	//bullet->GetComponent<PhysicsComponent>()->AddForce(playerOrientation.GetForward(), float(aMessage.myForceStrength));
+}
+
+void ClientLevel::ReceiveNetworkMessage(const NetMessageExplosion& aMessage, const sockaddr_in&)
+{
+	ClientProjectileManager::GetInstance()->RequestExplosion(aMessage.myPosition, aMessage.myGID);
+	ClientProjectileManager::GetInstance()->KillGrenade(aMessage.myGID - 1);
+}
+
 void ClientLevel::AddLight(Prism::PointLight* aLight)
 {
 	myPointLights.Add(aLight);
@@ -302,7 +340,7 @@ void ClientLevel::CollisionCallback(PhysicsComponent* aFirst, PhysicsComponent* 
 	case eEntityType::EXPLOSION:
 		if (aHasEntered == true)
 		{
-			//HandleExplosion(first, second);
+			HandleExplosion(first, second);
 		}
 		break;
 	}
@@ -352,9 +390,10 @@ void ClientLevel::HandleTrigger(Entity& aFirstEntity, Entity& aSecondEntity, boo
 		{
 			ClientNetworkManager::GetInstance()->AddMessage<NetMessageHealthPack>(NetMessageHealthPack(firstTrigger->GetValue()));
 		}
-		aSecondEntity.SendNote<CollisionNote>(CollisionNote(&aFirstEntity));
-		aFirstEntity.SendNote<CollisionNote>(CollisionNote(&aSecondEntity));
+		aSecondEntity.SendNote<CollisionNote>(CollisionNote(&aFirstEntity, aHasEntered));
 	}
+
+	aFirstEntity.SendNote<CollisionNote>(CollisionNote(&aSecondEntity, aHasEntered));
 }
 
 void ClientLevel::CreatePlayers()

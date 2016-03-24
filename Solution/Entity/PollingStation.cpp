@@ -1,6 +1,9 @@
 #include "stdafx.h"
+
+#include <NetMessageLevelComplete.h>
 #include "PollingStation.h"
-#include <iostream>
+#include <SharedNetworkManager.h>
+
 PollingStation* PollingStation::myInstance = nullptr;
 PollingStation* PollingStation::GetInstance()
 {
@@ -93,3 +96,28 @@ Entity* PollingStation::FindClosestPlayer(const CU::Vector3<float>& aPosition, f
 	return toReturn;
 }
 
+void PollingStation::HasDied(Entity* anEntity)
+{
+	if (anEntity->GetSubType() == "playerserver")
+	{
+		bool allPlayersDead = true;
+		for each(Entity* player in myPlayers)
+		{
+			if (player->GetState() != eEntityState::DIE)
+			{
+				allPlayersDead = false;
+				break;
+			}
+		}
+
+		if (allPlayersDead == true)
+		{
+			SharedNetworkManager::GetInstance()->AddMessage(NetMessageLevelComplete());
+		}
+	}
+	else
+	{
+		//DL_ASSERT("No handle for enemy death yet.");
+		//handle dead enemies here
+	}
+}

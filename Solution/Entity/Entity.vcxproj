@@ -202,6 +202,8 @@
     <ClInclude Include="ShootingComponentData.h" />
     <ClInclude Include="ShootNote.h" />
     <ClInclude Include="Shotgun.h" />
+    <ClInclude Include="SpawnpointComponent.h" />
+    <ClInclude Include="SpawnpointComponentData.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="TriggerComponent.h" />
     <ClInclude Include="TriggerComponentData.h" />
@@ -235,6 +237,7 @@
     <ClCompile Include="BulletComponent.cpp" />
     <ClCompile Include="ShootingComponent.cpp" />
     <ClCompile Include="Shotgun.cpp" />
+    <ClCompile Include="SpawnpointComponent.cpp" />
     <ClCompile Include="stdafx.cpp">
       <MultiProcessorCompilation Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</MultiProcessorCompilation>
       <MultiProcessorCompilation Condition="'$(Configuration)|$(Platform)'=='DataExporter|Win32'">false</MultiProcessorCompilation>

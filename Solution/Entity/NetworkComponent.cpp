@@ -27,7 +27,6 @@ NetworkComponent::NetworkComponent(Entity& anEntity, CU::Matrix44<float>& anOrie
 	mySendTime = NETWORK_UPDATE_INTERVAL;
 	SharedNetworkManager::GetInstance()->Subscribe(eNetMessageType::POSITION, this);
 	SharedNetworkManager::GetInstance()->Subscribe(eNetMessageType::ON_HIT, this);
-	SharedNetworkManager::GetInstance()->Subscribe(eNetMessageType::ENEMY_SHOOTING, this);
 
 }
 
@@ -36,7 +35,6 @@ NetworkComponent::~NetworkComponent()
 {
 	SharedNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::POSITION, this);
 	SharedNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::ON_HIT, this);
-	SharedNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::ENEMY_SHOOTING, this);
 
 }
 
@@ -101,10 +99,3 @@ void NetworkComponent::SetPlayer(bool aBool)
 	myIsPlayer = aBool;
 }
 
-void NetworkComponent::ReceiveNetworkMessage(const NetMessageEnemyShooting& aMessage, const sockaddr_in& )
-{
-	if (myEntity.GetIsClient() == true && aMessage.myGID == myEntity.GetGID())
-	{
-		myEntity.AddToScene();
-	}
-}

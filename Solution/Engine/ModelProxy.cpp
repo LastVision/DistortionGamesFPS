@@ -60,6 +60,7 @@ namespace Prism
 		{
 			return myModel->GetRadius();
 		}
-		return 0.f;
+		DL_ASSERT("Unable to find radius, reporting large (25.f) radius");
+		return 25.f;
 	}
 }

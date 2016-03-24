@@ -8,7 +8,7 @@ struct RespawnTriggerMessage : public Message
 };
 
 inline RespawnTriggerMessage::RespawnTriggerMessage(unsigned int aGID)
-	: Message(eMessageType::SET_ACTIVE)
+	: Message(eMessageType::RESPAWN_TRIGGER)
 	, myGID(aGID)
 {
 }

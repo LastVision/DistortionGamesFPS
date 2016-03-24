@@ -4,6 +4,7 @@
 #include <Entity.h>
 #include <EntityFactory.h>
 #include <DL_Debug.h>
+#include <PhysicsComponent.h>
 
 ServerProjectileManager::ServerProjectileManager()
 {
@@ -41,5 +42,15 @@ void ServerProjectileManager::CreateBullets(Prism::Scene* aScene)
 		Entity* bullet = EntityFactory::CreateEntity((50000 + i), eEntityType::BULLET, "bulletserver", aScene, false, CU::Vector3<float>(0, -10.f, 0));
 		bullet->Kill();
 		myBullets.Add(bullet);
+	}
+}
+
+void ServerProjectileManager::CreateGrenades(Prism::Scene* aScene)
+{
+	for (int i = 0; i < myGrenades.GetCapacity(); ++i)
+	{
+		Entity* grenade = EntityFactory::CreateEntity((60000 + i + (i * 1)), eEntityType::GRENADE, "server", aScene, false, CU::Vector3<float>(0, -10.f, 0));
+		grenade->GetComponent<PhysicsComponent>()->Sleep();
+		myGrenades.Add(grenade);
 	}
 }
