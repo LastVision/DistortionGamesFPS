@@ -30,15 +30,12 @@ void ClientUnitManager::CreateUnits(Prism::Scene* aScene)
 		}
 	}
 	int index = 51000;
-	CU::Vector3<float> pos;
 	for (unsigned int j = 0; j < types.Size(); ++j)
 	{
 		for (unsigned int i = 0; i < myUnits.GetCapacity(); ++i)
 		{
-			pos = { pos.x, -pos.y + 5 * (j* i), pos.z };
-			Entity* unit = EntityFactory::CreateEntity(index++, eEntityType::UNIT, CU::ToLower(types[j]), aScene, true, pos);
+			Entity* unit = EntityFactory::CreateEntity(index++, eEntityType::UNIT, CU::ToLower(types[j]), aScene, true, CU::Vector3<float>());
 			unit->GetComponent<PhysicsComponent>()->RemoveFromScene();
-			unit->GetComponent<PhysicsComponent>()->TeleportToPosition(pos);
 			unit->Kill();
 			myUnits.Add(unit);
 		}

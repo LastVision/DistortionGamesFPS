@@ -39,7 +39,7 @@ PhysicsComponent::PhysicsComponent(Entity& aEntity, const PhysicsComponentData& 
 	}
 	else if (myPhysicsType == ePhysics::CAPSULE)
 	{
-		myCapsuleControllerId = Prism::PhysicsInterface::GetInstance()->CreatePlayerController(myEntity.GetOrientation().GetPos(), this);
+		myCapsuleControllerId = Prism::PhysicsInterface::GetInstance()->CreatePlayerController(myEntity.GetOrientation().GetPos(), this, shouldAddToPhysicsScene);
 	}
 }
 
@@ -132,7 +132,7 @@ void PhysicsComponent::UpdateOrientation()
 		int apa = 5;
 		apa;
 	}
-	
+
 	if (myIsAwake == true)
 	{
 		Prism::PhysicsInterface::GetInstance()->UpdateOrientation(myDynamicBody, myShapes, myThread4x4Float);
@@ -146,7 +146,7 @@ void PhysicsComponent::UpdateOrientation()
 void PhysicsComponent::UpdateOrientationStatic()
 {
 	DL_ASSERT_EXP(myPhysicsType == ePhysics::PHANTOM, "Cant update Orientation Static on other types of PhysEntities");
-	
+
 	if (myIsAwake == true)
 	{
 		Prism::PhysicsInterface::GetInstance()->UpdateOrientation(myStaticBody, myShapes, myThread4x4Float);

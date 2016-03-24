@@ -21,6 +21,7 @@ namespace CU
 			Sleep(1);
 		}
 
+		myThread->join();
 		SAFE_DELETE(myThread);
 	}
 
