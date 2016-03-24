@@ -19,7 +19,7 @@ namespace Prism
 		, myActiveInstances(4096)
 		, myDebugDraw(false)
 		, myTotalObjects(0)
-		, myDuplicateRooms(0)
+		, myObjectsInDuplicateRooms(0)
 	{
 	}
 
@@ -78,6 +78,7 @@ namespace Prism
 
 	void RoomManager::Add(Instance* anInstance, eObjectRoomType aRoomType)
 	{
+		++myTotalObjects;
 		DL_ASSERT_EXP(aRoomType != eObjectRoomType::NONE, "Can't add object room type NONE to Room Manager.");
 		if (aRoomType != eObjectRoomType::STATIC)
 		{
@@ -86,7 +87,6 @@ namespace Prism
 		else
 		{
 			bool success(false);
-			++myTotalObjects;
 
 			for (int i = 0; i < myRooms.Size(); ++i)
 			{
@@ -95,7 +95,7 @@ namespace Prism
 					if (success == true)
 					{
 						anInstance->SetExistInMultipleRooms(true);
-						++myDuplicateRooms;
+						++myObjectsInDuplicateRooms;
 					}
 					//myInstances.Add(InstanceInRoom(i, anInstance));
 					myRooms[i]->Add(anInstance);
@@ -117,6 +117,7 @@ namespace Prism
 		{
 			if (myAlwaysRenderInstances[i] == anInstance)
 			{
+				--myTotalObjects;
 				myAlwaysRenderInstances.RemoveCyclicAtIndex(i);
 				return;
 			}
@@ -182,8 +183,12 @@ namespace Prism
 
 		#ifndef RELEASE_BUILD
 		#ifdef SHOW_PORTAL_CULLING_DEBUG_TEXT
-		//DEBUG_PRINT(playerRoom);
+		DEBUG_PRINT(myRooms[playerRoom]->GetName());
 		DEBUG_PRINT(myActiveInstances.Size());
+		DEBUG_PRINT(myTotalObjects);
+		DEBUG_PRINT(myObjectsInDuplicateRooms);
+		float objectsInDuplicateRoomsPercent = 100.f * static_cast<float>(myObjectsInDuplicateRooms) / static_cast<float>(myTotalObjects);
+		DEBUG_PRINT(objectsInDuplicateRoomsPercent);
 		//DEBUG_PRINT(myInstances.Size());
 		//float renderPercentage = 100.f * float(myActiveInstances.Size())
 		//	/ (myInstances.Size() + myAlwaysRenderInstances.Size());
