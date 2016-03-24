@@ -66,5 +66,5 @@ bool KillXMission::Update(float aDeltaTime)
 void KillXMission::AddValue(int aValue)
 {
 	myEnemiesKilled += aValue;
-	printf("Enemy killed! %i / %i", myEnemiesKilled, myAmountToKill);
+	printf("Enemy killed! %i / %i \n", myEnemiesKilled, myAmountToKill);
 }
