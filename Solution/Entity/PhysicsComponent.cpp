@@ -37,7 +37,7 @@ PhysicsComponent::PhysicsComponent(Entity& aEntity, const PhysicsComponentData& 
 	}
 	else if (myPhysicsType == ePhysics::CAPSULE)
 	{
-		myCapsuleControllerId = Prism::PhysicsInterface::GetInstance()->CreatePlayerController(myEntity.GetOrientation().GetPos(), this);
+		myCapsuleControllerId = Prism::PhysicsInterface::GetInstance()->CreatePlayerController(myEntity.GetOrientation().GetPos(), this, shouldAddToPhysicsScene);
 	}
 }
 
@@ -204,6 +204,10 @@ void PhysicsComponent::AddToScene()
 	{
 		Prism::PhysicsInterface::GetInstance()->Add(myDynamicBody);
 	}
+	else if (myPhysicsType == ePhysics::CAPSULE)
+	{
+		Prism::PhysicsInterface::GetInstance()->Add(myCapsuleControllerId);
+	}
 	else
 	{
 		Prism::PhysicsInterface::GetInstance()->Add(myStaticBody);
@@ -215,6 +219,10 @@ void PhysicsComponent::RemoveFromScene()
 	if (myPhysicsType == ePhysics::DYNAMIC || myPhysicsType == ePhysics::KINEMATIC)
 	{
 		Prism::PhysicsInterface::GetInstance()->Remove(myDynamicBody, myData);
+	}
+	else if (myPhysicsType == ePhysics::CAPSULE)
+	{
+		Prism::PhysicsInterface::GetInstance()->Remove(myCapsuleControllerId);
 	}
 	else
 	{

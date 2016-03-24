@@ -137,7 +137,6 @@ enum class eEntityState : unsigned char
 	WALK,
 	ATTACK,
 	DIE,
-	THROW,
 	_COUNT,
 };
 
