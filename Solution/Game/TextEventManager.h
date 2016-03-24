@@ -42,12 +42,5 @@ private:
 	CU::GrowingArray<MissionText*> myMissionTexts;
 
 	float myTextStartFadingTime;
-};
 
-inline void TextEventManager::AddNotification(std::string aText, float aLifeTime, CU::Vector4<float> aColor)
-{
-	myNotifications[0]->myText = aText;
-	myNotifications[0]->myLifeTime = aLifeTime;
-	myNotifications[0]->myColor = aColor;
-	myNotifications[0]->myIsActive = true;
-}
+};

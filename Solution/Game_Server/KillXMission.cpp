@@ -70,4 +70,5 @@ void KillXMission::AddValue(int aValue)
 {
 	PostMaster::GetInstance()->SendMessage<SendTextToClientsMessage>(SendTextToClientsMessage("Enemies left: " + std::to_string(myAmountToKill - myEnemiesKilled)));
 	myEnemiesKilled += aValue;
+	printf("Enemy killed! %i / %i \n", myEnemiesKilled, myAmountToKill);
 }

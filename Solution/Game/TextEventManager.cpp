@@ -86,6 +86,21 @@ void TextEventManager::Render()
 	}
 }
 
+void TextEventManager::AddNotification(std::string aText, float aLifeTime, CU::Vector4<float> aColor)
+{
+	for (int i = 0; i < myNotifications.Size(); i++)
+	{
+		if (myNotifications[i]->myIsActive == false)
+		{
+			myNotifications[i]->myText = aText;
+			myNotifications[i]->myLifeTime = aLifeTime;
+			myNotifications[i]->myColor = aColor;
+			myNotifications[i]->myIsActive = true;
+			return;
+		}
+	}
+}
+
 void TextEventManager::ReceiveNetworkMessage(const NetMessageText& aMessage, const sockaddr_in&)
 {
 	AddNotification(aMessage.myText);
