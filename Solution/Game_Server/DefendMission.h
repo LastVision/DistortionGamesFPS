@@ -13,5 +13,6 @@ private:
 	float myDefendTime;
 	bool myShouldCountDown;
 	int myEnemiesInside;
+	int myLastSecondToWarn;
 };
 

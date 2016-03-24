@@ -188,10 +188,8 @@ void ClientLevel::Update(const float aDeltaTime)
 
 	ClientNetworkManager::GetInstance()->Update(aDeltaTime);
 
-	if (myTextManager != nullptr)
-	{
-	myTextManager->Update(aDeltaTime);
-	}
+	//myTextManager->Update(aDeltaTime);
+
 }
 
 void ClientLevel::Render()
@@ -206,11 +204,8 @@ void ClientLevel::Render()
 		myPlayer->GetComponent<FirstPersonRenderComponent>()->Render();
 		//myPlayer->GetComponent<ShootingComponent>()->Render();
 
-		if (myTextManager != nullptr)
-		{
-		myTextManager->Render();
+		//myTextManager->Render();
 	}
-}
 }
 
 void ClientLevel::ReceiveNetworkMessage(const NetMessageOnDeath& aMessage, const sockaddr_in&)

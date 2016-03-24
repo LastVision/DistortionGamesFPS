@@ -103,5 +103,5 @@ void TextEventManager::AddNotification(std::string aText, float aLifeTime, CU::V
 
 void TextEventManager::ReceiveNetworkMessage(const NetMessageText& aMessage, const sockaddr_in&)
 {
-	AddNotification(aMessage.myText);
+	AddNotification(aMessage.myText, aMessage.myTime);
 }
