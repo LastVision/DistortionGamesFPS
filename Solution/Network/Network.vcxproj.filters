@@ -85,7 +85,6 @@
     <ClInclude Include="NetMessageRequestConnect.h">
       <Filter>Messages</Filter>
     </ClInclude>
-    <ClInclude Include="NetMessageRequestLevel.h" />
     <ClInclude Include="NetworkSubscriber.h" />
     <ClInclude Include="SharedNetworkManager.h" />
     <ClInclude Include="NetMessageConnectReply.h">
@@ -124,6 +123,9 @@
     </ClInclude>
     <ClInclude Include="NetMessageExplosion.h" />
     <ClInclude Include="NetMessageSetLevel.h">
+      <Filter>Messages</Filter>
+    </ClInclude>
+    <ClInclude Include="NetMessageText.h">
       <Filter>Messages</Filter>
     </ClInclude>
   </ItemGroup>

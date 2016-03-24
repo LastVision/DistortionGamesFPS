@@ -170,6 +170,7 @@
     <ClInclude Include="ResizeMessage.h" />
     <ClInclude Include="RespawnMessage.h" />
     <ClInclude Include="RespawnTriggerMessage.h" />
+    <ClInclude Include="SendTextToClientsMessage.h" />
     <ClInclude Include="SetActiveMessage.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="Subscriber.h" />

@@ -12,6 +12,7 @@ enum class eMessageType
 	DEFEND_TOUCH,
 	RESPAWN_TRIGGER,
 	RESPAWN,
+	SEND_TEXT_TO_CLIENTS,
 
 	
 	COUNT,

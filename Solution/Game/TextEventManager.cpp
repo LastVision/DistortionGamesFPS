@@ -1,5 +1,7 @@
 #include "stdafx.h"
 #include <Camera.h>
+#include "ClientNetworkManager.h"
+#include <NetMessageText.h>
 #include "TextEventManager.h"
 #include <Text.h>
 
@@ -28,10 +30,13 @@ TextEventManager::TextEventManager(const Prism::Camera* aCamera)
 		missionText->myColor = { 1.f, 1.f, 1.f, 1.f };
 		myMissionTexts.Add(missionText);
 	}
+
+	ClientNetworkManager::GetInstance()->Subscribe(eNetMessageType::TEXT, this);
 }
 
 TextEventManager::~TextEventManager()
 {
+	ClientNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::TEXT, this);
 	myNotifications.DeleteAll();
 	myMissionTexts.DeleteAll();
 }
@@ -79,4 +84,9 @@ void TextEventManager::Render()
 			position.y -= 20.f;
 		}
 	}
+}
+
+void TextEventManager::ReceiveNetworkMessage(const NetMessageText& aMessage, const sockaddr_in&)
+{
+	AddNotification(aMessage.myText);
 }

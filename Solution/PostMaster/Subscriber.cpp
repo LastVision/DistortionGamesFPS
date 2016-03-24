@@ -15,6 +15,7 @@ void Subscriber::ReceiveMessage(const OnClickMessage&){}
 void Subscriber::ReceiveMessage(const OnRadioButtonMessage&){}
 void Subscriber::ReceiveMessage(const ResizeMessage&){}
 void Subscriber::ReceiveMessage(const StartGameMessage&){}
+void Subscriber::ReceiveMessage(const SendTextToClientsMessage&){}
 void Subscriber::ReceiveMessage(const SetActiveMessage&){}
 void Subscriber::ReceiveMessage(const RespawnMessage&){}
 void Subscriber::ReceiveMessage(const RespawnTriggerMessage&){}
