@@ -12,6 +12,7 @@
 #include <NetMessageSetActive.h>
 #include <NetMessageHealthPack.h>
 #include <NetMessageEntityState.h>
+#include <SendTextToClientsMessage.h>
 #include <NetMessageShootGrenade.h>
 #include <NetMessageText.h>
 #include <NetworkComponent.h>
@@ -43,6 +44,7 @@ ServerLevel::ServerLevel()
 	ServerProjectileManager::Create();
 	PostMaster::GetInstance()->Subscribe(eMessageType::RESPAWN_TRIGGER, this);
 	PostMaster::GetInstance()->Subscribe(eMessageType::RESPAWN, this);
+	PostMaster::GetInstance()->Subscribe(eMessageType::SEND_TEXT_TO_CLIENTS, this);
 
 	ServerNetworkManager::GetInstance()->Subscribe(eNetMessageType::HEALTH_PACK, this);
 }
@@ -63,6 +65,7 @@ ServerLevel::~ServerLevel()
 	PostMaster::GetInstance()->UnSubscribe(eMessageType::SET_ACTIVE, this);
 	PostMaster::GetInstance()->UnSubscribe(eMessageType::RESPAWN_TRIGGER, this);
 	PostMaster::GetInstance()->UnSubscribe(eMessageType::RESPAWN, this);
+	PostMaster::GetInstance()->UnSubscribe(eMessageType::SEND_TEXT_TO_CLIENTS, this);
 
 	ServerNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::HEALTH_PACK, this);
 }
@@ -174,6 +177,11 @@ void ServerLevel::ReceiveNetworkMessage(const NetMessageShootGrenade& aMessage, 
 
 	//Skicka samma meddelande till clienten
 	SharedNetworkManager::GetInstance()->AddMessage<NetMessageShootGrenade>(NetMessageShootGrenade(aMessage.myForceStrength));
+}
+
+void ServerLevel::ReceiveMessage(const SendTextToClientsMessage& aMessage)
+{
+	SendTextMessageToClients(aMessage.myText);
 }
 
 void ServerLevel::ReceiveMessage(const SetActiveMessage& aMessage)
