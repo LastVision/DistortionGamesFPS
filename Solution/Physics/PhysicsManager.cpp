@@ -748,6 +748,11 @@ namespace Prism
 		myActorsToAdd[myCurrentIndex].Add(aStatic);
 	}
 
+	void PhysicsManager::Add(int aCapsuleID)
+	{
+		myScene->addActor(*myControllerManager->getController(aCapsuleID)->getActor());
+	}
+
 	void PhysicsManager::Remove(physx::PxRigidDynamic* aDynamic, const PhysicsComponentData& aData)
 	{
 		if (aDynamic != nullptr && aDynamic->getScene() != nullptr)

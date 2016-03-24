@@ -154,6 +154,11 @@ namespace Prism
 		myManager->Add(aStatic);
 	}
 
+	void PhysicsInterface::Add(int aCapsuleID)
+	{
+		myManager->Add(aCapsuleID);
+	}
+
 	void PhysicsInterface::Remove(physx::PxRigidDynamic* aDynamic, const PhysicsComponentData& aData)
 	{
 		myManager->Remove(aDynamic, aData);

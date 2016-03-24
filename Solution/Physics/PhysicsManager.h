@@ -92,6 +92,7 @@ namespace Prism
 			, physx::PxShape*** someShapesOut, bool aShouldAddToScene);
 		void Add(physx::PxRigidDynamic* aDynamic);
 		void Add(physx::PxRigidStatic* aStatic);
+		void Add(int aCapsuleID);
 		void Remove(physx::PxRigidDynamic* aDynamic, const PhysicsComponentData& aData);
 		void Remove(physx::PxRigidStatic* aStatic, const PhysicsComponentData& aData);
 		void Remove(int aCapsuleID);
