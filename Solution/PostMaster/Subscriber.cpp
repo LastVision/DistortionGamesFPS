@@ -19,3 +19,4 @@ void Subscriber::ReceiveMessage(const SendTextToClientsMessage&){}
 void Subscriber::ReceiveMessage(const SetActiveMessage&){}
 void Subscriber::ReceiveMessage(const RespawnMessage&){}
 void Subscriber::ReceiveMessage(const RespawnTriggerMessage&){}
+void Subscriber::ReceiveMessage(const ActivateSpawnpointMessage&){}

@@ -13,6 +13,7 @@ struct SendTextToClientsMessage;
 struct SetActiveMessage;
 struct RespawnMessage;
 struct RespawnTriggerMessage;
+struct ActivateSpawnpointMessage;
 struct Message;
 
 class Subscriber
@@ -35,5 +36,7 @@ public:
 	virtual void ReceiveMessage(const SetActiveMessage& aMessage);
 	virtual void ReceiveMessage(const RespawnMessage& aMessage);
 	virtual void ReceiveMessage(const RespawnTriggerMessage& aMessage);
+	virtual void ReceiveMessage(const ActivateSpawnpointMessage& aMessage);
+
 };
 

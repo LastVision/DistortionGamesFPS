@@ -79,9 +79,10 @@ void HealthComponent::TakeDamage(int aDamage)
 				PostMaster::GetInstance()->SendMessage(EnemyKilledMessage());
 			}
 			myEntity.SetState(eEntityState::DIE);
-			SharedNetworkManager::GetInstance()->AddMessage<NetMessageEntityState>(NetMessageEntityState(myEntity.GetState(), myEntity.GetGID()));
-			SharedNetworkManager::GetInstance()->AddMessage<NetMessageSetActive>(NetMessageSetActive(false, false, myEntity.GetGID()));
+			SharedNetworkManager::GetInstance()->AddMessage(NetMessageEntityState(myEntity.GetState(), myEntity.GetGID()));
+			SharedNetworkManager::GetInstance()->AddMessage(NetMessageSetActive(false, false, myEntity.GetGID()));
 			myEntity.GetComponent<PhysicsComponent>()->Sleep();
+			myEntity.Kill(false);
 			PollingStation::GetInstance()->HasDied(&myEntity);
 		}
 	}

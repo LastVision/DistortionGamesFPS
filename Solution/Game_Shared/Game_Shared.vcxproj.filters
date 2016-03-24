@@ -23,7 +23,6 @@
       <Filter>Level</Filter>
     </ClInclude>
     <ClInclude Include="SharedProjectileManager.h" />
-    <ClInclude Include="SharedUnitManager.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="SharedGame.cpp" />
@@ -37,6 +36,5 @@
       <Filter>Precompile</Filter>
     </ClCompile>
     <ClCompile Include="SharedProjectileManager.cpp" />
-    <ClCompile Include="SharedUnitManager.cpp" />
   </ItemGroup>
 </Project>

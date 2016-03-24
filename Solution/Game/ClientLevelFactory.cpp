@@ -3,6 +3,7 @@
 #include <EntityFactory.h>
 #include "ClientLevel.h"
 #include "ClientLevelFactory.h"
+#include "ClientUnitManager.h"
 #include <PhysicsComponent.h>
 #include <PhysicsInterface.h>
 #include <GraphicsComponent.h>
@@ -63,7 +64,9 @@ void ClientLevelFactory::ReadLevel(const std::string& aLevelPath)
 	LoadRooms(reader, levelElement);
 	LoadProps(reader, levelElement);
 	LoadDoors(reader, levelElement);
-	LoadUnits(reader, levelElement);
+	//LoadUnits(reader, levelElement);
+	ClientUnitManager::GetInstance()->CreateUnits(myCurrentLevel->GetScene());
+
 	LoadTriggers(reader, levelElement);
 	LoadLights(reader, levelElement);
 
@@ -287,3 +290,4 @@ void ClientLevelFactory::LoadLights(XMLReader& aReader, tinyxml2::XMLElement* aE
 		static_cast<ClientLevel*>(myCurrentLevel)->AddLight(light);
 	}
 }
+

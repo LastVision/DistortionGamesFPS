@@ -33,6 +33,8 @@ enum class eNetMessageType
 
 	SET_ACTIVE,
 	ENTITY_STATE,
+	ACTIVATE_SPAWNPOINT,
+	ACTIVATE_UNIT,
 
 	_COUNT,
 };

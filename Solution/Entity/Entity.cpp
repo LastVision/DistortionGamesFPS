@@ -171,7 +171,7 @@ Entity::~Entity()
 void Entity::Reset()
 {
 	myAlive = true;
-
+	myState = eEntityState::IDLE;
 	if (myIsClientSide == false && mySubType == "playerserver")
 	{
 		PollingStation::GetInstance()->AddEntity(this);

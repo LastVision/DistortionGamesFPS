@@ -50,6 +50,8 @@
 
 #include <NetworkComponent.h>
 #include "ClientProjectileManager.h"
+#include "ClientUnitManager.h"
+#include <NetMessageActivateSpawnpoint.h>
 #include "TextEventManager.h"
 
 ClientLevel::ClientLevel()
@@ -68,6 +70,7 @@ ClientLevel::ClientLevel()
 	ClientNetworkManager::GetInstance()->Subscribe(eNetMessageType::EXPLOSION, this);
 
 	ClientProjectileManager::Create();
+	ClientUnitManager::Create();
 	myScene = new Prism::Scene();
 }
 
@@ -79,6 +82,7 @@ ClientLevel::~ClientLevel()
 
 	SAFE_DELETE(myEmitterManager);
 	ClientProjectileManager::Destroy();
+	ClientUnitManager::Destroy();
 	ClientNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::ON_DEATH, this);
 	ClientNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::SET_ACTIVE, this);
 	ClientNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::ENTITY_STATE, this);
@@ -142,6 +146,7 @@ void ClientLevel::Update(const float aDeltaTime)
 		RESET_RUNTIME;
 	}
 	ClientProjectileManager::GetInstance()->Update(aDeltaTime);
+	ClientUnitManager::GetInstance()->Update(aDeltaTime);
 	//if (CU::InputWrapper::GetInstance()->KeyDown(DIK_U))
 	//{
 	//	myActiveEnemies.GetLast()->SetState(eEntityState::WALK);
@@ -150,6 +155,10 @@ void ClientLevel::Update(const float aDeltaTime)
 	//{
 	//	myActiveEnemies.GetLast()->SetState(eEntityState::ATTACK);
 	//}
+	if (CU::InputWrapper::GetInstance()->KeyDown(DIK_B) == true)
+	{
+		ClientNetworkManager::GetInstance()->AddMessage(NetMessageActivateSpawnpoint(17));
+	}
 
 	SharedLevel::Update(aDeltaTime);
 	myPlayer->GetComponent<FirstPersonRenderComponent>()->UpdateCoOpPositions(myPlayers);
@@ -298,9 +307,8 @@ void ClientLevel::ReceiveNetworkMessage(const NetMessageEntityState& aMessage, c
 
 	if (myActiveUnitsMap.find(aMessage.myGID) == myActiveUnitsMap.end())
 	{
-		DL_ASSERT("ENTITY GID NOT FOUND IN CLIENT LEVEL!");
+		return;
 	}
-
 	myActiveUnitsMap[aMessage.myGID]->SetState(static_cast<eEntityState>(aMessage.myEntityState));
 }
 
