@@ -190,4 +190,23 @@ namespace Prism
 
 		return intersection;
 	}
+
+	CU::Vector2<float> Camera::ConvertTo2D(const CU::Vector3<float>& aPostion)
+	{
+		CU::Matrix44<float> renderPos;
+		renderPos.SetPos(aPostion);
+		renderPos = renderPos * CU::InverseSimple(myOrientation);
+		renderPos = renderPos * GetProjection();
+
+		CU::Vector3<float> newRenderPos = renderPos.GetPos();
+		CU::Vector2<float> windowSize = Prism::Engine::GetInstance()->GetWindowSize();
+
+		newRenderPos /= renderPos.GetPos4().w;
+		newRenderPos += 1.f;
+		newRenderPos *= 0.5f;
+		newRenderPos.x *= windowSize.x;
+		newRenderPos.y *= windowSize.y;
+		newRenderPos.y += 50.f;
+		return { newRenderPos.x, newRenderPos.y };
+	}
 }
