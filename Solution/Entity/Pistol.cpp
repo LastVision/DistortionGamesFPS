@@ -1,5 +1,6 @@
 #include "stdafx.h"
 
+#include <AudioInterface.h>
 #include "DamageNote.h"
 #include "Entity.h"
 #include <EmitterMessage.h>
@@ -97,6 +98,7 @@ bool Pistol::Shoot(const CU::Matrix44<float>& aOrientation)
 		myShootTimer = myShootTime;
 		myMuzzleflashTimer = 0.2f;
 		myMuzzleflash[myCurrentMuzzleflash]->SetShouldRender(true);
+		Prism::Audio::AudioInterface::GetInstance()->PostEvent("Play_Pistol", 0);
 		return true;
 	}
 	return false;

@@ -107,9 +107,7 @@ void ClientLevel::Init(const std::string&)
 	CU::Matrix44f orientation;
 	myInstanceOrientations.Add(orientation);
 
-	Prism::Audio::AudioInterface::GetInstance()->PostEvent("PlayBackground", 0);
-	Prism::Audio::AudioInterface::GetInstance()->PostEvent("PlayFirstLayer", 0);
-	Prism::Audio::AudioInterface::GetInstance()->PostEvent("PlaySecondLayer", 0);
+	Prism::Audio::AudioInterface::GetInstance()->PostEvent("PlayAll", 0);
 	ClientProjectileManager::GetInstance()->CreateBullets(myScene);
 	ClientProjectileManager::GetInstance()->CreateGrenades(myScene);
 	ClientProjectileManager::GetInstance()->CreateExplosions();
@@ -387,11 +385,13 @@ void ClientLevel::HandleTrigger(Entity& aFirstEntity, Entity& aSecondEntity, boo
 			if (aSecondEntity.GetType() == eEntityType::PLAYER)
 			{
 				aSecondEntity.SendNote<UpgradeNote>(aFirstEntity.GetComponent<UpgradeComponent>()->GetData());
+				Prism::Audio::AudioInterface::GetInstance()->PostEvent("FadeInFirstLayer", 0);
 			}
 		}
 		else if (firstTrigger->GetTriggerType() == eTriggerType::HEALTH_PACK)
 		{
 			ClientNetworkManager::GetInstance()->AddMessage<NetMessageHealthPack>(NetMessageHealthPack(firstTrigger->GetValue()));
+			Prism::Audio::AudioInterface::GetInstance()->PostEvent("FadeInSecondLayer", 0);
 		}
 		aSecondEntity.SendNote<CollisionNote>(CollisionNote(&aFirstEntity, aHasEntered));
 	}
