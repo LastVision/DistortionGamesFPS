@@ -188,23 +188,28 @@ void ClientLevel::Update(const float aDeltaTime)
 
 	ClientNetworkManager::GetInstance()->Update(aDeltaTime);
 
+	if (myTextManager != nullptr)
+	{
 	myTextManager->Update(aDeltaTime);
-
+	}
 }
 
 void ClientLevel::Render()
 {
 	if (myInitDone == true)
 	{
-	myDeferredRenderer->Render(myScene);
-	Prism::DebugDrawer::GetInstance()->RenderLinesToScreen(*myPlayer->GetComponent<InputComponent>()->GetCamera());
-	//myScene->Render();
-	//myDeferredRenderer->Render(myScene);
-	myEmitterManager->RenderEmitters();
-	myPlayer->GetComponent<FirstPersonRenderComponent>()->Render();
-	//myPlayer->GetComponent<ShootingComponent>()->Render();
+		myDeferredRenderer->Render(myScene);
+		Prism::DebugDrawer::GetInstance()->RenderLinesToScreen(*myPlayer->GetComponent<InputComponent>()->GetCamera());
+		//myScene->Render();
+		//myDeferredRenderer->Render(myScene);
+		myEmitterManager->RenderEmitters();
+		myPlayer->GetComponent<FirstPersonRenderComponent>()->Render();
+		//myPlayer->GetComponent<ShootingComponent>()->Render();
 
+		if (myTextManager != nullptr)
+		{
 		myTextManager->Render();
+	}
 }
 }
 
@@ -321,7 +326,7 @@ void ClientLevel::ReceiveNetworkMessage(const NetMessageEnemyShooting& aMessage,
 
 void ClientLevel::ReceiveNetworkMessage(const NetMessageShootGrenade&, const sockaddr_in&)
 {
- 	Entity* bullet = ClientProjectileManager::GetInstance()->RequestGrenade();
+	Entity* bullet = ClientProjectileManager::GetInstance()->RequestGrenade();
 	CU::Matrix44<float> playerOrientation = myPlayer->GetOrientation();
 	bullet->AddToScene();
 	bullet->GetComponent<PhysicsComponent>()->AddToScene();
