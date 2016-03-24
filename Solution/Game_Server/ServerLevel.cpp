@@ -250,7 +250,6 @@ void ServerLevel::HandleTrigger(Entity& aFirstEntity, Entity& aSecondEntity, boo
 		}
 		else if (aSecondEntity.GetType() == eEntityType::UNIT && aSecondEntity.GetSubType() != "playerserver")
 		{
-			SendTextMessageToClients("A unit entered defend zone");
 			if (myMissionManager->GetCurrentMissionType() == eMissionType::DEFEND)
 			{
 				printf("DefendTrigger with GID: %i entered by: %s with GID: %i \n", aFirstEntity.GetGID(), aSecondEntity.GetSubType().c_str(), aSecondEntity.GetGID());
@@ -262,7 +261,6 @@ void ServerLevel::HandleTrigger(Entity& aFirstEntity, Entity& aSecondEntity, boo
 	{
 		if (aSecondEntity.GetType() == eEntityType::UNIT && aSecondEntity.GetSubType() != "playerserver")
 		{
-			SendTextMessageToClients("A unit left defend zone");
 			if (myMissionManager->GetCurrentMissionType() == eMissionType::DEFEND)
 			{
 				printf("DefendTrigger with GID: %i exited by: %s with GID: %i \n", aFirstEntity.GetGID(), aSecondEntity.GetSubType().c_str(), aSecondEntity.GetGID());

@@ -179,7 +179,7 @@ void ClientLevel::Update(const float aDeltaTime)
 
 	ClientNetworkManager::GetInstance()->Update(aDeltaTime);
 
-	myTextManager->Update(aDeltaTime);
+	//myTextManager->Update(aDeltaTime);
 
 }
 
@@ -195,7 +195,7 @@ void ClientLevel::Render()
 		myPlayer->GetComponent<FirstPersonRenderComponent>()->Render();
 		//myPlayer->GetComponent<ShootingComponent>()->Render();
 
-		myTextManager->Render();
+		//myTextManager->Render();
 	}
 }
 
