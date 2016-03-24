@@ -9,12 +9,15 @@
 ClientUnitManager::ClientUnitManager()
 {
 	ClientNetworkManager::GetInstance()->Subscribe(eNetMessageType::ACTIVATE_UNIT, this);
+	ClientNetworkManager::GetInstance()->Subscribe(eNetMessageType::ENTITY_STATE, this);
 }
 
 
 ClientUnitManager::~ClientUnitManager()
 {
 	ClientNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::ACTIVATE_UNIT, this);
+	ClientNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::ENTITY_STATE, this);
+
 }
 
 void ClientUnitManager::CreateUnits(Prism::Scene* aScene)
@@ -70,6 +73,10 @@ void ClientUnitManager::ReceiveNetworkMessage(const NetMessageEntityState& aMess
 	if (myUnitsMap.find(aMessage.myGID) != myUnitsMap.end())
 	{
 		myUnitsMap[aMessage.myGID]->SetState(static_cast<eEntityState>(aMessage.myEntityState));
+		if (aMessage.myEntityState == static_cast<unsigned char>(eEntityState::DIE))
+		{
+			myUnitsMap[aMessage.myGID]->Kill();
+		}
 	}
 }
 

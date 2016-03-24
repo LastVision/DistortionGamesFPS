@@ -99,14 +99,17 @@ void SpawnpointComponent::SpawnUnit(float aDelta)
 	{
 		for (int i = 0; i < myData.mySpawnPerInterval; ++i)
 		{
-			if (myActiveCount < myUnitCount)
+			if (myUnits[myUnitIndex]->IsAlive() == false)
 			{
-				CU::Vector3<float> spawnPosition = myEntity.GetOrientation().GetPos();
-				spawnPosition.x + 5 * i;
-				SharedUnitManager::GetInstance()->ActivateUnit(myUnits[myUnitIndex], spawnPosition);
-				SharedNetworkManager::GetInstance()->AddMessage(NetMessageActivateUnit(myUnits[myUnitIndex]->GetGID(), spawnPosition));
-				myUnitIndex++;
-				myActiveCount++;
+				if (myActiveCount < myUnitCount)
+				{
+					CU::Vector3<float> spawnPosition = myEntity.GetOrientation().GetPos();
+					spawnPosition.x + 5 * i;
+					SharedUnitManager::GetInstance()->ActivateUnit(myUnits[myUnitIndex], spawnPosition);
+					SharedNetworkManager::GetInstance()->AddMessage(NetMessageActivateUnit(myUnits[myUnitIndex]->GetGID(), spawnPosition));
+					myUnitIndex++;
+					myActiveCount++;
+				}
 			}
 		}
 		mySpawnTimer = myData.mySpawnInterval;

@@ -7,7 +7,7 @@
 
 
 PhysicsComponent::PhysicsComponent(Entity& aEntity, const PhysicsComponentData& aPhysicsComponentData
-	, const std::string& aFBXPath)
+		, const std::string& aFBXPath)
 	: Component(aEntity)
 	, myData(aPhysicsComponentData)
 	, myIsAwake(true)

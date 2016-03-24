@@ -317,7 +317,22 @@ namespace Prism
 
 		for (int i = 0; i < myPositionJobs[myCurrentIndex ^ 1].Size(); ++i)
 		{
-			SetPosition(myPositionJobs[myCurrentIndex ^ 1][i]);
+			if (myPositionJobs[myCurrentIndex ^ 1][i].myID > -1)
+			{
+				int capID = myPositionJobs[myCurrentIndex ^ 1][i].myID;
+				physx::PxExtendedVec3 pos;
+				pos.x = myPositionJobs[myCurrentIndex ^ 1][i].myPosition.x;
+				pos.y = myPositionJobs[myCurrentIndex ^ 1][i].myPosition.y;
+				pos.z = myPositionJobs[myCurrentIndex ^ 1][i].myPosition.z;
+				myControllerManager->getController(myPositionJobs[myCurrentIndex ^ 1][i].myID)->setPosition(pos);
+				myControllerPositions[myCurrentIndex ^ 1][capID].x = float(myPositionJobs[myCurrentIndex ^ 1][i].myPosition.x);
+				myControllerPositions[myCurrentIndex ^ 1][capID].y = float(myPositionJobs[myCurrentIndex ^ 1][i].myPosition.y);
+				myControllerPositions[myCurrentIndex ^ 1][capID].z = float(myPositionJobs[myCurrentIndex ^ 1][i].myPosition.z);
+			}
+			else
+			{
+				SetPosition(myPositionJobs[myCurrentIndex ^ 1][i]);
+			}
 		}
 		myPositionJobs[myCurrentIndex ^ 1].RemoveAll();
 
@@ -465,6 +480,11 @@ namespace Prism
 	void PhysicsManager::TeleportToPosition(physx::PxRigidStatic * aStaticBody, const CU::Vector3<float>& aPosition)
 	{
 		myPositionJobs[myCurrentIndex].Add(PositionJob(aStaticBody, aPosition, PositionJobType::TELEPORT));
+	}
+
+	void PhysicsManager::TeleportToPosition(int aID, const CU::Vector3<float>& aPosition)
+	{
+		myPositionJobs[myCurrentIndex].Add(PositionJob(aID, aPosition, PositionJobType::TELEPORT));
 	}
 
 	void PhysicsManager::MoveToPosition(physx::PxRigidDynamic* aDynamicBody, const CU::Vector3<float>& aPosition)

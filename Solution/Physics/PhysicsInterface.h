@@ -46,6 +46,7 @@ namespace Prism
 		void SetVelocity(physx::PxRigidDynamic* aDynamicBody, const CU::Vector3<float>& aVelocity);
 		void TeleportToPosition(physx::PxRigidDynamic* aDynamicBody, const CU::Vector3<float>& aPosition);
 		void TeleportToPosition(physx::PxRigidStatic* aStaticBody, const CU::Vector3<float>& aPosition);
+		void TeleportToPosition(int aID, const CU::Vector3<float>& aPosition);
 		void MoveToPosition(physx::PxRigidDynamic* aDynamicBody, const CU::Vector3<float>& aPosition);
 
 		int CreatePlayerController(const CU::Vector3<float>& aStartPosition, PhysicsComponent* aComponent, bool aShouldAddToScene);

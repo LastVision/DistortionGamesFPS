@@ -5,6 +5,8 @@
 #include "PhysicsComponent.h"
 #include <CommonHelper.h>
 
+#include <PhysicsInterface.h>
+
 SharedUnitManager* SharedUnitManager::myInstance = nullptr;
 
 SharedUnitManager::SharedUnitManager()
@@ -35,7 +37,6 @@ void SharedUnitManager::Update(float aDeltaTime)
 		}
 		else
 		{
-			myActiveUnits[i]->RemoveFromScene();
 			myActiveUnits.RemoveCyclicAtIndex(i);
 		}
 	}
@@ -48,6 +49,7 @@ void SharedUnitManager::ActivateUnit(Entity* aUnit, const CU::Vector3<float>& aP
 	{
 		aUnit->GetComponent<PhysicsComponent>()->Wake();
 		aUnit->GetComponent<PhysicsComponent>()->AddToScene();
+		Prism::PhysicsInterface::GetInstance()->TeleportToPosition(aUnit->GetComponent<PhysicsComponent>()->GetCapsuleControllerId(), aPosition);
 	}
 	else
 	{
@@ -55,7 +57,6 @@ void SharedUnitManager::ActivateUnit(Entity* aUnit, const CU::Vector3<float>& aP
 		aUnit->GetComponent<PhysicsComponent>()->AddToScene();
 	}
 	
-	aUnit->GetComponent<PhysicsComponent>()->TeleportToPosition(aPosition);
 	myActiveUnits.Add(aUnit);
 }
 
