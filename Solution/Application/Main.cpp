@@ -8,6 +8,7 @@
 #include <TimerManager.h>
 #include <CommonHelper.h>
 #include <InputWrapper.h>
+#include <Defines.h>
 //#include <vld.h>
 
 bool engineIsRunning = true;
@@ -94,6 +95,10 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPTSTR, int aNumberCommands)
 			else if (command == "-useEntityLog")
 			{
 				DL_Debug::Debug::GetInstance()->ActivateFilterLog(DL_Debug::eFilterLog::ENTITY);
+			}
+			else if (command == "-generateLightData")
+			{
+				Global_GenerateLightData = true;
 			}
 		}
 
