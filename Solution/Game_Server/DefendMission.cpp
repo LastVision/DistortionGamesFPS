@@ -1,12 +1,14 @@
 #include "stdafx.h"
 #include "DefendMission.h"
-
+#include <SendTextToClientsMessage.h>
+#include <PostMaster.h>
 
 DefendMission::DefendMission(const std::string& aMissionType, float aSecondsToDefend, bool aShouldLoopMissionEvents)
 	: Mission(aMissionType, aShouldLoopMissionEvents)
 	, myDefendTime(aSecondsToDefend)
 	, myShouldCountDown(true)
 	, myEnemiesInside(0)
+	, myLastSecondToWarn(int(aSecondsToDefend))
 {
 }
 
@@ -32,6 +34,12 @@ bool DefendMission::Update(float aDeltaTime)
 		{
 			myDefendTime -= aDeltaTime;
 		}
+		//test:
+		//if (myLastSecondToWarn == int(myDefendTime))
+		//{
+		//	myLastSecondToWarn = int(myDefendTime);
+		//	PostMaster::GetInstance()->SendMessage<SendTextToClientsMessage>(SendTextToClientsMessage("Hold out: " + std::to_string(myLastSecondToWarn), 1.f));
+		//}
 		return false;
 	}
 	else if (myEndEvents.Size() > 0)
@@ -45,11 +53,21 @@ bool DefendMission::Update(float aDeltaTime)
 		return false;
 	}
 
+	PostMaster::GetInstance()->SendMessage<SendTextToClientsMessage>(SendTextToClientsMessage("Mission complete"));
 	return true;
 }
 
 void DefendMission::AddValue(int aValue)
 {
+	std::string text = "A unit entered defend zone";
+
+	if (aValue < 0)
+	{
+		text = "A unit left defend zone";
+	}
+
+	PostMaster::GetInstance()->SendMessage<SendTextToClientsMessage>(SendTextToClientsMessage(text));
+
 	myEnemiesInside += aValue;
 	printf("%i inside defendtrigger \n", myEnemiesInside);
 }
