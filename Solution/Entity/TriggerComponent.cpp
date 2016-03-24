@@ -62,7 +62,7 @@ void TriggerComponent::Activate()
 {
 	if (myTriggerType == eTriggerType::RESPAWN)
 	{
-		myRespawnTime = myData.myValue;
+		myRespawnTime = float(myData.myValue);
 		myPlayersInside = 0;
 		myHasTriggered = true;
 	}
