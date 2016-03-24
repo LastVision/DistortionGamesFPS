@@ -1,11 +1,13 @@
 #include "stdafx.h"
 #include "CollisionNote.h"
 #include <GameStateMessage.h>
+#include <NetMessageSetActive.h>
 #include "PhysicsComponent.h"
 #include <PostMaster.h>
 #include <RespawnMessage.h>
 #include "TriggerComponent.h"
 #include "TriggerComponentData.h"
+#include <SharedNetworkManager.h>
 
 TriggerComponent::TriggerComponent(Entity& anEntity, const TriggerComponentData& someData)
 	: Component(anEntity)
@@ -50,6 +52,10 @@ void TriggerComponent::ReceiveNote(const CollisionNote& aNote)
 		if (myData.myIsOneTime == true)
 		{
 			myEntity.GetComponent<PhysicsComponent>()->RemoveFromScene();
+			if (myData.myIsClientSide == false)
+			{
+				SharedNetworkManager::GetInstance()->AddMessage<NetMessageSetActive>(NetMessageSetActive(false, true, myEntity.GetGID()));
+			}
 		}
 	}
 	else if (myTriggerType == eTriggerType::RESPAWN)

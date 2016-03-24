@@ -30,6 +30,9 @@ public:
 
 	//bool IsLastLevel();
 
+	const CU::Vector3<float> GetMinPoint() const;
+	const CU::Vector3<float> GetMaxPoint() const;
+
 protected:
 	void ReadLeveList(const std::string& aLevelListPath);
 	virtual void ReadLevel(const std::string& aLevelPath);
@@ -48,9 +51,23 @@ protected:
 	int myCurrentID;
 
 	std::unordered_map<int, std::string> myLevelPaths;
+
+	CU::Vector3<float> myMinPoint;
+	CU::Vector3<float> myMaxPoint;
 };
 
 //inline bool SharedLevelFactory::IsLastLevel()
 //{
 //	return myCurrentID >= myLevelPaths.Size();
 //}
+
+
+inline const CU::Vector3<float> SharedLevelFactory::GetMinPoint() const
+{
+	return myMinPoint;
+}
+
+inline const CU::Vector3<float> SharedLevelFactory::GetMaxPoint() const
+{
+	return myMaxPoint;
+}

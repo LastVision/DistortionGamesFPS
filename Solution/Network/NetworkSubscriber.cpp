@@ -21,7 +21,7 @@ void NetworkSubscriber::ReceiveNetworkMessage(const NetMessagePingReply&, const 
 void NetworkSubscriber::ReceiveNetworkMessage(const NetMessagePingRequest&, const sockaddr_in&){}
 void NetworkSubscriber::ReceiveNetworkMessage(const NetMessagePosition&, const sockaddr_in&){}
 void NetworkSubscriber::ReceiveNetworkMessage(const NetMessageRequestConnect&, const sockaddr_in&){}
-void NetworkSubscriber::ReceiveNetworkMessage(const NetMessageRequestLevel&, const sockaddr_in&){}
+void NetworkSubscriber::ReceiveNetworkMessage(const NetMessageSetLevel&, const sockaddr_in&){}
 void NetworkSubscriber::ReceiveNetworkMessage(const NetMessageRequestStartLevel&, const sockaddr_in&){}
 void NetworkSubscriber::ReceiveNetworkMessage(const NetMessageShootGrenade&, const sockaddr_in&){}
 void NetworkSubscriber::ReceiveNetworkMessage(const NetMessageSetActive&, const sockaddr_in&){}

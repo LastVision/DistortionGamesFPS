@@ -6,6 +6,7 @@
 #include "ClientUnitManager.h"
 #include <PhysicsComponent.h>
 #include <PhysicsInterface.h>
+#include <GraphicsComponent.h>
 #include <PointLight.h>
 #include <Room.h>
 #include <RoomManager.h>
@@ -41,6 +42,12 @@ ClientLevel* ClientLevelFactory::LoadCurrentLevel()
 	myCurrentLevel = new ClientLevel();
 	ReadLevel(myLevelPaths[myCurrentID]);
 	myCurrentLevel->Init();
+	myCurrentLevel->SetMinMax(myMinPoint, myMaxPoint);
+
+
+	
+	std::string levelName(myLevelPaths[myCurrentID].begin() + myLevelPaths[myCurrentID].rfind('/')+1, myLevelPaths[myCurrentID].end() - 4);
+	myCurrentLevel->SetName(levelName);
 #ifdef THREAD_PHYSICS
 	Prism::PhysicsInterface::GetInstance()->InitThread();
 #endif
@@ -236,7 +243,18 @@ void ClientLevelFactory::LoadTriggers(XMLReader& aReader, tinyxml2::XMLElement* 
 		}
 		else
 		{
-			SAFE_DELETE(newEntity);
+			if (newEntity->GetComponent<GraphicsComponent>() != nullptr)
+			{
+				newEntity->AddToScene();
+				newEntity->GetComponent<PhysicsComponent>()->RemoveFromScene();
+				newEntity->RemoveComponent(eComponentType::TRIGGER);
+				newEntity->RemoveComponent(eComponentType::PHYSICS);
+				myCurrentLevel->AddEntity(newEntity);
+			}
+			else
+			{
+				SAFE_DELETE(newEntity);
+			}
 		}
 	}
 }

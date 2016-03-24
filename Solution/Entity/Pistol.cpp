@@ -86,9 +86,10 @@ bool Pistol::Shoot(const CU::Matrix44<float>& aOrientation)
 {
 	if (myAmmoInClip > 0 && myShootTimer <= 0.f)
 	{
-		CU::Vector3<float> forward = aOrientation.GetForward();
+		CU::Vector3<float> forward = CU::Vector3<float>(0, 0, 1.f) 
+			* (CU::Matrix44<float>::CreateRotateAroundX(CU::Math::RandomRange(myMinSpreadRotation, myMaxSpreadRotation)) 
+			* aOrientation);
 		forward = forward * CU::Matrix44<float>::CreateRotateAroundY(CU::Math::RandomRange(myMinSpreadRotation, myMaxSpreadRotation));
-		forward = forward * CU::Matrix44<float>::CreateRotateAroundX(CU::Math::RandomRange(myMinSpreadRotation, myMaxSpreadRotation));
 
 		Prism::PhysicsInterface::GetInstance()->RayCast(aOrientation.GetPos()
 			, forward, 500.f, myRaycastHandler);

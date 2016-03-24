@@ -7,18 +7,22 @@
 #include "InGameState.h"
 #include <InputWrapper.h>
 #include "LobbyState.h"
+#include <ModelLoader.h>
 #include <NetMessageDisconnect.h>
 #include <NetMessageLoadLevel.h>
-#include <NetMessageRequestLevel.h>
+#include <NetMessageSetLevel.h>
 #include <NetMessageRequestStartLevel.h>
 #include <OnClickMessage.h>
 #include <OnRadioButtonMessage.h>
 #include <PostMaster.h>
 #include <SharedNetworkManager.h>
+#include <TextProxy.h>
 
 LobbyState::LobbyState()
 	: myGUIManager(nullptr)
+	, myGUIManagerHost(nullptr)
 	, myLevelToStart(-1)
+	, myStartGame(false)
 {
 }
 
@@ -28,12 +32,16 @@ LobbyState::~LobbyState()
 	SAFE_DELETE(myGUIManager);
 	myCursor = nullptr;
 	PostMaster::GetInstance()->UnSubscribe(eMessageType::ON_CLICK, this);
+	PostMaster::GetInstance()->UnSubscribe(eMessageType::ON_RADIO_BUTTON, this);
+	SharedNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::SET_LEVEL, this);
 	SharedNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::LOAD_LEVEL, this);
 }
 
 void LobbyState::InitState(StateStackProxy* aStateStackProxy, GUI::Cursor* aCursor)
 {
 	PostMaster::GetInstance()->Subscribe(eMessageType::ON_CLICK, this);
+	PostMaster::GetInstance()->Subscribe(eMessageType::ON_RADIO_BUTTON, this);
+	SharedNetworkManager::GetInstance()->Subscribe(eNetMessageType::SET_LEVEL, this);
 	SharedNetworkManager::GetInstance()->Subscribe(eNetMessageType::LOAD_LEVEL, this);
 	myCursor = aCursor;
 	myIsActiveState = true;
@@ -42,6 +50,12 @@ void LobbyState::InitState(StateStackProxy* aStateStackProxy, GUI::Cursor* aCurs
 	myStateStack = aStateStackProxy;
 
 	myGUIManager = new GUI::GUIManager(myCursor, "Data/Resource/GUI/GUI_Lobby.xml", nullptr, -1);
+	myGUIManagerHost = new GUI::GUIManager(myCursor, "Data/Resource/GUI/GUI_Lobby_host.xml", nullptr, -1);
+
+	myText = Prism::ModelLoader::GetInstance()->LoadText(Prism::Engine::GetInstance()->GetFont(Prism::eFont::CONSOLE));
+	myText->SetPosition({ 800.f, 800.f });
+	myText->SetText("No current level selected.");
+	myText->SetScale({ 1.f, 1.f });
 
 	const CU::Vector2<int>& windowSize = Prism::Engine::GetInstance()->GetWindowSizeInt();
 	OnResize(windowSize.x, windowSize.y);
@@ -78,27 +92,48 @@ const eStateStatus LobbyState::Update(const float& aDeltaTime)
 		ClientNetworkManager::GetInstance()->AddMessage(NetMessageRequestStartLevel());
 	}
 
-	if (myLevelToStart != -1)
+	if (myStartGame == true)
 	{
+		DL_ASSERT_EXP(myLevelToStart != -1, "Can't start level -1.");
 		PostMaster::GetInstance()->UnSubscribe(eMessageType::ON_CLICK, this);
+		PostMaster::GetInstance()->UnSubscribe(eMessageType::ON_RADIO_BUTTON, this);
+		SharedNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::SET_LEVEL, this);
 		SharedNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::LOAD_LEVEL, this);
 
 		SET_RUNTIME(false);
 		myStateStack->PushSubGameState(new InGameState(myLevelToStart));
 	}
 
-	myGUIManager->Update(aDeltaTime);
+	if (ClientNetworkManager::GetInstance()->GetGID() == 1)
+	{
+		myGUIManagerHost->Update(aDeltaTime);
+	}
+	else
+	{
+		myGUIManager->Update(aDeltaTime);
+	}
 
 	return myStateStatus;
 }
 
 void LobbyState::Render()
 {
-	myGUIManager->Render();
+	if (ClientNetworkManager::GetInstance()->GetGID() == 1)
+	{
+		myGUIManagerHost->Render();
+	}
+	else
+	{
+		myGUIManager->Render();
+		myText->Render();
+	}
+
+	DEBUG_PRINT(myLevelToStart+1);
 }
 
 void LobbyState::ResumeState()
 {
+	myStartGame = false;
 	myIsActiveState = true;
 	myLevelToStart = -1;
 }
@@ -123,10 +158,17 @@ void LobbyState::ReceiveMessage(const OnRadioButtonMessage& aMessage)
 {
 	DL_ASSERT_EXP(aMessage.myEvent == eOnRadioButtonEvent::LEVEL_SELECT, "Only level select in lobby state.");
 
-	ClientNetworkManager::GetInstance()->AddMessage(NetMessageRequestLevel(aMessage.myID));
+	ClientNetworkManager::GetInstance()->AddMessage(NetMessageSetLevel(aMessage.myID));
+}
+
+void LobbyState::ReceiveNetworkMessage(const NetMessageSetLevel& aMessage, const sockaddr_in&)
+{
+	myLevelToStart = aMessage.myLevelID;
+	myText->SetText(CU::Concatenate("Current level: %i", myLevelToStart+1));
 }
 
 void LobbyState::ReceiveNetworkMessage(const NetMessageLoadLevel& aMessage, const sockaddr_in&)
 {
 	myLevelToStart = aMessage.myLevelID;
+	myStartGame = true;
 }

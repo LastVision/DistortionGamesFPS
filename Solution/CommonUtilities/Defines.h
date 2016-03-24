@@ -43,3 +43,11 @@
 //#define USE_RAW_INPUT
 
 #define SERVER_CONNECT_TO_DEBUGGER true
+
+
+class LightTest
+{
+public:
+	static bool GenerateLightData;
+};
+//static bool Global_GenerateLightData;

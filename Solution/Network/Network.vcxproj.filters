@@ -79,9 +79,6 @@
     <ClInclude Include="NetMessageOnDeath.h">
       <Filter>Messages</Filter>
     </ClInclude>
-    <ClInclude Include="NetMessageRequestLevel.h">
-      <Filter>Messages</Filter>
-    </ClInclude>
     <ClInclude Include="NetMessageLevelLoaded.h">
       <Filter>Messages</Filter>
     </ClInclude>
@@ -130,6 +127,9 @@
       <Filter>Messages</Filter>
     </ClInclude>
     <ClInclude Include="NetMessageActivateUnit.h">
+      <Filter>Messages</Filter>
+    </ClInclude>
+    <ClInclude Include="NetMessageSetLevel.h">
       <Filter>Messages</Filter>
     </ClInclude>
   </ItemGroup>

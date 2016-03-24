@@ -261,6 +261,7 @@
     <ClCompile Include="Camera2D.cpp" />
     <ClCompile Include="FileWatcher.cpp" />
     <ClCompile Include="FuzzySet.cpp" />
+    <ClCompile Include="GameConstants.cpp" />
     <ClCompile Include="MathHelper.cpp" />
     <ClCompile Include="Quaternion.cpp" />
     <ClCompile Include="stdafx.cpp">

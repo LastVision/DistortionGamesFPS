@@ -87,5 +87,18 @@ namespace CU
 				, RandomRange<float>(aMin.z, aMax.z)
 				, RandomRange<float>(aMin.w, aMax.w));
 		}
+
+		unsigned int ClosestPowerOfTwo(unsigned int aValue)
+		{
+			unsigned int n = aValue;
+			n--;
+			n |= n >> 1;   
+			n |= n >> 2;
+			n |= n >> 4;
+			n |= n >> 8;
+			n |= n >> 16;
+			n++;
+			return n;
+		}
 	}
 }

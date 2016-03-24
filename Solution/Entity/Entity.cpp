@@ -75,7 +75,14 @@ Entity::Entity(unsigned int aGID, const EntityData& aEntityData, Prism::Scene* a
 		}
 		else
 		{
-			DL_ASSERT_EXP(myIsClientSide == false, "Can't create PhysicsComponent on client without graphics.");
+			if (myIsClientSide == true && aEntityData.myTriggerData.myExistsInEntity == true && aEntityData.myTriggerData.myIsClientSide == false)
+			{
+			}
+			else
+			{
+				DL_ASSERT_EXP(myIsClientSide == false, "Can't create PhysicsComponent on client without graphics.");
+			}
+
 			myComponents[static_cast<int>(eComponentType::PHYSICS)] = new PhysicsComponent(*this, aEntityData.myPhysicsData
 				, "no path");
 		}

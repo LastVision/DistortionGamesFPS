@@ -13,7 +13,7 @@
 #include "NetMessageHealth.h"
 #include "NetMessageHealthPack.h"
 #include "NetMessageDisconnect.h"
-#include "NetMessageRequestLevel.h"
+#include "NetMessageSetLevel.h"
 #include "NetMessageRequestStartLevel.h"
 #include "NetMessagePingRequest.h"
 #include "NetMessagePingReply.h"
@@ -275,8 +275,8 @@ void SharedNetworkManager::HandleMessage()
 		case eNetMessageType::ON_DISCONNECT:
 			UnpackAndHandle(NetMessageDisconnect(), buffer);
 			break;
-		case eNetMessageType::REQUEST_LEVEL:
-			UnpackAndHandle(NetMessageRequestLevel(), buffer);
+		case eNetMessageType::SET_LEVEL:
+			UnpackAndHandle(NetMessageSetLevel(), buffer);
 			break;
 		case eNetMessageType::REQUEST_START_LEVEL:
 			UnpackAndHandle(NetMessageRequestStartLevel(), buffer);
