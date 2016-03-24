@@ -348,7 +348,6 @@ void ClientLevel::CollisionCallback(PhysicsComponent* aFirst, PhysicsComponent* 
 		HandleTrigger(first, second, aHasEntered);
 		break;
 	case eEntityType::EXPLOSION:
-		myTextManager->AddNotification("explosion");
 		if (aHasEntered == true)
 		{
 			HandleExplosion(first, second);
