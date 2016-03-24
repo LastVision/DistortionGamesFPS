@@ -11,7 +11,7 @@
 #include <NetMessageRequestConnect.h>
 #include <NetMessageOnJoin.h>
 #include <NetMessageDisconnect.h>
-#include <NetMessageRequestLevel.h>
+#include <NetMessageSetLevel.h>
 #include <NetMessageRequestStartLevel.h>
 #include <NetMessagePingRequest.h>
 #include <NetMessagePingReply.h>

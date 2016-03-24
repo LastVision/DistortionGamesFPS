@@ -101,4 +101,12 @@ void SharedLevelFactory::ReadOrientation(XMLReader& aReader, tinyxml2::XMLElemen
 
 	propElement = aReader.ForceFindFirstChild(aElement, "scale");
 	aReader.ForceReadAttribute(propElement, "X", "Y", "Z", aOutScale);
+
+	myMinPoint.x = min(myMinPoint.x, aOutPosition.x);
+	myMinPoint.y = min(myMinPoint.y, aOutPosition.y);
+	myMinPoint.z = min(myMinPoint.z, aOutPosition.z);
+
+	myMaxPoint.x = max(myMaxPoint.x, aOutPosition.x);
+	myMaxPoint.y = max(myMaxPoint.y, aOutPosition.y);
+	myMaxPoint.z = max(myMaxPoint.z, aOutPosition.z);
 }
