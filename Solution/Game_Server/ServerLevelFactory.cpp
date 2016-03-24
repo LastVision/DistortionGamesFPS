@@ -12,6 +12,7 @@
 #include "ServerUnitManager.h"
 #include <TriggerComponent.h>
 #include <XMLReader.h>
+#include <SpawnpointComponent.h>
 
 ServerLevelFactory::ServerLevelFactory(const std::string& aLevelListPath)
 	: SharedLevelFactory(aLevelListPath)
@@ -230,7 +231,6 @@ void ServerLevelFactory::LoadSpawnpoint(XMLReader& aReader, tinyxml2::XMLElement
 
 		ReadGID(aReader, entityElement, gid);
 
-		//Read bound to trigger
 
 		tinyxml2::XMLElement* propElement = aReader.ForceFindFirstChild(entityElement, "position");
 		aReader.ForceReadAttribute(propElement, "x", "y", "z", serverPosition);
@@ -238,6 +238,18 @@ void ServerLevelFactory::LoadSpawnpoint(XMLReader& aReader, tinyxml2::XMLElement
 		Entity* newEntity = EntityFactory::CreateEntity(gid, eEntityType::SPAWNPOINT, spawnpointType, nullptr, false
 			, serverPosition);
 		newEntity->Reset();
+
+
+
+		for (tinyxml2::XMLElement* e = aReader.FindFirstChild(entityElement, "boundtotrigger"); e != nullptr;
+			e = aReader.FindNextElement(e, "boundtotrigger"))
+		{
+			int triggerGID;
+			aReader.ForceReadAttribute(e, "value", triggerGID);
+			newEntity->GetComponent<SpawnpointComponent>()->BindToTrigger(triggerGID);
+		}
+
+		//Read bound to trigger
 
 		myCurrentLevel->AddEntity(newEntity);
 	}

@@ -7,19 +7,20 @@
 #include <MathHelper.h>
 #include "SharedUnitManager.h"
 
-#include <NetMessageSetActive.h>
 #include <SharedNetworkManager.h>
-#include <NetMessageActivateSpawnpoint.h>
 #include <NetMessageActivateUnit.h>
 
+#include <PostMaster.h>
+#include <ActivateSpawnpointMessage.h>
 
 SpawnpointComponent::SpawnpointComponent(Entity& anEntity, const SpawnpointComponentData& aSpawnpointComponentData)
 	: Component(anEntity)
 	, myData(aSpawnpointComponentData)
 	, myIsActive(false)
 	, myUnits(512)
+	, myTriggerConnections(4)
 {
-	SharedNetworkManager::GetInstance()->Subscribe(eNetMessageType::ACTIVATE_SPAWNPOINT, this);
+	PostMaster::GetInstance()->Subscribe(eMessageType::ACTIVATE_SPAWNPOINT, this);
 
 	myUnitCount = (myData.mySpawnPerInterval * myData.mySpawnpointLifetime) / myData.mySpawnInterval;
 	mySpawnTimer = myData.mySpawnInterval;
@@ -43,7 +44,7 @@ SpawnpointComponent::SpawnpointComponent(Entity& anEntity, const SpawnpointCompo
 SpawnpointComponent::~SpawnpointComponent()
 {
 	myUnits.RemoveAll();
-	SharedNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::ACTIVATE_SPAWNPOINT, this);
+	PostMaster::GetInstance()->UnSubscribe(eMessageType::ACTIVATE_SPAWNPOINT, this);
 }
 
 void SpawnpointComponent::Update(float aDelta)
@@ -76,15 +77,24 @@ void SpawnpointComponent::DeActivate()
 	myIsActive = false;
 }
 
-void SpawnpointComponent::ReceiveNetworkMessage(const NetMessageActivateSpawnpoint& aMessage, const sockaddr_in&)
+void SpawnpointComponent::ReceiveMessage(const ActivateSpawnpointMessage& aMessage)
 {
-	if (myEntity.GetGID() == aMessage.myGID)
+	for each(unsigned int gid in myTriggerConnections)
 	{
-		if (myIsActive == false)
+		if (gid == aMessage.myGID)
 		{
-			Activate();
+			if (myIsActive == false)
+			{
+				Activate();
+				return;
+			}
 		}
 	}
+}
+
+void SpawnpointComponent::BindToTrigger(unsigned int aGID)
+{
+	myTriggerConnections.Add(aGID);
 }
 
 void SpawnpointComponent::SpawnUnit(float aDelta)

@@ -27,6 +27,7 @@
 #include <SetActiveMessage.h>
 #include <RespawnMessage.h>
 #include <RespawnTriggerMessage.h>
+#include <ActivateSpawnpointMessage.h>
 
 #include "ServerProjectileManager.h"
 #include "ServerUnitManager.h"
@@ -252,6 +253,9 @@ void ServerLevel::HandleTrigger(Entity& aFirstEntity, Entity& aSecondEntity, boo
 				break;
 			case eTriggerType::LEVEL_CHANGE:
 				myNextLevel = firstTrigger->GetValue();
+				break;
+			case eTriggerType::ENEMY_SPAWN:
+				PostMaster::GetInstance()->SendMessage(ActivateSpawnpointMessage(firstTrigger->GetEntity().GetGID()));
 				break;
 			}
 			aSecondEntity.SendNote<CollisionNote>(CollisionNote(&aFirstEntity, aHasEntered));

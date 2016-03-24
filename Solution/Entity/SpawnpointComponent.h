@@ -1,11 +1,10 @@
 #pragma once
 #include "Component.h"
-#include <NetworkSubscriber.h>
-
+#include <Subscriber.h>
 class Entity;
 struct SpawnpointComponentData;
 
-class SpawnpointComponent : public Component, public NetworkSubscriber
+class SpawnpointComponent : public Component, public Subscriber
 {
 public:
 	SpawnpointComponent(Entity& anEntity, const SpawnpointComponentData& aSpawnpointComponentData);
@@ -15,8 +14,12 @@ public:
 	void Activate();
 	void DeActivate();
 
-	void ReceiveNetworkMessage(const NetMessageActivateSpawnpoint& aMessage, const sockaddr_in& aSenderAddress) override;
+	void ReceiveMessage(const ActivateSpawnpointMessage& aMessage) override;
 
+	void BindToTrigger(unsigned int aGID);
+
+	static eComponentType GetTypeStatic();
+	eComponentType GetType() override;
 private:
 
 	void SpawnUnit(float aDelta);
@@ -24,6 +27,7 @@ private:
 	const SpawnpointComponentData& myData;
 	CU::GrowingArray<Entity*> myUnits;
 
+	CU::GrowingArray<unsigned int> myTriggerConnections;
 
 	int myUnitCount;
 	int myActiveCount;
@@ -32,4 +36,14 @@ private:
 	float myLifetime;
 	bool myIsActive;
 };
+
+inline eComponentType SpawnpointComponent::GetTypeStatic()
+{
+	return eComponentType::SPAWNPOINT;
+}
+
+inline eComponentType SpawnpointComponent::GetType()
+{
+	return GetTypeStatic();
+}
 
