@@ -3,6 +3,7 @@
 #include "PhysicsComponent.h"
 #include "PhysicsComponentData.h"
 #include <PhysicsInterface.h>
+#include <CommonHelper.h>
 
 
 PhysicsComponent::PhysicsComponent(Entity& aEntity, const PhysicsComponentData& aPhysicsComponentData
@@ -25,7 +26,8 @@ PhysicsComponent::PhysicsComponent(Entity& aEntity, const PhysicsComponentData& 
 
 	bool shouldAddToPhysicsScene = true;
 	if (myEntity.GetType() == eEntityType::EXPLOSION || myEntity.GetSubType() == "respawn"
-		|| myEntity.GetType() == eEntityType::BULLET)
+		|| myEntity.GetType() == eEntityType::BULLET || myEntity.GetSubType() == CU::ToLower("gunDroidServer")
+		|| myEntity.GetSubType() == "gundroid")
 	{
 		shouldAddToPhysicsScene = false;
 	}

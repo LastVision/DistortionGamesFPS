@@ -5,6 +5,7 @@
 #include <EntityFactory.h>
 #include <fstream>
 #include <CommonHelper.h>
+#include <PhysicsComponent.h>
 ServerUnitManager::ServerUnitManager()
 {
 }
@@ -38,7 +39,11 @@ void ServerUnitManager::CreateUnits(Prism::Scene* aScene)
 	{
 		for (int i = 0; i < myUnits.GetCapacity(); ++i)
 		{
-			Entity* unit = EntityFactory::CreateEntity(index++, eEntityType::UNIT, CU::ToLower(types[j]), aScene, false, { pos.x, -pos.y + 5 * (j* i), pos.z });
+			pos = { pos.x, -pos.y + 5 * ((j + 1)* (i + 1)), pos.z };
+			Entity* unit = EntityFactory::CreateEntity(index++, eEntityType::UNIT, CU::ToLower(types[j]), aScene, false, pos);
+			unit->GetComponent<PhysicsComponent>()->Sleep();
+			unit->GetComponent<PhysicsComponent>()->TeleportToPosition(pos);
+
 			unit->Kill();
 			myUnits.Add(unit);
 		}

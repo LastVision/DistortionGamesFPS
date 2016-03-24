@@ -2,7 +2,7 @@
 #include "SharedUnitManager.h"
 #include "Entity.h"
 #include <Utility.h>
-
+#include "PhysicsComponent.h"
 
 SharedUnitManager* SharedUnitManager::myInstance = nullptr;
 
@@ -42,6 +42,15 @@ void SharedUnitManager::Update(float aDeltaTime)
 void SharedUnitManager::ActivateUnit(Entity* aUnit)
 {
 	aUnit->Reset();
+	if (aUnit->GetIsClient() == false)
+	{
+		aUnit->GetComponent<PhysicsComponent>()->Wake();
+	}
+	else
+	{
+		aUnit->GetComponent<PhysicsComponent>()->AddToScene();
+	}
+
 	myActiveUnits.Add(aUnit);
 }
 
