@@ -386,28 +386,30 @@ void ClientLevel::DebugMusic()
 
 void ClientLevel::HandleTrigger(Entity& aFirstEntity, Entity& aSecondEntity, bool aHasEntered)
 {
-	if (aSecondEntity.GetType() == eEntityType::PLAYER && aHasEntered == true)
+	if (aSecondEntity.GetType() == eEntityType::PLAYER)
 	{
-		TriggerComponent* firstTrigger = aFirstEntity.GetComponent<TriggerComponent>();
-		if (firstTrigger->GetTriggerType() == eTriggerType::UPGRADE)
+		if (aHasEntered == true)
 		{
-			myTextManager->AddNotification("upgrade");
-			if (aSecondEntity.GetType() == eEntityType::PLAYER)
+			TriggerComponent* firstTrigger = aFirstEntity.GetComponent<TriggerComponent>();
+			if (firstTrigger->GetTriggerType() == eTriggerType::UPGRADE)
 			{
-				aSecondEntity.SendNote<UpgradeNote>(aFirstEntity.GetComponent<UpgradeComponent>()->GetData());
-				Prism::Audio::AudioInterface::GetInstance()->PostEvent("FadeInFirstLayer", 0);
+				myTextManager->AddNotification("upgrade");
+				if (aSecondEntity.GetType() == eEntityType::PLAYER)
+				{
+					aSecondEntity.SendNote<UpgradeNote>(aFirstEntity.GetComponent<UpgradeComponent>()->GetData());
+					Prism::Audio::AudioInterface::GetInstance()->PostEvent("FadeInFirstLayer", 0);
+				}
 			}
+			else if (firstTrigger->GetTriggerType() == eTriggerType::HEALTH_PACK)
+			{
+				myTextManager->AddNotification("healthpack");
+				ClientNetworkManager::GetInstance()->AddMessage<NetMessageHealthPack>(NetMessageHealthPack(firstTrigger->GetValue()));
+				Prism::Audio::AudioInterface::GetInstance()->PostEvent("FadeInSecondLayer", 0);
+			}
+			aSecondEntity.SendNote<CollisionNote>(CollisionNote(&aFirstEntity, aHasEntered));
 		}
-		else if (firstTrigger->GetTriggerType() == eTriggerType::HEALTH_PACK)
-		{
-			myTextManager->AddNotification("healthpack");
-			ClientNetworkManager::GetInstance()->AddMessage<NetMessageHealthPack>(NetMessageHealthPack(firstTrigger->GetValue()));
-			Prism::Audio::AudioInterface::GetInstance()->PostEvent("FadeInSecondLayer", 0);
-		}
-		aSecondEntity.SendNote<CollisionNote>(CollisionNote(&aFirstEntity, aHasEntered));
+		aFirstEntity.SendNote<CollisionNote>(CollisionNote(&aSecondEntity, aHasEntered));
 	}
-
-	aFirstEntity.SendNote<CollisionNote>(CollisionNote(&aSecondEntity, aHasEntered));
 }
 
 void ClientLevel::CreatePlayers()
