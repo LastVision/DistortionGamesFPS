@@ -47,6 +47,6 @@ namespace Prism
 		bool myDebugDraw;
 
 		int myTotalObjects;
-		int myDuplicateRooms;
+		int myObjectsInDuplicateRooms;
 	};
 }
