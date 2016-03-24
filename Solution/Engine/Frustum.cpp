@@ -16,6 +16,7 @@ void Prism::Frustum::Update()
 
 void Prism::Frustum::Resize(Portal* aPortal, const CU::Matrix44<float>& aCameraOrientation, bool aDebugDraw)
 {
+	aCameraOrientation;
 	//bool resize(true);
 	//for (int i = 0; i < 4; ++i)
 	//{

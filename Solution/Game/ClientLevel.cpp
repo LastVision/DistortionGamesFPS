@@ -206,11 +206,9 @@ void ClientLevel::ReceiveNetworkMessage(const NetMessageSetActive& aMessage, con
 	if (myActiveEntitiesMap.find(aMessage.myGID) == myActiveEntitiesMap.end())
 	{
 		useEntityMap = false;
-		//DL_ASSERT("GID NOT FOUND IN CLIENT LEVEL!");
 	}
 	if (useEntityMap == false && myActiveUnitsMap.find(aMessage.myGID) == myActiveUnitsMap.end())
 	{
-		int triggerWillNotDoAnythingOnClient = 0;
 		return;
 	}
 
@@ -277,14 +275,14 @@ void ClientLevel::ReceiveNetworkMessage(const NetMessageEntityState& aMessage, c
 	myActiveUnitsMap[aMessage.myGID]->SetState(static_cast<eEntityState>(aMessage.myEntityState));
 }
 
-void ClientLevel::ReceiveNetworkMessage(const NetMessageEnemyShooting& aMessage, const sockaddr_in& aSenderAddress)
+void ClientLevel::ReceiveNetworkMessage(const NetMessageEnemyShooting& aMessage, const sockaddr_in&)
 {
 	Entity* requestedBullet = ClientProjectileManager::GetInstance()->RequestBullet(aMessage.myGID);
 	requestedBullet->AddToScene();
 	ClientProjectileManager::GetInstance()->ActivateBullet(requestedBullet);
 }
 
-void ClientLevel::ReceiveNetworkMessage(const NetMessageShootGrenade& aMessage, const sockaddr_in&)
+void ClientLevel::ReceiveNetworkMessage(const NetMessageShootGrenade&, const sockaddr_in&)
 {
  	Entity* bullet = ClientProjectileManager::GetInstance()->RequestGrenade();
 	CU::Matrix44<float> playerOrientation = myPlayer->GetOrientation();
