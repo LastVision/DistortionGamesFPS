@@ -20,6 +20,7 @@ namespace Prism
 		void Remove(Instance* anInstance);
 
 		const CU::GrowingArray<Instance*>& GetActiveInstances(const Camera& aCamera);
+		const CU::GrowingArray<Instance*>& GetAllInstances();
 
 	private:
 		int GetRoomId(const CU::Vector3<float>& aPosition) const;
@@ -43,10 +44,11 @@ namespace Prism
 
 		CU::GrowingArray<Instance*> myAlwaysRenderInstances;
 		CU::GrowingArray<Instance*> myActiveInstances;
+		CU::GrowingArray<Instance*> myAllInstances;
 
 		bool myDebugDraw;
 
 		int myTotalObjects;
-		int myDuplicateRooms;
+		int myObjectsInDuplicateRooms;
 	};
 }

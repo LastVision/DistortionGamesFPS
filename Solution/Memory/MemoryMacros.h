@@ -10,6 +10,7 @@
 
 
 #define SAFE_DELETE(pointer) delete pointer; pointer = nullptr;
+#define SAFE_ARRAY_DELETE(pointer) delete[] pointer; pointer = nullptr;
 #define	SAFE_RELEASE(pointer) pointer->Release(); pointer = nullptr;
 
 

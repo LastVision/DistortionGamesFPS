@@ -75,7 +75,14 @@ Entity::Entity(unsigned int aGID, const EntityData& aEntityData, Prism::Scene* a
 		}
 		else
 		{
-			DL_ASSERT_EXP(myIsClientSide == false, "Can't create PhysicsComponent on client without graphics.");
+			if (myIsClientSide == true && aEntityData.myTriggerData.myExistsInEntity == true && aEntityData.myTriggerData.myIsClientSide == false)
+			{
+			}
+			else
+			{
+				DL_ASSERT_EXP(myIsClientSide == false, "Can't create PhysicsComponent on client without graphics.");
+			}
+
 			myComponents[static_cast<int>(eComponentType::PHYSICS)] = new PhysicsComponent(*this, aEntityData.myPhysicsData
 				, "no path");
 		}
@@ -223,6 +230,7 @@ void Entity::AddToScene()
 	else if (GetComponent<AnimationComponent>() != nullptr && GetComponent<AnimationComponent>()->GetInstance() != nullptr)
 	{
 		myScene->AddInstance(GetComponent<AnimationComponent>()->GetInstance(), myRoomType);
+		GetComponent<AnimationComponent>()->AddWeaponToScene(myScene);
 	}
 
 	myIsInScene = true;
@@ -240,6 +248,7 @@ void Entity::RemoveFromScene()
 	else if (GetComponent<AnimationComponent>() != nullptr)
 	{
 		myScene->RemoveInstance(GetComponent<AnimationComponent>()->GetInstance());
+		GetComponent<AnimationComponent>()->RemoveWeaponFromScene(myScene);
 	}
 
 	myIsInScene = false;

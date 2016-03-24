@@ -4,9 +4,11 @@
 #ifndef DLL_EXPORT
 #define DL_ASSERT(string)
 #define DL_ASSERT_EXP(expression, string)
-#define DL_PRINT_VA(...)
+//#define DL_PRINT_VA(...)
 #define DL_ASSERT_VA(...)
+
 #define DL_PRINT(string)
+#define DL_PRINT_VA( ... ) DL_Debug::Debug::GetInstance()->PrintMessageVA(__VA_ARGS__)
 
 #define DL_DEBUG( ... )
 
@@ -29,6 +31,7 @@
 
 #define DL_PRINT(string) DL_Debug::Debug::GetInstance()->PrintMessage(string)
 #define DL_PRINT_VA(...)
+
 
 #define DL_DEBUG( ... ) DL_Debug::Debug::GetInstance()->DebugMessage(__FILE__,__LINE__,__FUNCTION__,__VA_ARGS__)
 

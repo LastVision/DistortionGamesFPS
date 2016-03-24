@@ -175,6 +175,7 @@
     </ClCompile>
     <ClCompile Include="ThreadUtilities.cpp" />
     <ClCompile Include="FileWatcher.cpp" />
+    <ClCompile Include="GameConstants.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="CommonUtilities.rc" />

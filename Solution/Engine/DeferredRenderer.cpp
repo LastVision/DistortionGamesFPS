@@ -23,6 +23,21 @@ namespace Prism
 		myCubemap = myEffect->GetEffect()->GetVariableByName("CubeMap")->AsShaderResource();
 		myAmbientMultiplier = myEffect->GetEffect()->GetVariableByName("AmbientMultiplier")->AsScalar();
 
+		mycAr = myEffect->GetEffect()->GetVariableByName("cAr")->AsShaderResource();
+		mycAg = myEffect->GetEffect()->GetVariableByName("cAg")->AsShaderResource();
+		mycAb = myEffect->GetEffect()->GetVariableByName("cAb")->AsShaderResource();
+		mycBr = myEffect->GetEffect()->GetVariableByName("cBr")->AsShaderResource();
+		mycBg = myEffect->GetEffect()->GetVariableByName("cBg")->AsShaderResource();
+		mycBb = myEffect->GetEffect()->GetVariableByName("cBb")->AsShaderResource();
+		mycC = myEffect->GetEffect()->GetVariableByName("cC")->AsShaderResource();
+
+		mySHGridSizeVariable = myEffect->GetEffect()->GetVariableByName("SHGridSize")->AsVector();
+		mySHGridOffsetVariable = myEffect->GetEffect()->GetVariableByName("SHGridOffset")->AsVector();
+
+		myInvertedProjection = myEffect->GetEffect()->GetVariableByName("InvertedProjection")->AsMatrix();
+		myNotInvertedView = myEffect->GetEffect()->GetVariableByName("NotInvertedView")->AsMatrix();
+
+
 #ifdef USE_LIGHT
 		myAmbientMultiplier->SetFloat(0.05f);
 #else
@@ -69,12 +84,13 @@ namespace Prism
 		InitFullscreenQuad();
 
 		myCubemap = TextureContainer::GetInstance()->GetTexture("Data/Resource/Texture/CubeMap/T_cubemap_level01.dds");
+		myCubeMapGenerator = new CubeMapGenerator();
 	}
-
 
 	DeferredRenderer::~DeferredRenderer()
 	{
 		SAFE_DELETE(myDepthStencilTexture);
+		SAFE_DELETE(myCubeMapGenerator);
 		SAFE_DELETE(myGBufferData.myAlbedoTexture);
 		SAFE_DELETE(myGBufferData.myNormalTexture);
 		SAFE_DELETE(myGBufferData.myDepthTexture);
@@ -85,32 +101,34 @@ namespace Prism
 
 	void DeferredRenderer::Render(Scene* aScene)
 	{
-		ID3D11DeviceContext* context = Engine::GetInstance()->GetContex();
-		context->ClearRenderTargetView(myGBufferData.myAlbedoTexture->GetRenderTargetView(), myClearColor);
-		context->ClearRenderTargetView(myGBufferData.myNormalTexture->GetRenderTargetView(), myClearColor);
-		context->ClearRenderTargetView(myGBufferData.myDepthTexture->GetRenderTargetView(), myClearColor);
-		context->ClearRenderTargetView(myGBufferData.myMetalnessTexture->GetRenderTargetView(), myClearColor);
-		context->ClearRenderTargetView(myGBufferData.myAmbientOcclusionTexture->GetRenderTargetView(), myClearColor);
-		context->ClearRenderTargetView(myGBufferData.myRoughnessTexture->GetRenderTargetView(), myClearColor);
+		Engine::GetInstance()->RestoreViewPort();
 
-		context->ClearDepthStencilView(myDepthStencilTexture->GetDepthStencilView(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
-
-		ID3D11RenderTargetView* targets[6];
-		targets[0] = myGBufferData.myAlbedoTexture->GetRenderTargetView();
-		targets[1] = myGBufferData.myNormalTexture->GetRenderTargetView();
-		targets[2] = myGBufferData.myDepthTexture->GetRenderTargetView();
-		targets[3] = myGBufferData.myMetalnessTexture->GetRenderTargetView();
-		targets[4] = myGBufferData.myAmbientOcclusionTexture->GetRenderTargetView();
-		targets[5] = myGBufferData.myRoughnessTexture->GetRenderTargetView();
-
-		context->OMSetRenderTargets(6, targets
-			, myDepthStencilTexture->GetDepthStencilView());
+		ClearGBuffer();
+		Engine::GetInstance()->GetContex()->ClearDepthStencilView(myDepthStencilTexture->GetDepthStencilView()
+			, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
+		SetGBufferAsTarget();
 
 		aScene->Render();
 
 		ActivateBuffers();
 
 		RenderDeferred(aScene);
+	}
+
+	void DeferredRenderer::RenderCubeMap(Scene* aScene, ID3D11RenderTargetView* aRenderTarget, ID3D11DepthStencilView* aDepth,
+		D3D11_VIEWPORT* aViewPort)
+	{
+		Engine::GetInstance()->GetContex()->RSSetViewports(1, aViewPort);
+		ClearGBuffer();
+		Engine::GetInstance()->GetContex()->ClearDepthStencilView(myDepthStencilTexture->GetDepthStencilView()
+			, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
+		SetGBufferAsTarget();
+
+		aScene->RenderWithoutRoomManager();
+
+		ActivateBuffers();
+
+		RenderCubemapDeferred(aScene, aRenderTarget, aDepth);
 	}
 
 	void DeferredRenderer::OnResize(float aWidth, float aHeight)
@@ -122,6 +140,24 @@ namespace Prism
 		myGBufferData.myAmbientOcclusionTexture->Resize(aWidth, aHeight);
 		myGBufferData.myRoughnessTexture->Resize(aWidth, aHeight);
 		myDepthStencilTexture->Resize(aWidth, aHeight);
+	}
+
+	void DeferredRenderer::GenerateSHData(Scene* aScene
+		, const CU::Vector3<float>& aMinPoint, const CU::Vector3<float>& aMaxPoint, const std::string& aName)
+	{
+		myAmbientPass.mySHGridSize.x = CU::Math::ClosestPowerOfTwo(abs(int(aMaxPoint.x - aMinPoint.x)));
+		myAmbientPass.mySHGridSize.y = CU::Math::ClosestPowerOfTwo(abs(int(aMaxPoint.y - aMinPoint.y)));
+		myAmbientPass.mySHGridSize.z = CU::Math::ClosestPowerOfTwo(abs(int(aMaxPoint.z - aMinPoint.z)));
+		myAmbientPass.mySHGridOffset = aMinPoint;
+
+		//mySH_GRID_X = CU::Math::ClosestPowerOfTwo(abs(int(aMaxPoint.x - aMinPoint.x)));
+		//mySH_GRID_Y = CU::Math::ClosestPowerOfTwo(abs(int(aMaxPoint.y - aMinPoint.y)));
+		//mySH_GRID_Z = CU::Math::ClosestPowerOfTwo(abs(int(aMaxPoint.z - aMinPoint.z)));
+		//myCubeMapGenerator->GenerateSHTextures(this, aScene, mySHTextures, aMinPoint, aMaxPoint);
+		myCubeMapGenerator->GenerateSHTextures(this, aScene, mySHTextures, myAmbientPass.mySHGridSize
+			, myAmbientPass.mySHGridOffset, 2.f, aName);
+
+		myAmbientPass.mySHGridOffset *= -1.f;
 	}
 
 	void DeferredRenderer::InitFullscreenQuad()
@@ -199,29 +235,23 @@ namespace Prism
 	void DeferredRenderer::RenderDeferred(Scene* aScene)
 	{
 		Engine::GetInstance()->RestoreViewPort();
+
+		RenderAmbientPass(aScene);
+
+		ID3D11RenderTargetView* renderTarget = Engine::GetInstance()->GetBackbuffer();
+		Engine::GetInstance()->GetContex()->OMSetRenderTargets(1, &renderTarget, myDepthStencilTexture->GetDepthStencilView());
+
+#ifdef USE_LIGHT
+		aScene->UpdateLights();
+		RenderPointLights(aScene);
+#endif
+	}
+
+	void DeferredRenderer::RenderCubemapDeferred(Scene* aScene, ID3D11RenderTargetView* aTarget
+		, ID3D11DepthStencilView* aDepth)
+	{
 		ID3D11DeviceContext* context = Engine::GetInstance()->GetContex();
-
-		ID3D11RenderTargetView* backbuffer = Engine::GetInstance()->GetBackbuffer();
-		context->ClearRenderTargetView(backbuffer, myClearColor);
-		context->ClearDepthStencilView(Engine::GetInstance()->GetDepthView(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
-		context->OMSetRenderTargets(1, &backbuffer
-			, Engine::GetInstance()->GetDepthView());
-
-		myAmbientPass.myAlbedo->SetResource(myGBufferData.myAlbedoTexture->GetShaderView());
-		myAmbientPass.myNormal->SetResource(myGBufferData.myNormalTexture->GetShaderView());
-		myAmbientPass.myDepth->SetResource(myGBufferData.myDepthTexture->GetShaderView());
-		myAmbientPass.myCubemap->SetResource(myCubemap->GetShaderView());
-		myAmbientPass.myEffect->SetCameraPosition(aScene->GetCamera()->GetOrientation().GetPos());
-
-		Render(myAmbientPass.myEffect);
-
-		myAmbientPass.myAlbedo->SetResource(nullptr);
-		myAmbientPass.myNormal->SetResource(nullptr);
-		myAmbientPass.myDepth->SetResource(nullptr);
-		myAmbientPass.myCubemap->SetResource(nullptr);
-
-		context->OMSetRenderTargets(1, &backbuffer
-			, myDepthStencilTexture->GetDepthStencilView());
+		context->OMSetRenderTargets(1, &aTarget, aDepth);
 
 #ifdef USE_LIGHT
 		aScene->UpdateLights();
@@ -233,6 +263,7 @@ namespace Prism
 	{
 		const Camera& camera = *aScene->GetCamera();
 
+		Engine::GetInstance()->RestoreViewPort();
 		myLightPass.myAlbedo->SetResource(myGBufferData.myAlbedoTexture->GetShaderView());
 		myLightPass.myNormal->SetResource(myGBufferData.myNormalTexture->GetShaderView());
 		myLightPass.myDepth->SetResource(myGBufferData.myDepthTexture->GetShaderView());
@@ -240,8 +271,8 @@ namespace Prism
 		myLightPass.myAmbientOcclusion->SetResource(myGBufferData.myAmbientOcclusionTexture->GetShaderView());
 		myLightPass.myRoughness->SetResource(myGBufferData.myRoughnessTexture->GetShaderView());
 
-		myLightPass.myInvertedProjection->SetMatrix(&CU::InverseReal(aScene->GetCamera()->GetProjection()).myMatrix[0]);
-		myLightPass.myNotInvertedView->SetMatrix(&aScene->GetCamera()->GetOrientation().myMatrix[0]);
+		myLightPass.myInvertedProjection->SetMatrix(&CU::InverseReal(camera.GetProjection()).myMatrix[0]);
+		myLightPass.myNotInvertedView->SetMatrix(&camera.GetOrientation().myMatrix[0]);
 
 
 		const CU::GrowingArray<PointLight*>& lights = aScene->GetPointLights();
@@ -264,6 +295,64 @@ namespace Prism
 		myLightPass.myRoughness->SetResource(nullptr);
 	}
 
+	void DeferredRenderer::RenderAmbientPass(Scene* aScene)
+	{
+		ID3D11DeviceContext* context = Engine::GetInstance()->GetContex();
+
+		ID3D11RenderTargetView* backbuffer = Engine::GetInstance()->GetBackbuffer();
+		context->ClearRenderTargetView(backbuffer, myClearColor);
+		context->ClearDepthStencilView(Engine::GetInstance()->GetDepthView(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
+		context->OMSetRenderTargets(1, &backbuffer
+			, Engine::GetInstance()->GetDepthView());
+
+		SetAmbientData(false);
+		myAmbientPass.myEffect->SetCameraPosition(aScene->GetCamera()->GetOrientation().GetPos());
+		myAmbientPass.myInvertedProjection->SetMatrix(&CU::InverseReal(aScene->GetCamera()->GetProjection()).myMatrix[0]);
+		myAmbientPass.myNotInvertedView->SetMatrix(&aScene->GetCamera()->GetOrientation().myMatrix[0]);
+		myAmbientPass.mySHGridSizeVariable->SetFloatVector(&myAmbientPass.mySHGridSize.x);
+		myAmbientPass.mySHGridOffsetVariable->SetFloatVector(&myAmbientPass.mySHGridOffset.x);
+		//myAmbientPass.mySHGridSizeVariable->SetRawValue(&myAmbientPass.mySHGridSize.x, 0, sizeof(float) * 3);
+		//myAmbientPass.mySHGridOffsetVariable->SetRawValue(&myAmbientPass.mySHGridOffset.x, 0, sizeof(float) * 3);
+
+		Render(myAmbientPass.myEffect);
+
+		SetAmbientData(true);
+	}
+
+	void DeferredRenderer::SetAmbientData(bool aClearTextures)
+	{
+		if (aClearTextures == false)
+		{
+			myAmbientPass.myAlbedo->SetResource(myGBufferData.myAlbedoTexture->GetShaderView());
+			myAmbientPass.myNormal->SetResource(myGBufferData.myNormalTexture->GetShaderView());
+			myAmbientPass.myDepth->SetResource(myGBufferData.myDepthTexture->GetShaderView());
+			myAmbientPass.myCubemap->SetResource(myCubemap->GetShaderView());
+
+			myAmbientPass.mycAr->SetResource(mySHTextures.cAr->GetShaderView());
+			myAmbientPass.mycAg->SetResource(mySHTextures.cAg->GetShaderView());
+			myAmbientPass.mycAb->SetResource(mySHTextures.cAb->GetShaderView());
+			myAmbientPass.mycBr->SetResource(mySHTextures.cBr->GetShaderView());
+			myAmbientPass.mycBg->SetResource(mySHTextures.cBg->GetShaderView());
+			myAmbientPass.mycBb->SetResource(mySHTextures.cBb->GetShaderView());
+			myAmbientPass.mycC->SetResource(mySHTextures.cC->GetShaderView());
+		}
+		else
+		{
+			myAmbientPass.myAlbedo->SetResource(nullptr);
+			myAmbientPass.myNormal->SetResource(nullptr);
+			myAmbientPass.myDepth->SetResource(nullptr);
+			myAmbientPass.myCubemap->SetResource(nullptr);
+
+			myAmbientPass.mycAr->SetResource(nullptr);
+			myAmbientPass.mycAg->SetResource(nullptr);
+			myAmbientPass.mycAb->SetResource(nullptr);
+			myAmbientPass.mycBr->SetResource(nullptr);
+			myAmbientPass.mycBg->SetResource(nullptr);
+			myAmbientPass.mycBb->SetResource(nullptr);
+			myAmbientPass.mycC->SetResource(nullptr);
+		}
+	}
+
 	void DeferredRenderer::SetupAmbientData()
 	{
 		myAmbientPass.myEffect = EffectContainer::GetInstance()->GetEffect(
@@ -271,23 +360,6 @@ namespace Prism
 
 		myAmbientPass.OnEffectLoad();
 		myAmbientPass.myEffect->AddListener(&myAmbientPass);
-
-		/*myAmbientPass.myAlbedo
-			= myAmbientPass.myEffect->GetEffect()->GetVariableByName("AlbedoTexture")->AsShaderResource();
-		myAmbientPass.myNormal
-			= myAmbientPass.myEffect->GetEffect()->GetVariableByName("NormalTexture")->AsShaderResource();
-		myAmbientPass.myDepth
-			= myAmbientPass.myEffect->GetEffect()->GetVariableByName("DepthTexture")->AsShaderResource();
-		myAmbientPass.myCubemap
-			= myAmbientPass.myEffect->GetEffect()->GetVariableByName("CubeMap")->AsShaderResource();
-		myAmbientPass.myAmbientMultiplier
-			= myAmbientPass.myEffect->GetEffect()->GetVariableByName("AmbientMultiplier")->AsScalar();
-
-#ifdef USE_LIGHT
-		myAmbientPass.myAmbientMultiplier->SetFloat(0.05f);
-#else
-		myAmbientPass.myAmbientMultiplier->SetFloat(1.f);
-#endif*/
 	}
 
 	void DeferredRenderer::SetupLightData()
@@ -297,25 +369,6 @@ namespace Prism
 
 		myLightPass.OnEffectLoad();
 		myLightPass.myEffect->AddListener(&myLightPass);
-
-		/*myLightPass.myAlbedo
-			= myLightPass.myEffect->GetEffect()->GetVariableByName("AlbedoTexture")->AsShaderResource();
-		myLightPass.myNormal
-			= myLightPass.myEffect->GetEffect()->GetVariableByName("NormalTexture")->AsShaderResource();
-		myLightPass.myDepth
-			= myLightPass.myEffect->GetEffect()->GetVariableByName("DepthTexture")->AsShaderResource();
-		myLightPass.myMetalness
-			= myLightPass.myEffect->GetEffect()->GetVariableByName("MetalnessTexture")->AsShaderResource();
-		myLightPass.myAmbientOcclusion
-			= myLightPass.myEffect->GetEffect()->GetVariableByName("AOTexture")->AsShaderResource();
-		myLightPass.myRoughness
-			= myLightPass.myEffect->GetEffect()->GetVariableByName("RoughnessTexture")->AsShaderResource();
-
-		myLightPass.myPointLightVariable
-			= myLightPass.myEffect->GetEffect()->GetVariableByName("PointLights");
-
-		myLightPass.myInvertedProjection = myLightPass.myEffect->GetEffect()->GetVariableByName("InvertedProjection")->AsMatrix();
-		myLightPass.myNotInvertedView = myLightPass.myEffect->GetEffect()->GetVariableByName("NotInvertedView")->AsMatrix();*/
 	}
 
 	void DeferredRenderer::SetupGBufferData()
@@ -351,4 +404,31 @@ namespace Prism
 			, D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE
 			, DXGI_FORMAT_R32G32B32A32_FLOAT);
 	}
+
+	void DeferredRenderer::ClearGBuffer()
+	{
+		ID3D11DeviceContext* context = Engine::GetInstance()->GetContex();
+
+		context->ClearRenderTargetView(myGBufferData.myAlbedoTexture->GetRenderTargetView(), myClearColor);
+		context->ClearRenderTargetView(myGBufferData.myNormalTexture->GetRenderTargetView(), myClearColor);
+		context->ClearRenderTargetView(myGBufferData.myDepthTexture->GetRenderTargetView(), myClearColor);
+		context->ClearRenderTargetView(myGBufferData.myMetalnessTexture->GetRenderTargetView(), myClearColor);
+		context->ClearRenderTargetView(myGBufferData.myAmbientOcclusionTexture->GetRenderTargetView(), myClearColor);
+		context->ClearRenderTargetView(myGBufferData.myRoughnessTexture->GetRenderTargetView(), myClearColor);
+	}
+
+	void DeferredRenderer::SetGBufferAsTarget()
+	{
+		ID3D11RenderTargetView* targets[6];
+		targets[0] = myGBufferData.myAlbedoTexture->GetRenderTargetView();
+		targets[1] = myGBufferData.myNormalTexture->GetRenderTargetView();
+		targets[2] = myGBufferData.myDepthTexture->GetRenderTargetView();
+		targets[3] = myGBufferData.myMetalnessTexture->GetRenderTargetView();
+		targets[4] = myGBufferData.myAmbientOcclusionTexture->GetRenderTargetView();
+		targets[5] = myGBufferData.myRoughnessTexture->GetRenderTargetView();
+
+		Engine::GetInstance()->GetContex()->OMSetRenderTargets(6, targets
+			, myDepthStencilTexture->GetDepthStencilView());
+	}
+
 }

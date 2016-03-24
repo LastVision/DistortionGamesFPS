@@ -75,6 +75,8 @@ private:
 
 	int myMaxHealth;
 	int myCurrentHealth;
+	bool myHasDied;
+	Prism::Scene* myScene;
 };
 
 

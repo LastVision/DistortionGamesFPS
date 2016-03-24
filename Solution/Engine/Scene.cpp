@@ -51,6 +51,20 @@ namespace Prism
 		myInstancingHelper->Render(myDirectionalLightData);
 	}
 
+	void Scene::RenderWithoutRoomManager()
+	{
+		UpdateLights();
+
+		const CU::GrowingArray<Instance*>& instances = myRoomManager->GetAllInstances();
+
+		for (int i = 0; i < instances.Size(); ++i)
+		{
+			instances[i]->Render(*myCamera, *myInstancingHelper);
+		}
+
+		myInstancingHelper->Render(myDirectionalLightData);
+	}
+
 	void Scene::OnResize(int aWidth, int aHeigth)
 	{
 		float ratio = static_cast<float>(aWidth) / static_cast<float>(aHeigth);

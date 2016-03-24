@@ -30,13 +30,13 @@ FirstPersonRenderComponent::FirstPersonRenderComponent(Entity& aEntity, Prism::S
 	, myDisplayDamageIndicatorTimer(0)
 	, myMaxHealth(10)
 	, myCurrentHealth(myMaxHealth)
+	, myHasDied(false) 
 {
 	CU::Vector2<float> size(128.f, 128.f);
 	myCrosshair = Prism::ModelLoader::GetInstance()->LoadSprite("Data/Resource/Texture/UI/T_crosshair.dds", size, size * 0.5f);
 	CU::Vector2<float> damageSize(Prism::Engine::GetInstance()->GetWindowSize().x, Prism::Engine::GetInstance()->GetWindowSize().y);
 	myDamageIndicator = Prism::ModelLoader::GetInstance()->LoadSprite("Data/Resource/Texture/UI/T_damage_indicator.dds", damageSize, damageSize * 0.5f);
 	myCoOpSprite = Prism::ModelLoader::GetInstance()->LoadSprite("Data/Resource/Texture/UI/T_coopmarker.dds", size, size * 0.5f);
-
 
 	Prism::ModelProxy* model = Prism::ModelLoader::GetInstance()->LoadModelAnimated("Data/Resource/Model/First_person/Pistol/SK_arm_pistol_idle.fbx", "Data/Resource/Shader/S_effect_pbl_animated.fx");
 	myModel = new Prism::Instance(*model, myInputComponentEyeOrientation);
@@ -101,6 +101,17 @@ FirstPersonRenderComponent::~FirstPersonRenderComponent()
 
 void FirstPersonRenderComponent::Update(float aDelta)
 {
+	if (myEntity.GetState() == eEntityState::DIE && myHasDied == false)
+	{
+		myHasDied = true;
+		myEntity.GetScene()->RemoveInstance(myModel);
+	}
+	if (myEntity.GetState() != eEntityState::DIE && myHasDied == true)
+	{
+		myHasDied = false;
+		myEntity.GetScene()->AddInstance(myModel, eObjectRoomType::DYNAMIC);
+	}
+
 	UpdateJoints();
 	if (myDisplayDamageIndicatorTimer >= 0.f)
 	{

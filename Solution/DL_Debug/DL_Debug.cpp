@@ -63,15 +63,16 @@ bool DL_Debug::Debug::Create(std::string aFile)
 
 	strftime(buf, sizeof(buf), "%Y-%m-%d_%H_%M_%S", &tstruct);
 
+	std::string logFolder = "log\\";
 #ifdef RELEASE_BUILD
 #ifndef DLL_EXPORT
 	char documents[MAX_PATH];
 	HRESULT hResult = SHGetFolderPath(NULL, CSIDL_PERSONAL, NULL, SHGFP_TYPE_CURRENT, documents);
 	std::stringstream documentPath;
 	documentPath << documents;
-	std::string logFolder = documentPath.str() + "\\Distortion Games\\Raven";
+	logFolder = documentPath.str() + "\\Distortion Games\\Machina";
 	CreateDirectory(logFolder.c_str(), NULL);
-	logFolder += "\\log";
+	logFolder += "\\log\\";
 	CreateDirectory(logFolder.c_str(), NULL);
 #else
 	CreateDirectory("log", NULL);
@@ -80,7 +81,7 @@ bool DL_Debug::Debug::Create(std::string aFile)
 	CreateDirectory("log", NULL);
 #endif
 	std::stringstream ss;
-	ss << "log\\" << buf << "_" << aFile;
+	ss << logFolder << buf << "_" << aFile;
 	ourInstance->myDebugFile.open(ss.str().c_str());
 	if (ourInstance == nullptr)
 	{

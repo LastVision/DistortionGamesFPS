@@ -1,5 +1,7 @@
 #pragma once
 
-namespace GC
+class GC
 {
-}
+public:
+	static bool GenerateLightData;
+};

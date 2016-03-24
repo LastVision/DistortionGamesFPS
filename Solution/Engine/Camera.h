@@ -9,6 +9,7 @@ namespace Prism
 	{
 	public:
 		Camera(CU::Matrix44f& aPlayerMatrix);
+		Camera(CU::Matrix44f& aPlayerMatrix, float aWidth, float aHeight);
 		~Camera();
 
 		void ReadXML(const std::string& aFileName);

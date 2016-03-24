@@ -20,6 +20,7 @@ AnimationComponent::AnimationComponent(Entity& aEntity, const AnimationComponent
 	, myComponentData(aComponentData)
 	, myInstance(nullptr)
 	, myCullingRadius(10.f)
+	, myIsEnemy(false)
 {
 #ifndef BOX_MODE
 	Prism::ModelProxy* model = Prism::ModelLoader::GetInstance()->LoadModelAnimated(myComponentData.myModelPath
@@ -34,6 +35,19 @@ AnimationComponent::AnimationComponent(Entity& aEntity, const AnimationComponent
 		AnimationLoadData loadAnimation = myComponentData.myAnimations[i];
 		AddAnimation(loadAnimation.myEntityState, loadAnimation.myAnimationPath, loadAnimation.myLoopFlag, loadAnimation.myResetTimeOnRestart);
 	}
+	
+	if (myEntity.GetType() == eEntityType::UNIT && myEntity.GetSubType() == "gundroid")
+	{
+		myIsEnemy = true;
+		for (int i = 0; i < animations; ++i)
+		{
+			Prism::ModelLoader::GetInstance()->GetHierarchyToBone(myAnimations[i].myFile, "r_hand_wpn_tip12", myEnemyAnimations[i].myWeaponBone);
+		}
+		Prism::ModelProxy* weapon = Prism::ModelLoader::GetInstance()->LoadModelAnimated("Data/Resource/Model/Enemy_weapon/SK_enemy_weapon_rifle.fbx", myComponentData.myEffectPath);
+		myWeapon = new Prism::Instance(*weapon, myWeaponJoint);
+		
+	}
+
 #endif
 }
 
@@ -43,6 +57,7 @@ AnimationComponent::~AnimationComponent()
 
 	myEntity.GetScene()->RemoveInstance(myInstance);
 	SAFE_DELETE(myInstance);
+	SAFE_DELETE(myWeapon);
 #endif
 }
 
@@ -82,6 +97,14 @@ void AnimationComponent::Update(float aDeltaTime)
 	}
 
 	data.myElapsedTime += aDeltaTime;
+
+	if (myIsEnemy == true)
+	{
+		//myWeapon->SetAnimation(Prism::AnimationSystem::GetInstance()->GetAnimation(data.myFile.c_str()));
+		myWeapon->Update(aDeltaTime);
+		EnemyAnimationBone currentAnimation = myEnemyAnimations[int(myEntity.GetState())];
+		myWeaponJoint = CU::InverseSimple(*currentAnimation.myWeaponBone.myBind) * (*currentAnimation.myWeaponBone.myJoint) * myEntity.GetOrientation();
+	}
 #endif
 }
 
@@ -134,4 +157,20 @@ void AnimationComponent::SetScale(const CU::Vector3<float>& aScale)
 Prism::Animation* AnimationComponent::GetCurrent() const
 {
 	return myInstance->GetCurrentAnimation();
+}
+
+void AnimationComponent::AddWeaponToScene(Prism::Scene* aScene)
+{
+	if (myIsEnemy == true)
+	{
+		aScene->AddInstance(myWeapon, eObjectRoomType::DYNAMIC);
+	}
+}
+
+void AnimationComponent::RemoveWeaponFromScene(Prism::Scene* aScene)
+{
+	if (myIsEnemy == true)
+	{
+		aScene->RemoveInstance(myWeapon);
+	}
 }
