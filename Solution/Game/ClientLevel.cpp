@@ -349,6 +349,7 @@ void ClientLevel::CollisionCallback(PhysicsComponent* aFirst, PhysicsComponent* 
 		HandleTrigger(first, second, aHasEntered);
 		break;
 	case eEntityType::EXPLOSION:
+		myTextManager->AddNotification("explosion");
 		if (aHasEntered == true)
 		{
 			HandleExplosion(first, second);
@@ -392,6 +393,7 @@ void ClientLevel::HandleTrigger(Entity& aFirstEntity, Entity& aSecondEntity, boo
 		TriggerComponent* firstTrigger = aFirstEntity.GetComponent<TriggerComponent>();
 		if (firstTrigger->GetTriggerType() == eTriggerType::UPGRADE)
 		{
+			myTextManager->AddNotification("upgrade");
 			if (aSecondEntity.GetType() == eEntityType::PLAYER)
 			{
 				aSecondEntity.SendNote<UpgradeNote>(aFirstEntity.GetComponent<UpgradeComponent>()->GetData());
@@ -399,6 +401,7 @@ void ClientLevel::HandleTrigger(Entity& aFirstEntity, Entity& aSecondEntity, boo
 		}
 		else if (firstTrigger->GetTriggerType() == eTriggerType::HEALTH_PACK)
 		{
+			myTextManager->AddNotification("healthpack");
 			ClientNetworkManager::GetInstance()->AddMessage<NetMessageHealthPack>(NetMessageHealthPack(firstTrigger->GetValue()));
 		}
 		aSecondEntity.SendNote<CollisionNote>(CollisionNote(&aFirstEntity, aHasEntered));

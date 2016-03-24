@@ -28,13 +28,6 @@ TextEventManager::TextEventManager(const Prism::Camera* aCamera)
 		missionText->myColor = { 1.f, 1.f, 1.f, 1.f };
 		myMissionTexts.Add(missionText);
 	}
-
-	//myMissionTexts[0]->myIsActive = true;
-	//myMissionTexts[0]->myText = "Mission";
-	//
-	//myNotifications[0]->myIsActive = true;
-	//myNotifications[0]->myText = "Text";
-	//myNotifications[0]->myLifeTime = 5.f;
 }
 
 TextEventManager::~TextEventManager()
