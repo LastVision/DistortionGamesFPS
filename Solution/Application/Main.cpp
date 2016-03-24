@@ -8,6 +8,7 @@
 #include <TimerManager.h>
 #include <CommonHelper.h>
 #include <InputWrapper.h>
+#include <GameConstants.h>
 //#include <vld.h>
 
 bool engineIsRunning = true;
@@ -58,7 +59,8 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPTSTR, int aNumberCommands)
 {
 	ShowCursor(false);
 	DL_Debug::Debug::Create();
-
+	//Global_GenerateLightData = false;
+	GC::GenerateLightData = false;
 	if (aNumberCommands > 2)
 	{
 		int commandCount = 0;
@@ -94,6 +96,10 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPTSTR, int aNumberCommands)
 			else if (command == "-useEntityLog")
 			{
 				DL_Debug::Debug::GetInstance()->ActivateFilterLog(DL_Debug::eFilterLog::ENTITY);
+			}
+			else if (command == "-generateLightData")
+			{
+				GC::GenerateLightData = true;
 			}
 		}
 

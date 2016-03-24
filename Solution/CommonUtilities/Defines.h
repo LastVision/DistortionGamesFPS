@@ -44,4 +44,10 @@
 
 #define SERVER_CONNECT_TO_DEBUGGER true
 
-static bool Global_GenerateLightData = false;
+
+class LightTest
+{
+public:
+	static bool GenerateLightData;
+};
+//static bool Global_GenerateLightData;

@@ -38,7 +38,7 @@ namespace Prism
 		mySH_GRID_Z = int(ceilf(aGridSize.z / aNodeSize));
 
 
-		if (Global_GenerateLightData == true)
+		if (GC::GenerateLightData == true)
 		{
 			SHGridNode*** gridNodes = new SHGridNode**[mySH_GRID_X];
 			for (int x = 0; x < mySH_GRID_X; ++x)
