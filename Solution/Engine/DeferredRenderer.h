@@ -1,11 +1,14 @@
 #pragma once
 #include "BaseModel.h"
 #include "EffectListener.h"
+#include "CubeMapGenerator.h"
 
+struct D3D11_VIEWPORT;
 struct ID3DX11EffectVariable;
 struct ID3DX11EffectScalarVariable;
 struct ID3DX11EffectShaderResourceVariable;
 struct ID3DX11EffectMatrixVariable;
+struct ID3DX11EffectVectorVariable;
 
 namespace Prism
 {
@@ -31,6 +34,22 @@ namespace Prism
 		ID3DX11EffectShaderResourceVariable* myDepth = nullptr;
 		ID3DX11EffectShaderResourceVariable* myCubemap = nullptr;
 		ID3DX11EffectScalarVariable* myAmbientMultiplier = nullptr;
+		ID3DX11EffectMatrixVariable* myInvertedProjection;
+		ID3DX11EffectMatrixVariable* myNotInvertedView;
+
+		ID3DX11EffectShaderResourceVariable* mycAr = nullptr;
+		ID3DX11EffectShaderResourceVariable* mycAg = nullptr;
+		ID3DX11EffectShaderResourceVariable* mycAb = nullptr;
+		ID3DX11EffectShaderResourceVariable* mycBr = nullptr;
+		ID3DX11EffectShaderResourceVariable* mycBg = nullptr;
+		ID3DX11EffectShaderResourceVariable* mycBb = nullptr;
+		ID3DX11EffectShaderResourceVariable* mycC = nullptr;
+
+		ID3DX11EffectVectorVariable* mySHGridSizeVariable;
+		ID3DX11EffectVectorVariable* mySHGridOffsetVariable;
+
+		CU::Vector3<float> mySHGridSize;
+		CU::Vector3<float> mySHGridOffset;
 	};
 
 	struct LightPass : public EffectListener
@@ -58,7 +77,12 @@ namespace Prism
 		~DeferredRenderer();
 
 		void Render(Scene* aScene);
+		void RenderCubeMap(Scene* aScene, ID3D11RenderTargetView* aRenderTarget, ID3D11DepthStencilView* aDepth,
+			D3D11_VIEWPORT* aViewPort);
 		void OnResize(float aWidth, float aHeight);
+
+		void GenerateSHData(Scene* aScene
+			, const CU::Vector3<float>& aMinPoint, const CU::Vector3<float>& aMaxPoint, const std::string& aName);
 
 	private:
 		struct GBufferData
@@ -77,13 +101,20 @@ namespace Prism
 		void ActivateBuffers();
 		void Render(Effect* aEffect);
 		void RenderDeferred(Scene* aScene);
+		void RenderCubemapDeferred(Scene* aScene, ID3D11RenderTargetView* aTarget, ID3D11DepthStencilView* aDepth);
 		void RenderPointLights(Scene* aScene);
+		void RenderAmbientPass(Scene* aScene);
+		void SetAmbientData(bool aClearTextures);
 
 		void SetupAmbientData();
 		void SetupLightData();
 		void SetupGBufferData();
 
-		
+		void ClearGBuffer();
+		void SetGBufferAsTarget();
+
+		CubeMapGenerator* myCubeMapGenerator;
+		SHTextures mySHTextures;
 		Texture* myDepthStencilTexture;
 		Texture* myCubemap;
 		RenderToScreenData myRenderToScreenData;

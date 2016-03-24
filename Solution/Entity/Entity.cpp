@@ -223,6 +223,7 @@ void Entity::AddToScene()
 	else if (GetComponent<AnimationComponent>() != nullptr && GetComponent<AnimationComponent>()->GetInstance() != nullptr)
 	{
 		myScene->AddInstance(GetComponent<AnimationComponent>()->GetInstance(), myRoomType);
+		GetComponent<AnimationComponent>()->AddWeaponToScene(myScene);
 	}
 
 	myIsInScene = true;
@@ -240,6 +241,7 @@ void Entity::RemoveFromScene()
 	else if (GetComponent<AnimationComponent>() != nullptr)
 	{
 		myScene->RemoveInstance(GetComponent<AnimationComponent>()->GetInstance());
+		GetComponent<AnimationComponent>()->RemoveWeaponFromScene(myScene);
 	}
 
 	myIsInScene = false;

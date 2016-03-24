@@ -27,6 +27,7 @@ namespace Prism
 		~Scene();
 
 		void Render();
+		void RenderWithoutRoomManager();
 		void UpdateLights();
 
 		void OnResize(int aWidth, int aHeigth);

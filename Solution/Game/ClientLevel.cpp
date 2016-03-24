@@ -36,6 +36,7 @@
 
 #include "ClientNetworkManager.h"
 #include "DeferredRenderer.h"
+#include <CubeMapGenerator.h>
 #include <PointLight.h>
 #include <GrenadeComponent.h>
 
@@ -115,12 +116,27 @@ void ClientLevel::Init(const std::string&)
 
 }
 
+void ClientLevel::SetMinMax(const CU::Vector3<float>& aMinPoint, const CU::Vector3<float>& aMaxPoint)
+{
+	myMinPoint = aMinPoint;
+	myMaxPoint = aMaxPoint;
+}
+
+void ClientLevel::SetName(const std::string& aName)
+{
+	myName = aName;
+}
+
 void ClientLevel::Update(const float aDeltaTime)
 {
 	if (myInitDone == false && Prism::PhysicsInterface::GetInstance()->GetInitDone() == true)
 	{
 		myInitDone = true;
 		ClientNetworkManager::GetInstance()->AddMessage(NetMessageLevelLoaded());
+
+		SET_RUNTIME(false);
+		myDeferredRenderer->GenerateSHData(myScene, myMinPoint, myMaxPoint, myName);
+		RESET_RUNTIME;
 	}
 	ClientProjectileManager::GetInstance()->Update(aDeltaTime);
 	//if (CU::InputWrapper::GetInstance()->KeyDown(DIK_U))
@@ -164,6 +180,8 @@ void ClientLevel::Update(const float aDeltaTime)
 
 void ClientLevel::Render()
 {
+	if (myInitDone == true)
+	{
 	myDeferredRenderer->Render(myScene);
 	Prism::DebugDrawer::GetInstance()->RenderLinesToScreen(*myPlayer->GetComponent<InputComponent>()->GetCamera());
 	//myScene->Render();
@@ -171,6 +189,7 @@ void ClientLevel::Render()
 	myEmitterManager->RenderEmitters();
 	myPlayer->GetComponent<FirstPersonRenderComponent>()->Render();
 	//myPlayer->GetComponent<ShootingComponent>()->Render();
+}
 }
 
 void ClientLevel::ReceiveNetworkMessage(const NetMessageOnDeath& aMessage, const sockaddr_in&)
@@ -235,7 +254,10 @@ void ClientLevel::ReceiveNetworkMessage(const NetMessageSetActive& aMessage, con
 	{
 		if (useEntityMap == true)
 		{
-			myActiveEntitiesMap[aMessage.myGID]->GetComponent<PhysicsComponent>()->RemoveFromScene();
+			if (myActiveEntitiesMap[aMessage.myGID]->GetComponent<PhysicsComponent>() != nullptr)
+			{
+				myActiveEntitiesMap[aMessage.myGID]->GetComponent<PhysicsComponent>()->RemoveFromScene();
+			}
 			if (aMessage.myIsInGraphicsScene == true)
 			{
 				myActiveEntitiesMap[aMessage.myGID]->RemoveFromScene();
@@ -379,7 +401,7 @@ void ClientLevel::HandleTrigger(Entity& aFirstEntity, Entity& aSecondEntity, boo
 
 void ClientLevel::CreatePlayers()
 {
-	myPlayer = EntityFactory::GetInstance()->CreateEntity(ClientNetworkManager::GetInstance()->GetGID(), eEntityType::UNIT, "localplayer", myScene, true, CU::Vector3<float>());
+	myPlayer = EntityFactory::GetInstance()->CreateEntity(ClientNetworkManager::GetInstance()->GetGID(), eEntityType::UNIT, "localplayer", myScene, true, CU::Vector3<float>(0.f, 0.f, 0.f));
 
 	myScene->SetCamera(*myPlayer->GetComponent<InputComponent>()->GetCamera());
 
