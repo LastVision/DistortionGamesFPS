@@ -50,6 +50,8 @@
 
 #include <NetworkComponent.h>
 #include "ClientProjectileManager.h"
+#include "TextEventManager.h"
+
 ClientLevel::ClientLevel()
 	: myInstanceOrientations(16)
 	, myInstances(16)
@@ -111,6 +113,8 @@ void ClientLevel::Init(const std::string&)
 	ClientProjectileManager::GetInstance()->CreateBullets(myScene);
 	ClientProjectileManager::GetInstance()->CreateGrenades(myScene);
 	ClientProjectileManager::GetInstance()->CreateExplosions();
+
+	myTextManager = new TextEventManager(myPlayer->GetComponent<InputComponent>()->GetCamera());
 
 }
 
@@ -174,20 +178,24 @@ void ClientLevel::Update(const float aDeltaTime)
 
 	ClientNetworkManager::GetInstance()->Update(aDeltaTime);
 
+	myTextManager->Update(aDeltaTime);
+
 }
 
 void ClientLevel::Render()
 {
 	if (myInitDone == true)
 	{
-	myDeferredRenderer->Render(myScene);
-	Prism::DebugDrawer::GetInstance()->RenderLinesToScreen(*myPlayer->GetComponent<InputComponent>()->GetCamera());
-	//myScene->Render();
-	//myDeferredRenderer->Render(myScene);
-	myEmitterManager->RenderEmitters();
-	myPlayer->GetComponent<FirstPersonRenderComponent>()->Render();
-	//myPlayer->GetComponent<ShootingComponent>()->Render();
-}
+		myDeferredRenderer->Render(myScene);
+		Prism::DebugDrawer::GetInstance()->RenderLinesToScreen(*myPlayer->GetComponent<InputComponent>()->GetCamera());
+		//myScene->Render();
+		//myDeferredRenderer->Render(myScene);
+		myEmitterManager->RenderEmitters();
+		myPlayer->GetComponent<FirstPersonRenderComponent>()->Render();
+		//myPlayer->GetComponent<ShootingComponent>()->Render();
+
+		myTextManager->Render();
+	}
 }
 
 void ClientLevel::ReceiveNetworkMessage(const NetMessageOnDeath& aMessage, const sockaddr_in&)
@@ -304,7 +312,7 @@ void ClientLevel::ReceiveNetworkMessage(const NetMessageEnemyShooting& aMessage,
 
 void ClientLevel::ReceiveNetworkMessage(const NetMessageShootGrenade&, const sockaddr_in&)
 {
- 	Entity* bullet = ClientProjectileManager::GetInstance()->RequestGrenade();
+	Entity* bullet = ClientProjectileManager::GetInstance()->RequestGrenade();
 	CU::Matrix44<float> playerOrientation = myPlayer->GetOrientation();
 	bullet->AddToScene();
 	bullet->GetComponent<PhysicsComponent>()->AddToScene();
@@ -339,6 +347,7 @@ void ClientLevel::CollisionCallback(PhysicsComponent* aFirst, PhysicsComponent* 
 		HandleTrigger(first, second, aHasEntered);
 		break;
 	case eEntityType::EXPLOSION:
+		myTextManager->AddNotification("explosion");
 		if (aHasEntered == true)
 		{
 			HandleExplosion(first, second);
@@ -382,6 +391,7 @@ void ClientLevel::HandleTrigger(Entity& aFirstEntity, Entity& aSecondEntity, boo
 		TriggerComponent* firstTrigger = aFirstEntity.GetComponent<TriggerComponent>();
 		if (firstTrigger->GetTriggerType() == eTriggerType::UPGRADE)
 		{
+			myTextManager->AddNotification("upgrade");
 			if (aSecondEntity.GetType() == eEntityType::PLAYER)
 			{
 				aSecondEntity.SendNote<UpgradeNote>(aFirstEntity.GetComponent<UpgradeComponent>()->GetData());
@@ -390,6 +400,7 @@ void ClientLevel::HandleTrigger(Entity& aFirstEntity, Entity& aSecondEntity, boo
 		}
 		else if (firstTrigger->GetTriggerType() == eTriggerType::HEALTH_PACK)
 		{
+			myTextManager->AddNotification("healthpack");
 			ClientNetworkManager::GetInstance()->AddMessage<NetMessageHealthPack>(NetMessageHealthPack(firstTrigger->GetValue()));
 			Prism::Audio::AudioInterface::GetInstance()->PostEvent("FadeInSecondLayer", 0);
 		}

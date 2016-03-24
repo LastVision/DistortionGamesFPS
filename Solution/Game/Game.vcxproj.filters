@@ -50,6 +50,9 @@
     </ClCompile>
     <ClCompile Include="ClientProjectileManager.cpp" />
     <ClCompile Include="ClientUnitManager.cpp" />
+    <ClCompile Include="TextEventManager.cpp">
+      <Filter>Managers</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
@@ -107,6 +110,9 @@
     </ClInclude>
     <ClInclude Include="ClientProjectileManager.h" />
     <ClInclude Include="ClientUnitManager.h" />
+    <ClInclude Include="TextEventManager.h">
+      <Filter>Managers</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="PreCompile">
