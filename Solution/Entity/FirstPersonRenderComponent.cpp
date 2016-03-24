@@ -30,6 +30,7 @@ FirstPersonRenderComponent::FirstPersonRenderComponent(Entity& aEntity, Prism::S
 	, myDisplayDamageIndicatorTimer(0)
 	, myMaxHealth(10)
 	, myCurrentHealth(myMaxHealth)
+	, myHasDied(false) 
 {
 	CU::Vector2<float> size(128.f, 128.f);
 	myCrosshair = Prism::ModelLoader::GetInstance()->LoadSprite("Data/Resource/Texture/UI/T_crosshair.dds", size, size * 0.5f);
@@ -100,6 +101,17 @@ FirstPersonRenderComponent::~FirstPersonRenderComponent()
 
 void FirstPersonRenderComponent::Update(float aDelta)
 {
+	if (myEntity.GetState() == eEntityState::DIE && myHasDied == false)
+	{
+		myHasDied = true;
+		myEntity.GetScene()->RemoveInstance(myModel);
+	}
+	if (myEntity.GetState() != eEntityState::DIE && myHasDied == true)
+	{
+		myHasDied = false;
+		myEntity.GetScene()->AddInstance(myModel, eObjectRoomType::DYNAMIC);
+	}
+
 	UpdateJoints();
 	if (myDisplayDamageIndicatorTimer >= 0.f)
 	{
