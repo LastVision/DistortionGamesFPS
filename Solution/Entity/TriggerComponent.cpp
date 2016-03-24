@@ -52,7 +52,10 @@ void TriggerComponent::ReceiveNote(const CollisionNote& aNote)
 		if (myData.myIsOneTime == true)
 		{
 			myEntity.GetComponent<PhysicsComponent>()->RemoveFromScene();
-			SharedNetworkManager::GetInstance()->AddMessage<NetMessageSetActive>(NetMessageSetActive(false, true, myEntity.GetGID()));
+			if (myData.myIsClientSide == false)
+			{
+				SharedNetworkManager::GetInstance()->AddMessage<NetMessageSetActive>(NetMessageSetActive(false, true, myEntity.GetGID()));
+			}
 		}
 	}
 	else if (myTriggerType == eTriggerType::RESPAWN)
