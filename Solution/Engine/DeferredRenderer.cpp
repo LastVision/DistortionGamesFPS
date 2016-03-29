@@ -53,6 +53,7 @@ namespace Prism
 		myMetalness = myEffect->GetEffect()->GetVariableByName("MetalnessTexture")->AsShaderResource();
 		myAmbientOcclusion = myEffect->GetEffect()->GetVariableByName("AOTexture")->AsShaderResource();
 		myRoughness = myEffect->GetEffect()->GetVariableByName("RoughnessTexture")->AsShaderResource();
+		myCubemap = myEffect->GetEffect()->GetVariableByName("CubeMap")->AsShaderResource();
 
 		myPointLightVariable = myEffect->GetEffect()->GetVariableByName("PointLights");
 
@@ -158,6 +159,11 @@ namespace Prism
 			, myAmbientPass.mySHGridOffset, 4.f, aName);
 
 		myAmbientPass.mySHGridOffset *= -1.f;
+	}
+
+	void DeferredRenderer::SetCubeMap(const std::string& aFilePath)
+	{
+		myCubemap = TextureContainer::GetInstance()->GetTexture(aFilePath);
 	}
 
 	void DeferredRenderer::InitFullscreenQuad()
@@ -270,7 +276,7 @@ namespace Prism
 		myLightPass.myMetalness->SetResource(myGBufferData.myMetalnessTexture->GetShaderView());
 		myLightPass.myAmbientOcclusion->SetResource(myGBufferData.myAmbientOcclusionTexture->GetShaderView());
 		myLightPass.myRoughness->SetResource(myGBufferData.myRoughnessTexture->GetShaderView());
-
+		myLightPass.myCubemap->SetResource(myCubemap->GetShaderView());
 		myLightPass.myInvertedProjection->SetMatrix(&CU::InverseReal(camera.GetProjection()).myMatrix[0]);
 		myLightPass.myNotInvertedView->SetMatrix(&camera.GetOrientation().myMatrix[0]);
 

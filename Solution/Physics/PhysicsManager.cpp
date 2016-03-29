@@ -417,9 +417,10 @@ namespace Prism
 
 		returnValue = myScene->raycast(origin, unitDirection, maxDistance, buffer);
 		CU::Vector3<float> hitPosition;
+		
+		PhysicsComponent* ent = nullptr;//static_cast<PhysEntity*>(buffer.touches[myCurrentIndex].actor->userData);
 		if (returnValue == true)
 		{
-			PhysicsComponent* ent = nullptr;//static_cast<PhysEntity*>(buffer.touches[myCurrentIndex].actor->userData);
 			float closestDist = FLT_MAX;
 			for (int i = 0; i < int(buffer.nbTouches); ++i)
 			{
@@ -434,22 +435,10 @@ namespace Prism
 					hitPosition.x = buffer.touches[i].position.x;
 					hitPosition.y = buffer.touches[i].position.y;
 					hitPosition.z = buffer.touches[i].position.z;
-
 				}
 			}
-			if (ent == nullptr)
-			{
-				myRaycastResults[myCurrentIndex ^ 1].Add(RaycastResult(nullptr, aRaycastJob.myNormalizedDirection, hitPosition, aRaycastJob.myFunctionToCall));
-			}
-			else
-			{
-				myRaycastResults[myCurrentIndex ^ 1].Add(RaycastResult(ent, aRaycastJob.myNormalizedDirection, hitPosition, aRaycastJob.myFunctionToCall));
-			}
 		}
-		else
-		{
-			myRaycastResults[myCurrentIndex ^ 1].Add(RaycastResult(nullptr, aRaycastJob.myNormalizedDirection, hitPosition, aRaycastJob.myFunctionToCall));
-		}
+		myRaycastResults[myCurrentIndex ^ 1].Add(RaycastResult(ent, aRaycastJob.myNormalizedDirection, hitPosition, aRaycastJob.myFunctionToCall));
 	}
 
 	void PhysicsManager::AddForce(physx::PxRigidDynamic* aDynamicBody, const CU::Vector3<float>& aDirection, float aMagnitude)

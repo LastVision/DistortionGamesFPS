@@ -14,10 +14,14 @@ enum class eMissionType
 	DEFEND,
 };
 
+
 enum class eActionEventType
 {
 	LOCK,
 	UNLOCK,
+	TEXT,
+	SPAWN,
+	MARKER,
 };
 
 enum class eInGameStates
@@ -70,6 +74,7 @@ enum class eTriggerType : int
 	MISSION,
 	RESPAWN,
 	ENEMY_SPAWN,
+	MARKER,
 	_COUNT,
 };
 

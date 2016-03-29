@@ -81,6 +81,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="ActionEvent.h" />
     <ClInclude Include="DefendMission.h" />
     <ClInclude Include="KillXMission.h" />
     <ClInclude Include="Mission.h" />

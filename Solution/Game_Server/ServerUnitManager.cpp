@@ -38,7 +38,7 @@ void ServerUnitManager::CreateUnits(Prism::Scene* aScene)
 	{
 		for (int i = 0; i < myUnits.GetCapacity(); ++i)
 		{
-			Entity* unit = EntityFactory::CreateEntity(index++, eEntityType::UNIT, CU::ToLower(types[j]), aScene, false, CU::Vector3<float>());
+			Entity* unit = EntityFactory::CreateEntity(index++, eEntityType::UNIT, CU::ToLower(types[j]), aScene, false, CU::Vector3<float>(0.f, -200.f, 0.f));
 			unit->GetComponent<PhysicsComponent>()->Sleep();
 			unit->Kill();
 			myUnits.Add(unit);

@@ -134,5 +134,8 @@
     <ClInclude Include="NetMessageText.h">
       <Filter>Messages</Filter>
     </ClInclude>
+    <ClInclude Include="NetMessageDisplayMarker.h">
+      <Filter>Messages</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

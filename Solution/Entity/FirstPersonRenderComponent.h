@@ -38,18 +38,28 @@ public:
 
 	void ReceiveNetworkMessage(const NetMessageOnHit& aMessage, const sockaddr_in& aSenderAddress) override;
 	void ReceiveNetworkMessage(const NetMessageHealth& aMessage, const sockaddr_in& aSenderAddress) override;
+	void ReceiveNetworkMessage(const NetMessageDisplayMarker& aMessage, const sockaddr_in& aSenderAddress) override;
 
 private:
 	void UpdateJoints();
 
 	const CU::Matrix44<float>& myInputComponentEyeOrientation;
 	Prism::Instance* myModel;
+	Prism::Instance* myCurrentWeaponModel;
+	Prism::Instance* myPistolModel;
+	Prism::Instance* myShotgunModel;
+
 	GUI::GUIManager3D* my3DGUIManager;
+
 	Prism::SpriteProxy* myCrosshair;
 	Prism::SpriteProxy* myDamageIndicator;
-
+	Prism::SpriteProxy* myMarker;
 	Prism::SpriteProxy* myCoOpSprite;
+
 	CU::GrowingArray<CU::Vector3<float>> myCoOpPositions;
+	CU::Vector3<float> myMarkerPosition;
+
+	bool myRenderMarker;
 
 	struct PlayerAnimationData
 	{
@@ -65,6 +75,9 @@ private:
 
 	void AddAnimation(ePlayerState aState, const std::string& aAnimationPath, bool aLoopFlag, bool aResetTimeOnRestart);
 	CU::StaticArray<PlayerAnimationData, int(ePlayerState::_COUNT)> myAnimations;
+
+	void AddWeaponAnimation(ePlayerState aState, const std::string& aAnimationPath, bool aLoopFlag, bool aResetTimeOnRestart);
+	CU::StaticArray<Prism::AnimationData, int(ePlayerState::_COUNT)> myWeaponAnimations;
 
 	ePlayerState myCurrentState;
 	CU::Matrix44<float> myUIJoint;

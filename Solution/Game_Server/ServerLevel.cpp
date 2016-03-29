@@ -1,4 +1,3 @@
-
 #include "stdafx.h"
 #include "ServerLevel.h"
 
@@ -219,6 +218,7 @@ void ServerLevel::ReceiveMessage(const RespawnMessage &aMessage)
 void ServerLevel::ReceiveMessage(const RespawnTriggerMessage& aMessage)
 {
 	myRespawnTriggers[aMessage.myGID - 1]->GetComponent<TriggerComponent>()->Activate();
+	myRespawnTriggers[aMessage.myGID - 1]->GetComponent<TriggerComponent>()->SetRespawnValue(aMessage.myGID);
 	myRespawnTriggers[aMessage.myGID - 1]->GetComponent<PhysicsComponent>()->AddToScene();
 	myRespawnTriggers[aMessage.myGID - 1]->GetComponent<PhysicsComponent>()->TeleportToPosition(myPlayers[aMessage.myGID - 1]->GetOrientation().GetPos());
 }
@@ -249,7 +249,6 @@ void ServerLevel::HandleTrigger(Entity& aFirstEntity, Entity& aSecondEntity, boo
 			case eTriggerType::MISSION:
 				printf("MissionTrigger with GID: %i entered by: %s with GID: %i \n", aFirstEntity.GetGID(), aSecondEntity.GetSubType().c_str(), aSecondEntity.GetGID());
 				myMissionManager->SetMission(firstTrigger->GetValue());
-				SendTextMessageToClients("Mission activated");
 				break;
 			case eTriggerType::LEVEL_CHANGE:
 				myNextLevel = firstTrigger->GetValue();

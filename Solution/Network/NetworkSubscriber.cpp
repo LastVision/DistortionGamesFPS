@@ -6,6 +6,7 @@ NetworkSubscriber::~NetworkSubscriber(){}
 
 void NetworkSubscriber::ReceiveNetworkMessage(const NetMessageConnectReply&, const sockaddr_in&){}
 void NetworkSubscriber::ReceiveNetworkMessage(const NetMessageDisconnect&, const sockaddr_in&){}
+void NetworkSubscriber::ReceiveNetworkMessage(const NetMessageDisplayMarker&, const sockaddr_in&){}
 void NetworkSubscriber::ReceiveNetworkMessage(const NetMessageEntityState&, const sockaddr_in&) {}
 void NetworkSubscriber::ReceiveNetworkMessage(const NetMessageExplosion&, const sockaddr_in&) {}
 void NetworkSubscriber::ReceiveNetworkMessage(const NetMessageImportantReply&, const sockaddr_in&){}

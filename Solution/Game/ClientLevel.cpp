@@ -108,6 +108,7 @@ void ClientLevel::Init(const std::string&)
 
 	Prism::ModelLoader::GetInstance()->Pause();
 	myDeferredRenderer = new Prism::DeferredRenderer();
+	myDeferredRenderer->SetCubeMap("Data/Resource/Texture/CubeMap/church_horizontal_cross_cube_specular_pow2.dds");
 
 	myEmitterManager = new EmitterManager(*myPlayer->GetComponent<InputComponent>()->GetCamera());
 	Prism::ModelLoader::GetInstance()->UnPause();
