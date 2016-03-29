@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include <ActivateSpawnpointMessage.h>
 #include "Mission.h"
 #include <NetMessageSetActive.h>
 #include <PostMaster.h>
@@ -42,6 +43,9 @@ void Mission::SendMissionMessage(ActionEvent anEvent)
 	case eActionEventType::UNLOCK:
 		ServerNetworkManager::GetInstance()->AddMessage(NetMessageSetActive(false, true, anEvent.myGID));
 		PostMaster::GetInstance()->SendMessage(SetActiveMessage(anEvent.myGID, false));
+		break;
+	case eActionEventType::SPAWN:
+		PostMaster::GetInstance()->SendMessage(ActivateSpawnpointMessage(anEvent.myGID));
 		break;
 	case eActionEventType::TEXT:
 		PostMaster::GetInstance()->SendMessage(SendTextToClientsMessage(anEvent.myText, anEvent.myShowTextTime));

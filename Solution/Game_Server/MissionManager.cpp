@@ -194,12 +194,14 @@ ActionEvent MissionManager::CreateActionEvent(tinyxml2::XMLElement* anEventEleme
 	{
 	case eActionEventType::LOCK:
 	case eActionEventType::UNLOCK:
+	case eActionEventType::SPAWN:
 		aReader->ForceReadAttribute(anEventElement, "gid", actionEvent.myGID);
 		break;
 	case eActionEventType::TEXT:
 		aReader->ForceReadAttribute(anEventElement, "timeForText", actionEvent.myShowTextTime);
 		aReader->ForceReadAttribute(anEventElement, "text", actionEvent.myText);
 		break;
+	
 	}
 
 	return actionEvent;
@@ -218,6 +220,10 @@ eActionEventType MissionManager::GetType(const std::string& aType)
 	else if (aType == "text")
 	{
 		return eActionEventType::TEXT;
+	}
+	else if (aType == "spawn")
+	{
+		return eActionEventType::SPAWN;
 	}
 
 	DL_ASSERT("UNKNOWN event type");

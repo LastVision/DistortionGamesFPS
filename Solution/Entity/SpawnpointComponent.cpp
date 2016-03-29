@@ -82,6 +82,14 @@ void SpawnpointComponent::DeActivate()
 
 void SpawnpointComponent::ReceiveMessage(const ActivateSpawnpointMessage& aMessage)
 {
+	if (myEntity.GetGID() == aMessage.myGID)
+	{
+		if (myIsActive == false)
+		{
+			Activate();
+			return;
+		}
+	}
 	for each(unsigned int gid in myTriggerConnections)
 	{
 		if (gid == aMessage.myGID)
