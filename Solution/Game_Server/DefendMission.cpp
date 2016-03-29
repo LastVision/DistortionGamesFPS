@@ -1,5 +1,7 @@
 #include "stdafx.h"
 #include "DefendMission.h"
+#include "ServerNetworkManager.h"
+#include "NetMessageDisplayMarker.h"
 #include <SendTextToClientsMessage.h>
 #include <PostMaster.h>
 
@@ -54,6 +56,7 @@ bool DefendMission::Update(float aDeltaTime)
 	}
 
 	PostMaster::GetInstance()->SendMessage<SendTextToClientsMessage>(SendTextToClientsMessage("Mission complete"));
+	ServerNetworkManager::GetInstance()->AddMessage(NetMessageDisplayMarker({ 0.f, 0.f, 0.f }, false));
 	return true;
 }
 

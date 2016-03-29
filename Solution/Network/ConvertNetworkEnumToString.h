@@ -61,6 +61,8 @@ static std::string ConvertNetworkEnumToString(eNetMessageType aType)
 		return "ACTIVATE_UNIT ON CLIENT";
 	case eNetMessageType::TEXT:
 		return "TEXT TO CLIENT";
+	case eNetMessageType::DISPLAY_MARKER:
+		return "DISPLAY MARKER ON CLIENT";
 	case eNetMessageType::_COUNT:
 		DL_ASSERT("_COUNT not used as regular enum value");
 	default:

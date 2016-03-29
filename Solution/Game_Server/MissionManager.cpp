@@ -6,8 +6,10 @@
 #include "KillXMission.h"
 #include "Mission.h"
 #include "MissionManager.h"
+#include <NetMessageDisplayMarker.h>
 #include <PostMaster.h>
 #include <SendTextToClientsMessage.h>
+#include "ServerNetworkManager.h"
 #include <XMLReader.h>
 
 MissionManager::MissionManager(const std::string& aMissionXMLPath)
@@ -38,7 +40,7 @@ void MissionManager::Update(float aDeltaTime)
 	}
 }
 
-void MissionManager::SetMission(int aId)
+void MissionManager::SetMission(int aId, const CU::Vector3<float>& aPosition)
 {
 	myCurrentMission = myMissions[aId];
 	if (myCurrentMission->GetMissionType() == eMissionType::DEFEND)
