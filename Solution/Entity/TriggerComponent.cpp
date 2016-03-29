@@ -41,26 +41,29 @@ void TriggerComponent::Update(float aDelta)
 
 void TriggerComponent::ReceiveNote(const CollisionNote& aNote)
 {
-	if (aNote.myHasEntered == true)
+	if (aNote.myOther->GetSubType() == "playerserver")
 	{
-		++myPlayersInside;
-		if (myTriggerType == eTriggerType::LEVEL_CHANGE)
+		if (aNote.myHasEntered == true)
 		{
-			PostMaster::GetInstance()->SendMessage(GameStateMessage(eGameState::LOAD_LEVEL, myData.myValue));
-		}
-
-		if (myData.myIsOneTime == true)
-		{
-			myEntity.GetComponent<PhysicsComponent>()->RemoveFromScene();
-			if (myData.myIsClientSide == false)
+			++myPlayersInside;
+			if (myTriggerType == eTriggerType::LEVEL_CHANGE)
 			{
-				SharedNetworkManager::GetInstance()->AddMessage<NetMessageSetActive>(NetMessageSetActive(false, true, myEntity.GetGID()));
+				PostMaster::GetInstance()->SendMessage(GameStateMessage(eGameState::LOAD_LEVEL, myData.myValue));
+			}
+
+			if (myData.myIsOneTime == true)
+			{
+				myEntity.GetComponent<PhysicsComponent>()->RemoveFromScene();
+				if (myData.myIsClientSide == false)
+				{
+					SharedNetworkManager::GetInstance()->AddMessage<NetMessageSetActive>(NetMessageSetActive(false, true, myEntity.GetGID()));
+				}
 			}
 		}
-	}
-	else if (myTriggerType == eTriggerType::RESPAWN)
-	{
-		--myPlayersInside;
+		else if (myTriggerType == eTriggerType::RESPAWN)
+		{
+			--myPlayersInside;
+		}
 	}
 }
 
