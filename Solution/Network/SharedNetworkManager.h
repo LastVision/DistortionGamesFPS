@@ -2,7 +2,6 @@
 #include <vector>
 #include "NetworkMessageTypes.h"
 #include "NetworkSubscriber.h"
-
 namespace std
 {
 	class thread;
@@ -12,6 +11,11 @@ class NetMessage;
 class NetMessageImportantReply;
 
 class NetworkSubscriber;
+
+namespace CU
+{
+	class TimerManager;
+};
 
 struct NetworkSubscriberInfo
 {
@@ -54,7 +58,8 @@ public:
 	bool IsSubscribed(const eNetMessageType aMessageType, NetworkSubscriber* aSubscriber);
 
 	void ReceiveNetworkMessage(const NetMessageImportantReply& aMessage, const sockaddr_in& aSenderAddress) override;
-	void ReceiveNetworkMessage(const NetMessagePingReply& aMessage, const sockaddr_in& aSenderAddress) override;
+
+	float GetRepliesPerSecond();
 
 protected:
 	static SharedNetworkManager* myInstance;
@@ -111,6 +116,7 @@ protected:
 
 	virtual void SendThread() = 0;
 	virtual void ReceieveThread() = 0;
+	virtual void PingThread() = 0;
 
 	template<typename T> 
 	void UnpackAndHandle(T aMessage, Buffer& aBuffer);
@@ -123,12 +129,14 @@ protected:
 
 	std::thread* myReceieveThread;
 	std::thread* mySendThread;
+	std::thread* myPingThread;
+
 
 	CU::StaticArray<CU::GrowingArray<Buffer>, 2> myReceieveBuffer;
 	CU::StaticArray<CU::GrowingArray<SendBufferMessage>, 2> mySendBuffer;
 	CU::GrowingArray<ImportantMessage> myImportantMessagesBuffer;
 	CU::GrowingArray<ImportantReceivedMessage> myImportantReceivedMessages;
-
+	CU::TimerManager* myTimeManager;
 	CU::StaticArray<CU::GrowingArray<NetworkSubscriberInfo>, static_cast<int>(eNetMessageType::_COUNT)> mySubscribers;
 
 	bool myAllowSendWithoutSubscribers;
@@ -141,16 +149,23 @@ protected:
 	
 	unsigned int myGID;
 
+	volatile bool myHasSent;
 	volatile bool myIsRunning;
 	volatile bool myReceieveIsDone;
 	volatile bool myMainIsDone;
 	
+	volatile unsigned long long myCurrentTimeStamp;
+
 	float myPingTime;
 	float myResponsTime;
+	float myOtherResponsTime;
 	float myMS;
 
 	double myDataSent;
 	double myDataToPrint;
+
+	int myReplyCount;
+	float myRepliesPerSecond;
 
 	unsigned int myImportantID;
 

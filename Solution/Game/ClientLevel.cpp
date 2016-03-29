@@ -174,6 +174,9 @@ void ClientLevel::Update(const float aDeltaTime)
 	unsigned short ms = ClientNetworkManager::GetInstance()->GetResponsTime();
 	float kbs = static_cast<float>(ClientNetworkManager::GetInstance()->GetDataSent());
 
+	Prism::Engine::GetInstance()->PrintText(ms, { 0, 50 }, Prism::eTextType::RELEASE_TEXT);
+	Prism::Engine::GetInstance()->PrintText(ClientNetworkManager::GetInstance()->GetRepliesPerSecond(), { 0, 100 }, Prism::eTextType::RELEASE_TEXT);
+
 	DEBUG_PRINT(ms);
 	DEBUG_PRINT(kbs);
 
