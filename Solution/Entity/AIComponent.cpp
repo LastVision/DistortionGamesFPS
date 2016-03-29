@@ -101,6 +101,9 @@ void AIComponent::Update(float aDelta)
 
 void AIComponent::HandleRaycast(PhysicsComponent* aComponent, const CU::Vector3<float>& aDirection, const CU::Vector3<float>& aHitPosition)
 {
+	aDirection;
+	aHitPosition;
+
 	myHasRaycasted = false;
 
 	myTarget = nullptr;

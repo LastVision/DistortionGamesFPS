@@ -27,7 +27,7 @@ void ClientUnitManager::CreateUnits(Prism::Scene* aScene)
 	std::fstream read;
 	read.open("Data/Setting/SET_unitTypes.dtxt");
 
-	for (unsigned int i = 0; i < types.GetCapacity(); ++i)
+	for (int i = 0; i < types.GetCapacity(); ++i)
 	{
 		std::string toAdd;
 		read >> toAdd;
@@ -38,9 +38,9 @@ void ClientUnitManager::CreateUnits(Prism::Scene* aScene)
 		}
 	}
 	int index = 51000;
-	for (unsigned int j = 0; j < types.Size(); ++j)
+	for (int j = 0; j < types.Size(); ++j)
 	{
-		for (unsigned int i = 0; i < myUnits.GetCapacity(); ++i)
+		for (int i = 0; i < myUnits.GetCapacity(); ++i)
 		{
 			Entity* unit = EntityFactory::CreateEntity(index++, eEntityType::UNIT, CU::ToLower(types[j]), aScene, true, CU::Vector3<float>(0.f, -200.f, 0.f));
 			unit->GetComponent<PhysicsComponent>()->RemoveFromScene();
