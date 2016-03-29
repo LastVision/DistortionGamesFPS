@@ -93,6 +93,7 @@
     <ClInclude Include="NetMessageActivateUnit.h" />
     <ClInclude Include="NetMessageAllClientsComplete.h" />
     <ClInclude Include="NetMessageConnectReply.h" />
+    <ClInclude Include="NetMessageDisplayMarker.h" />
     <ClInclude Include="NetMessageEnemyShooting.h" />
     <ClInclude Include="NetMessageEntityState.h" />
     <ClInclude Include="NetMessageExplosion.h" />
