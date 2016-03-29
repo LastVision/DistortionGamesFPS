@@ -42,6 +42,7 @@ void MissionManager::Update(float aDeltaTime)
 
 void MissionManager::SetMission(int aId, const CU::Vector3<float>& aPosition)
 {
+	aPosition;
 	myCurrentMission = myMissions[aId];
 	if (myCurrentMission->GetMissionType() == eMissionType::DEFEND)
 	{
