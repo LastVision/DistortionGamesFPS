@@ -37,7 +37,6 @@ SpawnpointComponent::SpawnpointComponent(Entity& anEntity, const SpawnpointCompo
 		Entity* toAdd = SharedUnitManager::GetInstance()->RequestUnit(myData.myUnitTypes[randomType] + server);
 		myUnits.Add(toAdd);
 	}
-
 }
 
 
@@ -49,7 +48,11 @@ SpawnpointComponent::~SpawnpointComponent()
 
 void SpawnpointComponent::Update(float aDelta)
 {
-	if (myIsActive == true)
+	if (myIsActive == false && myTriggerConnections.Size() <= 0)
+	{
+		Activate();
+	}
+	else if (myIsActive == true)
 	{
 		myLifetime -= aDelta;
 		if (myLifetime > 0.f)
