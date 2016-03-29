@@ -31,6 +31,7 @@ FirstPersonRenderComponent::FirstPersonRenderComponent(Entity& aEntity, Prism::S
 	, myMaxHealth(10)
 	, myCurrentHealth(myMaxHealth)
 	, myHasDied(false) 
+	, myScene(aScene)
 {
 	CU::Vector2<float> size(128.f, 128.f);
 	myCrosshair = Prism::ModelLoader::GetInstance()->LoadSprite("Data/Resource/Texture/UI/T_crosshair.dds", size, size * 0.5f);
@@ -62,16 +63,10 @@ FirstPersonRenderComponent::FirstPersonRenderComponent(Entity& aEntity, Prism::S
 
 	myModel->Update(1.f / 30.f);
 
-	
-	/*while (myModel->GetCurrentAnimation() == nullptr)
-	{
-
-	}*/
-
 	for (int i = 0; i < static_cast<int>(ePlayerState::_COUNT); ++i)
 	{
-		Prism::ModelLoader::GetInstance()->GetHierarchyToBone(myAnimations[i].myData.myFile, "ui_jnt3", myAnimations[i].myUIBone);
-		Prism::ModelLoader::GetInstance()->GetHierarchyToBone(myAnimations[i].myData.myFile, "health_jnt3", myAnimations[i].myHealthBone);
+		Prism::ModelLoader::GetInstance()->GetHierarchyToBone(myAnimations[i].myData.myFile, "ui_jnt2", myAnimations[i].myUIBone);
+		Prism::ModelLoader::GetInstance()->GetHierarchyToBone(myAnimations[i].myData.myFile, "health_jnt2", myAnimations[i].myHealthBone);
 	}
 
 	ShootingComponent* shooting = myEntity.GetComponent<ShootingComponent>();
@@ -82,6 +77,36 @@ FirstPersonRenderComponent::FirstPersonRenderComponent(Entity& aEntity, Prism::S
 
 	SharedNetworkManager::GetInstance()->Subscribe(eNetMessageType::ON_HIT, this);
 	SharedNetworkManager::GetInstance()->Subscribe(eNetMessageType::HEALTH, this);
+
+	
+
+
+	Prism::ModelProxy* pistolModel = Prism::ModelLoader::GetInstance()->LoadModelAnimated("Data/Resource/Model/First_person/Pistol/SK_pistol_idle.fbx", "Data/Resource/Shader/S_effect_pbl_animated.fx");
+	myPistolModel = new Prism::Instance(*pistolModel, myInputComponentEyeOrientation);
+	AddWeaponAnimation(ePlayerState::PISTOL_IDLE, "Data/Resource/Model/First_person/Pistol/SK_pistol_idle.fbx", true, true);
+	AddWeaponAnimation(ePlayerState::PISTOL_HOLSTER, "Data/Resource/Model/First_person/Pistol/SK_pistol_holster.fbx", false, true);
+	AddWeaponAnimation(ePlayerState::PISTOL_DRAW, "Data/Resource/Model/First_person/Pistol/SK_pistol_draw.fbx", false, true);
+	AddWeaponAnimation(ePlayerState::PISTOL_RELOAD, "Data/Resource/Model/First_person/Pistol/SK_pistol_reload.fbx", false, true);
+	AddWeaponAnimation(ePlayerState::PISTOL_FIRE, "Data/Resource/Model/First_person/Pistol/SK_pistol_fire.fbx", false, true);
+	myPistolModel->Update(1.f / 30.f);
+
+	Prism::ModelProxy* shotgunModel = Prism::ModelLoader::GetInstance()->LoadModelAnimated("Data/Resource/Model/First_person/Shotgun/SK_shotgun_idle.fbx", "Data/Resource/Shader/S_effect_pbl_animated.fx");
+	myShotgunModel = new Prism::Instance(*shotgunModel, myInputComponentEyeOrientation);
+	AddWeaponAnimation(ePlayerState::SHOTGUN_IDLE, "Data/Resource/Model/First_person/Shotgun/SK_shotgun_idle.fbx", true, true);
+	AddWeaponAnimation(ePlayerState::SHOTGUN_HOLSTER, "Data/Resource/Model/First_person/Shotgun/SK_shotgun_holster.fbx", false, true);
+	AddWeaponAnimation(ePlayerState::SHOTGUN_DRAW, "Data/Resource/Model/First_person/Shotgun/SK_shotgun_draw.fbx", false, true);
+	AddWeaponAnimation(ePlayerState::SHOTGUN_RELOAD, "Data/Resource/Model/First_person/Shotgun/SK_shotgun_reload.fbx", false, true);
+	AddWeaponAnimation(ePlayerState::SHOTGUN_FIRE, "Data/Resource/Model/First_person/Shotgun/SK_shotgun_fire.fbx", false, true);
+	myShotgunModel->Update(1.f / 30.f);
+
+	AddWeaponAnimation(ePlayerState::GRENADE_LAUNCHER_IDLE, "Data/Resource/Model/First_person/GrenadeLauncher/SK_grenade_launcher_idle.fbx", true, true);
+	AddWeaponAnimation(ePlayerState::GRENADE_LAUNCHER_HOLSTER, "Data/Resource/Model/First_person/GrenadeLauncher/SK_grenade_launcher_holster.fbx", false, true);
+	AddWeaponAnimation(ePlayerState::GRENADE_LAUNCHER_DRAW, "Data/Resource/Model/First_person/GrenadeLauncher/SK_grenade_launcher_draw.fbx", false, true);
+	AddWeaponAnimation(ePlayerState::GRENADE_LAUNCHER_RELOAD, "Data/Resource/Model/First_person/GrenadeLauncher/SK_grenade_launcher_reload.fbx", false, true);
+	AddWeaponAnimation(ePlayerState::GRENADE_LAUNCHER_FIRE, "Data/Resource/Model/First_person/GrenadeLauncher/SK_grenade_launcher_fire.fbx", false, true);
+
+	myCurrentWeaponModel = myPistolModel;
+	aScene->AddInstance(myCurrentWeaponModel, eObjectRoomType::ALWAYS_RENDER);
 	
 }
 
@@ -95,6 +120,9 @@ FirstPersonRenderComponent::~FirstPersonRenderComponent()
 	SAFE_DELETE(my3DGUIManager);
 	SAFE_DELETE(myModel);
 	SAFE_DELETE(myCoOpSprite);
+	SAFE_DELETE(myCurrentWeaponModel);
+	SAFE_DELETE(myPistolModel);
+	SAFE_DELETE(myShotgunModel);
 	myCoOpPositions.RemoveAll();
 }
 
@@ -136,10 +164,13 @@ void FirstPersonRenderComponent::Update(float aDelta)
 		}
 	}
 
+
+
 	Prism::AnimationData& data = myAnimations[int(myCurrentState)].myData;
 	if (myModel->IsAnimationDone() == false || data.myShouldLoop == true)
 	{
 		myModel->Update(aDelta);
+
 	}
 	if (myModel->IsAnimationDone() == true && data.myShouldLoop == false)
 	{
@@ -160,6 +191,14 @@ void FirstPersonRenderComponent::Update(float aDelta)
 		}
 	}
 	data.myElapsedTime += aDelta;
+
+	Prism::AnimationData& weaponData = myWeaponAnimations[int(myCurrentState)];
+	if (myCurrentWeaponModel->IsAnimationDone() == false || weaponData.myShouldLoop == true)
+	{
+		myCurrentWeaponModel->Update(aDelta);
+
+	}
+	weaponData.myElapsedTime += aDelta;
 }
 
 void FirstPersonRenderComponent::UpdateCoOpPositions(const CU::GrowingArray<Entity*>& somePlayers)
@@ -240,9 +279,39 @@ void FirstPersonRenderComponent::AddAnimation(ePlayerState aState, const std::st
 	myAnimations[int(aState)].myData = newData;
 }
 
+void FirstPersonRenderComponent::AddWeaponAnimation(ePlayerState aState, const std::string& aAnimationPath, bool aLoopFlag, bool aResetTimeOnRestart)
+{
+	Prism::AnimationSystem::GetInstance()->GetAnimation(aAnimationPath.c_str());
+	Prism::AnimationData newData;
+	newData.myElapsedTime = 0.f;
+	newData.myFile = aAnimationPath;
+	newData.myShouldLoop = aLoopFlag;
+	newData.myResetTimeOnRestart = aResetTimeOnRestart;
+	myWeaponAnimations[int(aState)] = newData;
+}
+
 void FirstPersonRenderComponent::PlayAnimation(ePlayerState aAnimationState)
 {
 	myCurrentState = aAnimationState;
+	if (myCurrentState == ePlayerState::PISTOL_DRAW)
+	{
+		myScene->RemoveInstance(myCurrentWeaponModel);
+		myCurrentWeaponModel = myPistolModel;
+		myScene->AddInstance(myCurrentWeaponModel, eObjectRoomType::ALWAYS_RENDER);
+	}
+	else if (myCurrentState == ePlayerState::SHOTGUN_DRAW)
+	{
+		myScene->RemoveInstance(myCurrentWeaponModel);
+		myCurrentWeaponModel = myShotgunModel;
+		myScene->AddInstance(myCurrentWeaponModel, eObjectRoomType::ALWAYS_RENDER);
+	}
+	else if (myCurrentState == ePlayerState::GRENADE_LAUNCHER_DRAW)
+	{
+		myScene->RemoveInstance(myCurrentWeaponModel);
+		myCurrentWeaponModel = myPistolModel;
+		myScene->AddInstance(myCurrentWeaponModel, eObjectRoomType::ALWAYS_RENDER);
+	}
+
 	Prism::AnimationData& data = myAnimations[int(aAnimationState)].myData;
 	myModel->SetAnimation(Prism::AnimationSystem::GetInstance()->GetAnimation(data.myFile.c_str()));
 
@@ -253,6 +322,18 @@ void FirstPersonRenderComponent::PlayAnimation(ePlayerState aAnimationState)
 	else
 	{
 		myModel->ResetAnimationTime(data.myElapsedTime);
+	}
+
+	Prism::AnimationData& weaponData = myWeaponAnimations[int(aAnimationState)];
+	myCurrentWeaponModel->SetAnimation(Prism::AnimationSystem::GetInstance()->GetAnimation(weaponData.myFile.c_str()));
+
+	if (weaponData.myResetTimeOnRestart == true)
+	{
+		myCurrentWeaponModel->ResetAnimationTime(0.f);
+	}
+	else
+	{
+		myCurrentWeaponModel->ResetAnimationTime(weaponData.myElapsedTime);
 	}
 }
 
@@ -265,15 +346,15 @@ void FirstPersonRenderComponent::AddIntention(ePlayerState aPlayerState, bool aC
 		{
 		case eWeaponType::PISTOL:
 			myCurrentState = ePlayerState::PISTOL_IDLE;
-			myEntity.GetComponent<FirstPersonRenderComponent>()->PlayAnimation(myCurrentState);
+			PlayAnimation(myCurrentState);
 			break;
 		case eWeaponType::GRENADE_LAUNCHER:
 			myCurrentState = ePlayerState::GRENADE_LAUNCHER_IDLE;
-			myEntity.GetComponent<FirstPersonRenderComponent>()->PlayAnimation(myCurrentState);
+			PlayAnimation(myCurrentState);
 			break;
 		case eWeaponType::SHOTGUN:
 			myCurrentState = ePlayerState::SHOTGUN_IDLE;
-			myEntity.GetComponent<FirstPersonRenderComponent>()->PlayAnimation(myCurrentState);
+			PlayAnimation(myCurrentState);
 			break;
 		}
 	}
