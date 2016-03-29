@@ -48,12 +48,16 @@ namespace EntityEnumConverter
 	}
 	const ePropType ConvertStringToPropType(const std::string& aType)
 	{
+		aType;
+
 		DL_ASSERT("Not in use. Remove assert when in use.");
 		return ePropType::NOT_A_PROP;
 	}
 
 	const eOwnerType ConvertStringToOwnerType(const std::string& aType)
 	{
+		aType;
+
 		DL_ASSERT("Not in use. Remove assert when in use.");
 		return eOwnerType::NOT_USED;
 	}

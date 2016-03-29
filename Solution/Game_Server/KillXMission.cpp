@@ -20,7 +20,7 @@ bool KillXMission::Update(float aDeltaTime)
 		myStartEvents[0].myTimeBeforeStarting -= aDeltaTime;
 		if (myStartEvents[0].myTimeBeforeStarting <= 0.f)
 		{
-			SendMissionMessage(myStartEvents[0].myType, myStartEvents[0].myGID);
+			SendMissionMessage(myStartEvents[0]);
 			myStartEvents.RemoveNonCyclicAtIndex(0);
 		}
 		return false;
@@ -33,7 +33,7 @@ bool KillXMission::Update(float aDeltaTime)
 			myMissionEvents[myCurrentMissionEvent].myTimeBeforeStarting -= aDeltaTime;
 			if (myMissionEvents[myCurrentMissionEvent].myTimeBeforeStarting <= 0.f)
 			{
-				SendMissionMessage(myMissionEvents[myCurrentMissionEvent].myType, myMissionEvents[myCurrentMissionEvent].myGID);
+				SendMissionMessage(myMissionEvents[myCurrentMissionEvent]);
 				++myCurrentMissionEvent;
 				if (myCurrentMissionEvent == myMissionEvents.Size())
 				{
@@ -56,7 +56,7 @@ bool KillXMission::Update(float aDeltaTime)
 		myEndEvents[0].myTimeBeforeStarting -= aDeltaTime;
 		if (myEndEvents[0].myTimeBeforeStarting <= 0.f)
 		{
-			SendMissionMessage(myEndEvents[0].myType, myEndEvents[0].myGID);
+			SendMissionMessage(myEndEvents[0]);
 			myEndEvents.RemoveNonCyclicAtIndex(0);
 		}
 		return false;

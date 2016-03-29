@@ -82,7 +82,10 @@ void HealthComponent::TakeDamage(int aDamage)
 			SharedNetworkManager::GetInstance()->AddMessage(NetMessageEntityState(myEntity.GetState(), myEntity.GetGID()));
 			SharedNetworkManager::GetInstance()->AddMessage(NetMessageSetActive(false, false, myEntity.GetGID()));
 			myEntity.GetComponent<PhysicsComponent>()->Sleep();
-			myEntity.Kill(false);
+			if (myEntity.GetSubType() != "playerserver")
+			{
+				myEntity.Kill(false);
+			}
 			PollingStation::GetInstance()->HasDied(&myEntity);
 		}
 	}

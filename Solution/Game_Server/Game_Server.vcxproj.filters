@@ -66,6 +66,9 @@
     </ClInclude>
     <ClInclude Include="ServerProjectileManager.h" />
     <ClInclude Include="ServerUnitManager.h" />
+    <ClInclude Include="ActionEvent.h">
+      <Filter>Mission</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
