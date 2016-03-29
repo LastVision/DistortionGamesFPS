@@ -22,13 +22,29 @@ AIComponent::AIComponent(Entity& anEntity, const AIComponentData& aData, CU::Mat
 	, myBehavior(new BlendedBehavior(myEntity, aData))
 	, myShootTimer(2.f)
 	, myAttackAnimationTimeCurrent(0.f)
+	, myTarget(nullptr)
+	, myHasRaycasted(false)
+	, myHasJustSpawned(true)
 {
+	myRaycastHandler = [=](PhysicsComponent* aComponent, const CU::Vector3<float>& aDirection, const CU::Vector3<float>& aHitPosition)
+	{
+		this->HandleRaycast(aComponent, aDirection, aHitPosition);
+	};
 }
 
 AIComponent::~AIComponent()
 {
 	myBullets.RemoveAll();
 	SAFE_DELETE(myBehavior);
+}
+
+void AIComponent::Reset()
+{
+	myHasJustSpawned = true;
+	myShootTimer = 2.f;
+	myAttackAnimationTimeCurrent = 0.f;
+	myTarget = nullptr;
+	myHasRaycasted = false;
 }
 
 void AIComponent::Update(float aDelta)
@@ -43,14 +59,30 @@ void AIComponent::Update(float aDelta)
 
 	if (myEntity.GetState() != eEntityState::DIE)
 	{
-		Entity* closestPlayer = PollingStation::GetInstance()->FindClosestPlayer(myEntity.GetOrientation().GetPos(), myData.myVisionRange);
-
-		Move(aDelta, closestPlayer);
-		myShootTimer -= aDelta;
-		if (closestPlayer != nullptr && myShootTimer < 0.f)
+		if (myHasRaycasted == false)
 		{
-			Shoot(closestPlayer);
-			myShootTimer = 2.f;
+			Entity* closestPlayer = PollingStation::GetInstance()->FindClosestPlayer(myEntity.GetOrientation().GetPos(), myData.myVisionRange);
+
+			if (closestPlayer != nullptr)
+			{
+				CU::Vector3<float> toPlayer(CU::GetNormalized(closestPlayer->GetOrientation().GetPos() - myOrientation.GetPos()));
+
+				Prism::PhysicsInterface::GetInstance()->RayCast(myOrientation.GetPos() + CU::Vector3<float>(0.f, 1.f, 0.f)
+					, toPlayer, myData.myVisionRange, myRaycastHandler);
+				myHasRaycasted = true;
+			}
+		}
+
+		myShootTimer -= aDelta;
+		
+		Move(aDelta, myTarget);
+		if (myTarget != nullptr)
+		{
+			if (myShootTimer < 0.f)
+			{
+				Shoot(myTarget);
+				myShootTimer = 2.f;
+			}
 		}
 
 		if (myEntity.GetState() == eEntityState::ATTACK)
@@ -63,6 +95,20 @@ void AIComponent::Update(float aDelta)
 				SharedNetworkManager::GetInstance()->AddMessage<NetMessageEntityState>(NetMessageEntityState(myEntity.GetState(), myEntity.GetGID()));
 				myAttackAnimationTimeCurrent = 0.f;
 			}
+		}
+	}
+}
+
+void AIComponent::HandleRaycast(PhysicsComponent* aComponent, const CU::Vector3<float>& aDirection, const CU::Vector3<float>& aHitPosition)
+{
+	myHasRaycasted = false;
+
+	myTarget = nullptr;
+	if (aComponent != nullptr)
+	{
+		if (aComponent->GetEntity().GetSubType() == "playerserver")
+		{
+			myTarget = &aComponent->GetEntity();
 		}
 	}
 }
@@ -95,14 +141,16 @@ void AIComponent::Move(float aDelta, Entity* aClosestPlayer)
 
 		Prism::PhysicsInterface::GetInstance()->Move(myEntity.GetComponent<PhysicsComponent>()->GetCapsuleControllerId(), movement, 0.05f, aDelta);
 
-		SetOrientation(CU::GetNormalized(movement));
+		SetOrientation(CU::GetNormalized(movement), aDelta);
 	}
 }
 
-void AIComponent::SetOrientation(const CU::Vector3<float>& aLookInDirection)
+void AIComponent::SetOrientation(const CU::Vector3<float>& aLookInDirection, float aDelta)
 {
 	CU::Vector3<float> pos;
 	Prism::PhysicsInterface::GetInstance()->GetPosition(myEntity.GetComponent<PhysicsComponent>()->GetCapsuleControllerId(), pos);
+	bool hasMoved = CU::Math::DistanceBetweenLessThanOrEqualToEpsilon(pos, myOrientation.GetPos(), 0.1f * aDelta) == false;
+
 	myOrientation.SetPos(pos);
 
 	static CU::Vector3<float> y(0, 1.f, 0);
@@ -121,7 +169,16 @@ void AIComponent::SetOrientation(const CU::Vector3<float>& aLookInDirection)
 		angle = -angle;
 	}
 
-	SharedNetworkManager::GetInstance()->AddMessage(NetMessagePosition(pos, angle, myEntity.GetGID()));
+	if (myHasJustSpawned == true)
+	{
+		myHasJustSpawned = false;
+		SharedNetworkManager::GetInstance()->AddMessage(NetMessagePosition(pos, angle, myEntity.GetGID()));
+		SharedNetworkManager::GetInstance()->AddMessage(NetMessagePosition(pos, angle, myEntity.GetGID()));
+	}
+	else if (hasMoved == true)
+	{
+		SharedNetworkManager::GetInstance()->AddMessage(NetMessagePosition(pos, angle, myEntity.GetGID()));
+	}
 }
 
 void AIComponent::Shoot(Entity* aClosestPlayer)

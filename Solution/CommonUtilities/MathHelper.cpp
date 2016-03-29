@@ -100,5 +100,11 @@ namespace CU
 			n++;
 			return n;
 		}
+
+		bool DistanceBetweenLessThanOrEqualToEpsilon(const CU::Vector3<float>& aVector1, const CU::Vector3<float>& aVector2, float anEpsilon)
+		{
+			float distance2 = CU::Length2(aVector2 - aVector1);
+			return distance2 <= anEpsilon * anEpsilon;
+		}
 	}
 }
