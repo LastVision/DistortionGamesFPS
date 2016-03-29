@@ -28,6 +28,8 @@ namespace Prism
 
 	struct SHTextures
 	{
+		~SHTextures();
+
 		Texture* cAr;
 		Texture* cAg;
 		Texture* cAb;

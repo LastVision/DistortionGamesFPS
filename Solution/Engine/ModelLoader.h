@@ -125,7 +125,6 @@ namespace Prism
 		std::unordered_map<std::string, ModelProxy*> myModelProxies;
 		std::unordered_map<std::string, Sprite*> mySprites;
 		std::unordered_map<std::string, FontProxy*> myFontProxies;
-		CU::GrowingArray<TextProxy*> myTextProxies;
 		std::unordered_map<std::string, int> myInstancedCount;
 
 		static ModelLoader* myInstance;

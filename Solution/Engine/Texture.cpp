@@ -495,6 +495,8 @@ namespace Prism
 		{
 			myDepthTexture->Release();
 		}
+
+		SAFE_DELETE(myViewPort);
 	}
 
 	void Texture::Resize(float aWidth, float aHeight)
