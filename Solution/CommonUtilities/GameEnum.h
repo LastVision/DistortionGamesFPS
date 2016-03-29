@@ -14,6 +14,7 @@ enum class eMissionType
 	DEFEND,
 };
 
+
 enum class eActionEventType
 {
 	LOCK,
