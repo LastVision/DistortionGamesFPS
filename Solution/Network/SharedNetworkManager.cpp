@@ -235,9 +235,9 @@ eNetMessageType SharedNetworkManager::ReadType(const std::vector<char>& aBuffer)
 	return static_cast<eNetMessageType>(aBuffer[0]);
 }
 
-unsigned short SharedNetworkManager::GetResponsTime() const
+unsigned long long SharedNetworkManager::GetResponsTime() const
 {
-	return static_cast<unsigned short>(myMS);
+	return myMS;
 }
 
 double SharedNetworkManager::GetDataSent() const

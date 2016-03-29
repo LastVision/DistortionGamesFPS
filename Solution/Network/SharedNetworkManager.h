@@ -39,7 +39,7 @@ public:
 	
 	eNetMessageType ReadType(const char* aBuffer);
 	eNetMessageType ReadType(const std::vector<char>& aBuffer);
-	unsigned short GetResponsTime() const;
+	unsigned long long GetResponsTime() const;
 	double GetDataSent() const;
 
 	void AllowSendWithoutSubscriber(bool aAllow);
@@ -159,7 +159,7 @@ protected:
 	float myPingTime;
 	float myResponsTime;
 	float myOtherResponsTime;
-	float myMS;
+	unsigned long long myMS;
 
 	double myDataSent;
 	double myDataToPrint;

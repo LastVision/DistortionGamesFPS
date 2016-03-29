@@ -148,11 +148,11 @@ void ClientNetworkManager::PingThread()
 			NetMessagePingRequest toSend;
 			toSend.PackMessage();
 			myNetwork->Send(toSend.myStream);
-			myCurrentTimeStamp = myTimeManager->GetMasterTimer().GetTime().GetMilliseconds();
 
 			if (myHasSent == false)
 			{
-				myResponsTime = 0.f;
+				myCurrentTimeStamp = myTimeManager->GetMasterTimer().GetTime().GetMilliseconds();
+				myHasSent = true;
 			}
 
 			Sleep(1000);
@@ -210,7 +210,10 @@ void ClientNetworkManager::ReceiveNetworkMessage(const NetMessageDisconnect& aMe
 
 void ClientNetworkManager::ReceiveNetworkMessage(const NetMessagePingRequest&, const sockaddr_in&)
 {
-	AddMessage(NetMessagePingReply());
+	NetMessagePingReply toSend;
+	toSend.mySenderID = myGID;
+	toSend.PackMessage();
+	myNetwork->Send(toSend.myStream);
 }
 
 void ClientNetworkManager::ReceiveNetworkMessage(const NetMessageConnectReply& aMessage, const sockaddr_in&)
@@ -243,6 +246,7 @@ void ClientNetworkManager::ReceiveNetworkMessage(const NetMessagePingReply& aMes
 	unsigned long long old = myCurrentTimeStamp;
 	myCurrentTimeStamp = myTimeManager->GetMasterTimer().GetTime().GetMilliseconds();
 	myMS = (myCurrentTimeStamp - old);
+	myHasSent = false;
 }
 
 void ClientNetworkManager::UpdateImportantMessages(float aDeltaTime)

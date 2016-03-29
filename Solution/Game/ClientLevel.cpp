@@ -171,13 +171,13 @@ void ClientLevel::Update(const float aDeltaTime)
 		ClientNetworkManager::GetInstance()->AddMessage(NetMessageDisconnect(ClientNetworkManager::GetInstance()->GetGID()));
 	}
 
-	unsigned short ms = ClientNetworkManager::GetInstance()->GetResponsTime();
+	unsigned long long ms = ClientNetworkManager::GetInstance()->GetResponsTime();
 	float kbs = static_cast<float>(ClientNetworkManager::GetInstance()->GetDataSent());
 
-	Prism::Engine::GetInstance()->PrintText(ms, { 0, 50 }, Prism::eTextType::RELEASE_TEXT);
+	Prism::Engine::GetInstance()->PrintText(int(ms), { 0, 50 }, Prism::eTextType::RELEASE_TEXT);
 	Prism::Engine::GetInstance()->PrintText(ClientNetworkManager::GetInstance()->GetRepliesPerSecond(), { 0, 100 }, Prism::eTextType::RELEASE_TEXT);
 
-	DEBUG_PRINT(ms);
+	DEBUG_PRINT(int(ms));
 	DEBUG_PRINT(kbs);
 
 	//for (int i = 0; i < myPlayers.Size(); ++i)
