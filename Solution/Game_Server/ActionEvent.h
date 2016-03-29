@@ -10,4 +10,6 @@ struct ActionEvent
 	float myTimeBeforeStarting;
 	float myShowTextTime;
 	std::string myText;
+	bool myShow;
+	CU::Vector3<float> myPosition;
 };

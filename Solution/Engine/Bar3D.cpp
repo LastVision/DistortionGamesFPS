@@ -104,8 +104,8 @@ namespace Prism
 		CU::GrowingArray<GUIVertex> vertices(4 * numbersToMake);
 		CU::GrowingArray<CU::Vector4<float>> torusPosition(4 * numbersToMake);
 
-		float inner = 0.05f;
-		float outer = 0.075f;
+		float inner = 0.075f;
+		float outer = 0.1f;
 		if (myBarPosition == eBarPosition::LEFT || myBarPosition == eBarPosition::RIGHT || myBarPosition == eBarPosition::TOP)
 		{
 			for (int i = 0; i < numbersToMake; ++i)

@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "CollisionNote.h"
 #include <GameStateMessage.h>
+#include <NetMessageDisplayMarker.h>
 #include <NetMessageSetActive.h>
 #include "PhysicsComponent.h"
 #include <PostMaster.h>
@@ -49,6 +50,10 @@ void TriggerComponent::ReceiveNote(const CollisionNote& aNote)
 			if (myTriggerType == eTriggerType::LEVEL_CHANGE)
 			{
 				PostMaster::GetInstance()->SendMessage(GameStateMessage(eGameState::LOAD_LEVEL, myData.myValue));
+			}
+			else if (myTriggerType == eTriggerType::MARKER)
+			{
+				SharedNetworkManager::GetInstance()->AddMessage(NetMessageDisplayMarker(myData.myPosition, myData.myShowMarker));
 			}
 
 			if (myData.myIsOneTime == true)

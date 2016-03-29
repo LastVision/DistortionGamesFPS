@@ -6,8 +6,10 @@
 #include "KillXMission.h"
 #include "Mission.h"
 #include "MissionManager.h"
+#include <NetMessageDisplayMarker.h>
 #include <PostMaster.h>
 #include <SendTextToClientsMessage.h>
+#include "ServerNetworkManager.h"
 #include <XMLReader.h>
 
 MissionManager::MissionManager(const std::string& aMissionXMLPath)
@@ -199,7 +201,12 @@ ActionEvent MissionManager::CreateActionEvent(tinyxml2::XMLElement* anEventEleme
 		aReader->ForceReadAttribute(anEventElement, "timeForText", actionEvent.myShowTextTime);
 		aReader->ForceReadAttribute(anEventElement, "text", actionEvent.myText);
 		break;
-	
+	case eActionEventType::MARKER:
+		aReader->ForceReadAttribute(anEventElement, "show", actionEvent.myShow);
+		aReader->ReadAttribute(anEventElement, "positionx", actionEvent.myPosition.x);
+		aReader->ReadAttribute(anEventElement, "positiony", actionEvent.myPosition.y);
+		aReader->ReadAttribute(anEventElement, "positionz", actionEvent.myPosition.z);
+		break;
 	}
 
 	return actionEvent;
@@ -222,6 +229,10 @@ eActionEventType MissionManager::GetType(const std::string& aType)
 	else if (aType == "spawn")
 	{
 		return eActionEventType::SPAWN;
+	}
+	else if (aType == "marker")
+	{
+		return eActionEventType::MARKER;
 	}
 
 	DL_ASSERT("UNKNOWN event type");
