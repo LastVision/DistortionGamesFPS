@@ -85,7 +85,7 @@ FirstPersonRenderComponent::FirstPersonRenderComponent(Entity& aEntity, Prism::S
 
 	SharedNetworkManager::GetInstance()->Subscribe(eNetMessageType::ON_HIT, this);
 	SharedNetworkManager::GetInstance()->Subscribe(eNetMessageType::HEALTH, this);
-
+	SharedNetworkManager::GetInstance()->Subscribe(eNetMessageType::DISPLAY_MARKER, this);
 }
 
 
@@ -93,6 +93,7 @@ FirstPersonRenderComponent::~FirstPersonRenderComponent()
 {
 	SharedNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::ON_HIT, this);
 	SharedNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::HEALTH, this);
+	SharedNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::DISPLAY_MARKER, this);
 	SAFE_DELETE(myCrosshair);
 	SAFE_DELETE(myDamageIndicator);
 	SAFE_DELETE(my3DGUIManager);

@@ -180,7 +180,15 @@ void ComponentLoader::LoadTriggerComponent(XMLReader& aDocument, tinyxml2::XMLEl
 			aDocument.ReadAttribute(e, "activeFromStart", aOutputData.myIsActiveFromStart);
 
 			aOutputData.myTriggerType = ConvertToTriggerEnum(name);
+
 		}
+		else if (elementName == CU::ToLower("Marker"))
+		{
+				aDocument.ReadAttribute(e, "positionx", aOutputData.myPosition.x);
+				aDocument.ReadAttribute(e, "positiony", aOutputData.myPosition.y);
+				aDocument.ReadAttribute(e, "positionz", aOutputData.myPosition.z);
+				aDocument.ForceReadAttribute(e, "show", aOutputData.myShowMarker);
+		}		
 	}
 }
 
@@ -370,6 +378,10 @@ int ComponentLoader::ConvertToTriggerEnum(std::string aName)
 	else if (aName == "spawntrigger")
 	{
 		return static_cast<int>(eTriggerType::ENEMY_SPAWN);
+	}
+	else if (aName == "marker")
+	{
+		return static_cast<int>(eTriggerType::MARKER);
 	}
 
 	DL_ASSERT("[ComponentLoader] No trigger type in trigger component named " + aName);
