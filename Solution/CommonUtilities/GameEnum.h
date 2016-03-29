@@ -21,6 +21,7 @@ enum class eActionEventType
 	UNLOCK,
 	TEXT,
 	SPAWN,
+	MARKER,
 };
 
 enum class eInGameStates

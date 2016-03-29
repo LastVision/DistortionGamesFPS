@@ -16,12 +16,12 @@ private:
 };
 
 inline NetMessageDisplayMarker::NetMessageDisplayMarker()
-	: NetImportantMessage(eNetMessageType::ACTIVATE_UNIT)
+	: NetImportantMessage(eNetMessageType::DISPLAY_MARKER)
 {
 }
 
 inline NetMessageDisplayMarker::NetMessageDisplayMarker(const CU::Vector3<float>& aPosition, bool aDisplayMarker)
-	: NetImportantMessage(eNetMessageType::ACTIVATE_UNIT)
+	: NetImportantMessage(eNetMessageType::DISPLAY_MARKER)
 	, myPosition(aPosition)
 	, myDisplayMarker(aDisplayMarker)
 {

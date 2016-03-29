@@ -40,9 +40,8 @@ void MissionManager::Update(float aDeltaTime)
 	}
 }
 
-void MissionManager::SetMission(int aId, const CU::Vector3<float>&)
+void MissionManager::SetMission(int aId)
 {
-	aPosition;
 	myCurrentMission = myMissions[aId];
 	if (myCurrentMission->GetMissionType() == eMissionType::DEFEND)
 	{
@@ -202,7 +201,12 @@ ActionEvent MissionManager::CreateActionEvent(tinyxml2::XMLElement* anEventEleme
 		aReader->ForceReadAttribute(anEventElement, "timeForText", actionEvent.myShowTextTime);
 		aReader->ForceReadAttribute(anEventElement, "text", actionEvent.myText);
 		break;
-	
+	case eActionEventType::MARKER:
+		aReader->ForceReadAttribute(anEventElement, "show", actionEvent.myShow);
+		aReader->ReadAttribute(anEventElement, "positionx", actionEvent.myPosition.x);
+		aReader->ReadAttribute(anEventElement, "positiony", actionEvent.myPosition.y);
+		aReader->ReadAttribute(anEventElement, "positionz", actionEvent.myPosition.z);
+		break;
 	}
 
 	return actionEvent;
@@ -225,6 +229,10 @@ eActionEventType MissionManager::GetType(const std::string& aType)
 	else if (aType == "spawn")
 	{
 		return eActionEventType::SPAWN;
+	}
+	else if (aType == "marker")
+	{
+		return eActionEventType::MARKER;
 	}
 
 	DL_ASSERT("UNKNOWN event type");

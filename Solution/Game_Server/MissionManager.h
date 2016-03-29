@@ -19,7 +19,7 @@ public:
 
 	void Update(float aDeltaTime);
 
-	void SetMission(int aId, const CU::Vector3<float>& aPosition = { 0.f, 0.f, 0.f });
+	void SetMission(int aId);
 	eMissionType GetCurrentMissionType() const;
 
 	void ReceiveMessage(const EnemyKilledMessage& aMessage) override;
