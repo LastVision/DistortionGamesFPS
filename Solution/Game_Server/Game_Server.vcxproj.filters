@@ -19,7 +19,7 @@
     <Filter Include="Mission">
       <UniqueIdentifier>{3abe5c38-98cc-4543-ba61-6d332ce13db2}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Manager">
+    <Filter Include="Managers">
       <UniqueIdentifier>{6479426a-17b7-4595-9e1f-230f0c62b6ff}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
@@ -68,10 +68,10 @@
       <Filter>Mission</Filter>
     </ClInclude>
     <ClInclude Include="ServerProjectileManager.h">
-      <Filter>Manager</Filter>
+      <Filter>Managers</Filter>
     </ClInclude>
     <ClInclude Include="ServerUnitManager.h">
-      <Filter>Manager</Filter>
+      <Filter>Managers</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -113,10 +113,10 @@
       <Filter>Mission</Filter>
     </ClCompile>
     <ClCompile Include="ServerProjectileManager.cpp">
-      <Filter>Manager</Filter>
+      <Filter>Managers</Filter>
     </ClCompile>
     <ClCompile Include="ServerUnitManager.cpp">
-      <Filter>Manager</Filter>
+      <Filter>Managers</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
