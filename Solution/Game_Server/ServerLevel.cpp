@@ -250,7 +250,6 @@ void ServerLevel::HandleTrigger(Entity& aFirstEntity, Entity& aSecondEntity, boo
 			case eTriggerType::MISSION:
 				printf("MissionTrigger with GID: %i entered by: %s with GID: %i \n", aFirstEntity.GetGID(), aSecondEntity.GetSubType().c_str(), aSecondEntity.GetGID());
 				myMissionManager->SetMission(firstTrigger->GetValue());
-				SendTextMessageToClients("Mission activated");
 				break;
 			case eTriggerType::LEVEL_CHANGE:
 				myNextLevel = firstTrigger->GetValue();

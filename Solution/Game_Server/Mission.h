@@ -1,19 +1,7 @@
 #pragma once
 #include <GrowingArray.h>
 #include <GameEnum.h>
-
-struct ActionEvent
-{
-	ActionEvent(){}
-	ActionEvent(eActionEventType aType, int aGID, float aTimeBeforeStarting)
-		: myType(aType)
-		, myGID(aGID)
-		, myTimeBeforeStarting(aTimeBeforeStarting)
-	{}
-	eActionEventType myType;
-	int myGID;
-	float myTimeBeforeStarting;
-};
+#include "ActionEvent.h"
 
 class Mission 
 {
@@ -31,7 +19,7 @@ public:
 	virtual void AddValue(int aValue) = 0;
 
 protected:
-	void SendMissionMessage(eActionEventType aType, int aGID);
+	void SendMissionMessage(ActionEvent anEvent);
 	CU::GrowingArray<ActionEvent> myStartEvents;
 	CU::GrowingArray<ActionEvent> myMissionEvents;
 	CU::GrowingArray<ActionEvent> myEndEvents;
