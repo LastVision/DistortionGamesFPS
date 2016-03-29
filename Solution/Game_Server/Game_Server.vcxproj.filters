@@ -19,6 +19,9 @@
     <Filter Include="Mission">
       <UniqueIdentifier>{3abe5c38-98cc-4543-ba61-6d332ce13db2}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Manager">
+      <UniqueIdentifier>{6479426a-17b7-4595-9e1f-230f0c62b6ff}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
@@ -64,8 +67,12 @@
     <ClInclude Include="DefendMission.h">
       <Filter>Mission</Filter>
     </ClInclude>
-    <ClInclude Include="ServerProjectileManager.h" />
-    <ClInclude Include="ServerUnitManager.h" />
+    <ClInclude Include="ServerProjectileManager.h">
+      <Filter>Manager</Filter>
+    </ClInclude>
+    <ClInclude Include="ServerUnitManager.h">
+      <Filter>Manager</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -105,7 +112,11 @@
     <ClCompile Include="DefendMission.cpp">
       <Filter>Mission</Filter>
     </ClCompile>
-    <ClCompile Include="ServerProjectileManager.cpp" />
-    <ClCompile Include="ServerUnitManager.cpp" />
+    <ClCompile Include="ServerProjectileManager.cpp">
+      <Filter>Manager</Filter>
+    </ClCompile>
+    <ClCompile Include="ServerUnitManager.cpp">
+      <Filter>Manager</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>
