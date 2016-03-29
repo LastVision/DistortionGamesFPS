@@ -1,5 +1,7 @@
 #include "stdafx.h"
 #include "DefendMission.h"
+#include "ServerNetworkManager.h"
+#include "NetMessageDisplayMarker.h"
 #include <SendTextToClientsMessage.h>
 #include <PostMaster.h>
 
@@ -23,7 +25,7 @@ bool DefendMission::Update(float aDeltaTime)
 		myStartEvents[0].myTimeBeforeStarting -= aDeltaTime;
 		if (myStartEvents[0].myTimeBeforeStarting <= 0.f)
 		{
-			SendMissionMessage(myStartEvents[0].myType, myStartEvents[0].myGID);
+			SendMissionMessage(myStartEvents[0]);
 			myStartEvents.RemoveNonCyclicAtIndex(0);
 		}
 		return false;
@@ -47,13 +49,14 @@ bool DefendMission::Update(float aDeltaTime)
 		myEndEvents[0].myTimeBeforeStarting -= aDeltaTime;
 		if (myEndEvents[0].myTimeBeforeStarting <= 0.f)
 		{
-			SendMissionMessage(myEndEvents[0].myType, myEndEvents[0].myGID);
+			SendMissionMessage(myEndEvents[0]);
 			myEndEvents.RemoveNonCyclicAtIndex(0);
 		}
 		return false;
 	}
 
 	PostMaster::GetInstance()->SendMessage<SendTextToClientsMessage>(SendTextToClientsMessage("Mission complete"));
+	ServerNetworkManager::GetInstance()->AddMessage(NetMessageDisplayMarker({ 0.f, 0.f, 0.f }, false));
 	return true;
 }
 

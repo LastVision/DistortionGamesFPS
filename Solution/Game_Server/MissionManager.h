@@ -1,7 +1,16 @@
 #pragma once
 #include <GameEnum.h>
 #include <unordered_map>
+#include "ActionEvent.h"
+
 class Mission;
+class XMLReader;
+
+namespace tinyxml2
+{
+	class XMLElement;
+}
+
 class MissionManager : public Subscriber
 {
 public:
@@ -10,7 +19,7 @@ public:
 
 	void Update(float aDeltaTime);
 
-	void SetMission(int aId);
+	void SetMission(int aId, const CU::Vector3<float>& aPosition = { 0.f, 0.f, 0.f });
 	eMissionType GetCurrentMissionType() const;
 
 	void ReceiveMessage(const EnemyKilledMessage& aMessage) override;
@@ -19,6 +28,8 @@ public:
 private:
 	eActionEventType GetType(const std::string& aType);
 	void LoadMissions(const std::string& aMissionXMLPath);
+	ActionEvent CreateActionEvent(tinyxml2::XMLElement* anEventElement, XMLReader* aReader);
+
 	Mission* myCurrentMission;
 	std::unordered_map<int, Mission*> myMissions;
 };

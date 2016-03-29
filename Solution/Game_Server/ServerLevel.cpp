@@ -1,4 +1,3 @@
-
 #include "stdafx.h"
 #include "ServerLevel.h"
 
@@ -249,8 +248,7 @@ void ServerLevel::HandleTrigger(Entity& aFirstEntity, Entity& aSecondEntity, boo
 				break;
 			case eTriggerType::MISSION:
 				printf("MissionTrigger with GID: %i entered by: %s with GID: %i \n", aFirstEntity.GetGID(), aSecondEntity.GetSubType().c_str(), aSecondEntity.GetGID());
-				myMissionManager->SetMission(firstTrigger->GetValue());
-				SendTextMessageToClients("Mission activated");
+				myMissionManager->SetMission(firstTrigger->GetValue(), aFirstEntity.GetOrientation().GetPos());
 				break;
 			case eTriggerType::LEVEL_CHANGE:
 				myNextLevel = firstTrigger->GetValue();

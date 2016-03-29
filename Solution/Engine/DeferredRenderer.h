@@ -63,6 +63,7 @@ namespace Prism
 		ID3DX11EffectShaderResourceVariable* myMetalness = nullptr;
 		ID3DX11EffectShaderResourceVariable* myAmbientOcclusion = nullptr;
 		ID3DX11EffectShaderResourceVariable* myRoughness = nullptr;
+		ID3DX11EffectShaderResourceVariable* myCubemap = nullptr;
 
 		ID3DX11EffectVariable* myPointLightVariable;
 		ID3DX11EffectMatrixVariable* myInvertedProjection;
@@ -83,6 +84,7 @@ namespace Prism
 
 		void GenerateSHData(Scene* aScene
 			, const CU::Vector3<float>& aMinPoint, const CU::Vector3<float>& aMaxPoint, const std::string& aName);
+		void SetCubeMap(const std::string& aFilePath);
 
 	private:
 		struct GBufferData

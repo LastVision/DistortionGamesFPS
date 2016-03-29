@@ -22,11 +22,11 @@ SpawnpointComponent::SpawnpointComponent(Entity& anEntity, const SpawnpointCompo
 {
 	PostMaster::GetInstance()->Subscribe(eMessageType::ACTIVATE_SPAWNPOINT, this);
 
-	myUnitCount = (myData.mySpawnPerInterval * myData.mySpawnpointLifetime) / myData.mySpawnInterval;
+	myUnitCount = int((myData.mySpawnPerInterval * myData.mySpawnpointLifetime) / myData.mySpawnInterval);
 	mySpawnTimer = myData.mySpawnInterval;
 	myLifetime = myData.mySpawnpointLifetime;
 
-	for (unsigned int i = 0; i < myUnitCount; ++i)
+	for (int i = 0; i < myUnitCount; ++i)
 	{
 		int randomType = CU::Math::RandomRange(0, aSpawnpointComponentData.myUnitTypes.Size());
 		std::string server = "";
@@ -82,6 +82,14 @@ void SpawnpointComponent::DeActivate()
 
 void SpawnpointComponent::ReceiveMessage(const ActivateSpawnpointMessage& aMessage)
 {
+	if (myEntity.GetGID() == aMessage.myGID)
+	{
+		if (myIsActive == false)
+		{
+			Activate();
+			return;
+		}
+	}
 	for each(unsigned int gid in myTriggerConnections)
 	{
 		if (gid == aMessage.myGID)
@@ -117,7 +125,7 @@ void SpawnpointComponent::SpawnUnit(float aDelta)
 				if (myActiveCount < myUnitCount)
 				{
 					CU::Vector3<float> spawnPosition = myEntity.GetOrientation().GetPos();
-					spawnPosition.x + 5 * i;
+					//spawnPosition.x + 5 * i;
 					SharedUnitManager::GetInstance()->ActivateUnit(myUnits[myUnitIndex], spawnPosition);
 					SharedNetworkManager::GetInstance()->AddMessage(NetMessageActivateUnit(myUnits[myUnitIndex]->GetGID(), spawnPosition));
 					myUnitIndex++;

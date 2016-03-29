@@ -1,9 +1,11 @@
 #include "stdafx.h"
+#include <ActivateSpawnpointMessage.h>
 #include "Mission.h"
 #include <NetMessageSetActive.h>
 #include <PostMaster.h>
 #include "ServerNetworkManager.h"
 #include <SetActiveMessage.h>
+#include <SendTextToClientsMessage.h>
 
 Mission::Mission(const std::string& aMissionType, bool aShouldLoopMissionEvents)
 	: myShouldLoopMissionEvents(aShouldLoopMissionEvents)
@@ -30,17 +32,23 @@ Mission::~Mission()
 {
 }
 
-void Mission::SendMissionMessage(eActionEventType aType, int aGID)
+void Mission::SendMissionMessage(ActionEvent anEvent)
 {
-	switch (aType)
+	switch (anEvent.myType)
 	{
 	case eActionEventType::LOCK:
-		ServerNetworkManager::GetInstance()->AddMessage(NetMessageSetActive(true, true, aGID));
-		PostMaster::GetInstance()->SendMessage(SetActiveMessage(aGID, true));
+		ServerNetworkManager::GetInstance()->AddMessage(NetMessageSetActive(true, true, anEvent.myGID));
+		PostMaster::GetInstance()->SendMessage(SetActiveMessage(anEvent.myGID, true));
 		break;
 	case eActionEventType::UNLOCK:
-		ServerNetworkManager::GetInstance()->AddMessage(NetMessageSetActive(false, true, aGID));
-		PostMaster::GetInstance()->SendMessage(SetActiveMessage(aGID, false));
+		ServerNetworkManager::GetInstance()->AddMessage(NetMessageSetActive(false, true, anEvent.myGID));
+		PostMaster::GetInstance()->SendMessage(SetActiveMessage(anEvent.myGID, false));
+		break;
+	case eActionEventType::SPAWN:
+		PostMaster::GetInstance()->SendMessage(ActivateSpawnpointMessage(anEvent.myGID));
+		break;
+	case eActionEventType::TEXT:
+		PostMaster::GetInstance()->SendMessage(SendTextToClientsMessage(anEvent.myText, anEvent.myShowTextTime));
 		break;
 	default:
 		break;

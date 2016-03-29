@@ -11,6 +11,7 @@
 #include <Instance.h>
 #include "InputComponent.h"
 #include <ModelLoader.h>
+#include <NetMessageDisplayMarker.h>
 #include <NetMessageHealth.h>
 #include <Scene.h>
 #include "ShootingComponent.h"
@@ -32,12 +33,14 @@ FirstPersonRenderComponent::FirstPersonRenderComponent(Entity& aEntity, Prism::S
 	, myCurrentHealth(myMaxHealth)
 	, myHasDied(false) 
 	, myScene(aScene)
+	, myRenderMarker(false)
 {
 	CU::Vector2<float> size(128.f, 128.f);
 	myCrosshair = Prism::ModelLoader::GetInstance()->LoadSprite("Data/Resource/Texture/UI/T_crosshair.dds", size, size * 0.5f);
 	CU::Vector2<float> damageSize(Prism::Engine::GetInstance()->GetWindowSize().x, Prism::Engine::GetInstance()->GetWindowSize().y);
 	myDamageIndicator = Prism::ModelLoader::GetInstance()->LoadSprite("Data/Resource/Texture/UI/T_damage_indicator.dds", damageSize, damageSize * 0.5f);
 	myCoOpSprite = Prism::ModelLoader::GetInstance()->LoadSprite("Data/Resource/Texture/UI/T_coopmarker.dds", size, size * 0.5f);
+	myMarker = Prism::ModelLoader::GetInstance()->LoadSprite("Data/Resource/Texture/UI/T_coopmarker.dds", size, size * 0.5f);
 
 	Prism::ModelProxy* model = Prism::ModelLoader::GetInstance()->LoadModelAnimated("Data/Resource/Model/First_person/Pistol/SK_arm_pistol_idle.fbx", "Data/Resource/Shader/S_effect_pbl_animated.fx");
 	myModel = new Prism::Instance(*model, myInputComponentEyeOrientation);
@@ -77,7 +80,7 @@ FirstPersonRenderComponent::FirstPersonRenderComponent(Entity& aEntity, Prism::S
 
 	SharedNetworkManager::GetInstance()->Subscribe(eNetMessageType::ON_HIT, this);
 	SharedNetworkManager::GetInstance()->Subscribe(eNetMessageType::HEALTH, this);
-
+	
 	
 
 
@@ -123,6 +126,7 @@ FirstPersonRenderComponent::~FirstPersonRenderComponent()
 	SAFE_DELETE(myCurrentWeaponModel);
 	SAFE_DELETE(myPistolModel);
 	SAFE_DELETE(myShotgunModel);
+	SAFE_DELETE(myMarker);
 	myCoOpPositions.RemoveAll();
 }
 
@@ -220,7 +224,34 @@ void FirstPersonRenderComponent::Render()
 	}
 	my3DGUIManager->Render();
 
+	if (myRenderMarker == true)
+	{
+		CU::Matrix44<float> renderPos;
+		CU::Vector3<float> tempPos(myMarkerPosition);
+		tempPos.y += 2.f;
+		float toBuddy = CU::Dot(tempPos - myInputComponentEyeOrientation.GetPos(), myInputComponentEyeOrientation.GetForward());
+		if (toBuddy >= 0.f)
+		{
+			renderPos.SetPos(tempPos);
+			renderPos = renderPos * CU::InverseSimple(myInputComponentEyeOrientation);
+			renderPos = renderPos * myEntity.GetComponent<InputComponent>()->GetCamera()->GetProjection();
+
+			CU::Vector3<float> newRenderPos = renderPos.GetPos();
+			newRenderPos /= renderPos.GetPos4().w;
 	
+			newRenderPos += 1.f;
+			newRenderPos *= 0.5f;
+			newRenderPos.x *= windowSize.x;
+			newRenderPos.y *= windowSize.y;
+			newRenderPos.y -= windowSize.y;
+
+			newRenderPos.x = fmaxf(0.f, fminf(newRenderPos.x, windowSize.x));
+			newRenderPos.y += windowSize.y;
+			newRenderPos.y = fmaxf(0.f, fminf(newRenderPos.y, windowSize.y));
+			myMarker->Render({ newRenderPos.x, newRenderPos.y });
+		}
+	}
+
 	for (int i = 0; i < myCoOpPositions.Size(); ++i)
 	{
 		CU::Matrix44<float> renderPos;
@@ -373,6 +404,12 @@ void FirstPersonRenderComponent::ReceiveNetworkMessage(const NetMessageHealth& a
 {
 	myMaxHealth = aMessage.myMaxHealth;
 	myCurrentHealth = aMessage.myCurrentHealth;
+}
+
+void FirstPersonRenderComponent::ReceiveNetworkMessage(const NetMessageDisplayMarker& aMessage, const sockaddr_in&)
+{
+	myRenderMarker = aMessage.myDisplayMarker;
+	myMarkerPosition = aMessage.myPosition;
 }
 
 void FirstPersonRenderComponent::UpdateJoints()

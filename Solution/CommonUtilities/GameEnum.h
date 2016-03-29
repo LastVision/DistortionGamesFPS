@@ -19,6 +19,8 @@ enum class eActionEventType
 {
 	LOCK,
 	UNLOCK,
+	TEXT,
+	SPAWN,
 };
 
 enum class eInGameStates

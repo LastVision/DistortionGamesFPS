@@ -6,7 +6,10 @@
 #include "KillXMission.h"
 #include "Mission.h"
 #include "MissionManager.h"
+#include <NetMessageDisplayMarker.h>
 #include <PostMaster.h>
+#include <SendTextToClientsMessage.h>
+#include "ServerNetworkManager.h"
 #include <XMLReader.h>
 
 MissionManager::MissionManager(const std::string& aMissionXMLPath)
@@ -37,16 +40,18 @@ void MissionManager::Update(float aDeltaTime)
 	}
 }
 
-void MissionManager::SetMission(int aId)
+void MissionManager::SetMission(int aId, const CU::Vector3<float>& aPosition)
 {
 	myCurrentMission = myMissions[aId];
 	if (myCurrentMission->GetMissionType() == eMissionType::DEFEND)
 	{
 		printf("Defend Mission started \n");
+		PostMaster::GetInstance()->SendMessage<SendTextToClientsMessage>(SendTextToClientsMessage("Defend Mission started"));
 	}
 	else if (myCurrentMission->GetMissionType() == eMissionType::KILL_X)
 	{
 		printf("KillX Mission started \n");
+		PostMaster::GetInstance()->SendMessage<SendTextToClientsMessage>(SendTextToClientsMessage("KillX Mission started"));
 	}
 }
 
@@ -58,7 +63,6 @@ eMissionType MissionManager::GetCurrentMissionType() const
 	}
 	return eMissionType::NONE;
 }
-
 
 void MissionManager::ReceiveMessage(const EnemyKilledMessage&)
 {
@@ -128,43 +132,79 @@ void MissionManager::LoadMissions(const std::string& aMissionXMLPath)
 		for (eventElement = reader.FindFirstChild(eventElement, "Event"); eventElement != nullptr;
 			eventElement = reader.FindNextElement(eventElement, "Event"))
 		{
-			std::string eventType;
-			reader.ForceReadAttribute(eventElement, "type", eventType);
-			int gid = 0;
-			reader.ForceReadAttribute(eventElement, "gid", gid);
-			float timeBeforeStart = 0.f;
-			reader.ForceReadAttribute(eventElement, "timeBeforeStarting", timeBeforeStart);
-			myMissions[missionId]->AddStartEvent(ActionEvent(GetType(eventType), gid, timeBeforeStart));
+			//std::string eventType;
+			//reader.ForceReadAttribute(eventElement, "type", eventType);
+			//int gid = 0;
+			//reader.ForceReadAttribute(eventElement, "gid", gid);
+			//float timeBeforeStart = 0.f;
+			//reader.ForceReadAttribute(eventElement, "timeBeforeStarting", timeBeforeStart);
+			//
+			//eActionEventType actionType = GetType(eventType);
+		
+			myMissions[missionId]->AddStartEvent(CreateActionEvent(eventElement, &reader));
 		}
 
 		eventElement = reader.FindFirstChild(rootElement, "MissionEvent");
 		for (eventElement = reader.FindFirstChild(eventElement, "Event"); eventElement != nullptr;
 			eventElement = reader.FindNextElement(eventElement, "Event"))
 		{
-			std::string eventType;
-			reader.ForceReadAttribute(eventElement, "type", eventType);
-			int gid = 0;
-			reader.ForceReadAttribute(eventElement, "gid", gid);
-			float timeBeforeStart = 0.f;
-			reader.ForceReadAttribute(eventElement, "timeBeforeStarting", timeBeforeStart);
-			myMissions[missionId]->AddMissionEvent(ActionEvent(GetType(eventType), gid, timeBeforeStart));
+			//std::string eventType;
+			//reader.ForceReadAttribute(eventElement, "type", eventType);
+			//int gid = 0;
+			//reader.ForceReadAttribute(eventElement, "gid", gid);
+			//float timeBeforeStart = 0.f;
+			//reader.ForceReadAttribute(eventElement, "timeBeforeStarting", timeBeforeStart);
+			//myMissions[missionId]->AddMissionEvent(ActionEvent(GetType(eventType), gid, timeBeforeStart));
+
+			myMissions[missionId]->AddMissionEvent(CreateActionEvent(eventElement, &reader));
 		}
 
 		eventElement = reader.FindFirstChild(rootElement, "EndEvent");
 		for (eventElement = reader.FindFirstChild(eventElement, "Event"); eventElement != nullptr;
 			eventElement = reader.FindNextElement(eventElement, "Event"))
 		{
-			std::string eventType;
-			reader.ForceReadAttribute(eventElement, "type", eventType);
-			int gid = 0;
-			reader.ForceReadAttribute(eventElement, "gid", gid);
-			float timeBeforeStart = 0.f;
-			reader.ForceReadAttribute(eventElement, "timeBeforeStarting", timeBeforeStart);
-			myMissions[missionId]->AddEndEvent(ActionEvent(GetType(eventType), gid, timeBeforeStart));
+			//std::string eventType;
+			//reader.ForceReadAttribute(eventElement, "type", eventType);
+			//int gid = 0;
+			//reader.ForceReadAttribute(eventElement, "gid", gid);
+			//float timeBeforeStart = 0.f;
+			//reader.ForceReadAttribute(eventElement, "timeBeforeStarting", timeBeforeStart);
+			//myMissions[missionId]->AddEndEvent(ActionEvent(GetType(eventType), gid, timeBeforeStart));
+
+			myMissions[missionId]->AddEndEvent(CreateActionEvent(eventElement, &reader));
 		}
 	}
 
 	reader.CloseDocument();
+}
+
+ActionEvent MissionManager::CreateActionEvent(tinyxml2::XMLElement* anEventElement, XMLReader* aReader)
+{
+	ActionEvent actionEvent;
+	std::string eventType;
+
+	aReader->ForceReadAttribute(anEventElement, "type", eventType);
+	aReader->ForceReadAttribute(anEventElement, "timeBeforeStarting", actionEvent.myTimeBeforeStarting);
+
+	eActionEventType actionType = GetType(eventType);
+
+	actionEvent.myType = actionType;
+
+	switch (actionType)
+	{
+	case eActionEventType::LOCK:
+	case eActionEventType::UNLOCK:
+	case eActionEventType::SPAWN:
+		aReader->ForceReadAttribute(anEventElement, "gid", actionEvent.myGID);
+		break;
+	case eActionEventType::TEXT:
+		aReader->ForceReadAttribute(anEventElement, "timeForText", actionEvent.myShowTextTime);
+		aReader->ForceReadAttribute(anEventElement, "text", actionEvent.myText);
+		break;
+	
+	}
+
+	return actionEvent;
 }
 
 eActionEventType MissionManager::GetType(const std::string& aType)
@@ -176,6 +216,14 @@ eActionEventType MissionManager::GetType(const std::string& aType)
 	else if (aType == "add")
 	{
 		return eActionEventType::LOCK;
+	}
+	else if (aType == "text")
+	{
+		return eActionEventType::TEXT;
+	}
+	else if (aType == "spawn")
+	{
+		return eActionEventType::SPAWN;
 	}
 
 	DL_ASSERT("UNKNOWN event type");
