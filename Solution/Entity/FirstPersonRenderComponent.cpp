@@ -40,7 +40,7 @@ FirstPersonRenderComponent::FirstPersonRenderComponent(Entity& aEntity, Prism::S
 	CU::Vector2<float> damageSize(Prism::Engine::GetInstance()->GetWindowSize().x, Prism::Engine::GetInstance()->GetWindowSize().y);
 	myDamageIndicator = Prism::ModelLoader::GetInstance()->LoadSprite("Data/Resource/Texture/UI/T_damage_indicator.dds", damageSize, damageSize * 0.5f);
 	myCoOpSprite = Prism::ModelLoader::GetInstance()->LoadSprite("Data/Resource/Texture/UI/T_coopmarker.dds", size, size * 0.5f);
-	myMarker = Prism::ModelLoader::GetInstance()->LoadSprite("Data/Resource/Texture/UI/T_coopmarker.dds", size, size * 0.5f);
+	myMarker = Prism::ModelLoader::GetInstance()->LoadSprite("Data/Resource/Texture/UI/T_marker.dds", size, size * 0.5f);
 
 	Prism::ModelProxy* model = Prism::ModelLoader::GetInstance()->LoadModelAnimated("Data/Resource/Model/First_person/Pistol/SK_arm_pistol_idle.fbx", "Data/Resource/Shader/S_effect_pbl_animated.fx");
 	myModel = new Prism::Instance(*model, myInputComponentEyeOrientation);
