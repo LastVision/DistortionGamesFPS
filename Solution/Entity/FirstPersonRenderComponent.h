@@ -28,6 +28,7 @@ public:
 	void RestartCurrentAnimation();
 
 	const CU::Matrix44<float>& GetUIJointOrientation() const;
+	const CU::Matrix44<float>& GetMuzzleJointOrientation() const;
 
 	void PlayAnimation(ePlayerState aAnimationState);
 
@@ -77,8 +78,20 @@ private:
 	void AddAnimation(ePlayerState aState, const std::string& aAnimationPath, bool aLoopFlag, bool aResetTimeOnRestart);
 	CU::StaticArray<PlayerAnimationData, int(ePlayerState::_COUNT)> myAnimations;
 
+	struct WeaponAnimationData
+	{
+		Prism::AnimationData myData;
+		GUIBone myMuzzleBone;
+
+		bool IsValid()
+		{
+			return myMuzzleBone.IsValid();
+		}
+	};
+
 	void AddWeaponAnimation(ePlayerState aState, const std::string& aAnimationPath, bool aLoopFlag, bool aResetTimeOnRestart);
-	CU::StaticArray<Prism::AnimationData, int(ePlayerState::_COUNT)> myWeaponAnimations;
+	CU::StaticArray<WeaponAnimationData, int(ePlayerState::_COUNT)> myWeaponAnimations;
+	CU::Matrix44<float> myMuzzleJoint;
 
 	ePlayerState myCurrentState;
 	CU::Matrix44<float> myUIJoint;
