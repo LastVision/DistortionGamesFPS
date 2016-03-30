@@ -33,7 +33,7 @@ ShootingComponent::~ShootingComponent()
 
 void ShootingComponent::Init(Prism::Scene* aScene)
 {
-	myPistol->Init(aScene, myEntity.GetComponent<FirstPersonRenderComponent>()->GetUIJointOrientation());
+	myPistol->Init(aScene, myEntity.GetComponent<FirstPersonRenderComponent>()->GetMuzzleJointOrientation());
 }
 
 void ShootingComponent::Update(float aDelta)

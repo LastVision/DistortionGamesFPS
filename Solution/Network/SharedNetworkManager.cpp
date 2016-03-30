@@ -63,6 +63,7 @@ void SharedNetworkManager::Initiate()
 	Subscribe(eNetMessageType::IMPORTANT_REPLY, this);
 	myHasSent = false;
 	myAllowSendWithoutSubscribers = false;
+	myStopSendMessages = false;
 }
 
 void SharedNetworkManager::StartNetwork(unsigned int /*aPortNum*/)
