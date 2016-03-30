@@ -67,6 +67,8 @@ void SharedNetworkManager::Initiate()
 		mySubscribers[i].Init(64);
 	}
 	Subscribe(eNetMessageType::IMPORTANT_REPLY, this);
+	Subscribe(eNetMessageType::SERVER_REPLY, this);
+	Subscribe(eNetMessageType::SERVER_REQUEST, this);
 	myHasSent = false;
 	myAllowSendWithoutSubscribers = false;
 	myStopSendMessages = false;
@@ -142,6 +144,8 @@ SharedNetworkManager::SharedNetworkManager()
 SharedNetworkManager::~SharedNetworkManager()
 {
 	UnSubscribe(eNetMessageType::IMPORTANT_REPLY, this);
+	UnSubscribe(eNetMessageType::SERVER_REPLY, this);
+	UnSubscribe(eNetMessageType::SERVER_REQUEST, this);
 
 	for (int i = 0; i < static_cast<int>(eNetMessageType::_COUNT); ++i)
 	{
