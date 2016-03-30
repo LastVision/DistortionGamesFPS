@@ -229,7 +229,7 @@ void ServerNetworkManager::CreateConnection(const std::string& aName, const sock
 	//{
 	//	if (connection.myAddress.sin_addr.S_un.S_addr == aSender.sin_addr.S_un.S_addr) //._.
 	//	{
-	//		Utility::PrintEndl("User already connected!", (DARK_RED_BACK | WHITE_TEXT));
+	//		Utility::Printf("User already connected!", (DARK_RED_BACK | WHITE_TEXT));
 	//		return;
 	//	}
 	//}
@@ -252,7 +252,7 @@ void ServerNetworkManager::CreateConnection(const std::string& aName, const sock
 	}
 
 	std::string conn(aName + " connected to the server!");
-	Utility::PrintEndl(conn, LIGHT_GREEN_TEXT);
+	Utility::Printf(conn, LIGHT_GREEN_TEXT);
 
 	AddMessage(NetMessageOnJoin(aName, myIDCount));
 }
@@ -284,7 +284,7 @@ void ServerNetworkManager::DisconnectConnection(const Connection& aConnection)
 	myNetwork->Send(onDisconnect.myStream, aConnection.myAddress);
 
 	std::string msg(aConnection.myName + " disconnected from server!");
-	Utility::PrintEndl(msg, LIGHT_BLUE_TEXT);
+	Utility::Printf(msg, LIGHT_BLUE_TEXT);
 
 	//auto reply on all important messages
 	for (ImportantMessage& impMsg : myImportantMessagesBuffer)
@@ -328,7 +328,7 @@ void ServerNetworkManager::UpdateImportantMessages(float aDeltaTime)
 
 					std::string resend = "Sending important message " + std::to_string(msg.myImportantID) + " of message type "
 						+ ConvertNetworkEnumToString(static_cast<eNetMessageType>(msg.myMessageType)) + " to client id " + std::to_string(client.myGID) + " - " + client.myName;
-					Utility::PrintEndl(resend, AQUA_TEXT);
+					Utility::Printf(resend, AQUA_TEXT);
 					myNetwork->Send(msg.myData, client.myNetworkAddress);
 				}
 			}
@@ -337,7 +337,7 @@ void ServerNetworkManager::UpdateImportantMessages(float aDeltaTime)
 		{
 			std::string resend = "All client has replied to the message id " + std::to_string(msg.myImportantID)
 				+ " of message type " + ConvertNetworkEnumToString(static_cast<eNetMessageType>(msg.myMessageType));
-			Utility::PrintEndl(resend, YELLOW_TEXT);
+			Utility::Printf(resend, YELLOW_TEXT);
 			myImportantMessagesBuffer.RemoveCyclic(msg);
 		}
 	}
