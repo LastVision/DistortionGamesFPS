@@ -49,8 +49,18 @@ ClientNetworkManager::~ClientNetworkManager()
 		delete mySendThread;
 		mySendThread = nullptr;
 	}
+
+	if (myPingThread != nullptr)
+	{
+		myPingThread->join();
+		SAFE_DELETE(myPingThread);
+	}
+
+
 	delete myNetwork;
 	myNetwork = nullptr;
+
+	SAFE_DELETE(myTimeManager);
 }
 
 void ClientNetworkManager::Create()
