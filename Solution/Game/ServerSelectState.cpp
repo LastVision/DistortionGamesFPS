@@ -103,12 +103,12 @@ const eStateStatus ServerSelectState::Update(const float& aDeltaTime)
 		//return eStateStatus::ePopSubState;
 	}
 
-	/*myRefreshServerTimer -= aDeltaTime;
+	myRefreshServerTimer -= aDeltaTime;
 	if (myRefreshServerTimer <= 0)
 	{
-		myRefreshServerTimer = 2.f;
+		myRefreshServerTimer = 5.f;
 		ClientNetworkManager::GetInstance()->AddMessage(NetMessageRequestServer(), ClientNetworkManager::GetInstance()->GetBroadcastAddress());
-	}*/
+	}
 
 	myGUIManager->Update(aDeltaTime);
 
