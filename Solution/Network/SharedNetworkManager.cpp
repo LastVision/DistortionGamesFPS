@@ -19,6 +19,8 @@
 #include "NetMessagePingRequest.h"
 #include "NetMessagePingReply.h"
 #include "NetMessagePosition.h"
+#include "NetMessageReplyServer.h"
+#include "NetMessageRequestServer.h"
 #include "NetMessageOnHit.h"
 #include "NetMessageOnDeath.h"
 #include "NetMessageExplosion.h"
@@ -349,6 +351,12 @@ void SharedNetworkManager::HandleMessage()
 			break;
 		case eNetMessageType::DISPLAY_MARKER:
 			UnpackAndHandle(NetMessageDisplayMarker(), buffer);
+			break;
+		case eNetMessageType::SERVER_REPLY:
+			UnpackAndHandle(NetMessageReplyServer(), buffer);
+			break;
+		case eNetMessageType::SERVER_REQUEST:
+			UnpackAndHandle(NetMessageRequestServer(), buffer);
 			break;
 		default:
 			DL_ASSERT("Unhandled network message type");
