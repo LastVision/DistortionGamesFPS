@@ -41,7 +41,7 @@ namespace Prism
 		std::string	myTextureName;
 
 		CU::Vector3f myEmitterSize;
-
+		//CU::Vector3f my
 		float myEmissionAngle;
 		float myAngleVariation;
 		float myRotationDelta;
