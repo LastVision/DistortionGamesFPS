@@ -61,6 +61,8 @@ public:
 
 	float GetRepliesPerSecond();
 
+	void StopSendMessages(const bool aStopMessagesFlag);
+
 protected:
 	static SharedNetworkManager* myInstance;
 
@@ -140,6 +142,7 @@ protected:
 	CU::StaticArray<CU::GrowingArray<NetworkSubscriberInfo>, static_cast<int>(eNetMessageType::_COUNT)> mySubscribers;
 
 	bool myAllowSendWithoutSubscribers;
+	bool myStopSendMessages;
 
 	bool myIsServer;
 	bool myIsOnline;
@@ -174,6 +177,11 @@ private:
 	void UpdateImportantReceivedMessages(float aDelta);
 };
 
+inline void SharedNetworkManager::StopSendMessages(const bool aStopMessagesFlag)
+{
+	myStopSendMessages = aStopMessagesFlag;
+}
+
 template<typename T>
 inline void SharedNetworkManager::AddMessage(T aMessage)
 {
@@ -183,6 +191,10 @@ inline void SharedNetworkManager::AddMessage(T aMessage)
 template<typename T>
 inline void SharedNetworkManager::AddMessage(T aMessage, unsigned int aTargetID)
 {
+	if (myStopSendMessages == true)
+	{
+		return;
+	}
 	aMessage.myTargetID = aTargetID;
 	aMessage.mySenderID = 0;
 	if (myIsServer == false)

@@ -37,8 +37,9 @@ void ServerInGameState::InitState(ServerStateStackProxy* aStateStackProxy)
 {
 	myStateStack = aStateStackProxy;
 	myStateStatus = eStateStatus::KEEP_STATE;
-
+	ServerNetworkManager::GetInstance()->StopSendMessages(true);
 	myLevel = static_cast<ServerLevel*>(myLevelFactory->LoadLevel(myLevelID));
+	ServerNetworkManager::GetInstance()->StopSendMessages(false);
 
 	myIsActiveState = true;
 }
@@ -86,7 +87,9 @@ void ServerInGameState::ReceiveNetworkMessage(const NetMessageLevelComplete& aMe
 		SET_RUNTIME(false);
 		SAFE_DELETE(myLevel);
 		ServerNetworkManager::GetInstance()->AddMessage(NetMessageAllClientsComplete(NetMessageAllClientsComplete::eType::LEVEL_COMPLETE));
+		ServerNetworkManager::GetInstance()->StopSendMessages(true);
 		myLevel = static_cast<ServerLevel*>(myLevelFactory->LoadLevel(myLevelID));
+		ServerNetworkManager::GetInstance()->StopSendMessages(false);
 	}
 }
 
