@@ -12,8 +12,8 @@
 #include <SharedNetworkManager.h>
 #include <XMLReader.h>
 
-Shotgun::Shotgun()
-	: Weapon(eWeaponType::SHOTGUN, "shotgun")
+Shotgun::Shotgun(Entity* aOwnerEntity)
+	: Weapon(eWeaponType::SHOTGUN, "shotgun", aOwnerEntity)
 {
 	XMLReader reader;
 	reader.OpenDocument("Data/Setting/SET_weapons.xml");
@@ -89,13 +89,13 @@ void Shotgun::ShootRowAround(const CU::Matrix44<float>& aOrientation, const CU::
 {
 	CU::Vector3<float> forward = aForward;
 
-	Prism::PhysicsInterface::GetInstance()->RayCast(aOrientation.GetPos(), forward, 100.f, myRaycastHandler);
+	Prism::PhysicsInterface::GetInstance()->RayCast(aOrientation.GetPos(), forward, 100.f, myRaycastHandler, myOwnerEntity->GetComponent<PhysicsComponent>());
 
 	Prism::PhysicsInterface::GetInstance()->RayCast(aOrientation.GetPos()
 		, forward * CU::Matrix44<float>::CreateRotateAroundY(CU::Math::RandomRange(-myMaxSpreadRotation, -myMinSpreadRotation))
-		, 100.f, myRaycastHandler);
+		, 100.f, myRaycastHandler, myOwnerEntity->GetComponent<PhysicsComponent>());
 
 	Prism::PhysicsInterface::GetInstance()->RayCast(aOrientation.GetPos()
 		, forward * CU::Matrix44<float>::CreateRotateAroundY(CU::Math::RandomRange(myMinSpreadRotation, myMaxSpreadRotation))
-		, 100.f, myRaycastHandler);
+		, 100.f, myRaycastHandler, myOwnerEntity->GetComponent<PhysicsComponent>());
 }

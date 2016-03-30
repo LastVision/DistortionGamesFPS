@@ -13,7 +13,7 @@ namespace Prism
 class Pistol : public Weapon
 {
 public:
-	Pistol();
+	Pistol(Entity* aOwnerEntity);
 	~Pistol();
 	void Init(Prism::Scene* aScene, const CU::Matrix44<float>& aOrientation);
 
