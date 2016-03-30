@@ -260,34 +260,7 @@ void ServerLevel::HandleTrigger(Entity& aFirstEntity, Entity& aSecondEntity, boo
 	{
 		if (aSecondEntity.GetType() == eEntityType::UNIT && aSecondEntity.GetSubType() == "playerserver")
 		{
-			switch (firstTrigger->GetTriggerType())
-			{
-			case eTriggerType::UNLOCK:
-				printf("UnlockTrigger with GID: %i entered by: %s with GID: %i \n", aFirstEntity.GetGID(), aSecondEntity.GetSubType().c_str(), aSecondEntity.GetGID());
-				SharedNetworkManager::GetInstance()->AddMessage(NetMessageSetActive(false, true, firstTrigger->GetValue()));
-				myActiveEntitiesMap[firstTrigger->GetValue()]->GetComponent<PhysicsComponent>()->RemoveFromScene();
-				// do "open" animation
-				SendTextMessageToClients("Unlocked door");
-				break;
-			case eTriggerType::LOCK:
-				printf("LockTrigger with GID: %i entered by: %s with GID: %i \n", aFirstEntity.GetGID(), aSecondEntity.GetSubType().c_str(), aSecondEntity.GetGID());
-				SharedNetworkManager::GetInstance()->AddMessage(NetMessageSetActive(true, true, firstTrigger->GetValue()));
-				myActiveEntitiesMap[firstTrigger->GetValue()]->GetComponent<PhysicsComponent>()->AddToScene();
-				// do "close" animation
-				SendTextMessageToClients("Locked door");
-				break;
-			case eTriggerType::MISSION:
-				printf("MissionTrigger with GID: %i entered by: %s with GID: %i \n", aFirstEntity.GetGID(), aSecondEntity.GetSubType().c_str(), aSecondEntity.GetGID());
-				myMissionManager->SetMission(firstTrigger->GetValue());
-				break;
-			case eTriggerType::LEVEL_CHANGE:
-				myNextLevel = firstTrigger->GetValue();
-				break;
-			case eTriggerType::ENEMY_SPAWN:
-				PostMaster::GetInstance()->SendMessage(ActivateSpawnpointMessage(firstTrigger->GetEntity().GetGID()));
-				break;
-			}
-			aSecondEntity.SendNote<CollisionNote>(CollisionNote(&aFirstEntity, aHasEntered));
+			Trigger(aFirstEntity, aSecondEntity, aHasEntered);
 		}
 		else if (aSecondEntity.GetType() == eEntityType::UNIT && aSecondEntity.GetSubType() != "playerserver")
 		{
@@ -310,6 +283,40 @@ void ServerLevel::HandleTrigger(Entity& aFirstEntity, Entity& aSecondEntity, boo
 		}
 	}
 	aFirstEntity.SendNote<CollisionNote>(CollisionNote(&aSecondEntity, aHasEntered));
+}
+
+void ServerLevel::Trigger(Entity& aFirstEntity, Entity& aSecondEntity, bool aHasEntered)
+{
+	TriggerComponent* firstTrigger = aFirstEntity.GetComponent<TriggerComponent>();
+
+	switch (firstTrigger->GetTriggerType())
+	{
+	case eTriggerType::UNLOCK:
+		printf("UnlockTrigger with GID: %i entered by: %s with GID: %i \n", aFirstEntity.GetGID(), aSecondEntity.GetSubType().c_str(), aSecondEntity.GetGID());
+		SharedNetworkManager::GetInstance()->AddMessage(NetMessageSetActive(false, true, firstTrigger->GetValue()));
+		myActiveEntitiesMap[firstTrigger->GetValue()]->GetComponent<PhysicsComponent>()->RemoveFromScene();
+		// do "open" animation
+		SendTextMessageToClients("Unlocked door");
+		break;
+	case eTriggerType::LOCK:
+		printf("LockTrigger with GID: %i entered by: %s with GID: %i \n", aFirstEntity.GetGID(), aSecondEntity.GetSubType().c_str(), aSecondEntity.GetGID());
+		SharedNetworkManager::GetInstance()->AddMessage(NetMessageSetActive(true, true, firstTrigger->GetValue()));
+		myActiveEntitiesMap[firstTrigger->GetValue()]->GetComponent<PhysicsComponent>()->AddToScene();
+		// do "close" animation
+		SendTextMessageToClients("Locked door");
+		break;
+	case eTriggerType::MISSION:
+		printf("MissionTrigger with GID: %i entered by: %s with GID: %i \n", aFirstEntity.GetGID(), aSecondEntity.GetSubType().c_str(), aSecondEntity.GetGID());
+		myMissionManager->SetMission(firstTrigger->GetValue());
+		break;
+	case eTriggerType::LEVEL_CHANGE:
+		myNextLevel = firstTrigger->GetValue();
+		break;
+	case eTriggerType::ENEMY_SPAWN:
+		PostMaster::GetInstance()->SendMessage(ActivateSpawnpointMessage(firstTrigger->GetEntity().GetGID()));
+		break;
+	}
+	aSecondEntity.SendNote<CollisionNote>(CollisionNote(&aFirstEntity, aHasEntered));
 }
 
 void ServerLevel::SendTextMessageToClients(const std::string& aText, float)

@@ -30,6 +30,7 @@ public:
 
 private:
 	void HandleTrigger(Entity& aFirstEntity, Entity& aSecondEntity, bool aHasEntered) override;
+	void Trigger(Entity& aFirstEntity, Entity& aSecondEntity, bool aHasEntered);
 	void SendTextMessageToClients(const std::string& aText, float aTime = 5.f);
 	std::function<void(PhysicsComponent*, const CU::Vector3<float>&, const CU::Vector3<float>&)> myPressedERayCastHandler;
 	unsigned int myEntityIDCount;
