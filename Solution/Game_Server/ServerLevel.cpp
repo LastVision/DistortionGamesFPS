@@ -247,9 +247,9 @@ void ServerLevel::HandlePressedERaycast(PhysicsComponent* aComponent, const CU::
 {
 	if (aComponent != nullptr)
 	{
+		Entity& entity = aComponent->GetEntity();
 
-		int apa = 5;
-		apa;
+		
 	}
 }
 
