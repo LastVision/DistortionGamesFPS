@@ -13,6 +13,7 @@
 #include <NetMessageHealthPack.h>
 #include <NetMessageEntityState.h>
 #include <SendTextToClientsMessage.h>
+#include <NetMessageRayCastRequest.h>
 #include <NetMessageShootGrenade.h>
 #include <NetMessageText.h>
 #include <NetworkComponent.h>
@@ -44,6 +45,7 @@ ServerLevel::ServerLevel()
 	ServerNetworkManager::GetInstance()->Subscribe(eNetMessageType::ENTITY_STATE, this);
 	ServerNetworkManager::GetInstance()->Subscribe(eNetMessageType::SHOOT_GRENADE, this);
 	ServerNetworkManager::GetInstance()->Subscribe(eNetMessageType::HEALTH_PACK, this);
+	ServerNetworkManager::GetInstance()->Subscribe(eNetMessageType::RAY_CAST_REQUEST, this);
 
 	PostMaster::GetInstance()->Subscribe(eMessageType::SET_ACTIVE, this);
 	PostMaster::GetInstance()->Subscribe(eMessageType::RESPAWN_TRIGGER, this);
@@ -53,6 +55,10 @@ ServerLevel::ServerLevel()
 	ServerProjectileManager::Create();
 	ServerUnitManager::Create();
 
+	myPressedERayCastHandler = [=](PhysicsComponent* aComponent, const CU::Vector3<float>& aDirection, const CU::Vector3<float>& aHitPosition)
+	{
+		this->HandlePressedERaycast(aComponent, aDirection, aHitPosition);
+	};
 }
 
 ServerLevel::~ServerLevel()
@@ -69,6 +75,7 @@ ServerLevel::~ServerLevel()
 	ServerNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::ENTITY_STATE, this);
 	ServerNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::SHOOT_GRENADE, this);
 	ServerNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::HEALTH_PACK, this);
+	ServerNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::RAY_CAST_REQUEST, this);
 
 	PostMaster::GetInstance()->UnSubscribe(eMessageType::SET_ACTIVE, this);
 	PostMaster::GetInstance()->UnSubscribe(eMessageType::RESPAWN_TRIGGER, this);
@@ -187,6 +194,18 @@ void ServerLevel::ReceiveNetworkMessage(const NetMessageShootGrenade& aMessage, 
 	SharedNetworkManager::GetInstance()->AddMessage<NetMessageShootGrenade>(NetMessageShootGrenade(aMessage.myForceStrength));
 }
 
+void ServerLevel::ReceiveNetworkMessage(const NetMessageRayCastRequest& aMessage, const sockaddr_in& )
+{
+	if (static_cast<eNetRayCastType>(aMessage.myRayCastType) == eNetRayCastType::CLIENT_PRESSED_E)
+	{
+		Prism::PhysicsInterface::GetInstance()->RayCast(aMessage.myPosition, aMessage.myDirection, aMessage.myMaxLength, myPressedERayCastHandler, myPlayers[aMessage.myGID - 1]->GetComponent<PhysicsComponent>());
+	}
+	else
+	{
+		DL_ASSERT("NOT IMPLEMENTED");
+	}
+}
+
 void ServerLevel::ReceiveMessage(const SendTextToClientsMessage& aMessage)
 {
 	SendTextMessageToClients(aMessage.myText);
@@ -222,6 +241,16 @@ void ServerLevel::ReceiveMessage(const RespawnTriggerMessage& aMessage)
 	myRespawnTriggers[aMessage.myGID - 1]->GetComponent<PhysicsComponent>()->AddToScene();
 	myRespawnTriggers[aMessage.myGID - 1]->GetComponent<PhysicsComponent>()->TeleportToPosition(myPlayers[aMessage.myGID - 1]->GetOrientation().GetPos());
 	myRespawnTriggers[aMessage.myGID - 1]->GetComponent<PhysicsComponent>()->UpdateOrientationStatic();
+}
+
+void ServerLevel::HandlePressedERaycast(PhysicsComponent* aComponent, const CU::Vector3<float>&, const CU::Vector3<float>&)
+{
+	if (aComponent != nullptr)
+	{
+
+		int apa = 5;
+		apa;
+	}
 }
 
 void ServerLevel::HandleTrigger(Entity& aFirstEntity, Entity& aSecondEntity, bool aHasEntered)

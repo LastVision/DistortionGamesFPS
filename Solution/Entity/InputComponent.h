@@ -9,6 +9,7 @@ namespace Prism
 }
 
 struct InputComponentData;
+class PhysicsComponent;
 
 class InputComponent : public Component
 {

@@ -166,6 +166,12 @@ enum class ePlayerState : int
 	_COUNT,
 };
 
+enum class eNetRayCastType : int
+{
+	CLIENT_PRESSED_E,
+	_COUNT,
+};
+
 enum class eComponentType
 {
 	NOT_USED = -1,
