@@ -8,6 +8,7 @@ namespace Prism
 {
 	class Camera;
 	class DeferredRenderer;
+	class Renderer;
 	class Scene;
 	class Instance;
 	class Room;
@@ -47,6 +48,7 @@ private:
 	void CreatePlayers();
 	Prism::Scene* myScene;
 	Prism::DeferredRenderer* myDeferredRenderer;
+	Prism::Renderer* myFullscreenRenderer;
 
 	CU::GrowingArray<Entity*> myInstances;
 	CU::GrowingArray<CU::Matrix44f> myInstanceOrientations;

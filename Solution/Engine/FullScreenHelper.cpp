@@ -8,9 +8,35 @@
 
 namespace Prism
 {
+	void CombineData::OnEffectLoad()
+	{
+		mySourceA = myEffect->GetEffect()->GetVariableByName("SourceA")->AsShaderResource();
+		myDepthA = myEffect->GetEffect()->GetVariableByName("DepthA")->AsShaderResource();
+		mySourceB = myEffect->GetEffect()->GetVariableByName("SourceB")->AsShaderResource();
+		myDepthB = myEffect->GetEffect()->GetVariableByName("DepthB")->AsShaderResource();
+	}
+
+	void RenderToTextureData::OnEffectLoad()
+	{
+		mySource = myEffect->GetEffect()->GetVariableByName("DiffuseTexture")->AsShaderResource();
+	}
+
+
+	void BloomData::OnEffectLoad()
+	{
+		myBloomVariable = myBloomEffect->GetEffect()->GetVariableByName("DiffuseTexture")->AsShaderResource();
+		myTexelWidthVariable = myBloomEffect->GetEffect()->GetVariableByName("TexelWidth")->AsScalar();
+		myTexelHeightVariable = myBloomEffect->GetEffect()->GetVariableByName("TexelHeight")->AsScalar();
+
+		myTexelWidthVariable->SetFloat(1.f / (Engine::GetInstance()->GetWindowSize().x / 4));
+		myTexelHeightVariable->SetFloat(1.f / (Engine::GetInstance()->GetWindowSize().y / 4));
+
+		myDownSampleVariable = myDownSampleEffect->GetEffect()->GetVariableByName("DiffuseTexture")->AsShaderResource();
+	}
+
 	FullScreenHelper::FullScreenHelper()
 	{
-		myFogOfWarEffect = EffectContainer::GetInstance()->GetEffect("Data/Resource/Shader/S_effect_fog_of_war.fx");
+		//myFogOfWarEffect = EffectContainer::GetInstance()->GetEffect("Data/Resource/Shader/S_effect_fog_of_war.fx");
 		CreateCombineData();
 		CreateRenderToTextureData();
 		CreateBloomData();
@@ -20,7 +46,7 @@ namespace Prism
 		myProcessingTexture = new Texture();
 		myProcessingTexture->Init(screenSize.x, screenSize.y
 			, D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_DEPTH_STENCIL
-			, DXGI_FORMAT_R16G16B16A16_FLOAT);
+			, DXGI_FORMAT_R32G32B32A32_FLOAT);
 
 
 		D3D11_INPUT_ELEMENT_DESC vertexDesc[] =
@@ -70,7 +96,7 @@ namespace Prism
 		SAFE_DELETE(myBloomData.myDownSampleTextures[1]);
 	}
 
-	void FullScreenHelper::Process(Texture* aSource, Texture* aTarget, int aEffect, Texture* aFogOfWarTexture)
+	void FullScreenHelper::Process(Texture* aSource, Texture* aTarget, Texture* aEmissiveTexture, int aEffect, Texture* aFogOfWarTexture)
 	{
 		ActivateBuffers();
 		Engine::GetInstance()->SetDepthBufferState(eDepthStencil::Z_DISABLED);
@@ -93,31 +119,13 @@ namespace Prism
 			Engine::GetInstance()->GetContex()->ClearRenderTargetView(
 				myBloomData.myFinalTexture->GetRenderTargetView(), myClearColor);
 
-			BloomEffect(myProcessingTexture, "BLOOM_DOWNSAMPLE");
+			BloomEffect(aEmissiveTexture, "BLOOM_DOWNSAMPLE");
 
 			Engine::GetInstance()->RestoreViewPort();
 			CombineTextures(myBloomData.myFinalTexture, aSource, myProcessingTexture, false);
 		}
 
-		if (aEffect & ePostProcessing::FOG_OF_WAR)
-		{
-			Engine::GetInstance()->GetContex()->ClearRenderTargetView(
-				myBloomData.myDownSampleTextures[0]->GetRenderTargetView(), myClearColor);
-			Engine::GetInstance()->GetContex()->ClearRenderTargetView(
-				myBloomData.myDownSampleTextures[1]->GetRenderTargetView(), myClearColor);
-			Engine::GetInstance()->GetContex()->ClearRenderTargetView(
-				myBloomData.myFinalTexture->GetRenderTargetView(), myClearColor);
-			
-			BloomEffect(aFogOfWarTexture, "HDR_DOWNSAMPLE");
-			Engine::GetInstance()->RestoreViewPort();
-
-			
-			DoFogOfWar(myProcessingTexture, myBloomData.myFinalTexture, aTarget);
-		}
-		else
-		{
-			CopyTexture(myProcessingTexture, aTarget);
-		}
+		CopyTexture(myProcessingTexture, aTarget);
 
 		
 		Engine::GetInstance()->SetDepthBufferState(eDepthStencil::Z_ENABLED);
@@ -127,10 +135,13 @@ namespace Prism
 	{
 		Engine::GetInstance()->RestoreViewPort();
 		Engine::GetInstance()->SetBackBufferAsTarget();
-
+		Engine::GetInstance()->SetRasterizeState(eRasterizer::NO_CULLING);
+		Engine::GetInstance()->SetDepthBufferState(eDepthStencil::Z_DISABLED);
 		myRenderToTextureData.mySource->SetResource(aSource->GetShaderView());
 		Render(myRenderToTextureData.myEffect);
 		myRenderToTextureData.mySource->SetResource(nullptr);
+		Engine::GetInstance()->SetDepthBufferState(eDepthStencil::Z_ENABLED);
+		Engine::GetInstance()->SetRasterizeState(eRasterizer::CULL_BACK);
 	}
 
 	void FullScreenHelper::RenderToScreen(Texture* aSource, Texture* aDepth)
@@ -214,14 +225,8 @@ namespace Prism
 		myCombineData.myEffect = EffectContainer::GetInstance()->GetEffect(
 			"Data/Resource/Shader/S_effect_combine.fx");
 
-		myCombineData.mySourceA
-			= myCombineData.myEffect->GetEffect()->GetVariableByName("SourceA")->AsShaderResource();
-		myCombineData.myDepthA
-			= myCombineData.myEffect->GetEffect()->GetVariableByName("DepthA")->AsShaderResource();
-		myCombineData.mySourceB
-			= myCombineData.myEffect->GetEffect()->GetVariableByName("SourceB")->AsShaderResource();
-		myCombineData.myDepthB
-			= myCombineData.myEffect->GetEffect()->GetVariableByName("DepthB")->AsShaderResource();
+		myCombineData.OnEffectLoad();
+		myCombineData.myEffect->AddListener(&myCombineData);
 	}
 
 	void FullScreenHelper::CreateRenderToTextureData()
@@ -229,8 +234,8 @@ namespace Prism
 		myRenderToTextureData.myEffect = EffectContainer::GetInstance()->GetEffect(
 			"Data/Resource/Shader/S_effect_render_to_texture.fx");
 
-		myRenderToTextureData.mySource
-			= myRenderToTextureData.myEffect->GetEffect()->GetVariableByName("DiffuseTexture")->AsShaderResource();
+		myRenderToTextureData.OnEffectLoad();
+		myRenderToTextureData.myEffect->AddListener(&myRenderToTextureData);
 	}
 
 	void FullScreenHelper::CreateBloomData()
@@ -239,43 +244,36 @@ namespace Prism
 		myBloomData.myFinalTexture->Init(Engine::GetInstance()->GetWindowSize().x / 4.f
 			, Engine::GetInstance()->GetWindowSize().y / 4.f
 			, D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_DEPTH_STENCIL
-			, DXGI_FORMAT_R16G16B16A16_FLOAT);
+			, DXGI_FORMAT_R32G32B32A32_FLOAT);
 
 		myBloomData.myMiddleMan = new Texture();
 		myBloomData.myMiddleMan->Init(Engine::GetInstance()->GetWindowSize().x / 4.f
 			, Engine::GetInstance()->GetWindowSize().y / 4.f
 			, D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_DEPTH_STENCIL
-			, DXGI_FORMAT_R16G16B16A16_FLOAT);
-
-		myBloomData.myBloomEffect
-			= EffectContainer::GetInstance()->GetEffect("Data/Resource/Shader/S_effect_bloom.fx");
-		myBloomData.myBloomVariable
-			= myBloomData.myBloomEffect->GetEffect()->GetVariableByName("DiffuseTexture")->AsShaderResource();
-		myBloomData.myTexelWidthVariable
-			= myBloomData.myBloomEffect->GetEffect()->GetVariableByName("TexelWidth")->AsScalar();
-		myBloomData.myTexelHeightVariable
-			= myBloomData.myBloomEffect->GetEffect()->GetVariableByName("TexelHeight")->AsScalar();
-
-		myBloomData.myTexelWidthVariable->SetFloat(1.f / (Engine::GetInstance()->GetWindowSize().x / 4));
-		myBloomData.myTexelHeightVariable->SetFloat(1.f / (Engine::GetInstance()->GetWindowSize().y / 4));
-
-
-		myBloomData.myDownSampleEffect
-			= EffectContainer::GetInstance()->GetEffect("Data/Resource/Shader/S_effect_down_sample.fx");
-		myBloomData.myDownSampleVariable
-			= myBloomData.myDownSampleEffect->GetEffect()->GetVariableByName("DiffuseTexture")->AsShaderResource();
+			, DXGI_FORMAT_R32G32B32A32_FLOAT);
 
 		myBloomData.myDownSampleTextures[0] = new Texture();
 		myBloomData.myDownSampleTextures[0]->Init(Engine::GetInstance()->GetWindowSize().x / 2.f
 			, Engine::GetInstance()->GetWindowSize().y / 2.f
 			, D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_DEPTH_STENCIL
-			, DXGI_FORMAT_R16G16B16A16_FLOAT);
+			, DXGI_FORMAT_R32G32B32A32_FLOAT);
 
 		myBloomData.myDownSampleTextures[1] = new Texture();
 		myBloomData.myDownSampleTextures[1]->Init(Engine::GetInstance()->GetWindowSize().x / 4.f
 			, Engine::GetInstance()->GetWindowSize().y / 4.f
 			, D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_DEPTH_STENCIL
-			, DXGI_FORMAT_R16G16B16A16_FLOAT);
+			, DXGI_FORMAT_R32G32B32A32_FLOAT);
+
+
+		myBloomData.myBloomEffect
+			= EffectContainer::GetInstance()->GetEffect("Data/Resource/Shader/S_effect_bloom.fx");
+
+		myBloomData.myDownSampleEffect
+			= EffectContainer::GetInstance()->GetEffect("Data/Resource/Shader/S_effect_down_sample.fx");
+
+		myBloomData.OnEffectLoad();
+		myBloomData.myBloomEffect->AddListener(&myBloomData);
+		myBloomData.myDownSampleEffect->AddListener(&myBloomData);
 	}
 
 	void FullScreenHelper::CreateVertices()
@@ -318,10 +316,10 @@ namespace Prism
 	void FullScreenHelper::Render(Effect* aEffect)
 	{
 		D3DX11_TECHNIQUE_DESC techDesc;
-		aEffect->GetTechnique(false)->GetDesc(&techDesc);
+		aEffect->GetTechnique()->GetDesc(&techDesc);
 		for (UINT i = 0; i < techDesc.Passes; ++i)
 		{
-			aEffect->GetTechnique(false)->GetPassByIndex(i)->Apply(0, Engine::GetInstance()->GetContex());
+			aEffect->GetTechnique()->GetPassByIndex(i)->Apply(0, Engine::GetInstance()->GetContex());
 			Engine::GetInstance()->GetContex()->DrawIndexed(6, 0, 0);
 		}
 	}
@@ -404,20 +402,5 @@ namespace Prism
 		myBloomData.myDownSampleTextures[1]->Resize(aWidth/4.f, aHeight/4.f);
 
 		myProcessingTexture->Resize(aWidth, aHeight);
-	}
-
-	void FullScreenHelper::DoFogOfWar(Texture* aWorldTexture, Texture* aFogOfWarTexture, Texture* aTarget)
-	{
-		ID3D11RenderTargetView* target = aTarget->GetRenderTargetView();
-		ID3D11DepthStencilView* depth = aTarget->GetDepthStencilView();
-		Engine::GetInstance()->GetContex()->ClearRenderTargetView(target, myClearColor);
-		Engine::GetInstance()->GetContex()->OMSetRenderTargets(1, &target, depth);
-		myFogOfWarEffect->SetFogOfWarTexture(aFogOfWarTexture);
-		myFogOfWarEffect->SetTexture(aWorldTexture);
-
-		Render(myFogOfWarEffect, "Render");
-
-		myFogOfWarEffect->SetFogOfWarTexture(nullptr);
-		myFogOfWarEffect->SetTexture(nullptr);
 	}
 }
