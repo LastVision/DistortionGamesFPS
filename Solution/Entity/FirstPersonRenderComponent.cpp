@@ -111,6 +111,11 @@ FirstPersonRenderComponent::FirstPersonRenderComponent(Entity& aEntity, Prism::S
 
 	myCurrentWeaponModel = myPistolModel;
 	aScene->AddInstance(myCurrentWeaponModel, eObjectRoomType::ALWAYS_RENDER);
+
+	for (int i = 0; i < static_cast<int>(ePlayerState::_COUNT); ++i)
+	{
+		Prism::ModelLoader::GetInstance()->GetHierarchyToBone(myWeaponAnimations[i].myData.myFile, "barrel_jnt1", myWeaponAnimations[i].myMuzzleBone);
+	}
 }
 
 FirstPersonRenderComponent::~FirstPersonRenderComponent()
@@ -232,7 +237,7 @@ void FirstPersonRenderComponent::Update(float aDelta)
 	}
 	data.myElapsedTime += aDelta;
 
-	Prism::AnimationData& weaponData = myWeaponAnimations[int(myCurrentState)];
+	Prism::AnimationData& weaponData = myWeaponAnimations[int(myCurrentState)].myData;
 	if (myCurrentWeaponModel->IsAnimationDone() == false || weaponData.myShouldLoop == true)
 	{
 		myCurrentWeaponModel->Update(aDelta);
@@ -334,6 +339,11 @@ const CU::Matrix44<float>& FirstPersonRenderComponent::GetUIJointOrientation() c
 	return myUIJoint;
 }
 
+const CU::Matrix44<float>& FirstPersonRenderComponent::GetMuzzleJointOrientation() const
+{
+	return myMuzzleJoint;
+}
+
 void FirstPersonRenderComponent::AddAnimation(ePlayerState aState, const std::string& aAnimationPath
 	, bool aLoopFlag, bool aResetTimeOnRestart)
 {
@@ -354,7 +364,7 @@ void FirstPersonRenderComponent::AddWeaponAnimation(ePlayerState aState, const s
 	newData.myFile = aAnimationPath;
 	newData.myShouldLoop = aLoopFlag;
 	newData.myResetTimeOnRestart = aResetTimeOnRestart;
-	myWeaponAnimations[int(aState)] = newData;
+	myWeaponAnimations[int(aState)].myData = newData;
 }
 
 void FirstPersonRenderComponent::PlayAnimation(ePlayerState aAnimationState)
@@ -391,7 +401,7 @@ void FirstPersonRenderComponent::PlayAnimation(ePlayerState aAnimationState)
 		myModel->ResetAnimationTime(data.myElapsedTime);
 	}
 
-	Prism::AnimationData& weaponData = myWeaponAnimations[int(aAnimationState)];
+	Prism::AnimationData& weaponData = myWeaponAnimations[int(aAnimationState)].myData;
 	myCurrentWeaponModel->SetAnimation(Prism::AnimationSystem::GetInstance()->GetAnimation(weaponData.myFile.c_str()));
 
 	if (weaponData.myResetTimeOnRestart == true)
@@ -462,5 +472,18 @@ void FirstPersonRenderComponent::UpdateJoints()
 
 		myUIJoint = CU::InverseSimple(*currentAnimation.myUIBone.myBind) * (*currentAnimation.myUIBone.myJoint) * myInputComponentEyeOrientation;
 		myHealthJoint = CU::InverseSimple(*currentAnimation.myHealthBone.myBind) * (*currentAnimation.myHealthBone.myJoint) * myInputComponentEyeOrientation;
+	}
+
+	WeaponAnimationData& currentWeaponAnimation = myWeaponAnimations[static_cast<int>(myCurrentState)];
+	if (currentWeaponAnimation.IsValid() == true)
+	{
+		//if (myFirstTimeActivateAnimation == false)
+		//{
+		//	myFirstTimeActivateAnimation = true;
+		//	//PlayAnimation(ePlayerState::PISTOL_IDLE);
+		//	AddIntention(ePlayerState::PISTOL_FIRE, true);
+		//}
+
+		myMuzzleJoint = CU::InverseSimple(*currentWeaponAnimation.myMuzzleBone.myBind) * (*currentWeaponAnimation.myMuzzleBone.myJoint) * myInputComponentEyeOrientation;
 	}
 }
