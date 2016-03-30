@@ -496,17 +496,23 @@ void FirstPersonRenderComponent::ReceiveNetworkMessage(const NetMessageDisplayMa
 
 void FirstPersonRenderComponent::ReceiveNetworkMessage(const NetMessageDisplayRespawn& aMessage, const sockaddr_in& aSenderAddress)
 {
+	for (int i = 0; i < myCoOpRespawns.Size(); i++)
+	{
+		if (myCoOpRespawns[i].myGID == aMessage.myGID)
+		{
+			myCoOpRespawns.RemoveCyclicAtIndex(i);
+			break;
+		}
+	}
+
 	if (aMessage.myDisplayRespawn == true)
 	{
 		CoOpRespawn respawn;
 		respawn.myMaxValue = aMessage.myMaxValue;
 		respawn.myCurrentValue = aMessage.myCurrentValue;
 		respawn.myPosition = aMessage.myPosition;
+		respawn.myGID = aMessage.myGID;
 		myCoOpRespawns.Add(respawn);
-	}
-	else
-	{
-
 	}
 }
 

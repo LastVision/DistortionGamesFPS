@@ -38,7 +38,7 @@ void TriggerComponent::Update(float aDelta)
 			CU::Vector3<float> position;
 			memcpy(&position, myEntity.GetComponent<PhysicsComponent>()->GetPosition(), sizeof(float) * 3);
 			SharedNetworkManager::GetInstance()->AddMessage(NetMessageDisplayRespawn(position
-				, true, myLastRespawnValue, myData.myValue));
+				, true, myLastRespawnValue, myData.myValue, myEntity.GetGID()));
 		}
 
 		if (myRespawnTime <= 0.f)
@@ -46,6 +46,8 @@ void TriggerComponent::Update(float aDelta)
 			PostMaster::GetInstance()->SendMessage<RespawnMessage>(RespawnMessage(myRespawnValue));
 			myEntity.GetComponent<PhysicsComponent>()->RemoveFromScene();
 			myHasTriggered = false;
+			SharedNetworkManager::GetInstance()->AddMessage(NetMessageDisplayRespawn({ 0.f, 0.f, 0.f }
+				, false, myData.myValue, myData.myValue, myEntity.GetGID()));
 		}
 	}
 }
