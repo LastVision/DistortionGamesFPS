@@ -45,7 +45,10 @@ namespace GUI
 		const int& myGrenadeLauncherClipSize;
 		const int& myGrenadeLauncherAmmoInClip;
 
-		Prism::Bar3D* myTopAmmoLeft;
+		Prism::Bar3D* myHealthIcon;
+		Prism::Bar3D* myPistolIcon;
+		Prism::Bar3D* myShotgunIcon;
+		Prism::Bar3D* myGrenadeLauncherIcon;
 	};
 
 }
