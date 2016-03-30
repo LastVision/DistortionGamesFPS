@@ -40,7 +40,7 @@ namespace Prism
 		Camera* GetCamera();
 	private:
 		void Reset();
-		CU::Vector3f CalculateDirection(float anAngle);
+		CU::Vector3f CalculateDirection(float aYVariation, float aZVariation);
 		void CreateVertexBuffer();
 		int UpdateVertexBuffer();
 

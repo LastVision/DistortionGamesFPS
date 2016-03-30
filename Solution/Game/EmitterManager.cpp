@@ -114,6 +114,7 @@ void EmitterManager::RenderEmitters()
 
 void EmitterManager::ReceiveMessage(const EmitterMessage& aMessage)
 {
+	
 	CU::Vector3f position = aMessage.myPosition;
 
 	if (aMessage.myEmitter != nullptr)
@@ -125,7 +126,14 @@ void EmitterManager::ReceiveMessage(const EmitterMessage& aMessage)
 	}
 
 	std::string particleType = CU::ToLower(aMessage.myParticleTypeString);
-	DL_ASSERT_EXP(myEmitters.find(particleType) != myEmitters.end(), "Effect did not exist!");
+	if (myEmitters.find(particleType) == myEmitters.end())
+	{
+		return;
+	}
+	//DL_ASSERT_EXP(myEmitters.find(particleType) != myEmitters.end(), "Effect did not exist!");
+
+
+
 
 	if (myEmitters[particleType]->myCurrentIndex > (PREALLOCATED_EMITTERGROUP - 1))
 	{

@@ -145,13 +145,48 @@ namespace Prism
 		myEmitterLife = myParticleEmitterData->myEmitterLifeTime;
 	}
 
-	CU::Vector3f ParticleEmitterInstance::CalculateDirection(float anAngle)
+	CU::Vector3f ParticleEmitterInstance::CalculateDirection(float aYVariation, float aZVariation)
 	{
-		CU::Vector3f toReturn;
-		toReturn.x = myParticleEmitterData->myEmitterSize.x * cosf(anAngle);
-		toReturn.y = myParticleEmitterData->myEmitterSize.y * sinf(anAngle);
-		toReturn.z = 0.f;
 
+		float radius = myParticleEmitterData->myEmitterSize.z;
+
+		if (myParticleEmitterData->myEmitterSize.x > myParticleEmitterData->myEmitterSize.z)
+		{
+			radius = myParticleEmitterData->myEmitterSize.x;
+		}
+
+		float toRad = aYVariation * 0.5f;
+		float toRad2 = aZVariation * 0.5f;
+
+
+		CU::Vector3<float> toReturn;
+		int toRand = CU::Math::DegreeToRad(toRad) * 100.f;
+		int toRand2 = CU::Math::DegreeToRad(toRad2) * 100.f;
+
+		float angle = 0.f;
+		float otherAngle = 0.f;
+
+		if (toRand > 0.f)
+		{
+			angle = static_cast<float>(rand() % toRand) / 100.f;
+		}
+		if (toRand2 > 0.f)
+		{
+			otherAngle = static_cast<float>(rand() % toRand2) / 100.f;
+		}
+		
+		toReturn.x = radius * cosf(angle);
+		toReturn.y = radius * sinf(angle);
+		toReturn.z = radius * sinf(otherAngle);
+
+		if (aYVariation >= 90.f && aYVariation <= 270.f)
+		{
+			toReturn.x = CU::Math::RandomRange(-toReturn.x, toReturn.x);
+		}
+	
+		toReturn.y = CU::Math::RandomRange(-toReturn.y, toReturn.y);
+
+	//	toReturn = CU::Math::RandomVector(-toReturn, toReturn);
 		return toReturn;
 	}
 
@@ -256,7 +291,7 @@ namespace Prism
 		{
 			myGraphicalParticles[i].myLifeTime -= aDeltaTime;
 
-			myGraphicalParticles[i].myPosition += myLogicalParticles[i].myDirection * aDeltaTime;
+			myGraphicalParticles[i].myPosition += (myLogicalParticles[i].myDirection * myParticleEmitterData->myData.mySpeed) * aDeltaTime;
 
 			//if (myGraphicalParticles[i].myAlpha < myParticleEmitterData->myData.myMidAlpha)
 			//{
@@ -296,7 +331,7 @@ namespace Prism
 
 			myGraphicalParticles[myParticleIndex].myColor = myParticleEmitterData->myData.myStartColor;
 
-			myLogicalParticles[myParticleIndex].myDirection = CalculateDirection(myParticleEmitterData->myEmissionAngle);
+			myLogicalParticles[myParticleIndex].myDirection = CalculateDirection(myParticleEmitterData->myVariation.x, myParticleEmitterData->myVariation.y);
 
 #pragma	region		Shape
 			if (myStates[CIRCLE] == TRUE && myStates[HOLLOW] == TRUE)
