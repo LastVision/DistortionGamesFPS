@@ -157,6 +157,8 @@ void AIComponent::SetOrientation(const CU::Vector3<float>& aLookInDirection, flo
 	CU::Vector3<float> right(CU::GetNormalized(CU::Cross(y, aLookInDirection)));
 	CU::Vector3<float> forward(CU::GetNormalized(CU::Cross(right, y)));
 
+	bool hasRotated = forward != myOrientation.GetForward();
+
 	myOrientation.SetForward(forward);
 	myOrientation.SetRight(right);
 	myOrientation.SetUp(y);
@@ -175,7 +177,7 @@ void AIComponent::SetOrientation(const CU::Vector3<float>& aLookInDirection, flo
 		SharedNetworkManager::GetInstance()->AddMessage(NetMessagePosition(pos, angle, myEntity.GetGID()));
 		SharedNetworkManager::GetInstance()->AddMessage(NetMessagePosition(pos, angle, myEntity.GetGID()));
 	}
-	else if (hasMoved == true)
+	else if (hasMoved == true || hasRotated == true)
 	{
 		SharedNetworkManager::GetInstance()->AddMessage(NetMessagePosition(pos, angle, myEntity.GetGID()));
 	}
