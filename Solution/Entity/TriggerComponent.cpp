@@ -2,6 +2,7 @@
 #include "CollisionNote.h"
 #include <GameStateMessage.h>
 #include <NetMessageDisplayMarker.h>
+#include <NetMessageDisplayRespawn.h>
 #include <NetMessageSetActive.h>
 #include "PhysicsComponent.h"
 #include <PostMaster.h>
@@ -31,11 +32,22 @@ void TriggerComponent::Update(float aDelta)
 	{
 		myRespawnTime -= aDelta * myPlayersInside;
 
+		if (myLastRespawnValue > int(myRespawnTime))
+		{
+			myLastRespawnValue = int(myRespawnTime);
+			CU::Vector3<float> position;
+			memcpy(&position, myEntity.GetComponent<PhysicsComponent>()->GetPosition(), sizeof(float) * 3);
+			SharedNetworkManager::GetInstance()->AddMessage(NetMessageDisplayRespawn(position
+				, true, myLastRespawnValue, myData.myValue, myEntity.GetGID()));
+		}
+
 		if (myRespawnTime <= 0.f)
 		{
 			PostMaster::GetInstance()->SendMessage<RespawnMessage>(RespawnMessage(myRespawnValue));
 			myEntity.GetComponent<PhysicsComponent>()->RemoveFromScene();
 			myHasTriggered = false;
+			SharedNetworkManager::GetInstance()->AddMessage(NetMessageDisplayRespawn({ 0.f, 0.f, 0.f }
+				, false, myData.myValue, myData.myValue, myEntity.GetGID()));
 		}
 	}
 }
@@ -77,6 +89,7 @@ void TriggerComponent::Activate()
 	if (myTriggerType == eTriggerType::RESPAWN)
 	{
 		myRespawnTime = float(myData.myValue);
+		myLastRespawnValue = myData.myValue;
 		myPlayersInside = 0;
 		myHasTriggered = true;
 	}

@@ -12,6 +12,7 @@
 #include "InputComponent.h"
 #include <ModelLoader.h>
 #include <NetMessageDisplayMarker.h>
+#include <NetMessageDisplayRespawn.h>
 #include <NetMessageHealth.h>
 #include <Scene.h>
 #include "ShootingComponent.h"
@@ -28,6 +29,7 @@ FirstPersonRenderComponent::FirstPersonRenderComponent(Entity& aEntity, Prism::S
 	, myIntentions(8)
 	, myFirstTimeActivateAnimation(false)
 	, myCoOpPositions(8)
+	, myCoOpRespawns(8)
 	, myDisplayDamageIndicatorTimer(0)
 	, myMaxHealth(10)
 	, myCurrentHealth(myMaxHealth)
@@ -81,6 +83,7 @@ FirstPersonRenderComponent::FirstPersonRenderComponent(Entity& aEntity, Prism::S
 	SharedNetworkManager::GetInstance()->Subscribe(eNetMessageType::ON_HIT, this);
 	SharedNetworkManager::GetInstance()->Subscribe(eNetMessageType::HEALTH, this);
 	SharedNetworkManager::GetInstance()->Subscribe(eNetMessageType::DISPLAY_MARKER, this);
+	SharedNetworkManager::GetInstance()->Subscribe(eNetMessageType::DISPLAY_RESPAWN, this);
 	
 	Prism::ModelProxy* pistolModel = Prism::ModelLoader::GetInstance()->LoadModelAnimated("Data/Resource/Model/First_person/Pistol/SK_pistol_idle.fbx", "Data/Resource/Shader/S_effect_pbl_animated.fx");
 	myPistolModel = new Prism::Instance(*pistolModel, myInputComponentEyeOrientation);
@@ -123,6 +126,7 @@ FirstPersonRenderComponent::~FirstPersonRenderComponent()
 	SharedNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::ON_HIT, this);
 	SharedNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::HEALTH, this);
 	SharedNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::DISPLAY_MARKER, this);
+	SharedNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::DISPLAY_RESPAWN, this);
 	SAFE_DELETE(myCrosshair);
 	SAFE_DELETE(myDamageIndicator);
 	SAFE_DELETE(my3DGUIManager);
@@ -134,6 +138,7 @@ FirstPersonRenderComponent::~FirstPersonRenderComponent()
 	SAFE_DELETE(myGrenadeLauncherModel);
 	SAFE_DELETE(myMarker);
 	myCoOpPositions.RemoveAll();
+	myCoOpRespawns.RemoveAll();
 }
 
 
@@ -322,6 +327,37 @@ void FirstPersonRenderComponent::Render()
 
 		myCoOpSprite->Render({ newRenderPos.x, newRenderPos.y });
 	}
+
+	for (int i = 0; i < myCoOpRespawns.Size(); ++i)
+	{
+		CU::Matrix44<float> renderPos;
+		CU::Vector3<float> tempPos(myCoOpRespawns[i].myPosition);
+		tempPos.y += 2.f;
+		float toBuddy = CU::Dot(tempPos - myInputComponentEyeOrientation.GetPos(), myInputComponentEyeOrientation.GetForward());
+		if (toBuddy < 0.f)
+		{
+			continue;
+		}
+		renderPos.SetPos(tempPos);
+		renderPos = renderPos * CU::InverseSimple(myInputComponentEyeOrientation);
+		renderPos = renderPos * myEntity.GetComponent<InputComponent>()->GetCamera()->GetProjection();
+
+		CU::Vector3<float> newRenderPos = renderPos.GetPos();
+		newRenderPos /= renderPos.GetPos4().w;
+
+		newRenderPos += 1.f;
+		newRenderPos *= 0.5f;
+		newRenderPos.x *= windowSize.x;
+		newRenderPos.y *= windowSize.y;
+		newRenderPos.y -= windowSize.y;
+
+		newRenderPos.x = fmaxf(0.f, fminf(newRenderPos.x, windowSize.x));
+		newRenderPos.y += windowSize.y;
+		newRenderPos.y = fmaxf(0.f, fminf(newRenderPos.y, windowSize.y));
+
+		//myCoOpSprite->Render({ newRenderPos.x, newRenderPos.y });
+		Prism::Engine::GetInstance()->PrintText(myCoOpRespawns[i].myCurrentValue, { newRenderPos.x, newRenderPos.y }, Prism::eTextType::RELEASE_TEXT);
+	}
 }
 
 bool FirstPersonRenderComponent::IsCurrentAnimationDone() const
@@ -456,6 +492,28 @@ void FirstPersonRenderComponent::ReceiveNetworkMessage(const NetMessageDisplayMa
 {
 	myRenderMarker = aMessage.myDisplayMarker;
 	myMarkerPosition = aMessage.myPosition;
+}
+
+void FirstPersonRenderComponent::ReceiveNetworkMessage(const NetMessageDisplayRespawn& aMessage, const sockaddr_in& aSenderAddress)
+{
+	for (int i = 0; i < myCoOpRespawns.Size(); i++)
+	{
+		if (myCoOpRespawns[i].myGID == aMessage.myGID)
+		{
+			myCoOpRespawns.RemoveCyclicAtIndex(i);
+			break;
+		}
+	}
+
+	if (aMessage.myDisplayRespawn == true)
+	{
+		CoOpRespawn respawn;
+		respawn.myMaxValue = aMessage.myMaxValue;
+		respawn.myCurrentValue = aMessage.myCurrentValue;
+		respawn.myPosition = aMessage.myPosition;
+		respawn.myGID = aMessage.myGID;
+		myCoOpRespawns.Add(respawn);
+	}
 }
 
 void FirstPersonRenderComponent::UpdateJoints()

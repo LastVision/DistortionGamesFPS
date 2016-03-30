@@ -112,6 +112,8 @@ namespace Prism
 		volatile bool myPhysicsDone;
 		volatile bool mySwapDone;
 #endif
+		volatile bool myIsSwapping;
+		volatile bool myIsReading;
 		volatile bool myInitDone;
 		volatile int myCurrentIndex;
 

@@ -63,6 +63,8 @@ static std::string ConvertNetworkEnumToString(eNetMessageType aType)
 		return "TEXT TO CLIENT";
 	case eNetMessageType::DISPLAY_MARKER:
 		return "DISPLAY MARKER ON CLIENT";
+	case eNetMessageType::DISPLAY_RESPAWN:
+		return "DISPLAY RESPAWN ON CLIENT";
 	case eNetMessageType::SERVER_REPLY:
 		return "SERVER REPLY";
 	case eNetMessageType::SERVER_REQUEST:
