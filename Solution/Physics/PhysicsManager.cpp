@@ -48,6 +48,8 @@ namespace Prism
 #endif
 		, myInitDone(false)
 		, myCurrentIndex(0)
+		, myIsSwapping(false)
+		, myIsReading(false)
 	{
 		myRaycastJobs[0].Init(64);
 		myRaycastJobs[1].Init(64);
@@ -205,6 +207,8 @@ namespace Prism
 		myQuit = true;
 		myLogicDone = true;
 		mySwapDone = true;
+		myIsSwapping = false;
+		myIsReading = false;
 		myPhysicsThread->join();
 	}
 
@@ -236,6 +240,11 @@ namespace Prism
 
 	void PhysicsManager::Swap()
 	{
+		while (myIsReading == true)
+		{
+		}
+
+		myIsSwapping = true;
 		for each (const PhysicsCallbackStruct& obj in myPhysicsComponentCallbacks)
 		{
 			obj.mySwapOrientationCallback();
@@ -256,6 +265,7 @@ namespace Prism
 		//std::swap(myActorsToWakeUp[0], myActorsToWakeUp[1]);
 
 		//myMoveJobs[myCurrentIndex].myId = -1;
+		myIsSwapping = false;
 	}
 
 	void PhysicsManager::Update()
@@ -881,11 +891,16 @@ namespace Prism
 
 	void PhysicsManager::EndFrame()
 	{
+		while (myIsSwapping == true)
+		{
+		}
+		myIsReading = true;
+
 		for (int i = 0; i < myRaycastResults[myCurrentIndex].Size(); ++i)
 		{
 			myRaycastResults[myCurrentIndex][i].myFunctionToCall(myRaycastResults[myCurrentIndex][i].myPhysicsComponent, myRaycastResults[myCurrentIndex][i].myDirection, myRaycastResults[myCurrentIndex][i].myHitPosition);
 		}
-
 		myRaycastResults[myCurrentIndex].RemoveAll();
+		myIsReading = false;
 	}
 }
