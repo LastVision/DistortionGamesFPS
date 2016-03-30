@@ -1,13 +1,13 @@
 #pragma once
-#include "NetImportantMessage.h"
+#include "NetMessage.h"
 
-class NetMessageRequestServer : public NetImportantMessage
+class NetMessageRequestServer : public NetMessage
 {
 public:
 	NetMessageRequestServer();
 };
 
 inline NetMessageRequestServer::NetMessageRequestServer()
-	: NetImportantMessage(eNetMessageType::SERVER_REQUEST)
+	: NetMessage(eNetMessageType::SERVER_REQUEST)
 {
 }

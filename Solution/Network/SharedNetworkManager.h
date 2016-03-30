@@ -122,6 +122,7 @@ protected:
 	void AddNetworkMessage(std::vector<char> aBuffer, unsigned int aTargetID);
 	void AddNetworkMessage(std::vector<char> aBuffer, sockaddr_in aTargetAddress);
 	virtual void AddImportantMessage(std::vector<char> aBuffer, unsigned int aImportantID) = 0;
+	virtual void AddImportantMessage(std::vector<char> aBuffer, unsigned int aImportantID, const sockaddr_in& aTargetAddress) = 0;
 
 	virtual void SendThread() = 0;
 	virtual void ReceieveThread() = 0;
@@ -245,7 +246,10 @@ inline void SharedNetworkManager::AddMessage(T aMessage, const sockaddr_in aTarg
 	}
 
 	aMessage.PackMessage();
-	
+	if (isImportant == true)
+	{
+		AddImportantMessage(aMessage.myStream, importantID, aTargetAddress);
+	}
 	myDataSent += aMessage.myStream.size() * sizeof(char);
 	AddNetworkMessage(aMessage.myStream, aTargetAddress);
 }
@@ -282,7 +286,9 @@ void SharedNetworkManager::SendToSubscriber(const T& aMessage, const sockaddr_in
 			subscribers[i].myNetworkSubscriber->ReceiveNetworkMessage(aMessage, aSenderAddress);
 		}
 	}
-	else if (myAllowSendWithoutSubscribers == false)
+	else if ((aMessage.myID != static_cast<int>(eNetMessageType::SERVER_REPLY) 
+		&& aMessage.myID != static_cast<int>(eNetMessageType::SERVER_REQUEST)) 
+		|| (myAllowSendWithoutSubscribers == false))
 	{
 		DL_DEBUG("Message id %i", static_cast<int>(aMessage.myID));
 		DL_ASSERT("Network message sent without subscriber.");

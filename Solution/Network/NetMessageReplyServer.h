@@ -1,8 +1,8 @@
 #pragma once
 #include "NetworkMessageTypes.h"
-#include "NetImportantMessage.h"
+#include "NetMessage.h"
 
-class NetMessageReplyServer : public NetImportantMessage
+class NetMessageReplyServer : public NetMessage
 {
 public:
 	NetMessageReplyServer();
@@ -17,12 +17,12 @@ protected:
 };
 
 inline NetMessageReplyServer::NetMessageReplyServer()
-	: NetImportantMessage(eNetMessageType::SERVER_REPLY)
+	: NetMessage(eNetMessageType::SERVER_REPLY)
 {
 }
 
 inline NetMessageReplyServer::NetMessageReplyServer(const std::string& aServerName, const std::string& aIP)
-	: NetImportantMessage(eNetMessageType::SERVER_REPLY)
+	: NetMessage(eNetMessageType::SERVER_REPLY)
 	, myServerName(aServerName)
 	, myIP(aIP)
 {

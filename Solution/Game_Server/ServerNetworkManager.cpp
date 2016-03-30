@@ -224,9 +224,10 @@ void ServerNetworkManager::CreateConnection(const std::string& aName, const sock
 {
 	myIDCount++;
 
-	NetMessageConnectReply connectReply(NetMessageConnectReply::eType::SUCCESS, myIDCount);
+	/*NetMessageConnectReply connectReply(NetMessageConnectReply::eType::SUCCESS, myIDCount);
 	connectReply.PackMessage();
-	myNetwork->Send(connectReply.myStream, aSender);
+	myNetwork->Send(connectReply.myStream, aSender);*/
+	AddMessage(NetMessageConnectReply(NetMessageConnectReply::eType::SUCCESS, myIDCount), aSender);
 
 	Sleep(200);
 	//for (Connection& connection : myClients)
@@ -368,6 +369,25 @@ void ServerNetworkManager::AddImportantMessage(std::vector<char> aBuffer, unsign
 		}
 		myImportantMessagesBuffer.Add(msg);
 	}
+}
+
+void ServerNetworkManager::AddImportantMessage(std::vector<char> aBuffer, unsigned int aImportantID, const sockaddr_in& aTargetAddress)
+{
+		ImportantMessage msg;
+		msg.myData = aBuffer;
+		msg.myImportantID = aImportantID;
+		msg.myMessageType = aBuffer[0];
+		msg.mySenders.Init(16);
+
+			ImportantClient client;
+			client.myGID = UINT_MAX;
+			client.myNetworkAddress = aTargetAddress;
+			client.myName = inet_ntoa(aTargetAddress.sin_addr);
+			client.myTimer = 0.f;
+			client.myHasReplied = false;
+			msg.mySenders.Add(client);
+
+		myImportantMessagesBuffer.Add(msg);
 }
 
 void ServerNetworkManager::ReceiveNetworkMessage(const NetMessageRequestConnect& aMessage, const sockaddr_in& aSenderAddress)

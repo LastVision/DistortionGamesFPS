@@ -410,7 +410,7 @@ void SharedNetworkManager::HandleMessage()
 	}
 }
 
-void SharedNetworkManager::ReceiveNetworkMessage(const NetMessageImportantReply& aMessage, const sockaddr_in&)
+void SharedNetworkManager::ReceiveNetworkMessage(const NetMessageImportantReply& aMessage, const sockaddr_in& aSenderAddress)
 {
 	for (ImportantMessage& msg : myImportantMessagesBuffer)
 	{
@@ -418,7 +418,15 @@ void SharedNetworkManager::ReceiveNetworkMessage(const NetMessageImportantReply&
 		{
 			for (ImportantClient& client : msg.mySenders)
 			{
-				if (aMessage.mySenderID == client.myGID)
+				if (client.myGID == UINT_MAX)
+				{
+					if (client.myNetworkAddress.sin_addr.S_un.S_addr == aSenderAddress.sin_addr.S_un.S_addr)
+					{
+						client.myHasReplied = true;
+						return;
+					}
+				}
+				else if (aMessage.mySenderID == client.myGID)
 				{
 					client.myHasReplied = true;
 					return;

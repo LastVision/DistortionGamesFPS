@@ -11,7 +11,7 @@ public:
 	static void Destroy();
 	static ClientNetworkManager* GetInstance();
 
-	void StartNetwork(unsigned int aPortNum = 13397) override;
+	void StartNetwork(unsigned int aPortNum = 13398) override;
 	void ConnectToServer(const char* aServerIP = "127.0.0.1");
 	unsigned int GetGID() const;
 	const CU::GrowingArray<OtherClients>& GetClients();
@@ -33,6 +33,7 @@ private:
 
 	void UpdateImportantMessages(float aDeltaTime) override;
 	void AddImportantMessage(std::vector<char> aBuffer, unsigned int aImportantID) override;
+	void AddImportantMessage(std::vector<char> aBuffer, unsigned int aImportantID, const sockaddr_in& aTargetAddress) override;
 
 	void ReceieveThread() override;
 	void SendThread() override;
