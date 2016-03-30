@@ -379,9 +379,11 @@ namespace Prism
 		myActorsToRemove[myCurrentIndex ^ 1].RemoveAll();
 	}
 
-	void PhysicsManager::RayCast(const CU::Vector3<float>& aOrigin, const CU::Vector3<float>& aNormalizedDirection, float aMaxRayDistance, std::function<void(PhysicsComponent*, const CU::Vector3<float>&, const CU::Vector3<float>&)> aFunctionToCall)
+	void PhysicsManager::RayCast(const CU::Vector3<float>& aOrigin, const CU::Vector3<float>& aNormalizedDirection
+		, float aMaxRayDistance, std::function<void(PhysicsComponent*, const CU::Vector3<float>&
+		, const CU::Vector3<float>&)> aFunctionToCall, const PhysicsComponent* aComponent)
 	{
-		myRaycastJobs[myCurrentIndex].Add(RaycastJob(aOrigin, aNormalizedDirection, aMaxRayDistance, aFunctionToCall));
+		myRaycastJobs[myCurrentIndex].Add(RaycastJob(aOrigin, aNormalizedDirection, aMaxRayDistance, aFunctionToCall, aComponent));
 	}
 
 	void PhysicsManager::onTrigger(physx::PxTriggerPair* somePairs, physx::PxU32 aCount)
@@ -426,7 +428,8 @@ namespace Prism
 			{
 				if (buffer.touches[i].distance < closestDist)
 				{
-					if (buffer.touches[i].distance == 0.f)
+					if (buffer.touches[i].distance == 0.f
+						|| buffer.touches[i].actor->userData == aRaycastJob.myRaycasterComponent)
 					{
 						continue;
 					}

@@ -8,7 +8,7 @@ class PhysicsComponent;
 class Shotgun : public Weapon
 {
 public:
-	Shotgun();
+	Shotgun(Entity* aOwnerEntity);
 	~Shotgun();
 
 	bool Shoot(const CU::Matrix44<float>& aOrientation) override;
