@@ -8,6 +8,7 @@
 #include <NetMessageLoadLevel.h>
 #include <NetMessageRequestConnect.h>
 #include <NetMessageSetLevel.h>
+#include <NetMessageReplyServer.h>
 #include <NetMessageRequestStartLevel.h>
 
 
@@ -20,6 +21,7 @@ ServerLobbyState::~ServerLobbyState()
 {
 	ServerNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::SET_LEVEL, this);
 	ServerNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::REQUEST_START_LEVEL, this);
+	ServerNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::SERVER_REQUEST, this);
 	ServerNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::ON_CONNECT, this);
 
 }
@@ -31,6 +33,7 @@ void ServerLobbyState::InitState(ServerStateStackProxy* aStateStackProxy)
 
 	ServerNetworkManager::GetInstance()->Subscribe(eNetMessageType::SET_LEVEL, this);
 	ServerNetworkManager::GetInstance()->Subscribe(eNetMessageType::REQUEST_START_LEVEL, this);
+	ServerNetworkManager::GetInstance()->Subscribe(eNetMessageType::SERVER_REQUEST, this);
 	ServerNetworkManager::GetInstance()->Subscribe(eNetMessageType::ON_CONNECT, this);
 	myCurrentLevelID = 0;
 	myIsActiveState = true;
@@ -54,6 +57,7 @@ void ServerLobbyState::ResumeState()
 	myIsActiveState = true;
 	ServerNetworkManager::GetInstance()->Subscribe(eNetMessageType::SET_LEVEL, this);
 	ServerNetworkManager::GetInstance()->Subscribe(eNetMessageType::REQUEST_START_LEVEL, this);
+	ServerNetworkManager::GetInstance()->Subscribe(eNetMessageType::SERVER_REQUEST, this);
 	ServerNetworkManager::GetInstance()->Subscribe(eNetMessageType::ON_CONNECT, this);
 	ServerNetworkManager::GetInstance()->AllowNewConnections(true);
 }
@@ -71,6 +75,7 @@ void ServerLobbyState::ReceiveNetworkMessage(const NetMessageRequestStartLevel&,
 	ServerNetworkManager::GetInstance()->AllowNewConnections(false);
 	ServerNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::SET_LEVEL, this);
 	ServerNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::REQUEST_START_LEVEL, this);
+	ServerNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::SERVER_REQUEST, this);
 	ServerNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::ON_CONNECT, this);
 
 	SET_RUNTIME(false);
@@ -81,4 +86,9 @@ void ServerLobbyState::ReceiveNetworkMessage(const NetMessageRequestConnect& aMe
 {
 	//Broadcast join
 	ServerNetworkManager::GetInstance()->CreateConnection(aMessage.myName, aSenderAddress);
+}
+
+void ServerLobbyState::ReceiveNetworkMessage(const NetMessageRequestServer&, const sockaddr_in& aSenderAddress)
+{
+	ServerNetworkManager::GetInstance()->AddMessage(NetMessageReplyServer("test"), aSenderAddress);
 }

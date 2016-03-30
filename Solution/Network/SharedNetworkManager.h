@@ -36,6 +36,8 @@ public:
 	void AddMessage(T aMessage);
 	template<typename T>
 	void AddMessage(T aMessage, unsigned int aTargetID);
+	template<typename T>
+	void AddMessage(T aMessage, const sockaddr_in aTargetAddress);
 	
 	eNetMessageType ReadType(const char* aBuffer);
 	eNetMessageType ReadType(const std::vector<char>& aBuffer);
@@ -216,6 +218,29 @@ inline void SharedNetworkManager::AddMessage(T aMessage, unsigned int aTargetID)
 	}
 	myDataSent += aMessage.myStream.size() * sizeof(char);
 	AddNetworkMessage(aMessage.myStream, aTargetID);
+}
+
+template<typename T>
+inline void SharedNetworkManager::AddMessage(T aMessage, const sockaddr_in aTargetAddress)
+{
+	aTargetAddress;
+	aMessage.mySenderID = 0;
+	if (myIsServer == false)
+	{
+		aMessage.mySenderID = myGID;
+	}
+	bool isImportant = aMessage.GetIsImportant();
+	unsigned int importantID = 0;
+	if (isImportant == true)
+	{
+		importantID = myImportantID;
+		aMessage.SetImportantID(myImportantID++);
+	}
+
+	aMessage.PackMessage();
+	
+	myDataSent += aMessage.myStream.size() * sizeof(char);
+	//AddNetworkMessage(aMessage.myStream, aTargetAddress);
 }
 
 template<typename T>

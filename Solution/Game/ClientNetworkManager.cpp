@@ -251,7 +251,7 @@ void ClientNetworkManager::ReceiveNetworkMessage(const NetMessageOnJoin& aMessag
 	}
 }
 
-void ClientNetworkManager::ReceiveNetworkMessage(const NetMessagePingReply& aMessage, const sockaddr_in& aSenderAddress)
+void ClientNetworkManager::ReceiveNetworkMessage(const NetMessagePingReply&, const sockaddr_in&)
 {
 	unsigned long long old = myCurrentTimeStamp;
 	myCurrentTimeStamp = myTimeManager->GetMasterTimer().GetTime().GetMilliseconds();
