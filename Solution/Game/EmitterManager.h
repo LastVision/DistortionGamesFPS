@@ -2,7 +2,7 @@
 #include "Subscriber.h"
 #include <GrowingArray.h>
 #include <bitset>
-#define PREALLOCATED_EMITTERGROUP 24
+#define PREALLOCATED_EMITTERGROUP 32
 
 class Entity;
 class ParticleEmitterComponent;
@@ -21,8 +21,8 @@ struct EmitterData
 	std::bitset<PREALLOCATED_EMITTERGROUP> myFinishedGroups;
 	std::string myType;
 	short myCurrentIndex;
-	short myFinishedCount;
-	bool myGroupIsActive;
+	short myActiveCount;
+	bool myTypeIsActive;
 
 };
 
@@ -41,7 +41,6 @@ private:
 	CU::GrowingArray<EmitterData*> myEmitterList;
 	const Prism::Camera& myCamera;
 	short myEmitterIndex;
-	short myAvailableEmitterCount;
 
 	void operator=(const EmitterManager&) = delete;
 
