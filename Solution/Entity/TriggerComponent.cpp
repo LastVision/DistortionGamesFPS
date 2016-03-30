@@ -35,7 +35,9 @@ void TriggerComponent::Update(float aDelta)
 		if (myLastRespawnValue > int(myRespawnTime))
 		{
 			myLastRespawnValue = int(myRespawnTime);
-			SharedNetworkManager::GetInstance()->AddMessage(NetMessageDisplayRespawn(myEntity.GetOrientation().GetPos()
+			CU::Vector3<float> position;
+			memcpy(&position, myEntity.GetComponent<PhysicsComponent>()->GetPosition(), sizeof(float) * 3);
+			SharedNetworkManager::GetInstance()->AddMessage(NetMessageDisplayRespawn(position
 				, true, myLastRespawnValue, myData.myValue));
 		}
 
