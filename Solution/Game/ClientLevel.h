@@ -30,7 +30,7 @@ public:
 
 	void Update(const float aDeltaTime) override;
 	void Render();
-	bool connected;
+	
 	Prism::Scene* GetScene();
 
 	void ReceiveNetworkMessage(const NetMessageOnDeath& aMessage, const sockaddr_in& aSenderAddress) override;

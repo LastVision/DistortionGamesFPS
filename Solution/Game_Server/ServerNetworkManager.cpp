@@ -164,7 +164,11 @@ void ServerNetworkManager::SendThread()
 	{
 		for (SendBufferMessage arr : mySendBuffer[myCurrentSendBuffer])
 		{
-			if (arr.myTargetID == 0)
+			if (arr.myTargetID == UINT_MAX)
+			{
+				myNetwork->Send(arr.myBuffer, arr.myTargetAddress);
+			}
+			else if (arr.myTargetID == 0)
 			{
 				for (Connection& connection : myClients)
 				{
@@ -220,16 +224,17 @@ void ServerNetworkManager::CreateConnection(const std::string& aName, const sock
 {
 	myIDCount++;
 
-	NetMessageConnectReply connectReply(NetMessageConnectReply::eType::SUCCESS, myIDCount);
+	/*NetMessageConnectReply connectReply(NetMessageConnectReply::eType::SUCCESS, myIDCount);
 	connectReply.PackMessage();
-	myNetwork->Send(connectReply.myStream, aSender);
+	myNetwork->Send(connectReply.myStream, aSender);*/
+	AddMessage(NetMessageConnectReply(NetMessageConnectReply::eType::SUCCESS, myIDCount), aSender);
 
 	Sleep(200);
 	//for (Connection& connection : myClients)
 	//{
 	//	if (connection.myAddress.sin_addr.S_un.S_addr == aSender.sin_addr.S_un.S_addr) //._.
 	//	{
-	//		Utility::PrintEndl("User already connected!", (DARK_RED_BACK | WHITE_TEXT));
+	//		Utility::Printf("User already connected!", (DARK_RED_BACK | WHITE_TEXT));
 	//		return;
 	//	}
 	//}
@@ -252,7 +257,7 @@ void ServerNetworkManager::CreateConnection(const std::string& aName, const sock
 	}
 
 	std::string conn(aName + " connected to the server!");
-	Utility::PrintEndl(conn, LIGHT_GREEN_TEXT);
+	Utility::Printf(conn, LIGHT_GREEN_TEXT);
 
 	AddMessage(NetMessageOnJoin(aName, myIDCount));
 }
@@ -284,7 +289,7 @@ void ServerNetworkManager::DisconnectConnection(const Connection& aConnection)
 	myNetwork->Send(onDisconnect.myStream, aConnection.myAddress);
 
 	std::string msg(aConnection.myName + " disconnected from server!");
-	Utility::PrintEndl(msg, LIGHT_BLUE_TEXT);
+	Utility::Printf(msg, LIGHT_BLUE_TEXT);
 
 	//auto reply on all important messages
 	for (ImportantMessage& impMsg : myImportantMessagesBuffer)
@@ -328,7 +333,7 @@ void ServerNetworkManager::UpdateImportantMessages(float aDeltaTime)
 
 					std::string resend = "Sending important message " + std::to_string(msg.myImportantID) + " of message type "
 						+ ConvertNetworkEnumToString(static_cast<eNetMessageType>(msg.myMessageType)) + " to client id " + std::to_string(client.myGID) + " - " + client.myName;
-					Utility::PrintEndl(resend, AQUA_TEXT);
+					Utility::Printf(resend, AQUA_TEXT);
 					myNetwork->Send(msg.myData, client.myNetworkAddress);
 				}
 			}
@@ -337,7 +342,7 @@ void ServerNetworkManager::UpdateImportantMessages(float aDeltaTime)
 		{
 			std::string resend = "All client has replied to the message id " + std::to_string(msg.myImportantID)
 				+ " of message type " + ConvertNetworkEnumToString(static_cast<eNetMessageType>(msg.myMessageType));
-			Utility::PrintEndl(resend, YELLOW_TEXT);
+			Utility::Printf(resend, YELLOW_TEXT);
 			myImportantMessagesBuffer.RemoveCyclic(msg);
 		}
 	}
@@ -364,6 +369,25 @@ void ServerNetworkManager::AddImportantMessage(std::vector<char> aBuffer, unsign
 		}
 		myImportantMessagesBuffer.Add(msg);
 	}
+}
+
+void ServerNetworkManager::AddImportantMessage(std::vector<char> aBuffer, unsigned int aImportantID, const sockaddr_in& aTargetAddress)
+{
+		ImportantMessage msg;
+		msg.myData = aBuffer;
+		msg.myImportantID = aImportantID;
+		msg.myMessageType = aBuffer[0];
+		msg.mySenders.Init(16);
+
+			ImportantClient client;
+			client.myGID = UINT_MAX;
+			client.myNetworkAddress = aTargetAddress;
+			client.myName = inet_ntoa(aTargetAddress.sin_addr);
+			client.myTimer = 0.f;
+			client.myHasReplied = false;
+			msg.mySenders.Add(client);
+
+		myImportantMessagesBuffer.Add(msg);
 }
 
 void ServerNetworkManager::ReceiveNetworkMessage(const NetMessageRequestConnect& aMessage, const sockaddr_in& aSenderAddress)
@@ -424,4 +448,9 @@ void ServerNetworkManager::ReceiveNetworkMessage(const NetMessagePingRequest&, c
 	{
 		myNetwork->Send(toSend.myStream, connection.myAddress);
 	}
+}
+
+const std::string& ServerNetworkManager::GetIP() const
+{
+	return myNetwork->GetIP();
 }

@@ -3,6 +3,7 @@
 class NetMessageConnectReply;
 class NetMessageDisconnect;
 class NetMessageDisplayMarker;
+class NetMessageDisplayRespawn;
 class NetMessageEntityState;
 class NetMessageExplosion;
 class NetMessageImportantReply;
@@ -17,6 +18,7 @@ class NetMessageAllClientsComplete;
 class NetMessagePingReply;
 class NetMessagePingRequest;
 class NetMessagePosition;
+class NetMessageRayCastRequest;
 class NetMessageRequestConnect;
 class NetMessageSetLevel;
 class NetMessageRequestStartLevel;
@@ -27,6 +29,8 @@ class NetMessageLoadLevel;
 class NetMessageEnemyShooting;
 class NetMessageActivateSpawnpoint;
 class NetMessageActivateUnit;
+class NetMessageRequestServer;
+class NetMessageReplyServer;
 
 class NetworkSubscriber
 {
@@ -37,6 +41,7 @@ public:
 	virtual void ReceiveNetworkMessage(const NetMessageConnectReply& aMessage, const sockaddr_in& aSenderAddress);
 	virtual void ReceiveNetworkMessage(const NetMessageDisconnect& aMessage, const sockaddr_in& aSenderAddress);
 	virtual void ReceiveNetworkMessage(const NetMessageDisplayMarker& aMessage, const sockaddr_in& aSenderAddress);
+	virtual void ReceiveNetworkMessage(const NetMessageDisplayRespawn& aMessage, const sockaddr_in& aSenderAddress);
 	virtual void ReceiveNetworkMessage(const NetMessageEntityState& aMessage, const sockaddr_in& aSenderAddress);
 	virtual void ReceiveNetworkMessage(const NetMessageExplosion& aMessage, const sockaddr_in& aSenderAddress);
 	virtual void ReceiveNetworkMessage(const NetMessageImportantReply& aMessage, const sockaddr_in& aSenderAddress);
@@ -51,9 +56,12 @@ public:
 	virtual void ReceiveNetworkMessage(const NetMessagePingReply& aMessage, const sockaddr_in& aSenderAddress);
 	virtual void ReceiveNetworkMessage(const NetMessagePingRequest& aMessage, const sockaddr_in& aSenderAddress);
 	virtual void ReceiveNetworkMessage(const NetMessagePosition& aMessage, const sockaddr_in& aSenderAddress);
+	virtual void ReceiveNetworkMessage(const NetMessageRayCastRequest& aMessage, const sockaddr_in& aSenderAddress);
 	virtual void ReceiveNetworkMessage(const NetMessageRequestConnect& aMessage, const sockaddr_in& aSenderAddress);
 	virtual void ReceiveNetworkMessage(const NetMessageSetLevel& aMessage, const sockaddr_in& aSenderAddress);
 	virtual void ReceiveNetworkMessage(const NetMessageRequestStartLevel& aMessage, const sockaddr_in& aSenderAddress);
+	virtual void ReceiveNetworkMessage(const NetMessageReplyServer& aMessage, const sockaddr_in& aSenderAddress);
+	virtual void ReceiveNetworkMessage(const NetMessageRequestServer& aMessage, const sockaddr_in& aSenderAddress);
 	virtual void ReceiveNetworkMessage(const NetMessageShootGrenade& aMessage, const sockaddr_in& aSenderAddress);
 	virtual void ReceiveNetworkMessage(const NetMessageSetActive& aMessage, const sockaddr_in& aSenderAddress);
 	virtual void ReceiveNetworkMessage(const NetMessageText& aMessage, const sockaddr_in& aSenderAddress);

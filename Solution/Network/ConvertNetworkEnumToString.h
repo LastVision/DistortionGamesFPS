@@ -63,6 +63,14 @@ static std::string ConvertNetworkEnumToString(eNetMessageType aType)
 		return "TEXT TO CLIENT";
 	case eNetMessageType::DISPLAY_MARKER:
 		return "DISPLAY MARKER ON CLIENT";
+	case eNetMessageType::DISPLAY_RESPAWN:
+		return "DISPLAY RESPAWN ON CLIENT";
+	case eNetMessageType::SERVER_REPLY:
+		return "SERVER REPLY";
+	case eNetMessageType::SERVER_REQUEST:
+		return "SERVER REQUEST";
+	case eNetMessageType::RAY_CAST_REQUEST:
+		return "CLIENT WANTS TO RAY CAST";
 	case eNetMessageType::_COUNT:
 		DL_ASSERT("_COUNT not used as regular enum value");
 	default:

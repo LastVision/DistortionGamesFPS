@@ -31,13 +31,21 @@ namespace GUI
 
 		//myGUIBone = aModel->GetCurrentAnimation()->GetHiearchyToBone("ui_jnt3");
 		//myHealthBone = aModel->GetCurrentAnimation()->GetHiearchyToBone("health_jnt3");
-		myLeftBar = new Prism::Bar3D({ 0.02f, 0.005f }, myShotgunClipSize, myEffect, eBarPosition::LEFT);
-		myRightBar = new Prism::Bar3D({ 0.02f, 0.005f }, myGrenadeLauncherClipSize, myEffect, eBarPosition::RIGHT);
-		myTopBar = new Prism::Bar3D({ 0.02f, 0.005f }, myPistolClipSize, myEffect, eBarPosition::TOP);
-		myHealthBar = new Prism::Bar3D({ 0.01f, 0.025f }, 15, myEffect, eBarPosition::HEALTH);
+		myLeftBar = new Prism::Bar3D({ 0.02f, 0.005f }, myShotgunClipSize, myEffect, eBarPosition::LEFT, "Data/Resource/Texture/UI/T_ammo_shotgun.dds");
+		myRightBar = new Prism::Bar3D({ 0.02f, 0.005f }, myGrenadeLauncherClipSize, myEffect, eBarPosition::RIGHT, "Data/Resource/Texture/UI/T_ammo_grenade_launcher.dds");
+		myTopBar = new Prism::Bar3D({ 0.02f, 0.005f }, myPistolClipSize, myEffect, eBarPosition::TOP, "Data/Resource/Texture/UI/T_ammo_pistol.dds");
+		myHealthBar = new Prism::Bar3D({ 0.01f, 0.025f }, 15, myEffect, eBarPosition::HEALTH, "Data/Resource/Texture/UI/T_healthbar.dds");
 
-		myTopAmmoLeft = new Prism::Bar3D({ 0.05f, 0.025f }, 1, myEffect, eBarPosition::TOP_AMMOLEFT);
-		myTopAmmoLeft->SetValue(1.f);
+		myHealthIcon = new Prism::Bar3D({ 0.025f, 0.025f }, 1, myEffect, eBarPosition::HEALTH_ICON, "Data/Resource/Texture/UI/T_healthIcon.dds");
+		myHealthIcon->SetValue(1.f);
+		
+		myPistolIcon = new Prism::Bar3D({ 0.025f, 0.025f }, 1, myEffect, eBarPosition::PISTOL_ICON, "Data/Resource/Texture/UI/T_pistolIcon.dds");
+		myPistolIcon->SetValue(1.f);
+		myShotgunIcon = new Prism::Bar3D({ 0.025f, 0.025f }, 1, myEffect, eBarPosition::SHOTGUN_ICON, "Data/Resource/Texture/UI/T_shotgunIcon.dds");
+		myShotgunIcon->SetValue(1.f);
+		myGrenadeLauncherIcon = new Prism::Bar3D({ 0.025f, 0.025f }, 1, myEffect, eBarPosition::GRENADE_LAUNCHER_ICON, "Data/Resource/Texture/UI/T_grenadeLauncherIcon.dds");
+		myGrenadeLauncherIcon->SetValue(1.f);
+			
 		Prism::ModelLoader::GetInstance()->UnPause();
 	}
 
@@ -48,7 +56,10 @@ namespace GUI
 		SAFE_DELETE(myTopBar);
 		SAFE_DELETE(myRightBar);
 		SAFE_DELETE(myHealthBar);
-		SAFE_DELETE(myTopAmmoLeft);
+		SAFE_DELETE(myHealthIcon);
+		SAFE_DELETE(myPistolIcon);
+		SAFE_DELETE(myShotgunIcon);
+		SAFE_DELETE(myGrenadeLauncherIcon);
 	}
 
 	void GUIManager3D::Update(const CU::Matrix44<float>& aUIJointOrientation
@@ -76,6 +87,10 @@ namespace GUI
 		myRightBar->Render(*myScene->GetCamera(), myWristOrientation);
 		myTopBar->Render(*myScene->GetCamera(), myWristOrientation);
 		myHealthBar->Render(*myScene->GetCamera(), myHealthOrientation);
-		myTopAmmoLeft->Render(*myScene->GetCamera(), myWristOrientation);
+		
+		myHealthIcon->Render(*myScene->GetCamera(), myHealthOrientation);
+		myPistolIcon->Render(*myScene->GetCamera(), myWristOrientation);
+		myShotgunIcon->Render(*myScene->GetCamera(), myWristOrientation);
+		myGrenadeLauncherIcon->Render(*myScene->GetCamera(), myWristOrientation);
 	}
 }

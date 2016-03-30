@@ -48,6 +48,8 @@ namespace Prism
 #endif
 		, myInitDone(false)
 		, myCurrentIndex(0)
+		, myIsSwapping(false)
+		, myIsReading(false)
 	{
 		myRaycastJobs[0].Init(64);
 		myRaycastJobs[1].Init(64);
@@ -205,6 +207,8 @@ namespace Prism
 		myQuit = true;
 		myLogicDone = true;
 		mySwapDone = true;
+		myIsSwapping = false;
+		myIsReading = false;
 		myPhysicsThread->join();
 	}
 
@@ -236,6 +240,11 @@ namespace Prism
 
 	void PhysicsManager::Swap()
 	{
+		while (myIsReading == true)
+		{
+		}
+
+		myIsSwapping = true;
 		for each (const PhysicsCallbackStruct& obj in myPhysicsComponentCallbacks)
 		{
 			obj.mySwapOrientationCallback();
@@ -256,6 +265,7 @@ namespace Prism
 		//std::swap(myActorsToWakeUp[0], myActorsToWakeUp[1]);
 
 		//myMoveJobs[myCurrentIndex].myId = -1;
+		myIsSwapping = false;
 	}
 
 	void PhysicsManager::Update()
@@ -379,9 +389,11 @@ namespace Prism
 		myActorsToRemove[myCurrentIndex ^ 1].RemoveAll();
 	}
 
-	void PhysicsManager::RayCast(const CU::Vector3<float>& aOrigin, const CU::Vector3<float>& aNormalizedDirection, float aMaxRayDistance, std::function<void(PhysicsComponent*, const CU::Vector3<float>&, const CU::Vector3<float>&)> aFunctionToCall)
+	void PhysicsManager::RayCast(const CU::Vector3<float>& aOrigin, const CU::Vector3<float>& aNormalizedDirection
+		, float aMaxRayDistance, std::function<void(PhysicsComponent*, const CU::Vector3<float>&
+		, const CU::Vector3<float>&)> aFunctionToCall, const PhysicsComponent* aComponent)
 	{
-		myRaycastJobs[myCurrentIndex].Add(RaycastJob(aOrigin, aNormalizedDirection, aMaxRayDistance, aFunctionToCall));
+		myRaycastJobs[myCurrentIndex].Add(RaycastJob(aOrigin, aNormalizedDirection, aMaxRayDistance, aFunctionToCall, aComponent));
 	}
 
 	void PhysicsManager::onTrigger(physx::PxTriggerPair* somePairs, physx::PxU32 aCount)
@@ -426,7 +438,8 @@ namespace Prism
 			{
 				if (buffer.touches[i].distance < closestDist)
 				{
-					if (buffer.touches[i].distance == 0.f)
+					if (buffer.touches[i].distance == 0.f
+						|| buffer.touches[i].actor->userData == aRaycastJob.myRaycasterComponent)
 					{
 						continue;
 					}
@@ -878,11 +891,16 @@ namespace Prism
 
 	void PhysicsManager::EndFrame()
 	{
+		while (myIsSwapping == true)
+		{
+		}
+		myIsReading = true;
+
 		for (int i = 0; i < myRaycastResults[myCurrentIndex].Size(); ++i)
 		{
 			myRaycastResults[myCurrentIndex][i].myFunctionToCall(myRaycastResults[myCurrentIndex][i].myPhysicsComponent, myRaycastResults[myCurrentIndex][i].myDirection, myRaycastResults[myCurrentIndex][i].myHitPosition);
 		}
-
 		myRaycastResults[myCurrentIndex].RemoveAll();
+		myIsReading = false;
 	}
 }

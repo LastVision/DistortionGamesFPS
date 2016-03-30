@@ -11,6 +11,7 @@ public:
 
 	void StartNetwork(int aPortNum);
 	void Send(const std::vector<char>& anArray);
+	void Send(const std::vector<char>& anArray, const sockaddr_in& aTargetAddress);
 	void Receieve(std::vector<Buffer>& someBuffers);
 
 	bool ConnectToServer(const char* anIP);

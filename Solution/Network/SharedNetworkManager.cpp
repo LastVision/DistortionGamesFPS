@@ -8,6 +8,7 @@
 #include "NetMessageImportantReply.h"
 #include "NetMessageConnectReply.h"
 #include "NetMessageDisplayMarker.h"
+#include "NetMessageDisplayRespawn.h"
 #include "NetMessageEntityState.h"
 #include "NetMessageRequestConnect.h"
 #include "NetMessageOnJoin.h"
@@ -15,10 +16,13 @@
 #include "NetMessageHealthPack.h"
 #include "NetMessageDisconnect.h"
 #include "NetMessageSetLevel.h"
+#include "NetMessageRayCastRequest.h"
 #include "NetMessageRequestStartLevel.h"
 #include "NetMessagePingRequest.h"
 #include "NetMessagePingReply.h"
 #include "NetMessagePosition.h"
+#include "NetMessageReplyServer.h"
+#include "NetMessageRequestServer.h"
 #include "NetMessageOnHit.h"
 #include "NetMessageOnDeath.h"
 #include "NetMessageExplosion.h"
@@ -29,6 +33,9 @@
 #include "NetMessageEnemyShooting.h"
 #include "NetMessageLevelComplete.h"
 #include "NetMessageText.h"
+
+#include <IPHlpApi.h>
+#pragma comment(lib, "IPHLPAPI.lib")
 
 #define BUFFERSIZE 512
 
@@ -61,11 +68,14 @@ void SharedNetworkManager::Initiate()
 		mySubscribers[i].Init(64);
 	}
 	Subscribe(eNetMessageType::IMPORTANT_REPLY, this);
+	Subscribe(eNetMessageType::SERVER_REPLY, this);
+	Subscribe(eNetMessageType::SERVER_REQUEST, this);
 	myHasSent = false;
 	myAllowSendWithoutSubscribers = false;
+	myStopSendMessages = false;
 }
 
-void SharedNetworkManager::StartNetwork(unsigned int /*aPortNum*/)
+void SharedNetworkManager::StartNetwork(unsigned int aPortNum)
 {
 
 	myIsRunning = true;
@@ -87,6 +97,41 @@ void SharedNetworkManager::StartNetwork(unsigned int /*aPortNum*/)
 		CU::SetThreadName(myPingThread->get_id(), "Ping Thread - Client");
 	}
 #endif
+	SetupBroadcastAddress(aPortNum);
+}
+
+void SharedNetworkManager::SetupBroadcastAddress(unsigned int aPortNumber)
+{
+	ZeroMemory(&myBroadcastAddress, sizeof(myBroadcastAddress));
+	hostent* localHosy = gethostbyname("");
+	char* localIP = inet_ntoa(*(struct in_addr*)*localHosy->h_addr_list);
+
+	IP_ADAPTER_INFO * FixedInfo;
+	ULONG ulOutBufLen;
+
+	FixedInfo = (IP_ADAPTER_INFO *)GlobalAlloc(GPTR, sizeof(IP_ADAPTER_INFO));
+	ulOutBufLen = sizeof(IP_ADAPTER_INFO);
+
+	if (ERROR_SUCCESS != GetAdaptersInfo(FixedInfo, &ulOutBufLen))
+	{
+		DL_ASSERT("Cound not get the adapter information!");
+		return;
+	}
+
+	char* subnetmask = FixedInfo->IpAddressList.IpMask.String;
+	in_addr hostIP, mask;
+
+	if (inet_pton(AF_INET, localIP, &hostIP) == 1 &&
+		inet_pton(AF_INET, subnetmask, &mask) == 1)
+	{
+		myBroadcastAddress.sin_addr.S_un.S_addr = hostIP.S_un.S_addr | ~mask.S_un.S_addr;
+	}
+
+	myBroadcastAddress.sin_port = htons(static_cast<uint16_t>(aPortNumber));
+	myBroadcastAddress.sin_family = AF_INET;
+	
+
+
 }
 
 SharedNetworkManager::SharedNetworkManager()
@@ -100,6 +145,8 @@ SharedNetworkManager::SharedNetworkManager()
 SharedNetworkManager::~SharedNetworkManager()
 {
 	UnSubscribe(eNetMessageType::IMPORTANT_REPLY, this);
+	UnSubscribe(eNetMessageType::SERVER_REPLY, this);
+	UnSubscribe(eNetMessageType::SERVER_REQUEST, this);
 
 	for (int i = 0; i < static_cast<int>(eNetMessageType::_COUNT); ++i)
 	{
@@ -259,7 +306,10 @@ void SharedNetworkManager::AddNetworkMessage(std::vector<char> aBuffer, unsigned
 	}
 }
 
-
+void SharedNetworkManager::AddNetworkMessage(std::vector<char> aBuffer, sockaddr_in aTargetAddress)
+{
+	mySendBuffer[myCurrentSendBuffer ^ 1].Add({ aBuffer, aTargetAddress });
+}
 
 void SharedNetworkManager::HandleMessage()
 {
@@ -349,6 +399,18 @@ void SharedNetworkManager::HandleMessage()
 		case eNetMessageType::DISPLAY_MARKER:
 			UnpackAndHandle(NetMessageDisplayMarker(), buffer);
 			break;
+		case eNetMessageType::DISPLAY_RESPAWN:
+			UnpackAndHandle(NetMessageDisplayRespawn(), buffer);
+			break;
+		case eNetMessageType::SERVER_REPLY:
+			UnpackAndHandle(NetMessageReplyServer(), buffer);
+			break;
+		case eNetMessageType::SERVER_REQUEST:
+			UnpackAndHandle(NetMessageRequestServer(), buffer);
+			break;
+		case eNetMessageType::RAY_CAST_REQUEST:
+			UnpackAndHandle(NetMessageRayCastRequest(), buffer);
+			break;
 		default:
 			DL_ASSERT("Unhandled network message type");
 			break;
@@ -356,7 +418,7 @@ void SharedNetworkManager::HandleMessage()
 	}
 }
 
-void SharedNetworkManager::ReceiveNetworkMessage(const NetMessageImportantReply& aMessage, const sockaddr_in&)
+void SharedNetworkManager::ReceiveNetworkMessage(const NetMessageImportantReply& aMessage, const sockaddr_in& aSenderAddress)
 {
 	for (ImportantMessage& msg : myImportantMessagesBuffer)
 	{
@@ -364,7 +426,15 @@ void SharedNetworkManager::ReceiveNetworkMessage(const NetMessageImportantReply&
 		{
 			for (ImportantClient& client : msg.mySenders)
 			{
-				if (aMessage.mySenderID == client.myGID)
+				if (client.myGID == UINT_MAX)
+				{
+					if (client.myNetworkAddress.sin_addr.S_un.S_addr == aSenderAddress.sin_addr.S_un.S_addr)
+					{
+						client.myHasReplied = true;
+						return;
+					}
+				}
+				else if (aMessage.mySenderID == client.myGID)
 				{
 					client.myHasReplied = true;
 					return;

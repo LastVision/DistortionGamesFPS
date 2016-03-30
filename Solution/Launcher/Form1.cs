@@ -17,6 +17,7 @@ namespace Launcher
         private string myDocumentFolder = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
         private string myConfigPath = "Data\\Setting\\SET_config.bin";
         private string myExePath = "Application_Client_Release.exe";
+        private string myServerPath = "Application_Server_Release.exe";
         private string myLogo = "bin\\Data\\Resource\\Texture\\Logo\\T_launcher_logo.png";
         private string myGameName = "Machina";
 
@@ -127,6 +128,11 @@ namespace Launcher
                 }
                 else
                 {
+                    Process server = new Process();
+                    server.StartInfo.FileName = myServerPath;
+                    server.StartInfo.WorkingDirectory = "bin\\";
+                    server.Start();
+                    
                     Process newProcess = new Process();
                     newProcess.StartInfo.FileName = myExePath;
                     newProcess.StartInfo.WorkingDirectory = "bin\\";
@@ -135,7 +141,7 @@ namespace Launcher
                     newProcess.WaitForInputIdle();
                     
                 }
-                Application.Exit();
+                
             }
             else
             {

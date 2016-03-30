@@ -37,8 +37,9 @@ void ServerInGameState::InitState(ServerStateStackProxy* aStateStackProxy)
 {
 	myStateStack = aStateStackProxy;
 	myStateStatus = eStateStatus::KEEP_STATE;
-
+	ServerNetworkManager::GetInstance()->StopSendMessages(true);
 	myLevel = static_cast<ServerLevel*>(myLevelFactory->LoadLevel(myLevelID));
+	ServerNetworkManager::GetInstance()->StopSendMessages(false);
 
 	myIsActiveState = true;
 }
@@ -86,15 +87,21 @@ void ServerInGameState::ReceiveNetworkMessage(const NetMessageLevelComplete& aMe
 		SET_RUNTIME(false);
 		SAFE_DELETE(myLevel);
 		ServerNetworkManager::GetInstance()->AddMessage(NetMessageAllClientsComplete(NetMessageAllClientsComplete::eType::LEVEL_COMPLETE));
+		ServerNetworkManager::GetInstance()->StopSendMessages(true);
 		myLevel = static_cast<ServerLevel*>(myLevelFactory->LoadLevel(myLevelID));
+		ServerNetworkManager::GetInstance()->StopSendMessages(false);
 	}
 }
 
 void ServerInGameState::ReceiveNetworkMessage(const NetMessageRequestStartLevel&, const sockaddr_in&)
 {
-	DL_ASSERT_EXP(myState == eInGameStates::LEVEL_COMPLETE_ALL_CLIENTS_RESPONDED, "Wrong state for Request Start Level message.");
-	myState = eInGameStates::LEVEL_LOAD;
-	ServerNetworkManager::GetInstance()->AddMessage(NetMessageLoadLevel(myLevelID));
+	//DL_ASSERT_EXP(myState == eInGameStates::LEVEL_COMPLETE_ALL_CLIENTS_RESPONDED, "Wrong state for Request Start Level message.");
+	//Can't assert and support space pressed twice at the same time.
+	if (myState == eInGameStates::LEVEL_COMPLETE_ALL_CLIENTS_RESPONDED)
+	{
+		myState = eInGameStates::LEVEL_LOAD;
+		ServerNetworkManager::GetInstance()->AddMessage(NetMessageLoadLevel(myLevelID));
+	}
 }
 
 void ServerInGameState::ReceiveNetworkMessage(const NetMessageLevelLoaded& aMessage, const sockaddr_in&)
