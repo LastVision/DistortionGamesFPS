@@ -154,5 +154,8 @@
     <ClInclude Include="NetMessageRayCastResult.h">
       <Filter>Messages</Filter>
     </ClInclude>
+    <ClInclude Include="NetMessagePressE.h">
+      <Filter>Messages</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
