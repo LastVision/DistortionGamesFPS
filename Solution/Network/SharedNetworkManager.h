@@ -277,6 +277,7 @@ void SharedNetworkManager::SendToSubscriber(const T& aMessage, const sockaddr_in
 	}
 	else if (myAllowSendWithoutSubscribers == false)
 	{
+		DL_DEBUG("Message id %i", static_cast<int>(aMessage.myID));
 		DL_ASSERT("Network message sent without subscriber.");
 	}
 }

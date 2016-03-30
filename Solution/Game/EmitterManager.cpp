@@ -9,7 +9,6 @@
 #include <TimerManager.h>
 #include "CommonHelper.h"
 #include <Camera.h>
-#include <Frustum.h>
 #define FINISHED 0
 #define UNFINISHED 1
 
@@ -17,7 +16,6 @@
 EmitterManager::EmitterManager(const Prism::Camera& aCamera)
 	: myEmitterList(64)
 	, myCamera(aCamera)
-	, myAvailableEmitterCount(0)
 {
 	PostMaster* postMaster = PostMaster::GetInstance();
 	postMaster->Subscribe(eMessageType::PARTICLE, this);
@@ -45,7 +43,7 @@ void EmitterManager::UpdateEmitters(float aDeltaTime, CU::Matrix44f aWorldMatrix
 {
 	for (int i = 0; i < myEmitterList.Size(); ++i)
 	{
-		if (myEmitterList[i]->myGroupIsActive == false)
+		if (myEmitterList[i]->myTypeIsActive == false)
 		{
 			continue;
 		}
@@ -64,17 +62,6 @@ void EmitterManager::UpdateEmitters(float aDeltaTime, CU::Matrix44f aWorldMatrix
 				{
 					continue;
 				}
-				if (instance->GetEntity() != nullptr)
-				{
-					instance->SetPosition({ instance->GetEntity()->GetOrientation().GetPos().x, 3.f
-						, instance->GetEntity()->GetOrientation().GetPos().z });
-				}
-				if (instance->GetCamera() != nullptr)
-				{
-					CU::Vector3<float> pos = instance->GetCamera()->GetOrientation().GetPos();
-					instance->SetPosition({ pos.x, pos.y - 50.f, pos.z + 65.f });
-
-				}
 				instance->Update(aDeltaTime, aWorldMatrix);
 			}
 		}
@@ -86,7 +73,7 @@ void EmitterManager::RenderEmitters()
 	Prism::ParticleDataContainer::GetInstance()->SetGPUData(myCamera);
 	for (int i = 0; i < myEmitterList.Size(); ++i)
 	{
-		if (myEmitterList[i]->myGroupIsActive == false)
+		if (myEmitterList[i]->myTypeIsActive == false)
 		{
 			continue;
 		}
@@ -114,12 +101,11 @@ void EmitterManager::RenderEmitters()
 
 			if (finished >= myEmitterList[i]->myEmitters[k].Size())
 			{
-				myEmitterList[i]->myFinishedCount--;
+				myEmitterList[i]->myActiveCount--;
 				myEmitterList[i]->myFinishedGroups[k] = FINISHED;
-				//if (myEmitterList[i]->myFinishedCount >= PREALLOCATED_EMITTERGROUP)
-				if (myEmitterList[i]->myFinishedCount <= 0)
+				if (myEmitterList[i]->myActiveCount <= 0)
 				{
-					myEmitterList[i]->myGroupIsActive = false;
+					myEmitterList[i]->myTypeIsActive = false;
 				}
 			}
 		}
@@ -139,31 +125,19 @@ void EmitterManager::ReceiveMessage(const EmitterMessage& aMessage)
 	}
 
 	std::string particleType = CU::ToLower(aMessage.myParticleTypeString);
-	if (particleType == "")
-	{
-		return;
-	}
 	DL_ASSERT_EXP(myEmitters.find(particleType) != myEmitters.end(), "Effect did not exist!");
 
 	if (myEmitters[particleType]->myCurrentIndex > (PREALLOCATED_EMITTERGROUP - 1))
 	{
 		myEmitters[particleType]->myCurrentIndex = 0;
-
-		//short index = myEmitters[particleType]->myCurrentIndex;
-		//	DL_ASSERT_EXP(myEmitters[particleType]->myEmitters[index][0]->IsActive() == false, "Particle popped");
 	}
 
 	short index = myEmitters[particleType]->myCurrentIndex;
 
-	/*if (myEmitters[particleType]->myEmitters[index][0]->IsActive() == true)
-	{
-	return;
-	}*/
 
 	for (int i = 0; i < myEmitters[particleType]->myEmitters[index].Size(); ++i)
 	{
 		Prism::ParticleEmitterInstance* instance = myEmitters[particleType]->myEmitters[index][i];
-
 
 		instance->SetEntity(nullptr);
 
@@ -191,13 +165,11 @@ void EmitterManager::ReceiveMessage(const EmitterMessage& aMessage)
 		{
 			instance->SetEmitterLifeTime(aMessage.myEmitterLifeTime);
 		}
-
-
-
 	}
+
 	myEmitters[particleType]->myFinishedGroups[index] = UNFINISHED;
-	myEmitters[particleType]->myFinishedCount++;
-	myEmitters[particleType]->myGroupIsActive = true;
+	myEmitters[particleType]->myActiveCount++;
+	myEmitters[particleType]->myTypeIsActive = true;
 	myEmitters[particleType]->myCurrentIndex++;
 }
 
@@ -238,24 +210,13 @@ void EmitterManager::ReadList(const std::string& aPath, const std::string& anID,
 	{
 		std::string entityPath = "";
 		rootDocument.ForceReadAttribute(e, "src", entityPath);
-		if (entityPath == "Data/Resource/Particle/P_emitter_weather_snow_medium.xml" ||
-			entityPath == "Data/Resource/Particle/P_emitter_weather_snow_small.xml")
-		{
-			Prism::ParticleEmitterInstance* newEmitter;
-			newEmitter = new Prism::ParticleEmitterInstance(Prism::ParticleDataContainer::GetInstance()->
-				GetParticleData(entityPath), true);
-			newEmitter->SetShouldAlwaysShow(true);
-			myEmitters[anID]->myEmitters[anIndex].Add(newEmitter);
-		}
-		else if (entityPath != "")
-		{
-			bool allowManyParticles = true;
-			Prism::ParticleEmitterInstance* newEmitter;
-			newEmitter = new Prism::ParticleEmitterInstance(Prism::ParticleDataContainer::GetInstance()->
-				GetParticleData(entityPath), allowManyParticles);
-			newEmitter->SetShouldAlwaysShow(false);
-			myEmitters[anID]->myEmitters[anIndex].Add(newEmitter);
-		}
+		//bool allowManyParticles = true;
+		Prism::ParticleEmitterInstance* newEmitter;
+		newEmitter = new Prism::ParticleEmitterInstance(Prism::ParticleDataContainer::GetInstance()->
+			GetParticleData(entityPath), true);
+		newEmitter->SetShouldAlwaysShow(false);
+		myEmitters[anID]->myEmitters[anIndex].Add(newEmitter);
+
 	}
 	rootDocument.CloseDocument();
 }
@@ -264,8 +225,8 @@ void EmitterManager::ReadList(const std::string& aPath, const std::string& anID,
 EmitterData::EmitterData(const std::string& aType)
 	: myType(aType)
 	, myCurrentIndex(0)
-	, myFinishedCount(0)
-	, myGroupIsActive(false)
+	, myActiveCount(0)
+	, myTypeIsActive(false)
 {
 	for (int i = 0; i < PREALLOCATED_EMITTERGROUP; ++i)
 	{

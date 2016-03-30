@@ -56,6 +56,9 @@ namespace Prism
 		element = read.ForceFindFirstChild(emitter, "Texture");
 		read.ReadAttribute(element, "filepath", myTextureName);
 
+		element = read.ForceFindFirstChild(emitter, "ActiveAtStart");
+		read.ReadAttribute(element, "value", myIsActiveAtStart);
+
 		element = read.ForceFindFirstChild(emitter, "CircleEmitter");
 		read.ReadAttribute(element, "value", myIsCircle);
 
@@ -65,6 +68,22 @@ namespace Prism
 		element = read.ForceFindFirstChild(emitter, "EmitterSize");
 		read.ReadAttribute(element, "x", "y", "z", myEmitterSize);
 		myEmitterSize *= 0.5f;
+
+
+
+
+
+
+		element = read.ForceFindFirstChild(emitter, "EmitterLifeTime");
+		read.ReadAttribute(element, "value", myEmitterLifeTime);
+		if (myEmitterLifeTime < 0)
+		{
+			myUseEmitterLifeTime = false;
+		}
+		else
+		{
+			myUseEmitterLifeTime = true;
+		}
 
 		//element = read.ForceFindFirstChild(emitter, "ParticleRotation");
 		//read.ReadAttribute(element, "min", myMinRotation);
@@ -79,6 +98,10 @@ namespace Prism
 		//element = read.ForceFindFirstChild(emitter, "ParticleMinVelocity");
 		//read.ReadAttribute(element, "x", "y", "z", myMinVelocity);
 
+
+		//element = read.ForceFindFirstChild(emitter, "ParticleDirection");
+		//read.ReadAttribute(element, "x", "y", "z", myDirection);
+
 		element = read.ForceFindFirstChild(emitter, "ParticleStartColor");
 		read.ReadAttribute(element, "r", "g", "b", myData.myStartColor);
 
@@ -88,16 +111,7 @@ namespace Prism
 		element = read.ForceFindFirstChild(emitter, "ParticleLifeTime");
 		read.ReadAttribute(element, "value", myData.myParticleLifeTime);
 
-		element = read.ForceFindFirstChild(emitter, "EmitterLifeTime");
-		read.ReadAttribute(element, "value", myEmitterLifeTime);
-		if (myEmitterLifeTime < 0)
-		{
-			myUseEmitterLifeTime = false;
-		}
-		else
-		{
-			myUseEmitterLifeTime = true;
-		}
+
 		element = read.ForceFindFirstChild(emitter, "EmittsPerSecond");
 		read.ReadAttribute(element, "value", myEmissionRate);
 		myEmissionRate = 1 / myEmissionRate;
@@ -124,8 +138,7 @@ namespace Prism
 		element = read.ForceFindFirstChild(emitter, "ParticleAlphaStart");
 		read.ReadAttribute(element, "value", myData.myStartAlpha);
 
-		element = read.ForceFindFirstChild(emitter, "ActiveAtStart");
-		read.ReadAttribute(element, "value", myIsActiveAtStart);
+
 
 		//element = read.ForceFindFirstChild(emitter, "UseAlphaDelta");
 		//read.ReadAttribute(element, "value", myUseAlphaDelta);
