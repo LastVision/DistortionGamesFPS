@@ -2,6 +2,7 @@
 #include "CollisionNote.h"
 #include <GameStateMessage.h>
 #include <NetMessageDisplayMarker.h>
+#include <NetMessageDisplayRespawn.h>
 #include <NetMessageSetActive.h>
 #include "PhysicsComponent.h"
 #include <PostMaster.h>
@@ -30,6 +31,13 @@ void TriggerComponent::Update(float aDelta)
 	if (myHasTriggered == true && myTriggerType == eTriggerType::RESPAWN)
 	{
 		myRespawnTime -= aDelta * myPlayersInside;
+
+		if (myLastRespawnValue > int(myRespawnTime))
+		{
+			myLastRespawnValue = int(myRespawnTime);
+			SharedNetworkManager::GetInstance()->AddMessage(NetMessageDisplayRespawn(myEntity.GetOrientation().GetPos()
+				, true, myLastRespawnValue, myData.myValue));
+		}
 
 		if (myRespawnTime <= 0.f)
 		{

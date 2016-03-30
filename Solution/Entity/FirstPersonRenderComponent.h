@@ -15,6 +15,14 @@ namespace Prism
 	class SpriteProxy;
 }
 
+struct CoOpRespawn
+{
+	CU::Vector3<float> myPosition;
+	int myCurrentValue;
+	int myMaxValue;
+	int myGID;
+};
+
 class FirstPersonRenderComponent : public Component, public NetworkSubscriber
 {
 public:
@@ -40,6 +48,7 @@ public:
 	void ReceiveNetworkMessage(const NetMessageOnHit& aMessage, const sockaddr_in& aSenderAddress) override;
 	void ReceiveNetworkMessage(const NetMessageHealth& aMessage, const sockaddr_in& aSenderAddress) override;
 	void ReceiveNetworkMessage(const NetMessageDisplayMarker& aMessage, const sockaddr_in& aSenderAddress) override;
+	void ReceiveNetworkMessage(const NetMessageDisplayRespawn& aMessage, const sockaddr_in& aSenderAddress) override;
 
 private:
 	void UpdateJoints();
@@ -59,6 +68,7 @@ private:
 	Prism::SpriteProxy* myCoOpSprite;
 
 	CU::GrowingArray<CU::Vector3<float>> myCoOpPositions;
+	CU::GrowingArray<CoOpRespawn> myCoOpRespawns;
 	CU::Vector3<float> myMarkerPosition;
 
 	bool myRenderMarker;

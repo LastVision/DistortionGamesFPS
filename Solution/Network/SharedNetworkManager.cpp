@@ -8,6 +8,7 @@
 #include "NetMessageImportantReply.h"
 #include "NetMessageConnectReply.h"
 #include "NetMessageDisplayMarker.h"
+#include "NetMessageDisplayRespawn.h"
 #include "NetMessageEntityState.h"
 #include "NetMessageRequestConnect.h"
 #include "NetMessageOnJoin.h"
@@ -351,6 +352,9 @@ void SharedNetworkManager::HandleMessage()
 			break;
 		case eNetMessageType::DISPLAY_MARKER:
 			UnpackAndHandle(NetMessageDisplayMarker(), buffer);
+			break;
+		case eNetMessageType::DISPLAY_RESPAWN:
+			UnpackAndHandle(NetMessageDisplayRespawn(), buffer);
 			break;
 		case eNetMessageType::SERVER_REPLY:
 			UnpackAndHandle(NetMessageReplyServer(), buffer);

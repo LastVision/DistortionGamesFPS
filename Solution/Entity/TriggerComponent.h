@@ -36,6 +36,7 @@ private:
 	
 	int myRespawnValue;
 	float myRespawnTime;
+	int myLastRespawnValue;
 };
 
 inline eComponentType TriggerComponent::GetTypeStatic()
