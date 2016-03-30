@@ -11,7 +11,7 @@ public:
 	static void Destroy();
 	static ServerNetworkManager* GetInstance();
 
-	void StartNetwork(unsigned int aPortNum = 13398) override;
+	void StartNetwork(unsigned int aPortNum = 13397) override;
 
 	bool ListContainsAllClients(const CU::GrowingArray<unsigned int>& someClientIDs) const;
 	void AllowNewConnections(bool aValue);

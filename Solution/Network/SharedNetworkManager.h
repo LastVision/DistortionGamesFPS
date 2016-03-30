@@ -60,6 +60,8 @@ public:
 	bool IsSubscribed(const eNetMessageType aMessageType, NetworkSubscriber* aSubscriber);
 
 	void ReceiveNetworkMessage(const NetMessageImportantReply& aMessage, const sockaddr_in& aSenderAddress) override;
+	void ReceiveNetworkMessage(const NetMessageReplyServer&, const sockaddr_in&) override {}
+	void ReceiveNetworkMessage(const NetMessageRequestServer&, const sockaddr_in&) override {}
 
 	float GetRepliesPerSecond();
 
@@ -286,9 +288,7 @@ void SharedNetworkManager::SendToSubscriber(const T& aMessage, const sockaddr_in
 			subscribers[i].myNetworkSubscriber->ReceiveNetworkMessage(aMessage, aSenderAddress);
 		}
 	}
-	else if ((aMessage.myID != static_cast<int>(eNetMessageType::SERVER_REPLY) 
-		&& aMessage.myID != static_cast<int>(eNetMessageType::SERVER_REQUEST)) 
-		|| (myAllowSendWithoutSubscribers == false))
+	else if (myAllowSendWithoutSubscribers == false)
 	{
 		DL_DEBUG("Message id %i", static_cast<int>(aMessage.myID));
 		DL_ASSERT("Network message sent without subscriber.");

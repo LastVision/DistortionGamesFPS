@@ -149,6 +149,14 @@ void ServerSelectState::ReceiveNetworkMessage(const NetMessageReplyServer& aMess
 	newServer.myIp = aMessage.myIP;
 	newServer.myName = aMessage.myServerName;
 
+	for (ServerSelectState::Server server : myServers)
+	{
+		if (server == newServer)
+		{
+			return;
+		}
+	}
+
 	myServers.Add(newServer);
 	for (int i = 0; i < myServers.Size(); ++i)
 	{

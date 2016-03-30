@@ -32,6 +32,8 @@ private:
 	{
 		std::string myIp;
 		std::string myName;
+
+		bool operator==(const Server& aServer){ return (aServer.myIp == myIp && aServer.myName == myName); }
 	};
 	GUI::GUIManager* myGUIManager;
 

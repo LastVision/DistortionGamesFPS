@@ -11,7 +11,7 @@ public:
 	static void Destroy();
 	static ClientNetworkManager* GetInstance();
 
-	void StartNetwork(unsigned int aPortNum = 13398) override;
+	void StartNetwork(unsigned int aPortNum = 13397) override;
 	void ConnectToServer(const char* aServerIP = "127.0.0.1");
 	unsigned int GetGID() const;
 	const CU::GrowingArray<OtherClients>& GetClients();
