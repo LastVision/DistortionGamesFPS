@@ -78,7 +78,8 @@ void ServerNetwork::StartServer(unsigned int aPortNum)
 
 
 	Utility::Printf("Server successfully started!", LIGHT_GREEN_TEXT);
-
+	hostent* localHosy = gethostbyname("");
+	myIP = inet_ntoa(*(struct in_addr*)*localHosy->h_addr_list);
 }
 
 void ServerNetwork::Send(const std::vector<char>& anArray, const sockaddr_in& anAddress)
@@ -133,10 +134,9 @@ void ServerNetwork::Receieve(std::vector<Buffer>& someBuffers)
 
 void ServerNetwork::PrintStatus()
 {
-	hostent* localHosy = gethostbyname("");
-	char* localIP = inet_ntoa(*(struct in_addr*)*localHosy->h_addr_list);
+	
 
 	std::string toPrint = "------ SERVER ONLINE ------\n------- SERVER INFO -------\n";
-	toPrint += "Server IP: " + std::string(localIP) + "\nServer Port: " + myPort + "\n---------------------------\n";
+	toPrint += "Server IP: " + std::string(myIP) + "\nServer Port: " + myPort + "\n---------------------------\n";
 	Utility::Printf(toPrint, eConsoleColor::LIGHT_BLUE_TEXT);
 }

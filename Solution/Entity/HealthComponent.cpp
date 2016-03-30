@@ -24,7 +24,7 @@ HealthComponent::HealthComponent(Entity& anEntity, const HealthComponentData& so
 	SharedNetworkManager::GetInstance()->Subscribe(eNetMessageType::ON_HIT, this);
 	if (myEntity.GetSubType() == "playerserver")
 	{
-		SharedNetworkManager::GetInstance()->AddMessage<NetMessageHealth>(NetMessageHealth(someData.myMaxHealth, myCurrentHealth), myEntity.GetGID());
+		SharedNetworkManager::GetInstance()->AddMessage<NetMessageHealth>(NetMessageHealth(someData.myMaxHealth, myCurrentHealth, myEntity.GetGID()), myEntity.GetGID());
 	}
 }
 
@@ -57,7 +57,7 @@ void HealthComponent::TakeDamage(int aDamage)
 	myCurrentHealth -= aDamage;
 	if (myEntity.GetSubType() == "playerserver")
 	{
-		SharedNetworkManager::GetInstance()->AddMessage<NetMessageHealth>(NetMessageHealth(myData.myMaxHealth, myCurrentHealth), myEntity.GetGID());
+		SharedNetworkManager::GetInstance()->AddMessage<NetMessageHealth>(NetMessageHealth(myData.myMaxHealth, myCurrentHealth, myEntity.GetGID()), myEntity.GetGID());
 	}
 	if (myEntity.GetIsClient() == false)
 	{
@@ -108,7 +108,7 @@ void HealthComponent::Heal(int anAmount)
 	}
 	if (myEntity.GetSubType() == "playerserver")
 	{
-		SharedNetworkManager::GetInstance()->AddMessage<NetMessageHealth>(NetMessageHealth(myData.myMaxHealth, myCurrentHealth), myEntity.GetGID());
+		SharedNetworkManager::GetInstance()->AddMessage<NetMessageHealth>(NetMessageHealth(myData.myMaxHealth, myCurrentHealth, myEntity.GetGID()), myEntity.GetGID());
 	}
 }
 

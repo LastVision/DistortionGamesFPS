@@ -140,7 +140,14 @@ void ClientNetworkManager::SendThread()
 	{
 		for (SendBufferMessage arr : mySendBuffer[myCurrentSendBuffer])
 		{
-			myNetwork->Send(arr.myBuffer);
+			if (arr.myTargetID == UINT_MAX)
+			{
+				myNetwork->Send(arr.myBuffer, arr.myTargetAddress);
+			}
+			else
+			{
+				myNetwork->Send(arr.myBuffer);
+			}
 		}
 
 		mySendBuffer[myCurrentSendBuffer].RemoveAll();
@@ -251,7 +258,7 @@ void ClientNetworkManager::ReceiveNetworkMessage(const NetMessageOnJoin& aMessag
 	}
 }
 
-void ClientNetworkManager::ReceiveNetworkMessage(const NetMessagePingReply& aMessage, const sockaddr_in& aSenderAddress)
+void ClientNetworkManager::ReceiveNetworkMessage(const NetMessagePingReply&, const sockaddr_in&)
 {
 	unsigned long long old = myCurrentTimeStamp;
 	myCurrentTimeStamp = myTimeManager->GetMasterTimer().GetTime().GetMilliseconds();
@@ -273,7 +280,14 @@ void ClientNetworkManager::UpdateImportantMessages(float aDeltaTime)
 				if (client.myTimer >= 1.f)
 				{
 					client.myTimer = 0.f;
-					myNetwork->Send(msg.myData);
+					if (client.myGID == UINT_MAX)
+					{
+						myNetwork->Send(msg.myData, client.myNetworkAddress);
+					}
+					else 
+					{
+						myNetwork->Send(msg.myData);
+					}
 				}
 			}
 		}
@@ -298,5 +312,24 @@ void ClientNetworkManager::AddImportantMessage(std::vector<char> aBuffer, unsign
 	server.myTimer = 0.f;
 	server.myHasReplied = false;
 	msg.mySenders.Add(server);
+	myImportantMessagesBuffer.Add(msg);
+}
+
+void ClientNetworkManager::AddImportantMessage(std::vector<char> aBuffer, unsigned int aImportantID, const sockaddr_in& aTargetAddress)
+{
+	ImportantMessage msg;
+	msg.myData = aBuffer;
+	msg.myImportantID = aImportantID;
+	msg.myMessageType = aBuffer[0];
+	msg.mySenders.Init(1);
+
+	ImportantClient client;
+	client.myGID = UINT_MAX;
+	client.myNetworkAddress = aTargetAddress;
+	client.myName = inet_ntoa(aTargetAddress.sin_addr);
+	client.myTimer = 0.f;
+	client.myHasReplied = false;
+	msg.mySenders.Add(client);
+
 	myImportantMessagesBuffer.Add(msg);
 }

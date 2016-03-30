@@ -145,5 +145,14 @@
     <ClInclude Include="NetMessageExplosion.h">
       <Filter>Messages</Filter>
     </ClInclude>
+    <ClInclude Include="NetMessageDisplayRespawn.h">
+      <Filter>Messages</Filter>
+    </ClInclude>
+    <ClInclude Include="NetMessageRayCastRequest.h">
+      <Filter>Messages</Filter>
+    </ClInclude>
+    <ClInclude Include="NetMessageRayCastResult.h">
+      <Filter>Messages</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

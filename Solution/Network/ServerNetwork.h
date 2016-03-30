@@ -15,6 +15,8 @@ public:
 	void Receieve(std::vector<Buffer>& someBuffers);
 
 	void PrintStatus();
+
+	const std::string& GetIP() const;
 private:
 
 	void Send(NetMessageOnJoin join);
@@ -26,9 +28,10 @@ private:
 	WSADATA myWSAData;
 
 	std::string myPort;
-
-
-	
-
+	std::string myIP;
 };
 
+inline const std::string& ServerNetwork::GetIP() const
+{
+	return myIP;
+}

@@ -8,6 +8,7 @@
 #include "NetMessageImportantReply.h"
 #include "NetMessageConnectReply.h"
 #include "NetMessageDisplayMarker.h"
+#include "NetMessageDisplayRespawn.h"
 #include "NetMessageEntityState.h"
 #include "NetMessageRequestConnect.h"
 #include "NetMessageOnJoin.h"
@@ -31,6 +32,9 @@
 #include "NetMessageEnemyShooting.h"
 #include "NetMessageLevelComplete.h"
 #include "NetMessageText.h"
+
+#include <IPHlpApi.h>
+#pragma comment(lib, "IPHLPAPI.lib")
 
 #define BUFFERSIZE 512
 
@@ -68,7 +72,7 @@ void SharedNetworkManager::Initiate()
 	myStopSendMessages = false;
 }
 
-void SharedNetworkManager::StartNetwork(unsigned int /*aPortNum*/)
+void SharedNetworkManager::StartNetwork(unsigned int aPortNum)
 {
 
 	myIsRunning = true;
@@ -90,6 +94,41 @@ void SharedNetworkManager::StartNetwork(unsigned int /*aPortNum*/)
 		CU::SetThreadName(myPingThread->get_id(), "Ping Thread - Client");
 	}
 #endif
+	SetupBroadcastAddress(aPortNum);
+}
+
+void SharedNetworkManager::SetupBroadcastAddress(unsigned int aPortNumber)
+{
+	ZeroMemory(&myBroadcastAddress, sizeof(myBroadcastAddress));
+	hostent* localHosy = gethostbyname("");
+	char* localIP = inet_ntoa(*(struct in_addr*)*localHosy->h_addr_list);
+
+	IP_ADAPTER_INFO * FixedInfo;
+	ULONG ulOutBufLen;
+
+	FixedInfo = (IP_ADAPTER_INFO *)GlobalAlloc(GPTR, sizeof(IP_ADAPTER_INFO));
+	ulOutBufLen = sizeof(IP_ADAPTER_INFO);
+
+	if (ERROR_SUCCESS != GetAdaptersInfo(FixedInfo, &ulOutBufLen))
+	{
+		DL_ASSERT("Cound not get the adapter information!");
+		return;
+	}
+
+	char* subnetmask = FixedInfo->IpAddressList.IpMask.String;
+	in_addr hostIP, mask;
+
+	if (inet_pton(AF_INET, localIP, &hostIP) == 1 &&
+		inet_pton(AF_INET, subnetmask, &mask) == 1)
+	{
+		myBroadcastAddress.sin_addr.S_un.S_addr = hostIP.S_un.S_addr | ~mask.S_un.S_addr;
+	}
+
+	myBroadcastAddress.sin_port = htons(static_cast<uint16_t>(aPortNumber));
+	myBroadcastAddress.sin_family = AF_INET;
+	
+
+
 }
 
 SharedNetworkManager::SharedNetworkManager()
@@ -262,7 +301,10 @@ void SharedNetworkManager::AddNetworkMessage(std::vector<char> aBuffer, unsigned
 	}
 }
 
-
+void SharedNetworkManager::AddNetworkMessage(std::vector<char> aBuffer, sockaddr_in aTargetAddress)
+{
+	mySendBuffer[myCurrentSendBuffer ^ 1].Add({ aBuffer, aTargetAddress });
+}
 
 void SharedNetworkManager::HandleMessage()
 {
@@ -352,6 +394,9 @@ void SharedNetworkManager::HandleMessage()
 		case eNetMessageType::DISPLAY_MARKER:
 			UnpackAndHandle(NetMessageDisplayMarker(), buffer);
 			break;
+		case eNetMessageType::DISPLAY_RESPAWN:
+			UnpackAndHandle(NetMessageDisplayRespawn(), buffer);
+			break;
 		case eNetMessageType::SERVER_REPLY:
 			UnpackAndHandle(NetMessageReplyServer(), buffer);
 			break;
@@ -365,7 +410,7 @@ void SharedNetworkManager::HandleMessage()
 	}
 }
 
-void SharedNetworkManager::ReceiveNetworkMessage(const NetMessageImportantReply& aMessage, const sockaddr_in&)
+void SharedNetworkManager::ReceiveNetworkMessage(const NetMessageImportantReply& aMessage, const sockaddr_in& aSenderAddress)
 {
 	for (ImportantMessage& msg : myImportantMessagesBuffer)
 	{
@@ -373,7 +418,15 @@ void SharedNetworkManager::ReceiveNetworkMessage(const NetMessageImportantReply&
 		{
 			for (ImportantClient& client : msg.mySenders)
 			{
-				if (aMessage.mySenderID == client.myGID)
+				if (client.myGID == UINT_MAX)
+				{
+					if (client.myNetworkAddress.sin_addr.S_un.S_addr == aSenderAddress.sin_addr.S_un.S_addr)
+					{
+						client.myHasReplied = true;
+						return;
+					}
+				}
+				else if (aMessage.mySenderID == client.myGID)
 				{
 					client.myHasReplied = true;
 					return;
