@@ -61,7 +61,7 @@ void SharedNetworkManager::Initiate()
 		mySubscribers[i].Init(64);
 	}
 	Subscribe(eNetMessageType::IMPORTANT_REPLY, this);
-
+	myHasSent = false;
 	myAllowSendWithoutSubscribers = false;
 }
 
@@ -71,17 +71,20 @@ void SharedNetworkManager::StartNetwork(unsigned int /*aPortNum*/)
 	myIsRunning = true;
 	myReceieveThread = new std::thread([&] {ReceieveThread(); });
 	mySendThread = new std::thread([&] {SendThread(); });
+	myPingThread = new std::thread([&] {PingThread(); });
 
 #ifdef _DEBUG
 	if (myIsServer == true)
 	{
 		CU::SetThreadName(myReceieveThread->get_id(), "Receieve Thread - Server");
 		CU::SetThreadName(mySendThread->get_id(), "Send Thread - Server");
+		CU::SetThreadName(myPingThread->get_id(), "Ping Thread - Server");
 	}
 	else
 	{
 		CU::SetThreadName(myReceieveThread->get_id(), "Receieve Thread - Client");
 		CU::SetThreadName(mySendThread->get_id(), "Send Thread - Client");
+		CU::SetThreadName(myPingThread->get_id(), "Ping Thread - Client");
 	}
 #endif
 }
@@ -114,15 +117,16 @@ void SharedNetworkManager::Update(float aDelta)
 	SwapBuffer();
 	UpdateImportantMessages(aDelta);
 	UpdateImportantReceivedMessages(aDelta);
+
 	myPingTime -= aDelta;
 	myResponsTime += aDelta;
 	if (myPingTime <= 0.f)
 	{
-		myResponsTime = 0.f;
-		AddMessage(NetMessagePingRequest());
 		myDataToPrint = myDataSent;
 		myDataSent = 0;
 		myPingTime = 1.f;
+		myRepliesPerSecond = 1.f / myReplyCount;
+		myReplyCount = 0;
 	}
 	HandleMessage();
 }
@@ -232,9 +236,9 @@ eNetMessageType SharedNetworkManager::ReadType(const std::vector<char>& aBuffer)
 	return static_cast<eNetMessageType>(aBuffer[0]);
 }
 
-unsigned short SharedNetworkManager::GetResponsTime() const
+unsigned long long SharedNetworkManager::GetResponsTime() const
 {
-	return static_cast<unsigned short>(myMS);
+	return myMS;
 }
 
 double SharedNetworkManager::GetDataSent() const
@@ -254,6 +258,8 @@ void SharedNetworkManager::AddNetworkMessage(std::vector<char> aBuffer, unsigned
 		mySendBuffer[myCurrentSendBuffer ^ 1].Add({ aBuffer, aTargetID });
 	}
 }
+
+
 
 void SharedNetworkManager::HandleMessage()
 {
@@ -350,11 +356,6 @@ void SharedNetworkManager::HandleMessage()
 	}
 }
 
-void SharedNetworkManager::ReceiveNetworkMessage(const NetMessagePingReply&, const sockaddr_in&)
-{
-	myMS = myResponsTime * 1000.f;
-}
-
 void SharedNetworkManager::ReceiveNetworkMessage(const NetMessageImportantReply& aMessage, const sockaddr_in&)
 {
 	for (ImportantMessage& msg : myImportantMessagesBuffer)
@@ -371,6 +372,11 @@ void SharedNetworkManager::ReceiveNetworkMessage(const NetMessageImportantReply&
 			}
 		}
 	}
+}
+
+float SharedNetworkManager::GetRepliesPerSecond()
+{
+	return myRepliesPerSecond;
 }
 
 bool SharedNetworkManager::AlreadyReceived(const NetMessage& aMessage)

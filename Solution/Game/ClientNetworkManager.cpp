@@ -16,11 +16,12 @@
 #include <NetMessageOnDeath.h>
 #include <NetMessageLoadLevel.h>
 
+#include <TimerManager.h>
+
 #define BUFFERSIZE 512
 
 ClientNetworkManager::ClientNetworkManager()
 {
-	
 }
 
 ClientNetworkManager::~ClientNetworkManager()
@@ -83,13 +84,19 @@ void ClientNetworkManager::Initiate()
 	myNetwork = new ClientNetwork();
 	myGID = 0;
 	__super::Initiate();
+
+
 	myClients.Init(16);
+
+	myTimeManager = new CU::TimerManager();
+
 	Subscribe(eNetMessageType::CONNECT_REPLY, this);
 	Subscribe(eNetMessageType::ON_CONNECT, this);
 	Subscribe(eNetMessageType::ON_DISCONNECT, this);
 	Subscribe(eNetMessageType::ON_JOIN, this);
 	Subscribe(eNetMessageType::PING_REQUEST, this);
 	Subscribe(eNetMessageType::PING_REPLY, this);
+
 }
 
 void ClientNetworkManager::StartNetwork(unsigned int aPortNum)
@@ -132,6 +139,28 @@ void ClientNetworkManager::SendThread()
 	}
 }
 
+void ClientNetworkManager::PingThread()
+{
+	while (myIsRunning == true)
+	{
+		if (myIsOnline == true)
+		{
+			NetMessagePingRequest toSend;
+			toSend.PackMessage();
+			myNetwork->Send(toSend.myStream);
+
+			if (myHasSent == false)
+			{
+				myCurrentTimeStamp = myTimeManager->GetMasterTimer().GetTime().GetMilliseconds();
+				myHasSent = true;
+			}
+
+			Sleep(1000);
+		}
+		Sleep(1);
+	}
+}
+
 void ClientNetworkManager::ConnectToServer(const char* aServerIP)
 {
 	DL_ASSERT_EXP(myIsServer == false, "Tried to Connect to Server from Server... this doesn't seem right.");
@@ -153,8 +182,14 @@ const CU::GrowingArray<OtherClients>& ClientNetworkManager::GetClients()
 	return myClients;
 }
 
+void ClientNetworkManager::Update(float aDeltaTime)
+{
+	__super::Update(aDeltaTime);
+	myTimeManager->Update();
+}
+
 void ClientNetworkManager::DebugPrint()
-{ 
+{
 	DEBUG_PRINT(myGID);
 	DEBUG_PRINT(myName);
 
@@ -174,8 +209,11 @@ void ClientNetworkManager::ReceiveNetworkMessage(const NetMessageDisconnect& aMe
 }
 
 void ClientNetworkManager::ReceiveNetworkMessage(const NetMessagePingRequest&, const sockaddr_in&)
-	{
-	AddMessage(NetMessagePingReply());
+{
+	NetMessagePingReply toSend;
+	toSend.mySenderID = myGID;
+	toSend.PackMessage();
+	myNetwork->Send(toSend.myStream);
 }
 
 void ClientNetworkManager::ReceiveNetworkMessage(const NetMessageConnectReply& aMessage, const sockaddr_in&)
@@ -195,12 +233,20 @@ void ClientNetworkManager::ReceiveNetworkMessage(const NetMessageRequestConnect&
 	DL_ASSERT("Should not happen");
 }
 
-void ClientNetworkManager::ReceiveNetworkMessage(const NetMessageOnJoin& aMessage, const sockaddr_in& )
+void ClientNetworkManager::ReceiveNetworkMessage(const NetMessageOnJoin& aMessage, const sockaddr_in&)
 {
 	if (aMessage.myOtherClientID != myGID)
 	{
 		myClients.Add(OtherClients(aMessage.myName, aMessage.myOtherClientID));
 	}
+}
+
+void ClientNetworkManager::ReceiveNetworkMessage(const NetMessagePingReply& aMessage, const sockaddr_in& aSenderAddress)
+{
+	unsigned long long old = myCurrentTimeStamp;
+	myCurrentTimeStamp = myTimeManager->GetMasterTimer().GetTime().GetMilliseconds();
+	myMS = (myCurrentTimeStamp - old);
+	myHasSent = false;
 }
 
 void ClientNetworkManager::UpdateImportantMessages(float aDeltaTime)

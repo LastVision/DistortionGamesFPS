@@ -216,7 +216,7 @@ void DL_Debug::Debug::AssertMessage(const char *aFileName, int aLine, const char
 
 	//_wassert(wc, 0, aLine);
 
- 	_wassert(wc, _CRT_WIDE(__FILE__), __LINE__);
+	_wassert(wc, _CRT_WIDE(__FILE__), __LINE__);
 	delete[] wc;
 }
 

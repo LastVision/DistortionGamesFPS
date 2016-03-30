@@ -20,13 +20,16 @@
 #include <NetMessageOnDeath.h>
 #include <NetMessageLevelLoaded.h>
 
+#include <TimerManager.h>
+
 #define BUFFERSIZE 512
-#define RECONNECT_ATTEMPTS 10000
+#define RECONNECT_ATTEMPTS 100
 
 ServerNetworkManager::ServerNetworkManager()
 	: myAllowNewConnections(false)
+	, myPingTime(1.f)
 {
-	
+
 }
 
 ServerNetworkManager::~ServerNetworkManager()
@@ -44,16 +47,21 @@ ServerNetworkManager::~ServerNetworkManager()
 	if (myReceieveThread != nullptr)
 	{
 		myReceieveThread->join();
-		delete myReceieveThread;
-		myReceieveThread = nullptr;
+		SAFE_DELETE(myReceieveThread);
 	}
 
 	if (mySendThread != nullptr)
 	{
 		mySendThread->join();
-		delete mySendThread;
-		mySendThread = nullptr;
+		SAFE_DELETE(mySendThread);
 	}
+
+	if (myPingThread != nullptr)
+	{
+		myPingThread->join();
+		SAFE_DELETE(myPingThread);
+	}
+
 	delete myNetwork;
 	myNetwork = nullptr;
 }
@@ -66,6 +74,7 @@ void ServerNetworkManager::Initiate()
 	myGID = 0;
 	myIDCount = 0;
 	__super::Initiate();
+	myTimeManager = new CU::TimerManager();
 	Subscribe(eNetMessageType::POSITION, this);
 	Subscribe(eNetMessageType::PING_REPLY, this);
 	Subscribe(eNetMessageType::PING_REQUEST, this);
@@ -165,7 +174,7 @@ void ServerNetworkManager::SendThread()
 					}
 				}
 			}
-			else 
+			else
 			{
 				for (Connection& connection : myClients)
 				{
@@ -179,6 +188,30 @@ void ServerNetworkManager::SendThread()
 		}
 		mySendBuffer[myCurrentSendBuffer].RemoveAll();
 		myCurrentSendBuffer ^= 1;
+		Sleep(1);
+	}
+}
+
+void ServerNetworkManager::PingThread()
+{
+	while (myIsRunning == true)
+	{
+		if (myClients.Size() > 0)
+		{
+			NetMessagePingRequest toSend;
+			toSend.PackMessage();
+			for (Connection& connection : myClients)
+			{
+				myNetwork->Send(toSend.myStream, connection.myAddress);
+			}
+
+			if (myHasSent == false)
+			{
+				myResponsTime = 0.f;
+			}
+
+			Sleep(1000);
+		}
 		Sleep(1);
 	}
 }
@@ -224,12 +257,32 @@ void ServerNetworkManager::CreateConnection(const std::string& aName, const sock
 	AddMessage(NetMessageOnJoin(aName, myIDCount));
 }
 
+void ServerNetworkManager::Update(float aDelta)
+{
+	__super::Update(aDelta);
+	myTimeManager->Update();
+	myCurrentTimeStamp = myTimeManager->GetMasterTimer().GetTime().GetMilliseconds();
+	myPingTime -= aDelta;
+	if (myPingTime < 0.f)
+	{
+		for (Connection& clients : myClients)
+		{
+			clients.myPingCount++;
+			if (clients.myPingCount > RECONNECT_ATTEMPTS)
+			{
+				DisconnectConnection(clients);
+			}
+		}
+		myPingTime = 1.f;
+	}
+}
+
 void ServerNetworkManager::DisconnectConnection(const Connection& aConnection)
 {
 	NetMessageDisconnect onDisconnect = NetMessageDisconnect(aConnection.myID);
 	onDisconnect.PackMessage();
 	myNetwork->Send(onDisconnect.myStream, aConnection.myAddress);
-	
+
 	std::string msg(aConnection.myName + " disconnected from server!");
 	Utility::PrintEndl(msg, LIGHT_BLUE_TEXT);
 
@@ -272,8 +325,8 @@ void ServerNetworkManager::UpdateImportantMessages(float aDeltaTime)
 				if (client.myTimer >= 1.f)
 				{
 					client.myTimer = 0.f;
-					
-					std::string resend = "Sending important message " + std::to_string(msg.myImportantID) + " of message type " 
+
+					std::string resend = "Sending important message " + std::to_string(msg.myImportantID) + " of message type "
 						+ ConvertNetworkEnumToString(static_cast<eNetMessageType>(msg.myMessageType)) + " to client id " + std::to_string(client.myGID) + " - " + client.myName;
 					Utility::PrintEndl(resend, AQUA_TEXT);
 					myNetwork->Send(msg.myData, client.myNetworkAddress);
@@ -282,7 +335,7 @@ void ServerNetworkManager::UpdateImportantMessages(float aDeltaTime)
 		}
 		if (finished == true)
 		{
-			std::string resend = "All client has replied to the message id " + std::to_string(msg.myImportantID) 
+			std::string resend = "All client has replied to the message id " + std::to_string(msg.myImportantID)
 				+ " of message type " + ConvertNetworkEnumToString(static_cast<eNetMessageType>(msg.myMessageType));
 			Utility::PrintEndl(resend, YELLOW_TEXT);
 			myImportantMessagesBuffer.RemoveCyclic(msg);
@@ -319,7 +372,7 @@ void ServerNetworkManager::ReceiveNetworkMessage(const NetMessageRequestConnect&
 	{
 		NetMessageImportantReply toReply(aMessage.GetImportantID());
 		toReply.PackMessage();
-		
+
 		myNetwork->Send(toReply.myStream, aSenderAddress);
 	}
 	if (AlreadyReceived(aMessage) == false)
@@ -363,15 +416,12 @@ void ServerNetworkManager::ReceiveNetworkMessage(const NetMessagePosition& aMess
 	AddMessage(aMessage);
 }
 
-void ServerNetworkManager::ReceiveNetworkMessage(const NetMessagePingRequest& aMessage, const sockaddr_in&)
+void ServerNetworkManager::ReceiveNetworkMessage(const NetMessagePingRequest&, const sockaddr_in&)
 {
-	AddMessage(NetMessagePingReply(), aMessage.mySenderID);
-	for (Connection& c : myClients)
+	NetMessagePingReply toSend;
+	toSend.PackMessage();
+	for (Connection& connection : myClients)
 	{
-		c.myPingCount++;
-		if (c.myPingCount > RECONNECT_ATTEMPTS)
-		{
-			DisconnectConnection(c);
-		}
+		myNetwork->Send(toSend.myStream, connection.myAddress);
 	}
 }

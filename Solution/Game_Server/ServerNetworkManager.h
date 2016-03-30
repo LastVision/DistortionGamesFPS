@@ -18,6 +18,7 @@ public:
 
 	void CreateConnection(const std::string& aName, const sockaddr_in& aSender);
 
+	void Update(float aDelta) override;
 
 	void ReceiveNetworkMessage(const NetMessagePosition& aMessage, const sockaddr_in& aSenderAddress) override;
 	void ReceiveNetworkMessage(const NetMessagePingRequest& aMessage, const sockaddr_in& aSenderAddress) override;
@@ -38,9 +39,11 @@ private:
 
 	void ReceieveThread() override;
 	void SendThread() override;
+	void PingThread() override;
 
 	short myIDCount;
-	
+	float myPingTime;
+
 	void DisconnectConnection(const Connection& aConnection);
 
 	CU::GrowingArray<Connection> myClients;
