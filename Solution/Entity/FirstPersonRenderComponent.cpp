@@ -100,11 +100,14 @@ FirstPersonRenderComponent::FirstPersonRenderComponent(Entity& aEntity, Prism::S
 	AddWeaponAnimation(ePlayerState::SHOTGUN_FIRE, "Data/Resource/Model/First_person/Shotgun/SK_shotgun_fire.fbx", false, true);
 	myShotgunModel->Update(1.f / 30.f);
 
+	Prism::ModelProxy* grenadeModel = Prism::ModelLoader::GetInstance()->LoadModelAnimated("Data/Resource/Model/First_person/GrenadeLauncher/SK_grenade_launcher_idle.fbx", "Data/Resource/Shader/S_effect_pbl_animated.fx");
+	myGrenadeLauncherModel = new Prism::Instance(*grenadeModel, myInputComponentEyeOrientation);
 	AddWeaponAnimation(ePlayerState::GRENADE_LAUNCHER_IDLE, "Data/Resource/Model/First_person/GrenadeLauncher/SK_grenade_launcher_idle.fbx", true, true);
 	AddWeaponAnimation(ePlayerState::GRENADE_LAUNCHER_HOLSTER, "Data/Resource/Model/First_person/GrenadeLauncher/SK_grenade_launcher_holster.fbx", false, true);
 	AddWeaponAnimation(ePlayerState::GRENADE_LAUNCHER_DRAW, "Data/Resource/Model/First_person/GrenadeLauncher/SK_grenade_launcher_draw.fbx", false, true);
 	AddWeaponAnimation(ePlayerState::GRENADE_LAUNCHER_RELOAD, "Data/Resource/Model/First_person/GrenadeLauncher/SK_grenade_launcher_reload.fbx", false, true);
 	AddWeaponAnimation(ePlayerState::GRENADE_LAUNCHER_FIRE, "Data/Resource/Model/First_person/GrenadeLauncher/SK_grenade_launcher_fire.fbx", false, true);
+	myGrenadeLauncherModel->Update(1.f / 30.f);
 
 	myCurrentWeaponModel = myPistolModel;
 	aScene->AddInstance(myCurrentWeaponModel, eObjectRoomType::ALWAYS_RENDER);
@@ -123,6 +126,7 @@ FirstPersonRenderComponent::~FirstPersonRenderComponent()
 	SAFE_DELETE(myCurrentWeaponModel);
 	SAFE_DELETE(myPistolModel);
 	SAFE_DELETE(myShotgunModel);
+	SAFE_DELETE(myGrenadeLauncherModel);
 	SAFE_DELETE(myMarker);
 	myCoOpPositions.RemoveAll();
 }
@@ -168,28 +172,63 @@ void FirstPersonRenderComponent::Update(float aDelta)
 
 
 	Prism::AnimationData& data = myAnimations[int(myCurrentState)].myData;
+	if (myModel->IsAnimationDone() == true && data.myShouldLoop == false)
+	{
+		bool shouldGetNextIntention = false;
+		switch (myEntity.GetComponent<ShootingComponent>()->GetCurrentWeapon()->GetWeaponType())
+		{
+		case eWeaponType::PISTOL:
+			if (myCurrentState == ePlayerState::SHOTGUN_HOLSTER
+				|| myCurrentState == ePlayerState::GRENADE_LAUNCHER_HOLSTER)
+			{
+				shouldGetNextIntention = true;
+			}
+			else
+			{
+				myCurrentState = ePlayerState::PISTOL_IDLE;
+				PlayAnimation(myCurrentState);
+			}
+			break;
+		case eWeaponType::GRENADE_LAUNCHER:
+			if (myCurrentState == ePlayerState::PISTOL_HOLSTER
+				|| myCurrentState == ePlayerState::SHOTGUN_HOLSTER)
+			{
+				shouldGetNextIntention = true;
+			}
+			else
+			{
+				myCurrentState = ePlayerState::GRENADE_LAUNCHER_IDLE;
+				PlayAnimation(myCurrentState);
+			}
+			break;
+		case eWeaponType::SHOTGUN:
+			if (myCurrentState == ePlayerState::PISTOL_HOLSTER 
+				|| myCurrentState == ePlayerState::GRENADE_LAUNCHER_HOLSTER)
+			{
+				shouldGetNextIntention = true;
+			}
+			else
+			{
+				myCurrentState = ePlayerState::SHOTGUN_IDLE;
+				PlayAnimation(myCurrentState);
+			}
+			break;
+		}
+		if (shouldGetNextIntention == true)
+		{
+			if (myIntentions.Size() > 0)
+			{
+				myCurrentState = myIntentions[0];
+				myIntentions.RemoveNonCyclicAtIndex(0);
+
+				PlayAnimation(myCurrentState);
+			}
+		}
+	}
 	if (myModel->IsAnimationDone() == false || data.myShouldLoop == true)
 	{
 		myModel->Update(aDelta);
 
-	}
-	if (myModel->IsAnimationDone() == true && data.myShouldLoop == false)
-	{
-		switch (myEntity.GetComponent<ShootingComponent>()->GetCurrentWeapon()->GetWeaponType())
-		{
-		case eWeaponType::PISTOL:
-			myCurrentState = ePlayerState::PISTOL_IDLE;
-			PlayAnimation(myCurrentState);
-			break;
-		case eWeaponType::GRENADE_LAUNCHER:
-			myCurrentState = ePlayerState::GRENADE_LAUNCHER_IDLE;
-			PlayAnimation(myCurrentState);
-			break;
-		case eWeaponType::SHOTGUN:
-			myCurrentState = ePlayerState::SHOTGUN_IDLE;
-			PlayAnimation(myCurrentState);
-			break;
-		}
 	}
 	data.myElapsedTime += aDelta;
 
@@ -336,7 +375,7 @@ void FirstPersonRenderComponent::PlayAnimation(ePlayerState aAnimationState)
 	else if (myCurrentState == ePlayerState::GRENADE_LAUNCHER_DRAW)
 	{
 		myScene->RemoveInstance(myCurrentWeaponModel);
-		myCurrentWeaponModel = myPistolModel;
+		myCurrentWeaponModel = myGrenadeLauncherModel;
 		myScene->AddInstance(myCurrentWeaponModel, eObjectRoomType::ALWAYS_RENDER);
 	}
 
