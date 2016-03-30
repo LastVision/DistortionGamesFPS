@@ -255,7 +255,6 @@ void ServerLevel::HandlePressedERaycast(PhysicsComponent* aComponent, const CU::
 
 void ServerLevel::HandleTrigger(Entity& aFirstEntity, Entity& aSecondEntity, bool aHasEntered)
 {
-	TriggerComponent* firstTrigger = aFirstEntity.GetComponent<TriggerComponent>();
 	if (aHasEntered == true)
 	{
 		if (aSecondEntity.GetType() == eEntityType::UNIT && aSecondEntity.GetSubType() == "playerserver")
