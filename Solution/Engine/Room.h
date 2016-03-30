@@ -4,6 +4,7 @@
 namespace Prism
 {
 	class Portal;
+	class PointLight;
 
 	enum class eRoomType
 	{
@@ -30,6 +31,9 @@ namespace Prism
 		void Add(Instance* anInstance);
 		const CU::GrowingArray<Instance*>& GetInstances() const;
 
+		void Add(PointLight* aPointLight);
+		const CU::GrowingArray<PointLight*>& GetPointLights() const;
+
 		const std::string& GetName() const;
 		eRoomType GetType() const;
 
@@ -41,6 +45,7 @@ namespace Prism
 		CU::Intersection::AABB myAABB;
 		CU::GrowingArray<Portal*> myPortals;
 		CU::GrowingArray<Instance*> myInstances;
+		CU::GrowingArray<PointLight*> myPointLights;
 		const std::string myName;
 		const eRoomType myType;
 	};
@@ -68,6 +73,11 @@ namespace Prism
 	inline const CU::GrowingArray<Instance*>& Room::GetInstances() const
 	{
 		return myInstances;
+	}
+
+	inline const CU::GrowingArray<PointLight*>& Room::GetPointLights() const
+	{
+		return myPointLights;
 	}
 
 	inline const std::string& Room::GetName() const
