@@ -1,11 +1,13 @@
 #include "stdafx.h"
 
-#include <Cursor.h>
 #include "ClientNetworkManager.h"
-#include "LobbyState.h"
+#include <Cursor.h>
 #include <fstream>
 #include <GUIManager.h>
 #include <InputWrapper.h>
+#include "LobbyState.h"
+#include <NetMessageReplyServer.h>
+#include <NetMessageRequestServer.h>
 #include <OnClickMessage.h>
 #include <PostMaster.h>
 #include "ServerSelectState.h"
@@ -24,11 +26,13 @@ ServerSelectState::~ServerSelectState()
 	SAFE_DELETE(myGUIManager);
 	myCursor = nullptr;
 	PostMaster::GetInstance()->UnSubscribe(eMessageType::ON_CLICK, this);
+	ClientNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::SERVER_REPLY, this);
 }
 
 void ServerSelectState::InitState(StateStackProxy* aStateStackProxy, GUI::Cursor* aCursor)
 {
 	PostMaster::GetInstance()->Subscribe(eMessageType::ON_CLICK, this);
+	ClientNetworkManager::GetInstance()->Subscribe(eNetMessageType::SERVER_REPLY, this);
 	myCursor = aCursor;
 	myIsActiveState = true;
 	myIsLetThrough = true;
@@ -39,7 +43,7 @@ void ServerSelectState::InitState(StateStackProxy* aStateStackProxy, GUI::Cursor
 
 	const CU::Vector2<int>& windowSize = Prism::Engine::GetInstance()->GetWindowSizeInt();
 	OnResize(windowSize.x, windowSize.y);
-
+	/*
 	std::ifstream stream;
 	stream.open("Data/Setting/ip.txt");
 
@@ -57,8 +61,11 @@ void ServerSelectState::InitState(StateStackProxy* aStateStackProxy, GUI::Cursor
 	{
 		std::string text(myServers[i].myName + ": " + myServers[i].myIp);
 		myGUIManager->SetButtonText(i, text);
-	}
+	}*/
 	myCursor->SetShouldRender(true);
+
+	// broadcast request server
+	ClientNetworkManager::GetInstance()->AddMessage(NetMessageRequestServer(), ClientNetworkManager::GetInstance()->GetBroadcastAddress());
 }
 
 void ServerSelectState::EndState()
@@ -96,6 +103,13 @@ const eStateStatus ServerSelectState::Update(const float& aDeltaTime)
 		//return eStateStatus::ePopSubState;
 	}
 
+	/*myRefreshServerTimer -= aDeltaTime;
+	if (myRefreshServerTimer <= 0)
+	{
+		myRefreshServerTimer = 2.f;
+		ClientNetworkManager::GetInstance()->AddMessage(NetMessageRequestServer(), ClientNetworkManager::GetInstance()->GetBroadcastAddress());
+	}*/
+
 	myGUIManager->Update(aDeltaTime);
 
 	return myStateStatus;
@@ -126,5 +140,19 @@ void ServerSelectState::ReceiveMessage(const OnClickMessage& aMessage)
 			DL_ASSERT("Unknown event.");
 			break;
 		}
+	}
+}
+
+void ServerSelectState::ReceiveNetworkMessage(const NetMessageReplyServer& aMessage, const sockaddr_in& aSenderAddress)
+{
+	ServerSelectState::Server newServer;
+	newServer.myIp = aMessage.myIP;
+	newServer.myName = aMessage.myServerName;
+
+	myServers.Add(newServer);
+	for (int i = 0; i < myServers.Size(); ++i)
+	{
+		std::string text(myServers[i].myName + ": " + myServers[i].myIp);
+		myGUIManager->SetButtonText(i, text);
 	}
 }

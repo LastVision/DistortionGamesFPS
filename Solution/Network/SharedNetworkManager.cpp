@@ -32,6 +32,9 @@
 #include "NetMessageLevelComplete.h"
 #include "NetMessageText.h"
 
+#include <IPHlpApi.h>
+#pragma comment(lib, "IPHLPAPI.lib")
+
 #define BUFFERSIZE 512
 
 SharedNetworkManager* SharedNetworkManager::myInstance = nullptr;
@@ -68,7 +71,7 @@ void SharedNetworkManager::Initiate()
 	myStopSendMessages = false;
 }
 
-void SharedNetworkManager::StartNetwork(unsigned int /*aPortNum*/)
+void SharedNetworkManager::StartNetwork(unsigned int aPortNum)
 {
 
 	myIsRunning = true;
@@ -90,6 +93,41 @@ void SharedNetworkManager::StartNetwork(unsigned int /*aPortNum*/)
 		CU::SetThreadName(myPingThread->get_id(), "Ping Thread - Client");
 	}
 #endif
+	SetupBroadcastAddress(aPortNum);
+}
+
+void SharedNetworkManager::SetupBroadcastAddress(unsigned int aPortNumber)
+{
+	ZeroMemory(&myBroadcastAddress, sizeof(myBroadcastAddress));
+	hostent* localHosy = gethostbyname("");
+	char* localIP = inet_ntoa(*(struct in_addr*)*localHosy->h_addr_list);
+
+	IP_ADAPTER_INFO * FixedInfo;
+	ULONG ulOutBufLen;
+
+	FixedInfo = (IP_ADAPTER_INFO *)GlobalAlloc(GPTR, sizeof(IP_ADAPTER_INFO));
+	ulOutBufLen = sizeof(IP_ADAPTER_INFO);
+
+	if (ERROR_SUCCESS != GetAdaptersInfo(FixedInfo, &ulOutBufLen))
+	{
+		DL_ASSERT("Cound not get the adapter information!");
+		return;
+	}
+
+	char* subnetmask = FixedInfo->IpAddressList.IpMask.String;
+	in_addr hostIP, mask;
+
+	if (inet_pton(AF_INET, localIP, &hostIP) == 1 &&
+		inet_pton(AF_INET, subnetmask, &mask) == 1)
+	{
+		myBroadcastAddress.sin_addr.S_un.S_addr = hostIP.S_un.S_addr | ~mask.S_un.S_addr;
+	}
+
+	myBroadcastAddress.sin_port = htons(static_cast<uint16_t>(aPortNumber));
+	myBroadcastAddress.sin_family = AF_INET;
+	
+
+
 }
 
 SharedNetworkManager::SharedNetworkManager()
@@ -262,7 +300,10 @@ void SharedNetworkManager::AddNetworkMessage(std::vector<char> aBuffer, unsigned
 	}
 }
 
-
+void SharedNetworkManager::AddNetworkMessage(std::vector<char> aBuffer, sockaddr_in aTargetAddress)
+{
+	mySendBuffer[myCurrentSendBuffer ^ 1].Add({ aBuffer, aTargetAddress });
+}
 
 void SharedNetworkManager::HandleMessage()
 {

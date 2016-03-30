@@ -6,9 +6,10 @@ class NetMessageReplyServer : public NetImportantMessage
 {
 public:
 	NetMessageReplyServer();
-	NetMessageReplyServer(const std::string& aServerName);
+	NetMessageReplyServer(const std::string& aServerName, const std::string& aIP);
 
 	std::string myServerName;
+	std::string myIP;
 protected:
 
 	void DoSerialize(StreamType& aStream) override;
@@ -20,9 +21,10 @@ inline NetMessageReplyServer::NetMessageReplyServer()
 {
 }
 
-inline NetMessageReplyServer::NetMessageReplyServer(const std::string& aServerName)
+inline NetMessageReplyServer::NetMessageReplyServer(const std::string& aServerName, const std::string& aIP)
 	: NetImportantMessage(eNetMessageType::SERVER_REPLY)
 	, myServerName(aServerName)
+	, myIP(aIP)
 {
 }
 
@@ -30,10 +32,12 @@ inline void NetMessageReplyServer::DoSerialize(StreamType& aStream)
 {
 	__super::DoSerialize(aStream);
 	SERIALIZE(aStream, myServerName);
+	SERIALIZE(aStream, myIP);
 }
 
 inline void NetMessageReplyServer::DoDeSerialize(StreamType& aStream)
 {
 	__super::DoDeSerialize(aStream);
 	DESERIALIZE(aStream, myServerName);
+	DESERIALIZE(aStream, myIP);
 }

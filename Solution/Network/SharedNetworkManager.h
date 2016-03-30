@@ -65,6 +65,8 @@ public:
 
 	void StopSendMessages(const bool aStopMessagesFlag);
 
+	const sockaddr_in& GetBroadcastAddress() const;
+
 protected:
 	static SharedNetworkManager* myInstance;
 
@@ -105,17 +107,20 @@ protected:
 	{
 		SendBufferMessage() {}
 		SendBufferMessage(std::vector<char> aBuffer, unsigned int aTargetID) : myBuffer(aBuffer), myTargetID(aTargetID) {}
+		SendBufferMessage(std::vector<char> aBuffer, const sockaddr_in aTargetAddress) : myBuffer(aBuffer), myTargetAddress(aTargetAddress), myTargetID(UINT_MAX) {}
 
 		std::vector<char> myBuffer;
 		unsigned int myTargetID;
+		sockaddr_in myTargetAddress;
 	};
 
 	SharedNetworkManager();
 	
-
+	void SetupBroadcastAddress(unsigned int aPortNumber);
 	virtual void UpdateImportantMessages(float aDeltaTime) = 0;
 
 	void AddNetworkMessage(std::vector<char> aBuffer, unsigned int aTargetID);
+	void AddNetworkMessage(std::vector<char> aBuffer, sockaddr_in aTargetAddress);
 	virtual void AddImportantMessage(std::vector<char> aBuffer, unsigned int aImportantID) = 0;
 
 	virtual void SendThread() = 0;
@@ -173,6 +178,8 @@ protected:
 	float myRepliesPerSecond;
 
 	unsigned int myImportantID;
+
+	sockaddr_in myBroadcastAddress;
 
 	bool AlreadyReceived(const NetMessage& aMessage);
 private:
@@ -240,7 +247,7 @@ inline void SharedNetworkManager::AddMessage(T aMessage, const sockaddr_in aTarg
 	aMessage.PackMessage();
 	
 	myDataSent += aMessage.myStream.size() * sizeof(char);
-	//AddNetworkMessage(aMessage.myStream, aTargetAddress);
+	AddNetworkMessage(aMessage.myStream, aTargetAddress);
 }
 
 template<typename T>
@@ -280,4 +287,9 @@ void SharedNetworkManager::SendToSubscriber(const T& aMessage, const sockaddr_in
 		DL_DEBUG("Message id %i", static_cast<int>(aMessage.myID));
 		DL_ASSERT("Network message sent without subscriber.");
 	}
+}
+
+inline const sockaddr_in& SharedNetworkManager::GetBroadcastAddress() const
+{
+	return myBroadcastAddress;
 }

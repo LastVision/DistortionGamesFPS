@@ -33,11 +33,25 @@ void ClientNetwork::StartNetwork(int aPortNum)
 	ZeroMemory(&myServerAddress, sizeof(myServerAddress));
 	myServerAddress.sin_family = AF_INET;
 	myServerAddress.sin_port = htons(myPort);
+
+	DWORD nonBlocking = 1;
+	if (ioctlsocket(mySocket, FIONBIO, &nonBlocking) != 0)
+	{
+		DL_ASSERT("Failed to set non-blocking socket.");
+	}
 }
 
 void ClientNetwork::Send(const std::vector<char>& anArray)
 {
 	if (sendto(mySocket, &anArray[0], anArray.size(), 0, (struct sockaddr *) &myServerAddress, sizeof(myServerAddress)) == SOCKET_ERROR)
+	{
+		DL_ASSERT("Failed to send");
+	}
+}
+
+void ClientNetwork::Send(const std::vector<char>& anArray, const sockaddr_in& aTargetAddress)
+{
+	if (sendto(mySocket, &anArray[0], anArray.size(), 0, (struct sockaddr *) &aTargetAddress, sizeof(aTargetAddress)) == SOCKET_ERROR)
 	{
 		DL_ASSERT("Failed to send");
 	}
@@ -61,11 +75,7 @@ bool ClientNetwork::ConnectToServer(const char* anIP)
 {
 	myIP = anIP;
 	myServerAddress.sin_addr.S_un.S_addr = inet_addr(myIP);
-	DWORD nonBlocking = 1;
-	if (ioctlsocket(mySocket, FIONBIO, &nonBlocking) != 0)
-	{
-		return false;
-	}
+	
 	return true;
 }
 

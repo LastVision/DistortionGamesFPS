@@ -140,7 +140,14 @@ void ClientNetworkManager::SendThread()
 	{
 		for (SendBufferMessage arr : mySendBuffer[myCurrentSendBuffer])
 		{
-			myNetwork->Send(arr.myBuffer);
+			if (arr.myTargetID == UINT_MAX)
+			{
+				myNetwork->Send(arr.myBuffer, arr.myTargetAddress);
+			}
+			else
+			{
+				myNetwork->Send(arr.myBuffer);
+			}
 		}
 
 		mySendBuffer[myCurrentSendBuffer].RemoveAll();

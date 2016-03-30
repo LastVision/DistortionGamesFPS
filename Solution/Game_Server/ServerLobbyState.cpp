@@ -90,5 +90,5 @@ void ServerLobbyState::ReceiveNetworkMessage(const NetMessageRequestConnect& aMe
 
 void ServerLobbyState::ReceiveNetworkMessage(const NetMessageRequestServer&, const sockaddr_in& aSenderAddress)
 {
-	ServerNetworkManager::GetInstance()->AddMessage(NetMessageReplyServer("test"), aSenderAddress);
+	ServerNetworkManager::GetInstance()->AddMessage(NetMessageReplyServer("test", ServerNetworkManager::GetInstance()->GetIP()), aSenderAddress);
 }

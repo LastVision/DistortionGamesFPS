@@ -164,7 +164,11 @@ void ServerNetworkManager::SendThread()
 	{
 		for (SendBufferMessage arr : mySendBuffer[myCurrentSendBuffer])
 		{
-			if (arr.myTargetID == 0)
+			if (arr.myTargetID == UINT_MAX)
+			{
+				myNetwork->Send(arr.myBuffer, arr.myTargetAddress);
+			}
+			else if (arr.myTargetID == 0)
 			{
 				for (Connection& connection : myClients)
 				{
@@ -424,4 +428,9 @@ void ServerNetworkManager::ReceiveNetworkMessage(const NetMessagePingRequest&, c
 	{
 		myNetwork->Send(toSend.myStream, connection.myAddress);
 	}
+}
+
+const std::string& ServerNetworkManager::GetIP() const
+{
+	return myNetwork->GetIP();
 }

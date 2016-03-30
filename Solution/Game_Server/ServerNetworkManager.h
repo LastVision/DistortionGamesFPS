@@ -29,6 +29,7 @@ public:
 	const short GetLastJoinedID() const;
 	const CU::GrowingArray<Connection>& GetClients() const;
 
+	const std::string& GetIP() const;
 private:
 	ServerNetworkManager();
 	~ServerNetworkManager();
