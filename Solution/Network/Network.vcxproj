@@ -100,6 +100,7 @@
     <ClInclude Include="NetMessageHealth.h" />
     <ClInclude Include="NetMessageHealthPack.h" />
     <ClInclude Include="NetMessageLevelComplete.h" />
+    <ClInclude Include="NetMessageReplyServer.h" />
     <ClInclude Include="NetMessageRequestConnect.h" />
     <ClInclude Include="NetMessageDisconnect.h" />
     <ClInclude Include="NetMessageImportantReply.h" />
@@ -110,6 +111,7 @@
     <ClInclude Include="NetMessagePingReply.h" />
     <ClInclude Include="NetMessagePingRequest.h" />
     <ClInclude Include="NetMessagePosition.h" />
+    <ClInclude Include="NetMessageRequestServer.h" />
     <ClInclude Include="NetMessageSetLevel.h" />
     <ClInclude Include="NetMessageRequestStartLevel.h" />
     <ClInclude Include="NetMessageSetActive.h" />

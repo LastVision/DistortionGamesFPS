@@ -9,8 +9,8 @@
 #include <NetMessageShootGrenade.h>
 #include <SharedNetworkManager.h>
 
-GrenadeLauncher::GrenadeLauncher(Prism::Scene* aScene, unsigned int aEntityGID)
-	: Weapon(eWeaponType::GRENADE_LAUNCHER, "grenadelauncher")
+GrenadeLauncher::GrenadeLauncher(Prism::Scene* aScene, unsigned int aEntityGID, Entity* aOwnerEntity)
+	: Weapon(eWeaponType::GRENADE_LAUNCHER, "grenadelauncher", aOwnerEntity)
 	, myScene(aScene)
 	, myBullets(16)
 	, myCurrentBulletToUse(0)

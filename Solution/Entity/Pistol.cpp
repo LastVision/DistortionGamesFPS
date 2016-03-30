@@ -15,8 +15,8 @@
 #include <SharedNetworkManager.h>
 #include <NetMessageOnHit.h>
 
-Pistol::Pistol()
-	: Weapon(eWeaponType::PISTOL, "pistol")
+Pistol::Pistol(Entity* aOwnerEntity)
+	: Weapon(eWeaponType::PISTOL, "pistol", aOwnerEntity)
 	, myOrientation(nullptr)
 	, myMuzzleflashTimer(0.f)
 	, myCurrentMuzzleflash(0)
@@ -93,7 +93,7 @@ bool Pistol::Shoot(const CU::Matrix44<float>& aOrientation)
 		forward = forward * CU::Matrix44<float>::CreateRotateAroundY(CU::Math::RandomRange(myMinSpreadRotation, myMaxSpreadRotation));
 
 		Prism::PhysicsInterface::GetInstance()->RayCast(aOrientation.GetPos()
-			, forward, 500.f, myRaycastHandler);
+			, forward, 500.f, myRaycastHandler, myOwnerEntity->GetComponent<PhysicsComponent>());
 		myAmmoInClip -= 1;
 		myShootTimer = myShootTime;
 		myMuzzleflashTimer = 0.2f;
