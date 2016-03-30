@@ -92,9 +92,13 @@ void ServerInGameState::ReceiveNetworkMessage(const NetMessageLevelComplete& aMe
 
 void ServerInGameState::ReceiveNetworkMessage(const NetMessageRequestStartLevel&, const sockaddr_in&)
 {
-	DL_ASSERT_EXP(myState == eInGameStates::LEVEL_COMPLETE_ALL_CLIENTS_RESPONDED, "Wrong state for Request Start Level message.");
-	myState = eInGameStates::LEVEL_LOAD;
-	ServerNetworkManager::GetInstance()->AddMessage(NetMessageLoadLevel(myLevelID));
+	//DL_ASSERT_EXP(myState == eInGameStates::LEVEL_COMPLETE_ALL_CLIENTS_RESPONDED, "Wrong state for Request Start Level message.");
+	//Can't assert and support space pressed twice at the same time.
+	if (myState == eInGameStates::LEVEL_COMPLETE_ALL_CLIENTS_RESPONDED)
+	{
+		myState = eInGameStates::LEVEL_LOAD;
+		ServerNetworkManager::GetInstance()->AddMessage(NetMessageLoadLevel(myLevelID));
+	}
 }
 
 void ServerInGameState::ReceiveNetworkMessage(const NetMessageLevelLoaded& aMessage, const sockaddr_in&)

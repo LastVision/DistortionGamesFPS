@@ -71,6 +71,12 @@ void ComponentLoader::LoadGraphicsComponent(XMLReader& aDocument, tinyxml2::XMLE
 		{
 			DL_ASSERT("Legacy XML");
 		}
+#ifndef DEBUG
+		else if (elementName == CU::ToLower("Debug"))
+		{
+			aOutputData.myExistsInEntity = false;
+		}
+#endif
 	}
 }
 
