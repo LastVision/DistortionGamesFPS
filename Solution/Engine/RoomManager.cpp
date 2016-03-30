@@ -29,6 +29,7 @@ namespace Prism
 	{
 		myActiveInstances.RemoveAll();
 		myPortals.DeleteAll();
+		myRooms.DeleteAll();
 	}
 
 	void RoomManager::Add(Room* aRoom)

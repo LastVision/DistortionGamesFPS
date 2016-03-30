@@ -48,6 +48,7 @@ private:
 	Prism::Instance* myCurrentWeaponModel;
 	Prism::Instance* myPistolModel;
 	Prism::Instance* myShotgunModel;
+	Prism::Instance* myGrenadeLauncherModel;
 
 	GUI::GUIManager3D* my3DGUIManager;
 
