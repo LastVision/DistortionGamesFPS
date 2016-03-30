@@ -88,8 +88,6 @@ namespace Prism
 			SAFE_DELETE(it->second);
 		}
 		myFontProxies.clear();
-
-		//myTextProxies.DeleteAll();
 	}
 
 	void ModelLoader::LoadInstancedCount()

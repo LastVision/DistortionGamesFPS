@@ -44,6 +44,7 @@ InGameState::~InGameState()
 	Console::Destroy();
 	SAFE_DELETE(myLevel);
 	SAFE_DELETE(myLevelFactory);
+	SAFE_DELETE(myText);
 }
 
 void InGameState::InitState(StateStackProxy* aStateStackProxy, GUI::Cursor* aCursor)
