@@ -299,28 +299,28 @@ namespace Prism
 			myLogicalParticles[myParticleIndex].myDirection = CalculateDirection(myParticleEmitterData->myEmissionAngle);
 
 #pragma	region		Shape
-			//if (myStates[CIRCLE] == TRUE && myStates[HOLLOW] == TRUE)
-			//{
-			//	CU::Vector3<float> pos = CreateCirclePositions();
-			//	myGraphicalParticles[myParticleIndex].myPosition = aWorldMatrix.GetPos() + pos;
-			//}
-			//else if (myStates[CIRCLE] == TRUE)
-			//{
-			//	CU::Vector3<float> pos = CreateCirclePositions();
-			//	myGraphicalParticles[myParticleIndex].myPosition = CU::Math::RandomVector(aWorldMatrix.GetPos() - pos
-			//		, aWorldMatrix.GetPos() + pos);
-			//}
-			//else if (myStates[HOLLOW] == TRUE)
-			//{
-			//	CU::Vector3<float> pos = CreateHollowSquare();
-			//	myGraphicalParticles[myParticleIndex].myPosition = aWorldMatrix.GetPos() + pos;
-			//}
-			//else
-			//{
-			myGraphicalParticles[myParticleIndex].myPosition =
-				CU::Math::RandomVector(aWorldMatrix.GetPos() - myParticleEmitterData->myEmitterSize
-				, aWorldMatrix.GetPos() + myParticleEmitterData->myEmitterSize);
-			//	}
+			if (myStates[CIRCLE] == TRUE && myStates[HOLLOW] == TRUE)
+			{
+				CU::Vector3<float> pos = CreateCirclePositions();
+				myGraphicalParticles[myParticleIndex].myPosition = aWorldMatrix.GetPos() + pos;
+			}
+			else if (myStates[CIRCLE] == TRUE)
+			{
+				CU::Vector3<float> pos = CreateCirclePositions();
+				myGraphicalParticles[myParticleIndex].myPosition = CU::Math::RandomVector(aWorldMatrix.GetPos() - pos
+					, aWorldMatrix.GetPos() + pos);
+			}
+			else if (myStates[HOLLOW] == TRUE)
+			{
+				CU::Vector3<float> pos = CreateHollowSquare();
+				myGraphicalParticles[myParticleIndex].myPosition = aWorldMatrix.GetPos() + pos;
+			}
+			else
+			{
+				myGraphicalParticles[myParticleIndex].myPosition =
+					CU::Math::RandomVector(aWorldMatrix.GetPos() - myParticleEmitterData->myEmitterSize
+					, aWorldMatrix.GetPos() + myParticleEmitterData->myEmitterSize);
+			}
 #pragma endregion
 
 			myGraphicalParticles[myParticleIndex].myLifeTime = myParticleEmitterData->myData.myParticleLifeTime;
