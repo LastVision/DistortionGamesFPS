@@ -484,8 +484,11 @@ void FirstPersonRenderComponent::ReceiveNetworkMessage(const NetMessageOnHit& aM
 
 void FirstPersonRenderComponent::ReceiveNetworkMessage(const NetMessageHealth& aMessage, const sockaddr_in&)
 {
-	myMaxHealth = aMessage.myMaxHealth;
-	myCurrentHealth = aMessage.myCurrentHealth;
+	if (aMessage.myGID == myEntity.GetGID())
+	{
+		myMaxHealth = aMessage.myMaxHealth;
+		myCurrentHealth = aMessage.myCurrentHealth;
+	}
 }
 
 void FirstPersonRenderComponent::ReceiveNetworkMessage(const NetMessageDisplayMarker& aMessage, const sockaddr_in&)
