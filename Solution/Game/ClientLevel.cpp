@@ -202,7 +202,7 @@ void ClientLevel::Render()
 	{
 		myDeferredRenderer->Render(myScene);
 
-		//myFullscreenRenderer->Render(myDeferredRenderer->GetFinishedTexture(), myDeferredRenderer->GetEmissiveTexture(), Prism::ePostProcessing::BLOOM);
+		myFullscreenRenderer->Render(myDeferredRenderer->GetFinishedTexture(), myDeferredRenderer->GetEmissiveTexture(), Prism::ePostProcessing::BLOOM);
 
 		Prism::DebugDrawer::GetInstance()->RenderLinesToScreen(*myPlayer->GetComponent<InputComponent>()->GetCamera());
 		//myScene->Render();

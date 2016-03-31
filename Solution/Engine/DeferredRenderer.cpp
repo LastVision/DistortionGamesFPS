@@ -67,6 +67,16 @@ namespace Prism
 	{
 		CU::Vector2<float> windowSize = Engine::GetInstance()->GetWindowSize();
 
+		myViewPort = new D3D11_VIEWPORT();
+		ZeroMemory(myViewPort, sizeof(D3D11_VIEWPORT));
+
+		myViewPort->TopLeftX = 0;
+		myViewPort->TopLeftY = 0;
+		myViewPort->Width = windowSize.x;
+		myViewPort->Height = windowSize.y;
+		myViewPort->MinDepth = 0.f;
+		myViewPort->MaxDepth = 1.f;
+
 		myDepthStencilTexture = new Texture();
 		myDepthStencilTexture->InitAsDepthBuffer(windowSize.x, windowSize.y);
 
@@ -92,11 +102,12 @@ namespace Prism
 		myFinishedTexture = new Texture();
 		myFinishedTexture->Init(windowSize.x, windowSize.y
 			, D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE
-			, DXGI_FORMAT_R32G32B32A32_FLOAT);
+			, DXGI_FORMAT_R8G8B8A8_UNORM);
 	}
 
 	DeferredRenderer::~DeferredRenderer()
 	{
+		SAFE_DELETE(myViewPort);
 		SAFE_DELETE(myDepthStencilTexture);
 		SAFE_DELETE(myCubeMapGenerator);
 		SAFE_DELETE(myGBufferData.myAlbedoTexture);
@@ -115,7 +126,7 @@ namespace Prism
 		Engine::GetInstance()->GetContex()->ClearDepthStencilView(myDepthStencilTexture->GetDepthStencilView()
 			, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 		SetGBufferAsTarget();
-
+		Engine::GetInstance()->GetContex()->RSSetViewports(1, myViewPort);
 		aScene->Render();
 
 		ActivateBuffers();
@@ -257,8 +268,8 @@ namespace Prism
 
 		RenderAmbientPass(aScene);
 
-		ID3D11RenderTargetView* renderTarget = Engine::GetInstance()->GetBackbuffer();
-		//ID3D11RenderTargetView* renderTarget = myFinishedTexture->GetRenderTargetView();
+		//ID3D11RenderTargetView* renderTarget = Engine::GetInstance()->GetBackbuffer();
+		ID3D11RenderTargetView* renderTarget = myFinishedTexture->GetRenderTargetView();
 		Engine::GetInstance()->GetContex()->OMSetRenderTargets(1, &renderTarget, myDepthStencilTexture->GetDepthStencilView());
 
 #ifdef USE_LIGHT
@@ -306,8 +317,8 @@ namespace Prism
 	{
 		ID3D11DeviceContext* context = Engine::GetInstance()->GetContex();
 
-		ID3D11RenderTargetView* backbuffer = Engine::GetInstance()->GetBackbuffer();
-		//ID3D11RenderTargetView* backbuffer = myFinishedTexture->GetRenderTargetView();
+		//ID3D11RenderTargetView* backbuffer = Engine::GetInstance()->GetBackbuffer();
+		ID3D11RenderTargetView* backbuffer = myFinishedTexture->GetRenderTargetView();
 		context->ClearRenderTargetView(backbuffer, myClearColor);
 		context->ClearDepthStencilView(Engine::GetInstance()->GetDepthView(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 		context->OMSetRenderTargets(1, &backbuffer
@@ -389,37 +400,37 @@ namespace Prism
 		myGBufferData.myAlbedoTexture = new Texture();
 		myGBufferData.myAlbedoTexture->Init(windowSize.x, windowSize.y
 			, D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE
-			, DXGI_FORMAT_R32G32B32A32_FLOAT);
+			, DXGI_FORMAT_R8G8B8A8_UNORM);
 
 		myGBufferData.myNormalTexture = new Texture();
 		myGBufferData.myNormalTexture->Init(windowSize.x, windowSize.y
 			, D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE
-			, DXGI_FORMAT_R32G32B32A32_FLOAT);
+			, DXGI_FORMAT_R8G8B8A8_UNORM);
 
 		myGBufferData.myDepthTexture = new Texture();
 		myGBufferData.myDepthTexture->Init(windowSize.x, windowSize.y
 			, D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE
-			, DXGI_FORMAT_R32G32B32A32_FLOAT);
+			, DXGI_FORMAT_R32_FLOAT);
 
 		myGBufferData.myMetalnessTexture = new Texture();
 		myGBufferData.myMetalnessTexture->Init(windowSize.x, windowSize.y
 			, D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE
-			, DXGI_FORMAT_R32G32B32A32_FLOAT);
+			, DXGI_FORMAT_R8G8B8A8_UNORM);
 
 		myGBufferData.myAmbientOcclusionTexture = new Texture();
 		myGBufferData.myAmbientOcclusionTexture->Init(windowSize.x, windowSize.y
 			, D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE
-			, DXGI_FORMAT_R32G32B32A32_FLOAT);
+			, DXGI_FORMAT_R8G8B8A8_UNORM);
 
 		myGBufferData.myRoughnessTexture = new Texture();
 		myGBufferData.myRoughnessTexture->Init(windowSize.x, windowSize.y
 			, D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE
-			, DXGI_FORMAT_R32G32B32A32_FLOAT);
+			, DXGI_FORMAT_R8G8B8A8_UNORM);
 
 		myGBufferData.myEmissiveTexture = new Texture();
 		myGBufferData.myEmissiveTexture->Init(windowSize.x, windowSize.y
 			, D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE
-			, DXGI_FORMAT_R32G32B32A32_FLOAT);
+			, DXGI_FORMAT_R8G8B8A8_UNORM);
 	}
 
 	void DeferredRenderer::ClearGBuffer()

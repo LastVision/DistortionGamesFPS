@@ -143,7 +143,7 @@ bool ClientGame::Update()
 
 	myStateStack.RenderCurrentState();
 
-	myTimerManager->CapFrameRate(60.f);
+	//myTimerManager->CapFrameRate(60.f);
 	myCursor->Update();
 	myCursor->Render();
 	

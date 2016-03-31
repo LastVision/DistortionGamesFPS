@@ -134,6 +134,7 @@ namespace Prism
 		AmbientPass myAmbientPass;
 		LightPass myLightPass;
 		GBufferData myGBufferData;
+		D3D11_VIEWPORT* myViewPort;
 
 		float myClearColor[4];
 	};
