@@ -63,6 +63,10 @@ namespace Prism
 		ID3D11RenderTargetView* GetBackbuffer();
 		ID3D11ShaderResourceView* GetBackbufferView();
 		ID3D11Texture2D* GetDepthBufferTexture();
+
+		void SetDepthStencil(ID3D11DepthStencilView* aStencil);
+		void RestoreDepthStencil();
+
 		FontProxy* GetFont(eFont aFont);
 		void SetDebugName(ID3D11DeviceChild* aChild, const std::string& aName);
 
