@@ -14,6 +14,7 @@
 #include <NetMessageDisplayMarker.h>
 #include <NetMessageDisplayRespawn.h>
 #include <NetMessageHealth.h>
+#include <NetMessagePressEText.h>
 #include <Scene.h>
 #include "ShootingComponent.h"
 #include <SpriteProxy.h>
@@ -36,6 +37,7 @@ FirstPersonRenderComponent::FirstPersonRenderComponent(Entity& aEntity, Prism::S
 	, myHasDied(false)
 	, myScene(aScene)
 	, myRenderMarker(false)
+	, myPressETexts(16)
 {
 	CU::Vector2<float> size(128.f, 128.f);
 	myCrosshair = Prism::ModelLoader::GetInstance()->LoadSprite("Data/Resource/Texture/UI/T_crosshair.dds", size, size * 0.5f);
@@ -84,7 +86,8 @@ FirstPersonRenderComponent::FirstPersonRenderComponent(Entity& aEntity, Prism::S
 	SharedNetworkManager::GetInstance()->Subscribe(eNetMessageType::HEALTH, this);
 	SharedNetworkManager::GetInstance()->Subscribe(eNetMessageType::DISPLAY_MARKER, this);
 	SharedNetworkManager::GetInstance()->Subscribe(eNetMessageType::DISPLAY_RESPAWN, this);
-	
+	SharedNetworkManager::GetInstance()->Subscribe(eNetMessageType::PRESS_E_TEXT, this);
+
 	Prism::ModelProxy* pistolModel = Prism::ModelLoader::GetInstance()->LoadModelAnimated("Data/Resource/Model/First_person/Pistol/SK_pistol_idle.fbx", "Data/Resource/Shader/S_effect_pbl_animated.fx");
 	myPistolModel = new Prism::Instance(*pistolModel, myInputComponentEyeOrientation);
 	AddWeaponAnimation(ePlayerState::PISTOL_IDLE, "Data/Resource/Model/First_person/Pistol/SK_pistol_idle.fbx", true, true);
@@ -127,6 +130,7 @@ FirstPersonRenderComponent::~FirstPersonRenderComponent()
 	SharedNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::HEALTH, this);
 	SharedNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::DISPLAY_MARKER, this);
 	SharedNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::DISPLAY_RESPAWN, this);
+	SharedNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::PRESS_E_TEXT, this);
 	SAFE_DELETE(myCrosshair);
 	SAFE_DELETE(myDamageIndicator);
 	SAFE_DELETE(my3DGUIManager);
@@ -212,7 +216,7 @@ void FirstPersonRenderComponent::Update(float aDelta)
 			}
 			break;
 		case eWeaponType::SHOTGUN:
-			if (myCurrentState == ePlayerState::PISTOL_HOLSTER 
+			if (myCurrentState == ePlayerState::PISTOL_HOLSTER
 				|| myCurrentState == ePlayerState::GRENADE_LAUNCHER_HOLSTER)
 			{
 				shouldGetNextIntention = true;
@@ -357,6 +361,42 @@ void FirstPersonRenderComponent::Render()
 
 		//myCoOpSprite->Render({ newRenderPos.x, newRenderPos.y });
 		Prism::Engine::GetInstance()->PrintText(myCoOpRespawns[i].myCurrentValue, { newRenderPos.x, newRenderPos.y }, Prism::eTextType::RELEASE_TEXT);
+	}
+
+	for (int i = 0; i < myPressETexts.Size(); ++i)
+	{
+		CU::Matrix44<float> renderPos;
+		CU::Vector3<float> tempPos(myPressETexts[i].myPosition);
+		float lengthToText = CU::Length(tempPos - myInputComponentEyeOrientation.GetPos());
+		if (lengthToText > 10.f)
+		{
+			continue;
+		}
+
+		float toBuddy = CU::Dot(tempPos - myInputComponentEyeOrientation.GetPos(), myInputComponentEyeOrientation.GetForward());
+		if (toBuddy < 0.f)
+		{
+			continue;
+		}
+		renderPos.SetPos(tempPos);
+		renderPos = renderPos * CU::InverseSimple(myInputComponentEyeOrientation);
+		renderPos = renderPos * myEntity.GetComponent<InputComponent>()->GetCamera()->GetProjection();
+
+		CU::Vector3<float> newRenderPos = renderPos.GetPos();
+		newRenderPos /= renderPos.GetPos4().w;
+
+		newRenderPos += 1.f;
+		newRenderPos *= 0.5f;
+		newRenderPos.x *= windowSize.x;
+		newRenderPos.y *= windowSize.y;
+		newRenderPos.y -= windowSize.y;
+
+		newRenderPos.x = fmaxf(0.f, fminf(newRenderPos.x, windowSize.x));
+		newRenderPos.y += windowSize.y;
+		newRenderPos.y = fmaxf(0.f, fminf(newRenderPos.y, windowSize.y));
+
+		//myCoOpSprite->Render({ newRenderPos.x, newRenderPos.y });
+		Prism::Engine::GetInstance()->PrintText("Press E", { newRenderPos.x, newRenderPos.y }, Prism::eTextType::RELEASE_TEXT,1.f, CU::Vector4<float>(1.f, 1.f, 1.f, 1.f -  (lengthToText / 10.f)));
 	}
 }
 
@@ -516,6 +556,28 @@ void FirstPersonRenderComponent::ReceiveNetworkMessage(const NetMessageDisplayRe
 		respawn.myPosition = aMessage.myPosition;
 		respawn.myGID = aMessage.myGID;
 		myCoOpRespawns.Add(respawn);
+	}
+}
+
+void FirstPersonRenderComponent::ReceiveNetworkMessage(const NetMessagePressEText& aMessage, const sockaddr_in&)
+{
+	if (aMessage.myShouldAdd == true)
+	{
+		PressEText text;
+		text.myGID = aMessage.myGID;
+		text.myPosition = aMessage.myPosition;
+		myPressETexts.Add(text);
+	}
+	else
+	{
+		for (int i = myPressETexts.Size() - 1; i >= 0; --i)
+		{
+			if (myPressETexts[i].myGID == aMessage.myGID)
+			{
+				myPressETexts.RemoveCyclicAtIndex(i);
+				break;
+			}
+		}
 	}
 }
 

@@ -32,6 +32,7 @@ class NetMessageActivateSpawnpoint;
 class NetMessageActivateUnit;
 class NetMessageRequestServer;
 class NetMessageReplyServer;
+class NetMessagePressEText;
 
 class NetworkSubscriber
 {
@@ -71,6 +72,6 @@ public:
 	virtual void ReceiveNetworkMessage(const NetMessageEnemyShooting& aMessage, const sockaddr_in& aSenderAddress);
 	virtual void ReceiveNetworkMessage(const NetMessageActivateSpawnpoint& aMessage, const sockaddr_in& aSenderAddress);
 	virtual void ReceiveNetworkMessage(const NetMessageActivateUnit& aMessage, const sockaddr_in& aSenderAddress);
-
+	virtual void ReceiveNetworkMessage(const NetMessagePressEText& aMessage, const sockaddr_in& aSenderAddress);
 
 };

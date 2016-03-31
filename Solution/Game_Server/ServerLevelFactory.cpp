@@ -4,12 +4,14 @@
 #include <EntityFactory.h>
 #include <MathHelper.h>
 #include <NetworkComponent.h>
+#include <NetMessagePressEText.h>
 #include <PhysicsComponent.h>
 #include <PhysicsInterface.h>
 #include <PollingStation.h>
 #include "ServerLevel.h"
 #include "ServerLevelFactory.h"
 #include "ServerUnitManager.h"
+#include "ServerNetworkManager.h"
 #include <TriggerComponent.h>
 #include <XMLReader.h>
 #include <SpawnpointComponent.h>
@@ -205,6 +207,10 @@ void ServerLevelFactory::LoadTriggers(XMLReader& aReader, tinyxml2::XMLElement* 
 			if (newEntity->GetComponent<TriggerComponent>()->GetIsActiveFromStart() == false)
 			{
 				newEntity->GetComponent<PhysicsComponent>()->RemoveFromScene();
+			}
+			else
+			{
+				myCurrentLevel->AddPressETrigger(newEntity);
 			}
 		}
 		else

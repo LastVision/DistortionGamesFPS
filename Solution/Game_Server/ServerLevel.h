@@ -26,6 +26,7 @@ public:
 	void ReceiveMessage(const SetActiveMessage& aMessage) override;
 	void ReceiveMessage(const RespawnMessage &aMessage) override;
 	void ReceiveMessage(const RespawnTriggerMessage& aMessage) override;
+	void AddPressETrigger(Entity* aTrigger);
 
 	//void HandlePressedERaycast(PhysicsComponent* aComponent, const CU::Vector3<float>& aDirection, const CU::Vector3<float>& aHitPosition, const CU::Vector3<float>& aHitNormal);
 
@@ -41,6 +42,8 @@ private:
 	CU::GrowingArray<Entity*> myRespawnTriggers;
 
 	std::unordered_map<int, CU::GrowingArray<Entity*>> myPlayersInPressableTriggers;
+
+	CU::GrowingArray<Entity*> myPressETriggers;
 
 	int myNextLevel;
 };
