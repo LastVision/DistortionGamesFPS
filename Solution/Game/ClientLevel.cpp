@@ -463,7 +463,7 @@ void ClientLevel::CreatePlayers()
 	}
 }
 
-void ClientLevel::HandleOtherClientRayCast(PhysicsComponent* aComponent, const CU::Vector3<float>& aDirection, const CU::Vector3<float>& aHitPosition, const CU::Vector3<float>& aHitNormal)
+void ClientLevel::HandleOtherClientRayCast(PhysicsComponent* aComponent, const CU::Vector3<float>& aDirection, const CU::Vector3<float>& aHitPosition, const CU::Vector3<float>&)
 {
 	if (aComponent != nullptr)
 	{
