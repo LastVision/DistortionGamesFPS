@@ -104,6 +104,7 @@ ClientLevel::~ClientLevel()
 	SAFE_DELETE(myPlayer);
 	SAFE_DELETE(myScene);
 	SAFE_DELETE(myDeferredRenderer);
+	SAFE_DELETE(myFullscreenRenderer);
 	SAFE_DELETE(myTextManager);
 
 	Prism::Audio::AudioInterface::GetInstance()->PostEvent("StopBackground", 0);
