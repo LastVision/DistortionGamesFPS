@@ -537,7 +537,7 @@ void FirstPersonRenderComponent::ReceiveNetworkMessage(const NetMessageDisplayMa
 	myMarkerPosition = aMessage.myPosition;
 }
 
-void FirstPersonRenderComponent::ReceiveNetworkMessage(const NetMessageDisplayRespawn& aMessage, const sockaddr_in& aSenderAddress)
+void FirstPersonRenderComponent::ReceiveNetworkMessage(const NetMessageDisplayRespawn& aMessage, const sockaddr_in&)
 {
 	for (int i = 0; i < myCoOpRespawns.Size(); i++)
 	{

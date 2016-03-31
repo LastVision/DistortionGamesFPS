@@ -104,6 +104,7 @@ ClientLevel::~ClientLevel()
 	SAFE_DELETE(myPlayer);
 	SAFE_DELETE(myScene);
 	SAFE_DELETE(myDeferredRenderer);
+	SAFE_DELETE(myFullscreenRenderer);
 	SAFE_DELETE(myTextManager);
 
 	Prism::Audio::AudioInterface::GetInstance()->PostEvent("StopBackground", 0);
@@ -462,7 +463,7 @@ void ClientLevel::CreatePlayers()
 	}
 }
 
-void ClientLevel::HandleOtherClientRayCast(PhysicsComponent* aComponent, const CU::Vector3<float>& aDirection, const CU::Vector3<float>& aHitPosition, const CU::Vector3<float>& aHitNormal)
+void ClientLevel::HandleOtherClientRayCast(PhysicsComponent* aComponent, const CU::Vector3<float>& aDirection, const CU::Vector3<float>& aHitPosition, const CU::Vector3<float>&)
 {
 	if (aComponent != nullptr)
 	{

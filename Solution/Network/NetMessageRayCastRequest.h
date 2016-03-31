@@ -12,7 +12,7 @@ public:
 
 	int myRayCastType;
 	float myMaxLength;
-	int myGID;
+	unsigned int myGID;
 
 private:
 	void DoSerialize(StreamType& aStream) override;
