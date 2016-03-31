@@ -34,6 +34,7 @@
 #include "NetMessageEnemyShooting.h"
 #include "NetMessageLevelComplete.h"
 #include "NetMessageText.h"
+#include "NetMessagePressEText.h"
 
 #include <IPHlpApi.h>
 #pragma comment(lib, "IPHLPAPI.lib")
@@ -414,6 +415,9 @@ void SharedNetworkManager::HandleMessage()
 			break;
 		case eNetMessageType::PRESS_E:
 			UnpackAndHandle(NetMessagePressE(), buffer);
+			break;
+		case eNetMessageType::PRESS_E_TEXT:
+   			UnpackAndHandle(NetMessagePressEText(), buffer);
 			break;
 		default:
 			DL_ASSERT("Unhandled network message type");

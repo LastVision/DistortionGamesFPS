@@ -41,6 +41,13 @@ Entity::Entity(unsigned int aGID, const EntityData& aEntityData, Prism::Scene* a
 	SetRotation(aRotation);
 
 
+	//has to be here fro press E-text
+	if (aEntityData.myTriggerData.myExistsInEntity == true)
+	{
+		myComponents[static_cast<int>(eComponentType::TRIGGER)] = new TriggerComponent(*this, aEntityData.myTriggerData);
+	}
+
+
 	myRoomType = eObjectRoomType::NOT_USED_ON_SERVER;
 	if (myScene != nullptr)
 	{
@@ -61,32 +68,6 @@ Entity::Entity(unsigned int aGID, const EntityData& aEntityData, Prism::Scene* a
 		}
 	}
 
-	if (aEntityData.myPhysicsData.myExistsInEntity == true)
-	{
-		if (aEntityData.myAnimationData.myExistsInEntity == true)
-		{
-			myComponents[static_cast<int>(eComponentType::PHYSICS)] = new PhysicsComponent(*this, aEntityData.myPhysicsData
-				, aEntityData.myAnimationData.myModelPath);
-		}
-		else if (aEntityData.myGraphicsData.myExistsInEntity == true)
-		{
-			myComponents[static_cast<int>(eComponentType::PHYSICS)] = new PhysicsComponent(*this, aEntityData.myPhysicsData
-				, aEntityData.myGraphicsData.myModelPath);
-		}
-		else
-		{
-			if (myIsClientSide == true && aEntityData.myTriggerData.myExistsInEntity == true && aEntityData.myTriggerData.myIsClientSide == false)
-			{
-			}
-			else
-			{
-				DL_ASSERT_EXP(myIsClientSide == false, "Can't create PhysicsComponent on client without graphics.");
-			}
-
-			myComponents[static_cast<int>(eComponentType::PHYSICS)] = new PhysicsComponent(*this, aEntityData.myPhysicsData
-				, "no path");
-		}
-	}
 
 	if (aEntityData.myAIComponentData.myExistsInEntity == true)
 	{
@@ -106,11 +87,6 @@ Entity::Entity(unsigned int aGID, const EntityData& aEntityData, Prism::Scene* a
 	if (aEntityData.myHealthData.myExistsInEntity == true)
 	{
 		myComponents[static_cast<int>(eComponentType::HEALTH)] = new HealthComponent(*this, aEntityData.myHealthData);
-	}
-
-	if (aEntityData.myTriggerData.myExistsInEntity == true)
-	{
-		myComponents[static_cast<int>(eComponentType::TRIGGER)] = new TriggerComponent(*this, aEntityData.myTriggerData);
 	}
 
 	if (aEntityData.myUpgradeData.myExistsInEntity == true)
@@ -143,6 +119,33 @@ Entity::Entity(unsigned int aGID, const EntityData& aEntityData, Prism::Scene* a
 	if (aEntityData.mySpawnpointData.myExistsInEntity == true)
 	{
 		myComponents[static_cast<int>(eComponentType::SPAWNPOINT)] = new SpawnpointComponent(*this, aEntityData.mySpawnpointData);
+	}
+
+	if (aEntityData.myPhysicsData.myExistsInEntity == true)
+	{
+		if (aEntityData.myAnimationData.myExistsInEntity == true)
+		{
+			myComponents[static_cast<int>(eComponentType::PHYSICS)] = new PhysicsComponent(*this, aEntityData.myPhysicsData
+				, aEntityData.myAnimationData.myModelPath);
+		}
+		else if (aEntityData.myGraphicsData.myExistsInEntity == true)
+		{
+			myComponents[static_cast<int>(eComponentType::PHYSICS)] = new PhysicsComponent(*this, aEntityData.myPhysicsData
+				, aEntityData.myGraphicsData.myModelPath);
+		}
+		else
+		{
+			if (myIsClientSide == true && aEntityData.myTriggerData.myExistsInEntity == true && aEntityData.myTriggerData.myIsClientSide == false)
+			{
+			}
+			else
+			{
+				DL_ASSERT_EXP(myIsClientSide == false, "Can't create PhysicsComponent on client without graphics.");
+			}
+
+			myComponents[static_cast<int>(eComponentType::PHYSICS)] = new PhysicsComponent(*this, aEntityData.myPhysicsData
+				, "no path");
+		}
 	}
 
 	Reset();

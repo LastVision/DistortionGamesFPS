@@ -44,6 +44,7 @@ enum class eNetMessageType
 	RAY_CAST_REQUEST,
 	RAY_CAST_RESULT,
 	PRESS_E,
+	PRESS_E_TEXT,
 
 	_COUNT,
 };

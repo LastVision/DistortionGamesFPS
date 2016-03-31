@@ -54,7 +54,7 @@ void TriggerComponent::Update(float aDelta)
 
 void TriggerComponent::ReceiveNote(const CollisionNote& aNote)
 {
-	if (myData.myIsPressable == false && aNote.myOther->GetSubType() == "playerserver")
+	if (aNote.myOther->GetSubType() == "playerserver")
 	{
 		if (aNote.myHasEntered == true)
 		{

@@ -73,6 +73,8 @@ static std::string ConvertNetworkEnumToString(eNetMessageType aType)
 		return "CLIENT WANTS TO RAY CAST";
 	case eNetMessageType::PRESS_E:
 		return "CLIENT WANTS TO PRESS E";
+	case eNetMessageType::PRESS_E_TEXT:
+		return "SERVER SEND PRESS E TEXT";
 	case eNetMessageType::_COUNT:
 		DL_ASSERT("_COUNT not used as regular enum value");
 	default:
