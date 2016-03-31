@@ -61,7 +61,7 @@ bool KillXMission::Update(float aDeltaTime)
 		}
 		return false;
 	}
-	PostMaster::GetInstance()->SendMessage<SendTextToClientsMessage>(SendTextToClientsMessage("Mission complete"));
+	//PostMaster::GetInstance()->SendMessage<SendTextToClientsMessage>(SendTextToClientsMessage("Mission complete"));
 
 	return true;
 }
