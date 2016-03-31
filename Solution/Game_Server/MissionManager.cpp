@@ -46,12 +46,12 @@ void MissionManager::SetMission(int aId)
 	if (myCurrentMission->GetMissionType() == eMissionType::DEFEND)
 	{
 		printf("Defend Mission started \n");
-		PostMaster::GetInstance()->SendMessage<SendTextToClientsMessage>(SendTextToClientsMessage("Defend Mission started"));
+		//PostMaster::GetInstance()->SendMessage<SendTextToClientsMessage>(SendTextToClientsMessage("Defend Mission started"));
 	}
 	else if (myCurrentMission->GetMissionType() == eMissionType::KILL_X)
 	{
 		printf("KillX Mission started \n");
-		PostMaster::GetInstance()->SendMessage<SendTextToClientsMessage>(SendTextToClientsMessage("KillX Mission started"));
+		//PostMaster::GetInstance()->SendMessage<SendTextToClientsMessage>(SendTextToClientsMessage("KillX Mission started"));
 	}
 }
 

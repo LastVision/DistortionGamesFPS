@@ -33,6 +33,8 @@ namespace Prism
 		ID3DX11EffectShaderResourceVariable* myNormal = nullptr;
 		ID3DX11EffectShaderResourceVariable* myDepth = nullptr;
 		ID3DX11EffectShaderResourceVariable* myCubemap = nullptr;
+
+		ID3DX11EffectShaderResourceVariable* mySSAORandomTextureVariable = nullptr;
 		ID3DX11EffectScalarVariable* myAmbientMultiplier = nullptr;
 		ID3DX11EffectMatrixVariable* myInvertedProjection;
 		ID3DX11EffectMatrixVariable* myNotInvertedView;
@@ -50,6 +52,7 @@ namespace Prism
 
 		CU::Vector3<float> mySHGridSize;
 		CU::Vector3<float> mySHGridOffset;
+		Texture* mySSAORandomTexture;
 	};
 
 	struct LightPass : public EffectListener
@@ -63,6 +66,7 @@ namespace Prism
 		ID3DX11EffectShaderResourceVariable* myMetalness = nullptr;
 		ID3DX11EffectShaderResourceVariable* myAmbientOcclusion = nullptr;
 		ID3DX11EffectShaderResourceVariable* myRoughness = nullptr;
+		ID3DX11EffectShaderResourceVariable* myEmissive = nullptr;
 		ID3DX11EffectShaderResourceVariable* myCubemap = nullptr;
 
 		ID3DX11EffectVariable* myPointLightVariable;
@@ -86,6 +90,9 @@ namespace Prism
 			, const CU::Vector3<float>& aMinPoint, const CU::Vector3<float>& aMaxPoint, const std::string& aName);
 		void SetCubeMap(const std::string& aFilePath);
 
+		Texture* GetFinishedTexture();
+		Texture* GetEmissiveTexture();
+
 	private:
 		struct GBufferData
 		{
@@ -96,6 +103,7 @@ namespace Prism
 			Texture* myMetalnessTexture;
 			Texture* myAmbientOcclusionTexture;
 			Texture* myRoughnessTexture;
+			Texture* myEmissiveTexture;
 		};
 
 		void InitFullscreenQuad();
@@ -114,15 +122,19 @@ namespace Prism
 
 		void ClearGBuffer();
 		void SetGBufferAsTarget();
+		void SetLightPassData(const Camera& aCamera);
+		void RemoveLightPassData();
 
 		CubeMapGenerator* myCubeMapGenerator;
 		SHTextures mySHTextures;
 		Texture* myDepthStencilTexture;
 		Texture* myCubemap;
+		Texture* myFinishedTexture;
 		RenderToScreenData myRenderToScreenData;
 		AmbientPass myAmbientPass;
 		LightPass myLightPass;
 		GBufferData myGBufferData;
+		D3D11_VIEWPORT* myViewPort;
 
 		float myClearColor[4];
 	};

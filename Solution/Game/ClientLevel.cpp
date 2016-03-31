@@ -36,6 +36,7 @@
 
 #include "ClientNetworkManager.h"
 #include "DeferredRenderer.h"
+#include <Renderer.h>
 #include <CubeMapGenerator.h>
 #include <PointLight.h>
 #include <GrenadeComponent.h>
@@ -111,6 +112,9 @@ void ClientLevel::Init(const std::string&)
 	Prism::ModelLoader::GetInstance()->Pause();
 	myDeferredRenderer = new Prism::DeferredRenderer();
 	myDeferredRenderer->SetCubeMap("Data/Resource/Texture/CubeMap/church_horizontal_cross_cube_specular_pow2.dds");
+
+	myFullscreenRenderer = new Prism::Renderer();
+
 
 	Prism::ModelLoader::GetInstance()->UnPause();
 	CU::Matrix44f orientation;
@@ -199,6 +203,9 @@ void ClientLevel::Render()
 	if (myInitDone == true)
 	{
 		myDeferredRenderer->Render(myScene);
+
+		myFullscreenRenderer->Render(myDeferredRenderer->GetFinishedTexture(), myDeferredRenderer->GetEmissiveTexture(), Prism::ePostProcessing::BLOOM);
+
 		Prism::DebugDrawer::GetInstance()->RenderLinesToScreen(*myPlayer->GetComponent<InputComponent>()->GetCamera());
 		//myScene->Render();
 		//myDeferredRenderer->Render(myScene);

@@ -325,7 +325,7 @@ void ServerLevel::HandleTrigger(Entity& aFirstEntity, Entity& aSecondEntity, boo
 	}
 	else
 	{
-		if (aSecondEntity.GetType() == eEntityType::UNIT && aSecondEntity.GetSubType() == "playerserver")
+		if (aSecondEntity.GetType() == eEntityType::UNIT && aSecondEntity.GetSubType() == "playerserver" && aFirstEntity.GetComponent<TriggerComponent>()->IsPressable() == true)
 		{
 			myPlayersInPressableTriggers[aSecondEntity.GetGID()].RemoveCyclic(&aFirstEntity);
 		}
@@ -355,14 +355,14 @@ void ServerLevel::Trigger(Entity& aFirstEntity, Entity& aSecondEntity, bool aHas
 		SharedNetworkManager::GetInstance()->AddMessage(NetMessageSetActive(false, true, firstTrigger->GetValue()));
 		myActiveEntitiesMap[firstTrigger->GetValue()]->GetComponent<PhysicsComponent>()->RemoveFromScene();
 		// do "open" animation
-		SendTextMessageToClients("Unlocked door");
+		//SendTextMessageToClients("Unlocked door");
 		break;
 	case eTriggerType::LOCK:
 		printf("LockTrigger with GID: %i entered by: %s with GID: %i \n", aFirstEntity.GetGID(), aSecondEntity.GetSubType().c_str(), aSecondEntity.GetGID());
 		SharedNetworkManager::GetInstance()->AddMessage(NetMessageSetActive(true, true, firstTrigger->GetValue()));
 		myActiveEntitiesMap[firstTrigger->GetValue()]->GetComponent<PhysicsComponent>()->AddToScene();
 		// do "close" animation
-		SendTextMessageToClients("Locked door");
+		//SendTextMessageToClients("Locked door");
 		break;
 	case eTriggerType::MISSION:
 		printf("MissionTrigger with GID: %i entered by: %s with GID: %i \n", aFirstEntity.GetGID(), aSecondEntity.GetSubType().c_str(), aSecondEntity.GetGID());

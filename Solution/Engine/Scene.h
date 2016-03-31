@@ -70,10 +70,6 @@ namespace Prism
 		return myCamera;
 	}
 
-	inline const CU::GrowingArray<PointLight*>& Scene::GetPointLights() const
-	{
-		return myPointLights;
-	}
 
 	inline RoomManager* Scene::GetRoomManager() const
 	{

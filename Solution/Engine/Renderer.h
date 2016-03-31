@@ -29,6 +29,8 @@ namespace Prism
 
 		void FinalRender();
 
+		void Render(Texture* aSource, Texture* aEmissiveTexture, int aEffect);
+
 		void OnResize(float aWidth, float aHeight);
 
 		Texture* GetWorldTexture();
