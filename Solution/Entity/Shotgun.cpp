@@ -47,6 +47,7 @@ bool Shotgun::Shoot(const CU::Matrix44<float>& aOrientation)
 		myAmmoInClip -= 1;
 		myShootTimer = myShootTime;
 		Prism::Audio::AudioInterface::GetInstance()->PostEvent("Play_Shotgun", 0);
+		SendRayCastRequest(aOrientation.GetPos(), aOrientation.GetForward(), 500.f, myOwnerEntity->GetGID());
 		return true;
 	}
 	return false;
