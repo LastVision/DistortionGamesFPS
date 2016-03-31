@@ -21,6 +21,7 @@ public:
 	uint32_t mySenderID;
 	uint32_t myTargetID;
 	uint8_t myID;
+	uint16_t myGameID;
 protected:
 
 	virtual void DoSerialize(StreamType& aStream);

@@ -82,6 +82,4 @@ inline OtherClients::OtherClients(const std::string& aName, unsigned int anID)
 	: myName(aName)
 	, myID(anID)
 {
-	int apa = 4;
-	apa++;
 }

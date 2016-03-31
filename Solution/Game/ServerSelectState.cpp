@@ -154,7 +154,7 @@ void ServerSelectState::ReceiveMessage(const OnClickMessage& aMessage)
 	}
 }
 
-void ServerSelectState::ReceiveNetworkMessage(const NetMessageReplyServer& aMessage, const sockaddr_in& aSenderAddress)
+void ServerSelectState::ReceiveNetworkMessage(const NetMessageReplyServer& aMessage, const sockaddr_in&)
 {
 	ServerSelectState::Server newServer;
 	newServer.myIp = aMessage.myIP;
