@@ -9,7 +9,7 @@
 #include "InputComponentData.h"
 #include <InputWrapper.h>
 #include <NetMessagePosition.h>
-#include <NetMessageRayCastRequest.h>
+#include <NetMessagePressE.h>
 #include <NetMessageEntityState.h>
 #include "NetworkComponent.h"
 #include <PostMaster.h>
@@ -69,8 +69,9 @@ void InputComponent::Update(float aDelta)
 		{
 			//Prism::PhysicsInterface::GetInstance()->RayCast(myEntity.GetOrientation().GetPos()
 			//	, myEntity.GetOrientation().GetForward(), 10.f, myRaycastHandler, myEntity.GetComponent<PhysicsComponent>());
-			SharedNetworkManager::GetInstance()->AddMessage(NetMessageRayCastRequest(myEntity.GetOrientation().GetPos(), myEntity.GetOrientation().GetForward()
-				, int(eNetRayCastType::CLIENT_PRESSED_E), 10.f, myEntity.GetGID()));
+			//SharedNetworkManager::GetInstance()->AddMessage(NetMessageRayCastRequest(myEntity.GetOrientation().GetPos(), myEntity.GetOrientation().GetForward()
+			//	, int(eNetRayCastType::CLIENT_PRESSED_E), 10.f, myEntity.GetGID()));
+			SharedNetworkManager::GetInstance()->AddMessage(NetMessagePressE(myEntity.GetGID()));
 		}
 
 		myEyeOrientation = myOrientation;

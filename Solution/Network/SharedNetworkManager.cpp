@@ -21,6 +21,7 @@
 #include "NetMessagePingRequest.h"
 #include "NetMessagePingReply.h"
 #include "NetMessagePosition.h"
+#include "NetMessagePressE.h"
 #include "NetMessageReplyServer.h"
 #include "NetMessageRequestServer.h"
 #include "NetMessageOnHit.h"
@@ -410,6 +411,9 @@ void SharedNetworkManager::HandleMessage()
 			break;
 		case eNetMessageType::RAY_CAST_REQUEST:
 			UnpackAndHandle(NetMessageRayCastRequest(), buffer);
+			break;
+		case eNetMessageType::PRESS_E:
+			UnpackAndHandle(NetMessagePressE(), buffer);
 			break;
 		default:
 			DL_ASSERT("Unhandled network message type");

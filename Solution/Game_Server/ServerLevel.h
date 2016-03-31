@@ -20,6 +20,7 @@ public:
 	void ReceiveNetworkMessage(const NetMessageEntityState& aMessage, const sockaddr_in& aSenderAddress) override;
 	void ReceiveNetworkMessage(const NetMessageHealthPack& aMessage, const sockaddr_in& aSenderAddress) override;
 	void ReceiveNetworkMessage(const NetMessageShootGrenade& aMessage, const sockaddr_in& aSenderAddress) override;
+	void ReceiveNetworkMessage(const NetMessagePressE& aMessage, const sockaddr_in& aSenderAddress) override;
 	void ReceiveNetworkMessage(const NetMessageRayCastRequest& aMessage, const sockaddr_in& aSenderAddress) override;
 	void ReceiveMessage(const SendTextToClientsMessage& aMessage) override;
 	void ReceiveMessage(const SetActiveMessage& aMessage) override;
@@ -38,6 +39,8 @@ private:
 	bool myAllClientsLoaded;
 	MissionManager* myMissionManager;
 	CU::GrowingArray<Entity*> myRespawnTriggers;
+
+	std::unordered_map<int, CU::GrowingArray<Entity*>> myPlayersInPressableTriggers;
 
 	int myNextLevel;
 };

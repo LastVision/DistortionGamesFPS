@@ -25,6 +25,7 @@ public:
 	bool GetIsActiveFromStart() const;
 	void SetRespawnValue(int aValue);
 	int GetRespawnValue() const;
+	bool IsPressable() const;
 
 private:
 
