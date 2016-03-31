@@ -31,7 +31,7 @@ namespace Prism
 		Effect* myEffect = nullptr;
 		ID3DX11EffectShaderResourceVariable* myAlbedo = nullptr;
 		ID3DX11EffectShaderResourceVariable* myNormal = nullptr;
-		ID3DX11EffectShaderResourceVariable* myDepth = nullptr;
+		ID3DX11EffectShaderResourceVariable* myEmissive = nullptr;
 		ID3DX11EffectShaderResourceVariable* myCubemap = nullptr;
 
 		ID3DX11EffectShaderResourceVariable* mySSAORandomTextureVariable = nullptr;
@@ -97,14 +97,9 @@ namespace Prism
 	private:
 		struct GBufferData
 		{
-			Texture* myAlbedoTexture;
-			Texture* myNormalTexture;
-			Texture* myDepthTexture;
-
-			Texture* myMetalnessTexture;
-			Texture* myAmbientOcclusionTexture;
-			Texture* myRoughnessTexture;
-			Texture* myEmissiveTexture;
+			Texture* myAlbedoTexture; //DEPTH is stored in W
+			Texture* myNormalTexture; //METALNESS is stored in W
+			Texture* myEmissiveTexture;  //ROUGHNESS is stored in W
 		};
 
 		void InitFullscreenQuad();
