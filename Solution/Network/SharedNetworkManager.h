@@ -184,6 +184,8 @@ protected:
 
 	sockaddr_in myBroadcastAddress;
 
+	unsigned short myMessageGameIdentifier;
+
 	bool AlreadyReceived(const NetMessage& aMessage);
 private:
 	void UpdateImportantReceivedMessages(float aDelta);
@@ -234,6 +236,7 @@ template<typename T>
 inline void SharedNetworkManager::AddMessage(T aMessage, const sockaddr_in aTargetAddress)
 {
 	aTargetAddress;
+	aMessage.myGameID = myMessageGameIdentifier;
 	aMessage.mySenderID = 0;
 	if (myIsServer == false)
 	{
@@ -260,11 +263,6 @@ template<typename T>
 void SharedNetworkManager::UnpackAndHandle(T aMessage, Buffer& aBuffer)
 {
 	aMessage.UnPackMessage(aBuffer.myData, aBuffer.myLength);
-	if (aMessage.myGameID != static_cast<uint16_t>('DG'))
-	{
-		//This will discard any messages that are not connected with our gameID
-		return;
-	}
 	if (CheckIfImportantMessage(aMessage) == true)
 	{
 		AddMessage(NetMessageImportantReply(aMessage.GetImportantID()), aMessage.mySenderID);

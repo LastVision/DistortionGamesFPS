@@ -126,7 +126,12 @@ void ClientNetworkManager::ReceieveThread()
 		myNetwork->Receieve(someBuffers);
 		for (Buffer message : someBuffers)
 		{
-			myReceieveBuffer[myCurrentBuffer ^ 1].Add(message);
+			NetMessage toDeserialize;
+			toDeserialize.DeSerializeFirst(message.myData);
+			if (toDeserialize.myGameID == myMessageGameIdentifier)
+			{
+				myReceieveBuffer[myCurrentBuffer ^ 1].Add(message);
+			}
 		}
 		ReceieveIsDone();
 		WaitForMain();

@@ -74,6 +74,8 @@ void SharedNetworkManager::Initiate()
 	myHasSent = false;
 	myAllowSendWithoutSubscribers = false;
 	myStopSendMessages = false;
+
+	myMessageGameIdentifier = 1496;
 }
 
 void SharedNetworkManager::StartNetwork(unsigned int aPortNum)
