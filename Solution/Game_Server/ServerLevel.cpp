@@ -13,6 +13,7 @@
 #include <NetMessageHealthPack.h>
 #include <NetMessageEntityState.h>
 #include <SendTextToClientsMessage.h>
+#include <NetMessageRayCastRequest.h>
 #include <NetMessageShootGrenade.h>
 #include <NetMessageText.h>
 #include <NetworkComponent.h>
@@ -44,6 +45,7 @@ ServerLevel::ServerLevel()
 	ServerNetworkManager::GetInstance()->Subscribe(eNetMessageType::ENTITY_STATE, this);
 	ServerNetworkManager::GetInstance()->Subscribe(eNetMessageType::SHOOT_GRENADE, this);
 	ServerNetworkManager::GetInstance()->Subscribe(eNetMessageType::HEALTH_PACK, this);
+	ServerNetworkManager::GetInstance()->Subscribe(eNetMessageType::RAY_CAST_REQUEST, this);
 
 	PostMaster::GetInstance()->Subscribe(eMessageType::SET_ACTIVE, this);
 	PostMaster::GetInstance()->Subscribe(eMessageType::RESPAWN_TRIGGER, this);
@@ -53,6 +55,10 @@ ServerLevel::ServerLevel()
 	ServerProjectileManager::Create();
 	ServerUnitManager::Create();
 
+	//myPressedERayCastHandler = [=](PhysicsComponent* aComponent, const CU::Vector3<float>& aDirection, const CU::Vector3<float>& aHitPosition, const CU::Vector3<float>& aHitNormal)
+	//{
+	//	this->HandlePressedERaycast(aComponent, aDirection, aHitPosition, aHitNormal);
+	//};
 }
 
 ServerLevel::~ServerLevel()
@@ -69,6 +75,7 @@ ServerLevel::~ServerLevel()
 	ServerNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::ENTITY_STATE, this);
 	ServerNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::SHOOT_GRENADE, this);
 	ServerNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::HEALTH_PACK, this);
+	ServerNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::RAY_CAST_REQUEST, this);
 
 	PostMaster::GetInstance()->UnSubscribe(eMessageType::SET_ACTIVE, this);
 	PostMaster::GetInstance()->UnSubscribe(eMessageType::RESPAWN_TRIGGER, this);
@@ -187,6 +194,18 @@ void ServerLevel::ReceiveNetworkMessage(const NetMessageShootGrenade& aMessage, 
 	SharedNetworkManager::GetInstance()->AddMessage<NetMessageShootGrenade>(NetMessageShootGrenade(aMessage.myForceStrength));
 }
 
+void ServerLevel::ReceiveNetworkMessage(const NetMessageRayCastRequest& aMessage, const sockaddr_in& )
+{
+	if (static_cast<eNetRayCastType>(aMessage.myRayCastType) == eNetRayCastType::CLIENT_PRESSED_E)
+	{
+		//Prism::PhysicsInterface::GetInstance()->RayCast(aMessage.myPosition, aMessage.myDirection, aMessage.myMaxLength, myPressedERayCastHandler, myPlayers[aMessage.myGID - 1]->GetComponent<PhysicsComponent>());
+	}
+	else
+	{
+		DL_ASSERT("NOT IMPLEMENTED");
+	}
+}
+
 void ServerLevel::ReceiveMessage(const SendTextToClientsMessage& aMessage)
 {
 	SendTextMessageToClients(aMessage.myText);
@@ -224,41 +243,23 @@ void ServerLevel::ReceiveMessage(const RespawnTriggerMessage& aMessage)
 	myRespawnTriggers[aMessage.myGID - 1]->GetComponent<PhysicsComponent>()->UpdateOrientationStatic();
 }
 
+//void ServerLevel::HandlePressedERaycast(PhysicsComponent* aComponent, const CU::Vector3<float>&, const CU::Vector3<float>&, const CU::Vector3<float>&)
+//{
+//	if (aComponent != nullptr)
+//	{
+//		//Entity& entity = aComponent->GetEntity();
+//
+//		
+//	}
+//}
+
 void ServerLevel::HandleTrigger(Entity& aFirstEntity, Entity& aSecondEntity, bool aHasEntered)
 {
-	TriggerComponent* firstTrigger = aFirstEntity.GetComponent<TriggerComponent>();
 	if (aHasEntered == true)
 	{
 		if (aSecondEntity.GetType() == eEntityType::UNIT && aSecondEntity.GetSubType() == "playerserver")
 		{
-			switch (firstTrigger->GetTriggerType())
-			{
-			case eTriggerType::UNLOCK:
-				printf("UnlockTrigger with GID: %i entered by: %s with GID: %i \n", aFirstEntity.GetGID(), aSecondEntity.GetSubType().c_str(), aSecondEntity.GetGID());
-				SharedNetworkManager::GetInstance()->AddMessage(NetMessageSetActive(false, true, firstTrigger->GetValue()));
-				myActiveEntitiesMap[firstTrigger->GetValue()]->GetComponent<PhysicsComponent>()->RemoveFromScene();
-				// do "open" animation
-				SendTextMessageToClients("Unlocked door");
-				break;
-			case eTriggerType::LOCK:
-				printf("LockTrigger with GID: %i entered by: %s with GID: %i \n", aFirstEntity.GetGID(), aSecondEntity.GetSubType().c_str(), aSecondEntity.GetGID());
-				SharedNetworkManager::GetInstance()->AddMessage(NetMessageSetActive(true, true, firstTrigger->GetValue()));
-				myActiveEntitiesMap[firstTrigger->GetValue()]->GetComponent<PhysicsComponent>()->AddToScene();
-				// do "close" animation
-				SendTextMessageToClients("Locked door");
-				break;
-			case eTriggerType::MISSION:
-				printf("MissionTrigger with GID: %i entered by: %s with GID: %i \n", aFirstEntity.GetGID(), aSecondEntity.GetSubType().c_str(), aSecondEntity.GetGID());
-				myMissionManager->SetMission(firstTrigger->GetValue());
-				break;
-			case eTriggerType::LEVEL_CHANGE:
-				myNextLevel = firstTrigger->GetValue();
-				break;
-			case eTriggerType::ENEMY_SPAWN:
-				PostMaster::GetInstance()->SendMessage(ActivateSpawnpointMessage(firstTrigger->GetEntity().GetGID()));
-				break;
-			}
-			aSecondEntity.SendNote<CollisionNote>(CollisionNote(&aFirstEntity, aHasEntered));
+			Trigger(aFirstEntity, aSecondEntity, aHasEntered);
 		}
 		else if (aSecondEntity.GetType() == eEntityType::UNIT && aSecondEntity.GetSubType() != "playerserver")
 		{
@@ -281,6 +282,40 @@ void ServerLevel::HandleTrigger(Entity& aFirstEntity, Entity& aSecondEntity, boo
 		}
 	}
 	aFirstEntity.SendNote<CollisionNote>(CollisionNote(&aSecondEntity, aHasEntered));
+}
+
+void ServerLevel::Trigger(Entity& aFirstEntity, Entity& aSecondEntity, bool aHasEntered)
+{
+	TriggerComponent* firstTrigger = aFirstEntity.GetComponent<TriggerComponent>();
+
+	switch (firstTrigger->GetTriggerType())
+	{
+	case eTriggerType::UNLOCK:
+		printf("UnlockTrigger with GID: %i entered by: %s with GID: %i \n", aFirstEntity.GetGID(), aSecondEntity.GetSubType().c_str(), aSecondEntity.GetGID());
+		SharedNetworkManager::GetInstance()->AddMessage(NetMessageSetActive(false, true, firstTrigger->GetValue()));
+		myActiveEntitiesMap[firstTrigger->GetValue()]->GetComponent<PhysicsComponent>()->RemoveFromScene();
+		// do "open" animation
+		SendTextMessageToClients("Unlocked door");
+		break;
+	case eTriggerType::LOCK:
+		printf("LockTrigger with GID: %i entered by: %s with GID: %i \n", aFirstEntity.GetGID(), aSecondEntity.GetSubType().c_str(), aSecondEntity.GetGID());
+		SharedNetworkManager::GetInstance()->AddMessage(NetMessageSetActive(true, true, firstTrigger->GetValue()));
+		myActiveEntitiesMap[firstTrigger->GetValue()]->GetComponent<PhysicsComponent>()->AddToScene();
+		// do "close" animation
+		SendTextMessageToClients("Locked door");
+		break;
+	case eTriggerType::MISSION:
+		printf("MissionTrigger with GID: %i entered by: %s with GID: %i \n", aFirstEntity.GetGID(), aSecondEntity.GetSubType().c_str(), aSecondEntity.GetGID());
+		myMissionManager->SetMission(firstTrigger->GetValue());
+		break;
+	case eTriggerType::LEVEL_CHANGE:
+		myNextLevel = firstTrigger->GetValue();
+		break;
+	case eTriggerType::ENEMY_SPAWN:
+		PostMaster::GetInstance()->SendMessage(ActivateSpawnpointMessage(firstTrigger->GetEntity().GetGID()));
+		break;
+	}
+	aSecondEntity.SendNote<CollisionNote>(CollisionNote(&aFirstEntity, aHasEntered));
 }
 
 void ServerLevel::SendTextMessageToClients(const std::string& aText, float)

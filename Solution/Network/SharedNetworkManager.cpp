@@ -16,6 +16,7 @@
 #include "NetMessageHealthPack.h"
 #include "NetMessageDisconnect.h"
 #include "NetMessageSetLevel.h"
+#include "NetMessageRayCastRequest.h"
 #include "NetMessageRequestStartLevel.h"
 #include "NetMessagePingRequest.h"
 #include "NetMessagePingReply.h"
@@ -406,6 +407,9 @@ void SharedNetworkManager::HandleMessage()
 			break;
 		case eNetMessageType::SERVER_REQUEST:
 			UnpackAndHandle(NetMessageRequestServer(), buffer);
+			break;
+		case eNetMessageType::RAY_CAST_REQUEST:
+			UnpackAndHandle(NetMessageRayCastRequest(), buffer);
 			break;
 		default:
 			DL_ASSERT("Unhandled network message type");

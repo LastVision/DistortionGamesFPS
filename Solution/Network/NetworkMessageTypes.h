@@ -41,6 +41,9 @@ enum class eNetMessageType
 	ACTIVATE_SPAWNPOINT,
 	ACTIVATE_UNIT,
 
+	RAY_CAST_REQUEST,
+	RAY_CAST_RESULT,
+
 	_COUNT,
 };
 
