@@ -92,6 +92,7 @@ namespace Prism
 
 		Texture* GetFinishedTexture();
 		Texture* GetEmissiveTexture();
+		Texture* GetDepthStencilTexture();
 
 	private:
 		struct GBufferData

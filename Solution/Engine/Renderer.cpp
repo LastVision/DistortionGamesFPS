@@ -145,13 +145,15 @@ namespace Prism
 	}
 
 
-	void Renderer::Render(Texture* aSource, Texture* aEmissiveTexture, int aEffect)
+	void Renderer::Render(Texture* aSource, Texture* aEmissiveTexture, Texture* aDepthStencilTexture, int aEffect)
 	{
 		myEngine->GetContex()->ClearRenderTargetView(myFinalTexture->GetRenderTargetView(), myClearColor);
 
 		myFullScreenHelper->Process(aSource, myFinalTexture, aEmissiveTexture, aEffect, nullptr);
 
 		myFullScreenHelper->RenderToScreen(myFinalTexture);
+
+		Engine::GetInstance()->SetDepthStencil(aDepthStencilTexture->GetDepthStencilView());
 	}
 
 	void Renderer::OnResize(float aWidth, float aHeight)

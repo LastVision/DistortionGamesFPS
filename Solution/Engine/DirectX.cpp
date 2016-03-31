@@ -27,7 +27,7 @@ namespace Prism
 
 	void DirectX::Clear(const float aClearColor[4])
 	{
-		myContext->OMSetRenderTargets(1, &myBackbufferRenderTarget, myBackbufferDepthStencil);
+		//myContext->OMSetRenderTargets(1, &myBackbufferRenderTarget, myBackbufferDepthStencil);
 		myContext->ClearRenderTargetView(myBackbufferRenderTarget, aClearColor);
 		myContext->ClearDepthStencilView(myBackbufferDepthStencil, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 	}
@@ -140,6 +140,19 @@ namespace Prism
 	ID3D11Texture2D* DirectX::GetDepthbufferTexture()
 	{
 		return myDepthbufferTexture;
+	}
+
+	void DirectX::SetDepthStencil(ID3D11DepthStencilView* aStencil)
+	{
+		myBackbufferDepthStencil = aStencil;
+		myContext->OMSetRenderTargets(1, &myBackbufferRenderTarget, myBackbufferDepthStencil);
+	}
+
+	void DirectX::RestoreDepthStencil()
+	{
+		myBackbufferDepthStencil = myOriginalBackbufferDepthStencil;
+		myContext->OMSetRenderTargets(1, &myBackbufferRenderTarget, myBackbufferDepthStencil);
+
 	}
 
 	void DirectX::RestoreViewPort()
@@ -333,6 +346,12 @@ namespace Prism
 		stencilDesc.Texture2D.MipSlice = 0;
 
 		hr = myDevice->CreateDepthStencilView(myDepthbufferTexture, &stencilDesc, &myBackbufferDepthStencil);
+		if (FAILED(hr))
+		{
+			return false;
+		}
+
+		hr = myDevice->CreateDepthStencilView(myDepthbufferTexture, &stencilDesc, &myOriginalBackbufferDepthStencil);
 		if (FAILED(hr))
 		{
 			return false;

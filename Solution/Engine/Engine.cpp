@@ -111,6 +111,7 @@ namespace Prism
 
 	void Engine::Render()
 	{
+		RestoreDepthStencil();
 		DEBUG_PRINT(GET_RUNTIME);
 		DEBUG_PRINT(GetWindowSize());
 
@@ -249,6 +250,16 @@ namespace Prism
 	ID3D11Texture2D* Engine::GetDepthBufferTexture()
 	{
 		return myDirectX->GetDepthbufferTexture();
+	}
+
+	void Engine::SetDepthStencil(ID3D11DepthStencilView* aStencil)
+	{
+		myDirectX->SetDepthStencil(aStencil);
+	}
+
+	void Engine::RestoreDepthStencil()
+	{
+		myDirectX->RestoreDepthStencil();
 	}
 
 	FontProxy* Engine::GetFont(eFont aFont)
