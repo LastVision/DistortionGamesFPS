@@ -490,7 +490,7 @@ namespace Prism
 		return proxy;
 	}
 
-	TextProxy* ModelLoader::LoadText(FontProxy* aFontProxy)
+	TextProxy* ModelLoader::LoadText(FontProxy* aFontProxy, bool aIs3d)
 	{
 		TextProxy* proxy = new TextProxy();
 
@@ -502,11 +502,12 @@ namespace Prism
 		newData.myTextProxy = proxy;
 		newData.myFontProxyToUse = aFontProxy;
 		newData.myLoadType = eLoadType::TEXT;
+		newData.myIs3dText = aIs3d;
 
 		myBuffers[myInactiveBuffer].Add(newData);
 		myCanCopyArray = true;
 #else
-		proxy->SetText(new Text(*aFontProxy));
+		proxy->SetText(new Text(*aFontProxy, aIs3d));
 #endif	
 
 		return proxy;
@@ -679,7 +680,7 @@ namespace Prism
 
 	void ModelLoader::CreateText(LoadData& someData)
 	{
-		someData.myTextProxy->SetText(new Text(*someData.myFontProxyToUse));
+		someData.myTextProxy->SetText(new Text(*someData.myFontProxyToUse, someData.myIs3dText));
 	}
 
 	void ModelLoader::GetHierarchyToBone(LoadData& someData)

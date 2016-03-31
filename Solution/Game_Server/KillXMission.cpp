@@ -40,6 +40,10 @@ bool KillXMission::Update(float aDeltaTime)
 					if (myShouldLoopMissionEvents == true)
 					{
 						myCurrentMissionEvent = 0;
+						for (int i = 0; i < myMissionEvents.Size(); ++i)
+						{
+							myMissionEvents[i].myTimeBeforeStarting = myMissionEvents[i].myResetTime;
+						}
 					}
 					else
 					{
