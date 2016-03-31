@@ -36,6 +36,26 @@ bool DefendMission::Update(float aDeltaTime)
 		{
 			myDefendTime -= aDeltaTime;
 		}
+		if (myMissionEvents.Size() > 0)
+		{
+			myMissionEvents[myCurrentMissionEvent].myTimeBeforeStarting -= aDeltaTime;
+			if (myMissionEvents[myCurrentMissionEvent].myTimeBeforeStarting <= 0.f)
+			{
+				SendMissionMessage(myMissionEvents[myCurrentMissionEvent]);
+				++myCurrentMissionEvent;
+				if (myCurrentMissionEvent == myMissionEvents.Size())
+				{
+					if (myShouldLoopMissionEvents == true)
+					{
+						myCurrentMissionEvent = 0;
+					}
+					else
+					{
+						myMissionEvents.RemoveAll();
+					}
+				}
+			}
+		}
 		//test:
 		//if (myLastSecondToWarn == int(myDefendTime))
 		//{
