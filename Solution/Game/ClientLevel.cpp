@@ -72,6 +72,8 @@ ClientLevel::ClientLevel()
 	ClientProjectileManager::Create();
 	ClientUnitManager::Create();
 	myScene = new Prism::Scene();
+	myEmitterManager = new EmitterManager();
+
 }
 
 ClientLevel::~ClientLevel()
@@ -110,7 +112,6 @@ void ClientLevel::Init(const std::string&)
 	myDeferredRenderer = new Prism::DeferredRenderer();
 	myDeferredRenderer->SetCubeMap("Data/Resource/Texture/CubeMap/church_horizontal_cross_cube_specular_pow2.dds");
 
-	myEmitterManager = new EmitterManager(*myPlayer->GetComponent<InputComponent>()->GetCamera());
 	Prism::ModelLoader::GetInstance()->UnPause();
 	CU::Matrix44f orientation;
 	myInstanceOrientations.Add(orientation);
@@ -121,7 +122,7 @@ void ClientLevel::Init(const std::string&)
 	ClientProjectileManager::GetInstance()->CreateExplosions();
 
 	myTextManager = new TextEventManager(myPlayer->GetComponent<InputComponent>()->GetCamera());
-
+	myEmitterManager->Initiate(myPlayer->GetComponent<InputComponent>()->GetCamera());
 }
 
 void ClientLevel::SetMinMax(const CU::Vector3<float>& aMinPoint, const CU::Vector3<float>& aMaxPoint)

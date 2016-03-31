@@ -13,9 +13,8 @@
 #define UNFINISHED 1
 
 
-EmitterManager::EmitterManager(const Prism::Camera& aCamera)
+EmitterManager::EmitterManager()
 	: myEmitterList(64)
-	, myCamera(aCamera)
 {
 	PostMaster* postMaster = PostMaster::GetInstance();
 	postMaster->Subscribe(eMessageType::PARTICLE, this);
@@ -37,6 +36,11 @@ EmitterManager::~EmitterManager()
 		delete it->second;
 		it->second = nullptr;
 	}
+}
+
+void EmitterManager::Initiate(Prism::Camera* aCamera)
+{
+	myCamera = aCamera;
 }
 
 void EmitterManager::UpdateEmitters(float aDeltaTime, CU::Matrix44f aWorldMatrix)
@@ -70,7 +74,7 @@ void EmitterManager::UpdateEmitters(float aDeltaTime, CU::Matrix44f aWorldMatrix
 
 void EmitterManager::RenderEmitters()
 {
-	Prism::ParticleDataContainer::GetInstance()->SetGPUData(myCamera);
+	Prism::ParticleDataContainer::GetInstance()->SetGPUData(*myCamera);
 	for (int i = 0; i < myEmitterList.Size(); ++i)
 	{
 		if (myEmitterList[i]->myTypeIsActive == false)
@@ -173,6 +177,11 @@ void EmitterManager::ReceiveMessage(const EmitterMessage& aMessage)
 		{
 			instance->SetEmitterLifeTime(aMessage.myEmitterLifeTime);
 		}
+		if (aMessage.myUseDirection == true)
+		{
+			instance->SetDirection(aMessage.myDirection);
+		}
+
 	}
 
 	myEmitters[particleType]->myFinishedGroups[index] = UNFINISHED;

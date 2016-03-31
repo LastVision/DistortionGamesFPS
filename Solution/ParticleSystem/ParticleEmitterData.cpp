@@ -39,7 +39,6 @@ namespace Prism
 			SAFE_RELEASE(myInputLayout);
 		}
 		SAFE_DELETE(myTechniqueDesc);
-	
 	}
 
 	void ParticleEmitterData::LoadDataFile(const std::string& aFilePath)
