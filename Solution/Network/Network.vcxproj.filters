@@ -151,10 +151,10 @@
     <ClInclude Include="NetMessageRayCastRequest.h">
       <Filter>Messages</Filter>
     </ClInclude>
-    <ClInclude Include="NetMessageRayCastResult.h">
+    <ClInclude Include="NetMessagePressE.h">
       <Filter>Messages</Filter>
     </ClInclude>
-    <ClInclude Include="NetMessagePressE.h">
+    <ClInclude Include="NetMessagePressEText.h">
       <Filter>Messages</Filter>
     </ClInclude>
   </ItemGroup>
