@@ -17,11 +17,11 @@ public:
 	static eComponentType GetTypeStatic();
 	eComponentType GetType() override;
 
-	void HandleRaycast(PhysicsComponent* aComponent, const CU::Vector3<float>& aDirection, const CU::Vector3<float>& aHitPosition);
+	void HandleRaycast(PhysicsComponent* aComponent, const CU::Vector3<float>& aDirection, const CU::Vector3<float>& aHitPosition, const CU::Vector3<float>& aHitNormal);
 
 private:
 	void operator=(AIComponent&) = delete;
-	std::function<void(PhysicsComponent*, const CU::Vector3<float>&, const CU::Vector3<float>&)> myRaycastHandler;
+	std::function<void(PhysicsComponent*, const CU::Vector3<float>&, const CU::Vector3<float>&, const CU::Vector3<float>&)> myRaycastHandler;
 
 	void Move(float aDelta, Entity* aClosestPlayer);
 	void SetOrientation(const CU::Vector3<float>& aLookInDirection, float aDelta);

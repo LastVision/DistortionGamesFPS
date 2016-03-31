@@ -34,9 +34,9 @@ Pistol::Pistol(Entity* aOwnerEntity)
 	myAmmoTotal = INT_MAX;
 	myShootTimer = myShootTime;
 
-	myRaycastHandler = [=](PhysicsComponent* aComponent, const CU::Vector3<float>& aDirection, const CU::Vector3<float>& aHitPosition)
+	myRaycastHandler = [=](PhysicsComponent* aComponent, const CU::Vector3<float>& aDirection, const CU::Vector3<float>& aHitPosition, const CU::Vector3<float>& aHitNormal)
 	{
-		this->HandleRaycast(aComponent, aDirection, aHitPosition);
+		this->HandleRaycast(aComponent, aDirection, aHitPosition, aHitNormal);
 	};
 
 	for (int i = 0; i < 5; ++i)
@@ -133,7 +133,7 @@ void Pistol::Update(float aDelta)
 	}
 }
 
-void Pistol::HandleRaycast(PhysicsComponent* aComponent, const CU::Vector3<float>& aDirection, const CU::Vector3<float>& aHitPosition)
+void Pistol::HandleRaycast(PhysicsComponent* aComponent, const CU::Vector3<float>& aDirection, const CU::Vector3<float>& aHitPosition, const CU::Vector3<float>& aHitNormal)
 {
 	if (aComponent != nullptr)
 	{

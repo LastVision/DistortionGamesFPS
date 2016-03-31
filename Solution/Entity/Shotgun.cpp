@@ -25,9 +25,9 @@ Shotgun::Shotgun(Entity* aOwnerEntity)
 	
 	reader.CloseDocument();
 
-	myRaycastHandler = [=](PhysicsComponent* aComponent, const CU::Vector3<float>& aDirection, const CU::Vector3<float>& aHitPosition)
+	myRaycastHandler = [=](PhysicsComponent* aComponent, const CU::Vector3<float>& aDirection, const CU::Vector3<float>& aHitPosition, const CU::Vector3<float>& aHitNormal)
 	{
-		this->HandleRaycast(aComponent, aDirection, aHitPosition);
+		this->HandleRaycast(aComponent, aDirection, aHitPosition, aHitNormal);
 	};
 }
 
@@ -64,7 +64,7 @@ void Shotgun::Update(float aDelta)
 	myShootTimer -= aDelta;
 }
 
-void Shotgun::HandleRaycast(PhysicsComponent* aComponent, const CU::Vector3<float>& aDirection, const CU::Vector3<float>& aHitPosition)
+void Shotgun::HandleRaycast(PhysicsComponent* aComponent, const CU::Vector3<float>& aDirection, const CU::Vector3<float>& aHitPosition, const CU::Vector3<float>& aHitNormal)
 {
 	if (aComponent != nullptr)
 	{

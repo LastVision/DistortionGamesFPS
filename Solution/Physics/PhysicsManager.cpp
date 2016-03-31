@@ -391,7 +391,7 @@ namespace Prism
 
 	void PhysicsManager::RayCast(const CU::Vector3<float>& aOrigin, const CU::Vector3<float>& aNormalizedDirection
 		, float aMaxRayDistance, std::function<void(PhysicsComponent*, const CU::Vector3<float>&
-		, const CU::Vector3<float>&)> aFunctionToCall, const PhysicsComponent* aComponent)
+		, const CU::Vector3<float>&, const CU::Vector3<float>&)> aFunctionToCall, const PhysicsComponent* aComponent)
 	{
 		myRaycastJobs[myCurrentIndex].Add(RaycastJob(aOrigin, aNormalizedDirection, aMaxRayDistance, aFunctionToCall, aComponent));
 	}
@@ -429,6 +429,7 @@ namespace Prism
 
 		returnValue = myScene->raycast(origin, unitDirection, maxDistance, buffer);
 		CU::Vector3<float> hitPosition;
+		CU::Vector3<float> hitNormal;
 		
 		PhysicsComponent* ent = nullptr;//static_cast<PhysEntity*>(buffer.touches[myCurrentIndex].actor->userData);
 		if (returnValue == true)
@@ -448,10 +449,14 @@ namespace Prism
 					hitPosition.x = buffer.touches[i].position.x;
 					hitPosition.y = buffer.touches[i].position.y;
 					hitPosition.z = buffer.touches[i].position.z;
+					
+					hitNormal.x = buffer.touches[i].normal.x;
+					hitNormal.y = buffer.touches[i].normal.y;
+					hitNormal.z = buffer.touches[i].normal.z;
 				}
 			}
 		}
-		myRaycastResults[myCurrentIndex ^ 1].Add(RaycastResult(ent, aRaycastJob.myNormalizedDirection, hitPosition, aRaycastJob.myFunctionToCall));
+		myRaycastResults[myCurrentIndex ^ 1].Add(RaycastResult(ent, aRaycastJob.myNormalizedDirection, hitPosition, hitNormal, aRaycastJob.myFunctionToCall));
 	}
 
 	void PhysicsManager::AddForce(physx::PxRigidDynamic* aDynamicBody, const CU::Vector3<float>& aDirection, float aMagnitude)
@@ -898,7 +903,9 @@ namespace Prism
 
 		for (int i = 0; i < myRaycastResults[myCurrentIndex].Size(); ++i)
 		{
-			myRaycastResults[myCurrentIndex][i].myFunctionToCall(myRaycastResults[myCurrentIndex][i].myPhysicsComponent, myRaycastResults[myCurrentIndex][i].myDirection, myRaycastResults[myCurrentIndex][i].myHitPosition);
+			myRaycastResults[myCurrentIndex][i].myFunctionToCall(myRaycastResults[myCurrentIndex][i].myPhysicsComponent
+				, myRaycastResults[myCurrentIndex][i].myDirection, myRaycastResults[myCurrentIndex][i].myHitPosition
+				, myRaycastResults[myCurrentIndex][i].myHitNormal);
 		}
 		myRaycastResults[myCurrentIndex].RemoveAll();
 		myIsReading = false;

@@ -26,13 +26,13 @@ public:
 	void ReceiveMessage(const RespawnMessage &aMessage) override;
 	void ReceiveMessage(const RespawnTriggerMessage& aMessage) override;
 
-	void HandlePressedERaycast(PhysicsComponent* aComponent, const CU::Vector3<float>& aDirection, const CU::Vector3<float>& aHitPosition);
+	//void HandlePressedERaycast(PhysicsComponent* aComponent, const CU::Vector3<float>& aDirection, const CU::Vector3<float>& aHitPosition, const CU::Vector3<float>& aHitNormal);
 
 private:
 	void HandleTrigger(Entity& aFirstEntity, Entity& aSecondEntity, bool aHasEntered) override;
 	void Trigger(Entity& aFirstEntity, Entity& aSecondEntity, bool aHasEntered);
 	void SendTextMessageToClients(const std::string& aText, float aTime = 5.f);
-	std::function<void(PhysicsComponent*, const CU::Vector3<float>&, const CU::Vector3<float>&)> myPressedERayCastHandler;
+	//std::function<void(PhysicsComponent*, const CU::Vector3<float>&, const CU::Vector3<float>&, const CU::Vector3<float>&)> myPressedERayCastHandler;
 	unsigned int myEntityIDCount;
 	CU::GrowingArray<unsigned int> myLoadedClients;
 	bool myAllClientsLoaded;

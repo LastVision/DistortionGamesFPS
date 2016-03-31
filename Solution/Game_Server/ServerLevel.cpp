@@ -55,10 +55,10 @@ ServerLevel::ServerLevel()
 	ServerProjectileManager::Create();
 	ServerUnitManager::Create();
 
-	myPressedERayCastHandler = [=](PhysicsComponent* aComponent, const CU::Vector3<float>& aDirection, const CU::Vector3<float>& aHitPosition)
-	{
-		this->HandlePressedERaycast(aComponent, aDirection, aHitPosition);
-	};
+	//myPressedERayCastHandler = [=](PhysicsComponent* aComponent, const CU::Vector3<float>& aDirection, const CU::Vector3<float>& aHitPosition, const CU::Vector3<float>& aHitNormal)
+	//{
+	//	this->HandlePressedERaycast(aComponent, aDirection, aHitPosition, aHitNormal);
+	//};
 }
 
 ServerLevel::~ServerLevel()
@@ -198,7 +198,7 @@ void ServerLevel::ReceiveNetworkMessage(const NetMessageRayCastRequest& aMessage
 {
 	if (static_cast<eNetRayCastType>(aMessage.myRayCastType) == eNetRayCastType::CLIENT_PRESSED_E)
 	{
-		Prism::PhysicsInterface::GetInstance()->RayCast(aMessage.myPosition, aMessage.myDirection, aMessage.myMaxLength, myPressedERayCastHandler, myPlayers[aMessage.myGID - 1]->GetComponent<PhysicsComponent>());
+		//Prism::PhysicsInterface::GetInstance()->RayCast(aMessage.myPosition, aMessage.myDirection, aMessage.myMaxLength, myPressedERayCastHandler, myPlayers[aMessage.myGID - 1]->GetComponent<PhysicsComponent>());
 	}
 	else
 	{
@@ -243,15 +243,15 @@ void ServerLevel::ReceiveMessage(const RespawnTriggerMessage& aMessage)
 	myRespawnTriggers[aMessage.myGID - 1]->GetComponent<PhysicsComponent>()->UpdateOrientationStatic();
 }
 
-void ServerLevel::HandlePressedERaycast(PhysicsComponent* aComponent, const CU::Vector3<float>&, const CU::Vector3<float>&)
-{
-	if (aComponent != nullptr)
-	{
-		//Entity& entity = aComponent->GetEntity();
-
-		
-	}
-}
+//void ServerLevel::HandlePressedERaycast(PhysicsComponent* aComponent, const CU::Vector3<float>&, const CU::Vector3<float>&, const CU::Vector3<float>&)
+//{
+//	if (aComponent != nullptr)
+//	{
+//		//Entity& entity = aComponent->GetEntity();
+//
+//		
+//	}
+//}
 
 void ServerLevel::HandleTrigger(Entity& aFirstEntity, Entity& aSecondEntity, bool aHasEntered)
 {
