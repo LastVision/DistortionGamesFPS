@@ -40,6 +40,7 @@ private:
 	CU::GrowingArray<Server> myServers;
 
 	Server* myServer;
+	Server myLocalhost;
 
 	float myRefreshServerTimer;
 	float myWaitForResponseTimer;
