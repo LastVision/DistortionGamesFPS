@@ -43,6 +43,7 @@ enum class eNetMessageType
 
 	RAY_CAST_REQUEST,
 	RAY_CAST_RESULT,
+	PRESS_E,
 
 	_COUNT,
 };
@@ -80,6 +81,4 @@ inline OtherClients::OtherClients(const std::string& aName, unsigned int anID)
 	: myName(aName)
 	, myID(anID)
 {
-	int apa = 4;
-	apa++;
 }

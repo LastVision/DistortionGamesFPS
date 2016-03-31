@@ -241,6 +241,7 @@ void ClientNetworkManager::ReceiveNetworkMessage(const NetMessageConnectReply& a
 	}
 	else
 	{
+		myIsOnline = false;
 		DL_ASSERT("Failed to connect");
 	}
 }
@@ -303,7 +304,7 @@ void ClientNetworkManager::AddImportantMessage(std::vector<char> aBuffer, unsign
 	ImportantMessage msg;
 	msg.myData = aBuffer;
 	msg.myImportantID = aImportantID;
-	msg.myMessageType = aBuffer[0];
+	msg.myMessageType = aBuffer[2];
 	msg.mySenders.Init(1);
 	ImportantClient server;
 	server.myGID = 0;
@@ -320,7 +321,7 @@ void ClientNetworkManager::AddImportantMessage(std::vector<char> aBuffer, unsign
 	ImportantMessage msg;
 	msg.myData = aBuffer;
 	msg.myImportantID = aImportantID;
-	msg.myMessageType = aBuffer[0];
+	msg.myMessageType = aBuffer[2];
 	msg.mySenders.Init(1);
 
 	ImportantClient client;

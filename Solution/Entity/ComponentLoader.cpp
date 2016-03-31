@@ -169,7 +169,8 @@ void ComponentLoader::LoadGrenadeComponent(XMLReader& aDocument, tinyxml2::XMLEl
 void ComponentLoader::LoadTriggerComponent(XMLReader& aDocument, tinyxml2::XMLElement* aSourceElement, TriggerComponentData& aOutputData)
 {
 	aOutputData.myExistsInEntity = true;
-	aOutputData.myIsOneTime = false;
+	aOutputData.myIsOneTime = false; 
+	aOutputData.myIsPressable = false;
 	aOutputData.myTriggerType = -1;
 
 	for (tinyxml2::XMLElement* e = aDocument.FindFirstChild(aSourceElement); e != nullptr; e = aDocument.FindNextElement(e))
@@ -184,6 +185,7 @@ void ComponentLoader::LoadTriggerComponent(XMLReader& aDocument, tinyxml2::XMLEl
 			aDocument.ReadAttribute(e, "oneTimeTrigger", aOutputData.myIsOneTime);
 			aDocument.ForceReadAttribute(e, "isClientSide", aOutputData.myIsClientSide);
 			aDocument.ReadAttribute(e, "activeFromStart", aOutputData.myIsActiveFromStart);
+			aDocument.ReadAttribute(e, "isPressable", aOutputData.myIsPressable);
 
 			aOutputData.myTriggerType = ConvertToTriggerEnum(name);
 
