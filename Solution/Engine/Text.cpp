@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include "Camera.h"
 #include "FontProxy.h"
 #include "Surface.h"
 #include "Text.h"
@@ -6,11 +7,18 @@
 
 #include "Engine.h"
 
-Prism::Text::Text(const FontProxy& aFont)
+Prism::Text::Text(const FontProxy& aFont, bool aIs3d)
 	: myFont(aFont)
 	, myColor(1.f, 1.f, 1.f, 1.f)
 {
-	myEffect = EffectContainer::GetInstance()->GetEffect("Data/Resource/Shader/S_effect_font.fx");
+	if (aIs3d == false)
+	{
+		myEffect = EffectContainer::GetInstance()->GetEffect("Data/Resource/Shader/S_effect_font.fx");
+	}
+	else
+	{
+		myEffect = EffectContainer::GetInstance()->GetEffect("Data/Resource/Shader/S_effect_font3d.fx");
+	}
 	myScale = { 1.f, 1.f };
 
 	D3D11_INPUT_ELEMENT_DESC vertexDesc[] =
@@ -77,6 +85,27 @@ void Prism::Text::Render(const CU::Vector2<float>& aPosition, const CU::Vector2<
 
 	BaseModel::Render();
 
+	Engine::GetInstance()->SetDepthBufferState(eDepthStencil::Z_ENABLED);
+}
+
+void Prism::Text::Render(const Camera* aCamera, const CU::Matrix44<float>& aOrientation, const CU::Vector2<float>& aScale, const CU::Vector4<float>& aColor)
+{
+	Engine::GetInstance()->SetDepthBufferState(eDepthStencil::Z_DISABLED);
+	float blendFactor[4];
+	blendFactor[0] = 0.f;
+	blendFactor[1] = 0.f;
+	blendFactor[2] = 0.f;
+	blendFactor[3] = 0.f;
+
+	myEffect->SetBlendState(myBlendState, blendFactor);
+	myEffect->SetWorldMatrix(aOrientation * aCamera->GetOrientation());
+	myEffect->SetViewMatrix(CU::InverseSimple(aCamera->GetOrientation()));
+	myEffect->SetProjectionMatrix(aCamera->GetProjection());
+	myEffect->SetViewProjectionMatrix(aCamera->GetViewProjection());
+	//myEffect->SetPosAndScale(aPosition, aScale);
+	myEffect->SetColor(aColor);
+
+	BaseModel::Render();
 	Engine::GetInstance()->SetDepthBufferState(eDepthStencil::Z_ENABLED);
 }
 

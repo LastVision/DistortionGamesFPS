@@ -3,17 +3,22 @@
 #include "ClientNetworkManager.h"
 #include <NetMessageText.h>
 #include "TextEventManager.h"
-#include <Text.h>
+//#include <Text.h>
+#include <ModelLoader.h>
+#include <TextProxy.h>
 
 TextEventManager::TextEventManager(const Prism::Camera* aCamera)
 	: myCamera(aCamera)
 	, myTextStartFadingTime(1.f)
 {
 	myNotifications.Init(8);
-
+	myStartOffset = { -1.f, 1.f, 2.f };
 	for (int i = 0; i < myNotifications.GetCapacity(); i++)
 	{
 		NotificationText* notification = new NotificationText;
+		notification->my3dText = Prism::ModelLoader::GetInstance()->LoadText(Prism::Engine::GetInstance()->GetFont(Prism::eFont::DIALOGUE), true);
+		notification->my3dText->Rotate3dText(-0.8f);
+		notification->my3dText->SetOffset(myStartOffset);
 		notification->myCurrentText = "";
 		notification->myRemainingText = "";
 		notification->myIsActive = false;
@@ -28,6 +33,10 @@ TextEventManager::TextEventManager(const Prism::Camera* aCamera)
 TextEventManager::~TextEventManager()
 {
 	ClientNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::TEXT, this);
+	for (int i = 0; i < myNotifications.Size(); ++i)
+	{
+		SAFE_DELETE(myNotifications[i]->my3dText);
+	}
 	myNotifications.DeleteAll();
 }
 
@@ -48,6 +57,8 @@ void TextEventManager::Update(float aDeltaTime)
 					myNotifications[i]->myCurrentText += myNotifications[i]->myRemainingText[0];
 					myNotifications[i]->myRemainingText.erase(myNotifications[i]->myRemainingText.begin());
 					myNotifications[i]->myCurrentLetterInterval = myNotifications[i]->myNextLetterInterval;
+					
+					myNotifications[i]->my3dText->SetText(myNotifications[i]->myCurrentText);
 				}
 			}
 
@@ -65,17 +76,23 @@ void TextEventManager::Update(float aDeltaTime)
 
 void TextEventManager::Render()
 {
+	//CU::Vector2<float> position;
+	//position.x = 100.f;
+	//position.y = Prism::Engine::GetInstance()->GetWindowSize().y - 100.f;
 
-	CU::Vector2<float> position;
-	position.x = 100.f;
-	position.y = Prism::Engine::GetInstance()->GetWindowSize().y - 100.f;
+	CU::Vector3<float> pos3d(myStartOffset);
 
 	for (int i = 0; i < myNotifications.Size(); i++)
 	{
 		if (myNotifications[i]->myIsActive == true)
 		{
-			Prism::Engine::GetInstance()->PrintText(myNotifications[i]->myCurrentText, position, Prism::eTextType::RELEASE_TEXT, 1.f, myNotifications[i]->myColor);
-			position.y -= 20.f;
+			//Prism::Engine::GetInstance()->PrintText(myNotifications[i]->myCurrentText, position, Prism::eTextType::RELEASE_TEXT, 1.f, myNotifications[i]->myColor);
+			//position.y -= 20.f;
+
+			myNotifications[i]->my3dText->SetOffset(pos3d);
+			pos3d.y -= 0.1f;
+			myNotifications[i]->my3dText->SetColor(myNotifications[i]->myColor);
+			myNotifications[i]->my3dText->Render(myCamera);
 		}
 	}
 }
@@ -86,6 +103,7 @@ void TextEventManager::AddNotification(std::string aText, float aLifeTime, CU::V
 	{
 		if (myNotifications[i]->myIsActive == false)
 		{
+			myNotifications[i]->my3dText->SetText("");
 			myNotifications[i]->myRemainingText = aText;
 			myNotifications[i]->myCurrentText = "";
 			myNotifications[i]->myLifeTime = aLifeTime;
