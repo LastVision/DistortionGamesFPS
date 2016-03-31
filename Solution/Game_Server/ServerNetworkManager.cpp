@@ -172,7 +172,7 @@ void ServerNetworkManager::SendThread()
 			{
 				for (Connection& connection : myClients)
 				{
-					if (connection.myID != static_cast<unsigned int>(arr.myBuffer[5]))
+					if (connection.myID != static_cast<unsigned int>(arr.myBuffer[7]))
 					{
 						myNetwork->Send(arr.myBuffer, connection.myAddress);
 					}
@@ -182,7 +182,7 @@ void ServerNetworkManager::SendThread()
 			{
 				for (Connection& connection : myClients)
 				{
-					if (connection.myID == arr.myTargetID && connection.myID != static_cast<unsigned int>(arr.myBuffer[5]))
+					if (connection.myID == arr.myTargetID && connection.myID != static_cast<unsigned int>(arr.myBuffer[7]))
 					{
 						myNetwork->Send(arr.myBuffer, connection.myAddress);
 						break;
@@ -360,7 +360,7 @@ void ServerNetworkManager::AddImportantMessage(std::vector<char> aBuffer, unsign
 		ImportantMessage msg;
 		msg.myData = aBuffer;
 		msg.myImportantID = aImportantID;
-		msg.myMessageType = aBuffer[0];
+		msg.myMessageType = aBuffer[2];
 		msg.mySenders.Init(myClients.Size());
 		for (Connection c : myClients)
 		{
@@ -381,7 +381,7 @@ void ServerNetworkManager::AddImportantMessage(std::vector<char> aBuffer, unsign
 		ImportantMessage msg;
 		msg.myData = aBuffer;
 		msg.myImportantID = aImportantID;
-		msg.myMessageType = aBuffer[0];
+		msg.myMessageType = aBuffer[2];
 		msg.mySenders.Init(16);
 
 			ImportantClient client;

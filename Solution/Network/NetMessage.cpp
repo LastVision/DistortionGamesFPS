@@ -6,6 +6,7 @@
 NetMessage::NetMessage(eNetMessageType aID)
 {
 	myID = static_cast<uint8_t>(aID);
+	myGameID = static_cast<uint16_t>('DG');
 }
 
 
@@ -42,6 +43,7 @@ const unsigned int NetMessage::GetImportantID() const
 
 void NetMessage::DoSerialize(StreamType& aStream)
 {
+	SERIALIZE(aStream, myGameID);
 	SERIALIZE(aStream, myID);
 	SERIALIZE(aStream, myTimeStamp);
 	SERIALIZE(aStream, mySenderID);
@@ -51,6 +53,7 @@ void NetMessage::DoSerialize(StreamType& aStream)
 
 void NetMessage::DoDeSerialize(StreamType& aStream)
 {
+	DESERIALIZE(aStream, myGameID);
 	DESERIALIZE(aStream, myID);
 	DESERIALIZE(aStream, myTimeStamp);
 	DESERIALIZE(aStream, mySenderID);

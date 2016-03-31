@@ -276,12 +276,12 @@ bool SharedNetworkManager::IsSubscribed(const eNetMessageType aMessageType, Netw
 
 eNetMessageType SharedNetworkManager::ReadType(const char* aBuffer)
 {
-	return static_cast<eNetMessageType>(aBuffer[0]);
+	return static_cast<eNetMessageType>(aBuffer[2]);
 }
 
 eNetMessageType SharedNetworkManager::ReadType(const std::vector<char>& aBuffer)
 {
-	return static_cast<eNetMessageType>(aBuffer[0]);
+	return static_cast<eNetMessageType>(aBuffer[2]);
 }
 
 unsigned long long SharedNetworkManager::GetResponsTime() const
