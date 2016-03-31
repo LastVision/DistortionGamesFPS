@@ -42,6 +42,7 @@ private:
 	Server* myServer;
 
 	float myRefreshServerTimer;
+	float myWaitForResponseTimer;
 
 	bool myTriedToConnect;
 };
