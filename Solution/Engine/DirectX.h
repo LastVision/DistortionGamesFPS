@@ -64,9 +64,9 @@ namespace Prism
 		bool D3DSwapChainSetup();
 		bool D3DBackbufferSetup(int aWidth, int aHeight);
 		bool D3DViewPortSetup(int aWidth, int aHeight);
-
 		bool D3DSetupRasterizerStates();
 		bool D3DSetupDepthStencilStates();
+		void D3DGetRefreshRate(unsigned int& aNumerator, unsigned int& aDenominator);
 
 		ID3D11Device* myDevice;
 		ID3D11DeviceContext* myContext;
@@ -91,6 +91,7 @@ namespace Prism
 
 		HWND& myHWND;
 		SetupInfo mySetupInfo;
+		CU::Vector2<int> myWindowSize;
 	};
 }
 

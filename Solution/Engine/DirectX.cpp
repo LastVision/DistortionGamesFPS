@@ -3,6 +3,7 @@
 #include <D3D11.h>
 #include "Texture.h"
 
+#pragma comment(lib, "dxgi.lib")
 
 namespace Prism
 {
@@ -12,6 +13,8 @@ namespace Prism
 		, myDebugInterface(nullptr)
 		, myInfoQueue(nullptr)
 	{
+		myWindowSize.x = mySetupInfo.myScreenWidth;
+		myWindowSize.y = mySetupInfo.myScreenHeight;
 		D3DSetup();
 	}
 
@@ -42,6 +45,8 @@ namespace Prism
 
 	void DirectX::OnResize(const int aWidth, const int aHeight)
 	{
+		myWindowSize.x = aWidth;
+		myWindowSize.y = aHeight;
 
 		myContext->OMSetRenderTargets(0, NULL, NULL);
 		myBackbufferRenderTarget->Release();
@@ -232,6 +237,10 @@ namespace Prism
 
 	bool DirectX::D3DSwapChainSetup()
 	{
+		unsigned int numerator = 0;
+		unsigned int denominator = 1;
+		D3DGetRefreshRate(numerator, denominator);
+
 		DXGI_SWAP_CHAIN_DESC swapChainDesc;
 		ZeroMemory(&swapChainDesc, sizeof(DXGI_SWAP_CHAIN_DESC));
 
@@ -239,8 +248,8 @@ namespace Prism
 		swapChainDesc.BufferDesc.Width = mySetupInfo.myScreenWidth;
 		swapChainDesc.BufferDesc.Height = mySetupInfo.myScreenHeight;
 		swapChainDesc.BufferDesc.Format = DXGI_FORMAT_R16G16B16A16_FLOAT;
-		swapChainDesc.BufferDesc.RefreshRate.Numerator = 60;
-		swapChainDesc.BufferDesc.RefreshRate.Denominator = 1;
+		swapChainDesc.BufferDesc.RefreshRate.Numerator = numerator;
+		swapChainDesc.BufferDesc.RefreshRate.Denominator = denominator;
 		swapChainDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT | DXGI_USAGE_SHADER_INPUT;
 		swapChainDesc.OutputWindow = myHWND;
 		swapChainDesc.SampleDesc.Count = 1;
@@ -250,6 +259,7 @@ namespace Prism
 			D3D_DRIVER_TYPE_HARDWARE,
 			NULL,
 #ifdef _DEBUG
+
 			D3D11_CREATE_DEVICE_DEBUG,
 #else
 			0,
@@ -467,5 +477,35 @@ namespace Prism
 		}
 
 		return true;
+	}
+
+	void DirectX::D3DGetRefreshRate(unsigned int& aNumerator, unsigned int& aDenominator)
+	{
+		IDXGIFactory* factory;
+		IDXGIAdapter* adapter;
+		IDXGIOutput* adapterOutput;
+		unsigned int numModes;
+		DXGI_MODE_DESC* displayModeList;
+
+		HRESULT result = CreateDXGIFactory(__uuidof(IDXGIFactory), (void**)&factory);
+		result = factory->EnumAdapters(0, &adapter);
+		result = adapter->EnumOutputs(0, &adapterOutput);
+		adapterOutput->GetDisplayModeList(DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_ENUM_MODES_INTERLACED, &numModes, NULL);
+		displayModeList = new DXGI_MODE_DESC[numModes];
+		result = adapterOutput->GetDisplayModeList(DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_ENUM_MODES_INTERLACED, &numModes, displayModeList);
+
+		for (int i = 0; i < numModes; ++i)
+		{
+			if (displayModeList[i].Width == myWindowSize.x && displayModeList[i].Height == myWindowSize.y)
+			{
+				aNumerator = displayModeList[i].RefreshRate.Numerator;
+				aDenominator = displayModeList[i].RefreshRate.Denominator;
+			}
+		}
+
+		SAFE_ARRAY_DELETE(displayModeList);
+		SAFE_RELEASE(adapterOutput);
+		SAFE_RELEASE(adapter);
+		SAFE_RELEASE(factory);
 	}
 }
