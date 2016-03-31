@@ -10,6 +10,7 @@
 #include "TriggerComponent.h"
 #include "TriggerComponentData.h"
 #include <SharedNetworkManager.h>
+#include <SetActiveMessage.h>
 
 TriggerComponent::TriggerComponent(Entity& anEntity, const TriggerComponentData& someData)
 	: Component(anEntity)
@@ -70,11 +71,12 @@ void TriggerComponent::ReceiveNote(const CollisionNote& aNote)
 
 			if (myData.myIsOneTime == true)
 			{
-				myEntity.GetComponent<PhysicsComponent>()->RemoveFromScene();
-				if (myData.myIsClientSide == false)
+				//myEntity.GetComponent<PhysicsComponent>()->RemoveFromScene();
+				if (myData.myIsClientSide == false && myData.myIsPressable == false)
 				{
 					SharedNetworkManager::GetInstance()->AddMessage<NetMessageSetActive>(NetMessageSetActive(false, true, myEntity.GetGID()));
 				}
+				PostMaster::GetInstance()->SendMessage<SetActiveMessage>(SetActiveMessage(myEntity.GetGID(), false));
 			}
 		}
 		else if (myTriggerType == eTriggerType::RESPAWN)
