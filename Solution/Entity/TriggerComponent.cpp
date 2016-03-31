@@ -54,7 +54,7 @@ void TriggerComponent::Update(float aDelta)
 
 void TriggerComponent::ReceiveNote(const CollisionNote& aNote)
 {
-	if (aNote.myOther->GetSubType() == "playerserver")
+	if (myData.myIsPressable == false && aNote.myOther->GetSubType() == "playerserver")
 	{
 		if (aNote.myHasEntered == true)
 		{
@@ -108,4 +108,9 @@ bool TriggerComponent::IsClientSide() const
 bool TriggerComponent::GetIsActiveFromStart() const
 {
 	return myData.myIsActiveFromStart;
+}
+
+bool TriggerComponent::IsPressable() const
+{
+	return myData.myIsPressable;
 }

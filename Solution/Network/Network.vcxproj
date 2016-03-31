@@ -102,8 +102,8 @@
     <ClInclude Include="NetMessageHealthPack.h" />
     <ClInclude Include="NetMessageLevelComplete.h" />
     <ClInclude Include="NetMessagePressE.h" />
+    <ClInclude Include="NetMessagePressEText.h" />
     <ClInclude Include="NetMessageRayCastRequest.h" />
-    <ClInclude Include="NetMessageRayCastResult.h" />
     <ClInclude Include="NetMessageReplyServer.h" />
     <ClInclude Include="NetMessageRequestConnect.h" />
     <ClInclude Include="NetMessageDisconnect.h" />

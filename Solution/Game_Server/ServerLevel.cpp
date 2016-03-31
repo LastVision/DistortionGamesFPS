@@ -12,8 +12,8 @@
 #include <NetMessageSetActive.h>
 #include <NetMessageHealthPack.h>
 #include <NetMessageEntityState.h>
-#include <SendTextToClientsMessage.h>
 #include <NetMessageRayCastRequest.h>
+#include <NetMessagePressE.h>
 #include <NetMessageShootGrenade.h>
 #include <NetMessageText.h>
 #include <NetworkComponent.h>
@@ -28,6 +28,7 @@
 #include <RespawnMessage.h>
 #include <RespawnTriggerMessage.h>
 #include <ActivateSpawnpointMessage.h>
+#include <SendTextToClientsMessage.h>
 
 #include "ServerProjectileManager.h"
 #include "ServerUnitManager.h"
@@ -46,6 +47,7 @@ ServerLevel::ServerLevel()
 	ServerNetworkManager::GetInstance()->Subscribe(eNetMessageType::SHOOT_GRENADE, this);
 	ServerNetworkManager::GetInstance()->Subscribe(eNetMessageType::HEALTH_PACK, this);
 	ServerNetworkManager::GetInstance()->Subscribe(eNetMessageType::RAY_CAST_REQUEST, this);
+	ServerNetworkManager::GetInstance()->Subscribe(eNetMessageType::PRESS_E, this);
 
 	PostMaster::GetInstance()->Subscribe(eMessageType::SET_ACTIVE, this);
 	PostMaster::GetInstance()->Subscribe(eMessageType::RESPAWN_TRIGGER, this);
@@ -55,10 +57,10 @@ ServerLevel::ServerLevel()
 	ServerProjectileManager::Create();
 	ServerUnitManager::Create();
 
-	myPressedERayCastHandler = [=](PhysicsComponent* aComponent, const CU::Vector3<float>& aDirection, const CU::Vector3<float>& aHitPosition)
-	{
-		this->HandlePressedERaycast(aComponent, aDirection, aHitPosition);
-	};
+	//myPressedERayCastHandler = [=](PhysicsComponent* aComponent, const CU::Vector3<float>& aDirection, const CU::Vector3<float>& aHitPosition, const CU::Vector3<float>& aHitNormal)
+	//{
+	//	this->HandlePressedERaycast(aComponent, aDirection, aHitPosition, aHitNormal);
+	//};
 }
 
 ServerLevel::~ServerLevel()
@@ -76,12 +78,17 @@ ServerLevel::~ServerLevel()
 	ServerNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::SHOOT_GRENADE, this);
 	ServerNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::HEALTH_PACK, this);
 	ServerNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::RAY_CAST_REQUEST, this);
+	ServerNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::PRESS_E, this);
 
 	PostMaster::GetInstance()->UnSubscribe(eMessageType::SET_ACTIVE, this);
 	PostMaster::GetInstance()->UnSubscribe(eMessageType::RESPAWN_TRIGGER, this);
 	PostMaster::GetInstance()->UnSubscribe(eMessageType::RESPAWN, this);
 	PostMaster::GetInstance()->UnSubscribe(eMessageType::SEND_TEXT_TO_CLIENTS, this);
 
+	for (auto it = myPlayersInPressableTriggers.begin(); it != myPlayersInPressableTriggers.end(); ++it)
+	{
+		it->second.RemoveAll();
+	}
 }
 
 void ServerLevel::Init(const std::string& aMissionXMLPath)
@@ -99,6 +106,8 @@ void ServerLevel::Init(const std::string& aMissionXMLPath)
 		myRespawnTriggers.Add(newRespawnTrigger);
 
 		myMissionManager = new MissionManager(aMissionXMLPath);
+
+		myPlayersInPressableTriggers[client.myID] = CU::GrowingArray<Entity*>(8);
 	}
 	ServerProjectileManager::GetInstance()->CreateBullets(nullptr);
 	ServerProjectileManager::GetInstance()->CreateGrenades(nullptr);
@@ -194,11 +203,24 @@ void ServerLevel::ReceiveNetworkMessage(const NetMessageShootGrenade& aMessage, 
 	SharedNetworkManager::GetInstance()->AddMessage<NetMessageShootGrenade>(NetMessageShootGrenade(aMessage.myForceStrength));
 }
 
+void ServerLevel::ReceiveNetworkMessage(const NetMessagePressE& aMessage, const sockaddr_in&)
+{
+	if (myPlayersInPressableTriggers[aMessage.myGID].Size() == 0)
+	{
+		return;
+	}
+
+	for (int i = 0; i < myPlayersInPressableTriggers[aMessage.myGID].Size(); ++i)
+	{
+		Trigger(*myPlayersInPressableTriggers[aMessage.myGID][i], *myPlayers[aMessage.myGID - 1], true);
+	}
+}
+
 void ServerLevel::ReceiveNetworkMessage(const NetMessageRayCastRequest& aMessage, const sockaddr_in& )
 {
 	if (static_cast<eNetRayCastType>(aMessage.myRayCastType) == eNetRayCastType::CLIENT_PRESSED_E)
 	{
-		Prism::PhysicsInterface::GetInstance()->RayCast(aMessage.myPosition, aMessage.myDirection, aMessage.myMaxLength, myPressedERayCastHandler, myPlayers[aMessage.myGID - 1]->GetComponent<PhysicsComponent>());
+		//Prism::PhysicsInterface::GetInstance()->RayCast(aMessage.myPosition, aMessage.myDirection, aMessage.myMaxLength, myPressedERayCastHandler, myPlayers[aMessage.myGID - 1]->GetComponent<PhysicsComponent>());
 	}
 	else
 	{
@@ -243,15 +265,15 @@ void ServerLevel::ReceiveMessage(const RespawnTriggerMessage& aMessage)
 	myRespawnTriggers[aMessage.myGID - 1]->GetComponent<PhysicsComponent>()->UpdateOrientationStatic();
 }
 
-void ServerLevel::HandlePressedERaycast(PhysicsComponent* aComponent, const CU::Vector3<float>&, const CU::Vector3<float>&)
-{
-	if (aComponent != nullptr)
-	{
-		//Entity& entity = aComponent->GetEntity();
-
-		
-	}
-}
+//void ServerLevel::HandlePressedERaycast(PhysicsComponent* aComponent, const CU::Vector3<float>&, const CU::Vector3<float>&, const CU::Vector3<float>&)
+//{
+//	if (aComponent != nullptr)
+//	{
+//		//Entity& entity = aComponent->GetEntity();
+//
+//		
+//	}
+//}
 
 void ServerLevel::HandleTrigger(Entity& aFirstEntity, Entity& aSecondEntity, bool aHasEntered)
 {
@@ -259,7 +281,14 @@ void ServerLevel::HandleTrigger(Entity& aFirstEntity, Entity& aSecondEntity, boo
 	{
 		if (aSecondEntity.GetType() == eEntityType::UNIT && aSecondEntity.GetSubType() == "playerserver")
 		{
-			Trigger(aFirstEntity, aSecondEntity, aHasEntered);
+			if (aFirstEntity.GetComponent<TriggerComponent>()->IsPressable() == false)
+			{
+				Trigger(aFirstEntity, aSecondEntity, aHasEntered);
+			}
+			else
+			{
+				myPlayersInPressableTriggers[aSecondEntity.GetGID()].Add(&aFirstEntity);
+			}
 		}
 		else if (aSecondEntity.GetType() == eEntityType::UNIT && aSecondEntity.GetSubType() != "playerserver")
 		{
@@ -272,7 +301,11 @@ void ServerLevel::HandleTrigger(Entity& aFirstEntity, Entity& aSecondEntity, boo
 	}
 	else
 	{
-		if (aSecondEntity.GetType() == eEntityType::UNIT && aSecondEntity.GetSubType() != "playerserver")
+		if (aSecondEntity.GetType() == eEntityType::UNIT && aSecondEntity.GetSubType() == "playerserver")
+		{
+			myPlayersInPressableTriggers[aSecondEntity.GetGID()].RemoveCyclic(&aFirstEntity);
+		}
+		else if (aSecondEntity.GetType() == eEntityType::UNIT && aSecondEntity.GetSubType() != "playerserver")
 		{
 			if (myMissionManager->GetCurrentMissionType() == eMissionType::DEFEND)
 			{
