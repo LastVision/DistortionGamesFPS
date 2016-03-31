@@ -17,12 +17,12 @@
 #endif
 
 //DO NOT CHANGE
-#define DGFX_VERSION 15
+#define DGFX_VERSION 16
 #define TERRAIN_VERSION 1
 
 //#define ENABLE_DEBUG_TEXT
 #ifndef DLL_EXPORT
-//#define THREADED_LOADING
+#define THREADED_LOADING
 //#define SCENE_USE_OCTREE
 #endif
 
@@ -43,11 +43,3 @@
 //#define USE_RAW_INPUT
 
 #define SERVER_CONNECT_TO_DEBUGGER true
-
-
-class LightTest
-{
-public:
-	static bool GenerateLightData;
-};
-//static bool Global_GenerateLightData;

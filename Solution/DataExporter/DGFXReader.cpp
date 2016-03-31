@@ -43,17 +43,9 @@ DGFXReader::~DGFXReader()
 		binFile.close();
 
 		
-		if (isAnimated == 1)
-		{
-			file << "1 ";
-		}
-		else
-		{
-			file << "0 ";
-		}
 
 		file << myConvertedFiles[i];
-
+		file << " " << radius;
 		file << std::endl;
 
 	}

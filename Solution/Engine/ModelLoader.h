@@ -3,6 +3,7 @@
 #include "BoneName.h"
 #include <GrowingArray.h>
 #include <atomic>
+#include <unordered_map>
 
 struct ID3D11Texture2D;
 
@@ -99,6 +100,7 @@ namespace Prism
 		void WaitUntilCopyIsAllowed();
 		void WaitUntilAddIsAllowed();
 		void CopyLoadJobs();
+		void LoadRadiuses();
 
 		void CreateModel(LoadData& someData);
 		void CreateModelAnimated(LoadData& someData);
@@ -108,6 +110,7 @@ namespace Prism
 		void CreateFont(LoadData& someData);
 		void CreateText(LoadData& someData);
 		void GetHierarchyToBone(LoadData& someData);
+		void SetRadius(ModelProxy* aProxy, const std::string& aModelPath);
 
 		CU::GrowingArray<LoadData> myBuffers[2];
 		CU::GrowingArray<LoadData> myLoadArray;
@@ -126,6 +129,7 @@ namespace Prism
 		std::unordered_map<std::string, Sprite*> mySprites;
 		std::unordered_map<std::string, FontProxy*> myFontProxies;
 		std::unordered_map<std::string, int> myInstancedCount;
+		std::unordered_map<std::string, float> myRadiuses;
 
 		static ModelLoader* myInstance;
 	};
