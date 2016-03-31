@@ -208,7 +208,7 @@ void ServerLevelFactory::LoadTriggers(XMLReader& aReader, tinyxml2::XMLElement* 
 			{
 				newEntity->GetComponent<PhysicsComponent>()->RemoveFromScene();
 			}
-			else
+			else if (newEntity->GetComponent<TriggerComponent>()->IsPressable() == true)
 			{
 				myCurrentLevel->AddPressETrigger(newEntity);
 			}
