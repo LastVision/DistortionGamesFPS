@@ -16,6 +16,7 @@
 #include <NetMessagePressE.h>
 #include <NetMessageShootGrenade.h>
 #include <NetMessageText.h>
+#include <NetMessagePressEText.h>
 #include <NetworkComponent.h>
 #include <PhysicsInterface.h>
 #include <PhysicsComponent.h>
@@ -38,6 +39,7 @@ ServerLevel::ServerLevel()
 	, myAllClientsLoaded(false)
 	, myNextLevel(-1)
 	, myRespawnTriggers(16)
+	, myPressETriggers(16)
 {
 	Prism::PhysicsInterface::Create(std::bind(&ServerLevel::CollisionCallback, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3), true);
 
@@ -112,6 +114,7 @@ void ServerLevel::Init(const std::string& aMissionXMLPath)
 	ServerProjectileManager::GetInstance()->CreateBullets(nullptr);
 	ServerProjectileManager::GetInstance()->CreateGrenades(nullptr);
 
+	
 }
 
 void ServerLevel::Update(const float aDeltaTime)
@@ -119,6 +122,13 @@ void ServerLevel::Update(const float aDeltaTime)
 	if (myAllClientsLoaded == true && Prism::PhysicsInterface::GetInstance()->GetInitDone() == true)
 	{
 		__super::Update(aDeltaTime);
+
+		for (int i = 0; i < myPressETriggers.Size(); ++i)
+		{
+			ServerNetworkManager::GetInstance()->AddMessage(NetMessagePressEText(myPressETriggers[i]->GetGID(), myPressETriggers[i]->GetOrientation().GetPos(), true));
+		}
+		myPressETriggers.RemoveAll();
+
 		myMissionManager->Update(aDeltaTime);
 		ServerProjectileManager::GetInstance()->Update(aDeltaTime);
 		ServerUnitManager::GetInstance()->Update(aDeltaTime);
@@ -205,14 +215,11 @@ void ServerLevel::ReceiveNetworkMessage(const NetMessageShootGrenade& aMessage, 
 
 void ServerLevel::ReceiveNetworkMessage(const NetMessagePressE& aMessage, const sockaddr_in&)
 {
-	if (myPlayersInPressableTriggers[aMessage.myGID].Size() == 0)
-	{
-		return;
-	}
-
 	for (int i = 0; i < myPlayersInPressableTriggers[aMessage.myGID].Size(); ++i)
 	{
 		Trigger(*myPlayersInPressableTriggers[aMessage.myGID][i], *myPlayers[aMessage.myGID - 1], true);
+		myPlayersInPressableTriggers[aMessage.myGID][i]->
+			SendNote<CollisionNote>(CollisionNote(myPlayers[aMessage.myGID - 1], true));
 	}
 }
 
@@ -238,10 +245,22 @@ void ServerLevel::ReceiveMessage(const SetActiveMessage& aMessage)
 	if (aMessage.myShouldActivate == true)
 	{
 		myActiveEntitiesMap[aMessage.myGID]->GetComponent<PhysicsComponent>()->AddToScene();
+		if (myActiveEntitiesMap[aMessage.myGID]->GetType() == eEntityType::TRIGGER 
+			&& myActiveEntitiesMap[aMessage.myGID]->GetComponent<TriggerComponent>()->IsPressable() == true)
+		{
+			ServerNetworkManager::GetInstance()->AddMessage(
+				NetMessagePressEText(aMessage.myGID, myActiveEntitiesMap[aMessage.myGID]->GetOrientation().GetPos(), true));
+		}
 	}
 	else
 	{
 		myActiveEntitiesMap[aMessage.myGID]->GetComponent<PhysicsComponent>()->RemoveFromScene();
+		if (myActiveEntitiesMap[aMessage.myGID]->GetType() == eEntityType::TRIGGER
+			&& myActiveEntitiesMap[aMessage.myGID]->GetComponent<TriggerComponent>()->IsPressable() == true)
+		{
+			ServerNetworkManager::GetInstance()->AddMessage(
+				NetMessagePressEText(aMessage.myGID, myActiveEntitiesMap[aMessage.myGID]->GetOrientation().GetPos(), false));
+		}
 	}
 }
 
@@ -263,6 +282,11 @@ void ServerLevel::ReceiveMessage(const RespawnTriggerMessage& aMessage)
 	myRespawnTriggers[aMessage.myGID - 1]->GetComponent<PhysicsComponent>()->AddToScene();
 	myRespawnTriggers[aMessage.myGID - 1]->GetComponent<PhysicsComponent>()->TeleportToPosition(myPlayers[aMessage.myGID - 1]->GetOrientation().GetPos());
 	myRespawnTriggers[aMessage.myGID - 1]->GetComponent<PhysicsComponent>()->UpdateOrientationStatic();
+}
+
+void ServerLevel::AddPressETrigger(Entity* aTrigger)
+{
+	myPressETriggers.Add(aTrigger);
 }
 
 //void ServerLevel::HandlePressedERaycast(PhysicsComponent* aComponent, const CU::Vector3<float>&, const CU::Vector3<float>&, const CU::Vector3<float>&)
@@ -301,7 +325,7 @@ void ServerLevel::HandleTrigger(Entity& aFirstEntity, Entity& aSecondEntity, boo
 	}
 	else
 	{
-		if (aSecondEntity.GetType() == eEntityType::UNIT && aSecondEntity.GetSubType() == "playerserver")
+		if (aSecondEntity.GetType() == eEntityType::UNIT && aSecondEntity.GetSubType() == "playerserver" && aFirstEntity.GetComponent<TriggerComponent>()->IsPressable() == true)
 		{
 			myPlayersInPressableTriggers[aSecondEntity.GetGID()].RemoveCyclic(&aFirstEntity);
 		}
@@ -314,7 +338,10 @@ void ServerLevel::HandleTrigger(Entity& aFirstEntity, Entity& aSecondEntity, boo
 			}
 		}
 	}
-	aFirstEntity.SendNote<CollisionNote>(CollisionNote(&aSecondEntity, aHasEntered));
+	if (aFirstEntity.GetComponent<TriggerComponent>()->IsPressable() == false)
+	{
+		aFirstEntity.SendNote<CollisionNote>(CollisionNote(&aSecondEntity, aHasEntered));
+	}
 }
 
 void ServerLevel::Trigger(Entity& aFirstEntity, Entity& aSecondEntity, bool aHasEntered)
