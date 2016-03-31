@@ -172,6 +172,10 @@ namespace GUI
 			myButtonText = aText;
 			aSuccessOut = true;
 			myIsVisible = true;
+			if (aText == "")
+			{
+				myIsVisible = false;
+			}
 		}
 	}
 

@@ -61,7 +61,8 @@ namespace Prism
 
 		void Update();
 
-		void RayCast(const CU::Vector3<float>& aOrigin, const CU::Vector3<float>& aNormalizedDirection, float aMaxRayDistance, std::function<void(PhysicsComponent*, const CU::Vector3<float>&, const CU::Vector3<float>&)> aFunctionToCall, const PhysicsComponent* aComponent);
+		void RayCast(const CU::Vector3<float>& aOrigin, const CU::Vector3<float>& aNormalizedDirection, float aMaxRayDistance
+			, std::function<void(PhysicsComponent*, const CU::Vector3<float>&, const CU::Vector3<float>&, const CU::Vector3<float>&)> aFunctionToCall, const PhysicsComponent* aComponent);
 		void AddForce(physx::PxRigidDynamic* aDynamicBody, const CU::Vector3<float>& aDirection, float aMagnitude);
 		void SetVelocity(physx::PxRigidDynamic* aDynamicBody, const CU::Vector3<float>& aVelocity);
 		void TeleportToPosition(physx::PxRigidDynamic* aDynamicBody, const CU::Vector3<float>& aPosition);
@@ -122,7 +123,7 @@ namespace Prism
 			RaycastJob() {}
 			RaycastJob(const CU::Vector3<float>& aOrigin, const CU::Vector3<float>& aNormalizedDirection
 				, float aMaxRayDistance, std::function<void(PhysicsComponent*
-				, const CU::Vector3<float>&, const CU::Vector3<float>&)> aFunctionToCall, const PhysicsComponent* aRaycasterComponent)
+				, const CU::Vector3<float>&, const CU::Vector3<float>&, const CU::Vector3<float>&)> aFunctionToCall, const PhysicsComponent* aRaycasterComponent)
 				: myOrigin(aOrigin)
 				, myNormalizedDirection(aNormalizedDirection)
 				, myMaxRayDistance(aMaxRayDistance)
@@ -132,7 +133,7 @@ namespace Prism
 			CU::Vector3<float> myOrigin;
 			CU::Vector3<float> myNormalizedDirection;
 			float myMaxRayDistance;
-			std::function<void(PhysicsComponent*, const CU::Vector3<float>&, const CU::Vector3<float>&)> myFunctionToCall;
+			std::function<void(PhysicsComponent*, const CU::Vector3<float>&, const CU::Vector3<float>&, const CU::Vector3<float>&)> myFunctionToCall;
 			const PhysicsComponent* myRaycasterComponent;
 		};
 		void RayCast(const RaycastJob& aRaycastJob);
@@ -141,16 +142,20 @@ namespace Prism
 		struct RaycastResult
 		{
 			RaycastResult() {}
-			RaycastResult(PhysicsComponent* aPhysicsComponent, const CU::Vector3<float>& aDirection, const CU::Vector3<float>& aHitPosition, std::function<void(PhysicsComponent*, const CU::Vector3<float>&, const CU::Vector3<float>&)> aFunctionToCall)
+			RaycastResult(PhysicsComponent* aPhysicsComponent, const CU::Vector3<float>& aDirection, const CU::Vector3<float>& aHitPosition
+				, const CU::Vector3<float>& aHitNormal
+				, std::function<void(PhysicsComponent*, const CU::Vector3<float>&, const CU::Vector3<float>&, const CU::Vector3<float>&)> aFunctionToCall)
 				: myPhysicsComponent(aPhysicsComponent)
 				, myDirection(aDirection)
 				, myHitPosition(aHitPosition)
+				, myHitNormal(aHitNormal)
 				, myFunctionToCall(aFunctionToCall)
 			{}
 			PhysicsComponent* myPhysicsComponent;
 			CU::Vector3<float> myDirection;
 			CU::Vector3<float> myHitPosition;
-			std::function<void(PhysicsComponent*, const CU::Vector3<float>&, const CU::Vector3<float>&)> myFunctionToCall;
+			CU::Vector3<float> myHitNormal;
+			std::function<void(PhysicsComponent*, const CU::Vector3<float>&, const CU::Vector3<float>&, const CU::Vector3<float>&)> myFunctionToCall;
 		};
 		CU::GrowingArray<RaycastResult> myRaycastResults[2];
 

@@ -93,28 +93,6 @@ void ServerNetwork::Send(const std::vector<char>& anArray, const sockaddr_in& an
 	}
 }
 
-void ServerNetwork::Send(NetMessageOnJoin join)
-{
-	/*join.Init();
-	join.mySenderID = myIDCount;
-
-	for (int i = 0; i < myClients.Size(); ++i)
-	{
-	if (myClients[i].myID != myIDCount)
-	{
-	join.myTargetID = myClients[i].myID;
-	join.PackMessage();
-	if (sendto(myListenSocket, &join.myStream[0], join.myStream.size(), 0, (struct sockaddr *)&myClients[i].myAdress
-	, sizeof(sockaddr_in)) == SOCKET_ERROR)
-	{
-	int errorCode = WSAGetLastError();
-	std::string toPrint = "sendto() failed with error code : " + errorCode;
-	Utility::Printf(toPrint, Utility::eCOLOR::WHITE_BACK_RED);
-	}
-	}
-	}*/
-}
-
 void ServerNetwork::Receieve(std::vector<Buffer>& someBuffers)
 {
 	int toReturn = 0;

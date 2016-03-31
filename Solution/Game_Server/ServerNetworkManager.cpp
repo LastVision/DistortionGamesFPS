@@ -172,7 +172,7 @@ void ServerNetworkManager::SendThread()
 			{
 				for (Connection& connection : myClients)
 				{
-					if (connection.myID != static_cast<unsigned int>(arr.myBuffer[5]))
+					if (connection.myID != static_cast<unsigned int>(arr.myBuffer[7]))
 					{
 						myNetwork->Send(arr.myBuffer, connection.myAddress);
 					}
@@ -182,7 +182,7 @@ void ServerNetworkManager::SendThread()
 			{
 				for (Connection& connection : myClients)
 				{
-					if (connection.myID == arr.myTargetID && connection.myID != static_cast<unsigned int>(arr.myBuffer[5]))
+					if (connection.myID == arr.myTargetID && connection.myID != static_cast<unsigned int>(arr.myBuffer[7]))
 					{
 						myNetwork->Send(arr.myBuffer, connection.myAddress);
 						break;
@@ -222,6 +222,11 @@ void ServerNetworkManager::PingThread()
 
 void ServerNetworkManager::CreateConnection(const std::string& aName, const sockaddr_in& aSender)
 {
+	if (myAllowNewConnections == false)
+	{
+		AddMessage(NetMessageConnectReply(NetMessageConnectReply::eType::FAIL), aSender);
+		return;
+	}
 	myIDCount++;
 
 	/*NetMessageConnectReply connectReply(NetMessageConnectReply::eType::SUCCESS, myIDCount);
@@ -355,7 +360,7 @@ void ServerNetworkManager::AddImportantMessage(std::vector<char> aBuffer, unsign
 		ImportantMessage msg;
 		msg.myData = aBuffer;
 		msg.myImportantID = aImportantID;
-		msg.myMessageType = aBuffer[0];
+		msg.myMessageType = aBuffer[2];
 		msg.mySenders.Init(myClients.Size());
 		for (Connection c : myClients)
 		{
@@ -376,7 +381,7 @@ void ServerNetworkManager::AddImportantMessage(std::vector<char> aBuffer, unsign
 		ImportantMessage msg;
 		msg.myData = aBuffer;
 		msg.myImportantID = aImportantID;
-		msg.myMessageType = aBuffer[0];
+		msg.myMessageType = aBuffer[2];
 		msg.mySenders.Init(16);
 
 			ImportantClient client;
@@ -403,9 +408,10 @@ void ServerNetworkManager::ReceiveNetworkMessage(const NetMessageRequestConnect&
 	{
 		if (myAllowNewConnections == false)
 		{
-			NetMessageConnectReply connectReply(NetMessageConnectReply::eType::FAIL);
+			/*NetMessageConnectReply connectReply(NetMessageConnectReply::eType::FAIL);
 			connectReply.PackMessage();
-			myNetwork->Send(connectReply.myStream, aSenderAddress);
+			myNetwork->Send(connectReply.myStream, aSenderAddress);*/
+			AddMessage(NetMessageConnectReply(NetMessageConnectReply::eType::FAIL), aSenderAddress);
 			//Bounce
 		}
 	}

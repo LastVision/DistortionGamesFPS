@@ -70,9 +70,9 @@ void ServerLobbyState::ReceiveNetworkMessage(const NetMessageSetLevel& aMessage,
 
 void ServerLobbyState::ReceiveNetworkMessage(const NetMessageRequestStartLevel&, const sockaddr_in&)
 {
+	ServerNetworkManager::GetInstance()->AllowNewConnections(false);
 	ServerNetworkManager::GetInstance()->AddMessage(NetMessageLoadLevel(myCurrentLevelID));
 
-	ServerNetworkManager::GetInstance()->AllowNewConnections(false);
 	ServerNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::SET_LEVEL, this);
 	ServerNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::REQUEST_START_LEVEL, this);
 	ServerNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::SERVER_REQUEST, this);

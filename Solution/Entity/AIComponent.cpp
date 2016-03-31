@@ -26,9 +26,9 @@ AIComponent::AIComponent(Entity& anEntity, const AIComponentData& aData, CU::Mat
 	, myHasRaycasted(false)
 	, myHasJustSpawned(true)
 {
-	myRaycastHandler = [=](PhysicsComponent* aComponent, const CU::Vector3<float>& aDirection, const CU::Vector3<float>& aHitPosition)
+	myRaycastHandler = [=](PhysicsComponent* aComponent, const CU::Vector3<float>& aDirection, const CU::Vector3<float>& aHitPosition, const CU::Vector3<float>& aHitNormal)
 	{
-		this->HandleRaycast(aComponent, aDirection, aHitPosition);
+		this->HandleRaycast(aComponent, aDirection, aHitPosition, aHitNormal);
 	};
 }
 
@@ -99,10 +99,11 @@ void AIComponent::Update(float aDelta)
 	}
 }
 
-void AIComponent::HandleRaycast(PhysicsComponent* aComponent, const CU::Vector3<float>& aDirection, const CU::Vector3<float>& aHitPosition)
+void AIComponent::HandleRaycast(PhysicsComponent* aComponent, const CU::Vector3<float>& aDirection, const CU::Vector3<float>& aHitPosition, const CU::Vector3<float>& aHitNormal)
 {
 	aDirection;
 	aHitPosition;
+	aHitNormal;
 
 	myHasRaycasted = false;
 

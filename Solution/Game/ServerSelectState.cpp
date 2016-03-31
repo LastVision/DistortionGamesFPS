@@ -63,7 +63,7 @@ void ServerSelectState::InitState(StateStackProxy* aStateStackProxy, GUI::Cursor
 		myGUIManager->SetButtonText(i, text);
 	}*/
 	myCursor->SetShouldRender(true);
-
+	myTriedToConnect = false;
 	// broadcast request server
 	ClientNetworkManager::GetInstance()->AddMessage(NetMessageRequestServer(), ClientNetworkManager::GetInstance()->GetBroadcastAddress());
 }
@@ -94,19 +94,30 @@ const eStateStatus ServerSelectState::Update(const float& aDeltaTime)
 
 	if (myServer != nullptr)
 	{
-		ClientNetworkManager::GetInstance()->ConnectToServer(myServer->myIp.c_str());
-
-		SET_RUNTIME(false);
-		PostMaster::GetInstance()->UnSubscribe(eMessageType::ON_CLICK, this);
-		myStateStack->PushSubGameState(new LobbyState());
-
+		if (myTriedToConnect == false)
+		{
+			ClientNetworkManager::GetInstance()->ConnectToServer(myServer->myIp.c_str());
+			myTriedToConnect = true;
+		}
+		if (ClientNetworkManager::GetInstance()->GetGID() != 0)
+		{
+			SET_RUNTIME(false);
+			PostMaster::GetInstance()->UnSubscribe(eMessageType::ON_CLICK, this);
+			myStateStack->PushSubGameState(new LobbyState());
+		}
 		//return eStateStatus::ePopSubState;
 	}
 
 	myRefreshServerTimer -= aDeltaTime;
 	if (myRefreshServerTimer <= 0)
 	{
-		myRefreshServerTimer = 5.f;
+		myRefreshServerTimer = 2.f;
+		for (int i = 0; i < myServers.Size(); ++i)
+		{
+			myGUIManager->SetButtonText(i, "");
+		}
+		myServers.RemoveAll();
+		myTriedToConnect = false;
 		ClientNetworkManager::GetInstance()->AddMessage(NetMessageRequestServer(), ClientNetworkManager::GetInstance()->GetBroadcastAddress());
 	}
 
@@ -143,7 +154,7 @@ void ServerSelectState::ReceiveMessage(const OnClickMessage& aMessage)
 	}
 }
 
-void ServerSelectState::ReceiveNetworkMessage(const NetMessageReplyServer& aMessage, const sockaddr_in& aSenderAddress)
+void ServerSelectState::ReceiveNetworkMessage(const NetMessageReplyServer& aMessage, const sockaddr_in&)
 {
 	ServerSelectState::Server newServer;
 	newServer.myIp = aMessage.myIP;
