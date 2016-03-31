@@ -4,10 +4,12 @@
 namespace Prism
 {
 	class Camera;
+	class TextProxy;
 }
 
 struct NotificationText
 {
+	Prism::TextProxy* my3dText;
 	std::string myCurrentText;
 	std::string myRemainingText;
 	CU::Vector4<float> myColor;
@@ -34,6 +36,7 @@ private:
 	const Prism::Camera* myCamera;
 
 	CU::GrowingArray<NotificationText*> myNotifications;
+	CU::Vector3<float> myStartOffset;
 
 	float myTextStartFadingTime;
 

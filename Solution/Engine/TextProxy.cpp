@@ -26,6 +26,19 @@ namespace Prism
 		myPosition.y -= Engine::GetInstance()->GetWindowSize().y;
 	}
 
+	void Prism::TextProxy::SetOffset(const CU::Vector3<float>& aOffset)
+	{
+		my3DOrientation.SetPos(aOffset);
+	}
+
+	void Prism::TextProxy::Rotate3dText(float aRadians)
+	{
+		CU::Vector3<float> oldPos = my3DOrientation.GetPos();
+		my3DOrientation.SetPos(CU::Vector3<float>());
+		my3DOrientation = my3DOrientation * CU::Matrix44<float>::CreateRotateAroundY(aRadians);
+		my3DOrientation.SetPos(oldPos);
+	}
+
 	void TextProxy::SetText(const std::string& aText)
 	{
 		if (IsLoaded() == true)
@@ -51,6 +64,11 @@ namespace Prism
 		{
 			myText->Render(myPosition, myScale, myColor);
 		}
+	}
+
+	void TextProxy::Render(const Camera* aCamera)
+	{
+		myText->Render(aCamera, my3DOrientation, myScale, myColor);
 	}
 
 	void TextProxy::SetScale(const CU::Vector2<float>&)

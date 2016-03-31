@@ -89,6 +89,7 @@ namespace Prism
 		DL_ASSERT_EXP(aFilePath == "Data/Resource/Shader/S_effect_pbl.fx"
 			|| aFilePath == "Data/Resource/Shader/S_effect_pbl_animated.fx"
 			|| aFilePath == "Data/Resource/Shader/S_effect_font.fx"
+			|| aFilePath == "Data/Resource/Shader/S_effect_font3d.fx"
 			|| aFilePath == "Data/Resource/Shader/S_effect_sprite.fx"
 			|| aFilePath == "Data/Resource/Shader/S_effect_debug.fx"
 			|| aFilePath == "Data/Resource/Shader/S_effect_no_texture.fx"

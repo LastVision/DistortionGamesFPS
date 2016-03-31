@@ -55,6 +55,8 @@
 #include <NetMessageActivateSpawnpoint.h>
 #include "TextEventManager.h"
 
+#include <TextProxy.h>
+
 ClientLevel::ClientLevel()
 	: myInstanceOrientations(16)
 	, myInstances(16)
@@ -188,6 +190,7 @@ void ClientLevel::Update(const float aDeltaTime)
 	//}
 
 	DebugMusic();
+
 
 	Prism::PhysicsInterface::GetInstance()->EndFrame();
 
