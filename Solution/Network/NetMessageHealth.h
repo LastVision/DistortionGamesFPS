@@ -11,7 +11,7 @@ public:
 
 	int myMaxHealth;
 	int myCurrentHealth;
-	int myGID;
+	unsigned int myGID;
 private:
 	void DoSerialize(StreamType& aStream) override;
 	void DoDeSerialize(StreamType& aStream) override;

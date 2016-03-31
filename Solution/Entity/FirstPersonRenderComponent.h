@@ -49,6 +49,7 @@ public:
 	void ReceiveNetworkMessage(const NetMessageHealth& aMessage, const sockaddr_in& aSenderAddress) override;
 	void ReceiveNetworkMessage(const NetMessageDisplayMarker& aMessage, const sockaddr_in& aSenderAddress) override;
 	void ReceiveNetworkMessage(const NetMessageDisplayRespawn& aMessage, const sockaddr_in& aSenderAddress) override;
+	void ReceiveNetworkMessage(const NetMessagePressEText& aMessage, const sockaddr_in& aSenderAddress) override;
 
 private:
 	void UpdateJoints();
@@ -114,6 +115,15 @@ private:
 	int myCurrentHealth;
 	bool myHasDied;
 	Prism::Scene* myScene;
+
+	struct PressEText
+	{
+		unsigned int myGID;
+		CU::Vector3<float> myPosition;
+
+	};
+
+	CU::GrowingArray<PressEText> myPressETexts;
 };
 
 
