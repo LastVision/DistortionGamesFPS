@@ -241,6 +241,7 @@ void ClientNetworkManager::ReceiveNetworkMessage(const NetMessageConnectReply& a
 	}
 	else
 	{
+		myIsOnline = false;
 		DL_ASSERT("Failed to connect");
 	}
 }

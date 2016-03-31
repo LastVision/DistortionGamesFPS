@@ -222,6 +222,11 @@ void ServerNetworkManager::PingThread()
 
 void ServerNetworkManager::CreateConnection(const std::string& aName, const sockaddr_in& aSender)
 {
+	if (myAllowNewConnections == false)
+	{
+		AddMessage(NetMessageConnectReply(NetMessageConnectReply::eType::FAIL), aSender);
+		return;
+	}
 	myIDCount++;
 
 	/*NetMessageConnectReply connectReply(NetMessageConnectReply::eType::SUCCESS, myIDCount);
@@ -403,9 +408,10 @@ void ServerNetworkManager::ReceiveNetworkMessage(const NetMessageRequestConnect&
 	{
 		if (myAllowNewConnections == false)
 		{
-			NetMessageConnectReply connectReply(NetMessageConnectReply::eType::FAIL);
+			/*NetMessageConnectReply connectReply(NetMessageConnectReply::eType::FAIL);
 			connectReply.PackMessage();
-			myNetwork->Send(connectReply.myStream, aSenderAddress);
+			myNetwork->Send(connectReply.myStream, aSenderAddress);*/
+			AddMessage(NetMessageConnectReply(NetMessageConnectReply::eType::FAIL), aSenderAddress);
 			//Bounce
 		}
 	}
