@@ -1,8 +1,9 @@
 #include "stdafx.h"
 #include "DefendMission.h"
-#include "ServerNetworkManager.h"
 #include "NetMessageDisplayMarker.h"
+#include <NetMessageText.h>
 #include <SendTextToClientsMessage.h>
+#include "ServerNetworkManager.h"
 #include <PostMaster.h>
 
 DefendMission::DefendMission(const std::string& aMissionType, float aSecondsToDefend, bool aShouldLoopMissionEvents)
@@ -48,6 +49,10 @@ bool DefendMission::Update(float aDeltaTime)
 					if (myShouldLoopMissionEvents == true)
 					{
 						myCurrentMissionEvent = 0;
+						for (int i = 0; i < myMissionEvents.Size(); ++i)
+						{
+							myMissionEvents[i].myTimeBeforeStarting = myMissionEvents[i].myResetTime;
+						}
 					}
 					else
 					{
@@ -89,7 +94,8 @@ void DefendMission::AddValue(int aValue)
 		text = "A unit left defend zone";
 	}
 
-	PostMaster::GetInstance()->SendMessage<SendTextToClientsMessage>(SendTextToClientsMessage(text));
+	//PostMaster::GetInstance()->SendMessage<SendTextToClientsMessage>(SendTextToClientsMessage(text));
+	ServerNetworkManager::GetInstance()->AddMessage(NetMessageText(text));
 
 	myEnemiesInside += aValue;
 	printf("%i inside defendtrigger \n", myEnemiesInside);

@@ -8,6 +8,7 @@ struct ActionEvent
 	eActionEventType myType;
 	int myGID;
 	float myTimeBeforeStarting;
+	float myResetTime;
 	float myShowTextTime;
 	std::string myText;
 	bool myShow;

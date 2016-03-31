@@ -208,6 +208,7 @@ ActionEvent MissionManager::CreateActionEvent(tinyxml2::XMLElement* anEventEleme
 		aReader->ReadAttribute(anEventElement, "positionz", actionEvent.myPosition.z);
 		break;
 	}
+	actionEvent.myResetTime = actionEvent.myTimeBeforeStarting;
 
 	return actionEvent;
 }
