@@ -29,7 +29,7 @@ namespace Prism
 
 		void FinalRender();
 
-		void Render(Texture* aSource, Texture* aEmissiveTexture, int aEffect);
+		void Render(Texture* aSource, Texture* aEmissiveTexture, Texture* aDepthStencilTexture, int aEffect);
 
 		void OnResize(float aWidth, float aHeight);
 

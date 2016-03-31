@@ -107,6 +107,7 @@ namespace Prism
 
 	DeferredRenderer::~DeferredRenderer()
 	{
+		SAFE_DELETE(myFinishedTexture);
 		SAFE_DELETE(myViewPort);
 		SAFE_DELETE(myDepthStencilTexture);
 		SAFE_DELETE(myCubeMapGenerator);
@@ -116,6 +117,7 @@ namespace Prism
 		SAFE_DELETE(myGBufferData.myMetalnessTexture);
 		SAFE_DELETE(myGBufferData.myAmbientOcclusionTexture);
 		SAFE_DELETE(myGBufferData.myRoughnessTexture);
+		SAFE_DELETE(myGBufferData.myEmissiveTexture);
 	}
 
 	void DeferredRenderer::Render(Scene* aScene)
@@ -169,6 +171,7 @@ namespace Prism
 		myAmbientPass.mySHGridSize.z = CU::Math::ClosestPowerOfTwo(abs(int(aMaxPoint.z - aMinPoint.z)));
 		myAmbientPass.mySHGridOffset = aMinPoint;
 
+		ModelLoader::GetInstance()->WaitUntilFinished();
 		myCubeMapGenerator->GenerateSHTextures(this, aScene, mySHTextures, myAmbientPass.mySHGridSize
 			, myAmbientPass.mySHGridOffset, 4.f, aName);
 
@@ -188,6 +191,11 @@ namespace Prism
 	Prism::Texture* DeferredRenderer::GetEmissiveTexture()
 	{
 		return myGBufferData.myEmissiveTexture;
+	}
+
+	Prism::Texture* DeferredRenderer::GetDepthStencilTexture()
+	{
+		return myDepthStencilTexture;
 	}
 
 	void DeferredRenderer::InitFullscreenQuad()

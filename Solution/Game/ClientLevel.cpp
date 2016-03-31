@@ -33,6 +33,7 @@
 #include <NetMessageShootGrenade.h>
 #include <NetMessageSetActive.h>
 #include <NetMessageEnemyShooting.h>
+#include <NetMessageRayCastRequest.h>
 
 #include "ClientNetworkManager.h"
 #include "DeferredRenderer.h"
@@ -71,10 +72,16 @@ ClientLevel::ClientLevel()
 	ClientNetworkManager::GetInstance()->Subscribe(eNetMessageType::ENEMY_SHOOTING, this);
 	ClientNetworkManager::GetInstance()->Subscribe(eNetMessageType::SHOOT_GRENADE, this);
 	ClientNetworkManager::GetInstance()->Subscribe(eNetMessageType::EXPLOSION, this);
+	ClientNetworkManager::GetInstance()->Subscribe(eNetMessageType::RAY_CAST_REQUEST, this);
 
 	ClientProjectileManager::Create();
 	ClientUnitManager::Create();
 	myScene = new Prism::Scene();
+
+	myOtherClientRaycastHandler = [=](PhysicsComponent* aComponent, const CU::Vector3<float>& aDirection, const CU::Vector3<float>& aHitPosition, const CU::Vector3<float>& aHitNormal)
+	{
+		this->HandleOtherClientRayCast(aComponent, aDirection, aHitPosition, aHitNormal);
+	};
 }
 
 ClientLevel::~ClientLevel()
@@ -92,12 +99,14 @@ ClientLevel::~ClientLevel()
 	ClientNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::ENEMY_SHOOTING, this);
 	ClientNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::SHOOT_GRENADE, this);
 	ClientNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::EXPLOSION, this);
+	ClientNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::RAY_CAST_REQUEST, this);
 
 	myInstances.DeleteAll();
 	myPointLights.DeleteAll();
 	SAFE_DELETE(myPlayer);
 	SAFE_DELETE(myScene);
 	SAFE_DELETE(myDeferredRenderer);
+	SAFE_DELETE(myFullscreenRenderer);
 	SAFE_DELETE(myTextManager);
 
 	Prism::Audio::AudioInterface::GetInstance()->PostEvent("StopBackground", 0);
@@ -205,11 +214,13 @@ void ClientLevel::Render()
 	{
 		myDeferredRenderer->Render(myScene);
 
-		myFullscreenRenderer->Render(myDeferredRenderer->GetFinishedTexture(), myDeferredRenderer->GetEmissiveTexture(), Prism::ePostProcessing::BLOOM);
+		myFullscreenRenderer->Render(myDeferredRenderer->GetFinishedTexture(), myDeferredRenderer->GetEmissiveTexture(), myDeferredRenderer->GetDepthStencilTexture(), Prism::ePostProcessing::BLOOM);
 
 		Prism::DebugDrawer::GetInstance()->RenderLinesToScreen(*myPlayer->GetComponent<InputComponent>()->GetCamera());
+
 		//myScene->Render();
 		//myDeferredRenderer->Render(myScene);
+
 		myEmitterManager->RenderEmitters();
 		myPlayer->GetComponent<FirstPersonRenderComponent>()->Render();
 		//myPlayer->GetComponent<ShootingComponent>()->Render();
@@ -349,6 +360,14 @@ void ClientLevel::ReceiveNetworkMessage(const NetMessageExplosion& aMessage, con
 	ClientProjectileManager::GetInstance()->KillGrenade(aMessage.myGID - 1);
 }
 
+void ClientLevel::ReceiveNetworkMessage(const NetMessageRayCastRequest& aMessage, const sockaddr_in&)
+{
+	if (myPlayer->GetGID() != aMessage.myGID)
+	{
+		Prism::PhysicsInterface::GetInstance()->RayCast(aMessage.myPosition, aMessage.myDirection, 500.f, myOtherClientRaycastHandler, myPlayer->GetComponent<PhysicsComponent>());
+	}
+}
+
 void ClientLevel::AddLight(Prism::PointLight* aLight)
 {
 	myPointLights.Add(aLight);
@@ -444,5 +463,24 @@ void ClientLevel::CreatePlayers()
 		newPlayer->Reset();
 		myPlayers.Add(newPlayer);
 		myActiveUnitsMap[newPlayer->GetGID()] = newPlayer;
+	}
+}
+
+void ClientLevel::HandleOtherClientRayCast(PhysicsComponent* aComponent, const CU::Vector3<float>& aDirection, const CU::Vector3<float>& aHitPosition, const CU::Vector3<float>&)
+{
+	if (aComponent != nullptr)
+	{
+		if (aComponent->GetPhysicsType() == ePhysics::DYNAMIC)
+		{
+			aComponent->AddForce(aDirection, 5.f);
+		}
+
+		PostMaster::GetInstance()->SendMessage(EmitterMessage("Shotgun", aHitPosition));
+		//aComponent->GetEntity().SendNote<DamageNote>(DamageNote(myDamage));
+
+		//SharedNetworkManager::GetInstance()->AddMessage(NetMessageOnHit(float(myDamage), aComponent->GetEntity().GetGID()));
+
+		//SharedNetworkManager::GetInstance()->AddMessage(NetMessageOnHit(myDamage, aComponent->GetEntity().GetGID()));
+
 	}
 }

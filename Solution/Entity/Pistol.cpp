@@ -99,6 +99,7 @@ bool Pistol::Shoot(const CU::Matrix44<float>& aOrientation)
 		myMuzzleflashTimer = 0.2f;
 		myMuzzleflash[myCurrentMuzzleflash]->SetShouldRender(true);
 		Prism::Audio::AudioInterface::GetInstance()->PostEvent("Play_Pistol", 0);
+		SendRayCastRequest(aOrientation.GetPos(), forward, 500.f, myOwnerEntity->GetGID());
 		return true;
 	}
 	return false;
@@ -133,7 +134,7 @@ void Pistol::Update(float aDelta)
 	}
 }
 
-void Pistol::HandleRaycast(PhysicsComponent* aComponent, const CU::Vector3<float>& aDirection, const CU::Vector3<float>& aHitPosition, const CU::Vector3<float>& aHitNormal)
+void Pistol::HandleRaycast(PhysicsComponent* aComponent, const CU::Vector3<float>& aDirection, const CU::Vector3<float>& aHitPosition, const CU::Vector3<float>&)
 {
 	if (aComponent != nullptr)
 	{

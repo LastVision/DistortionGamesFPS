@@ -63,6 +63,7 @@ namespace Prism
 #endif
 
 		LoadInstancedCount();
+		LoadRadiuses();
 	}
 
 	ModelLoader::~ModelLoader()
@@ -300,6 +301,9 @@ namespace Prism
 #endif
 		
 		myModelProxies[aModelPath] = proxy;
+		
+		SetRadius(proxy, aModelPath);
+
 		return proxy;
 	}
 
@@ -336,6 +340,8 @@ namespace Prism
 
 		proxy->SetModelAnimated(model);
 #endif
+
+		SetRadius(proxy, aModelPath);
 
 		myModelProxies[aModelPath] = proxy;
 		return proxy;
@@ -527,6 +533,21 @@ namespace Prism
 #endif	
 	}
 
+	void ModelLoader::SetRadius(ModelProxy* aProxy, const std::string& aModelPath)
+	{
+		float radius = 0;
+		if (myRadiuses.find(aModelPath) == myRadiuses.end())
+		{
+			radius = 25.f;
+		}
+		else
+		{
+			radius = myRadiuses[aModelPath];
+		}
+
+		aProxy->SetRadius(radius);
+	}
+
 	bool ModelLoader::CheckIfWorking()
 	{
 		if (myIsPaused == true || (myBuffers[myInactiveBuffer].Size() == 0
@@ -572,6 +593,21 @@ namespace Prism
 		for (int i = 0; i < myBuffers[myActiveBuffer].Size(); ++i)
 		{
 			myLoadArray.Add(myBuffers[myActiveBuffer][i]);
+		}
+	}
+
+	void ModelLoader::LoadRadiuses()
+	{
+		std::fstream file;
+		file.open("GeneratedData/modellist.bin", std::ios::in | std::ios::binary);
+
+		std::string model;
+		float radius = 0;
+		while (file >> model)
+		{
+			file >> radius;
+
+			myRadiuses[model] = radius;
 		}
 	}
 

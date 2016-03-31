@@ -369,13 +369,16 @@ void ServerNetworkManager::AddImportantMessage(std::vector<char> aBuffer, unsign
 		msg.mySenders.Init(myClients.Size());
 		for (Connection c : myClients)
 		{
-			ImportantClient client;
-			client.myGID = c.myID;
-			client.myNetworkAddress = c.myAddress;
-			client.myName = c.myName;
-			client.myTimer = 0.f;
-			client.myHasReplied = false;
-			msg.mySenders.Add(client);
+			if (aBuffer[11] == 0 || aBuffer[11] == static_cast<int>(c.myID))
+			{
+				ImportantClient client;
+				client.myGID = c.myID;
+				client.myNetworkAddress = c.myAddress;
+				client.myName = c.myName;
+				client.myTimer = 0.f;
+				client.myHasReplied = false;
+				msg.mySenders.Add(client);
+			}
 		}
 		myImportantMessagesBuffer.Add(msg);
 	}

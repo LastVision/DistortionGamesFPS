@@ -47,6 +47,7 @@ bool Shotgun::Shoot(const CU::Matrix44<float>& aOrientation)
 		myAmmoInClip -= 1;
 		myShootTimer = myShootTime;
 		Prism::Audio::AudioInterface::GetInstance()->PostEvent("Play_Shotgun", 0);
+		SendRayCastRequest(aOrientation.GetPos(), aOrientation.GetForward(), 500.f, myOwnerEntity->GetGID());
 		return true;
 	}
 	return false;
@@ -64,7 +65,7 @@ void Shotgun::Update(float aDelta)
 	myShootTimer -= aDelta;
 }
 
-void Shotgun::HandleRaycast(PhysicsComponent* aComponent, const CU::Vector3<float>& aDirection, const CU::Vector3<float>& aHitPosition, const CU::Vector3<float>& aHitNormal)
+void Shotgun::HandleRaycast(PhysicsComponent* aComponent, const CU::Vector3<float>& aDirection, const CU::Vector3<float>& aHitPosition, const CU::Vector3<float>&)
 {
 	if (aComponent != nullptr)
 	{

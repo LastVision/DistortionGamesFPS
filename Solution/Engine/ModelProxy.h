@@ -21,12 +21,14 @@ namespace Prism
 		void SetEffect(Effect* aEffect);
 
 		float GetRadius() const;
+		void SetRadius(float aRadius);
 
 		bool IsLoaded() const;
 		bool IsAnimated() const;
 	private:
 		Model* myModel;
 		ModelAnimated* myModelAnimated;
+		float myRadius;
 	};
 
 	inline bool ModelProxy::IsLoaded() const

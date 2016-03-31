@@ -252,7 +252,10 @@ void ServerLevelFactory::LoadSpawnpoint(XMLReader& aReader, tinyxml2::XMLElement
 		{
 			int triggerGID;
 			aReader.ForceReadAttribute(e, "value", triggerGID);
-			newEntity->GetComponent<SpawnpointComponent>()->BindToTrigger(triggerGID);
+			if (triggerGID != -1)
+			{
+				newEntity->GetComponent<SpawnpointComponent>()->BindToTrigger(triggerGID);
+			}
 		}
 
 		//Read bound to trigger

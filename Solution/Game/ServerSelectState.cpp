@@ -64,6 +64,9 @@ void ServerSelectState::InitState(StateStackProxy* aStateStackProxy, GUI::Cursor
 	}*/
 	myCursor->SetShouldRender(true);
 	myTriedToConnect = false;
+
+	myRefreshServerTimer = 0.f;
+	myWaitForResponseTimer = 0.f;
 	// broadcast request server
 	ClientNetworkManager::GetInstance()->AddMessage(NetMessageRequestServer(), ClientNetworkManager::GetInstance()->GetBroadcastAddress());
 }
@@ -98,6 +101,17 @@ const eStateStatus ServerSelectState::Update(const float& aDeltaTime)
 		{
 			ClientNetworkManager::GetInstance()->ConnectToServer(myServer->myIp.c_str());
 			myTriedToConnect = true;
+			myWaitForResponseTimer = 1.f;
+		}
+		else if (myTriedToConnect == true)
+		{
+			myWaitForResponseTimer -= aDeltaTime;
+			if (myWaitForResponseTimer <= 0.f)
+			{
+				//Show Failed to connect message
+				Prism::Engine::GetInstance()->PrintText("Failed to connect to the server, the server is either down or ingame. Try again!", 
+				{50.f,Prism::Engine::GetInstance()->GetWindowSize().y - 50.f}, Prism::eTextType::RELEASE_TEXT);
+			}
 		}
 		if (ClientNetworkManager::GetInstance()->GetGID() != 0)
 		{
@@ -118,6 +132,7 @@ const eStateStatus ServerSelectState::Update(const float& aDeltaTime)
 		}
 		myServers.RemoveAll();
 		myTriedToConnect = false;
+		myServer = nullptr;
 		ClientNetworkManager::GetInstance()->AddMessage(NetMessageRequestServer(), ClientNetworkManager::GetInstance()->GetBroadcastAddress());
 	}
 

@@ -168,7 +168,7 @@ enum class ePlayerState : int
 
 enum class eNetRayCastType : int
 {
-	CLIENT_PRESSED_E,
+	CLIENT_SHOOT,
 	_COUNT,
 };
 
