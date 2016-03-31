@@ -9,7 +9,7 @@ public:
 	NetMessagePressEText(int aGID, const CU::Vector3<float>& aPosition, bool aShouldAdd);
 	~NetMessagePressEText();
 
-	int myGID;
+	unsigned int myGID;
 	CU::Vector3<float> myPosition;
 	bool myShouldAdd;
 private:
