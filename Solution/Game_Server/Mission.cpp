@@ -23,6 +23,10 @@ Mission::Mission(const std::string& aMissionType, bool aShouldLoopMissionEvents)
 	{
 		myMissionType = eMissionType::DEFEND;
 	}
+	else if (aMissionType == "event")
+	{
+		myMissionType = eMissionType::EVENT;
+	}
 	else
 	{
 		DL_ASSERT("UNKNOWN MISSIONTYPE");

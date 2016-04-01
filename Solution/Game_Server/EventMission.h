@@ -1,8 +1,12 @@
 #pragma once
-class EventMission
+#include "Mission.h"
+
+class EventMission : public Mission
 {
 public:
-	EventMission();
+	EventMission(const std::string& aMissionType);
 	~EventMission();
+
+	bool Update(float aDeltaTime) override;
 };
 
