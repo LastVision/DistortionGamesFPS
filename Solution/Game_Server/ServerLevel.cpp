@@ -368,6 +368,10 @@ void ServerLevel::Trigger(Entity& aFirstEntity, Entity& aSecondEntity, bool aHas
 	case eTriggerType::MISSION:
 		printf("MissionTrigger with GID: %i entered by: %s with GID: %i \n", aFirstEntity.GetGID(), aSecondEntity.GetSubType().c_str(), aSecondEntity.GetGID());
 		myMissionManager->SetMission(firstTrigger->GetValue());
+		if (myMissionManager->GetCurrentMissionType() == eMissionType::DEFEND)
+		{
+			PollingStation::GetInstance()->SetEnemyTargetPosition(&aFirstEntity);
+		}
 		break;
 	case eTriggerType::LEVEL_CHANGE:
 		myNextLevel = firstTrigger->GetValue();
