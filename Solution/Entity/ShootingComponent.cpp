@@ -4,7 +4,9 @@
 #include "GrenadeLauncher.h"
 #include <InputWrapper.h>
 #include "InputComponent.h"
+#include <NetMessageEntityState.h>
 #include "Pistol.h"
+#include <SharedNetworkManager.h>
 #include "Shotgun.h"
 #include "ShootingComponent.h"
 #include "UpgradeComponentData.h"
@@ -117,6 +119,7 @@ void ShootingComponent::Update(float aDelta)
 			if (myCurrentWeapon->Shoot(aOrientation) == true)
 			{
 				myEntity.GetComponent<FirstPersonRenderComponent>()->AddIntention(ePlayerState::PISTOL_FIRE, true);
+				SharedNetworkManager::GetInstance()->AddMessage<NetMessageEntityState>(NetMessageEntityState(eEntityState::ATTACK, myEntity.GetGID()));
 			}
 		}
 		else if (myCurrentWeapon == myShotgun)
@@ -124,6 +127,7 @@ void ShootingComponent::Update(float aDelta)
 			if (myCurrentWeapon->Shoot(aOrientation) == true)
 			{
 				myEntity.GetComponent<FirstPersonRenderComponent>()->AddIntention(ePlayerState::SHOTGUN_FIRE, true);
+				SharedNetworkManager::GetInstance()->AddMessage<NetMessageEntityState>(NetMessageEntityState(eEntityState::ATTACK, myEntity.GetGID()));
 			}
 		}
 		else if (myCurrentWeapon == myGrenadeLauncher)
@@ -132,6 +136,7 @@ void ShootingComponent::Update(float aDelta)
 			if (myCurrentWeapon->Shoot(aOrientation) == true)
 			{
 				myEntity.GetComponent<FirstPersonRenderComponent>()->AddIntention(ePlayerState::GRENADE_LAUNCHER_FIRE, true);
+				SharedNetworkManager::GetInstance()->AddMessage<NetMessageEntityState>(NetMessageEntityState(eEntityState::ATTACK, myEntity.GetGID()));
 			}
 		}
 	}
