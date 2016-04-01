@@ -269,6 +269,10 @@ void ComponentLoader::LoadSpawnpointComponent(XMLReader& aDocument, tinyxml2::XM
 		{
 			aDocument.ForceReadAttribute(e, "value", aOutputData.mySpawnPerInterval);
 		}
+		else if (elementName == CU::ToLower("SpawnCount"))
+		{
+			aDocument.ForceReadAttribute(e, "value", aOutputData.myUnitCount);
+		}
 	}
 }
 

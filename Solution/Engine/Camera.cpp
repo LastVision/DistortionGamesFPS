@@ -35,7 +35,7 @@ namespace Prism
 	{
 		myFrustum = new Frustum(aPlayerMatrix, myNear, myFar);
 		ReadXML("Data/Setting/SET_camera.xml");
-		OnResize(aWidth, aHeight);
+		OnResize(int(aWidth), int(aHeight));
 	}
 
 	Camera::~Camera()

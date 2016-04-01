@@ -88,7 +88,7 @@ void Prism::Text::Render(const CU::Vector2<float>& aPosition, const CU::Vector2<
 	Engine::GetInstance()->SetDepthBufferState(eDepthStencil::Z_ENABLED);
 }
 
-void Prism::Text::Render(const Camera* aCamera, const CU::Matrix44<float>& aOrientation, const CU::Vector2<float>& aScale, const CU::Vector4<float>& aColor)
+void Prism::Text::Render(const Camera* aCamera, const CU::Matrix44<float>& aOrientation, const CU::Vector2<float>&, const CU::Vector4<float>& aColor)
 {
 	Engine::GetInstance()->SetDepthBufferState(eDepthStencil::Z_DISABLED);
 	float blendFactor[4];
