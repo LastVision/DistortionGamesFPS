@@ -48,6 +48,8 @@ public:
 	static eComponentType GetTypeStatic();
 	eComponentType GetType() override;
 
+	bool IsInScene() const;
+
 private:
 	const PhysicsComponentData& myData;
 	Prism::PhysicsCallbackStruct myCallbackStruct;
@@ -65,6 +67,7 @@ private:
 	int myCapsuleControllerId;
 
 	bool myIsAwake;
+	bool myIsInScene;
 };
 
 inline const int PhysicsComponent::GetCapsuleControllerId() const
@@ -85,4 +88,9 @@ inline eComponentType PhysicsComponent::GetType()
 inline ePhysics PhysicsComponent::GetPhysicsType() const
 {
 	return myPhysicsType;
+}
+
+inline bool PhysicsComponent::IsInScene() const
+{
+	return myIsInScene;
 }

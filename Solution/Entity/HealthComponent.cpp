@@ -76,7 +76,7 @@ void HealthComponent::TakeDamage(int aDamage)
 			}
 			else
 			{
-				PostMaster::GetInstance()->SendMessage(EnemyKilledMessage());
+				PostMaster::GetInstance()->SendMessage(EnemyKilledMessage(&myEntity));
 			}
 			myEntity.SetState(eEntityState::DIE);
 			SharedNetworkManager::GetInstance()->AddMessage(NetMessageEntityState(myEntity.GetState(), myEntity.GetGID()));

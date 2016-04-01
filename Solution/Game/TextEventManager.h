@@ -39,5 +39,7 @@ private:
 	CU::Vector3<float> myStartOffset;
 
 	float myTextStartFadingTime;
-
+	Prism::TextProxy* myMissionText;
+	CU::Vector3<float> myMissionOffset;
+	bool myShouldRender;
 };

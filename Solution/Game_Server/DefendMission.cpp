@@ -4,14 +4,17 @@
 #include <NetMessageText.h>
 #include <SendTextToClientsMessage.h>
 #include "ServerNetworkManager.h"
+#include <PollingStation.h>
 #include <PostMaster.h>
 
 DefendMission::DefendMission(const std::string& aMissionType, float aSecondsToDefend, bool aShouldLoopMissionEvents)
 	: Mission(aMissionType, aShouldLoopMissionEvents)
 	, myDefendTime(aSecondsToDefend)
+	, myMaxDefendTime(aSecondsToDefend)
 	, myShouldCountDown(true)
 	, myEnemiesInside(0)
 	, myLastSecondToWarn(int(aSecondsToDefend))
+	, mySendTime(2.f)
 {
 }
 
@@ -37,6 +40,20 @@ bool DefendMission::Update(float aDeltaTime)
 		{
 			myDefendTime -= aDeltaTime;
 		}
+
+		mySendTime -= aDeltaTime;
+		if (mySendTime <= 0.f)
+		{
+			int percentage = 100 - (int((myDefendTime / myMaxDefendTime) * 100));
+			ServerNetworkManager::GetInstance()->AddMessage(NetMessageText("Virus upload: " + std::to_string(percentage) + " %", 1.f, true, true));
+			mySendTime = 2.f;
+		}
+
+		if (myDefendTime <= 0.f)
+		{
+			ServerNetworkManager::GetInstance()->AddMessage(NetMessageText("", 1.f, true, false));
+		}
+
 		if (myMissionEvents.Size() > 0)
 		{
 			myMissionEvents[myCurrentMissionEvent].myTimeBeforeStarting -= aDeltaTime;
@@ -82,6 +99,7 @@ bool DefendMission::Update(float aDeltaTime)
 
 	//PostMaster::GetInstance()->SendMessage<SendTextToClientsMessage>(SendTextToClientsMessage("Mission complete"));
 	//ServerNetworkManager::GetInstance()->AddMessage(NetMessageDisplayMarker({ 0.f, 0.f, 0.f }, false));
+	PollingStation::GetInstance()->ResetEnemyTargetPosition();
 	return true;
 }
 

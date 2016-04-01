@@ -45,6 +45,7 @@
 
 #include <PhysicsInterface.h>
 #include <PostMaster.h>
+#include <ShootingComponent.h>
 #include <TriggerComponent.h>
 #include <UpgradeComponent.h>
 #include <UpgradeNote.h>
@@ -65,6 +66,8 @@ ClientLevel::ClientLevel()
 	, myPointLights(64)
 	, mySpotLights(64)
 	, myInitDone(false)
+	, myForceStrengthPistol(0.f)
+	, myForceStrengthShotgun(0.f)
 {
 	Prism::PhysicsInterface::Create(std::bind(&ClientLevel::CollisionCallback, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3), false);
 
@@ -80,10 +83,17 @@ ClientLevel::ClientLevel()
 	ClientUnitManager::Create();
 	myScene = new Prism::Scene();
 
-	myOtherClientRaycastHandler = [=](PhysicsComponent* aComponent, const CU::Vector3<float>& aDirection, const CU::Vector3<float>& aHitPosition, const CU::Vector3<float>& aHitNormal)
+	myOtherClientRaycastHandlerPistol = [=](PhysicsComponent* aComponent, const CU::Vector3<float>& aDirection, const CU::Vector3<float>& aHitPosition, const CU::Vector3<float>& aHitNormal)
 	{
-		this->HandleOtherClientRayCast(aComponent, aDirection, aHitPosition, aHitNormal);
+		this->HandleOtherClientRayCastPistol(aComponent, aDirection, aHitPosition, aHitNormal);
 	};
+
+	myOtherClientRaycastHandlerShotgun = [=](PhysicsComponent* aComponent, const CU::Vector3<float>& aDirection, const CU::Vector3<float>& aHitPosition, const CU::Vector3<float>& aHitNormal)
+	{
+		this->HandleOtherClientRayCastShotgun(aComponent, aDirection, aHitPosition, aHitNormal);
+	};
+	myEmitterManager = new EmitterManager();
+
 }
 
 ClientLevel::~ClientLevel()
@@ -120,6 +130,8 @@ ClientLevel::~ClientLevel()
 void ClientLevel::Init(const std::string&)
 {
 	CreatePlayers();
+	myForceStrengthPistol = myPlayer->GetComponent<ShootingComponent>()->GetWeaponForceStrength(eWeaponType::PISTOL);
+	myForceStrengthShotgun = myPlayer->GetComponent<ShootingComponent>()->GetWeaponForceStrength(eWeaponType::SHOTGUN);
 
 	Prism::ModelLoader::GetInstance()->Pause();
 	myDeferredRenderer = new Prism::DeferredRenderer();
@@ -127,7 +139,7 @@ void ClientLevel::Init(const std::string&)
 
 	myFullscreenRenderer = new Prism::Renderer();
 
-	myEmitterManager = new EmitterManager(*myPlayer->GetComponent<InputComponent>()->GetCamera());
+
 	Prism::ModelLoader::GetInstance()->UnPause();
 	CU::Matrix44f orientation;
 	myInstanceOrientations.Add(orientation);
@@ -138,7 +150,7 @@ void ClientLevel::Init(const std::string&)
 	ClientProjectileManager::GetInstance()->CreateExplosions();
 
 	myTextManager = new TextEventManager(myPlayer->GetComponent<InputComponent>()->GetCamera());
-
+	myEmitterManager->Initiate(myPlayer->GetComponent<InputComponent>()->GetCamera());
 }
 
 void ClientLevel::SetMinMax(const CU::Vector3<float>& aMinPoint, const CU::Vector3<float>& aMaxPoint)
@@ -361,13 +373,22 @@ void ClientLevel::ReceiveNetworkMessage(const NetMessageExplosion& aMessage, con
 {
 	ClientProjectileManager::GetInstance()->RequestExplosion(aMessage.myPosition, aMessage.myGID);
 	ClientProjectileManager::GetInstance()->KillGrenade(aMessage.myGID - 1);
+	PostMaster::GetInstance()->SendMessage(EmitterMessage("Explosion", aMessage.myPosition,true));
 }
 
 void ClientLevel::ReceiveNetworkMessage(const NetMessageRayCastRequest& aMessage, const sockaddr_in&)
 {
 	if (myPlayer->GetGID() != aMessage.myGID)
 	{
-		Prism::PhysicsInterface::GetInstance()->RayCast(aMessage.myPosition, aMessage.myDirection, 500.f, myOtherClientRaycastHandler, myPlayer->GetComponent<PhysicsComponent>());
+		switch (eNetRayCastType(aMessage.myRayCastType))
+		{
+		case eNetRayCastType::CLIENT_SHOOT_PISTOL:
+			Prism::PhysicsInterface::GetInstance()->RayCast(aMessage.myPosition, aMessage.myDirection, 500.f, myOtherClientRaycastHandlerPistol, myPlayer->GetComponent<PhysicsComponent>());
+			break;
+		case eNetRayCastType::CLIENT_SHOOT_SHOTGUN:
+			Prism::PhysicsInterface::GetInstance()->RayCast(aMessage.myPosition, aMessage.myDirection, 500.f, myOtherClientRaycastHandlerShotgun, myPlayer->GetComponent<PhysicsComponent>());
+			break;
+		}
 	}
 }
 
@@ -475,21 +496,29 @@ void ClientLevel::CreatePlayers()
 	}
 }
 
-void ClientLevel::HandleOtherClientRayCast(PhysicsComponent* aComponent, const CU::Vector3<float>& aDirection, const CU::Vector3<float>& aHitPosition, const CU::Vector3<float>&)
+void ClientLevel::HandleOtherClientRayCastPistol(PhysicsComponent* aComponent, const CU::Vector3<float>& aDirection, const CU::Vector3<float>& aHitPosition, const CU::Vector3<float>& aHitNormal)
 {
 	if (aComponent != nullptr)
 	{
 		if (aComponent->GetPhysicsType() == ePhysics::DYNAMIC)
 		{
-			aComponent->AddForce(aDirection, 5.f);
+			aComponent->AddForce(aDirection, myForceStrengthPistol);
 		}
 
-		PostMaster::GetInstance()->SendMessage(EmitterMessage("Shotgun", aHitPosition));
-		//aComponent->GetEntity().SendNote<DamageNote>(DamageNote(myDamage));
+		CU::Vector3<float> toSend = CU::Reflect<float>(aDirection, aHitNormal);
+		PostMaster::GetInstance()->SendMessage(EmitterMessage("Shotgun", aHitPosition, toSend));
+	}
+}
 
-		//SharedNetworkManager::GetInstance()->AddMessage(NetMessageOnHit(float(myDamage), aComponent->GetEntity().GetGID()));
-
-		//SharedNetworkManager::GetInstance()->AddMessage(NetMessageOnHit(myDamage, aComponent->GetEntity().GetGID()));
-
+void ClientLevel::HandleOtherClientRayCastShotgun(PhysicsComponent* aComponent, const CU::Vector3<float>& aDirection, const CU::Vector3<float>& aHitPosition, const CU::Vector3<float>& aHitNormal)
+{
+	if (aComponent != nullptr)
+	{
+		if (aComponent->GetPhysicsType() == ePhysics::DYNAMIC)
+		{
+			aComponent->AddForce(aDirection, myForceStrengthShotgun);
+		}
+		CU::Vector3<float> toSend = CU::Reflect(aDirection, aHitNormal);
+		PostMaster::GetInstance()->SendMessage(EmitterMessage("Shotgun", aHitPosition, toSend));
 	}
 }

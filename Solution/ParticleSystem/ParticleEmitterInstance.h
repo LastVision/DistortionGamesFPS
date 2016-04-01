@@ -20,27 +20,33 @@ namespace Prism
 		void ReleaseData();
 		void Render();
 		void Update(float aDeltaTime, const CU::Matrix44f& aWorldMatrix);
-		void SetPosition(const CU::Vector3f& aPosition);
-		void SetEmitterLifeTime(float aLifeTime);
 		void Activate();
 		bool IsActive();
+
+		void SetPosition(const CU::Vector3f& aPosition);
+
+		void SetEmitterLifeTime(float aLifeTime);
+		void KillEmitter(float aKillTime);
+
 		void SetEntity(Entity* anEntity);
 		Entity* GetEntity();
+
 		void SetGPUData(Camera* aCamera);
 
-		CU::Vector2<float> GetPosition();
 
 		bool GetShouldAlwaysShow();
 		void SetShouldAlwaysShow(bool aShouldAlwaysShow);
 
 		void SetRadius(float aRadius);
 		void SetSize(const CU::Vector3f& aSize);
-		void KillEmitter(float aKillTime);
-		void SetCamera(Camera* aCamera);
-		Camera* GetCamera();
+
+		void SetDirection(const CU::Vector3<float>& aDirection);
+
 	private:
 		void Reset();
-		CU::Vector3f CalculateDirection(float anAngle);
+		CU::Vector3f CalculateDirection(float aYVariation, float aZVariation);
+		CU::Vector3f CalculateDirection(const CU::Vector3<float>& aDirection);
+
 		void CreateVertexBuffer();
 		int UpdateVertexBuffer();
 
@@ -48,7 +54,7 @@ namespace Prism
 		void UpdateParticle(float aDeltaTime);
 
 		void EmitParticle(const CU::Matrix44f& aWorldMatrix);
-
+		void Reflect(CU::Vector3<float>&  aOutputVector, const CU::Vector3<float>& aIncidentVector, const CU::Vector3<float>& aNormal);
 		CU::Vector3<float> CreateCirclePositions();
 		CU::Vector3<float> CreateSpherePositions();
 
@@ -68,14 +74,16 @@ namespace Prism
 		float myEmissionTime;
 		float myEmitterLife;
 		float myParticleScaling;
+		float myParticleSpeed;
 
 		int myParticleIndex;
 		int myLiveParticleCount;
-
+		
 		bool myAlwaysShow;
 		bool myHasEmitted;
+		bool myOverrideDirection;
+		CU::Vector3<float> myDirection;
 
-		Camera* myCamera;
 
 		Entity* myEntity;
 

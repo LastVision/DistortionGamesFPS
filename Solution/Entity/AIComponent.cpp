@@ -59,6 +59,17 @@ void AIComponent::Update(float aDelta)
 
 	if (myEntity.GetState() != eEntityState::DIE)
 	{
+		myDefendTarget = PollingStation::GetInstance()->GetCurrentDefendTarget(myEntity.GetOrientation().GetPos());
+		if (myDefendTarget != nullptr && myTarget == nullptr)
+		{
+			myTarget = myDefendTarget;
+		}
+		else if (myDefendTarget == nullptr && myTarget != nullptr && myTarget->GetType() == eEntityType::TRIGGER)
+		{
+			myTarget = nullptr;
+		}
+
+
 		if (myHasRaycasted == false)
 		{
 			Entity* closestPlayer = PollingStation::GetInstance()->FindClosestPlayer(myEntity.GetOrientation().GetPos(), myData.myVisionRange);
@@ -76,7 +87,7 @@ void AIComponent::Update(float aDelta)
 		myShootTimer -= aDelta;
 		
 		Move(aDelta, myTarget);
-		if (myTarget != nullptr)
+		if (myTarget != nullptr && myTarget != myDefendTarget)
 		{
 			if (myShootTimer < 0.f)
 			{
@@ -117,7 +128,6 @@ void AIComponent::HandleRaycast(PhysicsComponent* aComponent, const CU::Vector3<
 	}
 }
 
-
 void AIComponent::Move(float aDelta, Entity* aClosestPlayer)
 {
 	if (myEntity.GetState() != eEntityState::DIE)
@@ -142,7 +152,7 @@ void AIComponent::Move(float aDelta, Entity* aClosestPlayer)
 			myEntity.SetState(eEntityState::WALK);
 			SharedNetworkManager::GetInstance()->AddMessage<NetMessageEntityState>(NetMessageEntityState(myEntity.GetState(), myEntity.GetGID()));
 		}
-
+		movement.y = -0.5f;
 		Prism::PhysicsInterface::GetInstance()->Move(myEntity.GetComponent<PhysicsComponent>()->GetCapsuleControllerId(), movement, 0.05f, aDelta);
 
 		SetOrientation(CU::GetNormalized(movement), aDelta);

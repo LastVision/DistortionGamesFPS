@@ -5,6 +5,7 @@
 #include "Entity.h"
 #include <EmitterMessage.h>
 #include <NetMessageOnHit.h>
+#include <NetMessageRayCastRequest.h>
 #include <PostMaster.h>
 #include <PhysicsInterface.h>
 #include "PhysicsComponent.h"
@@ -46,8 +47,7 @@ bool Shotgun::Shoot(const CU::Matrix44<float>& aOrientation)
 		ShootRowAround(aOrientation, CU::Vector3<float>(0, 0, 1.f) * (CU::Matrix44<float>::CreateRotateAroundX(CU::Math::RandomRange(myMinSpreadRotation, myMaxSpreadRotation)) * aOrientation));
 		myAmmoInClip -= 1;
 		myShootTimer = myShootTime;
-		Prism::Audio::AudioInterface::GetInstance()->PostEvent("Play_Shotgun", 0);
-		SendRayCastRequest(aOrientation.GetPos(), aOrientation.GetForward(), 500.f, myOwnerEntity->GetGID());
+		Prism::Audio::AudioInterface::GetInstance()->PostEvent("Play_Shotgun", 0);	
 		return true;
 	}
 	return false;
@@ -65,7 +65,7 @@ void Shotgun::Update(float aDelta)
 	myShootTimer -= aDelta;
 }
 
-void Shotgun::HandleRaycast(PhysicsComponent* aComponent, const CU::Vector3<float>& aDirection, const CU::Vector3<float>& aHitPosition, const CU::Vector3<float>&)
+void Shotgun::HandleRaycast(PhysicsComponent* aComponent, const CU::Vector3<float>& aDirection, const CU::Vector3<float>& aHitPosition, const CU::Vector3<float>& aHitNormal)
 {
 	if (aComponent != nullptr)
 	{
@@ -73,9 +73,9 @@ void Shotgun::HandleRaycast(PhysicsComponent* aComponent, const CU::Vector3<floa
 		{
 			aComponent->AddForce(aDirection, myForceStrength);
 		}
-		//aComponent->GetEntity().SendNote<DamageNote>(DamageNote(myDamage));
 		SharedNetworkManager::GetInstance()->AddMessage(NetMessageOnHit(myDamage, aComponent->GetEntity().GetGID()));
-		PostMaster::GetInstance()->SendMessage(EmitterMessage("Shotgun", aHitPosition));
+		CU::Vector3<float> toSend = CU::Reflect(aDirection, aHitNormal);
+		PostMaster::GetInstance()->SendMessage(EmitterMessage("Shotgun", aHitPosition, toSend));
 	}
 }
 
@@ -88,15 +88,15 @@ void Shotgun::Upgrade(const UpgradeComponentData& aData)
 
 void Shotgun::ShootRowAround(const CU::Matrix44<float>& aOrientation, const CU::Vector3<float>& aForward)
 {
-	CU::Vector3<float> forward = aForward;
+	CU::Vector3<float> forward1 = aForward;
+	CU::Vector3<float> forward2 = aForward * CU::Matrix44<float>::CreateRotateAroundY(CU::Math::RandomRange(-myMaxSpreadRotation, -myMinSpreadRotation));
+	CU::Vector3<float> forward3 = aForward * CU::Matrix44<float>::CreateRotateAroundY(CU::Math::RandomRange(myMinSpreadRotation, myMaxSpreadRotation));
 
-	Prism::PhysicsInterface::GetInstance()->RayCast(aOrientation.GetPos(), forward, 100.f, myRaycastHandler, myOwnerEntity->GetComponent<PhysicsComponent>());
+	Prism::PhysicsInterface::GetInstance()->RayCast(aOrientation.GetPos(), forward1, 100.f, myRaycastHandler, myOwnerEntity->GetComponent<PhysicsComponent>());
+	Prism::PhysicsInterface::GetInstance()->RayCast(aOrientation.GetPos(), forward2, 100.f, myRaycastHandler, myOwnerEntity->GetComponent<PhysicsComponent>());
+	Prism::PhysicsInterface::GetInstance()->RayCast(aOrientation.GetPos(), forward3, 100.f, myRaycastHandler, myOwnerEntity->GetComponent<PhysicsComponent>());
 
-	Prism::PhysicsInterface::GetInstance()->RayCast(aOrientation.GetPos()
-		, forward * CU::Matrix44<float>::CreateRotateAroundY(CU::Math::RandomRange(-myMaxSpreadRotation, -myMinSpreadRotation))
-		, 100.f, myRaycastHandler, myOwnerEntity->GetComponent<PhysicsComponent>());
-
-	Prism::PhysicsInterface::GetInstance()->RayCast(aOrientation.GetPos()
-		, forward * CU::Matrix44<float>::CreateRotateAroundY(CU::Math::RandomRange(myMinSpreadRotation, myMaxSpreadRotation))
-		, 100.f, myRaycastHandler, myOwnerEntity->GetComponent<PhysicsComponent>());
+	SharedNetworkManager::GetInstance()->AddMessage(NetMessageRayCastRequest(aOrientation.GetPos(), forward1, int(eNetRayCastType::CLIENT_SHOOT_SHOTGUN), 500.f, myOwnerEntity->GetGID()));
+	SharedNetworkManager::GetInstance()->AddMessage(NetMessageRayCastRequest(aOrientation.GetPos(), forward2, int(eNetRayCastType::CLIENT_SHOOT_SHOTGUN), 500.f, myOwnerEntity->GetGID()));
+	SharedNetworkManager::GetInstance()->AddMessage(NetMessageRayCastRequest(aOrientation.GetPos(), forward3, int(eNetRayCastType::CLIENT_SHOOT_SHOTGUN), 500.f, myOwnerEntity->GetGID()));
 }

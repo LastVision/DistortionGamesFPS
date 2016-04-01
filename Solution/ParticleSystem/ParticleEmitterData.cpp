@@ -39,7 +39,6 @@ namespace Prism
 			SAFE_RELEASE(myInputLayout);
 		}
 		SAFE_DELETE(myTechniqueDesc);
-	
 	}
 
 	void ParticleEmitterData::LoadDataFile(const std::string& aFilePath)
@@ -69,11 +68,6 @@ namespace Prism
 		read.ReadAttribute(element, "x", "y", "z", myEmitterSize);
 		myEmitterSize *= 0.5f;
 
-
-
-
-
-
 		element = read.ForceFindFirstChild(emitter, "EmitterLifeTime");
 		read.ReadAttribute(element, "value", myEmitterLifeTime);
 		if (myEmitterLifeTime < 0)
@@ -85,22 +79,12 @@ namespace Prism
 			myUseEmitterLifeTime = true;
 		}
 
-		//element = read.ForceFindFirstChild(emitter, "ParticleRotation");
-		//read.ReadAttribute(element, "min", myMinRotation);
-		//read.ReadAttribute(element, "max", myMaxRotation);
-
 		element = read.ForceFindFirstChild(emitter, "ParticleRotationDelta");
 		read.ReadAttribute(element, "value", myRotationDelta);
 
-		//element = read.ForceFindFirstChild(emitter, "ParticleMaxVelocity");
-		//read.ReadAttribute(element, "x", "y", "z", myMaxVelocity);
-
-		//element = read.ForceFindFirstChild(emitter, "ParticleMinVelocity");
-		//read.ReadAttribute(element, "x", "y", "z", myMinVelocity);
-
-
-		//element = read.ForceFindFirstChild(emitter, "ParticleDirection");
-		//read.ReadAttribute(element, "x", "y", "z", myDirection);
+		element = read.ForceFindFirstChild(emitter, "EmissionVariation");
+		read.ReadAttribute(element, "yAxis", myVariation.x);
+		read.ReadAttribute(element, "zAxis", myVariation.y);
 
 		element = read.ForceFindFirstChild(emitter, "ParticleStartColor");
 		read.ReadAttribute(element, "r", "g", "b", myData.myStartColor);
@@ -111,7 +95,6 @@ namespace Prism
 		element = read.ForceFindFirstChild(emitter, "ParticleLifeTime");
 		read.ReadAttribute(element, "value", myData.myParticleLifeTime);
 
-
 		element = read.ForceFindFirstChild(emitter, "EmittsPerSecond");
 		read.ReadAttribute(element, "value", myEmissionRate);
 		myEmissionRate = 1 / myEmissionRate;
@@ -119,18 +102,9 @@ namespace Prism
 		element = read.ForceFindFirstChild(emitter, "ParticlesPerEmitt");
 		read.ReadAttribute(element, "value", myParticlesPerEmitt);
 
-		//Dead code, use in the future?
-		//element = read.ForceFindFirstChild(emitter, "EmissionRateDelta");
-		//read.ReadAttribute(element, "value", myEmissionRateDelta);
-
-
 		element = read.ForceFindFirstChild(emitter, "ParticleScale");
 		read.ReadAttribute(element, "min", myData.myMinStartSize);
 		read.ReadAttribute(element, "max", myData.myMaxStartSize);
-
-
-		//element = read.ForceFindFirstChild(emitter, "ParticleAlphaDelta");
-		//read.ReadAttribute(element, "value", myData.myAlphaDelta);
 
 		element = read.ForceFindFirstChild(emitter, "ParticleSizeDelta");
 		read.ReadAttribute(element, "value", myData.mySizeDelta);
@@ -138,10 +112,15 @@ namespace Prism
 		element = read.ForceFindFirstChild(emitter, "ParticleAlphaStart");
 		read.ReadAttribute(element, "value", myData.myStartAlpha);
 
+		element = read.ForceFindFirstChild(emitter, "ParticleAlphaDelta");
+		read.ReadAttribute(element, "value", myData.myAlphaDelta);
 
+		element = read.ForceFindFirstChild(emitter, "ParticleSpeed");
+		read.ReadAttribute(element, "value", myData.mySpeed);
+		myData.mySpeed *= 0.01f;
 
-		//element = read.ForceFindFirstChild(emitter, "UseAlphaDelta");
-		//read.ReadAttribute(element, "value", myUseAlphaDelta);
+		element = read.ForceFindFirstChild(emitter, "ParticleSpeedDelta");
+		read.ReadAttribute(element, "value", myData.mySpeedDelta);
 
 		read.CloseDocument();
 

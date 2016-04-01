@@ -10,7 +10,7 @@
 SharedUnitManager* SharedUnitManager::myInstance = nullptr;
 
 SharedUnitManager::SharedUnitManager()
-	: myUnits(512)
+	: myUnits(128)
 	, myActiveUnits(128)
 {
 }

@@ -15,9 +15,9 @@ public:
 	const int& GetAmmoInClip() const;
 	const int& GetClipSize() const;
 	eWeaponType GetWeaponType();
+	float GetForceStrength() const;
 
 	virtual void Upgrade(const UpgradeComponentData& aData);
-	void SendRayCastRequest(const CU::Vector3<float>& aPosition, const CU::Vector3<float>& aDirection, float aMaxLength, int aGID);
 
 protected:	
 	int myAmmoInClip;
@@ -47,4 +47,9 @@ inline const int& Weapon::GetClipSize() const
 inline eWeaponType Weapon::GetWeaponType()
 {
 	return myWeaponType;
+}
+
+inline float Weapon::GetForceStrength() const
+{
+	return myForceStrength;
 }

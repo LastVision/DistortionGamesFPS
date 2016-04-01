@@ -225,7 +225,7 @@ namespace Prism
 				SetPhysicsDone();
 				//WaitForSwap();
 			}
-			myTimerManager->CapFrameRate(60.f);
+			std::this_thread::sleep_for(std::chrono::milliseconds(16));
 		}
 	}
 #endif
@@ -305,7 +305,6 @@ namespace Prism
 				myControllerPositions[myCurrentIndex ^ 1][i].z = float(pos.z);
 			}
 		}
-		//myMoveJobs[myCurrentIndex].RemoveAll();
 
 		for (int i = 0; i < myActorsToWakeUp[myCurrentIndex ^ 1].Size(); ++i)
 		{
@@ -558,7 +557,7 @@ namespace Prism
 
 	void PhysicsManager::Move(int aId, const CU::Vector3<float>& aDirection, float aMinDisplacement, float aDeltaTime)
 	{
-		myMoveJobs[myCurrentIndex][aId] = MoveJob(aId, aDirection, aMinDisplacement, aDeltaTime);
+		myMoveJobs[myCurrentIndex][aId] = MoveJob(aId, aDirection, aMinDisplacement, myTimestep);
 	}
 
 	void PhysicsManager::Move(const MoveJob& aMoveJob)
@@ -644,7 +643,7 @@ namespace Prism
 
 	void PhysicsManager::GetPosition(int aId, CU::Vector3<float>& aPositionOut)
 	{
-		aPositionOut = myControllerPositions[myCurrentIndex][aId];
+		aPositionOut = myControllerPositions[myCurrentIndex ^1][aId];
 	}
 
 	void PhysicsManager::Create(PhysicsComponent* aComponent, const PhysicsCallbackStruct& aPhysData
@@ -908,6 +907,8 @@ namespace Prism
 				, myRaycastResults[myCurrentIndex][i].myHitNormal);
 		}
 		myRaycastResults[myCurrentIndex].RemoveAll();
+		//myMoveJobs[myCurrentIndex].RemoveAll();
+
 		myIsReading = false;
 	}
 }

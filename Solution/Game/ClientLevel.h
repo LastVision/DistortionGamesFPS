@@ -49,9 +49,11 @@ public:
 private:
 	void HandleTrigger(Entity& aFirstEntity, Entity& aSecondEntity, bool aHasEntered) override;
 	void CreatePlayers();
-	void HandleOtherClientRayCast(PhysicsComponent* aComponent, const CU::Vector3<float>& aDirection, const CU::Vector3<float>& aHitPosition, const CU::Vector3<float>& aHitNormal);
+	void HandleOtherClientRayCastPistol(PhysicsComponent* aComponent, const CU::Vector3<float>& aDirection, const CU::Vector3<float>& aHitPosition, const CU::Vector3<float>& aHitNormal);
+	void HandleOtherClientRayCastShotgun(PhysicsComponent* aComponent, const CU::Vector3<float>& aDirection, const CU::Vector3<float>& aHitPosition, const CU::Vector3<float>& aHitNormal);
 
-	std::function<void(PhysicsComponent*, const CU::Vector3<float>&, const CU::Vector3<float>&, const CU::Vector3<float>&)> myOtherClientRaycastHandler;
+	std::function<void(PhysicsComponent*, const CU::Vector3<float>&, const CU::Vector3<float>&, const CU::Vector3<float>&)> myOtherClientRaycastHandlerPistol;
+	std::function<void(PhysicsComponent*, const CU::Vector3<float>&, const CU::Vector3<float>&, const CU::Vector3<float>&)> myOtherClientRaycastHandlerShotgun;
 
 	Prism::Scene* myScene;
 	Prism::DeferredRenderer* myDeferredRenderer;
@@ -71,6 +73,9 @@ private:
 	std::string myName;
 
 	TextEventManager* myTextManager;
+
+	float myForceStrengthPistol;
+	float myForceStrengthShotgun;
 };
 
 inline Prism::Scene* ClientLevel::GetScene()

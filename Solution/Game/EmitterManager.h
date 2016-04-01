@@ -29,8 +29,9 @@ struct EmitterData
 class EmitterManager : public Subscriber
 {
 public:
-	EmitterManager(const Prism::Camera& aCamera);
+	EmitterManager();
 	~EmitterManager();
+	void Initiate(Prism::Camera* aCamera);
 	void UpdateEmitters(float aDeltaTime, CU::Matrix44f aWorldMatrix);
 	void RenderEmitters();
 	void ReceiveMessage(const EmitterMessage& aMessage) override;
@@ -39,7 +40,7 @@ private:
 	void ReadList(const std::string& aPath, const std::string& anID, short anIndex);
 	std::unordered_map<std::string, EmitterData*> myEmitters;
 	CU::GrowingArray<EmitterData*> myEmitterList;
-	const Prism::Camera& myCamera;
+	Prism::Camera* myCamera;
 	short myEmitterIndex;
 
 	void operator=(const EmitterManager&) = delete;

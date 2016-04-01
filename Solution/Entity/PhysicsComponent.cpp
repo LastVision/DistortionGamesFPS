@@ -41,6 +41,8 @@ PhysicsComponent::PhysicsComponent(Entity& aEntity, const PhysicsComponentData& 
 	{
 		myCapsuleControllerId = Prism::PhysicsInterface::GetInstance()->CreatePlayerController(myEntity.GetOrientation().GetPos(), this, shouldAddToPhysicsScene);
 	}
+
+	myIsInScene = shouldAddToPhysicsScene;
 }
 
 
@@ -214,6 +216,7 @@ void PhysicsComponent::AddToScene()
 	{
 		Prism::PhysicsInterface::GetInstance()->Add(myStaticBody);
 	}
+	myIsInScene = true;
 }
 
 void PhysicsComponent::RemoveFromScene()
@@ -228,9 +231,8 @@ void PhysicsComponent::RemoveFromScene()
 	}
 	else
 	{
-		//DL_ASSERT("Can't remove static objects");
 		Prism::PhysicsInterface::GetInstance()->Remove(myStaticBody, myData);
 	}
-
+	myIsInScene = false;
 }
 

@@ -12,6 +12,7 @@ namespace GUI
 namespace Prism
 {
 	class Instance;
+	class ModelProxy;
 	class SpriteProxy;
 }
 
@@ -60,6 +61,13 @@ private:
 	Prism::Instance* myPistolModel;
 	Prism::Instance* myShotgunModel;
 	Prism::Instance* myGrenadeLauncherModel;
+
+	Prism::ModelProxy* myPistolProxy;
+	bool myPistolHasUpdated;
+	Prism::ModelProxy* myShotgunProxy;
+	bool myShotgunHasUpdated;
+	Prism::ModelProxy* myGrenadeLauncherProxy;
+	bool myGrenadeLauncherHasUpdated;
 
 	GUI::GUIManager3D* my3DGUIManager;
 

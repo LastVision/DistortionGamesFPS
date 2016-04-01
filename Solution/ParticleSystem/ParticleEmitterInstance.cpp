@@ -19,6 +19,7 @@ namespace Prism
 		, myLiveParticleCount(0)
 		, myAlwaysShow(false)
 		, myHasEmitted(false)
+		, myOverrideDirection(false)
 		, myParticleToGraphicsCard(256)
 	{
 		myStates.reset();
@@ -28,7 +29,7 @@ namespace Prism
 		int particleCount = static_cast<int>(myParticleEmitterData->myParticlesPerEmitt * myParticleEmitterData->myData.myParticleLifeTime / myParticleEmitterData->myEmissionRate) + 1;
 
 
-		DL_DEBUG(("Loading :" + myEmitterPath).c_str());
+		DL_PRINT(("Loading :" + myEmitterPath).c_str());
 		DL_ASSERT_EXP(anAllowManyParticles == true || particleCount <= 201, "Can't have more than 201 particles in an emitter!");
 
 		myGraphicalParticles.Init(particleCount);
@@ -99,13 +100,13 @@ namespace Prism
 			myLogicalParticles[i] = LogicalParticle();
 		}
 
-
 		myLiveParticleCount = 0;
 
 		myEmissionTime = myParticleEmitterData->myEmissionRate;
 		myDiffColor = (myParticleEmitterData->myData.myEndColor - myParticleEmitterData->myData.myStartColor)
 			/ myParticleEmitterData->myData.myParticleLifeTime;
 
+		myParticleSpeed = myParticleEmitterData->myData.mySpeed;
 		if (myParticleEmitterData->myIsActiveAtStart == true)
 		{
 			myStates[ACTIVE] = TRUE;
@@ -145,13 +146,89 @@ namespace Prism
 		myEmitterLife = myParticleEmitterData->myEmitterLifeTime;
 	}
 
-	CU::Vector3f ParticleEmitterInstance::CalculateDirection(float anAngle)
+	CU::Vector3f ParticleEmitterInstance::CalculateDirection(float aYVariation, float aZVariation)
 	{
-		CU::Vector3f toReturn;
-		toReturn.x = myParticleEmitterData->myEmitterSize.x * cosf(anAngle);
-		toReturn.y = myParticleEmitterData->myEmitterSize.y * sinf(anAngle);
-		toReturn.z = 0.f;
+		float radius = myParticleEmitterData->myEmitterSize.z;
 
+		if (myParticleEmitterData->myEmitterSize.x > myParticleEmitterData->myEmitterSize.z)
+		{
+			radius = myParticleEmitterData->myEmitterSize.x;
+		}
+
+		float toRad = aYVariation * 0.5f;
+		float toRad2 = aZVariation * 0.5f;
+
+
+		CU::Vector3<float> toReturn;
+		int toRand = static_cast<int>(CU::Math::DegreeToRad(toRad) * 100.f);
+		int toRand2 = static_cast<int>(CU::Math::DegreeToRad(toRad2) * 100.f);
+
+		float angle = 0.f;
+		float otherAngle = 0.f;
+
+		if (toRand > 0.f)
+		{
+			angle = static_cast<float>(rand() % toRand) / 100.f;
+		}
+		if (toRand2 > 0.f)
+		{
+			otherAngle = static_cast<float>(rand() % toRand2) / 100.f;
+		}
+
+		toReturn.x = radius * cosf(angle);
+		toReturn.y = radius * sinf(angle);
+		toReturn.z = radius * sinf(otherAngle);
+
+		if (aYVariation >= 90.f && aYVariation <= 270.f)
+		{
+			toReturn.x = CU::Math::RandomRange(-toReturn.x, toReturn.x);
+		}
+		toReturn.y = CU::Math::RandomRange(-toReturn.y, toReturn.y);
+
+		return toReturn;
+	}
+
+	CU::Vector3f ParticleEmitterInstance::CalculateDirection(const CU::Vector3<float>& aDirection)
+	{
+		float radius = myParticleEmitterData->myEmitterSize.z;
+
+		if (myParticleEmitterData->myEmitterSize.x > myParticleEmitterData->myEmitterSize.z)
+		{
+			radius = myParticleEmitterData->myEmitterSize.x;
+		}
+
+		float toRad = 22.5f * 0.5f;
+		float toRad2 = 22.5f * 0.5f;
+
+
+		CU::Vector3<float> toReturn;
+		int toRand = static_cast<int>(CU::Math::DegreeToRad(toRad) * 100.f);
+		int toRand2 = static_cast<int>(CU::Math::DegreeToRad(toRad2) * 100.f);
+
+		float angle = 0.f;
+		float otherAngle = 0.f;
+
+		if (toRand > 0.f)
+		{
+			angle = static_cast<float>(rand() % toRand) / 100.f;
+		}
+		if (toRand2 > 0.f)
+		{
+			otherAngle = static_cast<float>(rand() % toRand2) / 100.f;
+		}
+
+		toReturn.x = (aDirection.x) * cosf(angle);
+		toReturn.y = (aDirection.y) * sinf(angle);
+		toReturn.z = (aDirection.z) * sinf(otherAngle);
+
+		/*
+		if (aYVariation >= 90.f && aYVariation <= 270.f)
+		{
+		toReturn.x = CU::Math::RandomRange(-toReturn.x, toReturn.x);
+		}
+		toReturn.y = CU::Math::RandomRange(-toReturn.y, toReturn.y);
+		*/
+	//	CU::Normalize(toReturn);
 		return toReturn;
 	}
 
@@ -192,7 +269,7 @@ namespace Prism
 	int ParticleEmitterInstance::UpdateVertexBuffer()
 	{
 		myParticleToGraphicsCard.RemoveAll();
-		for (unsigned int i = 0; i < myGraphicalParticles.Size(); ++i)
+		for (int i = 0; i < myGraphicalParticles.Size(); ++i)
 		{
 			if (myGraphicalParticles[i].myAlpha > 0.0f)
 			{
@@ -255,12 +332,17 @@ namespace Prism
 		for (int i = 0; i < myLogicalParticles.Size(); ++i)
 		{
 			myGraphicalParticles[i].myLifeTime -= aDeltaTime;
+			
+			if (myParticleEmitterData->myData.mySpeedDelta > 0.f)
+			{
+				myParticleEmitterData->myData.mySpeed += myParticleEmitterData->myData.mySpeedDelta * aDeltaTime;
+			}
 
-			myGraphicalParticles[i].myPosition += myLogicalParticles[i].myDirection * aDeltaTime;
+			myGraphicalParticles[i].myPosition += (myLogicalParticles[i].myDirection * (myParticleEmitterData->myData.mySpeed * 0.01f)) * aDeltaTime;
 
-			//if (myGraphicalParticles[i].myAlpha < myParticleEmitterData->myData.myMidAlpha)
-			//{
-			//	//myGraphicalParticles[i].myAlpha = ;/*myGraphicalParticles[i].myLifeTime / myParticleEmitterData->myData.myParticleLifeTime;*/
+			/*if (myGraphicalParticles[i].myAlpha < myParticleEmitterData->myData.myMidAlpha)
+			{*/
+				//myGraphicalParticles[i].myAlpha = myGraphicalParticles[i].myLifeTime / myParticleEmitterData->myData.myParticleLifeTime;
 			//}
 
 			if (myGraphicalParticles[i].mySize >= 0.f)
@@ -296,7 +378,14 @@ namespace Prism
 
 			myGraphicalParticles[myParticleIndex].myColor = myParticleEmitterData->myData.myStartColor;
 
-			myLogicalParticles[myParticleIndex].myDirection = CalculateDirection(myParticleEmitterData->myEmissionAngle);
+			//myLogicalParticles[myParticleIndex].myDirection = CalculateDirection(myDirection);
+			myLogicalParticles[myParticleIndex].mySpeed = myParticleSpeed;
+			myLogicalParticles[myParticleIndex].myDirection = myDirection;
+			if (myOverrideDirection == false)
+			{
+				myLogicalParticles[myParticleIndex].myDirection = CalculateDirection(myParticleEmitterData->myVariation.x,
+					myParticleEmitterData->myVariation.y);
+			}
 
 #pragma	region		Shape
 			if (myStates[CIRCLE] == TRUE && myStates[HOLLOW] == TRUE)
@@ -451,11 +540,6 @@ namespace Prism
 		return myEntity;
 	}
 
-	CU::Vector2<float> ParticleEmitterInstance::GetPosition()
-	{
-		return CU::Vector2<float>(myOrientation.GetPos().x, myOrientation.GetPos().z);
-	}
-
 	bool ParticleEmitterInstance::GetShouldAlwaysShow()
 	{
 		return myAlwaysShow;
@@ -476,6 +560,12 @@ namespace Prism
 	void ParticleEmitterInstance::SetSize(const CU::Vector3f& aSize)
 	{
 		myParticleEmitterData->myEmitterSize = aSize;
+	}
+
+	void ParticleEmitterInstance::SetDirection(const CU::Vector3<float>& aDirection)
+	{
+		myOverrideDirection = true;
+		myDirection = aDirection;
 	}
 
 	void ParticleEmitterInstance::KillEmitter(float aKillTime)

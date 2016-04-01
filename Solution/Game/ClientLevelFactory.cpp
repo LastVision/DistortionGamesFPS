@@ -13,6 +13,8 @@
 #include <Scene.h>
 #include <TriggerComponent.h>
 #include <XMLReader.h>
+#include <PostMaster.h>
+#include <EmitterMessage.h>
 
 ClientLevelFactory::ClientLevelFactory(const std::string& aLevelListPath)
 	: SharedLevelFactory(aLevelListPath)
@@ -64,6 +66,7 @@ void ClientLevelFactory::ReadLevel(const std::string& aLevelPath)
 	LoadRooms(reader, levelElement);
 	LoadProps(reader, levelElement);
 	LoadDoors(reader, levelElement);
+	LoadParticles(reader, levelElement);
 	//LoadUnits(reader, levelElement);
 	ClientUnitManager::GetInstance()->CreateUnits(myCurrentLevel->GetScene());
 
@@ -330,6 +333,25 @@ void ClientLevelFactory::LoadLights(XMLReader& aReader, tinyxml2::XMLElement* aE
 		light->PerformTransformation(CU::Matrix44f::CreateRotateAroundY(rotation.y));
 
 		static_cast<ClientLevel*>(myCurrentLevel)->AddLight(light);
+	}
+}
+
+void ClientLevelFactory::LoadParticles(XMLReader& aReader, tinyxml2::XMLElement* aElement)
+{
+	for (tinyxml2::XMLElement* entityElement = aReader.FindFirstChild(aElement, "particle"); entityElement != nullptr;
+		entityElement = aReader.FindNextElement(entityElement, "particle"))
+	{
+		std::string particleType;
+		aReader.ForceReadAttribute(entityElement, "type", particleType);
+		particleType = CU::ToLower(particleType);
+
+		tinyxml2::XMLElement* propElement = aReader.ForceFindFirstChild(entityElement, "position");
+		CU::Vector3<float> propPosition;
+		aReader.ForceReadAttribute(propElement, "X", propPosition.x);
+		aReader.ForceReadAttribute(propElement, "Y", propPosition.y);
+		aReader.ForceReadAttribute(propElement, "Z", propPosition.z);
+
+		PostMaster::GetInstance()->SendMessage(EmitterMessage(particleType, propPosition, true));
 	}
 }
 

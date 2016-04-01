@@ -5,6 +5,7 @@
 #include "Entity.h"
 #include <EmitterMessage.h>
 #include <ModelLoader.h>
+#include <NetMessageRayCastRequest.h>
 #include <Instance.h>
 #include "PhysicsComponent.h"
 #include <PostMaster.h>
@@ -99,7 +100,9 @@ bool Pistol::Shoot(const CU::Matrix44<float>& aOrientation)
 		myMuzzleflashTimer = 0.2f;
 		myMuzzleflash[myCurrentMuzzleflash]->SetShouldRender(true);
 		Prism::Audio::AudioInterface::GetInstance()->PostEvent("Play_Pistol", 0);
-		SendRayCastRequest(aOrientation.GetPos(), forward, 500.f, myOwnerEntity->GetGID());
+		//SendRayCastRequest(aOrientation.GetPos(), forward, 500.f, myOwnerEntity->GetGID());
+		SharedNetworkManager::GetInstance()->AddMessage(NetMessageRayCastRequest(aOrientation.GetPos()
+			, forward, int(eNetRayCastType::CLIENT_SHOOT_PISTOL), 500.f, myOwnerEntity->GetGID()));
 		return true;
 	}
 	return false;
@@ -134,7 +137,7 @@ void Pistol::Update(float aDelta)
 	}
 }
 
-void Pistol::HandleRaycast(PhysicsComponent* aComponent, const CU::Vector3<float>& aDirection, const CU::Vector3<float>& aHitPosition, const CU::Vector3<float>&)
+void Pistol::HandleRaycast(PhysicsComponent* aComponent, const CU::Vector3<float>& aDirection, const CU::Vector3<float>& aHitPosition, const CU::Vector3<float>& aHitNormal)
 {
 	if (aComponent != nullptr)
 	{
@@ -143,7 +146,10 @@ void Pistol::HandleRaycast(PhysicsComponent* aComponent, const CU::Vector3<float
 			aComponent->AddForce(aDirection, myForceStrength);
 		}
 
-		PostMaster::GetInstance()->SendMessage(EmitterMessage("Shotgun", aHitPosition));
+
+		CU::Vector3<float> toSend = CU::Reflect<float>(aDirection, aHitNormal);
+
+		PostMaster::GetInstance()->SendMessage(EmitterMessage("Shotgun", aHitPosition, toSend));
 		//aComponent->GetEntity().SendNote<DamageNote>(DamageNote(myDamage));
 
 		//SharedNetworkManager::GetInstance()->AddMessage(NetMessageOnHit(float(myDamage), aComponent->GetEntity().GetGID()));
