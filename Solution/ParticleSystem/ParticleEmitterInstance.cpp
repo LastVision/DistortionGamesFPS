@@ -106,6 +106,7 @@ namespace Prism
 		myDiffColor = (myParticleEmitterData->myData.myEndColor - myParticleEmitterData->myData.myStartColor)
 			/ myParticleEmitterData->myData.myParticleLifeTime;
 
+		myParticleSpeed = myParticleEmitterData->myData.mySpeed;
 		if (myParticleEmitterData->myIsActiveAtStart == true)
 		{
 			myStates[ACTIVE] = TRUE;
@@ -331,13 +332,18 @@ namespace Prism
 		for (int i = 0; i < myLogicalParticles.Size(); ++i)
 		{
 			myGraphicalParticles[i].myLifeTime -= aDeltaTime;
+			
+			if (myParticleEmitterData->myData.mySpeedDelta > 0.f)
+			{
+				myParticleEmitterData->myData.mySpeed += myParticleEmitterData->myData.mySpeedDelta * aDeltaTime;
+			}
 
 			myGraphicalParticles[i].myPosition += (myLogicalParticles[i].myDirection * (myParticleEmitterData->myData.mySpeed * 0.01f)) * aDeltaTime;
 
-			if (myGraphicalParticles[i].myAlpha < myParticleEmitterData->myData.myMidAlpha)
-			{
-				myGraphicalParticles[i].myAlpha = myGraphicalParticles[i].myLifeTime / myParticleEmitterData->myData.myParticleLifeTime;
-			}
+			/*if (myGraphicalParticles[i].myAlpha < myParticleEmitterData->myData.myMidAlpha)
+			{*/
+				//myGraphicalParticles[i].myAlpha = myGraphicalParticles[i].myLifeTime / myParticleEmitterData->myData.myParticleLifeTime;
+			//}
 
 			if (myGraphicalParticles[i].mySize >= 0.f)
 			{
@@ -373,6 +379,7 @@ namespace Prism
 			myGraphicalParticles[myParticleIndex].myColor = myParticleEmitterData->myData.myStartColor;
 
 			//myLogicalParticles[myParticleIndex].myDirection = CalculateDirection(myDirection);
+			myLogicalParticles[myParticleIndex].mySpeed = myParticleSpeed;
 			myLogicalParticles[myParticleIndex].myDirection = myDirection;
 			if (myOverrideDirection == false)
 			{
