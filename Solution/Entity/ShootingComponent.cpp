@@ -165,6 +165,21 @@ Weapon* ShootingComponent::GetWeapon(eWeaponType aWeaponType)
 	return myPistol;
 }
 
+float ShootingComponent::GetWeaponForceStrength(eWeaponType aWeaponType) const
+{
+	switch (aWeaponType)
+	{
+	case eWeaponType::PISTOL:
+		return myPistol->GetForceStrength();
+		break;
+	case eWeaponType::SHOTGUN:
+		return myShotgun->GetForceStrength();
+		break;
+	}
+	DL_ASSERT("Get Weapon force crash!");
+	return 0.f;
+}
+
 void ShootingComponent::ReceiveNote(const UpgradeNote& aNote)
 {
 	if (aNote.myData.myWeaponType == eWeaponType::PISTOL)
