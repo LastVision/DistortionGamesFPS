@@ -16,7 +16,7 @@ public:
 	void AddEndEvent(ActionEvent aEvent);
 
 	const eMissionType GetMissionType() const;
-	virtual void AddValue(int aValue) = 0;
+	virtual void AddValue(int) {};
 
 protected:
 	void SendMissionMessage(ActionEvent anEvent);

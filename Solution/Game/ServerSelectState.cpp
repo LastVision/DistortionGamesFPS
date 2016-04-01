@@ -67,6 +67,9 @@ void ServerSelectState::InitState(StateStackProxy* aStateStackProxy, GUI::Cursor
 
 	myRefreshServerTimer = 0.f;
 	myWaitForResponseTimer = 0.f;
+	myLocalhost.myIp = "127.0.0.1";
+	myLocalhost.myName = "localhost";
+
 	// broadcast request server
 	ClientNetworkManager::GetInstance()->AddMessage(NetMessageRequestServer(), ClientNetworkManager::GetInstance()->GetBroadcastAddress());
 }
@@ -92,7 +95,7 @@ const eStateStatus ServerSelectState::Update(const float& aDeltaTime)
 
 	if (CU::InputWrapper::GetInstance()->KeyDown(DIK_SPACE) == true)
 	{
-		myServer = &myServers[0];
+		myServer = &myLocalhost;
 	}
 
 	if (myServer != nullptr)

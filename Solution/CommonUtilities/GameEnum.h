@@ -12,6 +12,7 @@ enum class eMissionType
 	NONE,
 	KILL_X,
 	DEFEND,
+	EVENT,
 };
 
 

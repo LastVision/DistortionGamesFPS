@@ -1,6 +1,5 @@
 #pragma once
 #include "Mission.h"
-#include <Subscriber.h>
 
 class KillXMission : public Mission
 {

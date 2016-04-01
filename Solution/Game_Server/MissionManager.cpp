@@ -3,6 +3,7 @@
 #include "DefendMission.h"
 #include <DefendTouchMessage.h>
 #include <EnemyKilledMessage.h>
+#include "EventMission.h"
 #include "KillXMission.h"
 #include "Mission.h"
 #include "MissionManager.h"
@@ -42,16 +43,29 @@ void MissionManager::Update(float aDeltaTime)
 
 void MissionManager::SetMission(int aId)
 {
-	myCurrentMission = myMissions[aId];
-	if (myCurrentMission->GetMissionType() == eMissionType::DEFEND)
+	if (myCurrentMission == nullptr)
 	{
-		printf("Defend Mission started \n");
-		//PostMaster::GetInstance()->SendMessage<SendTextToClientsMessage>(SendTextToClientsMessage("Defend Mission started"));
+		myCurrentMission = myMissions[aId];
+		if (myCurrentMission->GetMissionType() == eMissionType::DEFEND)
+		{
+			printf("Defend Mission started \n");
+			//PostMaster::GetInstance()->SendMessage<SendTextToClientsMessage>(SendTextToClientsMessage("Defend Mission started"));
+		}
+		else if (myCurrentMission->GetMissionType() == eMissionType::KILL_X)
+		{
+			printf("KillX Mission started \n");
+			//PostMaster::GetInstance()->SendMessage<SendTextToClientsMessage>(SendTextToClientsMessage("KillX Mission started"));
+		}
+		else if (myCurrentMission->GetMissionType() == eMissionType::EVENT)
+		{
+			printf("Event Mission started \n");
+			//PostMaster::GetInstance()->SendMessage<SendTextToClientsMessage>(SendTextToClientsMessage("KillX Mission started"));
+		}
 	}
-	else if (myCurrentMission->GetMissionType() == eMissionType::KILL_X)
+	else
 	{
-		printf("KillX Mission started \n");
-		//PostMaster::GetInstance()->SendMessage<SendTextToClientsMessage>(SendTextToClientsMessage("KillX Mission started"));
+		int apa;
+		apa = 5;
 	}
 }
 
@@ -123,6 +137,11 @@ void MissionManager::LoadMissions(const std::string& aMissionXMLPath)
 			DefendMission* mission = new DefendMission(missionType, secondsToDefend, shouldLoopMissionEvents);
 			myMissions[missionId] = mission;
 		}
+		else if (missionType == "event")
+		{
+			EventMission* mission = new EventMission(missionType);
+			myMissions[missionId] = mission;
+		}
 		else
 		{
 			DL_ASSERT("UNKNOWN MISSIONTYPE!");
@@ -140,7 +159,7 @@ void MissionManager::LoadMissions(const std::string& aMissionXMLPath)
 			//reader.ForceReadAttribute(eventElement, "timeBeforeStarting", timeBeforeStart);
 			//
 			//eActionEventType actionType = GetType(eventType);
-		
+
 			myMissions[missionId]->AddStartEvent(CreateActionEvent(eventElement, &reader));
 		}
 
@@ -208,6 +227,7 @@ ActionEvent MissionManager::CreateActionEvent(tinyxml2::XMLElement* anEventEleme
 		aReader->ReadAttribute(anEventElement, "positionz", actionEvent.myPosition.z);
 		break;
 	}
+	actionEvent.myResetTime = actionEvent.myTimeBeforeStarting;
 
 	return actionEvent;
 }

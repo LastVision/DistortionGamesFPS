@@ -2,6 +2,7 @@
 #include <GameEnum.h>
 #include <unordered_map>
 #include "ActionEvent.h"
+#include <Subscriber.h>
 
 class Mission;
 class XMLReader;

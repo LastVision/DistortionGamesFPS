@@ -299,6 +299,7 @@ void FirstPersonRenderComponent::Render()
 			newRenderPos.y += windowSize.y;
 			newRenderPos.y = fmaxf(0.f, fminf(newRenderPos.y, windowSize.y));
 			myMarker->Render({ newRenderPos.x, newRenderPos.y });
+			Prism::Engine::GetInstance()->PrintText(std::to_string(int(toBuddy)) + " m", { newRenderPos.x, newRenderPos.y }, Prism::eTextType::RELEASE_TEXT);
 		}
 	}
 
