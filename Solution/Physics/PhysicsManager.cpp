@@ -225,7 +225,7 @@ namespace Prism
 				SetPhysicsDone();
 				//WaitForSwap();
 			}
-			myTimerManager->CapFrameRate(60.f);
+			std::this_thread::sleep_for(std::chrono::milliseconds(16));
 		}
 	}
 #endif
