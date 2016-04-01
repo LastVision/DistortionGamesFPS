@@ -681,7 +681,7 @@ namespace Prism
 
 	void ModelLoader::CreateText(LoadData& someData)
 	{
-		someData.myTextProxy->SetText(new Text(*someData.myFontProxyToUse, someData.myIs3dText));
+		someData.myTextProxy->SetText(new Text(*someData.myFontProxyToUse, someData.myIs3dText, someData.myShouldFollowCamera));
 	}
 
 	void ModelLoader::GetHierarchyToBone(LoadData& someData)
