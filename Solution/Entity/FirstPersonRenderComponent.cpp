@@ -10,6 +10,7 @@
 #include "HealthComponent.h"
 #include <Instance.h>
 #include "InputComponent.h"
+#include <ModelProxy.h>
 #include <ModelLoader.h>
 #include <NetMessageDisplayMarker.h>
 #include <NetMessageDisplayRespawn.h>
@@ -38,8 +39,11 @@ FirstPersonRenderComponent::FirstPersonRenderComponent(Entity& aEntity, Prism::S
 	, myScene(aScene)
 	, myRenderMarker(false)
 	, myPressETexts(16)
+	, myPistolHasUpdated(false)
+	, myShotgunHasUpdated(false)
+	, myGrenadeLauncherHasUpdated(false)
 {
-	bool shouldUseSpecialFoV = false;
+	bool shouldUseSpecialFoV = true;
 	CU::Vector2<float> size(128.f, 128.f);
 	myCrosshair = Prism::ModelLoader::GetInstance()->LoadSprite("Data/Resource/Texture/UI/T_crosshair.dds", size, size * 0.5f);
 	CU::Vector2<float> damageSize(Prism::Engine::GetInstance()->GetWindowSize().x, Prism::Engine::GetInstance()->GetWindowSize().y);
@@ -89,32 +93,32 @@ FirstPersonRenderComponent::FirstPersonRenderComponent(Entity& aEntity, Prism::S
 	SharedNetworkManager::GetInstance()->Subscribe(eNetMessageType::DISPLAY_RESPAWN, this);
 	SharedNetworkManager::GetInstance()->Subscribe(eNetMessageType::PRESS_E_TEXT, this);
 
-	Prism::ModelProxy* pistolModel = Prism::ModelLoader::GetInstance()->LoadModelAnimated("Data/Resource/Model/First_person/Pistol/SK_pistol_idle.fbx", "Data/Resource/Shader/S_effect_pbl_animated.fx");
-	myPistolModel = new Prism::Instance(*pistolModel, myInputComponentEyeOrientation, shouldUseSpecialFoV);
+	myPistolProxy = Prism::ModelLoader::GetInstance()->LoadModelAnimated("Data/Resource/Model/First_person/Pistol/SK_pistol_idle.fbx", "Data/Resource/Shader/S_effect_pbl_animated.fx");
+	myPistolModel = new Prism::Instance(*myPistolProxy, myInputComponentEyeOrientation, shouldUseSpecialFoV);
 	AddWeaponAnimation(ePlayerState::PISTOL_IDLE, "Data/Resource/Model/First_person/Pistol/SK_pistol_idle.fbx", true, true);
 	AddWeaponAnimation(ePlayerState::PISTOL_HOLSTER, "Data/Resource/Model/First_person/Pistol/SK_pistol_holster.fbx", false, true);
 	AddWeaponAnimation(ePlayerState::PISTOL_DRAW, "Data/Resource/Model/First_person/Pistol/SK_pistol_draw.fbx", false, true);
 	AddWeaponAnimation(ePlayerState::PISTOL_RELOAD, "Data/Resource/Model/First_person/Pistol/SK_pistol_reload.fbx", false, true);
 	AddWeaponAnimation(ePlayerState::PISTOL_FIRE, "Data/Resource/Model/First_person/Pistol/SK_pistol_fire.fbx", false, true);
-	myPistolModel->Update(1.f / 30.f);
-
-	Prism::ModelProxy* shotgunModel = Prism::ModelLoader::GetInstance()->LoadModelAnimated("Data/Resource/Model/First_person/Shotgun/SK_shotgun_idle.fbx", "Data/Resource/Shader/S_effect_pbl_animated.fx");
-	myShotgunModel = new Prism::Instance(*shotgunModel, myInputComponentEyeOrientation, shouldUseSpecialFoV);
+	//myPistolModel->Update(1.f / 30.f);
+	
+	myShotgunProxy = Prism::ModelLoader::GetInstance()->LoadModelAnimated("Data/Resource/Model/First_person/Shotgun/SK_shotgun_idle.fbx", "Data/Resource/Shader/S_effect_pbl_animated.fx");
+	myShotgunModel = new Prism::Instance(*myShotgunProxy, myInputComponentEyeOrientation, shouldUseSpecialFoV);
 	AddWeaponAnimation(ePlayerState::SHOTGUN_IDLE, "Data/Resource/Model/First_person/Shotgun/SK_shotgun_idle.fbx", true, true);
 	AddWeaponAnimation(ePlayerState::SHOTGUN_HOLSTER, "Data/Resource/Model/First_person/Shotgun/SK_shotgun_holster.fbx", false, true);
 	AddWeaponAnimation(ePlayerState::SHOTGUN_DRAW, "Data/Resource/Model/First_person/Shotgun/SK_shotgun_draw.fbx", false, true);
 	AddWeaponAnimation(ePlayerState::SHOTGUN_RELOAD, "Data/Resource/Model/First_person/Shotgun/SK_shotgun_reload.fbx", false, true);
 	AddWeaponAnimation(ePlayerState::SHOTGUN_FIRE, "Data/Resource/Model/First_person/Shotgun/SK_shotgun_fire.fbx", false, true);
-	myShotgunModel->Update(1.f / 30.f);
+	//myShotgunModel->Update(1.f / 30.f);
 
-	Prism::ModelProxy* grenadeModel = Prism::ModelLoader::GetInstance()->LoadModelAnimated("Data/Resource/Model/First_person/GrenadeLauncher/SK_grenade_launcher_idle.fbx", "Data/Resource/Shader/S_effect_pbl_animated.fx");
-	myGrenadeLauncherModel = new Prism::Instance(*grenadeModel, myInputComponentEyeOrientation, shouldUseSpecialFoV);
+	myGrenadeLauncherProxy = Prism::ModelLoader::GetInstance()->LoadModelAnimated("Data/Resource/Model/First_person/GrenadeLauncher/SK_grenade_launcher_idle.fbx", "Data/Resource/Shader/S_effect_pbl_animated.fx");
+	myGrenadeLauncherModel = new Prism::Instance(*myGrenadeLauncherProxy, myInputComponentEyeOrientation, shouldUseSpecialFoV);
 	AddWeaponAnimation(ePlayerState::GRENADE_LAUNCHER_IDLE, "Data/Resource/Model/First_person/GrenadeLauncher/SK_grenade_launcher_idle.fbx", true, true);
 	AddWeaponAnimation(ePlayerState::GRENADE_LAUNCHER_HOLSTER, "Data/Resource/Model/First_person/GrenadeLauncher/SK_grenade_launcher_holster.fbx", false, true);
 	AddWeaponAnimation(ePlayerState::GRENADE_LAUNCHER_DRAW, "Data/Resource/Model/First_person/GrenadeLauncher/SK_grenade_launcher_draw.fbx", false, true);
 	AddWeaponAnimation(ePlayerState::GRENADE_LAUNCHER_RELOAD, "Data/Resource/Model/First_person/GrenadeLauncher/SK_grenade_launcher_reload.fbx", false, true);
 	AddWeaponAnimation(ePlayerState::GRENADE_LAUNCHER_FIRE, "Data/Resource/Model/First_person/GrenadeLauncher/SK_grenade_launcher_fire.fbx", false, true);
-	myGrenadeLauncherModel->Update(1.f / 30.f);
+	//myGrenadeLauncherModel->Update(1.f / 30.f);
 
 	myCurrentWeaponModel = myPistolModel;
 	aScene->AddInstance(myCurrentWeaponModel, eObjectRoomType::ALWAYS_RENDER);
@@ -141,6 +145,9 @@ FirstPersonRenderComponent::~FirstPersonRenderComponent()
 	SAFE_DELETE(myPistolModel);
 	SAFE_DELETE(myShotgunModel);
 	SAFE_DELETE(myGrenadeLauncherModel);
+	SAFE_DELETE(myPistolProxy);
+	SAFE_DELETE(myShotgunProxy);
+	SAFE_DELETE(myGrenadeLauncherProxy);
 	SAFE_DELETE(myMarker);
 	myCoOpPositions.RemoveAll();
 	myCoOpRespawns.RemoveAll();
@@ -149,6 +156,22 @@ FirstPersonRenderComponent::~FirstPersonRenderComponent()
 
 void FirstPersonRenderComponent::Update(float aDelta)
 {
+	if (myPistolProxy->IsLoaded() == true && myPistolHasUpdated == false)
+	{
+		myPistolHasUpdated = true;
+		myPistolModel->Update(0.f);
+	}
+	if (myShotgunProxy->IsLoaded() == true && myShotgunHasUpdated == false)
+	{
+		myShotgunHasUpdated = true;
+		myShotgunModel->Update(0.f);
+	}
+	if (myGrenadeLauncherProxy->IsLoaded() == true && myGrenadeLauncherHasUpdated == false)
+	{
+		myGrenadeLauncherHasUpdated = true;
+		myGrenadeLauncherModel->Update(0.f);
+	}
+
 	if (myEntity.GetState() == eEntityState::DIE && myHasDied == false)
 	{
 		myHasDied = true;
