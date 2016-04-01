@@ -5,6 +5,7 @@
 #include "Entity.h"
 #include <EmitterMessage.h>
 #include <ModelLoader.h>
+#include <NetMessageRayCastRequest.h>
 #include <Instance.h>
 #include "PhysicsComponent.h"
 #include <PostMaster.h>
@@ -99,7 +100,9 @@ bool Pistol::Shoot(const CU::Matrix44<float>& aOrientation)
 		myMuzzleflashTimer = 0.2f;
 		myMuzzleflash[myCurrentMuzzleflash]->SetShouldRender(true);
 		Prism::Audio::AudioInterface::GetInstance()->PostEvent("Play_Pistol", 0);
-		SendRayCastRequest(aOrientation.GetPos(), forward, 500.f, myOwnerEntity->GetGID());
+		//SendRayCastRequest(aOrientation.GetPos(), forward, 500.f, myOwnerEntity->GetGID());
+		SharedNetworkManager::GetInstance()->AddMessage(NetMessageRayCastRequest(aOrientation.GetPos()
+			, forward, int(eNetRayCastType::CLIENT_SHOOT_PISTOL), 500.f, myOwnerEntity->GetGID()));
 		return true;
 	}
 	return false;

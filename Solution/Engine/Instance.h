@@ -20,7 +20,7 @@ namespace Prism
 	class Instance
 	{
 	public:
-		Instance(ModelProxy& aModel, const CU::Matrix44<float>& anOrientation);
+		Instance(ModelProxy& aModel, const CU::Matrix44<float>& anOrientation, bool aShouldUseSpecialFoV = false);
 		~Instance();
 
 		void Update(float aDelta);
@@ -72,6 +72,8 @@ namespace Prism
 		bool myShouldRender;
 
 		bool myExistInMultipleRooms;
+
+		bool myShouldUseSpecialFoV;
 	};
 
 	inline const CU::Matrix44f& Instance::GetOrientation() const

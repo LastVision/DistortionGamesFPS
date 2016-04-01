@@ -27,6 +27,7 @@ public:
 	static eComponentType GetTypeStatic();
 	eComponentType GetType() override;
 
+	float GetWeaponForceStrength(eWeaponType aWeaponType) const;
 private:
 	Weapon* myCurrentWeapon;
 	Pistol* myPistol;

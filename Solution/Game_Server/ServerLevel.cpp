@@ -114,7 +114,7 @@ void ServerLevel::Init(const std::string& aMissionXMLPath)
 	ServerProjectileManager::GetInstance()->CreateBullets(nullptr);
 	ServerProjectileManager::GetInstance()->CreateGrenades(nullptr);
 
-	
+
 }
 
 void ServerLevel::Update(const float aDeltaTime)
@@ -217,17 +217,20 @@ void ServerLevel::ReceiveNetworkMessage(const NetMessagePressE& aMessage, const 
 {
 	for (int i = 0; i < myPlayersInPressableTriggers[aMessage.myGID].Size(); ++i)
 	{
-		Trigger(*myPlayersInPressableTriggers[aMessage.myGID][i], *myPlayers[aMessage.myGID - 1], true);
-		myPlayersInPressableTriggers[aMessage.myGID][i]->
-			SendNote<CollisionNote>(CollisionNote(myPlayers[aMessage.myGID - 1], true));
+		if (myPlayersInPressableTriggers[aMessage.myGID][i]->GetComponent<PhysicsComponent>()->IsInScene() == true)
+		{
+			Trigger(*myPlayersInPressableTriggers[aMessage.myGID][i], *myPlayers[aMessage.myGID - 1], true);
+			myPlayersInPressableTriggers[aMessage.myGID][i]->
+				SendNote<CollisionNote>(CollisionNote(myPlayers[aMessage.myGID - 1], true));
+		}
 	}
 }
 
-void ServerLevel::ReceiveNetworkMessage(const NetMessageRayCastRequest& aMessage, const sockaddr_in& )
+void ServerLevel::ReceiveNetworkMessage(const NetMessageRayCastRequest& aMessage, const sockaddr_in&)
 {
-	if (static_cast<eNetRayCastType>(aMessage.myRayCastType) == eNetRayCastType::CLIENT_SHOOT)
+	if (static_cast<eNetRayCastType>(aMessage.myRayCastType) == eNetRayCastType::CLIENT_SHOOT_PISTOL ||
+		static_cast<eNetRayCastType>(aMessage.myRayCastType) == eNetRayCastType::CLIENT_SHOOT_SHOTGUN)
 	{
-		//Prism::PhysicsInterface::GetInstance()->RayCast(aMessage.myPosition, aMessage.myDirection, aMessage.myMaxLength, myPressedERayCastHandler, myPlayers[aMessage.myGID - 1]->GetComponent<PhysicsComponent>());
 		ServerNetworkManager::GetInstance()->AddMessage(aMessage);
 	}
 	else
@@ -246,7 +249,7 @@ void ServerLevel::ReceiveMessage(const SetActiveMessage& aMessage)
 	if (aMessage.myShouldActivate == true)
 	{
 		myActiveEntitiesMap[aMessage.myGID]->GetComponent<PhysicsComponent>()->AddToScene();
-		if (myActiveEntitiesMap[aMessage.myGID]->GetType() == eEntityType::TRIGGER 
+		if (myActiveEntitiesMap[aMessage.myGID]->GetType() == eEntityType::TRIGGER
 			&& myActiveEntitiesMap[aMessage.myGID]->GetComponent<TriggerComponent>()->IsPressable() == true)
 		{
 			ServerNetworkManager::GetInstance()->AddMessage(
