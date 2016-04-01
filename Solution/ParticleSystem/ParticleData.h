@@ -23,7 +23,9 @@ struct ParticleData
 
 	float myStartAlpha;
 	float myMidAlpha;
+	float myAlphaDelta;
 	float mySpeed;
+	float mySpeedDelta;
 	bool myHasRandomStartRotation;
 
 };

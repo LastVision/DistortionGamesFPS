@@ -74,10 +74,11 @@ namespace Prism
 		float myEmissionTime;
 		float myEmitterLife;
 		float myParticleScaling;
+		float myParticleSpeed;
 
 		int myParticleIndex;
 		int myLiveParticleCount;
-
+		
 		bool myAlwaysShow;
 		bool myHasEmitted;
 		bool myOverrideDirection;

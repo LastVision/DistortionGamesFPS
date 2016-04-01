@@ -112,10 +112,15 @@ namespace Prism
 		element = read.ForceFindFirstChild(emitter, "ParticleAlphaStart");
 		read.ReadAttribute(element, "value", myData.myStartAlpha);
 
+		element = read.ForceFindFirstChild(emitter, "ParticleAlphaDelta");
+		read.ReadAttribute(element, "value", myData.myAlphaDelta);
+
 		element = read.ForceFindFirstChild(emitter, "ParticleSpeed");
 		read.ReadAttribute(element, "value", myData.mySpeed);
+		myData.mySpeed *= 0.01f;
 
-
+		element = read.ForceFindFirstChild(emitter, "ParticleSpeedDelta");
+		read.ReadAttribute(element, "value", myData.mySpeedDelta);
 
 		read.CloseDocument();
 
