@@ -152,7 +152,7 @@ void AIComponent::Move(float aDelta, Entity* aClosestPlayer)
 			myEntity.SetState(eEntityState::WALK);
 			SharedNetworkManager::GetInstance()->AddMessage<NetMessageEntityState>(NetMessageEntityState(myEntity.GetState(), myEntity.GetGID()));
 		}
-
+		movement.y = -0.5f;
 		Prism::PhysicsInterface::GetInstance()->Move(myEntity.GetComponent<PhysicsComponent>()->GetCapsuleControllerId(), movement, 0.05f, aDelta);
 
 		SetOrientation(CU::GetNormalized(movement), aDelta);
