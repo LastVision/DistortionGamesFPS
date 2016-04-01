@@ -4,6 +4,7 @@
 #include <NetMessageText.h>
 #include <SendTextToClientsMessage.h>
 #include "ServerNetworkManager.h"
+#include <PollingStation.h>
 #include <PostMaster.h>
 
 DefendMission::DefendMission(const std::string& aMissionType, float aSecondsToDefend, bool aShouldLoopMissionEvents)
@@ -82,6 +83,7 @@ bool DefendMission::Update(float aDeltaTime)
 
 	//PostMaster::GetInstance()->SendMessage<SendTextToClientsMessage>(SendTextToClientsMessage("Mission complete"));
 	//ServerNetworkManager::GetInstance()->AddMessage(NetMessageDisplayMarker({ 0.f, 0.f, 0.f }, false));
+	PollingStation::GetInstance()->ResetEnemyTargetPosition();
 	return true;
 }
 
