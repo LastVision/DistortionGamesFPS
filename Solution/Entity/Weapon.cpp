@@ -1,6 +1,4 @@
 #include "stdafx.h"
-#include <NetMessageRayCastRequest.h>
-#include <SharedNetworkManager.h>
 #include "UpgradeComponentData.h"
 #include "Weapon.h"
 
@@ -35,9 +33,4 @@ void Weapon::Upgrade(const UpgradeComponentData& aData)
 	myClipSize += aData.myClipSizeModifier;
 	myDamage += aData.myDamageModifier;
 	myShootTime += aData.myShootTimeModifier;
-}
-
-void Weapon::SendRayCastRequest(const CU::Vector3<float>& aPosition, const CU::Vector3<float>& aDirection, float aMaxLength, int aGID)
-{
-	SharedNetworkManager::GetInstance()->AddMessage(NetMessageRayCastRequest(aPosition, aDirection, int(eNetRayCastType::CLIENT_SHOOT), aMaxLength, aGID));
 }

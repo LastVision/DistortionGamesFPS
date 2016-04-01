@@ -5,7 +5,8 @@ class NetMessageRayCastRequest : public NetImportantMessage
 {
 public:
 	NetMessageRayCastRequest();
-	NetMessageRayCastRequest(const CU::Vector3<float>& aPosition, const CU::Vector3<float>& aDirection, int aRayCastType, float aMaxLength, int aGID);
+	NetMessageRayCastRequest(const CU::Vector3<float>& aPosition, const CU::Vector3<float>& aDirection, int aRayCastType
+		, float aMaxLength, int aGID);
 
 	CU::Vector3<float> myPosition;
 	CU::Vector3<float> myDirection;
@@ -25,7 +26,8 @@ inline NetMessageRayCastRequest::NetMessageRayCastRequest()
 {
 }
 
-inline NetMessageRayCastRequest::NetMessageRayCastRequest(const CU::Vector3<float>& aPosition, const CU::Vector3<float>& aDirection, int aRayCastType, float aMaxLength, int aGID)
+inline NetMessageRayCastRequest::NetMessageRayCastRequest(const CU::Vector3<float>& aPosition, const CU::Vector3<float>& aDirection, int aRayCastType
+	, float aMaxLength, int aGID)
 	: NetImportantMessage(eNetMessageType::RAY_CAST_REQUEST)
 	, myPosition(aPosition)
 	, myDirection(aDirection)
