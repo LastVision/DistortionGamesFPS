@@ -13,7 +13,7 @@
 
 namespace Prism
 {
-	Instance::Instance(ModelProxy& aModel, const CU::Matrix44<float>& anOrientation)
+	Instance::Instance(ModelProxy& aModel, const CU::Matrix44<float>& anOrientation, bool aShouldUseSpecialFoV)
 		: myProxy(aModel)
 		, myOrientation(anOrientation)
 		, myScale({ 1, 1, 1 })
@@ -22,6 +22,7 @@ namespace Prism
 		, myTotalTime(0.f)
 		, myShouldRender(true)
 		, myExistInMultipleRooms(false)
+		, myShouldUseSpecialFoV(aShouldUseSpecialFoV)
 	{
 	}
 
@@ -58,7 +59,14 @@ namespace Prism
 	{
 		if (myShouldRender == true && myProxy.IsLoaded())
 		{
-			myProxy.GetEffect()->SetViewProjectionMatrix(aCamera.GetViewProjection());
+			if (myShouldUseSpecialFoV == true)
+			{
+				myProxy.GetEffect()->SetViewProjectionMatrix(aCamera.GetSpecialFoVViewProjection());
+			}
+			else
+			{
+				myProxy.GetEffect()->SetViewProjectionMatrix(aCamera.GetViewProjection());
+			}
 			myProxy.GetEffect()->SetScaleVector(myScale);
 			myProxy.GetEffect()->SetCameraPosition(aCamera.GetOrientation().GetPos());
 
@@ -83,7 +91,14 @@ namespace Prism
 			{
 				if (aCamera.GetFrustum().Inside(myOrientation.GetPos(), myProxy.myModelAnimated->GetRadius()) == true)
 				{
-					myProxy.GetEffect()->SetViewProjectionMatrix(aCamera.GetViewProjection());
+					if (myShouldUseSpecialFoV == true)
+					{
+						myProxy.GetEffect()->SetViewProjectionMatrix(aCamera.GetSpecialFoVViewProjection());
+					}
+					else
+					{
+						myProxy.GetEffect()->SetViewProjectionMatrix(aCamera.GetViewProjection());
+					}
 					myProxy.GetEffect()->SetScaleVector(myScale);
 					myProxy.GetEffect()->SetCameraPosition(aCamera.GetOrientation().GetPos());
 

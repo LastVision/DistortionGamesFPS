@@ -43,6 +43,7 @@ namespace Prism
 	{
 		Prism::Engine::GetInstance()->SetRasterizeState(eRasterizer::NO_CULLING);
 		myEffect->SetWorldMatrix(aWorld);
+		//myEffect->SetViewProjectionMatrix(aCamera.GetSpecialFoVViewProjection());
 		myEffect->SetViewProjectionMatrix(aCamera.GetViewProjection());
 		myEffect->SetCameraPosition(aCamera.GetOrientation().GetPos());
 		//BaseModel::Render();
