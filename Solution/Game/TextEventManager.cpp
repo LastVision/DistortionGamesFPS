@@ -16,7 +16,7 @@ TextEventManager::TextEventManager(const Prism::Camera* aCamera)
 	for (int i = 0; i < myNotifications.GetCapacity(); i++)
 	{
 		NotificationText* notification = new NotificationText;
-		notification->my3dText = Prism::ModelLoader::GetInstance()->LoadText(Prism::Engine::GetInstance()->GetFont(Prism::eFont::DIALOGUE), true);
+		notification->my3dText = Prism::ModelLoader::GetInstance()->LoadText(Prism::Engine::GetInstance()->GetFont(Prism::eFont::DIALOGUE), true, true);
 		notification->my3dText->Rotate3dText(-0.8f);
 		notification->my3dText->SetOffset(myStartOffset);
 		notification->myCurrentText = "";
@@ -30,7 +30,7 @@ TextEventManager::TextEventManager(const Prism::Camera* aCamera)
 	myMissionOffset.x = 0.f;
 	myMissionOffset.z += 0.5f;
 	myMissionOffset.y -= 0.1f;
-	myMissionText = Prism::ModelLoader::GetInstance()->LoadText(Prism::Engine::GetInstance()->GetFont(Prism::eFont::DIALOGUE), true);
+	myMissionText = Prism::ModelLoader::GetInstance()->LoadText(Prism::Engine::GetInstance()->GetFont(Prism::eFont::DIALOGUE), true, true);
 	myMissionText->Rotate3dText(0.8f);
 	myMissionText->SetOffset(myMissionOffset);
 	myMissionText->SetText("");

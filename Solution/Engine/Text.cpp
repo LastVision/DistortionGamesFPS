@@ -7,9 +7,10 @@
 
 #include "Engine.h"
 
-Prism::Text::Text(const FontProxy& aFont, bool aIs3d)
+Prism::Text::Text(const FontProxy& aFont, bool aIs3d, bool aShouldFollowCamera)
 	: myFont(aFont)
 	, myColor(1.f, 1.f, 1.f, 1.f)
+	, myShouldFollowCamera(aShouldFollowCamera)
 {
 	if (aIs3d == false)
 	{
@@ -98,7 +99,14 @@ void Prism::Text::Render(const Camera* aCamera, const CU::Matrix44<float>& aOrie
 	blendFactor[3] = 0.f;
 
 	myEffect->SetBlendState(myBlendState, blendFactor);
-	myEffect->SetWorldMatrix(aOrientation * aCamera->GetOrientation());
+	if (myShouldFollowCamera == true)
+	{
+		myEffect->SetWorldMatrix(aOrientation * aCamera->GetOrientation());
+	}
+	else
+	{
+		myEffect->SetWorldMatrix(aOrientation);
+	}
 	myEffect->SetViewMatrix(CU::InverseSimple(aCamera->GetOrientation()));
 	myEffect->SetProjectionMatrix(aCamera->GetProjection());
 	myEffect->SetViewProjectionMatrix(aCamera->GetViewProjection());

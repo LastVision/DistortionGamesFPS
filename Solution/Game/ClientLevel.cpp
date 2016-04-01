@@ -94,10 +94,15 @@ ClientLevel::ClientLevel()
 	};
 	myEmitterManager = new EmitterManager();
 
+	myTestText = Prism::ModelLoader::GetInstance()->LoadText(Prism::Engine::GetInstance()->GetFont(Prism::eFont::DIALOGUE), true, false);
+
+	myTestText->SetOffset({ 0.f, 1.f, 10.f });
+
 }
 
 ClientLevel::~ClientLevel()
 {
+	SAFE_DELETE(myTestText);
 #ifdef THREAD_PHYSICS
 	Prism::PhysicsInterface::GetInstance()->ShutdownThread();
 #endif
@@ -215,6 +220,16 @@ void ClientLevel::Update(const float aDeltaTime)
 
 	DebugMusic();
 
+	if (Prism::ModelLoader::GetInstance()->IsLoading() == false && myTestText->IsLoaded() == true)
+	{
+		static float totalTime = 0.f;
+		totalTime += aDeltaTime;
+		myTestText->SetText("Press W to walk forward.");
+		myTestText->SetColor({ 0.f, abs(cos(totalTime)), abs(cos(-totalTime)), 1.f });
+		myTestText->SetOffset({ 0.f, 1.f + (cos(totalTime * 2.f) * 0.5f), 10.f });
+		//myTestText->Rotate3dText((cos(totalTime * 2.f) * 0.5f));
+	}
+
 
 	Prism::PhysicsInterface::GetInstance()->EndFrame();
 
@@ -241,6 +256,7 @@ void ClientLevel::Render()
 		//myPlayer->GetComponent<ShootingComponent>()->Render();
 
 		myTextManager->Render();
+		myTestText->Render(myScene->GetCamera());
 	}
 }
 

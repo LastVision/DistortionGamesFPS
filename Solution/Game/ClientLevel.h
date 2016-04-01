@@ -76,6 +76,8 @@ private:
 
 	float myForceStrengthPistol;
 	float myForceStrengthShotgun;
+
+	Prism::TextProxy* myTestText;
 };
 
 inline Prism::Scene* ClientLevel::GetScene()
