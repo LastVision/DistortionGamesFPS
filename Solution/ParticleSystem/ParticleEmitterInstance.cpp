@@ -29,7 +29,7 @@ namespace Prism
 		int particleCount = static_cast<int>(myParticleEmitterData->myParticlesPerEmitt * myParticleEmitterData->myData.myParticleLifeTime / myParticleEmitterData->myEmissionRate) + 1;
 
 
-		DL_DEBUG(("Loading :" + myEmitterPath).c_str());
+		DL_PRINT(("Loading :" + myEmitterPath).c_str());
 		DL_ASSERT_EXP(anAllowManyParticles == true || particleCount <= 201, "Can't have more than 201 particles in an emitter!");
 
 		myGraphicalParticles.Init(particleCount);
@@ -334,10 +334,10 @@ namespace Prism
 
 			myGraphicalParticles[i].myPosition += (myLogicalParticles[i].myDirection * (myParticleEmitterData->myData.mySpeed * 0.01f)) * aDeltaTime;
 
-			//if (myGraphicalParticles[i].myAlpha < myParticleEmitterData->myData.myMidAlpha)
-			//{
-			//	//myGraphicalParticles[i].myAlpha = ;/*myGraphicalParticles[i].myLifeTime / myParticleEmitterData->myData.myParticleLifeTime;*/
-			//}
+			if (myGraphicalParticles[i].myAlpha < myParticleEmitterData->myData.myMidAlpha)
+			{
+				myGraphicalParticles[i].myAlpha = myGraphicalParticles[i].myLifeTime / myParticleEmitterData->myData.myParticleLifeTime;
+			}
 
 			if (myGraphicalParticles[i].mySize >= 0.f)
 			{
@@ -372,31 +372,13 @@ namespace Prism
 
 			myGraphicalParticles[myParticleIndex].myColor = myParticleEmitterData->myData.myStartColor;
 
-			myLogicalParticles[myParticleIndex].myDirection = CalculateDirection(myDirection);
+			//myLogicalParticles[myParticleIndex].myDirection = CalculateDirection(myDirection);
+			myLogicalParticles[myParticleIndex].myDirection = myDirection;
 			if (myOverrideDirection == false)
 			{
 				myLogicalParticles[myParticleIndex].myDirection = CalculateDirection(myParticleEmitterData->myVariation.x,
 					myParticleEmitterData->myVariation.y);
 			}
-
-			/*if (myLogicalParticles[myParticleIndex].myDirection.x - FLT_EPSILON < 0.f + FLT_EPSILON &&
-				myLogicalParticles[myParticleIndex].myDirection.y - FLT_EPSILON < 0.f + FLT_EPSILON &&
-				myLogicalParticles[myParticleIndex].myDirection.z - FLT_EPSILON < 0.f + FLT_EPSILON)
-				{
-				int a = 3;
-				if (rand() % a == 0)
-				{
-				myLogicalParticles[myParticleIndex].myDirection.x
-				}
-				if (rand() % a == 1)
-				{
-
-				}
-				if (rand() % a == 2)
-				{
-
-				}
-				}*/
 
 #pragma	region		Shape
 			if (myStates[CIRCLE] == TRUE && myStates[HOLLOW] == TRUE)

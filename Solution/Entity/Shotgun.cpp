@@ -65,7 +65,7 @@ void Shotgun::Update(float aDelta)
 	myShootTimer -= aDelta;
 }
 
-void Shotgun::HandleRaycast(PhysicsComponent* aComponent, const CU::Vector3<float>& aDirection, const CU::Vector3<float>& aHitPosition, const CU::Vector3<float>&)
+void Shotgun::HandleRaycast(PhysicsComponent* aComponent, const CU::Vector3<float>& aDirection, const CU::Vector3<float>& aHitPosition, const CU::Vector3<float>& aHitNormal)
 {
 	if (aComponent != nullptr)
 	{

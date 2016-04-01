@@ -356,6 +356,7 @@ void ClientLevel::ReceiveNetworkMessage(const NetMessageExplosion& aMessage, con
 {
 	ClientProjectileManager::GetInstance()->RequestExplosion(aMessage.myPosition, aMessage.myGID);
 	ClientProjectileManager::GetInstance()->KillGrenade(aMessage.myGID - 1);
+	PostMaster::GetInstance()->SendMessage(EmitterMessage("Explosion", aMessage.myPosition,true));
 }
 
 void ClientLevel::ReceiveNetworkMessage(const NetMessageRayCastRequest& aMessage, const sockaddr_in&)

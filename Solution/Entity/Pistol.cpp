@@ -134,7 +134,7 @@ void Pistol::Update(float aDelta)
 	}
 }
 
-void Pistol::HandleRaycast(PhysicsComponent* aComponent, const CU::Vector3<float>& aDirection, const CU::Vector3<float>& aHitPosition, const CU::Vector3<float>&)
+void Pistol::HandleRaycast(PhysicsComponent* aComponent, const CU::Vector3<float>& aDirection, const CU::Vector3<float>& aHitPosition, const CU::Vector3<float>& aHitNormal)
 {
 	if (aComponent != nullptr)
 	{
@@ -144,7 +144,7 @@ void Pistol::HandleRaycast(PhysicsComponent* aComponent, const CU::Vector3<float
 		}
 
 
-		CU::Vector3<float> toSend = CU::Reflect(aDirection, aHitNormal);
+		CU::Vector3<float> toSend = CU::Reflect<float>(aDirection, aHitNormal);
 
 		PostMaster::GetInstance()->SendMessage(EmitterMessage("Shotgun", aHitPosition, toSend));
 		//aComponent->GetEntity().SendNote<DamageNote>(DamageNote(myDamage));
