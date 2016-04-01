@@ -15,7 +15,7 @@ namespace Prism
 		, myLightMesh(nullptr)
 	{
 		ModelProxy* model = ModelLoader::GetInstance()->LoadModel("Data/Resource/Model/Light_mesh/SM_sphere.fbx"
-			, "Data/Resource/Shader/S_effect_deferred_light_mesh.fx");
+			, "Data/Resource/Shader/S_effect_deferred_light_mesh_point.fx");
 		myLightMesh = new Instance(*model, myOrientation);
 	}
 

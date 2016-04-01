@@ -1,5 +1,4 @@
 #include "stdafx.h"
-
 #include <EntityFactory.h>
 #include "ClientLevel.h"
 #include "ClientLevelFactory.h"
@@ -8,6 +7,7 @@
 #include <PhysicsInterface.h>
 #include <GraphicsComponent.h>
 #include <PointLight.h>
+#include <SpotLight.h>s
 #include <Room.h>
 #include <RoomManager.h>
 #include <Scene.h>
@@ -287,6 +287,48 @@ void ClientLevelFactory::LoadLights(XMLReader& aReader, tinyxml2::XMLElement* aE
 		light->SetPosition(position);
 		light->SetColor(color);
 		light->SetRange(range);
+		static_cast<ClientLevel*>(myCurrentLevel)->AddLight(light);
+	}
+
+	for (tinyxml2::XMLElement* lightElement = aReader.FindFirstChild(aElement, "spotlight"); lightElement != nullptr;
+		lightElement = aReader.FindNextElement(lightElement, "spotlight"))
+	{
+		CU::Vector3<float> position;
+		CU::Vector3<float> rotation;
+		CU::Vector4<float> color;
+		float range;
+		float spotangle;
+
+		
+		aReader.ForceReadAttribute(aReader.ForceFindFirstChild(lightElement, "position"), "X", "Y", "Z", position);
+		aReader.ForceReadAttribute(aReader.ForceFindFirstChild(lightElement, "rotation"), "X", "Y", "Z", rotation);
+
+		aReader.ForceReadAttribute(aReader.ForceFindFirstChild(lightElement, "color"), "R", color.x);
+		aReader.ForceReadAttribute(aReader.ForceFindFirstChild(lightElement, "color"), "G", color.y);
+		aReader.ForceReadAttribute(aReader.ForceFindFirstChild(lightElement, "color"), "B", color.z);
+		aReader.ForceReadAttribute(aReader.ForceFindFirstChild(lightElement, "color"), "A", color.w);
+
+		aReader.ForceReadAttribute(aReader.ForceFindFirstChild(lightElement, "range"), "value", range);
+		aReader.ForceReadAttribute(aReader.ForceFindFirstChild(lightElement, "spotangle"), "value", spotangle);
+
+		unsigned int gid(UINT32_MAX);
+
+		ReadGID(aReader, lightElement, gid);
+
+		Prism::SpotLight* light = new Prism::SpotLight(gid);
+		light->SetPosition(CU::Vector4<float>(position, 1.f));
+		light->SetColor(color);
+		light->SetRange(range);
+		light->SetAngle(spotangle/2.f);
+
+		rotation.x = CU::Math::DegreeToRad(rotation.x);
+		rotation.y = CU::Math::DegreeToRad(rotation.y);
+		rotation.z = CU::Math::DegreeToRad(rotation.z);
+
+		light->PerformTransformation(CU::Matrix44f::CreateRotateAroundZ(rotation.z));
+		light->PerformTransformation(CU::Matrix44f::CreateRotateAroundX(rotation.x));
+		light->PerformTransformation(CU::Matrix44f::CreateRotateAroundY(rotation.y));
+
 		static_cast<ClientLevel*>(myCurrentLevel)->AddLight(light);
 	}
 }

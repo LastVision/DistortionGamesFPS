@@ -13,6 +13,7 @@ namespace Prism
 	class Instance;
 	class Room;
 	class PointLight;
+	class SpotLight;
 }
 
 class EmitterManager;
@@ -41,6 +42,7 @@ public:
 	void ReceiveNetworkMessage(const NetMessageExplosion& aMessage, const sockaddr_in& aSenderAddress) override;
 	void ReceiveNetworkMessage(const NetMessageRayCastRequest& aMessage, const sockaddr_in& aSenderAddress) override;
 	void AddLight(Prism::PointLight* aLight);
+	void AddLight(Prism::SpotLight* aLight);
 	void CollisionCallback(PhysicsComponent* aFirst, PhysicsComponent* aSecond, bool aHasEntered) override;
 	void DebugMusic();
 
@@ -58,6 +60,7 @@ private:
 	CU::GrowingArray<Entity*> myInstances;
 	CU::GrowingArray<CU::Matrix44f> myInstanceOrientations;
 	CU::GrowingArray<Prism::PointLight*> myPointLights;
+	CU::GrowingArray<Prism::SpotLight*> mySpotLights;
 
 	Entity* myPlayer;
 	EmitterManager* myEmitterManager;

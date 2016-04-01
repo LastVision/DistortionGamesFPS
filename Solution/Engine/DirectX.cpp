@@ -460,15 +460,15 @@ namespace Prism
 		stencilDesc.StencilReadMask = UINT8(0xFF);
 		stencilDesc.StencilWriteMask = 0x0;
 
-		stencilDesc.FrontFace.StencilFunc = D3D11_COMPARISON_EQUAL;
-		stencilDesc.FrontFace.StencilPassOp = D3D11_STENCIL_OP_KEEP;
 		stencilDesc.FrontFace.StencilFailOp = D3D11_STENCIL_OP_ZERO;
 		stencilDesc.FrontFace.StencilDepthFailOp = D3D11_STENCIL_OP_ZERO;
+		stencilDesc.FrontFace.StencilPassOp = D3D11_STENCIL_OP_KEEP;
+		stencilDesc.FrontFace.StencilFunc = D3D11_COMPARISON_EQUAL;
 
-		stencilDesc.BackFace.StencilFunc = D3D11_COMPARISON_NEVER;
-		stencilDesc.BackFace.StencilPassOp = D3D11_STENCIL_OP_ZERO;
 		stencilDesc.BackFace.StencilFailOp = D3D11_STENCIL_OP_ZERO;
 		stencilDesc.BackFace.StencilDepthFailOp = D3D11_STENCIL_OP_ZERO;
+		stencilDesc.BackFace.StencilPassOp = D3D11_STENCIL_OP_ZERO;
+		stencilDesc.BackFace.StencilFunc = D3D11_COMPARISON_NEVER;
 
 		hr = myDevice->CreateDepthStencilState(&stencilDesc, &myDepthStencilStates[static_cast<int>(eDepthStencil::READ_NO_WRITE)]);
 		if (FAILED(hr))

@@ -40,6 +40,7 @@
 #include <Renderer.h>
 #include <CubeMapGenerator.h>
 #include <PointLight.h>
+#include <SpotLight.h>
 #include <GrenadeComponent.h>
 
 #include <PhysicsInterface.h>
@@ -62,6 +63,7 @@ ClientLevel::ClientLevel()
 	: myInstanceOrientations(16)
 	, myInstances(16)
 	, myPointLights(64)
+	, mySpotLights(64)
 	, myInitDone(false)
 {
 	Prism::PhysicsInterface::Create(std::bind(&ClientLevel::CollisionCallback, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3), false);
@@ -103,6 +105,7 @@ ClientLevel::~ClientLevel()
 
 	myInstances.DeleteAll();
 	myPointLights.DeleteAll();
+	mySpotLights.DeleteAll();
 	SAFE_DELETE(myPlayer);
 	SAFE_DELETE(myScene);
 	SAFE_DELETE(myDeferredRenderer);
@@ -371,6 +374,12 @@ void ClientLevel::ReceiveNetworkMessage(const NetMessageRayCastRequest& aMessage
 void ClientLevel::AddLight(Prism::PointLight* aLight)
 {
 	myPointLights.Add(aLight);
+	myScene->AddLight(aLight);
+}
+
+void ClientLevel::AddLight(Prism::SpotLight* aLight)
+{
+	mySpotLights.Add(aLight);
 	myScene->AddLight(aLight);
 }
 

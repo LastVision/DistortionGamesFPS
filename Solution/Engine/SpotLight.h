@@ -1,25 +1,29 @@
 #pragma once
 
+#include "LightStructs.h"
+
 class Camera;
 class Instance;
+
 
 namespace Prism
 {
 	class SpotLight
 	{
 	public:
-		SpotLight();
-		void Initiate();
-		void Render(Camera* aCamera);
+		SpotLight(unsigned int aGID);
+		~SpotLight();
+
+		void Render(const Camera& aCamera);
 		void Update();
 
 		const CU::Vector4<float>& GetColor() const;
 		void SetColor(const CU::Vector4<float>& aVector);
 
-		const CU::Vector4<float>& GetPosition() const;
+		CU::Vector4<float> GetPosition() const;
 		void SetPosition(const CU::Vector4<float>& aPosition);
 
-		const CU::Vector4<float>& GetDir() const;
+		CU::Vector4<float> GetDir() const;
 		void SetDir(const CU::Vector3<float>& aVector);
 
 		void SetRange(float aRange);
@@ -29,30 +33,39 @@ namespace Prism
 		float GetCone() const;
 
 
+		void SetAngle(float anAngle);
+		float GetAngle() const;
+
 		void PerformTransformation(const CU::Matrix44<float>& aTransformation);
+
+		const SpotLightData& GetLightData() const;
+
 	protected:
 		CU::Matrix44<float> myOrientation;
 
 	private:
+		unsigned int myGID;
 		CU::Vector4<float> myPosition;
-		CU::Vector4<float> myOriginalPosition;
-
 		CU::Vector4<float> myDirection;
-		CU::Vector3<float> myOriginalDirection;
-
 		CU::Vector4<float> myColor;
 
 		float myRange;
 		float myCone;
+		float myAngle;
 
-		Instance* myInstance;
+		Instance* myLightMesh;
+		SpotLightData myLightData;
 	};
 
 	inline void SpotLight::Update()
 	{
-		myPosition = myOriginalPosition * myOrientation;
-
-		myDirection = CU::Vector4<float>(myOriginalDirection, 0) * myOrientation;
+		myLightData.myColor = GetColor();
+		myLightData.myCone = GetCone();
+		myLightData.myAngle = GetAngle();
+		myLightData.myCosAngle = cos(GetAngle());
+		myLightData.myDirection = GetDir();
+		myLightData.myPosition = GetPosition();
+		myLightData.myRange = GetRange();
 	}
 
 	inline const CU::Vector4<float>& SpotLight::GetColor() const
@@ -65,7 +78,7 @@ namespace Prism
 		myColor = aColor;
 	}
 
-	inline const CU::Vector4<float>& SpotLight::GetPosition() const
+	inline CU::Vector4<float> SpotLight::GetPosition() const
 	{
 		return myPosition;
 	}
@@ -73,18 +86,16 @@ namespace Prism
 	inline void SpotLight::SetPosition(const CU::Vector4<float>& aPosition)
 	{
 		myPosition = aPosition;
-		myOriginalPosition = aPosition;
 	}
 
-	inline const CU::Vector4<float>& SpotLight::GetDir() const
+	inline CU::Vector4<float> SpotLight::GetDir() const
 	{
-		return myDirection;
+		return CU::Vector4<float>(myOrientation.GetForward(), 0.f);
 	}
 
 	inline void SpotLight::SetDir(const CU::Vector3<float>& aVector)
 	{
-		myOriginalDirection = aVector;
-		myDirection = { myOriginalDirection.x, myOriginalDirection.y, myOriginalDirection.z, 0.f };
+		myDirection = CU::Vector4<float>(aVector, 0.f);
 	}
 
 	inline void SpotLight::SetRange(float aRange)
@@ -115,8 +126,25 @@ namespace Prism
 		return myCone;
 	}
 
+	inline void SpotLight::SetAngle(float anAngle)
+	{
+		myAngle = anAngle;
+	}
+
+	inline float SpotLight::GetAngle() const
+	{
+		return myAngle;
+	}
+
 	inline void SpotLight::PerformTransformation(const CU::Matrix44<float>& aTransformation)
 	{
-		myOrientation = aTransformation * myOrientation;
+		myOrientation = myOrientation * aTransformation;
 	}
+
+	inline const SpotLightData& SpotLight::GetLightData() const
+	{
+		return myLightData;
+	}
+
+	
 }
