@@ -11,6 +11,8 @@ public:
 
 private:
 	float myDefendTime;
+	float myMaxDefendTime;
+	float mySendTime;
 	bool myShouldCountDown;
 	int myEnemiesInside;
 	int myLastSecondToWarn;

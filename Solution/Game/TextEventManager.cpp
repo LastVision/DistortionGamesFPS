@@ -26,7 +26,14 @@ TextEventManager::TextEventManager(const Prism::Camera* aCamera)
 		notification->myLifeTime = 0.f;
 		myNotifications.Add(notification);
 	}
-
+	myMissionOffset = myStartOffset;
+	myMissionOffset.x = 0.f;
+	myMissionOffset.z += 0.5f;
+	myMissionOffset.y -= 0.1f;
+	myMissionText = Prism::ModelLoader::GetInstance()->LoadText(Prism::Engine::GetInstance()->GetFont(Prism::eFont::DIALOGUE), true);
+	myMissionText->Rotate3dText(0.8f);
+	myMissionText->SetOffset(myMissionOffset);
+	myMissionText->SetText("");
 	ClientNetworkManager::GetInstance()->Subscribe(eNetMessageType::TEXT, this);
 }
 
@@ -38,6 +45,7 @@ TextEventManager::~TextEventManager()
 		SAFE_DELETE(myNotifications[i]->my3dText);
 	}
 	myNotifications.DeleteAll();
+	SAFE_DELETE(myMissionText);
 }
 
 void TextEventManager::Update(float aDeltaTime)
@@ -95,6 +103,11 @@ void TextEventManager::Render()
 			myNotifications[i]->my3dText->Render(myCamera);
 		}
 	}
+
+	if (myShouldRender == true)
+	{
+		myMissionText->Render(myCamera);
+	}
 }
 
 void TextEventManager::AddNotification(std::string aText, float aLifeTime, CU::Vector4<float> aColor)
@@ -119,5 +132,13 @@ void TextEventManager::AddNotification(std::string aText, float aLifeTime, CU::V
 
 void TextEventManager::ReceiveNetworkMessage(const NetMessageText& aMessage, const sockaddr_in&)
 {
-	AddNotification(aMessage.myText, aMessage.myTime);
+	if (aMessage.myIsMissionText == false)
+	{
+		AddNotification(aMessage.myText, aMessage.myTime);
+	}
+	else
+	{
+		myMissionText->SetText(aMessage.myText);
+		myShouldRender = aMessage.myShouldShow;
+	}
 }
