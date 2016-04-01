@@ -229,7 +229,6 @@ void InputComponent::UpdateMovement(float aDelta)
 #endif
 
 	movement.y = myVerticalSpeed;
-
 	Prism::PhysicsInterface::GetInstance()->Move(myEntity.GetComponent<PhysicsComponent>()->GetCapsuleControllerId(), movement, 0.05f, aDelta);
 
 	CU::Vector3<float> pos;
