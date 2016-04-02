@@ -45,6 +45,7 @@ public:
 	void AddLight(Prism::SpotLight* aLight);
 	void CollisionCallback(PhysicsComponent* aFirst, PhysicsComponent* aSecond, bool aHasEntered) override;
 	void DebugMusic();
+	void AddWorldText(const std::string& aText, const CU::Vector3<float>& aPosition, float aRotationAroundY, const CU::Vector4<float>& aColor);
 
 private:
 	void HandleTrigger(Entity& aFirstEntity, Entity& aSecondEntity, bool aHasEntered) override;
@@ -78,6 +79,13 @@ private:
 	float myForceStrengthShotgun;
 
 	Prism::TextProxy* myTestText;
+
+	struct WorldText
+	{
+		Prism::TextProxy* myProxy;
+		std::string myText;
+	};
+	CU::GrowingArray<WorldText> myWorldTexts;
 };
 
 inline Prism::Scene* ClientLevel::GetScene()

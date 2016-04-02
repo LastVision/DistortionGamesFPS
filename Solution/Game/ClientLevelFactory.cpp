@@ -68,6 +68,7 @@ void ClientLevelFactory::ReadLevel(const std::string& aLevelPath)
 	LoadDoors(reader, levelElement);
 	LoadParticles(reader, levelElement);
 	//LoadUnits(reader, levelElement);
+	LoadText(reader, levelElement);
 	ClientUnitManager::GetInstance()->CreateUnits(myCurrentLevel->GetScene());
 
 	LoadTriggers(reader, levelElement);
@@ -352,6 +353,33 @@ void ClientLevelFactory::LoadParticles(XMLReader& aReader, tinyxml2::XMLElement*
 		aReader.ForceReadAttribute(propElement, "Z", propPosition.z);
 
 		PostMaster::GetInstance()->SendMessage(EmitterMessage(particleType, propPosition, true));
+	}
+}
+
+void ClientLevelFactory::LoadText(XMLReader& aReader, tinyxml2::XMLElement* aElement)
+{
+	for (tinyxml2::XMLElement* textElement = aReader.FindFirstChild(aElement, "worldtext"); textElement != nullptr;
+		textElement = aReader.FindNextElement(textElement, "worldtext"))
+	{
+		std::string text;
+		CU::Vector3<float> position;
+		CU::Vector3<float> rotation;
+		CU::Vector4<float> color;
+
+		aReader.ForceReadAttribute(aReader.ForceFindFirstChild(textElement, "text"), "value", text);
+		aReader.ForceReadAttribute(aReader.ForceFindFirstChild(textElement, "position"), "X", "Y", "Z", position);
+		aReader.ForceReadAttribute(aReader.ForceFindFirstChild(textElement, "rotation"), "X", "Y", "Z", rotation);
+
+		aReader.ForceReadAttribute(aReader.ForceFindFirstChild(textElement, "color"), "R", color.x);
+		aReader.ForceReadAttribute(aReader.ForceFindFirstChild(textElement, "color"), "G", color.y);
+		aReader.ForceReadAttribute(aReader.ForceFindFirstChild(textElement, "color"), "B", color.z);
+		aReader.ForceReadAttribute(aReader.ForceFindFirstChild(textElement, "color"), "A", color.w);
+
+		rotation.x = CU::Math::DegreeToRad(rotation.x);
+		rotation.y = CU::Math::DegreeToRad(rotation.y);
+		rotation.z = CU::Math::DegreeToRad(rotation.z); 
+		
+		myCurrentLevel->AddWorldText(text, position, rotation.y, color);
 	}
 }
 

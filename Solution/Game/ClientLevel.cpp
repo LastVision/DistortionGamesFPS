@@ -68,6 +68,7 @@ ClientLevel::ClientLevel()
 	, myInitDone(false)
 	, myForceStrengthPistol(0.f)
 	, myForceStrengthShotgun(0.f)
+	, myWorldTexts(64)
 {
 	Prism::PhysicsInterface::Create(std::bind(&ClientLevel::CollisionCallback, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3), false);
 
@@ -102,6 +103,10 @@ ClientLevel::ClientLevel()
 
 ClientLevel::~ClientLevel()
 {
+	for (int i = 0; i < myWorldTexts.Size(); ++i)
+	{
+		SAFE_DELETE(myWorldTexts[i].myProxy);
+	}
 	SAFE_DELETE(myTestText);
 #ifdef THREAD_PHYSICS
 	Prism::PhysicsInterface::GetInstance()->ShutdownThread();
@@ -228,6 +233,11 @@ void ClientLevel::Update(const float aDeltaTime)
 		myTestText->SetColor({ 0.f, abs(cos(totalTime)), abs(cos(-totalTime)), 1.f });
 		myTestText->SetOffset({ 0.f, 1.f + (cos(totalTime * 2.f) * 0.5f), 10.f });
 		//myTestText->Rotate3dText((cos(totalTime * 2.f) * 0.5f));
+
+		for (int i = 0; i < myWorldTexts.Size(); ++i)
+		{
+			myWorldTexts[i].myProxy->SetText(myWorldTexts[i].myText);
+		}
 	}
 
 
@@ -257,6 +267,10 @@ void ClientLevel::Render()
 
 		myTextManager->Render();
 		myTestText->Render(myScene->GetCamera());
+		for (int i = 0; i < myWorldTexts.Size(); ++i)
+		{
+			myWorldTexts[i].myProxy->Render(myScene->GetCamera());
+		}
 	}
 }
 
@@ -465,6 +479,18 @@ void ClientLevel::DebugMusic()
 	{
 		Prism::Audio::AudioInterface::GetInstance()->PostEvent("FadeOutSecondLayer", 0);
 	}
+}
+
+void ClientLevel::AddWorldText(const std::string& aText, const CU::Vector3<float>& aPosition, float aRotationAroundY, const CU::Vector4<float>& aColor)
+{
+	WorldText toAdd;
+	toAdd.myProxy = Prism::ModelLoader::GetInstance()->LoadText(Prism::Engine::GetInstance()->GetFont(Prism::eFont::DIALOGUE), true, false);
+	toAdd.myText = aText;
+	toAdd.myProxy->SetOffset(aPosition);
+	toAdd.myProxy->SetColor(aColor);
+	toAdd.myProxy->Rotate3dText(aRotationAroundY);
+	
+	myWorldTexts.Add(toAdd);
 }
 
 void ClientLevel::HandleTrigger(Entity& aFirstEntity, Entity& aSecondEntity, bool aHasEntered)
