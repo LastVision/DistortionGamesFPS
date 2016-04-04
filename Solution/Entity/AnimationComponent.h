@@ -79,6 +79,11 @@ private:
 		}
 	};
 	CU::StaticArray<EnemyAnimationBone, int(eEntityState::_COUNT)> myEnemyAnimations;
+
+	GUIBone myMuzzleBone;
+	CU::Matrix44<float> myMuzzleBoneCalced;
+	CU::Matrix44<float> myMuzzleOrientation;
+	bool myHasSetCalcedMuzzle;
 };
 
 inline Prism::Instance* AnimationComponent::GetInstance()
