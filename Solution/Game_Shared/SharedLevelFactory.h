@@ -29,9 +29,12 @@ public:
 	//SharedLevel* LoadNextLevel();
 
 	//bool IsLastLevel();
+	const std::string& GetLevelPath(const int aLevelID) const;
 
 	const CU::Vector3<float> GetMinPoint() const;
 	const CU::Vector3<float> GetMaxPoint() const;
+
+	const bool& GetIsLoadingLevel() const;
 
 protected:
 	void ReadLeveList(const std::string& aLevelListPath);
@@ -49,6 +52,8 @@ protected:
 		CU::Vector3f& aOutPosition, CU::Vector3f& aOutRotation, CU::Vector3f& aOutScale);
 
 	int myCurrentID;
+
+	bool myIsLoadingLevel;
 
 	std::unordered_map<int, std::string> myLevelPaths;
 
@@ -70,4 +75,14 @@ inline const CU::Vector3<float> SharedLevelFactory::GetMinPoint() const
 inline const CU::Vector3<float> SharedLevelFactory::GetMaxPoint() const
 {
 	return myMaxPoint;
+}
+
+inline const std::string& SharedLevelFactory::GetLevelPath(const int aLevelID) const
+{
+	return myLevelPaths.at(aLevelID);
+}
+
+inline const bool& SharedLevelFactory::GetIsLoadingLevel() const
+{
+	return myIsLoadingLevel;
 }

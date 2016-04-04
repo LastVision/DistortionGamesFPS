@@ -12,6 +12,7 @@
 SharedLevelFactory::SharedLevelFactory(const std::string& aLevelListPath)
 	: myLevelPaths(8)
 	, myCurrentID(0)
+	, myIsLoadingLevel(false)
 {
 	EntityFactory::GetInstance()->LoadEntities("Data/Resource/Entity/LI_Entity.xml");
 	if (aLevelListPath != "")

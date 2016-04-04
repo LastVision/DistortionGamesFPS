@@ -2,6 +2,8 @@
 #include "ServerState.h"
 #include <NetworkSubscriber.h>
 
+class ServerLevelFactory;
+
 class ServerLobbyState : public ServerState, public NetworkSubscriber
 {
 public:
@@ -21,5 +23,6 @@ public:
 
 private:
 	int myCurrentLevelID;
+	ServerLevelFactory* myLevelFactory;
 };
 

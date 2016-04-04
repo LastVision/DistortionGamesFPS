@@ -38,6 +38,7 @@ private:
 	GUI::GUIManager* myGUIManager;
 	Prism::TextProxy* myText;
 	int myLevelToStart;
+	unsigned int myServerLevelHash;
 	bool myStartGame;
 };
 
