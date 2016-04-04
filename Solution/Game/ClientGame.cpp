@@ -15,6 +15,7 @@
 #include <FileWatcher.h>
 #include "ClientGame.h"
 #include <InputWrapper.h>
+#include "MainMenuState.h"
 #include <ModelLoader.h>
 #include <StreakDataContainer.h>
 #include <ParticleDataContainer.h>
@@ -23,7 +24,6 @@
 #include <ResizeMessage.h>
 #include "ScriptInterface.h"
 #include <ScriptSystem.h>
-#include "ServerSelectState.h"
 #include <SystemMonitor.h>
 #include <TimerManager.h>
 #include <VTuneApi.h>
@@ -90,7 +90,7 @@ bool ClientGame::Init(HWND& aHwnd)
 
 
 	//Console::GetInstance(); // needed to create console here
-	myStateStack.PushMainGameState(new ServerSelectState());
+	myStateStack.PushMainGameState(new MainMenuState());
 
 	//PostMaster::GetInstance()->SendMessage(GameStateMessage(eGameState::LOAD_GAME, 1));
 	GAME_LOG("Init Successful");

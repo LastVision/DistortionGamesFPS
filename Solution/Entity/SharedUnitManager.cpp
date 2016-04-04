@@ -94,7 +94,8 @@ void SharedUnitManager::AddToMap()
 
 Entity* SharedUnitManager::SearchForUnit(const std::string& aUnitType)
 {
-	for (int i = myUnitIndex; i < myUnits.Size(); ++i)
+	myUnitIndex = 0;
+	for (int i = myUnitIndex; i < myUnits.Size() - 1; ++i)
 	{
 		if (myUnits[i]->GetSubType() == CU::ToLower(aUnitType) && myUnits[i]->IsAlive() == false)
 		{
@@ -102,6 +103,7 @@ Entity* SharedUnitManager::SearchForUnit(const std::string& aUnitType)
 		}
 		myUnitIndex++;
 	}
+	return nullptr;
 }
 
 Entity* SharedUnitManager::RequestUnit(unsigned int aGID)
@@ -114,4 +116,9 @@ Entity* SharedUnitManager::RequestUnit(unsigned int aGID)
 		}
 	}
 	return nullptr;
+}
+
+const CU::GrowingArray<Entity*>& SharedUnitManager::GetUnits()
+{
+	return myUnits;
 }

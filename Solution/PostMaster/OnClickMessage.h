@@ -5,6 +5,14 @@ enum class eOnClickEvent
 {
 	CONNECT,
 	START_GAME,
+	START_SINGLEPLAYER,
+	HOST_MULTIPLAYER,
+	JOIN_MULTIPLAYER,
+	CREDITS,
+	GAME_QUIT,
+	RESUME_GAME,
+	OPTIONS,
+	HELP,
 };
 
 struct OnClickMessage : public Message

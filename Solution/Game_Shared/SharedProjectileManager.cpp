@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include <BulletComponent.h>
 #include "SharedProjectileManager.h"
 #include <Entity.h>
 
@@ -33,7 +34,7 @@ int SharedProjectileManager::GetBulletIndex()
 	return myBulletIndex;
 }
 
-Entity* SharedProjectileManager::RequestBullet()
+Entity* SharedProjectileManager::RequestBullet(const BulletComponentData& aBulletData)
 {
 	if (myBulletIndex >= myBullets.Size())
 	{
@@ -41,6 +42,7 @@ Entity* SharedProjectileManager::RequestBullet()
 	}
 
 	Entity* toReturn = myBullets[myBulletIndex];
+	toReturn->GetComponent<BulletComponent>()->SetData(aBulletData);
 	myBulletIndex++;
 	myLiveBullets.Add(toReturn);
 	return toReturn;

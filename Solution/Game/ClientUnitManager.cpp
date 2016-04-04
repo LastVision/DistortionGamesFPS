@@ -40,7 +40,7 @@ void ClientUnitManager::CreateUnits(Prism::Scene* aScene)
 	int index = 51000;
 	for (int j = 0; j < types.Size(); ++j)
 	{
-		for (int i = 0; i < myUnits.GetCapacity(); ++i)
+		for (int i = 0; i < myUnits.GetCapacity() / types.Size(); ++i)
 		{
 			Entity* unit = EntityFactory::CreateEntity(index++, eEntityType::UNIT, CU::ToLower(types[j]), aScene, true, CU::Vector3<float>(0.f, -200.f, 0.f));
 			unit->SetIsUnit(true);

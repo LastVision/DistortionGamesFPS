@@ -33,6 +33,7 @@ InGameState::InGameState(int aLevelID, unsigned int aServerHashLevelValue)
 	, myLevel(nullptr)
 	, myLevelComplete(false)
 	, myCanStartNextLevel(false)
+	, myFailedLevelHash(false)
 	, myServerHashLevelValue(aServerHashLevelValue)
 {
 	myIsActiveState = false;
@@ -77,6 +78,7 @@ void InGameState::InitState(StateStackProxy* aStateStackProxy, GUI::Cursor* aCur
 	{
 		ClientNetworkManager::GetInstance()->AddMessage(NetMessageDisconnect());
 		myStateStatus = eStateStatus::ePopMainState;
+		myFailedLevelHash = true;
 		DL_MESSAGE_BOX("Level don't match the server level. Please update and try again.", "Failed to play level.", MB_OK | MB_ICONWARNING);
 	}
 }
@@ -87,6 +89,10 @@ void InGameState::EndState()
 
 const eStateStatus InGameState::Update(const float& aDeltaTime)
 {
+	if (myFailedLevelHash == true)
+	{
+		return eStateStatus::ePopMainState;
+	}
 	Prism::EffectContainer::GetInstance()->Update(aDeltaTime);
 
 	if (CU::InputWrapper::GetInstance()->KeyDown(DIK_ESCAPE))

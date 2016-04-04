@@ -72,7 +72,7 @@ Entity::Entity(unsigned int aGID, const EntityData& aEntityData, Prism::Scene* a
 
 	if (aEntityData.myAIComponentData.myExistsInEntity == true)
 	{
-		myComponents[static_cast<int>(eComponentType::AI)] = new AIComponent(*this, aEntityData.myAIComponentData, myOrientation);
+		myComponents[static_cast<int>(eComponentType::AI)] = new AIComponent(*this, aEntityData.myAIComponentData, myOrientation, aEntityData.myProjecileData);
 	}
 
 	if (aEntityData.myGrenadeData.myExistsInEntity == true)
@@ -115,7 +115,7 @@ Entity::Entity(unsigned int aGID, const EntityData& aEntityData, Prism::Scene* a
 	}
 	if (aEntityData.myProjecileData.myExistsInEntity == true)
 	{
-		myComponents[static_cast<int>(eComponentType::BULLET)] = new BulletComponent(*this, aEntityData.myProjecileData, myOrientation);
+		myComponents[static_cast<int>(eComponentType::BULLET)] = new BulletComponent(*this, myOrientation);
 	}
 	if (aEntityData.mySpawnpointData.myExistsInEntity == true)
 	{

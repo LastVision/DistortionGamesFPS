@@ -1,4 +1,5 @@
 #pragma once
+#include <Matrix.h>
 #include "Component.h"
 #include <NetworkSubscriber.h>
 struct BulletComponentData;
@@ -6,7 +7,7 @@ struct BulletComponentData;
 class BulletComponent : public Component, public NetworkSubscriber
 {
 public:
-	BulletComponent(Entity& anEntity, const BulletComponentData& aData, CU::Matrix44<float>& anOrientation);
+	BulletComponent(Entity& anEntity, CU::Matrix44<float>& anOrientation);
 	~BulletComponent();
 
 	void Activate(const CU::Matrix44<float>& anOrientation);
@@ -18,8 +19,10 @@ public:
 	static eComponentType GetTypeStatic();
 	eComponentType GetType() override;
 
+	void SetData(const BulletComponentData& aData);
+
 private:
-	const BulletComponentData& myData;
+	const BulletComponentData* myData;
 	CU::Matrix44<float>& myOrientation;
 
 	float myLifetimeLeft;
@@ -34,4 +37,9 @@ inline eComponentType BulletComponent::GetTypeStatic()
 inline eComponentType BulletComponent::GetType()
 {
 	return GetTypeStatic();
+}
+
+inline void BulletComponent::SetData(const BulletComponentData& aData)
+{
+	myData = &aData;
 }

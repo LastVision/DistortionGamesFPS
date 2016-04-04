@@ -7,7 +7,7 @@ class PhysicsComponent;
 class AIComponent : public Component
 {
 public:
-	AIComponent(Entity& anEntity, const AIComponentData& aData, CU::Matrix44<float>& anOrientation);
+	AIComponent(Entity& anEntity, const AIComponentData& aData, CU::Matrix44<float>& anOrientation, const BulletComponentData& aBulletData);
 	~AIComponent();
 
 	void Reset() override;
@@ -32,6 +32,7 @@ private:
 	void Shoot(Entity* aClosestPlayer);
 
 	const AIComponentData& myData;
+	const BulletComponentData& myBulletData;
 
 	Behavior* myBehavior;
 

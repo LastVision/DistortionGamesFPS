@@ -58,6 +58,7 @@ private:
 
 	bool myLevelComplete;
 	bool myCanStartNextLevel;
+	bool myFailedLevelHash;
 
 	unsigned int myServerHashLevelValue;
 	unsigned int myHashLevelValue;

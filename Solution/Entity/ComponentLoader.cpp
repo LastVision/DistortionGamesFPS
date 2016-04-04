@@ -323,6 +323,8 @@ void ComponentLoader::LoadBulletComponent(XMLReader& aDocument, tinyxml2::XMLEle
 	aDocument.ForceReadAttribute(aDocument.ForceFindFirstChild(aSourceElement, "Damage"), "value", aOutputData.myDamage);
 	aDocument.ForceReadAttribute(aDocument.ForceFindFirstChild(aSourceElement, "Speed"), "value", aOutputData.mySpeed);
 	aDocument.ForceReadAttribute(aDocument.ForceFindFirstChild(aSourceElement, "Lifetime"), "value", aOutputData.myLifetime);
+	aDocument.ForceReadAttribute(aDocument.ForceFindFirstChild(aSourceElement, "minspreadrotation"), "value", aOutputData.myMinRotation);
+	aDocument.ForceReadAttribute(aDocument.ForceFindFirstChild(aSourceElement, "maxspreadrotation"), "value", aOutputData.myMaxRotation);
 }
 
 void ComponentLoader::LoadFirstPersonRenderComponent(XMLReader& aDocument, tinyxml2::XMLElement* aSourceElement, FirstPersonRenderComponentData& aOutputData)
