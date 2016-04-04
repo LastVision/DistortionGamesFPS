@@ -27,7 +27,7 @@ void BulletComponent::Activate(const CU::Matrix44<float>& anOrientation)
 	myEntity.Reset();
 	myLifetimeLeft = myData->myLifetime;
 	myOrientation = anOrientation;
-	myOrientation.SetPos(myOrientation.GetPos() + CU::Vector3<float>(0, 0, 1.f) * myOrientation + CU::Vector3<float>(0, 1.f, 0));
+	myOrientation.SetPos((myOrientation.GetPos() + CU::Vector3<float>(0, 0, 1.f) * myOrientation + CU::Vector3<float>(0, 1.f, 0)) + CU::Vector3<float>(0.f, 0.3f, 0.3f));
 	CU::Vector3<float> oldPos(myOrientation.GetPos());
 	myOrientation.SetPos({ 0.f, 0.f, 0.f });
 
