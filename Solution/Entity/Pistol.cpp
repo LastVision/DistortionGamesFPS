@@ -15,6 +15,7 @@
 #include <XMLReader.h>
 #include <SharedNetworkManager.h>
 #include <NetMessageOnHit.h>
+#include "SoundComponent.h"
 
 Pistol::Pistol(Entity* aOwnerEntity)
 	: Weapon(eWeaponType::PISTOL, "pistol", aOwnerEntity)
@@ -146,6 +147,10 @@ void Pistol::HandleRaycast(PhysicsComponent* aComponent, const CU::Vector3<float
 			aComponent->AddForce(aDirection, myForceStrength);
 		}
 
+		if (aComponent->GetEntity().GetComponent<SoundComponent>() != nullptr)
+		{
+			//Prism::Audio::AudioInterface::GetInstance()->PostEvent("Play_Shotgun", aComponent->GetEntity().GetComponent<SoundComponent>()->GetAudioSFXID());
+		}
 
 		CU::Vector3<float> toSend = CU::Reflect<float>(aDirection, aHitNormal);
 

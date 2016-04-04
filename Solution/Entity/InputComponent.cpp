@@ -1,5 +1,6 @@
 #include "stdafx.h"
 
+#include <AudioInterface.h>
 #include <Camera.h>
 #include "DamageNote.h"
 #include "FirstPersonRenderComponent.h"
@@ -64,6 +65,8 @@ void InputComponent::Update(float aDelta)
 	if (myEntity.GetState() != eEntityState::DIE)
 	{
 		UpdateMovement(aDelta);
+		
+		Prism::Audio::AudioInterface::GetInstance()->SetListenerPosition(myOrientation.GetPos().x, myOrientation.GetPos().y, myOrientation.GetPos().z);
 
 		if (CU::InputWrapper::GetInstance()->KeyDown(DIK_E) == true)
 		{
@@ -151,7 +154,7 @@ void InputComponent::UpdateMovement(float aDelta)
 		if (Prism::PhysicsInterface::GetInstance()->GetAllowedToJump(myEntity.GetComponent<PhysicsComponent>()->GetCapsuleControllerId()) == true)
 #endif
 		{
-		myVerticalSpeed = 0.25f;
+			myVerticalSpeed = 0.25f;
 		}
 	}
 

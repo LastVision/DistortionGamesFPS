@@ -203,6 +203,8 @@
     <ClInclude Include="ShootingComponentData.h" />
     <ClInclude Include="ShootNote.h" />
     <ClInclude Include="Shotgun.h" />
+    <ClInclude Include="SoundComponent.h" />
+    <ClInclude Include="SoundComponentData.h" />
     <ClInclude Include="SpawnpointComponent.h" />
     <ClInclude Include="SpawnpointComponentData.h" />
     <ClInclude Include="stdafx.h" />
@@ -239,6 +241,7 @@
     <ClCompile Include="SharedUnitManager.cpp" />
     <ClCompile Include="ShootingComponent.cpp" />
     <ClCompile Include="Shotgun.cpp" />
+    <ClCompile Include="SoundComponent.cpp" />
     <ClCompile Include="SpawnpointComponent.cpp" />
     <ClCompile Include="stdafx.cpp">
       <MultiProcessorCompilation Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</MultiProcessorCompilation>

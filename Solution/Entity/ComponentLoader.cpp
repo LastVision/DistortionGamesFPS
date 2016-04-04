@@ -327,6 +327,11 @@ void ComponentLoader::LoadBulletComponent(XMLReader& aDocument, tinyxml2::XMLEle
 	aDocument.ForceReadAttribute(aDocument.ForceFindFirstChild(aSourceElement, "maxspreadrotation"), "value", aOutputData.myMaxRotation);
 }
 
+void ComponentLoader::LoadSoundComponent(XMLReader&, tinyxml2::XMLElement*, SoundComponentData& aOutputData)
+{
+	aOutputData.myExistsInEntity = true;
+}
+
 void ComponentLoader::LoadFirstPersonRenderComponent(XMLReader& aDocument, tinyxml2::XMLElement* aSourceElement, FirstPersonRenderComponentData& aOutputData)
 {
 	aDocument;
