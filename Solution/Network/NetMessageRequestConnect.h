@@ -17,7 +17,7 @@ public:
 	std::string myName;
 	unsigned int myServerID;
 	unsigned int myOtherClientID;
-	eGameType myGameType;
+	unsigned char myGameType;
 protected:
 
 	void DoSerialize(StreamType& aStream) override;
@@ -27,10 +27,10 @@ protected:
 
 inline NetMessageRequestConnect::NetMessageRequestConnect(eGameType aGameType, const std::string& aName, short aServerID)
 	: NetImportantMessage(eNetMessageType::ON_CONNECT)
-	, myGameType(aGameType)
 	, myName(aName)
 	, myServerID(aServerID)
 {
+	myGameType = static_cast<unsigned char>(aGameType);
 }
 
 inline NetMessageRequestConnect::NetMessageRequestConnect()
@@ -40,11 +40,11 @@ inline NetMessageRequestConnect::NetMessageRequestConnect()
 
 inline NetMessageRequestConnect::NetMessageRequestConnect(eGameType aGameType, const std::string& aName, short aServerID, short aOtherClientID)
 	: NetImportantMessage(eNetMessageType::ON_CONNECT)
-	, myGameType(aGameType)
 	, myName(aName)
 	, myServerID(aServerID)
 	, myOtherClientID(aOtherClientID)
 {
+	myGameType = static_cast<unsigned char>(aGameType);
 }
 
 inline NetMessageRequestConnect::~NetMessageRequestConnect()

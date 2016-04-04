@@ -240,14 +240,14 @@ void ServerNetworkManager::CreateConnection(const std::string& aName, const sock
 	AddMessage(NetMessageConnectReply(NetMessageConnectReply::eType::SUCCESS, myIDCount), aSender);
 
 	Sleep(200);
-	//for (Connection& connection : myClients)
-	//{
-	//	if (connection.myAddress.sin_addr.S_un.S_addr == aSender.sin_addr.S_un.S_addr) //._.
-	//	{
-	//		Utility::Printf("User already connected!", (DARK_RED_BACK | WHITE_TEXT));
-	//		return;
-	//	}
-	//}
+	for (Connection& connection : myClients)
+	{
+		if (connection.myAddress.sin_addr.S_un.S_addr == aSender.sin_addr.S_un.S_addr) //._.
+		{
+			Utility::Printf("User already connected!", (DARK_RED_BACK | WHITE_TEXT));
+			return;
+		}
+	}
 
 	Connection newConnection;
 	newConnection.myAddress = aSender;
