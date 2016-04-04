@@ -10,7 +10,6 @@
 #include "Room.h"
 #include "RoomManager.h"
 #include "PointLight.h"
-
 namespace Prism
 {
 	RoomManager::RoomManager()
@@ -159,9 +158,9 @@ for (int i = 0; i < myPortals.Size(); ++i)
 	myPortals[i]->SetAlreadyPassed(false);
 }
 
-int playerRoom = GetRoomId(aCamera.GetOrientation().GetPos());
+myPlayerRoom = GetRoomId(aCamera.GetOrientation().GetPos());
 
-		FindActiveRooms(aCamera.GetFrustum(), aCamera.GetOrientation(), playerRoom);
+FindActiveRooms(aCamera.GetFrustum(), aCamera.GetOrientation(), myPlayerRoom);
 
 //for (int i = 0; i < myCurrentRoomIds.Size(); ++i)
 //{
@@ -200,7 +199,7 @@ for each (Instance* instance in myAlwaysRenderInstances)
 
 #ifndef RELEASE_BUILD
 #ifdef SHOW_PORTAL_CULLING_DEBUG_TEXT
-		DEBUG_PRINT(myRooms[playerRoom]->GetName());
+DEBUG_PRINT(myRooms[myPlayerRoom]->GetName());
 DEBUG_PRINT(myActiveInstances.Size());
 		DEBUG_PRINT(myTotalObjects);
 		DEBUG_PRINT(myObjectsInDuplicateRooms);
@@ -244,6 +243,18 @@ return myActiveInstances;
 		return myActivePointLights;
 	}
 
+	Prism::Room* RoomManager::GetPlayerRoom()
+	{
+		myPreviousPlayerRoom = myCurrentPlayerRoom;
+		myCurrentPlayerRoom = myRooms[myPlayerRoom];
+		return myCurrentPlayerRoom;
+	}
+
+	Prism::Room* RoomManager::GetPreviousPlayerRoom()
+	{
+		return myPreviousPlayerRoom;
+	}
+
 	int RoomManager::GetRoomId(const CU::Vector3<float>& aPosition) const
 	{
 		for (int i = 0; i < myRooms.Size(); ++i)
@@ -274,6 +285,7 @@ return myActiveInstances;
 					|| myActiveInstances.Find(instance) == myActiveInstances.FoundNone)
 				{
 					myActiveInstances.Add(instance);
+
 				}
 			}
 		}

@@ -31,6 +31,7 @@ Entity::Entity(unsigned int aGID, const EntityData& aEntityData, Prism::Scene* a
 	, myEmitterConnection(nullptr)
 	, myIsClientSide(aClientSide)
 	, mySubType(aSubType)
+	, myIsEnemy(false)
 {
 	for (int i = 0; i < static_cast<int>(eComponentType::_COUNT); ++i)
 	{
@@ -120,6 +121,7 @@ Entity::Entity(unsigned int aGID, const EntityData& aEntityData, Prism::Scene* a
 	if (aEntityData.mySpawnpointData.myExistsInEntity == true)
 	{
 		myComponents[static_cast<int>(eComponentType::SPAWNPOINT)] = new SpawnpointComponent(*this, aEntityData.mySpawnpointData);
+		myOrientation.SetPos(myOrientation.GetPos() + CU::Vector3<float>(0.f, 1.1f, 0.f));
 	}
 
 	if (aEntityData.mySoundData.myExistsInEntity == true && myIsClientSide == true)

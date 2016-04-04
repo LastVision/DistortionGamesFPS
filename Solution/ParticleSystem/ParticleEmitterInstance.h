@@ -41,12 +41,14 @@ namespace Prism
 		void SetSize(const CU::Vector3f& aSize);
 
 		void SetDirection(const CU::Vector3<float>& aDirection);
+		void ToggleDebugLines();
 
+		bool GetShouldRender();
+		void SetShouldRender(bool aShouldRender);
 	private:
 		void Reset();
 		CU::Vector3f CalculateDirection(float aYVariation, float aZVariation);
-		CU::Vector3f CalculateDirection(const CU::Vector3<float>& aDirection);
-
+		void CreatePoints();
 		void CreateVertexBuffer();
 		int UpdateVertexBuffer();
 
@@ -82,7 +84,11 @@ namespace Prism
 		bool myAlwaysShow;
 		bool myHasEmitted;
 		bool myOverrideDirection;
+		bool myShouldRender;
+		bool myDrawDebugLines;
+
 		CU::Vector3<float> myDirection;
+		CU::Vector3<float> myPoints[8];
 
 
 		Entity* myEntity;

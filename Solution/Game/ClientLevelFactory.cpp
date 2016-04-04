@@ -50,7 +50,7 @@ ClientLevel* ClientLevelFactory::LoadCurrentLevel()
 
 
 	
-	std::string levelName(myLevelPaths[myCurrentID].begin() + myLevelPaths[myCurrentID].rfind('/')+1, myLevelPaths[myCurrentID].end() - 4);
+	std::string levelName(myLevelPaths[myCurrentID].begin() + myLevelPaths[myCurrentID].rfind('/') + 1, myLevelPaths[myCurrentID].end() - 4);
 	myCurrentLevel->SetName(levelName);
 #ifdef THREAD_PHYSICS
 	Prism::PhysicsInterface::GetInstance()->InitThread();
@@ -102,12 +102,21 @@ void ClientLevelFactory::LoadRooms(XMLReader& aReader, tinyxml2::XMLElement* aEl
 
 		Prism::eRoomType typeEnum(Prism::eRoomType::ROOM);
 
+		Prism::Room *newRoom = new Prism::Room(position, scale, name, typeEnum);
+
+
 		if (type == "connector")
 		{
 			typeEnum = Prism::eRoomType::CONNECTOR;
 		}
+		else
+		{
+#ifdef USE_ATMOSPHERE_PARTICLES
+			PostMaster::GetInstance()->SendMessage(EmitterMessage("Atmosphere", position, scale, newRoom));
+#endif
+		}
 
-		static_cast<ClientLevel*>(myCurrentLevel)->GetScene()->AddRoom(new Prism::Room(position, scale, name, typeEnum));
+		static_cast<ClientLevel*>(myCurrentLevel)->GetScene()->AddRoom(newRoom);
 	}
 
 	static_cast<ClientLevel*>(myCurrentLevel)->GetScene()->GetRoomManager()->CalcPortals();
@@ -238,7 +247,7 @@ void ClientLevelFactory::LoadTriggers(XMLReader& aReader, tinyxml2::XMLElement* 
 		if (newEntity->GetComponent<TriggerComponent>()->IsClientSide() == true)
 		{
 			newEntity->Reset();
-			if(newEntity->GetComponent<TriggerComponent>()->GetIsActiveFromStart() == true)
+			if (newEntity->GetComponent<TriggerComponent>()->GetIsActiveFromStart() == true)
 			{
 				newEntity->AddToScene();
 			}
@@ -355,7 +364,7 @@ void ClientLevelFactory::LoadParticles(XMLReader& aReader, tinyxml2::XMLElement*
 		aReader.ForceReadAttribute(propElement, "Y", propPosition.y);
 		aReader.ForceReadAttribute(propElement, "Z", propPosition.z);
 
-		PostMaster::GetInstance()->SendMessage(EmitterMessage(particleType, propPosition, true));
+		//PostMaster::GetInstance()->SendMessage(EmitterMessage(particleType, propPosition, true));
 	}
 }
 

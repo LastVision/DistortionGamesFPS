@@ -6,6 +6,7 @@
 namespace Prism
 {
 	class ParticleEmitterInstance;
+	class Room;
 }
 
 struct EmitterMessage : public Message
@@ -18,9 +19,12 @@ struct EmitterMessage : public Message
 	EmitterMessage(const std::string& aParticleType, const CU::Vector3f& aPosition, float anEmitterLifeTime);
 	EmitterMessage(const std::string& aParticleType, const CU::Vector3f& aPosition, float anEmitterLifeTime, const CU::Vector3f& aSize);
 	EmitterMessage(const std::string& aParticleType, const CU::Vector3f& aPosition, float anEmitterLifeTime, float aRadius);
+
+	EmitterMessage(const std::string& aParticleType, const CU::Vector3f& aPosition, const CU::Vector3f& aSize, Prism::Room* aRoom);
 	EmitterMessage(const std::string& aParticleType, const CU::Vector3f& aPosition, const CU::Vector3f& aDirection);
 
 	Prism::ParticleEmitterInstance* myEmitter = nullptr;
+	Prism::Room* myRoom = nullptr;
 	const std::string myParticleTypeString = "NONE";
 	const CU::Vector3f myPosition = CU::Vector3f();
 	const CU::Vector3f mySize = CU::Vector3f();
@@ -101,5 +105,15 @@ inline EmitterMessage::EmitterMessage(const std::string& aParticleType, const CU
 	, myParticleTypeString(aParticleType)
 	, myPosition(aPosition)
 	, myDirection(aDirection)
+	, myUseDirection(true)
+{
+}
+
+inline EmitterMessage::EmitterMessage(const std::string& aParticleType, const CU::Vector3f& aPosition, const CU::Vector3f& aSize, Prism::Room* aRoom)
+	: Message(eMessageType::PARTICLE)
+	, myParticleTypeString(aParticleType)
+	, myPosition(aPosition)
+	, mySize(aSize)
+	, myRoom(aRoom)
 {
 }

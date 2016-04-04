@@ -3,9 +3,10 @@
 
 namespace Prism
 {
+	class Instance;
 	class Portal;
 	class PointLight;
-
+	class ParticleEmitterInstance;
 	enum class eRoomType
 	{
 		ROOM,
@@ -39,6 +40,8 @@ namespace Prism
 
 		bool operator<(Room& aRoom);
 
+		void AddEmitter(Prism::ParticleEmitterInstance* anEmitter);
+		Prism::ParticleEmitterInstance* GetEmitter();
 	private:
 		void operator=(Room&) = delete;
 		int myRoomId;
@@ -48,6 +51,7 @@ namespace Prism
 		CU::GrowingArray<PointLight*> myPointLights;
 		const std::string myName;
 		const eRoomType myType;
+		Prism::ParticleEmitterInstance* myEmitter;
 	};
 
 	inline const CU::Intersection::AABB& Room::GetAABB() const

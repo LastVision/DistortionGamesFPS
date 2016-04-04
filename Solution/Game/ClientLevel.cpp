@@ -57,9 +57,10 @@
 #include "ClientUnitManager.h"
 #include <NetMessageActivateSpawnpoint.h>
 #include "TextEventManager.h"
-
 #include <TextProxy.h>
-
+#include <RoomManager.h>
+#include <ParticleEmitterInstance.h>
+#include <Room.h>
 ClientLevel::ClientLevel()
 	: myInstanceOrientations(16)
 	, myInstances(16)
@@ -195,6 +196,7 @@ void ClientLevel::Update(const float aDeltaTime)
 	//{
 	//	myActiveEnemies.GetLast()->SetState(eEntityState::ATTACK);
 	//}
+
 	if (CU::InputWrapper::GetInstance()->KeyDown(DIK_B) == true)
 	{
 		ClientNetworkManager::GetInstance()->AddMessage(NetMessageActivateSpawnpoint(17));
@@ -260,8 +262,20 @@ void ClientLevel::Render()
 
 		//myScene->Render();
 		//myDeferredRenderer->Render(myScene);
-
+		if (myScene->GetRoomManager()->GetPlayerRoom()->GetEmitter() != nullptr)
+		{
+			myScene->GetRoomManager()->GetPlayerRoom()->GetEmitter()->SetShouldRender(true);
+		}
+		if (myScene->GetRoomManager()->GetPreviousPlayerRoom() != nullptr)
+		{
+			if (myScene->GetRoomManager()->GetPreviousPlayerRoom()->GetEmitter() != nullptr)
+			{
+				myScene->GetRoomManager()->GetPreviousPlayerRoom()->GetEmitter()->SetShouldAlwaysShow(false);
+			}
+		}
 		myEmitterManager->RenderEmitters();
+
+
 		myPlayer->GetComponent<FirstPersonRenderComponent>()->Render();
 		//myPlayer->GetComponent<ShootingComponent>()->Render();
 
@@ -403,7 +417,7 @@ void ClientLevel::ReceiveNetworkMessage(const NetMessageExplosion& aMessage, con
 {
 	ClientProjectileManager::GetInstance()->RequestExplosion(aMessage.myPosition, aMessage.myGID);
 	ClientProjectileManager::GetInstance()->KillGrenade(aMessage.myGID - 1);
-	PostMaster::GetInstance()->SendMessage(EmitterMessage("Explosion", aMessage.myPosition,true));
+	PostMaster::GetInstance()->SendMessage(EmitterMessage("Explosion", aMessage.myPosition, true));
 }
 
 void ClientLevel::ReceiveNetworkMessage(const NetMessageRayCastRequest& aMessage, const sockaddr_in&)
@@ -489,7 +503,7 @@ void ClientLevel::AddWorldText(const std::string& aText, const CU::Vector3<float
 	toAdd.myProxy->SetOffset(aPosition);
 	toAdd.myProxy->SetColor(aColor);
 	toAdd.myProxy->Rotate3dText(aRotationAroundY);
-	
+
 	myWorldTexts.Add(toAdd);
 }
 

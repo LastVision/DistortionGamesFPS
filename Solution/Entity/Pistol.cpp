@@ -154,7 +154,15 @@ void Pistol::HandleRaycast(PhysicsComponent* aComponent, const CU::Vector3<float
 
 		CU::Vector3<float> toSend = CU::Reflect<float>(aDirection, aHitNormal);
 
-		PostMaster::GetInstance()->SendMessage(EmitterMessage("Shotgun", aHitPosition, toSend));
+		if (aComponent->GetEntity().GetIsEnemy() == true)
+		{
+			PostMaster::GetInstance()->SendMessage(EmitterMessage("Shotgun", aHitPosition, toSend));
+		}
+		else
+		{
+			PostMaster::GetInstance()->SendMessage(EmitterMessage("Shotgun", aHitPosition, toSend));
+		}
+
 		//aComponent->GetEntity().SendNote<DamageNote>(DamageNote(myDamage));
 
 		//SharedNetworkManager::GetInstance()->AddMessage(NetMessageOnHit(float(myDamage), aComponent->GetEntity().GetGID()));

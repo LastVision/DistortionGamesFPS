@@ -1,5 +1,6 @@
 #include "stdafx.h"
 
+#include <Room.h>
 #include "EmitterManager.h"
 #include <EmitterMessage.h>
 #include <ParticleDataContainer.h>
@@ -9,6 +10,7 @@
 #include <TimerManager.h>
 #include "CommonHelper.h"
 #include <Camera.h>
+#include <InputWrapper.h>
 #define FINISHED 0
 #define UNFINISHED 1
 
@@ -45,6 +47,7 @@ void EmitterManager::Initiate(Prism::Camera* aCamera)
 
 void EmitterManager::UpdateEmitters(float aDeltaTime, CU::Matrix44f aWorldMatrix)
 {
+	
 	for (int i = 0; i < myEmitterList.Size(); ++i)
 	{
 		if (myEmitterList[i]->myTypeIsActive == false)
@@ -66,6 +69,12 @@ void EmitterManager::UpdateEmitters(float aDeltaTime, CU::Matrix44f aWorldMatrix
 				{
 					continue;
 				}
+#ifdef _DEBUG
+				if (CU::InputWrapper::GetInstance()->KeyDown(DIK_L) == true)
+				{
+					instance->ToggleDebugLines();
+				}
+#endif
 				instance->Update(aDeltaTime, aWorldMatrix);
 			}
 		}
@@ -92,14 +101,17 @@ void EmitterManager::RenderEmitters()
 			for (int j = 0; j < myEmitterList[i]->myEmitters[k].Size(); ++j)
 			{
 				Prism::ParticleEmitterInstance* instance = myEmitterList[i]->myEmitters[k][j];
-				if (instance->IsActive() == false)
+				if (instance->GetShouldRender() == true)
 				{
-					finished++;
+					if (instance->IsActive() == false)
+					{
+						finished++;
 
-				}
-				else
-				{
-					instance->Render();
+					}
+					else
+					{
+						instance->Render();
+					}
 				}
 			}
 
@@ -138,7 +150,6 @@ void EmitterManager::ReceiveMessage(const EmitterMessage& aMessage)
 
 
 
-
 	if (myEmitters[particleType]->myCurrentIndex > (PREALLOCATED_EMITTERGROUP - 1))
 	{
 		myEmitters[particleType]->myCurrentIndex = 0;
@@ -150,6 +161,11 @@ void EmitterManager::ReceiveMessage(const EmitterMessage& aMessage)
 	for (int i = 0; i < myEmitters[particleType]->myEmitters[index].Size(); ++i)
 	{
 		Prism::ParticleEmitterInstance* instance = myEmitters[particleType]->myEmitters[index][i];
+
+		if (aMessage.myRoom != nullptr)
+		{
+			aMessage.myRoom->AddEmitter(instance);
+		}
 
 		instance->SetEntity(nullptr);
 
