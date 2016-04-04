@@ -30,6 +30,7 @@ Entity::Entity(unsigned int aGID, const EntityData& aEntityData, Prism::Scene* a
 	, myEmitterConnection(nullptr)
 	, myIsClientSide(aClientSide)
 	, mySubType(aSubType)
+	, myIsUnit(false)
 {
 	for (int i = 0; i < static_cast<int>(eComponentType::_COUNT); ++i)
 	{

@@ -68,10 +68,12 @@ void EmitterManager::UpdateEmitters(float aDeltaTime, CU::Matrix44f aWorldMatrix
 				{
 					continue;
 				}
+#ifdef _DEBUG
 				if (CU::InputWrapper::GetInstance()->KeyDown(DIK_L) == true)
 				{
 					instance->ToggleDebugLines();
 				}
+#endif
 				instance->Update(aDeltaTime, aWorldMatrix);
 			}
 		}

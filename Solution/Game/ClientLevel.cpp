@@ -195,6 +195,7 @@ void ClientLevel::Update(const float aDeltaTime)
 	//{
 	//	myActiveEnemies.GetLast()->SetState(eEntityState::ATTACK);
 	//}
+
 	if (CU::InputWrapper::GetInstance()->KeyDown(DIK_B) == true)
 	{
 		ClientNetworkManager::GetInstance()->AddMessage(NetMessageActivateSpawnpoint(17));

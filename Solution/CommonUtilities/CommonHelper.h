@@ -130,22 +130,32 @@ namespace CU
 		return toReturn;
 	}
 
-	inline std::string GetSubString(const std::string& aStringToReadFrom, const std::string& aWordToFind, bool aReadAfterChar
+	inline std::string GetSubString(const std::string& aStringToReadFrom, const std::string& aToFind, bool aReadCharactersBeforeToFind
 		, int someCharsToSkip = 0)
 	{
-		if (aStringToReadFrom.rfind(aWordToFind) != std::string::npos)
+		if (aStringToReadFrom.find(aToFind) != std::string::npos)
 		{
-			if (aReadAfterChar == false)
+			if (aReadCharactersBeforeToFind == true)
 			{
-				return aStringToReadFrom.substr(0, aStringToReadFrom.rfind(aWordToFind));
+				return aStringToReadFrom.substr(0, aStringToReadFrom.find(aToFind));
 			}
-			else if (aReadAfterChar == true)
-			{
-				return aStringToReadFrom.substr(aStringToReadFrom.rfind(aWordToFind) + (someCharsToSkip - 1));
-			}
+
+			return aStringToReadFrom.substr(aStringToReadFrom.find(aToFind) + someCharsToSkip);
+
 		}
+
 		return aStringToReadFrom;
 	}
+
+	inline bool CheckSubString(const std::string& aString, const std::string& aToFind)
+	{
+		if (aString.find(aToFind) != aString.npos)
+			return true;
+
+		return false;
+	}
+
+
 
 	//If OptionalExtension is blank, the outputstring will have the same extension as the input string
 	//OptionalExtension needs to be entered without a period, "xml", NOT ".xml"
@@ -184,7 +194,7 @@ namespace CU
 
 		return realDataFilePath;
 	}
-	
+
 	inline std::string Concatenate(const char* aFormattedString, ...)
 	{
 		char buffer[1024];
@@ -233,7 +243,7 @@ namespace CU
 		unsigned int end = aString.length();
 		if (end > begin)
 		{
-			while (aString[end-1] == ' ')
+			while (aString[end - 1] == ' ')
 			{
 				--end;
 			}
@@ -250,7 +260,7 @@ namespace CU
 		//to radians:
 		Vector3<float> rotation(aRotationInDegrees);
 		rotation *= 0.0174532925f;
-		
+
 		aMatrixToRotate = Matrix44<float>::CreateRotateAroundZ(rotation.z) * aMatrixToRotate;
 		aMatrixToRotate = Matrix44<float>::CreateRotateAroundY(rotation.y) * aMatrixToRotate;
 		aMatrixToRotate = Matrix44<float>::CreateRotateAroundX(rotation.x) * aMatrixToRotate;

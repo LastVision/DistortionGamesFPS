@@ -324,9 +324,11 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			{
 				globalGame->Pause();
 			}
+			CU::InputWrapper::GetInstance()->ToggleWindowActive();
 		}
 		else if (LOWORD(wParam) == SIZE_MAXIMIZED)
 		{
+			CU::InputWrapper::GetInstance()->ToggleWindowActive();
 			OnResize();
 		}
 		else if (LOWORD(wParam) == SIZE_RESTORED)
