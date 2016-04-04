@@ -1,6 +1,9 @@
 #include "stdafx.h"
 #include "ServerStartState.h"
-#include <NetMessageStartLobby.h>
+#include <NetMessageRequestConnect.h>
+#include "ServerLobbyState.h"
+#include "ServerStateStackProxy.h"
+#include "ServerNetworkManager.h"
 
 ServerStartState::ServerStartState()
 {
@@ -9,13 +12,16 @@ ServerStartState::ServerStartState()
 
 ServerStartState::~ServerStartState()
 {
+	ServerNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::ON_CONNECT, this);
 }
 
 void ServerStartState::InitState(ServerStateStackProxy* aStateStackProxy)
 {
+	ServerNetworkManager::GetInstance()->AllowNewConnections(true);
 	myStateStack = aStateStackProxy;
 	myStateStatus = eStateStatus::KEEP_STATE;
 	myIsActiveState = true;
+	ServerNetworkManager::GetInstance()->Subscribe(eNetMessageType::ON_CONNECT, this);
 }
 
 void ServerStartState::EndState()
@@ -31,10 +37,15 @@ const eStateStatus ServerStartState::Update(const float)
 
 void ServerStartState::ResumeState()
 {
+	ServerNetworkManager::GetInstance()->AllowNewConnections(true);
+	ServerNetworkManager::GetInstance()->Subscribe(eNetMessageType::ON_CONNECT, this);
 	myIsActiveState = true;
 }
 
-void ServerStartState::ReceiveNetworkMessage(const NetMessageStartLobby& aMessage, const sockaddr_in&)
+void ServerStartState::ReceiveNetworkMessage(const NetMessageRequestConnect& aMessage, const sockaddr_in& aSenderAddress)
 {
-	aMessage;
+	ServerNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::ON_CONNECT, this);
+	SET_RUNTIME(false);
+	ServerNetworkManager::GetInstance()->CreateConnection(aMessage.myName, aSenderAddress);
+	myStateStack->PushMainState(new ServerLobbyState(aMessage.myGameType));
 }

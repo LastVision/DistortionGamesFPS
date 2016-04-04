@@ -7,7 +7,7 @@ class ServerLevelFactory;
 class ServerLobbyState : public ServerState, public NetworkSubscriber
 {
 public:
-	ServerLobbyState();
+	ServerLobbyState(eGameType aGameType);
 	~ServerLobbyState();
 
 	void InitState(ServerStateStackProxy* aStateStackProxy) override;
@@ -22,6 +22,8 @@ public:
 	void ReceiveNetworkMessage(const NetMessageRequestServer& aMessage, const sockaddr_in& aSenderAddress) override;
 
 private:
+	void operator=(const ServerLobbyState&) = delete;
+	const eGameType myGameType;
 	int myCurrentLevelID;
 	ServerLevelFactory* myLevelFactory;
 };
