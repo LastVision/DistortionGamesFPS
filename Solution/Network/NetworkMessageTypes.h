@@ -6,6 +6,7 @@ enum class eNetMessageType
 	NONE,
 	IMPORTANT_REPLY,
 	
+	START_LOBBY,
 	CONNECT_REPLY,
 	ON_CONNECT,
 	ON_JOIN,
