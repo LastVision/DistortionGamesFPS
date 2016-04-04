@@ -6,6 +6,8 @@
 #include "Vector.h"
 #include <ShlObj.h>
 #include <sstream>
+#include <fstream>
+#include <streambuf>
 
 namespace CU
 {
@@ -261,5 +263,19 @@ namespace CU
 		return aValue == 2 || aValue == 4 || aValue == 8 || aValue == 16 || aValue == 32 || aValue == 64 || aValue == 128
 			|| aValue == 256 || aValue == 512 || aValue == 1024 || aValue == 2048 || aValue == 4096 || aValue == 8192
 			|| aValue == 1024 * 6;
+	}
+
+	inline const std::string ReadFileToString(const std::string& aFilePath)
+	{
+		std::string toReturn;
+		std::ifstream file(aFilePath);
+
+		file.seekg(0, std::ios::end);
+		toReturn.reserve(static_cast<unsigned int>(file.tellg()));
+		file.seekg(0, std::ios::beg);
+
+		toReturn.assign(std::istreambuf_iterator<char>(file), std::istreambuf_iterator<char>());
+		file.close();
+		return toReturn;
 	}
 }

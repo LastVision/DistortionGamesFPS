@@ -120,7 +120,7 @@ const eStateStatus ServerSelectState::Update(const float& aDeltaTime)
 		{
 			SET_RUNTIME(false);
 			PostMaster::GetInstance()->UnSubscribe(eMessageType::ON_CLICK, this);
-			myStateStack->PushSubGameState(new LobbyState());
+			myStateStack->PushMainGameState(new LobbyState());
 		}
 		//return eStateStatus::ePopSubState;
 	}

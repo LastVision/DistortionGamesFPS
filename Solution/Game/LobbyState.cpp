@@ -23,6 +23,7 @@ LobbyState::LobbyState()
 	, myGUIManagerHost(nullptr)
 	, myLevelToStart(-1)
 	, myStartGame(false)
+	, myServerLevelHash(0)
 {
 }
 
@@ -103,7 +104,7 @@ const eStateStatus LobbyState::Update(const float& aDeltaTime)
 		SharedNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::LOAD_LEVEL, this);
 
 		SET_RUNTIME(false);
-		myStateStack->PushSubGameState(new InGameState(myLevelToStart));
+		myStateStack->PushSubGameState(new InGameState(myLevelToStart, myServerLevelHash));
 	}
 
 	if (ClientNetworkManager::GetInstance()->GetGID() == 1)
@@ -172,5 +173,7 @@ void LobbyState::ReceiveNetworkMessage(const NetMessageSetLevel& aMessage, const
 void LobbyState::ReceiveNetworkMessage(const NetMessageLoadLevel& aMessage, const sockaddr_in&)
 {
 	myLevelToStart = aMessage.myLevelID;
+	myServerLevelHash = aMessage.myLevelHash;
+
 	myStartGame = true;
 }
