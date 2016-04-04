@@ -7,7 +7,7 @@
 #include <PhysicsInterface.h>
 #include <GraphicsComponent.h>
 #include <PointLight.h>
-#include <SpotLight.h>s
+#include <SpotLight.h>
 #include <Room.h>
 #include <RoomManager.h>
 #include <Scene.h>
@@ -28,6 +28,7 @@ ClientLevelFactory::~ClientLevelFactory()
 
 ClientLevel* ClientLevelFactory::LoadLevel(int aID)
 {
+	myIsLoadingLevel = true;
 	if (myLevelPaths.find(aID) == myLevelPaths.end())
 	{
 		DL_ASSERT(CU::Concatenate("[LevelFactory] Trying to load a non-existing level! Check so the ID: %s is a valid id in LI_level.xml"
@@ -41,6 +42,7 @@ ClientLevel* ClientLevelFactory::LoadLevel(int aID)
 
 ClientLevel* ClientLevelFactory::LoadCurrentLevel()
 {
+	myIsLoadingLevel = true;
 	myCurrentLevel = new ClientLevel();
 	ReadLevel(myLevelPaths[myCurrentID]);
 	myCurrentLevel->Init();
@@ -53,6 +55,7 @@ ClientLevel* ClientLevelFactory::LoadCurrentLevel()
 #ifdef THREAD_PHYSICS
 	Prism::PhysicsInterface::GetInstance()->InitThread();
 #endif
+	myIsLoadingLevel = false;
 	return myCurrentLevel;
 }
 

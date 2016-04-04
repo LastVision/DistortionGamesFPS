@@ -30,7 +30,7 @@ namespace GUI
 class InGameState : public GameState, public Subscriber, public NetworkSubscriber
 {
 public:
-	InGameState(int aLevelID);
+	InGameState(int aLevelID, unsigned int aServerHashLevelValue);
 	~InGameState();
 
 	void InitState(StateStackProxy* aStateStackProxy, GUI::Cursor* aCursor) override;
@@ -58,6 +58,9 @@ private:
 
 	bool myLevelComplete;
 	bool myCanStartNextLevel;
+
+	unsigned int myServerHashLevelValue;
+	unsigned int myHashLevelValue;
 
 	Prism::TextProxy* myText;
 };

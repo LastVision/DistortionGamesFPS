@@ -1,8 +1,11 @@
 #include "stdafx.h"
+
+#include <CommonHelper.h>
 #include <NetMessageAllClientsComplete.h>
 #include <NetMessageLevelComplete.h>
 #include <NetMessageLevelLoaded.h>
 #include <NetMessageLoadLevel.h>
+#include <MurmurHash3.h>
 #include "ServerInGameState.h"
 #include "ServerLevel.h"
 #include "ServerLevelFactory.h"
@@ -11,10 +14,11 @@
 #include "ServerStateStackProxy.h"
 #include <iostream>
 
-ServerInGameState::ServerInGameState(int aLevelID)
+ServerInGameState::ServerInGameState(int aLevelID, unsigned int aLevelHashValue)
 	: myLevelID(aLevelID)
 	, myState(eInGameStates::LEVEL_LOAD)
 	, myRespondedClients(16)
+	, myLevelHashValue(aLevelHashValue)
 {
 	myIsActiveState = false;
 	myLevelFactory = new ServerLevelFactory("Data/Level/LI_level.xml");
@@ -88,6 +92,7 @@ void ServerInGameState::ReceiveNetworkMessage(const NetMessageLevelComplete& aMe
 		SAFE_DELETE(myLevel);
 		ServerNetworkManager::GetInstance()->AddMessage(NetMessageAllClientsComplete(NetMessageAllClientsComplete::eType::LEVEL_COMPLETE));
 		ServerNetworkManager::GetInstance()->StopSendMessages(true);
+		myLevelHashValue = Hash(CU::ReadFileToString(myLevelFactory->GetLevelPath(myLevelID)).c_str());
 		myLevel = static_cast<ServerLevel*>(myLevelFactory->LoadLevel(myLevelID));
 		ServerNetworkManager::GetInstance()->StopSendMessages(false);
 	}
@@ -100,7 +105,8 @@ void ServerInGameState::ReceiveNetworkMessage(const NetMessageRequestStartLevel&
 	if (myState == eInGameStates::LEVEL_COMPLETE_ALL_CLIENTS_RESPONDED)
 	{
 		myState = eInGameStates::LEVEL_LOAD;
-		ServerNetworkManager::GetInstance()->AddMessage(NetMessageLoadLevel(myLevelID));
+		
+		ServerNetworkManager::GetInstance()->AddMessage(NetMessageLoadLevel(myLevelID, myLevelHashValue));
 	}
 }
 

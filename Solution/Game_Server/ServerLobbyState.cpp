@@ -1,7 +1,9 @@
 #include "stdafx.h"
 
+#include <CommonHelper.h>
 #include <PostMaster.h>
 #include "ServerInGameState.h"
+#include "ServerLevelFactory.h"
 #include "ServerLobbyState.h"
 #include "ServerNetworkManager.h"
 #include "ServerStateStackProxy.h"
@@ -10,11 +12,13 @@
 #include <NetMessageSetLevel.h>
 #include <NetMessageReplyServer.h>
 #include <NetMessageRequestStartLevel.h>
+#include <MurmurHash3.h>
 
 
 ServerLobbyState::ServerLobbyState()
 {
 	myIsActiveState = false;
+	myLevelFactory = new ServerLevelFactory("Data/Level/LI_level.xml");
 }
 
 ServerLobbyState::~ServerLobbyState()
@@ -23,7 +27,7 @@ ServerLobbyState::~ServerLobbyState()
 	ServerNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::REQUEST_START_LEVEL, this);
 	ServerNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::SERVER_REQUEST, this);
 	ServerNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::ON_CONNECT, this);
-
+	SAFE_DELETE(myLevelFactory);
 }
 
 void ServerLobbyState::InitState(ServerStateStackProxy* aStateStackProxy)
@@ -71,7 +75,8 @@ void ServerLobbyState::ReceiveNetworkMessage(const NetMessageSetLevel& aMessage,
 void ServerLobbyState::ReceiveNetworkMessage(const NetMessageRequestStartLevel&, const sockaddr_in&)
 {
 	ServerNetworkManager::GetInstance()->AllowNewConnections(false);
-	ServerNetworkManager::GetInstance()->AddMessage(NetMessageLoadLevel(myCurrentLevelID));
+	unsigned int levelHashValue = Hash(CU::ReadFileToString(myLevelFactory->GetLevelPath(myCurrentLevelID)).c_str());
+	ServerNetworkManager::GetInstance()->AddMessage(NetMessageLoadLevel(myCurrentLevelID, levelHashValue));
 
 	ServerNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::SET_LEVEL, this);
 	ServerNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::REQUEST_START_LEVEL, this);
@@ -79,7 +84,7 @@ void ServerLobbyState::ReceiveNetworkMessage(const NetMessageRequestStartLevel&,
 	ServerNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::ON_CONNECT, this);
 
 	SET_RUNTIME(false);
-	myStateStack->PushMainState(new ServerInGameState(myCurrentLevelID));
+	myStateStack->PushMainState(new ServerInGameState(myCurrentLevelID, levelHashValue));
 }
 
 void ServerLobbyState::ReceiveNetworkMessage(const NetMessageRequestConnect& aMessage, const sockaddr_in& aSenderAddress)
