@@ -184,7 +184,7 @@ protected:
 
 	sockaddr_in myBroadcastAddress;
 
-	unsigned short myMessageGameIdentifier;
+	unsigned int myGameIdentifier;
 
 	bool AlreadyReceived(const NetMessage& aMessage);
 private:
@@ -236,7 +236,7 @@ template<typename T>
 inline void SharedNetworkManager::AddMessage(T aMessage, const sockaddr_in aTargetAddress)
 {
 	aTargetAddress;
-	aMessage.myGameID = myMessageGameIdentifier;
+	aMessage.myGameID = myGameIdentifier;
 	aMessage.mySenderID = 0;
 	if (myIsServer == false)
 	{

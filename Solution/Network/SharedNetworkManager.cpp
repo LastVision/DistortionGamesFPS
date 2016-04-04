@@ -1,5 +1,9 @@
 #include "stdafx.h"
+
 #include "SharedNetworkManager.h"
+
+#include <Defines.h>
+#include <MurmurHash3.h>
 
 #include "NetMessage.h"
 #include "NetMessageActivateSpawnpoint.h"
@@ -36,6 +40,7 @@
 #include "NetMessageLevelComplete.h"
 #include "NetMessageText.h"
 #include "NetMessagePressEText.h"
+
 
 #include <IPHlpApi.h>
 #pragma comment(lib, "IPHLPAPI.lib")
@@ -77,7 +82,7 @@ void SharedNetworkManager::Initiate()
 	myAllowSendWithoutSubscribers = false;
 	myStopSendMessages = false;
 
-	myMessageGameIdentifier = 1496;
+	myGameIdentifier = Hash("Distortion Games v." + NETWORK_VERSION);
 }
 
 void SharedNetworkManager::StartNetwork(unsigned int aPortNum)
@@ -280,12 +285,12 @@ bool SharedNetworkManager::IsSubscribed(const eNetMessageType aMessageType, Netw
 
 eNetMessageType SharedNetworkManager::ReadType(const char* aBuffer)
 {
-	return static_cast<eNetMessageType>(aBuffer[2]);
+	return static_cast<eNetMessageType>(aBuffer[4]);
 }
 
 eNetMessageType SharedNetworkManager::ReadType(const std::vector<char>& aBuffer)
 {
-	return static_cast<eNetMessageType>(aBuffer[2]);
+	return static_cast<eNetMessageType>(aBuffer[4]);
 }
 
 unsigned long long SharedNetworkManager::GetResponsTime() const

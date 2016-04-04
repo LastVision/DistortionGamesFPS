@@ -150,7 +150,7 @@ void ServerNetworkManager::ReceieveThread()
 		{
 			NetMessage toDeserialize;
 			toDeserialize.DeSerializeFirst(message.myData);
-			if (toDeserialize.myGameID == myMessageGameIdentifier)
+			if (toDeserialize.myGameID == myGameIdentifier)
 			{
 				myReceieveBuffer[myCurrentBuffer ^ 1].Add(message);
 			}
@@ -177,7 +177,7 @@ void ServerNetworkManager::SendThread()
 			{
 				for (Connection& connection : myClients)
 				{
-					if (connection.myID != static_cast<unsigned int>(arr.myBuffer[7]))
+					if (connection.myID != static_cast<unsigned int>(arr.myBuffer[9]))
 					{
 						myNetwork->Send(arr.myBuffer, connection.myAddress);
 					}
@@ -187,7 +187,7 @@ void ServerNetworkManager::SendThread()
 			{
 				for (Connection& connection : myClients)
 				{
-					if (connection.myID == arr.myTargetID && connection.myID != static_cast<unsigned int>(arr.myBuffer[7]))
+					if (connection.myID == arr.myTargetID && connection.myID != static_cast<unsigned int>(arr.myBuffer[9]))
 					{
 						myNetwork->Send(arr.myBuffer, connection.myAddress);
 						break;
@@ -365,11 +365,11 @@ void ServerNetworkManager::AddImportantMessage(std::vector<char> aBuffer, unsign
 		ImportantMessage msg;
 		msg.myData = aBuffer;
 		msg.myImportantID = aImportantID;
-		msg.myMessageType = aBuffer[2];
+		msg.myMessageType = aBuffer[4];
 		msg.mySenders.Init(myClients.Size());
 		for (Connection c : myClients)
 		{
-			if (aBuffer[11] == 0 || aBuffer[11] == static_cast<int>(c.myID))
+			if (aBuffer[13] == 0 || aBuffer[13] == static_cast<int>(c.myID))
 			{
 				ImportantClient client;
 				client.myGID = c.myID;
@@ -389,7 +389,7 @@ void ServerNetworkManager::AddImportantMessage(std::vector<char> aBuffer, unsign
 		ImportantMessage msg;
 		msg.myData = aBuffer;
 		msg.myImportantID = aImportantID;
-		msg.myMessageType = aBuffer[2];
+		msg.myMessageType = aBuffer[4];
 		msg.mySenders.Init(16);
 
 			ImportantClient client;

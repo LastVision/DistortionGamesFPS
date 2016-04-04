@@ -340,3 +340,12 @@ const unsigned int Hash(const char* aKey)
 
 	return result;
 }
+
+const unsigned int Hash(const std::string& aKey)
+{
+	int size = strlen(aKey.c_str());
+	unsigned int result;
+	MurmurHash3_x86_32(aKey.c_str(), size, 0, &result);
+
+	return result;
+}

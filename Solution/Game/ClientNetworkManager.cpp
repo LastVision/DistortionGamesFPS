@@ -128,7 +128,7 @@ void ClientNetworkManager::ReceieveThread()
 		{
 			NetMessage toDeserialize;
 			toDeserialize.DeSerializeFirst(message.myData);
-			if (toDeserialize.myGameID == myMessageGameIdentifier)
+			if (toDeserialize.myGameID == myGameIdentifier)
 			{
 				myReceieveBuffer[myCurrentBuffer ^ 1].Add(message);
 			}

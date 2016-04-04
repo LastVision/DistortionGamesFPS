@@ -1,12 +1,13 @@
 #include "stdafx.h"
+#include <Defines.h>
 #include "NetMessage.h"
-
+#include <MurmurHash3.h>
 
 
 NetMessage::NetMessage(eNetMessageType aID)
 {
 	myID = static_cast<uint8_t>(aID);
-	myGameID = static_cast<uint16_t>(1496);
+	myGameID = Hash("Distortion Games v." + NETWORK_VERSION);
 }
 
 
@@ -43,7 +44,7 @@ const unsigned int NetMessage::GetImportantID() const
 
 void NetMessage::DeSerializeFirst(char* aMessage)
 {
-	for (int i = 0; i < 2; ++i)
+	for (int i = 0; i < 4; ++i)
 	{
 		myStream.push_back(aMessage[i]);
 	}

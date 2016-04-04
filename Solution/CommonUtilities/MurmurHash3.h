@@ -33,6 +33,7 @@ void MurmurHash3_x86_128(const void* aKey, int aLength, uint32_t aSeed, void* ou
 void MurmurHash3_x64_128(const void* aKey, int aLength, uint32_t aSeed, void* out);
 
 const unsigned int Hash(const char* aKey);
+const unsigned int Hash(const std::string& aKey);
 //-----------------------------------------------------------------------------
 
 #endif  _MURMURHASH3_H_
