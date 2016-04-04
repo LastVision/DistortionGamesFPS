@@ -24,6 +24,7 @@
 #include "NetMessagePressE.h"
 #include "NetMessageReplyServer.h"
 #include "NetMessageRequestServer.h"
+#include "NetMessageStartLobby.h"
 #include "NetMessageOnHit.h"
 #include "NetMessageOnDeath.h"
 #include "NetMessageExplosion.h"
@@ -411,6 +412,9 @@ void SharedNetworkManager::HandleMessage()
 			break;
 		case eNetMessageType::SERVER_REQUEST:
 			UnpackAndHandle(NetMessageRequestServer(), buffer);
+			break;
+		case eNetMessageType::START_LOBBY:
+			UnpackAndHandle(NetMessageStartLobby(), buffer);
 			break;
 		case eNetMessageType::RAY_CAST_REQUEST:
 			UnpackAndHandle(NetMessageRayCastRequest(), buffer);

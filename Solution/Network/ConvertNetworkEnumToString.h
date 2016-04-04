@@ -69,6 +69,8 @@ static std::string ConvertNetworkEnumToString(eNetMessageType aType)
 		return "SERVER REPLY";
 	case eNetMessageType::SERVER_REQUEST:
 		return "SERVER REQUEST";
+	case eNetMessageType::START_LOBBY:
+		return "START LOBBY";
 	case eNetMessageType::RAY_CAST_REQUEST:
 		return "CLIENT WANTS TO RAY CAST";
 	case eNetMessageType::PRESS_E:

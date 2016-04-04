@@ -163,11 +163,11 @@ namespace GUI
 		}
 		else if (clickEvent == "host_multiplayer")
 		{
-			myClickEvent = new OnClickMessage(eOnClickEvent::HOST_MULTIPLAYER);
+			myClickEvent = new OnClickMessage(eOnClickEvent::MULTIPLAYER_HOST);
 		}
 		else if (clickEvent == "join_multiplayer")
 		{
-			myClickEvent = new OnClickMessage(eOnClickEvent::JOIN_MULTIPLAYER);
+			myClickEvent = new OnClickMessage(eOnClickEvent::MULTIPLAYER_JOIN);
 		}
 		else if (clickEvent == "credits")
 		{

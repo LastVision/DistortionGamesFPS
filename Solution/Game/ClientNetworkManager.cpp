@@ -183,7 +183,7 @@ void ClientNetworkManager::PingThread()
 	}
 }
 
-void ClientNetworkManager::ConnectToServer(const char* aServerIP)
+void ClientNetworkManager::ConnectToServer(eGameType aType, const char* aServerIP)
 {
 	DL_ASSERT_EXP(myIsServer == false, "Tried to Connect to Server from Server... this doesn't seem right.");
 	myIsOnline = myNetwork->ConnectToServer(aServerIP);
@@ -191,7 +191,7 @@ void ClientNetworkManager::ConnectToServer(const char* aServerIP)
 	DWORD username_len = 256 + 1;
 	GetUserNameA(username, &username_len);
 
-	AddMessage(NetMessageRequestConnect(username, 0));
+	AddMessage(NetMessageRequestConnect(aType, username, 0));
 }
 
 unsigned int ClientNetworkManager::GetGID() const
