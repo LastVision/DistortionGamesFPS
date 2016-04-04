@@ -3,6 +3,7 @@
 #include <Subscriber.h>
 class Entity;
 struct SpawnpointComponentData;
+class SharedUnitManager;
 
 class SpawnpointComponent : public Component, public Subscriber
 {
@@ -26,7 +27,8 @@ private:
 	void SpawnUnit(float aDelta);
 
 	const SpawnpointComponentData& myData;
-	CU::GrowingArray<Entity*> myUnits;
+	//CU::GrowingArray<Entity*> myUnits;
+	SharedUnitManager* myUnitManager;
 
 	CU::GrowingArray<unsigned int> myTriggerConnections;
 

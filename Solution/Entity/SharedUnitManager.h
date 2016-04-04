@@ -21,6 +21,8 @@ public:
 	Entity* RequestUnit(const std::string& aUnitType);
 	Entity* RequestUnit(unsigned int aGID);
 
+	const CU::GrowingArray<Entity*>& GetUnits();
+
 
 protected:
 	void AddToMap();

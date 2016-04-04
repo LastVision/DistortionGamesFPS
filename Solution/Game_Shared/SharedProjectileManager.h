@@ -6,6 +6,8 @@ namespace Prism
 	class Scene;
 }
 
+struct BulletComponentData;
+
 class SharedProjectileManager
 {
 public:
@@ -14,7 +16,7 @@ public:
 	virtual void CreateGrenades(Prism::Scene* aScene) = 0;
 	static SharedProjectileManager* GetInstance();
 	int GetBulletIndex();
-	Entity* RequestBullet();
+	Entity* RequestBullet(const BulletComponentData& aBulletData);
 	Entity* RequestBullet(unsigned int aGID);
 	void ActivateBullet(Entity* anEntity);
 	virtual void Update(float aDeltaTime);

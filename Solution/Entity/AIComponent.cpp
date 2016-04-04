@@ -13,7 +13,7 @@
 #include <NetMessageEnemyShooting.h>
 #include <SharedProjectileManager.h>
 
-AIComponent::AIComponent(Entity& anEntity, const AIComponentData& aData, CU::Matrix44<float>& anOrientation)
+AIComponent::AIComponent(Entity& anEntity, const AIComponentData& aData, CU::Matrix44<float>& anOrientation, const BulletComponentData& aBulletData)
 	: Component(anEntity)
 	, myData(aData)
 	, myOrientation(anOrientation)
@@ -25,6 +25,7 @@ AIComponent::AIComponent(Entity& anEntity, const AIComponentData& aData, CU::Mat
 	, myTarget(nullptr)
 	, myHasRaycasted(false)
 	, myHasJustSpawned(true)
+	, myBulletData(aBulletData)
 {
 	myRaycastHandler = [=](PhysicsComponent* aComponent, const CU::Vector3<float>& aDirection, const CU::Vector3<float>& aHitPosition, const CU::Vector3<float>& aHitNormal)
 	{
@@ -201,7 +202,7 @@ void AIComponent::Shoot(Entity* aClosestPlayer)
 
 	myEntity.SetState(eEntityState::ATTACK);
 	SharedNetworkManager::GetInstance()->AddMessage<NetMessageEntityState>(NetMessageEntityState(myEntity.GetState(), myEntity.GetGID()));
-	Entity* requestedBullet = SharedProjectileManager::GetInstance()->RequestBullet();
+	Entity* requestedBullet = SharedProjectileManager::GetInstance()->RequestBullet(myBulletData);
 	myAttackAnimationTimeCurrent = myData.myAttackAnimationTime;
 	requestedBullet->GetComponent<BulletComponent>()->Activate(myEntity.GetOrientation());
 	SharedNetworkManager::GetInstance()->AddMessage<NetMessageEnemyShooting>(NetMessageEnemyShooting(requestedBullet->GetGID()));

@@ -18,11 +18,12 @@ SpawnpointComponent::SpawnpointComponent(Entity& anEntity, const SpawnpointCompo
 	: Component(anEntity)
 	, myData(aSpawnpointComponentData)
 	, myIsActive(false)
-	, myUnits(512)
+	//, myUnits(512)
 	, myTriggerConnections(4)
 	, myBoundToTiggers(false)
 	, myActivateOnce(false)
 {
+	myUnitManager = SharedUnitManager::GetInstance();
 	PostMaster::GetInstance()->Subscribe(eMessageType::ACTIVATE_SPAWNPOINT, this);
 	PostMaster::GetInstance()->Subscribe(eMessageType::ENEMY_KILLED, this);
 
@@ -30,23 +31,30 @@ SpawnpointComponent::SpawnpointComponent(Entity& anEntity, const SpawnpointCompo
 	mySpawnTimer = myData.mySpawnInterval;
 	myLifetime = myData.mySpawnpointLifetime;
 
-	for (int i = 0; i < myData.myUnitCount; ++i)
-	{
-		int randomType = CU::Math::RandomRange(0, aSpawnpointComponentData.myUnitTypes.Size());
-		std::string server = "";
-		if (myEntity.GetIsClient() == false)
-		{
-			server = "Server";
-		}
-		Entity* toAdd = SharedUnitManager::GetInstance()->RequestUnit(myData.myUnitTypes[randomType] + server);
-		myUnits.Add(toAdd);
-	}
+	//for (int i = 0; i < myData.myUnitCount; ++i)
+	//{
+	//	int randomType = CU::Math::RandomRange(0, aSpawnpointComponentData.myUnitTypes.Size());
+	//	std::string server = "";
+	//	if (myEntity.GetIsClient() == false)
+	//	{
+	//		server = "Server";
+	//	}
+	//	Entity* toAdd = SharedUnitManager::GetInstance()->RequestUnit(myData.myUnitTypes[randomType] + server);
+	//	if (toAdd != nullptr)
+	//	{
+	//		//myUnits.Add(toAdd);
+	//	}
+	//	else
+	//	{
+	//		DL_ASSERT("Could not find enemy to add in spawncomponent!");
+	//	}
+	//}
 }
 
 
 SpawnpointComponent::~SpawnpointComponent()
 {
-	myUnits.RemoveAll();
+	//myUnits.RemoveAll();
 	PostMaster::GetInstance()->UnSubscribe(eMessageType::ACTIVATE_SPAWNPOINT, this);
 	PostMaster::GetInstance()->UnSubscribe(eMessageType::ENEMY_KILLED, this);
 }
@@ -109,7 +117,7 @@ void SpawnpointComponent::ReceiveMessage(const ActivateSpawnpointMessage& aMessa
 
 void SpawnpointComponent::ReceiveMessage(const EnemyKilledMessage& aMessage)
 {
-	for each (Entity* unit in myUnits)
+	for each (Entity* unit in myUnitManager->GetUnits())
 	{
 		if (unit->GetGID() == aMessage.myEnemy->GetGID())
 		{
@@ -127,11 +135,6 @@ void SpawnpointComponent::BindToTrigger(unsigned int aGID)
 
 void SpawnpointComponent::SpawnUnit(float aDelta)
 {
-	if (myUnitIndex >= myUnits.Size())
-	{
-		myUnitIndex = 0;
-	}
-
 	mySpawnTimer -= aDelta;
 	if (mySpawnTimer < 0.f)
 	{
@@ -139,20 +142,20 @@ void SpawnpointComponent::SpawnUnit(float aDelta)
 
 		for (int i = 0; i < myData.mySpawnPerInterval; ++i)
 		{
-			if (myUnits[myUnitIndex]->IsAlive() == false)
+			if (myActiveCount < myData.myUnitCount)
 			{
-				if (myActiveCount < myData.myUnitCount)
+				CU::Vector3<float> spawnPosition = myEntity.GetOrientation().GetPos();
+				int randomType = CU::Math::RandomRange(0, myData.myUnitTypes.Size());
+
+				Entity* toActivate = myUnitManager->RequestUnit(myData.myUnitTypes[randomType] + "Server");
+				if (toActivate != nullptr)
 				{
-					CU::Vector3<float> spawnPosition = myEntity.GetOrientation().GetPos();
-					//spawnPosition.x + 5 * i;
-					SharedUnitManager::GetInstance()->ActivateUnit(myUnits[myUnitIndex], spawnPosition);
-					SharedNetworkManager::GetInstance()->AddMessage(NetMessageActivateUnit(myUnits[myUnitIndex]->GetGID(), spawnPosition));
-					
+					SharedUnitManager::GetInstance()->ActivateUnit(toActivate, spawnPosition);
+					SharedNetworkManager::GetInstance()->AddMessage(NetMessageActivateUnit(toActivate->GetGID(), spawnPosition));
+
 					myActiveCount++;
 				}
 			}
-
-			myUnitIndex++;
 		}
 		mySpawnTimer = myData.mySpawnInterval;
 	}
