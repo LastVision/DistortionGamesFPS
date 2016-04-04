@@ -323,7 +323,7 @@ void ClientLevelFactory::LoadLights(XMLReader& aReader, tinyxml2::XMLElement* aE
 		light->SetPosition(CU::Vector4<float>(position, 1.f));
 		light->SetColor(color);
 		light->SetRange(range);
-		light->SetAngle(spotangle/2.f);
+		light->SetAngle(CU::Math::DegreeToRad(spotangle / 2.f));
 
 		rotation.x = CU::Math::DegreeToRad(rotation.x);
 		rotation.y = CU::Math::DegreeToRad(rotation.y);

@@ -442,7 +442,7 @@ namespace Prism
 		{
 			return false;
 		}
-
+		SetDebugName(myDepthStencilStates[static_cast<int>(eDepthStencil::Z_ENABLED)], "DepthStencil::Z_ENABLED");
 
 		stencilDesc.DepthEnable = false;
 		stencilDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
@@ -451,7 +451,7 @@ namespace Prism
 		{
 			return false;
 		}
-
+		SetDebugName(myDepthStencilStates[static_cast<int>(eDepthStencil::Z_DISABLED)], "DepthStencil::Z_DISABLED");
 
 		stencilDesc.DepthEnable = true;
 		stencilDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ZERO;
@@ -475,6 +475,7 @@ namespace Prism
 		{
 			return false;
 		}
+		SetDebugName(myDepthStencilStates[static_cast<int>(eDepthStencil::READ_NO_WRITE)], "DepthStencil::READ_NO_WRITE");
 
 		return true;
 	}

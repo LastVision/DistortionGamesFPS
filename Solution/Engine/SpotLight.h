@@ -1,7 +1,7 @@
 #pragma once
 
 #include "LightStructs.h"
-
+#include "MathHelper.h"
 class Camera;
 class Instance;
 
@@ -33,7 +33,7 @@ namespace Prism
 		float GetCone() const;
 
 
-		void SetAngle(float anAngle);
+		void SetAngle(float anAngleInRad);
 		float GetAngle() const;
 
 		void PerformTransformation(const CU::Matrix44<float>& aTransformation);
@@ -51,7 +51,7 @@ namespace Prism
 
 		float myRange;
 		float myCone;
-		float myAngle;
+		float myAngleInRad;
 
 		Instance* myLightMesh;
 		SpotLightData myLightData;
@@ -126,14 +126,14 @@ namespace Prism
 		return myCone;
 	}
 
-	inline void SpotLight::SetAngle(float anAngle)
+	inline void SpotLight::SetAngle(float anAngleInRad)
 	{
-		myAngle = anAngle;
+		myAngleInRad = anAngleInRad;
 	}
 
 	inline float SpotLight::GetAngle() const
 	{
-		return myAngle;
+		return myAngleInRad;
 	}
 
 	inline void SpotLight::PerformTransformation(const CU::Matrix44<float>& aTransformation)
