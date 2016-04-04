@@ -21,6 +21,7 @@ AnimationComponent::AnimationComponent(Entity& aEntity, const AnimationComponent
 	, myInstance(nullptr)
 	, myCullingRadius(10.f)
 	, myIsEnemy(false)
+	, myHasSetCalcedMuzzle(false)
 {
 #ifndef BOX_MODE
 	Prism::ModelProxy* model = Prism::ModelLoader::GetInstance()->LoadModelAnimated(myComponentData.myModelPath
@@ -36,7 +37,7 @@ AnimationComponent::AnimationComponent(Entity& aEntity, const AnimationComponent
 		AddAnimation(loadAnimation.myEntityState, loadAnimation.myAnimationPath, loadAnimation.myLoopFlag, loadAnimation.myResetTimeOnRestart);
 	}
 	
-	if (myEntity.GetType() == eEntityType::UNIT && myEntity.GetIsEnemy() == true)
+	if (myEntity.GetType() == eEntityType::UNIT && myEntity.GetSubType() != "player")
 	{
 		myIsEnemy = true;
 		for (int i = 0; i < animations; ++i)
@@ -45,7 +46,8 @@ AnimationComponent::AnimationComponent(Entity& aEntity, const AnimationComponent
 		}
 		Prism::ModelProxy* weapon = Prism::ModelLoader::GetInstance()->LoadModelAnimated("Data/Resource/Model/Enemy_weapon/SK_enemy_weapon_rifle.fbx", myComponentData.myEffectPath);
 		myWeapon = new Prism::Instance(*weapon, myWeaponJoint);
-		
+
+		Prism::ModelLoader::GetInstance()->GetHierarchyToBone("Data/Resource/Model/Enemy_weapon/SK_enemy_weapon_rifle.fbx", "weapon_muzzle_tip-1", myMuzzleBone);
 	}
 
 #endif
@@ -83,6 +85,11 @@ void AnimationComponent::AddAnimation(eEntityState aState, const std::string& aA
 
 void AnimationComponent::Update(float aDeltaTime)
 {
+	if (myMuzzleBone.IsValid() == true && myHasSetCalcedMuzzle == false)
+	{
+		myHasSetCalcedMuzzle = true;
+		myMuzzleBoneCalced = CU::InverseSimple(*myMuzzleBone.myBind) * (*myMuzzleBone.myJoint);
+	}
 #ifndef BOX_MODE
 	AnimationData& data = myAnimations[int(myEntity.GetState())];
 	if (myPrevEntityState != myEntity.GetState())
@@ -104,6 +111,11 @@ void AnimationComponent::Update(float aDeltaTime)
 		myWeapon->Update(aDeltaTime);
 		EnemyAnimationBone currentAnimation = myEnemyAnimations[int(myEntity.GetState())];
 		myWeaponJoint = CU::InverseSimple(*currentAnimation.myWeaponBone.myBind) * (*currentAnimation.myWeaponBone.myJoint) * myEntity.GetOrientation();
+		
+		myMuzzleOrientation = myMuzzleBoneCalced * myWeaponJoint;
+
+		//Prism::DebugDrawer::GetInstance()->RenderLine3D(CU::Vector3<float>(), myMuzzleOrientation.GetPos());
+
 	}
 #endif
 }
