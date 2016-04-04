@@ -33,9 +33,9 @@ ClientLevel* ClientLevelFactory::LoadLevel(int aID)
 		DL_ASSERT(CU::Concatenate("[LevelFactory] Trying to load a non-existing level! Check so the ID: %s is a valid id in LI_level.xml"
 			, std::to_string(aID).c_str()));
 	}
-			
+
 	myCurrentID = aID;
-		
+
 	return LoadCurrentLevel();
 }
 
@@ -47,8 +47,8 @@ ClientLevel* ClientLevelFactory::LoadCurrentLevel()
 	myCurrentLevel->SetMinMax(myMinPoint, myMaxPoint);
 
 
-	
-	std::string levelName(myLevelPaths[myCurrentID].begin() + myLevelPaths[myCurrentID].rfind('/')+1, myLevelPaths[myCurrentID].end() - 4);
+
+	std::string levelName(myLevelPaths[myCurrentID].begin() + myLevelPaths[myCurrentID].rfind('/') + 1, myLevelPaths[myCurrentID].end() - 4);
 	myCurrentLevel->SetName(levelName);
 #ifdef THREAD_PHYSICS
 	Prism::PhysicsInterface::GetInstance()->InitThread();
@@ -103,6 +103,12 @@ void ClientLevelFactory::LoadRooms(XMLReader& aReader, tinyxml2::XMLElement* aEl
 		{
 			typeEnum = Prism::eRoomType::CONNECTOR;
 		}
+		else
+		{
+#ifdef USE_ATMOSPHERE_PARTICLES
+			PostMaster::GetInstance()->SendMessage(EmitterMessage("Atmosphere", position, scale, 0));
+#endif
+		}
 
 		static_cast<ClientLevel*>(myCurrentLevel)->GetScene()->AddRoom(new Prism::Room(position, scale, name, typeEnum));
 	}
@@ -122,16 +128,16 @@ void ClientLevelFactory::LoadProps(XMLReader& aReader, tinyxml2::XMLElement* aEl
 		CU::Vector3f propPosition;
 		CU::Vector3f propRotation;
 		CU::Vector3f propScale;
-		
+
 		unsigned int gid(UINT32_MAX);
-		
+
 		ReadGID(aReader, entityElement, gid);
 		ReadOrientation(aReader, entityElement, propPosition, propRotation, propScale);
 
 		propRotation.x = CU::Math::DegreeToRad(propRotation.x);
 		propRotation.y = CU::Math::DegreeToRad(propRotation.y);
 		propRotation.z = CU::Math::DegreeToRad(propRotation.z);
-		
+
 		Entity* newEntity = EntityFactory::CreateEntity(gid, eEntityType::PROP, propType, static_cast<ClientLevel*>(myCurrentLevel)->GetScene()
 			, true, propPosition, propRotation, propScale);
 		newEntity->AddToScene();
@@ -235,7 +241,7 @@ void ClientLevelFactory::LoadTriggers(XMLReader& aReader, tinyxml2::XMLElement* 
 		if (newEntity->GetComponent<TriggerComponent>()->IsClientSide() == true)
 		{
 			newEntity->Reset();
-			if(newEntity->GetComponent<TriggerComponent>()->GetIsActiveFromStart() == true)
+			if (newEntity->GetComponent<TriggerComponent>()->GetIsActiveFromStart() == true)
 			{
 				newEntity->AddToScene();
 			}
@@ -303,7 +309,7 @@ void ClientLevelFactory::LoadLights(XMLReader& aReader, tinyxml2::XMLElement* aE
 		float range;
 		float spotangle;
 
-		
+
 		aReader.ForceReadAttribute(aReader.ForceFindFirstChild(lightElement, "position"), "X", "Y", "Z", position);
 		aReader.ForceReadAttribute(aReader.ForceFindFirstChild(lightElement, "rotation"), "X", "Y", "Z", rotation);
 
@@ -323,7 +329,7 @@ void ClientLevelFactory::LoadLights(XMLReader& aReader, tinyxml2::XMLElement* aE
 		light->SetPosition(CU::Vector4<float>(position, 1.f));
 		light->SetColor(color);
 		light->SetRange(range);
-		light->SetAngle(spotangle/2.f);
+		light->SetAngle(spotangle / 2.f);
 
 		rotation.x = CU::Math::DegreeToRad(rotation.x);
 		rotation.y = CU::Math::DegreeToRad(rotation.y);
@@ -377,8 +383,8 @@ void ClientLevelFactory::LoadText(XMLReader& aReader, tinyxml2::XMLElement* aEle
 
 		rotation.x = CU::Math::DegreeToRad(rotation.x);
 		rotation.y = CU::Math::DegreeToRad(rotation.y);
-		rotation.z = CU::Math::DegreeToRad(rotation.z); 
-		
+		rotation.z = CU::Math::DegreeToRad(rotation.z);
+
 		myCurrentLevel->AddWorldText(text, position, rotation.y, color);
 	}
 }

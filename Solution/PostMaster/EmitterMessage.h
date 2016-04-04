@@ -18,6 +18,8 @@ struct EmitterMessage : public Message
 	EmitterMessage(const std::string& aParticleType, const CU::Vector3f& aPosition, float anEmitterLifeTime);
 	EmitterMessage(const std::string& aParticleType, const CU::Vector3f& aPosition, float anEmitterLifeTime, const CU::Vector3f& aSize);
 	EmitterMessage(const std::string& aParticleType, const CU::Vector3f& aPosition, float anEmitterLifeTime, float aRadius);
+
+	EmitterMessage(const std::string& aParticleType, const CU::Vector3f& aPosition, const CU::Vector3f& aSize, short reserverd);
 	EmitterMessage(const std::string& aParticleType, const CU::Vector3f& aPosition, const CU::Vector3f& aDirection);
 
 	Prism::ParticleEmitterInstance* myEmitter = nullptr;
@@ -103,4 +105,13 @@ inline EmitterMessage::EmitterMessage(const std::string& aParticleType, const CU
 	, myDirection(aDirection)
 	, myUseDirection(true)
 {
+}
+
+inline EmitterMessage::EmitterMessage(const std::string& aParticleType, const CU::Vector3f& aPosition, const CU::Vector3f& aSize, short reserved)
+	: Message(eMessageType::PARTICLE)
+	, myParticleTypeString(aParticleType)
+	, myPosition(aPosition)
+	, mySize(aSize)
+{
+	reserved;
 }

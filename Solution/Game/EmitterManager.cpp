@@ -9,6 +9,7 @@
 #include <TimerManager.h>
 #include "CommonHelper.h"
 #include <Camera.h>
+#include <InputWrapper.h>
 #define FINISHED 0
 #define UNFINISHED 1
 
@@ -45,6 +46,7 @@ void EmitterManager::Initiate(Prism::Camera* aCamera)
 
 void EmitterManager::UpdateEmitters(float aDeltaTime, CU::Matrix44f aWorldMatrix)
 {
+	
 	for (int i = 0; i < myEmitterList.Size(); ++i)
 	{
 		if (myEmitterList[i]->myTypeIsActive == false)
@@ -65,6 +67,10 @@ void EmitterManager::UpdateEmitters(float aDeltaTime, CU::Matrix44f aWorldMatrix
 				if (instance->IsActive() == false)
 				{
 					continue;
+				}
+				if (CU::InputWrapper::GetInstance()->KeyDown(DIK_L) == true)
+				{
+					instance->ToggleDebugLines();
 				}
 				instance->Update(aDeltaTime, aWorldMatrix);
 			}
