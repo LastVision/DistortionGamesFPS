@@ -28,6 +28,7 @@ ServerLevelFactory::~ServerLevelFactory()
 
 ServerLevel* ServerLevelFactory::LoadLevel(int aID)
 {
+	myIsLoadingLevel = true;
 	if (myLevelPaths.find(aID) == myLevelPaths.end())
 	{
 		DL_ASSERT(CU::Concatenate("[LevelFactory] Trying to load a non-existing level! Check so the ID: %s is a valid id in LI_level.xml"
@@ -41,12 +42,14 @@ ServerLevel* ServerLevelFactory::LoadLevel(int aID)
 
 ServerLevel* ServerLevelFactory::LoadCurrentLevel()
 {
+	myIsLoadingLevel = true;
 	myCurrentLevel = new ServerLevel();
 	ReadLevel(myLevelPaths[myCurrentID]);
 	myCurrentLevel->Init(myMissionXMLPath);
 #ifdef THREAD_PHYSICS
 	Prism::PhysicsInterface::GetInstance()->InitThread();
 #endif
+	myIsLoadingLevel = false;
 	return myCurrentLevel;
 }
 

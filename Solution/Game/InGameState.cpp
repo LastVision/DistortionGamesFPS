@@ -3,14 +3,17 @@
 #include "ClientLevel.h"
 #include "ClientLevelFactory.h"
 #include "Console.h"
+#include <CommonHelper.h>
 #include <GameStateMessage.h>
 #include <EffectContainer.h>
 #include <FadeMessage.h>
 #include "InGameState.h"
 #include <InputWrapper.h>
 #include <ModelLoader.h>
+#include <MurmurHash3.h>
 #include "ServerSelectState.h"
 #include <NetMessageAllClientsComplete.h>
+#include <NetMessageDisconnect.h>
 #include <NetMessageLevelComplete.h>
 #include <NetMessageLevelLoaded.h>
 #include <NetMessageLoadLevel.h>
@@ -23,16 +26,18 @@
 #include <Cursor.h>
 #include "ClientNetworkManager.h"
 
-InGameState::InGameState(int aLevelID)
+InGameState::InGameState(int aLevelID, unsigned int aServerHashLevelValue)
 	: myGUIManager(nullptr)
 	, myLevelToLoad(aLevelID)
 	, myShouldLoadLevel(true)
 	, myLevel(nullptr)
 	, myLevelComplete(false)
 	, myCanStartNextLevel(false)
+	, myServerHashLevelValue(aServerHashLevelValue)
 {
 	myIsActiveState = false;
 	myLevelFactory = new ClientLevelFactory("Data/Level/LI_level.xml");
+	myHashLevelValue = Hash(CU::ReadFileToString(myLevelFactory->GetLevelPath(aLevelID)).c_str());
 }
 
 InGameState::~InGameState()
@@ -67,6 +72,13 @@ void InGameState::InitState(StateStackProxy* aStateStackProxy, GUI::Cursor* aCur
 	ClientNetworkManager::GetInstance()->Subscribe(eNetMessageType::LEVEL_COMPLETE, this);
 	ClientNetworkManager::GetInstance()->Subscribe(eNetMessageType::ALL_CLIENTS_COMPLETE, this);
 	ClientNetworkManager::GetInstance()->Subscribe(eNetMessageType::LOAD_LEVEL, this);
+
+	if (myHashLevelValue != myServerHashLevelValue)
+	{
+		ClientNetworkManager::GetInstance()->AddMessage(NetMessageDisconnect());
+		myStateStatus = eStateStatus::ePopMainState;
+		DL_MESSAGE_BOX("Level don't match the server level. Please update and try again.", "Failed to play level.", MB_OK | MB_ICONWARNING);
+	}
 }
 
 void InGameState::EndState()

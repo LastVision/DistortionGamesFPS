@@ -9,7 +9,7 @@ class ServerLevelFactory;
 class ServerInGameState : public ServerState, public NetworkSubscriber
 {
 public:
-	ServerInGameState(int aLevelID);
+	ServerInGameState(int aLevelID, unsigned int aLevelHashValue);
 	~ServerInGameState();
 
 	void InitState(ServerStateStackProxy* aStateStackProxy) override;
@@ -28,6 +28,7 @@ private:
 	ServerLevel* myLevel;
 	ServerLevelFactory* myLevelFactory;
 	int myLevelID;
+	unsigned int myLevelHashValue;
 
 	eInGameStates myState;
 
