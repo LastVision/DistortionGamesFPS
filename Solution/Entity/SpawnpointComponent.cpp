@@ -3,6 +3,7 @@
 #include "SpawnpointComponentData.h"
 
 #include "Entity.h"
+#include <EnemyKilledMessage.h>
 
 #include <MathHelper.h>
 #include "SharedUnitManager.h"
@@ -19,14 +20,17 @@ SpawnpointComponent::SpawnpointComponent(Entity& anEntity, const SpawnpointCompo
 	, myIsActive(false)
 	, myUnits(512)
 	, myTriggerConnections(4)
+	, myBoundToTiggers(false)
+	, myActivateOnce(false)
 {
 	PostMaster::GetInstance()->Subscribe(eMessageType::ACTIVATE_SPAWNPOINT, this);
+	PostMaster::GetInstance()->Subscribe(eMessageType::ENEMY_KILLED, this);
 
-	myUnitCount = (myData.mySpawnPerInterval * myData.mySpawnpointLifetime) / myData.mySpawnInterval;
+	/*myUnitCount = int((myData.mySpawnPerInterval * myData.mySpawnpointLifetime) / myData.mySpawnInterval);*/
 	mySpawnTimer = myData.mySpawnInterval;
 	myLifetime = myData.mySpawnpointLifetime;
 
-	for (unsigned int i = 0; i < myUnitCount; ++i)
+	for (int i = 0; i < myData.myUnitCount; ++i)
 	{
 		int randomType = CU::Math::RandomRange(0, aSpawnpointComponentData.myUnitTypes.Size());
 		std::string server = "";
@@ -44,13 +48,15 @@ SpawnpointComponent::~SpawnpointComponent()
 {
 	myUnits.RemoveAll();
 	PostMaster::GetInstance()->UnSubscribe(eMessageType::ACTIVATE_SPAWNPOINT, this);
+	PostMaster::GetInstance()->UnSubscribe(eMessageType::ENEMY_KILLED, this);
 }
 
 void SpawnpointComponent::Update(float aDelta)
 {
-	if (myIsActive == false && myTriggerConnections.Size() <= 0)
+	if (myIsActive == false && myBoundToTiggers == false && myActivateOnce == false)
 	{
 		Activate();
+		myActivateOnce = true;
 	}
 	else if (myIsActive == true)
 	{
@@ -75,13 +81,19 @@ void SpawnpointComponent::Activate()
 
 void SpawnpointComponent::DeActivate()
 {
-	myUnitIndex = 0;
-	myActiveCount = 0;
 	myIsActive = false;
 }
 
 void SpawnpointComponent::ReceiveMessage(const ActivateSpawnpointMessage& aMessage)
 {
+	if (myEntity.GetGID() == aMessage.myGID)
+	{
+		if (myIsActive == false)
+		{
+			Activate();
+			return;
+		}
+	}
 	for each(unsigned int gid in myTriggerConnections)
 	{
 		if (gid == aMessage.myGID)
@@ -95,8 +107,21 @@ void SpawnpointComponent::ReceiveMessage(const ActivateSpawnpointMessage& aMessa
 	}
 }
 
+void SpawnpointComponent::ReceiveMessage(const EnemyKilledMessage& aMessage)
+{
+	for each (Entity* unit in myUnits)
+	{
+		if (unit->GetGID() == aMessage.myEnemy->GetGID())
+		{
+			myActiveCount--;
+			return;
+		}
+	}
+}
+
 void SpawnpointComponent::BindToTrigger(unsigned int aGID)
 {
+	myBoundToTiggers = true;
 	myTriggerConnections.Add(aGID);
 }
 
@@ -110,20 +135,24 @@ void SpawnpointComponent::SpawnUnit(float aDelta)
 	mySpawnTimer -= aDelta;
 	if (mySpawnTimer < 0.f)
 	{
+		printf("Active units from spawnpoint %i", myActiveCount);
+
 		for (int i = 0; i < myData.mySpawnPerInterval; ++i)
 		{
 			if (myUnits[myUnitIndex]->IsAlive() == false)
 			{
-				if (myActiveCount < myUnitCount)
+				if (myActiveCount < myData.myUnitCount)
 				{
 					CU::Vector3<float> spawnPosition = myEntity.GetOrientation().GetPos();
-					spawnPosition.x + 5 * i;
+					//spawnPosition.x + 5 * i;
 					SharedUnitManager::GetInstance()->ActivateUnit(myUnits[myUnitIndex], spawnPosition);
 					SharedNetworkManager::GetInstance()->AddMessage(NetMessageActivateUnit(myUnits[myUnitIndex]->GetGID(), spawnPosition));
-					myUnitIndex++;
+					
 					myActiveCount++;
 				}
 			}
+
+			myUnitIndex++;
 		}
 		mySpawnTimer = myData.mySpawnInterval;
 	}

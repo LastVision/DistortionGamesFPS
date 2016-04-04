@@ -12,6 +12,19 @@
 
 namespace Prism
 {
+	SHTextures::~SHTextures()
+	{
+		SAFE_DELETE(cAr);
+		SAFE_DELETE(cAg);
+		SAFE_DELETE(cAb);
+		SAFE_DELETE(cBr);
+		SAFE_DELETE(cBg);
+		SAFE_DELETE(cBb);
+		SAFE_DELETE(cC);
+	}
+
+
+
 	CubeMapGenerator::CubeMapGenerator()
 	{
 		myCamera = new Camera(myCurrentCameraOrientation, 512.f, 512.f);
@@ -27,6 +40,7 @@ namespace Prism
 
 	CubeMapGenerator::~CubeMapGenerator()
 	{
+		SAFE_DELETE(myCamera);
 	}
 
 	void CubeMapGenerator::GenerateSHTextures(DeferredRenderer* aRenderer, Scene* aScene, SHTextures& someTextures
@@ -279,5 +293,4 @@ namespace Prism
 
 		return gridNode;
 	}
-
 }

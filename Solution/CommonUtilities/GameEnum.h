@@ -12,12 +12,17 @@ enum class eMissionType
 	NONE,
 	KILL_X,
 	DEFEND,
+	EVENT,
 };
+
 
 enum class eActionEventType
 {
 	LOCK,
 	UNLOCK,
+	TEXT,
+	SPAWN,
+	MARKER,
 };
 
 enum class eInGameStates
@@ -70,6 +75,7 @@ enum class eTriggerType : int
 	MISSION,
 	RESPAWN,
 	ENEMY_SPAWN,
+	MARKER,
 	_COUNT,
 };
 
@@ -158,6 +164,13 @@ enum class ePlayerState : int
 	GRENADE_LAUNCHER_RELOAD,
 	GRENADE_LAUNCHER_DRAW,
 	GRENADE_LAUNCHER_HOLSTER,
+	_COUNT,
+};
+
+enum class eNetRayCastType : int
+{
+	CLIENT_SHOOT_PISTOL,
+	CLIENT_SHOOT_SHOTGUN,
 	_COUNT,
 };
 

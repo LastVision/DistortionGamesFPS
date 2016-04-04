@@ -23,5 +23,7 @@ namespace Prism
 		CU::Vector4f myColor;
 		float myRange;
 		float myCone;
+		float myAngle;
+		float myCosAngle;
 	};
 }

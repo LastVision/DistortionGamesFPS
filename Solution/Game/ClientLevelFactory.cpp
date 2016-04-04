@@ -1,5 +1,4 @@
 #include "stdafx.h"
-
 #include <EntityFactory.h>
 #include "ClientLevel.h"
 #include "ClientLevelFactory.h"
@@ -8,11 +7,14 @@
 #include <PhysicsInterface.h>
 #include <GraphicsComponent.h>
 #include <PointLight.h>
+#include <SpotLight.h>s
 #include <Room.h>
 #include <RoomManager.h>
 #include <Scene.h>
 #include <TriggerComponent.h>
 #include <XMLReader.h>
+#include <PostMaster.h>
+#include <EmitterMessage.h>
 
 ClientLevelFactory::ClientLevelFactory(const std::string& aLevelListPath)
 	: SharedLevelFactory(aLevelListPath)
@@ -64,7 +66,9 @@ void ClientLevelFactory::ReadLevel(const std::string& aLevelPath)
 	LoadRooms(reader, levelElement);
 	LoadProps(reader, levelElement);
 	LoadDoors(reader, levelElement);
+	LoadParticles(reader, levelElement);
 	//LoadUnits(reader, levelElement);
+	LoadText(reader, levelElement);
 	ClientUnitManager::GetInstance()->CreateUnits(myCurrentLevel->GetScene());
 
 	LoadTriggers(reader, levelElement);
@@ -288,6 +292,94 @@ void ClientLevelFactory::LoadLights(XMLReader& aReader, tinyxml2::XMLElement* aE
 		light->SetColor(color);
 		light->SetRange(range);
 		static_cast<ClientLevel*>(myCurrentLevel)->AddLight(light);
+	}
+
+	for (tinyxml2::XMLElement* lightElement = aReader.FindFirstChild(aElement, "spotlight"); lightElement != nullptr;
+		lightElement = aReader.FindNextElement(lightElement, "spotlight"))
+	{
+		CU::Vector3<float> position;
+		CU::Vector3<float> rotation;
+		CU::Vector4<float> color;
+		float range;
+		float spotangle;
+
+		
+		aReader.ForceReadAttribute(aReader.ForceFindFirstChild(lightElement, "position"), "X", "Y", "Z", position);
+		aReader.ForceReadAttribute(aReader.ForceFindFirstChild(lightElement, "rotation"), "X", "Y", "Z", rotation);
+
+		aReader.ForceReadAttribute(aReader.ForceFindFirstChild(lightElement, "color"), "R", color.x);
+		aReader.ForceReadAttribute(aReader.ForceFindFirstChild(lightElement, "color"), "G", color.y);
+		aReader.ForceReadAttribute(aReader.ForceFindFirstChild(lightElement, "color"), "B", color.z);
+		aReader.ForceReadAttribute(aReader.ForceFindFirstChild(lightElement, "color"), "A", color.w);
+
+		aReader.ForceReadAttribute(aReader.ForceFindFirstChild(lightElement, "range"), "value", range);
+		aReader.ForceReadAttribute(aReader.ForceFindFirstChild(lightElement, "spotangle"), "value", spotangle);
+
+		unsigned int gid(UINT32_MAX);
+
+		ReadGID(aReader, lightElement, gid);
+
+		Prism::SpotLight* light = new Prism::SpotLight(gid);
+		light->SetPosition(CU::Vector4<float>(position, 1.f));
+		light->SetColor(color);
+		light->SetRange(range);
+		light->SetAngle(spotangle/2.f);
+
+		rotation.x = CU::Math::DegreeToRad(rotation.x);
+		rotation.y = CU::Math::DegreeToRad(rotation.y);
+		rotation.z = CU::Math::DegreeToRad(rotation.z);
+
+		light->PerformTransformation(CU::Matrix44f::CreateRotateAroundZ(rotation.z));
+		light->PerformTransformation(CU::Matrix44f::CreateRotateAroundX(rotation.x));
+		light->PerformTransformation(CU::Matrix44f::CreateRotateAroundY(rotation.y));
+
+		static_cast<ClientLevel*>(myCurrentLevel)->AddLight(light);
+	}
+}
+
+void ClientLevelFactory::LoadParticles(XMLReader& aReader, tinyxml2::XMLElement* aElement)
+{
+	for (tinyxml2::XMLElement* entityElement = aReader.FindFirstChild(aElement, "particle"); entityElement != nullptr;
+		entityElement = aReader.FindNextElement(entityElement, "particle"))
+	{
+		std::string particleType;
+		aReader.ForceReadAttribute(entityElement, "type", particleType);
+		particleType = CU::ToLower(particleType);
+
+		tinyxml2::XMLElement* propElement = aReader.ForceFindFirstChild(entityElement, "position");
+		CU::Vector3<float> propPosition;
+		aReader.ForceReadAttribute(propElement, "X", propPosition.x);
+		aReader.ForceReadAttribute(propElement, "Y", propPosition.y);
+		aReader.ForceReadAttribute(propElement, "Z", propPosition.z);
+
+		PostMaster::GetInstance()->SendMessage(EmitterMessage(particleType, propPosition, true));
+	}
+}
+
+void ClientLevelFactory::LoadText(XMLReader& aReader, tinyxml2::XMLElement* aElement)
+{
+	for (tinyxml2::XMLElement* textElement = aReader.FindFirstChild(aElement, "worldtext"); textElement != nullptr;
+		textElement = aReader.FindNextElement(textElement, "worldtext"))
+	{
+		std::string text;
+		CU::Vector3<float> position;
+		CU::Vector3<float> rotation;
+		CU::Vector4<float> color;
+
+		aReader.ForceReadAttribute(aReader.ForceFindFirstChild(textElement, "text"), "value", text);
+		aReader.ForceReadAttribute(aReader.ForceFindFirstChild(textElement, "position"), "X", "Y", "Z", position);
+		aReader.ForceReadAttribute(aReader.ForceFindFirstChild(textElement, "rotation"), "X", "Y", "Z", rotation);
+
+		aReader.ForceReadAttribute(aReader.ForceFindFirstChild(textElement, "color"), "R", color.x);
+		aReader.ForceReadAttribute(aReader.ForceFindFirstChild(textElement, "color"), "G", color.y);
+		aReader.ForceReadAttribute(aReader.ForceFindFirstChild(textElement, "color"), "B", color.z);
+		aReader.ForceReadAttribute(aReader.ForceFindFirstChild(textElement, "color"), "A", color.w);
+
+		rotation.x = CU::Math::DegreeToRad(rotation.x);
+		rotation.y = CU::Math::DegreeToRad(rotation.y);
+		rotation.z = CU::Math::DegreeToRad(rotation.z); 
+		
+		myCurrentLevel->AddWorldText(text, position, rotation.y, color);
 	}
 }
 

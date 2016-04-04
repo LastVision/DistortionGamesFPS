@@ -111,6 +111,7 @@ namespace Prism
 
 	void Engine::Render()
 	{
+		RestoreDepthStencil();
 		DEBUG_PRINT(GET_RUNTIME);
 		DEBUG_PRINT(GetWindowSize());
 
@@ -154,7 +155,7 @@ namespace Prism
 			myFadeData.mySprite->Render({ 0.f, 0.f }, { 1.f, 1.f }, { 1.f, 1.f, 1.f, 1.f * myFadeData.myCurrentTime / myFadeData.myTotalTime });
 		}
 
-		myDirectX->Present(0, 0);
+		myDirectX->Present(1, 0);
 
 		if (myFadeData.myIsFading == false)
 		{
@@ -249,6 +250,16 @@ namespace Prism
 	ID3D11Texture2D* Engine::GetDepthBufferTexture()
 	{
 		return myDirectX->GetDepthbufferTexture();
+	}
+
+	void Engine::SetDepthStencil(ID3D11DepthStencilView* aStencil)
+	{
+		myDirectX->SetDepthStencil(aStencil);
+	}
+
+	void Engine::RestoreDepthStencil()
+	{
+		myDirectX->RestoreDepthStencil();
 	}
 
 	FontProxy* Engine::GetFont(eFont aFont)

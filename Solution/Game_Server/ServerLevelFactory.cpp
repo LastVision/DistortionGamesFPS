@@ -4,12 +4,14 @@
 #include <EntityFactory.h>
 #include <MathHelper.h>
 #include <NetworkComponent.h>
+#include <NetMessagePressEText.h>
 #include <PhysicsComponent.h>
 #include <PhysicsInterface.h>
 #include <PollingStation.h>
 #include "ServerLevel.h"
 #include "ServerLevelFactory.h"
 #include "ServerUnitManager.h"
+#include "ServerNetworkManager.h"
 #include <TriggerComponent.h>
 #include <XMLReader.h>
 #include <SpawnpointComponent.h>
@@ -206,6 +208,10 @@ void ServerLevelFactory::LoadTriggers(XMLReader& aReader, tinyxml2::XMLElement* 
 			{
 				newEntity->GetComponent<PhysicsComponent>()->RemoveFromScene();
 			}
+			else if (newEntity->GetComponent<TriggerComponent>()->IsPressable() == true)
+			{
+				myCurrentLevel->AddPressETrigger(newEntity);
+			}
 		}
 		else
 		{
@@ -246,7 +252,10 @@ void ServerLevelFactory::LoadSpawnpoint(XMLReader& aReader, tinyxml2::XMLElement
 		{
 			int triggerGID;
 			aReader.ForceReadAttribute(e, "value", triggerGID);
-			newEntity->GetComponent<SpawnpointComponent>()->BindToTrigger(triggerGID);
+			if (triggerGID != -1)
+			{
+				newEntity->GetComponent<SpawnpointComponent>()->BindToTrigger(triggerGID);
+			}
 		}
 
 		//Read bound to trigger

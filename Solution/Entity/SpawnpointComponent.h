@@ -15,6 +15,7 @@ public:
 	void DeActivate();
 
 	void ReceiveMessage(const ActivateSpawnpointMessage& aMessage) override;
+	void ReceiveMessage(const EnemyKilledMessage& aMessage) override;
 
 	void BindToTrigger(unsigned int aGID);
 
@@ -29,12 +30,14 @@ private:
 
 	CU::GrowingArray<unsigned int> myTriggerConnections;
 
-	int myUnitCount;
 	int myActiveCount;
 	int myUnitIndex;
 	float mySpawnTimer;
 	float myLifetime;
 	bool myIsActive;
+
+	bool myBoundToTiggers;
+	bool myActivateOnce;
 };
 
 inline eComponentType SpawnpointComponent::GetTypeStatic()

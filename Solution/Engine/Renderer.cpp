@@ -21,23 +21,23 @@ namespace Prism
 			mySceneData[i].myScene = new Texture();
 			mySceneData[i].myScene->Init(screenSize.x, screenSize.y
 				, D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_DEPTH_STENCIL
-				, DXGI_FORMAT_R16G16B16A16_FLOAT);
+				, DXGI_FORMAT_R8G8B8A8_UNORM);
 
 			mySceneData[i].myFinished = new Texture();
 			mySceneData[i].myFinished->Init(screenSize.x, screenSize.y
 				, D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_DEPTH_STENCIL
-				, DXGI_FORMAT_R16G16B16A16_FLOAT);
+				, DXGI_FORMAT_R8G8B8A8_UNORM);
 		}
 
 		myFinalTexture = new Texture();
 		myFinalTexture->Init(screenSize.x, screenSize.y
 			, D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_DEPTH_STENCIL
-			, DXGI_FORMAT_R16G16B16A16_FLOAT);
+			, DXGI_FORMAT_R8G8B8A8_UNORM);
 
 		myCombineMiddleMan = new Texture();
 		myCombineMiddleMan->Init(screenSize.x, screenSize.y
 			, D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_DEPTH_STENCIL
-			, DXGI_FORMAT_R16G16B16A16_FLOAT);
+			, DXGI_FORMAT_R8G8B8A8_UNORM);
 
 		myFullScreenHelper = new FullScreenHelper();
 
@@ -122,11 +122,11 @@ namespace Prism
 		ID3D11RenderTargetView* renderTarget = data.myFinished->GetRenderTargetView();
 		myEngine->GetContex()->ClearRenderTargetView(renderTarget, myClearColor);
 
-		myFullScreenHelper->Process(data.myScene, data.myFinished, aEffect, aFogOfWarTexture);
+		//myFullScreenHelper->Process(data.myScene, data.myFinished, aEffect, aFogOfWarTexture);
 
 		++mySceneIndex;
 	}
-
+	 
 	void Renderer::FinalRender()
 	{
 		myEngine->GetContex()->ClearRenderTargetView(myFinalTexture->GetRenderTargetView(), myClearColor);
@@ -142,6 +142,18 @@ namespace Prism
 		mySceneIndex = 0;
 
 		Engine::GetInstance()->SetDepthBufferState(eDepthStencil::Z_ENABLED);
+	}
+
+
+	void Renderer::Render(Texture* aSource, Texture* aEmissiveTexture, Texture* aDepthStencilTexture, int aEffect)
+	{
+		myEngine->GetContex()->ClearRenderTargetView(myFinalTexture->GetRenderTargetView(), myClearColor);
+
+		myFullScreenHelper->Process(aSource, myFinalTexture, aEmissiveTexture, aEffect, nullptr);
+
+		myFullScreenHelper->RenderToScreen(myFinalTexture);
+
+		Engine::GetInstance()->SetDepthStencil(aDepthStencilTexture->GetDepthStencilView());
 	}
 
 	void Renderer::OnResize(float aWidth, float aHeight)

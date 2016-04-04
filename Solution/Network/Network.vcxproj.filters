@@ -121,7 +121,6 @@
     <ClInclude Include="NetMessageShootGrenade.h">
       <Filter>Messages</Filter>
     </ClInclude>
-    <ClInclude Include="NetMessageExplosion.h" />
     <ClInclude Include="NetMessageActivateSpawnpoint.h">
       <Filter>Messages</Filter>
     </ClInclude>
@@ -132,6 +131,30 @@
       <Filter>Messages</Filter>
     </ClInclude>
     <ClInclude Include="NetMessageText.h">
+      <Filter>Messages</Filter>
+    </ClInclude>
+    <ClInclude Include="NetMessageDisplayMarker.h">
+      <Filter>Messages</Filter>
+    </ClInclude>
+    <ClInclude Include="NetMessageRequestServer.h">
+      <Filter>Messages</Filter>
+    </ClInclude>
+    <ClInclude Include="NetMessageReplyServer.h">
+      <Filter>Messages</Filter>
+    </ClInclude>
+    <ClInclude Include="NetMessageExplosion.h">
+      <Filter>Messages</Filter>
+    </ClInclude>
+    <ClInclude Include="NetMessageDisplayRespawn.h">
+      <Filter>Messages</Filter>
+    </ClInclude>
+    <ClInclude Include="NetMessageRayCastRequest.h">
+      <Filter>Messages</Filter>
+    </ClInclude>
+    <ClInclude Include="NetMessagePressE.h">
+      <Filter>Messages</Filter>
+    </ClInclude>
+    <ClInclude Include="NetMessagePressEText.h">
       <Filter>Messages</Filter>
     </ClInclude>
   </ItemGroup>

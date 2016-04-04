@@ -1,11 +1,11 @@
 #include "stdafx.h"
-
-#include "Weapon.h"
 #include "UpgradeComponentData.h"
+#include "Weapon.h"
 
-Weapon::Weapon(eWeaponType aWeaponType, std::string aXMLTagName)
+Weapon::Weapon(eWeaponType aWeaponType, std::string aXMLTagName, Entity* aOwnerEntity)
 	: myWeaponType(aWeaponType)
 	, myForceStrength(0.f)
+	, myOwnerEntity(aOwnerEntity)
 {
 	XMLReader reader;
 	reader.OpenDocument("Data/Setting/SET_weapons.xml");

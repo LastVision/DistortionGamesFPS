@@ -17,11 +17,14 @@ public:
 	static eComponentType GetTypeStatic();
 	eComponentType GetType() override;
 
-	void HandleRaycast(PhysicsComponent* aComponent, const CU::Vector3<float>& aDirection, const CU::Vector3<float>& aHitPosition);
+	void HandleRaycast(PhysicsComponent* aComponent, const CU::Vector3<float>& aDirection, const CU::Vector3<float>& aHitPosition, const CU::Vector3<float>& aHitNormal);
+
+	void SetDefendTarget(Entity* aEntityToTarget);
+	void ResetDefendTarget();
 
 private:
 	void operator=(AIComponent&) = delete;
-	std::function<void(PhysicsComponent*, const CU::Vector3<float>&, const CU::Vector3<float>&)> myRaycastHandler;
+	std::function<void(PhysicsComponent*, const CU::Vector3<float>&, const CU::Vector3<float>&, const CU::Vector3<float>&)> myRaycastHandler;
 
 	void Move(float aDelta, Entity* aClosestPlayer);
 	void SetOrientation(const CU::Vector3<float>& aLookInDirection, float aDelta);
@@ -43,6 +46,7 @@ private:
 	float myAttackAnimationTimeCurrent;
 
 	Entity* myTarget;
+	Entity* myDefendTarget;
 
 	bool myHasJustSpawned;
 };
@@ -55,4 +59,14 @@ inline eComponentType AIComponent::GetTypeStatic()
 inline eComponentType AIComponent::GetType()
 {
 	return GetTypeStatic();
+}
+
+inline void AIComponent::SetDefendTarget(Entity* aEntityToTarget)
+{
+	myDefendTarget = aEntityToTarget;
+}
+
+inline void AIComponent::ResetDefendTarget()
+{
+	myDefendTarget = nullptr;
 }

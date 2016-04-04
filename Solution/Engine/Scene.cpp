@@ -19,7 +19,7 @@ namespace Prism
 		, myRenderRadius(-10.f)
 	{
 		myDirectionalLights.Init(4);
-		myPointLights.Init(4);
+		myPointLights.Init(128);
 		mySpotLights.Init(4);
 
 		memset(&myDirectionalLightData[0], 0, sizeof(DirectionalLightData) * NUMBER_OF_DIRECTIONAL_LIGHTS);
@@ -101,6 +101,7 @@ namespace Prism
 	void Scene::AddLight(PointLight* aLight)
 	{
 		myPointLights.Add(aLight);
+		myRoomManager->Add(aLight);
 	}
 
 	void Scene::AddLight(SpotLight* aLight)
@@ -127,21 +128,17 @@ namespace Prism
 		for (int i = 0; i < myPointLights.Size(); ++i)
 		{
 			myPointLights[i]->Update();
-
-			/*myPointLightData[i].myColor = myPointLights[i]->GetColor();
-			myPointLightData[i].myPosition = myPointLights[i]->GetPosition();
-			myPointLightData[i].myRange = myPointLights[i]->GetRange();*/
 		}
-
+		
 		for (int i = 0; i < mySpotLights.Size(); ++i)
 		{
 			mySpotLights[i]->Update();
 
-			mySpotLightData[i].myPosition = mySpotLights[i]->GetPosition();
-			mySpotLightData[i].myDirection = mySpotLights[i]->GetDir();
-			mySpotLightData[i].myColor = mySpotLights[i]->GetColor();
-			mySpotLightData[i].myRange = mySpotLights[i]->GetRange();
-			mySpotLightData[i].myCone = mySpotLights[i]->GetCone();
+			//mySpotLightData[i].myPosition = mySpotLights[i]->GetPosition();
+			//mySpotLightData[i].myDirection = mySpotLights[i]->GetDir();
+			//mySpotLightData[i].myColor = mySpotLights[i]->GetColor();
+			//mySpotLightData[i].myRange = mySpotLights[i]->GetRange();
+			//mySpotLightData[i].myCone = mySpotLights[i]->GetCone();
 		}
 	}
 
@@ -151,5 +148,17 @@ namespace Prism
 		{
 			myRoomManager->Remove(aInstance);
 		}
+	}
+
+	const CU::GrowingArray<PointLight*>& Scene::GetPointLights() const
+	{
+		//return myPointLights;
+		//return myActivePointLights;
+		return myRoomManager->GetActivePointLights();
+	}
+
+	const CU::GrowingArray<SpotLight*>& Scene::GetSpotLights() const
+	{
+		return mySpotLights;
 	}
 }

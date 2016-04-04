@@ -239,4 +239,12 @@ namespace CU
 	{
 		return Vector3<T>(-aVector.x, -aVector.y, -aVector.z);
 	}
+
+	template <typename T>
+	Vector3<T> Reflect(const CU::Vector3<T>& aDirection, const CU::Vector3<T>& aNormal)
+	{
+		return (aDirection - 2.f * CU::Dot(aDirection, aNormal) * aNormal);
+	}
+
+
 }

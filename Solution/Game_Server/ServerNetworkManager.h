@@ -18,6 +18,7 @@ public:
 
 	void CreateConnection(const std::string& aName, const sockaddr_in& aSender);
 
+	void Update(float aDelta) override;
 
 	void ReceiveNetworkMessage(const NetMessagePosition& aMessage, const sockaddr_in& aSenderAddress) override;
 	void ReceiveNetworkMessage(const NetMessagePingRequest& aMessage, const sockaddr_in& aSenderAddress) override;
@@ -28,6 +29,7 @@ public:
 	const short GetLastJoinedID() const;
 	const CU::GrowingArray<Connection>& GetClients() const;
 
+	const std::string& GetIP() const;
 private:
 	ServerNetworkManager();
 	~ServerNetworkManager();
@@ -35,12 +37,15 @@ private:
 	void UpdateImportantMessages(float aDeltaTime) override;
 
 	void AddImportantMessage(std::vector<char> aBuffer, unsigned int aImportantID) override;
+	void AddImportantMessage(std::vector<char> aBuffer, unsigned int aImportantID, const sockaddr_in& aTargetAddress) override;
 
 	void ReceieveThread() override;
 	void SendThread() override;
+	void PingThread() override;
 
 	short myIDCount;
-	
+	float myPingTime;
+
 	void DisconnectConnection(const Connection& aConnection);
 
 	CU::GrowingArray<Connection> myClients;

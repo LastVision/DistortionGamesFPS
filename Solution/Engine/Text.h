@@ -5,16 +5,18 @@
 
 namespace Prism
 {
+	class Camera;
 	class FontProxy;
 
 	class Text : public BaseModel
 	{
 	public:
-		Text(const FontProxy& aFont);
+		Text(const FontProxy& aFont, bool aIs3d = false, bool aShouldFollowCamera = false);
 		void SetPosition(const CU::Vector2<float>& aPosition);
 		void SetText(const std::string& aText);
 		void SetColor(const CU::Vector4<float>& aColor);
 		void Render(const CU::Vector2<float>& aPosition, const CU::Vector2<float>& aScale, const CU::Vector4<float>& aColor);
+		void Render(const Camera* aCamera, const CU::Matrix44<float>& aOrientation, const CU::Vector2<float>& aScale, const CU::Vector4<float>& aColor);
 		void SetScale(const CU::Vector2<float>& aScale);
 		float GetWidth() const;
 
@@ -29,6 +31,9 @@ namespace Prism
 		std::string myText;
 
 		CU::Vector4<float> myColor;
+
+		bool myShouldFollowCamera;
+
 	};
 }
 

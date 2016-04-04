@@ -71,6 +71,12 @@ void ComponentLoader::LoadGraphicsComponent(XMLReader& aDocument, tinyxml2::XMLE
 		{
 			DL_ASSERT("Legacy XML");
 		}
+#ifdef RELEASE_BUILD
+		else if (elementName == CU::ToLower("Debug"))
+		{
+			aOutputData.myExistsInEntity = false;
+		}
+#endif
 	}
 }
 
@@ -163,7 +169,8 @@ void ComponentLoader::LoadGrenadeComponent(XMLReader& aDocument, tinyxml2::XMLEl
 void ComponentLoader::LoadTriggerComponent(XMLReader& aDocument, tinyxml2::XMLElement* aSourceElement, TriggerComponentData& aOutputData)
 {
 	aOutputData.myExistsInEntity = true;
-	aOutputData.myIsOneTime = false;
+	aOutputData.myIsOneTime = false; 
+	aOutputData.myIsPressable = false;
 	aOutputData.myTriggerType = -1;
 
 	for (tinyxml2::XMLElement* e = aDocument.FindFirstChild(aSourceElement); e != nullptr; e = aDocument.FindNextElement(e))
@@ -178,9 +185,18 @@ void ComponentLoader::LoadTriggerComponent(XMLReader& aDocument, tinyxml2::XMLEl
 			aDocument.ReadAttribute(e, "oneTimeTrigger", aOutputData.myIsOneTime);
 			aDocument.ForceReadAttribute(e, "isClientSide", aOutputData.myIsClientSide);
 			aDocument.ReadAttribute(e, "activeFromStart", aOutputData.myIsActiveFromStart);
+			aDocument.ReadAttribute(e, "isPressable", aOutputData.myIsPressable);
 
 			aOutputData.myTriggerType = ConvertToTriggerEnum(name);
+
 		}
+		else if (elementName == CU::ToLower("Marker"))
+		{
+				aDocument.ReadAttribute(e, "positionx", aOutputData.myPosition.x);
+				aDocument.ReadAttribute(e, "positiony", aOutputData.myPosition.y);
+				aDocument.ReadAttribute(e, "positionz", aOutputData.myPosition.z);
+				aDocument.ForceReadAttribute(e, "show", aOutputData.myShowMarker);
+		}		
 	}
 }
 
@@ -252,6 +268,10 @@ void ComponentLoader::LoadSpawnpointComponent(XMLReader& aDocument, tinyxml2::XM
 		else if (elementName == CU::ToLower("SpawnPerInterval"))
 		{
 			aDocument.ForceReadAttribute(e, "value", aOutputData.mySpawnPerInterval);
+		}
+		else if (elementName == CU::ToLower("SpawnCount"))
+		{
+			aDocument.ForceReadAttribute(e, "value", aOutputData.myUnitCount);
 		}
 	}
 }
@@ -370,6 +390,10 @@ int ComponentLoader::ConvertToTriggerEnum(std::string aName)
 	else if (aName == "spawntrigger")
 	{
 		return static_cast<int>(eTriggerType::ENEMY_SPAWN);
+	}
+	else if (aName == "marker")
+	{
+		return static_cast<int>(eTriggerType::MARKER);
 	}
 
 	DL_ASSERT("[ComponentLoader] No trigger type in trigger component named " + aName);

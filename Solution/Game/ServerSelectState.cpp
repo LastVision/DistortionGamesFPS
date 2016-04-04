@@ -1,11 +1,13 @@
 #include "stdafx.h"
 
-#include <Cursor.h>
 #include "ClientNetworkManager.h"
-#include "LobbyState.h"
+#include <Cursor.h>
 #include <fstream>
 #include <GUIManager.h>
 #include <InputWrapper.h>
+#include "LobbyState.h"
+#include <NetMessageReplyServer.h>
+#include <NetMessageRequestServer.h>
 #include <OnClickMessage.h>
 #include <PostMaster.h>
 #include "ServerSelectState.h"
@@ -24,11 +26,13 @@ ServerSelectState::~ServerSelectState()
 	SAFE_DELETE(myGUIManager);
 	myCursor = nullptr;
 	PostMaster::GetInstance()->UnSubscribe(eMessageType::ON_CLICK, this);
+	ClientNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::SERVER_REPLY, this);
 }
 
 void ServerSelectState::InitState(StateStackProxy* aStateStackProxy, GUI::Cursor* aCursor)
 {
 	PostMaster::GetInstance()->Subscribe(eMessageType::ON_CLICK, this);
+	ClientNetworkManager::GetInstance()->Subscribe(eNetMessageType::SERVER_REPLY, this);
 	myCursor = aCursor;
 	myIsActiveState = true;
 	myIsLetThrough = true;
@@ -39,7 +43,7 @@ void ServerSelectState::InitState(StateStackProxy* aStateStackProxy, GUI::Cursor
 
 	const CU::Vector2<int>& windowSize = Prism::Engine::GetInstance()->GetWindowSizeInt();
 	OnResize(windowSize.x, windowSize.y);
-
+	/*
 	std::ifstream stream;
 	stream.open("Data/Setting/ip.txt");
 
@@ -57,8 +61,17 @@ void ServerSelectState::InitState(StateStackProxy* aStateStackProxy, GUI::Cursor
 	{
 		std::string text(myServers[i].myName + ": " + myServers[i].myIp);
 		myGUIManager->SetButtonText(i, text);
-	}
+	}*/
 	myCursor->SetShouldRender(true);
+	myTriedToConnect = false;
+
+	myRefreshServerTimer = 0.f;
+	myWaitForResponseTimer = 0.f;
+	myLocalhost.myIp = "127.0.0.1";
+	myLocalhost.myName = "localhost";
+
+	// broadcast request server
+	ClientNetworkManager::GetInstance()->AddMessage(NetMessageRequestServer(), ClientNetworkManager::GetInstance()->GetBroadcastAddress());
 }
 
 void ServerSelectState::EndState()
@@ -82,18 +95,48 @@ const eStateStatus ServerSelectState::Update(const float& aDeltaTime)
 
 	if (CU::InputWrapper::GetInstance()->KeyDown(DIK_SPACE) == true)
 	{
-		myServer = &myServers[0];
+		myServer = &myLocalhost;
 	}
 
 	if (myServer != nullptr)
 	{
-		ClientNetworkManager::GetInstance()->ConnectToServer(myServer->myIp.c_str());
-
-		SET_RUNTIME(false);
-		PostMaster::GetInstance()->UnSubscribe(eMessageType::ON_CLICK, this);
-		myStateStack->PushSubGameState(new LobbyState());
-
+		if (myTriedToConnect == false)
+		{
+			ClientNetworkManager::GetInstance()->ConnectToServer(myServer->myIp.c_str());
+			myTriedToConnect = true;
+			myWaitForResponseTimer = 1.f;
+		}
+		else if (myTriedToConnect == true)
+		{
+			myWaitForResponseTimer -= aDeltaTime;
+			if (myWaitForResponseTimer <= 0.f)
+			{
+				//Show Failed to connect message
+				Prism::Engine::GetInstance()->PrintText("Failed to connect to the server, the server is either down or ingame. Try again!", 
+				{50.f,Prism::Engine::GetInstance()->GetWindowSize().y - 50.f}, Prism::eTextType::RELEASE_TEXT);
+			}
+		}
+		if (ClientNetworkManager::GetInstance()->GetGID() != 0)
+		{
+			SET_RUNTIME(false);
+			PostMaster::GetInstance()->UnSubscribe(eMessageType::ON_CLICK, this);
+			myStateStack->PushSubGameState(new LobbyState());
+		}
 		//return eStateStatus::ePopSubState;
+	}
+
+	myRefreshServerTimer -= aDeltaTime;
+	if (myRefreshServerTimer <= 0)
+	{
+		myRefreshServerTimer = 2.f;
+		for (int i = 0; i < myServers.Size(); ++i)
+		{
+			myGUIManager->SetButtonText(i, "");
+		}
+		myServers.RemoveAll();
+		myTriedToConnect = false;
+		myServer = nullptr;
+		ClientNetworkManager::GetInstance()->AddMessage(NetMessageRequestServer(), ClientNetworkManager::GetInstance()->GetBroadcastAddress());
 	}
 
 	myGUIManager->Update(aDeltaTime);
@@ -126,5 +169,27 @@ void ServerSelectState::ReceiveMessage(const OnClickMessage& aMessage)
 			DL_ASSERT("Unknown event.");
 			break;
 		}
+	}
+}
+
+void ServerSelectState::ReceiveNetworkMessage(const NetMessageReplyServer& aMessage, const sockaddr_in&)
+{
+	ServerSelectState::Server newServer;
+	newServer.myIp = aMessage.myIP;
+	newServer.myName = aMessage.myServerName;
+
+	for (ServerSelectState::Server server : myServers)
+	{
+		if (server == newServer)
+		{
+			return;
+		}
+	}
+
+	myServers.Add(newServer);
+	for (int i = 0; i < myServers.Size(); ++i)
+	{
+		std::string text(myServers[i].myName + ": " + myServers[i].myIp);
+		myGUIManager->SetButtonText(i, text);
 	}
 }

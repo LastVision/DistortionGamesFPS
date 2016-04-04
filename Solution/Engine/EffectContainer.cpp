@@ -89,6 +89,7 @@ namespace Prism
 		DL_ASSERT_EXP(aFilePath == "Data/Resource/Shader/S_effect_pbl.fx"
 			|| aFilePath == "Data/Resource/Shader/S_effect_pbl_animated.fx"
 			|| aFilePath == "Data/Resource/Shader/S_effect_font.fx"
+			|| aFilePath == "Data/Resource/Shader/S_effect_font3d.fx"
 			|| aFilePath == "Data/Resource/Shader/S_effect_sprite.fx"
 			|| aFilePath == "Data/Resource/Shader/S_effect_debug.fx"
 			|| aFilePath == "Data/Resource/Shader/S_effect_no_texture.fx"
@@ -105,7 +106,8 @@ namespace Prism
 			|| aFilePath == "Data/Resource/Shader/S_effect_pbldebug.fx"
 			|| aFilePath == "Data/Resource/Shader/S_effect_3dgui.fx"
 			|| aFilePath == "Data/Resource/Shader/S_effect_deferred_ambient.fx"
-			|| aFilePath == "Data/Resource/Shader/S_effect_deferred_light_mesh.fx"
+			|| aFilePath == "Data/Resource/Shader/S_effect_deferred_light_mesh_point.fx"
+			|| aFilePath == "Data/Resource/Shader/S_effect_deferred_light_mesh_spot.fx"
 			|| aFilePath == "Data/Resource/Shader/S_effect_pbl_deferred.fx"
 			, CU::Concatenate("Found invalid Shader: %s", aFilePath.c_str()));
 	}

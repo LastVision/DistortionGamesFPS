@@ -16,11 +16,15 @@ public:
 	unsigned int GetGID() const;
 	const CU::GrowingArray<OtherClients>& GetClients();
 
+	void Update(float aDeltaTime) override;
+
 	void ReceiveNetworkMessage(const NetMessageConnectReply& aMessage, const sockaddr_in& aSenderAddress) override;
 	void ReceiveNetworkMessage(const NetMessageRequestConnect& aMessage, const sockaddr_in& aSenderAddress) override;
 	void ReceiveNetworkMessage(const NetMessageDisconnect& aMessage, const sockaddr_in& aSenderAddress) override;
 	void ReceiveNetworkMessage(const NetMessageOnJoin& aMessage, const sockaddr_in& aSenderAddress) override;
 	void ReceiveNetworkMessage(const NetMessagePingRequest& aMessage, const sockaddr_in& aSenderAddress) override;
+	void ReceiveNetworkMessage(const NetMessagePingReply& aMessage, const sockaddr_in& aSenderAddress) override;
+
 	void DebugPrint();
 
 private:
@@ -29,9 +33,11 @@ private:
 
 	void UpdateImportantMessages(float aDeltaTime) override;
 	void AddImportantMessage(std::vector<char> aBuffer, unsigned int aImportantID) override;
+	void AddImportantMessage(std::vector<char> aBuffer, unsigned int aImportantID, const sockaddr_in& aTargetAddress) override;
 
 	void ReceieveThread() override;
 	void SendThread() override;
+	void PingThread() override;
 
 	ClientNetwork* myNetwork;
 

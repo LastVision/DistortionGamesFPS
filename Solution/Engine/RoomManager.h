@@ -7,6 +7,7 @@ namespace Prism
 	class Instance;
 	class Portal;
 	class Room;
+	class PointLight;
 
 	class RoomManager
 	{
@@ -17,10 +18,12 @@ namespace Prism
 		void Add(Room* aRoom);
 		void CalcPortals();
 		void Add(Instance* anInstance, eObjectRoomType aRoomType);
+		void Add(PointLight* aPointLight);
 		void Remove(Instance* anInstance);
 
 		const CU::GrowingArray<Instance*>& GetActiveInstances(const Camera& aCamera);
 		const CU::GrowingArray<Instance*>& GetAllInstances();
+		const CU::GrowingArray<PointLight*>& GetActivePointLights();
 
 	private:
 		int GetRoomId(const CU::Vector3<float>& aPosition) const;
@@ -45,6 +48,7 @@ namespace Prism
 		CU::GrowingArray<Instance*> myAlwaysRenderInstances;
 		CU::GrowingArray<Instance*> myActiveInstances;
 		CU::GrowingArray<Instance*> myAllInstances;
+		CU::GrowingArray<PointLight*> myActivePointLights;
 
 		bool myDebugDraw;
 

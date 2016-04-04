@@ -28,6 +28,8 @@ private:
 	void LoadUnits(XMLReader& aReader, tinyxml2::XMLElement* aElement) override;
 	void LoadTriggers(XMLReader& aReader, tinyxml2::XMLElement* aElement) override;
 	void LoadLights(XMLReader& aReader, tinyxml2::XMLElement* aElement);
+	void LoadParticles(XMLReader& aReader, tinyxml2::XMLElement* aElement);
+	void LoadText(XMLReader& aReader, tinyxml2::XMLElement* aElement);
 
 
 	ClientLevel* myCurrentLevel;

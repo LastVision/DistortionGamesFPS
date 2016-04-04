@@ -33,15 +33,19 @@
 #include <NetMessageShootGrenade.h>
 #include <NetMessageSetActive.h>
 #include <NetMessageEnemyShooting.h>
+#include <NetMessageRayCastRequest.h>
 
 #include "ClientNetworkManager.h"
 #include "DeferredRenderer.h"
+#include <Renderer.h>
 #include <CubeMapGenerator.h>
 #include <PointLight.h>
+#include <SpotLight.h>
 #include <GrenadeComponent.h>
 
 #include <PhysicsInterface.h>
 #include <PostMaster.h>
+#include <ShootingComponent.h>
 #include <TriggerComponent.h>
 #include <UpgradeComponent.h>
 #include <UpgradeNote.h>
@@ -54,11 +58,17 @@
 #include <NetMessageActivateSpawnpoint.h>
 #include "TextEventManager.h"
 
+#include <TextProxy.h>
+
 ClientLevel::ClientLevel()
 	: myInstanceOrientations(16)
 	, myInstances(16)
 	, myPointLights(64)
+	, mySpotLights(64)
 	, myInitDone(false)
+	, myForceStrengthPistol(0.f)
+	, myForceStrengthShotgun(0.f)
+	, myWorldTexts(64)
 {
 	Prism::PhysicsInterface::Create(std::bind(&ClientLevel::CollisionCallback, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3), false);
 
@@ -68,14 +78,36 @@ ClientLevel::ClientLevel()
 	ClientNetworkManager::GetInstance()->Subscribe(eNetMessageType::ENEMY_SHOOTING, this);
 	ClientNetworkManager::GetInstance()->Subscribe(eNetMessageType::SHOOT_GRENADE, this);
 	ClientNetworkManager::GetInstance()->Subscribe(eNetMessageType::EXPLOSION, this);
+	ClientNetworkManager::GetInstance()->Subscribe(eNetMessageType::RAY_CAST_REQUEST, this);
 
 	ClientProjectileManager::Create();
 	ClientUnitManager::Create();
 	myScene = new Prism::Scene();
+
+	myOtherClientRaycastHandlerPistol = [=](PhysicsComponent* aComponent, const CU::Vector3<float>& aDirection, const CU::Vector3<float>& aHitPosition, const CU::Vector3<float>& aHitNormal)
+	{
+		this->HandleOtherClientRayCastPistol(aComponent, aDirection, aHitPosition, aHitNormal);
+	};
+
+	myOtherClientRaycastHandlerShotgun = [=](PhysicsComponent* aComponent, const CU::Vector3<float>& aDirection, const CU::Vector3<float>& aHitPosition, const CU::Vector3<float>& aHitNormal)
+	{
+		this->HandleOtherClientRayCastShotgun(aComponent, aDirection, aHitPosition, aHitNormal);
+	};
+	myEmitterManager = new EmitterManager();
+
+	myTestText = Prism::ModelLoader::GetInstance()->LoadText(Prism::Engine::GetInstance()->GetFont(Prism::eFont::DIALOGUE), true, false);
+
+	myTestText->SetOffset({ 0.f, 1.f, 10.f });
+
 }
 
 ClientLevel::~ClientLevel()
 {
+	for (int i = 0; i < myWorldTexts.Size(); ++i)
+	{
+		SAFE_DELETE(myWorldTexts[i].myProxy);
+	}
+	SAFE_DELETE(myTestText);
 #ifdef THREAD_PHYSICS
 	Prism::PhysicsInterface::GetInstance()->ShutdownThread();
 #endif
@@ -89,12 +121,15 @@ ClientLevel::~ClientLevel()
 	ClientNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::ENEMY_SHOOTING, this);
 	ClientNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::SHOOT_GRENADE, this);
 	ClientNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::EXPLOSION, this);
+	ClientNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::RAY_CAST_REQUEST, this);
 
 	myInstances.DeleteAll();
 	myPointLights.DeleteAll();
+	mySpotLights.DeleteAll();
 	SAFE_DELETE(myPlayer);
 	SAFE_DELETE(myScene);
 	SAFE_DELETE(myDeferredRenderer);
+	SAFE_DELETE(myFullscreenRenderer);
 	SAFE_DELETE(myTextManager);
 
 	Prism::Audio::AudioInterface::GetInstance()->PostEvent("StopBackground", 0);
@@ -105,11 +140,16 @@ ClientLevel::~ClientLevel()
 void ClientLevel::Init(const std::string&)
 {
 	CreatePlayers();
+	myForceStrengthPistol = myPlayer->GetComponent<ShootingComponent>()->GetWeaponForceStrength(eWeaponType::PISTOL);
+	myForceStrengthShotgun = myPlayer->GetComponent<ShootingComponent>()->GetWeaponForceStrength(eWeaponType::SHOTGUN);
 
 	Prism::ModelLoader::GetInstance()->Pause();
 	myDeferredRenderer = new Prism::DeferredRenderer();
+	myDeferredRenderer->SetCubeMap("Data/Resource/Texture/CubeMap/church_horizontal_cross_cube_specular_pow2.dds");
 
-	myEmitterManager = new EmitterManager(*myPlayer->GetComponent<InputComponent>()->GetCamera());
+	myFullscreenRenderer = new Prism::Renderer();
+
+
 	Prism::ModelLoader::GetInstance()->UnPause();
 	CU::Matrix44f orientation;
 	myInstanceOrientations.Add(orientation);
@@ -120,7 +160,7 @@ void ClientLevel::Init(const std::string&)
 	ClientProjectileManager::GetInstance()->CreateExplosions();
 
 	myTextManager = new TextEventManager(myPlayer->GetComponent<InputComponent>()->GetCamera());
-
+	myEmitterManager->Initiate(myPlayer->GetComponent<InputComponent>()->GetCamera());
 }
 
 void ClientLevel::SetMinMax(const CU::Vector3<float>& aMinPoint, const CU::Vector3<float>& aMaxPoint)
@@ -171,10 +211,10 @@ void ClientLevel::Update(const float aDeltaTime)
 		ClientNetworkManager::GetInstance()->AddMessage(NetMessageDisconnect(ClientNetworkManager::GetInstance()->GetGID()));
 	}
 
-	unsigned short ms = ClientNetworkManager::GetInstance()->GetResponsTime();
+	unsigned long long ms = ClientNetworkManager::GetInstance()->GetResponsTime();
 	float kbs = static_cast<float>(ClientNetworkManager::GetInstance()->GetDataSent());
 
-	DEBUG_PRINT(ms);
+	DEBUG_PRINT(int(ms));
 	DEBUG_PRINT(kbs);
 
 	//for (int i = 0; i < myPlayers.Size(); ++i)
@@ -184,6 +224,22 @@ void ClientLevel::Update(const float aDeltaTime)
 	//}
 
 	DebugMusic();
+
+	if (Prism::ModelLoader::GetInstance()->IsLoading() == false && myTestText->IsLoaded() == true)
+	{
+		static float totalTime = 0.f;
+		totalTime += aDeltaTime;
+		myTestText->SetText("Press W to walk forward.");
+		myTestText->SetColor({ 0.f, abs(cos(totalTime)), abs(cos(-totalTime)), 1.f });
+		myTestText->SetOffset({ 0.f, 1.f + (cos(totalTime * 2.f) * 0.5f), 10.f });
+		//myTestText->Rotate3dText((cos(totalTime * 2.f) * 0.5f));
+
+		for (int i = 0; i < myWorldTexts.Size(); ++i)
+		{
+			myWorldTexts[i].myProxy->SetText(myWorldTexts[i].myText);
+		}
+	}
+
 
 	Prism::PhysicsInterface::GetInstance()->EndFrame();
 
@@ -197,14 +253,24 @@ void ClientLevel::Render()
 	if (myInitDone == true)
 	{
 		myDeferredRenderer->Render(myScene);
+
+		myFullscreenRenderer->Render(myDeferredRenderer->GetFinishedTexture(), myDeferredRenderer->GetEmissiveTexture(), myDeferredRenderer->GetDepthStencilTexture(), Prism::ePostProcessing::BLOOM);
+
 		Prism::DebugDrawer::GetInstance()->RenderLinesToScreen(*myPlayer->GetComponent<InputComponent>()->GetCamera());
+
 		//myScene->Render();
 		//myDeferredRenderer->Render(myScene);
+
 		myEmitterManager->RenderEmitters();
 		myPlayer->GetComponent<FirstPersonRenderComponent>()->Render();
 		//myPlayer->GetComponent<ShootingComponent>()->Render();
 
 		myTextManager->Render();
+		myTestText->Render(myScene->GetCamera());
+		for (int i = 0; i < myWorldTexts.Size(); ++i)
+		{
+			myWorldTexts[i].myProxy->Render(myScene->GetCamera());
+		}
 	}
 }
 
@@ -337,11 +403,34 @@ void ClientLevel::ReceiveNetworkMessage(const NetMessageExplosion& aMessage, con
 {
 	ClientProjectileManager::GetInstance()->RequestExplosion(aMessage.myPosition, aMessage.myGID);
 	ClientProjectileManager::GetInstance()->KillGrenade(aMessage.myGID - 1);
+	PostMaster::GetInstance()->SendMessage(EmitterMessage("Explosion", aMessage.myPosition,true));
+}
+
+void ClientLevel::ReceiveNetworkMessage(const NetMessageRayCastRequest& aMessage, const sockaddr_in&)
+{
+	if (myPlayer->GetGID() != aMessage.myGID)
+	{
+		switch (eNetRayCastType(aMessage.myRayCastType))
+		{
+		case eNetRayCastType::CLIENT_SHOOT_PISTOL:
+			Prism::PhysicsInterface::GetInstance()->RayCast(aMessage.myPosition, aMessage.myDirection, 500.f, myOtherClientRaycastHandlerPistol, myPlayer->GetComponent<PhysicsComponent>());
+			break;
+		case eNetRayCastType::CLIENT_SHOOT_SHOTGUN:
+			Prism::PhysicsInterface::GetInstance()->RayCast(aMessage.myPosition, aMessage.myDirection, 500.f, myOtherClientRaycastHandlerShotgun, myPlayer->GetComponent<PhysicsComponent>());
+			break;
+		}
+	}
 }
 
 void ClientLevel::AddLight(Prism::PointLight* aLight)
 {
 	myPointLights.Add(aLight);
+	myScene->AddLight(aLight);
+}
+
+void ClientLevel::AddLight(Prism::SpotLight* aLight)
+{
+	mySpotLights.Add(aLight);
 	myScene->AddLight(aLight);
 }
 
@@ -392,6 +481,18 @@ void ClientLevel::DebugMusic()
 	}
 }
 
+void ClientLevel::AddWorldText(const std::string& aText, const CU::Vector3<float>& aPosition, float aRotationAroundY, const CU::Vector4<float>& aColor)
+{
+	WorldText toAdd;
+	toAdd.myProxy = Prism::ModelLoader::GetInstance()->LoadText(Prism::Engine::GetInstance()->GetFont(Prism::eFont::DIALOGUE), true, false);
+	toAdd.myText = aText;
+	toAdd.myProxy->SetOffset(aPosition);
+	toAdd.myProxy->SetColor(aColor);
+	toAdd.myProxy->Rotate3dText(aRotationAroundY);
+	
+	myWorldTexts.Add(toAdd);
+}
+
 void ClientLevel::HandleTrigger(Entity& aFirstEntity, Entity& aSecondEntity, bool aHasEntered)
 {
 	if (aSecondEntity.GetType() == eEntityType::PLAYER)
@@ -434,5 +535,32 @@ void ClientLevel::CreatePlayers()
 		newPlayer->Reset();
 		myPlayers.Add(newPlayer);
 		myActiveUnitsMap[newPlayer->GetGID()] = newPlayer;
+	}
+}
+
+void ClientLevel::HandleOtherClientRayCastPistol(PhysicsComponent* aComponent, const CU::Vector3<float>& aDirection, const CU::Vector3<float>& aHitPosition, const CU::Vector3<float>& aHitNormal)
+{
+	if (aComponent != nullptr)
+	{
+		if (aComponent->GetPhysicsType() == ePhysics::DYNAMIC)
+		{
+			aComponent->AddForce(aDirection, myForceStrengthPistol);
+		}
+
+		CU::Vector3<float> toSend = CU::Reflect<float>(aDirection, aHitNormal);
+		PostMaster::GetInstance()->SendMessage(EmitterMessage("Shotgun", aHitPosition, toSend));
+	}
+}
+
+void ClientLevel::HandleOtherClientRayCastShotgun(PhysicsComponent* aComponent, const CU::Vector3<float>& aDirection, const CU::Vector3<float>& aHitPosition, const CU::Vector3<float>& aHitNormal)
+{
+	if (aComponent != nullptr)
+	{
+		if (aComponent->GetPhysicsType() == ePhysics::DYNAMIC)
+		{
+			aComponent->AddForce(aDirection, myForceStrengthShotgun);
+		}
+		CU::Vector3<float> toSend = CU::Reflect(aDirection, aHitNormal);
+		PostMaster::GetInstance()->SendMessage(EmitterMessage("Shotgun", aHitPosition, toSend));
 	}
 }

@@ -44,6 +44,7 @@ InGameState::~InGameState()
 	Console::Destroy();
 	SAFE_DELETE(myLevel);
 	SAFE_DELETE(myLevelFactory);
+	SAFE_DELETE(myText);
 }
 
 void InGameState::InitState(StateStackProxy* aStateStackProxy, GUI::Cursor* aCursor)
@@ -204,7 +205,12 @@ void InGameState::ReceiveNetworkMessage(const NetMessageLevelComplete&, const so
 
 void InGameState::ReceiveNetworkMessage(const NetMessageLoadLevel& aMessage, const sockaddr_in&)
 {
-	DL_ASSERT_EXP(myLevel == nullptr, "Level has to be nullptr here");
+	if (myLevel != nullptr)
+	{
+		bool shouldAssertLater = true;
+		return;
+	}
+	//DL_ASSERT_EXP(myLevel == nullptr, "Level has to be nullptr here");
 	SET_RUNTIME(false);
 	myLevel = static_cast<ClientLevel*>(myLevelFactory->LoadLevel(aMessage.myLevelID));
 	ClientNetworkManager::GetInstance()->AllowSendWithoutSubscriber(false);

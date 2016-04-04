@@ -130,7 +130,7 @@ void CU::TimerManager::CapFrameRate(float aFrameRate)
 		waitTime = frameTime;
 		if (waitTime + 0.002f < capTime)
 		{
-			Sleep(1);
+			//Yield(1);
 		}
 	}
 }

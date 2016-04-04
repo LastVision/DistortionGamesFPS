@@ -25,6 +25,7 @@ public:
 	bool GetIsActiveFromStart() const;
 	void SetRespawnValue(int aValue);
 	int GetRespawnValue() const;
+	bool IsPressable() const;
 
 private:
 
@@ -36,6 +37,7 @@ private:
 	
 	int myRespawnValue;
 	float myRespawnTime;
+	int myLastRespawnValue;
 };
 
 inline eComponentType TriggerComponent::GetTypeStatic()

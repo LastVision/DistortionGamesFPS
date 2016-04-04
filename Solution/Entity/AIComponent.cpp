@@ -26,9 +26,9 @@ AIComponent::AIComponent(Entity& anEntity, const AIComponentData& aData, CU::Mat
 	, myHasRaycasted(false)
 	, myHasJustSpawned(true)
 {
-	myRaycastHandler = [=](PhysicsComponent* aComponent, const CU::Vector3<float>& aDirection, const CU::Vector3<float>& aHitPosition)
+	myRaycastHandler = [=](PhysicsComponent* aComponent, const CU::Vector3<float>& aDirection, const CU::Vector3<float>& aHitPosition, const CU::Vector3<float>& aHitNormal)
 	{
-		this->HandleRaycast(aComponent, aDirection, aHitPosition);
+		this->HandleRaycast(aComponent, aDirection, aHitPosition, aHitNormal);
 	};
 }
 
@@ -59,6 +59,17 @@ void AIComponent::Update(float aDelta)
 
 	if (myEntity.GetState() != eEntityState::DIE)
 	{
+		myDefendTarget = PollingStation::GetInstance()->GetCurrentDefendTarget(myEntity.GetOrientation().GetPos());
+		if (myDefendTarget != nullptr && myTarget == nullptr)
+		{
+			myTarget = myDefendTarget;
+		}
+		else if (myDefendTarget == nullptr && myTarget != nullptr && myTarget->GetType() == eEntityType::TRIGGER)
+		{
+			myTarget = nullptr;
+		}
+
+
 		if (myHasRaycasted == false)
 		{
 			Entity* closestPlayer = PollingStation::GetInstance()->FindClosestPlayer(myEntity.GetOrientation().GetPos(), myData.myVisionRange);
@@ -68,7 +79,7 @@ void AIComponent::Update(float aDelta)
 				CU::Vector3<float> toPlayer(CU::GetNormalized(closestPlayer->GetOrientation().GetPos() - myOrientation.GetPos()));
 
 				Prism::PhysicsInterface::GetInstance()->RayCast(myOrientation.GetPos() + CU::Vector3<float>(0.f, 1.f, 0.f)
-					, toPlayer, myData.myVisionRange, myRaycastHandler);
+					, toPlayer, myData.myVisionRange, myRaycastHandler, myEntity.GetComponent<PhysicsComponent>());
 				myHasRaycasted = true;
 			}
 		}
@@ -76,7 +87,7 @@ void AIComponent::Update(float aDelta)
 		myShootTimer -= aDelta;
 		
 		Move(aDelta, myTarget);
-		if (myTarget != nullptr)
+		if (myTarget != nullptr && myTarget != myDefendTarget)
 		{
 			if (myShootTimer < 0.f)
 			{
@@ -99,8 +110,12 @@ void AIComponent::Update(float aDelta)
 	}
 }
 
-void AIComponent::HandleRaycast(PhysicsComponent* aComponent, const CU::Vector3<float>& aDirection, const CU::Vector3<float>& aHitPosition)
+void AIComponent::HandleRaycast(PhysicsComponent* aComponent, const CU::Vector3<float>& aDirection, const CU::Vector3<float>& aHitPosition, const CU::Vector3<float>& aHitNormal)
 {
+	aDirection;
+	aHitPosition;
+	aHitNormal;
+
 	myHasRaycasted = false;
 
 	myTarget = nullptr;
@@ -112,7 +127,6 @@ void AIComponent::HandleRaycast(PhysicsComponent* aComponent, const CU::Vector3<
 		}
 	}
 }
-
 
 void AIComponent::Move(float aDelta, Entity* aClosestPlayer)
 {
@@ -138,7 +152,7 @@ void AIComponent::Move(float aDelta, Entity* aClosestPlayer)
 			myEntity.SetState(eEntityState::WALK);
 			SharedNetworkManager::GetInstance()->AddMessage<NetMessageEntityState>(NetMessageEntityState(myEntity.GetState(), myEntity.GetGID()));
 		}
-
+		movement.y = -0.5f;
 		Prism::PhysicsInterface::GetInstance()->Move(myEntity.GetComponent<PhysicsComponent>()->GetCapsuleControllerId(), movement, 0.05f, aDelta);
 
 		SetOrientation(CU::GetNormalized(movement), aDelta);

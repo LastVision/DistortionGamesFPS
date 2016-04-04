@@ -57,6 +57,7 @@ namespace GUI
 	RadioButtonContainer::~RadioButtonContainer()
 	{
 		myButtons.DeleteAll();
+		SAFE_DELETE(myBackground);
 	}
 
 	void RadioButtonContainer::Render(const CU::Vector2<float>& aParentPosition)

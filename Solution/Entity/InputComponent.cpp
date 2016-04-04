@@ -9,6 +9,7 @@
 #include "InputComponentData.h"
 #include <InputWrapper.h>
 #include <NetMessagePosition.h>
+#include <NetMessagePressE.h>
 #include <NetMessageEntityState.h>
 #include "NetworkComponent.h"
 #include <PostMaster.h>
@@ -43,9 +44,6 @@ InputComponent::InputComponent(Entity& anEntity, const InputComponentData& aData
 
 	mySendTime = 3;
 
-
-
-
 	//myCapsuleControllerId = Prism::PhysicsInterface::GetInstance()->CreatePlayerController(myOrientation.GetPos());
 }
 
@@ -66,6 +64,15 @@ void InputComponent::Update(float aDelta)
 	if (myEntity.GetState() != eEntityState::DIE)
 	{
 		UpdateMovement(aDelta);
+
+		if (CU::InputWrapper::GetInstance()->KeyDown(DIK_E) == true)
+		{
+			//Prism::PhysicsInterface::GetInstance()->RayCast(myEntity.GetOrientation().GetPos()
+			//	, myEntity.GetOrientation().GetForward(), 10.f, myRaycastHandler, myEntity.GetComponent<PhysicsComponent>());
+			//SharedNetworkManager::GetInstance()->AddMessage(NetMessageRayCastRequest(myEntity.GetOrientation().GetPos(), myEntity.GetOrientation().GetForward()
+			//	, int(eNetRayCastType::CLIENT_PRESSED_E), 10.f, myEntity.GetGID()));
+			SharedNetworkManager::GetInstance()->AddMessage(NetMessagePressE(myEntity.GetGID()));
+		}
 
 		myEyeOrientation = myOrientation;
 
@@ -222,7 +229,6 @@ void InputComponent::UpdateMovement(float aDelta)
 #endif
 
 	movement.y = myVerticalSpeed;
-
 	Prism::PhysicsInterface::GetInstance()->Move(myEntity.GetComponent<PhysicsComponent>()->GetCapsuleControllerId(), movement, 0.05f, aDelta);
 
 	CU::Vector3<float> pos;

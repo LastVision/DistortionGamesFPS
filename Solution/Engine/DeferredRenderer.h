@@ -31,8 +31,10 @@ namespace Prism
 		Effect* myEffect = nullptr;
 		ID3DX11EffectShaderResourceVariable* myAlbedo = nullptr;
 		ID3DX11EffectShaderResourceVariable* myNormal = nullptr;
-		ID3DX11EffectShaderResourceVariable* myDepth = nullptr;
+		ID3DX11EffectShaderResourceVariable* myEmissive = nullptr;
 		ID3DX11EffectShaderResourceVariable* myCubemap = nullptr;
+
+		ID3DX11EffectShaderResourceVariable* mySSAORandomTextureVariable = nullptr;
 		ID3DX11EffectScalarVariable* myAmbientMultiplier = nullptr;
 		ID3DX11EffectMatrixVariable* myInvertedProjection;
 		ID3DX11EffectMatrixVariable* myNotInvertedView;
@@ -50,21 +52,35 @@ namespace Prism
 
 		CU::Vector3<float> mySHGridSize;
 		CU::Vector3<float> mySHGridOffset;
+		Texture* mySSAORandomTexture;
 	};
 
-	struct LightPass : public EffectListener
+	struct PointLightPass : public EffectListener
 	{
 		void OnEffectLoad() override;
 
 		Effect* myEffect = nullptr;
 		ID3DX11EffectShaderResourceVariable* myAlbedo = nullptr;
 		ID3DX11EffectShaderResourceVariable* myNormal = nullptr;
-		ID3DX11EffectShaderResourceVariable* myDepth = nullptr;
-		ID3DX11EffectShaderResourceVariable* myMetalness = nullptr;
-		ID3DX11EffectShaderResourceVariable* myAmbientOcclusion = nullptr;
-		ID3DX11EffectShaderResourceVariable* myRoughness = nullptr;
+		ID3DX11EffectShaderResourceVariable* myEmissive = nullptr;
+		ID3DX11EffectShaderResourceVariable* myCubemap = nullptr;
 
 		ID3DX11EffectVariable* myPointLightVariable;
+		ID3DX11EffectMatrixVariable* myInvertedProjection;
+		ID3DX11EffectMatrixVariable* myNotInvertedView;
+	};
+
+	struct SpotLightPass : public EffectListener
+	{
+		void OnEffectLoad() override;
+
+		Effect* myEffect = nullptr;
+		ID3DX11EffectShaderResourceVariable* myAlbedo = nullptr;
+		ID3DX11EffectShaderResourceVariable* myNormal = nullptr;
+		ID3DX11EffectShaderResourceVariable* myEmissive = nullptr;
+		ID3DX11EffectShaderResourceVariable* myCubemap = nullptr;
+
+		ID3DX11EffectVariable* mySpotLightVariable;
 		ID3DX11EffectMatrixVariable* myInvertedProjection;
 		ID3DX11EffectMatrixVariable* myNotInvertedView;
 	};
@@ -83,17 +99,18 @@ namespace Prism
 
 		void GenerateSHData(Scene* aScene
 			, const CU::Vector3<float>& aMinPoint, const CU::Vector3<float>& aMaxPoint, const std::string& aName);
+		void SetCubeMap(const std::string& aFilePath);
+
+		Texture* GetFinishedTexture();
+		Texture* GetEmissiveTexture();
+		Texture* GetDepthStencilTexture();
 
 	private:
 		struct GBufferData
 		{
-			Texture* myAlbedoTexture;
-			Texture* myNormalTexture;
-			Texture* myDepthTexture;
-
-			Texture* myMetalnessTexture;
-			Texture* myAmbientOcclusionTexture;
-			Texture* myRoughnessTexture;
+			Texture* myAlbedoTexture; //DEPTH is stored in W
+			Texture* myNormalTexture; //METALNESS is stored in W
+			Texture* myEmissiveTexture;  //ROUGHNESS is stored in W
 		};
 
 		void InitFullscreenQuad();
@@ -103,6 +120,7 @@ namespace Prism
 		void RenderDeferred(Scene* aScene);
 		void RenderCubemapDeferred(Scene* aScene, ID3D11RenderTargetView* aTarget, ID3D11DepthStencilView* aDepth);
 		void RenderPointLights(Scene* aScene);
+		void RenderSpotLights(Scene* aScene);
 		void RenderAmbientPass(Scene* aScene);
 		void SetAmbientData(bool aClearTextures);
 
@@ -112,15 +130,22 @@ namespace Prism
 
 		void ClearGBuffer();
 		void SetGBufferAsTarget();
+		void SetPointLightData(const Camera& aCamera);
+		void RemovePointLightData();
+		void SetSpotLightData(const Camera& aCamera);
+		void RemoveSpotLightData();
 
 		CubeMapGenerator* myCubeMapGenerator;
 		SHTextures mySHTextures;
 		Texture* myDepthStencilTexture;
 		Texture* myCubemap;
+		Texture* myFinishedTexture;
 		RenderToScreenData myRenderToScreenData;
 		AmbientPass myAmbientPass;
-		LightPass myLightPass;
+		PointLightPass myPointLightPass;
+		SpotLightPass mySpotLightPass;
 		GBufferData myGBufferData;
+		D3D11_VIEWPORT* myViewPort;
 
 		float myClearColor[4];
 	};

@@ -20,6 +20,7 @@ namespace Prism
 		const CU::Matrix44<float>& GetOrientation() const;
 		const CU::Matrix44<float>& GetProjection() const;
 		const CU::Matrix44<float>& GetViewProjection() const;
+		const CU::Matrix44<float>& GetSpecialFoVViewProjection() const;
 
 		void Update(float aDeltaTime);
 
@@ -49,6 +50,10 @@ namespace Prism
 		CU::Matrix44<float> myProjectionMatrix;
 		CU::Matrix44<float> myProjectionMatrixNonInverted; //used to go from projection to view space
 		CU::Matrix44<float> myViewProjectionMatrix;
+
+		CU::Matrix44<float> mySpecialFoVOrientation;
+		CU::Matrix44<float> mySpecialFoVProjectionMatrix;
+		CU::Matrix44<float> mySpecialFoVViewProjectionMatrix;
 		float myNear;
 		float myFar;
 		float myFOV;

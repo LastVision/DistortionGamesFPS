@@ -1,4 +1,3 @@
-
 #include "stdafx.h"
 #include "ServerLevel.h"
 
@@ -13,9 +12,11 @@
 #include <NetMessageSetActive.h>
 #include <NetMessageHealthPack.h>
 #include <NetMessageEntityState.h>
-#include <SendTextToClientsMessage.h>
+#include <NetMessageRayCastRequest.h>
+#include <NetMessagePressE.h>
 #include <NetMessageShootGrenade.h>
 #include <NetMessageText.h>
+#include <NetMessagePressEText.h>
 #include <NetworkComponent.h>
 #include <PhysicsInterface.h>
 #include <PhysicsComponent.h>
@@ -28,6 +29,7 @@
 #include <RespawnMessage.h>
 #include <RespawnTriggerMessage.h>
 #include <ActivateSpawnpointMessage.h>
+#include <SendTextToClientsMessage.h>
 
 #include "ServerProjectileManager.h"
 #include "ServerUnitManager.h"
@@ -37,6 +39,7 @@ ServerLevel::ServerLevel()
 	, myAllClientsLoaded(false)
 	, myNextLevel(-1)
 	, myRespawnTriggers(16)
+	, myPressETriggers(16)
 {
 	Prism::PhysicsInterface::Create(std::bind(&ServerLevel::CollisionCallback, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3), true);
 
@@ -45,6 +48,8 @@ ServerLevel::ServerLevel()
 	ServerNetworkManager::GetInstance()->Subscribe(eNetMessageType::ENTITY_STATE, this);
 	ServerNetworkManager::GetInstance()->Subscribe(eNetMessageType::SHOOT_GRENADE, this);
 	ServerNetworkManager::GetInstance()->Subscribe(eNetMessageType::HEALTH_PACK, this);
+	ServerNetworkManager::GetInstance()->Subscribe(eNetMessageType::RAY_CAST_REQUEST, this);
+	ServerNetworkManager::GetInstance()->Subscribe(eNetMessageType::PRESS_E, this);
 
 	PostMaster::GetInstance()->Subscribe(eMessageType::SET_ACTIVE, this);
 	PostMaster::GetInstance()->Subscribe(eMessageType::RESPAWN_TRIGGER, this);
@@ -54,6 +59,10 @@ ServerLevel::ServerLevel()
 	ServerProjectileManager::Create();
 	ServerUnitManager::Create();
 
+	//myPressedERayCastHandler = [=](PhysicsComponent* aComponent, const CU::Vector3<float>& aDirection, const CU::Vector3<float>& aHitPosition, const CU::Vector3<float>& aHitNormal)
+	//{
+	//	this->HandlePressedERaycast(aComponent, aDirection, aHitPosition, aHitNormal);
+	//};
 }
 
 ServerLevel::~ServerLevel()
@@ -70,12 +79,18 @@ ServerLevel::~ServerLevel()
 	ServerNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::ENTITY_STATE, this);
 	ServerNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::SHOOT_GRENADE, this);
 	ServerNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::HEALTH_PACK, this);
+	ServerNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::RAY_CAST_REQUEST, this);
+	ServerNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::PRESS_E, this);
 
 	PostMaster::GetInstance()->UnSubscribe(eMessageType::SET_ACTIVE, this);
 	PostMaster::GetInstance()->UnSubscribe(eMessageType::RESPAWN_TRIGGER, this);
 	PostMaster::GetInstance()->UnSubscribe(eMessageType::RESPAWN, this);
 	PostMaster::GetInstance()->UnSubscribe(eMessageType::SEND_TEXT_TO_CLIENTS, this);
 
+	for (auto it = myPlayersInPressableTriggers.begin(); it != myPlayersInPressableTriggers.end(); ++it)
+	{
+		it->second.RemoveAll();
+	}
 }
 
 void ServerLevel::Init(const std::string& aMissionXMLPath)
@@ -93,9 +108,12 @@ void ServerLevel::Init(const std::string& aMissionXMLPath)
 		myRespawnTriggers.Add(newRespawnTrigger);
 
 		myMissionManager = new MissionManager(aMissionXMLPath);
+
+		myPlayersInPressableTriggers[client.myID] = CU::GrowingArray<Entity*>(8);
 	}
 	ServerProjectileManager::GetInstance()->CreateBullets(nullptr);
 	ServerProjectileManager::GetInstance()->CreateGrenades(nullptr);
+
 
 }
 
@@ -104,6 +122,13 @@ void ServerLevel::Update(const float aDeltaTime)
 	if (myAllClientsLoaded == true && Prism::PhysicsInterface::GetInstance()->GetInitDone() == true)
 	{
 		__super::Update(aDeltaTime);
+
+		for (int i = 0; i < myPressETriggers.Size(); ++i)
+		{
+			ServerNetworkManager::GetInstance()->AddMessage(NetMessagePressEText(myPressETriggers[i]->GetGID(), myPressETriggers[i]->GetOrientation().GetPos(), true));
+		}
+		myPressETriggers.RemoveAll();
+
 		myMissionManager->Update(aDeltaTime);
 		ServerProjectileManager::GetInstance()->Update(aDeltaTime);
 		ServerUnitManager::GetInstance()->Update(aDeltaTime);
@@ -188,6 +213,32 @@ void ServerLevel::ReceiveNetworkMessage(const NetMessageShootGrenade& aMessage, 
 	SharedNetworkManager::GetInstance()->AddMessage<NetMessageShootGrenade>(NetMessageShootGrenade(aMessage.myForceStrength));
 }
 
+void ServerLevel::ReceiveNetworkMessage(const NetMessagePressE& aMessage, const sockaddr_in&)
+{
+	for (int i = 0; i < myPlayersInPressableTriggers[aMessage.myGID].Size(); ++i)
+	{
+		if (myPlayersInPressableTriggers[aMessage.myGID][i]->GetComponent<PhysicsComponent>()->IsInScene() == true)
+		{
+			Trigger(*myPlayersInPressableTriggers[aMessage.myGID][i], *myPlayers[aMessage.myGID - 1], true);
+			myPlayersInPressableTriggers[aMessage.myGID][i]->
+				SendNote<CollisionNote>(CollisionNote(myPlayers[aMessage.myGID - 1], true));
+		}
+	}
+}
+
+void ServerLevel::ReceiveNetworkMessage(const NetMessageRayCastRequest& aMessage, const sockaddr_in&)
+{
+	if (static_cast<eNetRayCastType>(aMessage.myRayCastType) == eNetRayCastType::CLIENT_SHOOT_PISTOL ||
+		static_cast<eNetRayCastType>(aMessage.myRayCastType) == eNetRayCastType::CLIENT_SHOOT_SHOTGUN)
+	{
+		ServerNetworkManager::GetInstance()->AddMessage(aMessage);
+	}
+	else
+	{
+		DL_ASSERT("NOT IMPLEMENTED");
+	}
+}
+
 void ServerLevel::ReceiveMessage(const SendTextToClientsMessage& aMessage)
 {
 	SendTextMessageToClients(aMessage.myText);
@@ -198,10 +249,22 @@ void ServerLevel::ReceiveMessage(const SetActiveMessage& aMessage)
 	if (aMessage.myShouldActivate == true)
 	{
 		myActiveEntitiesMap[aMessage.myGID]->GetComponent<PhysicsComponent>()->AddToScene();
+		if (myActiveEntitiesMap[aMessage.myGID]->GetType() == eEntityType::TRIGGER
+			&& myActiveEntitiesMap[aMessage.myGID]->GetComponent<TriggerComponent>()->IsPressable() == true)
+		{
+			ServerNetworkManager::GetInstance()->AddMessage(
+				NetMessagePressEText(aMessage.myGID, myActiveEntitiesMap[aMessage.myGID]->GetOrientation().GetPos(), true));
+		}
 	}
 	else
 	{
 		myActiveEntitiesMap[aMessage.myGID]->GetComponent<PhysicsComponent>()->RemoveFromScene();
+		if (myActiveEntitiesMap[aMessage.myGID]->GetType() == eEntityType::TRIGGER
+			&& myActiveEntitiesMap[aMessage.myGID]->GetComponent<TriggerComponent>()->IsPressable() == true)
+		{
+			ServerNetworkManager::GetInstance()->AddMessage(
+				NetMessagePressEText(aMessage.myGID, myActiveEntitiesMap[aMessage.myGID]->GetOrientation().GetPos(), false));
+		}
 	}
 }
 
@@ -222,44 +285,38 @@ void ServerLevel::ReceiveMessage(const RespawnTriggerMessage& aMessage)
 	myRespawnTriggers[aMessage.myGID - 1]->GetComponent<TriggerComponent>()->SetRespawnValue(aMessage.myGID);
 	myRespawnTriggers[aMessage.myGID - 1]->GetComponent<PhysicsComponent>()->AddToScene();
 	myRespawnTriggers[aMessage.myGID - 1]->GetComponent<PhysicsComponent>()->TeleportToPosition(myPlayers[aMessage.myGID - 1]->GetOrientation().GetPos());
+	myRespawnTriggers[aMessage.myGID - 1]->GetComponent<PhysicsComponent>()->UpdateOrientationStatic();
 }
+
+void ServerLevel::AddPressETrigger(Entity* aTrigger)
+{
+	myPressETriggers.Add(aTrigger);
+}
+
+//void ServerLevel::HandlePressedERaycast(PhysicsComponent* aComponent, const CU::Vector3<float>&, const CU::Vector3<float>&, const CU::Vector3<float>&)
+//{
+//	if (aComponent != nullptr)
+//	{
+//		//Entity& entity = aComponent->GetEntity();
+//
+//		
+//	}
+//}
 
 void ServerLevel::HandleTrigger(Entity& aFirstEntity, Entity& aSecondEntity, bool aHasEntered)
 {
-	TriggerComponent* firstTrigger = aFirstEntity.GetComponent<TriggerComponent>();
 	if (aHasEntered == true)
 	{
 		if (aSecondEntity.GetType() == eEntityType::UNIT && aSecondEntity.GetSubType() == "playerserver")
 		{
-			switch (firstTrigger->GetTriggerType())
+			if (aFirstEntity.GetComponent<TriggerComponent>()->IsPressable() == false)
 			{
-			case eTriggerType::UNLOCK:
-				printf("UnlockTrigger with GID: %i entered by: %s with GID: %i \n", aFirstEntity.GetGID(), aSecondEntity.GetSubType().c_str(), aSecondEntity.GetGID());
-				SharedNetworkManager::GetInstance()->AddMessage(NetMessageSetActive(false, true, firstTrigger->GetValue()));
-				myActiveEntitiesMap[firstTrigger->GetValue()]->GetComponent<PhysicsComponent>()->RemoveFromScene();
-				// do "open" animation
-				SendTextMessageToClients("Unlocked door");
-				break;
-			case eTriggerType::LOCK:
-				printf("LockTrigger with GID: %i entered by: %s with GID: %i \n", aFirstEntity.GetGID(), aSecondEntity.GetSubType().c_str(), aSecondEntity.GetGID());
-				SharedNetworkManager::GetInstance()->AddMessage(NetMessageSetActive(true, true, firstTrigger->GetValue()));
-				myActiveEntitiesMap[firstTrigger->GetValue()]->GetComponent<PhysicsComponent>()->AddToScene();
-				// do "close" animation
-				SendTextMessageToClients("Locked door");
-				break;
-			case eTriggerType::MISSION:
-				printf("MissionTrigger with GID: %i entered by: %s with GID: %i \n", aFirstEntity.GetGID(), aSecondEntity.GetSubType().c_str(), aSecondEntity.GetGID());
-				myMissionManager->SetMission(firstTrigger->GetValue());
-				SendTextMessageToClients("Mission activated");
-				break;
-			case eTriggerType::LEVEL_CHANGE:
-				myNextLevel = firstTrigger->GetValue();
-				break;
-			case eTriggerType::ENEMY_SPAWN:
-				PostMaster::GetInstance()->SendMessage(ActivateSpawnpointMessage(firstTrigger->GetEntity().GetGID()));
-				break;
+				Trigger(aFirstEntity, aSecondEntity, aHasEntered);
 			}
-			aSecondEntity.SendNote<CollisionNote>(CollisionNote(&aFirstEntity, aHasEntered));
+			else
+			{
+				myPlayersInPressableTriggers[aSecondEntity.GetGID()].Add(&aFirstEntity);
+			}
 		}
 		else if (aSecondEntity.GetType() == eEntityType::UNIT && aSecondEntity.GetSubType() != "playerserver")
 		{
@@ -272,7 +329,11 @@ void ServerLevel::HandleTrigger(Entity& aFirstEntity, Entity& aSecondEntity, boo
 	}
 	else
 	{
-		if (aSecondEntity.GetType() == eEntityType::UNIT && aSecondEntity.GetSubType() != "playerserver")
+		if (aSecondEntity.GetType() == eEntityType::UNIT && aSecondEntity.GetSubType() == "playerserver" && aFirstEntity.GetComponent<TriggerComponent>()->IsPressable() == true)
+		{
+			myPlayersInPressableTriggers[aSecondEntity.GetGID()].RemoveCyclic(&aFirstEntity);
+		}
+		else if (aSecondEntity.GetType() == eEntityType::UNIT && aSecondEntity.GetSubType() != "playerserver")
 		{
 			if (myMissionManager->GetCurrentMissionType() == eMissionType::DEFEND)
 			{
@@ -281,7 +342,48 @@ void ServerLevel::HandleTrigger(Entity& aFirstEntity, Entity& aSecondEntity, boo
 			}
 		}
 	}
-	aFirstEntity.SendNote<CollisionNote>(CollisionNote(&aSecondEntity, aHasEntered));
+	if (aFirstEntity.GetComponent<TriggerComponent>()->IsPressable() == false)
+	{
+		aFirstEntity.SendNote<CollisionNote>(CollisionNote(&aSecondEntity, aHasEntered));
+	}
+}
+
+void ServerLevel::Trigger(Entity& aFirstEntity, Entity& aSecondEntity, bool aHasEntered)
+{
+	TriggerComponent* firstTrigger = aFirstEntity.GetComponent<TriggerComponent>();
+
+	switch (firstTrigger->GetTriggerType())
+	{
+	case eTriggerType::UNLOCK:
+		printf("UnlockTrigger with GID: %i entered by: %s with GID: %i \n", aFirstEntity.GetGID(), aSecondEntity.GetSubType().c_str(), aSecondEntity.GetGID());
+		SharedNetworkManager::GetInstance()->AddMessage(NetMessageSetActive(false, true, firstTrigger->GetValue()));
+		myActiveEntitiesMap[firstTrigger->GetValue()]->GetComponent<PhysicsComponent>()->RemoveFromScene();
+		// do "open" animation
+		//SendTextMessageToClients("Unlocked door");
+		break;
+	case eTriggerType::LOCK:
+		printf("LockTrigger with GID: %i entered by: %s with GID: %i \n", aFirstEntity.GetGID(), aSecondEntity.GetSubType().c_str(), aSecondEntity.GetGID());
+		SharedNetworkManager::GetInstance()->AddMessage(NetMessageSetActive(true, true, firstTrigger->GetValue()));
+		myActiveEntitiesMap[firstTrigger->GetValue()]->GetComponent<PhysicsComponent>()->AddToScene();
+		// do "close" animation
+		//SendTextMessageToClients("Locked door");
+		break;
+	case eTriggerType::MISSION:
+		printf("MissionTrigger with GID: %i entered by: %s with GID: %i \n", aFirstEntity.GetGID(), aSecondEntity.GetSubType().c_str(), aSecondEntity.GetGID());
+		myMissionManager->SetMission(firstTrigger->GetValue());
+		if (myMissionManager->GetCurrentMissionType() == eMissionType::DEFEND)
+		{
+			PollingStation::GetInstance()->SetEnemyTargetPosition(&aFirstEntity);
+		}
+		break;
+	case eTriggerType::LEVEL_CHANGE:
+		myNextLevel = firstTrigger->GetValue();
+		break;
+	case eTriggerType::ENEMY_SPAWN:
+		PostMaster::GetInstance()->SendMessage(ActivateSpawnpointMessage(firstTrigger->GetEntity().GetGID()));
+		break;
+	}
+	aSecondEntity.SendNote<CollisionNote>(CollisionNote(&aFirstEntity, aHasEntered));
 }
 
 void ServerLevel::SendTextMessageToClients(const std::string& aText, float)

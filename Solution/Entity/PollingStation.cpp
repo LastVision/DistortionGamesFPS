@@ -1,5 +1,6 @@
 #include "stdafx.h"
 
+#include "AIComponent.h"
 #include <NetMessageLevelComplete.h>
 #include "PollingStation.h"
 #include <SharedNetworkManager.h>
@@ -120,4 +121,42 @@ void PollingStation::HasDied(Entity* anEntity)
 		//DL_ASSERT("No handle for enemy death yet.");
 		//handle dead enemies here
 	}
+}
+
+void PollingStation::SetEnemyTargetPosition(Entity* aEntityToTarget)
+{
+	/*for each (Entity* enemy in myEnemies)
+	{
+		enemy->GetComponent<AIComponent>()->SetDefendTarget(aEntityToTarget);
+	}*/
+	myCurrentDefendTarget = aEntityToTarget;
+}
+
+void PollingStation::ResetEnemyTargetPosition()
+{
+	/*for each (Entity* enemy in myEnemies)
+	{
+		enemy->GetComponent<AIComponent>()->ResetDefendTarget();
+	}*/
+	myCurrentDefendTarget = nullptr;
+}
+
+Entity* PollingStation::GetCurrentDefendTarget(const CU::Vector3<float>& aEnemyPosition) const
+{
+	Entity* toReturn = nullptr;
+
+	float currentMinDistance2 = FLT_MAX;
+	float defendAggroRange = 30.f;
+
+	if (myCurrentDefendTarget != nullptr)
+	{
+		float distance2 = CU::Length2(myCurrentDefendTarget->GetOrientation().GetPos() - aEnemyPosition);
+		if (distance2 < defendAggroRange * defendAggroRange && distance2 < currentMinDistance2)
+		{
+			currentMinDistance2 = distance2;
+			toReturn = myCurrentDefendTarget;
+		}
+	}
+
+	return toReturn;
 }

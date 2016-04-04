@@ -17,6 +17,9 @@ enum class eNetMessageType
 	LEVEL_COMPLETE,
 	ALL_CLIENTS_COMPLETE,
 
+	SERVER_REQUEST,
+	SERVER_REPLY,
+
 	PING_REQUEST,
 	PING_REPLY,
 	
@@ -30,11 +33,18 @@ enum class eNetMessageType
 	SHOOT_GRENADE,
 	EXPLOSION,
 	TEXT,
+	DISPLAY_MARKER,
+	DISPLAY_RESPAWN,
 
 	SET_ACTIVE,
 	ENTITY_STATE,
 	ACTIVATE_SPAWNPOINT,
 	ACTIVATE_UNIT,
+
+	RAY_CAST_REQUEST,
+	RAY_CAST_RESULT,
+	PRESS_E,
+	PRESS_E_TEXT,
 
 	_COUNT,
 };
@@ -72,6 +82,4 @@ inline OtherClients::OtherClients(const std::string& aName, unsigned int anID)
 	: myName(aName)
 	, myID(anID)
 {
-	int apa = 4;
-	apa++;
 }

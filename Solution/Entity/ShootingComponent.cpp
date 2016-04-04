@@ -4,7 +4,9 @@
 #include "GrenadeLauncher.h"
 #include <InputWrapper.h>
 #include "InputComponent.h"
+#include <NetMessageEntityState.h>
 #include "Pistol.h"
+#include <SharedNetworkManager.h>
 #include "Shotgun.h"
 #include "ShootingComponent.h"
 #include "UpgradeComponentData.h"
@@ -18,9 +20,9 @@ ShootingComponent::ShootingComponent(Entity& anEntity, Prism::Scene* aScene)
 	, myGrenadeLauncher(nullptr)
 {
 
-	myPistol = new Pistol();
-	myShotgun = new Shotgun();
-	myGrenadeLauncher = new GrenadeLauncher(aScene, myEntity.GetGID());
+	myPistol = new Pistol(&myEntity);
+	myShotgun = new Shotgun(&myEntity);
+	myGrenadeLauncher = new GrenadeLauncher(aScene, myEntity.GetGID(), &myEntity);
 	myCurrentWeapon = myPistol;
 }
 
@@ -33,7 +35,7 @@ ShootingComponent::~ShootingComponent()
 
 void ShootingComponent::Init(Prism::Scene* aScene)
 {
-	myPistol->Init(aScene, myEntity.GetComponent<FirstPersonRenderComponent>()->GetUIJointOrientation());
+	myPistol->Init(aScene, myEntity.GetComponent<FirstPersonRenderComponent>()->GetMuzzleJointOrientation());
 }
 
 void ShootingComponent::Update(float aDelta)
@@ -117,6 +119,7 @@ void ShootingComponent::Update(float aDelta)
 			if (myCurrentWeapon->Shoot(aOrientation) == true)
 			{
 				myEntity.GetComponent<FirstPersonRenderComponent>()->AddIntention(ePlayerState::PISTOL_FIRE, true);
+				SharedNetworkManager::GetInstance()->AddMessage<NetMessageEntityState>(NetMessageEntityState(eEntityState::ATTACK, myEntity.GetGID()));
 			}
 		}
 		else if (myCurrentWeapon == myShotgun)
@@ -124,6 +127,7 @@ void ShootingComponent::Update(float aDelta)
 			if (myCurrentWeapon->Shoot(aOrientation) == true)
 			{
 				myEntity.GetComponent<FirstPersonRenderComponent>()->AddIntention(ePlayerState::SHOTGUN_FIRE, true);
+				SharedNetworkManager::GetInstance()->AddMessage<NetMessageEntityState>(NetMessageEntityState(eEntityState::ATTACK, myEntity.GetGID()));
 			}
 		}
 		else if (myCurrentWeapon == myGrenadeLauncher)
@@ -132,6 +136,7 @@ void ShootingComponent::Update(float aDelta)
 			if (myCurrentWeapon->Shoot(aOrientation) == true)
 			{
 				myEntity.GetComponent<FirstPersonRenderComponent>()->AddIntention(ePlayerState::GRENADE_LAUNCHER_FIRE, true);
+				SharedNetworkManager::GetInstance()->AddMessage<NetMessageEntityState>(NetMessageEntityState(eEntityState::ATTACK, myEntity.GetGID()));
 			}
 		}
 	}
@@ -163,6 +168,21 @@ Weapon* ShootingComponent::GetWeapon(eWeaponType aWeaponType)
 	}
 	DL_ASSERT("Get Weapon crash!");
 	return myPistol;
+}
+
+float ShootingComponent::GetWeaponForceStrength(eWeaponType aWeaponType) const
+{
+	switch (aWeaponType)
+	{
+	case eWeaponType::PISTOL:
+		return myPistol->GetForceStrength();
+		break;
+	case eWeaponType::SHOTGUN:
+		return myShotgun->GetForceStrength();
+		break;
+	}
+	DL_ASSERT("Get Weapon force crash!");
+	return 0.f;
 }
 
 void ShootingComponent::ReceiveNote(const UpgradeNote& aNote)

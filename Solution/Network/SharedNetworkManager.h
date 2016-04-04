@@ -2,7 +2,6 @@
 #include <vector>
 #include "NetworkMessageTypes.h"
 #include "NetworkSubscriber.h"
-
 namespace std
 {
 	class thread;
@@ -12,6 +11,11 @@ class NetMessage;
 class NetMessageImportantReply;
 
 class NetworkSubscriber;
+
+namespace CU
+{
+	class TimerManager;
+};
 
 struct NetworkSubscriberInfo
 {
@@ -32,10 +36,12 @@ public:
 	void AddMessage(T aMessage);
 	template<typename T>
 	void AddMessage(T aMessage, unsigned int aTargetID);
+	template<typename T>
+	void AddMessage(T aMessage, const sockaddr_in aTargetAddress);
 	
 	eNetMessageType ReadType(const char* aBuffer);
 	eNetMessageType ReadType(const std::vector<char>& aBuffer);
-	unsigned short GetResponsTime() const;
+	unsigned long long GetResponsTime() const;
 	double GetDataSent() const;
 
 	void AllowSendWithoutSubscriber(bool aAllow);
@@ -54,7 +60,14 @@ public:
 	bool IsSubscribed(const eNetMessageType aMessageType, NetworkSubscriber* aSubscriber);
 
 	void ReceiveNetworkMessage(const NetMessageImportantReply& aMessage, const sockaddr_in& aSenderAddress) override;
-	void ReceiveNetworkMessage(const NetMessagePingReply& aMessage, const sockaddr_in& aSenderAddress) override;
+	void ReceiveNetworkMessage(const NetMessageReplyServer&, const sockaddr_in&) override {}
+	void ReceiveNetworkMessage(const NetMessageRequestServer&, const sockaddr_in&) override {}
+
+	float GetRepliesPerSecond();
+
+	void StopSendMessages(const bool aStopMessagesFlag);
+
+	const sockaddr_in& GetBroadcastAddress() const;
 
 protected:
 	static SharedNetworkManager* myInstance;
@@ -96,21 +109,26 @@ protected:
 	{
 		SendBufferMessage() {}
 		SendBufferMessage(std::vector<char> aBuffer, unsigned int aTargetID) : myBuffer(aBuffer), myTargetID(aTargetID) {}
+		SendBufferMessage(std::vector<char> aBuffer, const sockaddr_in aTargetAddress) : myBuffer(aBuffer), myTargetAddress(aTargetAddress), myTargetID(UINT_MAX) {}
 
 		std::vector<char> myBuffer;
 		unsigned int myTargetID;
+		sockaddr_in myTargetAddress;
 	};
 
 	SharedNetworkManager();
 	
-
+	void SetupBroadcastAddress(unsigned int aPortNumber);
 	virtual void UpdateImportantMessages(float aDeltaTime) = 0;
 
 	void AddNetworkMessage(std::vector<char> aBuffer, unsigned int aTargetID);
+	void AddNetworkMessage(std::vector<char> aBuffer, sockaddr_in aTargetAddress);
 	virtual void AddImportantMessage(std::vector<char> aBuffer, unsigned int aImportantID) = 0;
+	virtual void AddImportantMessage(std::vector<char> aBuffer, unsigned int aImportantID, const sockaddr_in& aTargetAddress) = 0;
 
 	virtual void SendThread() = 0;
 	virtual void ReceieveThread() = 0;
+	virtual void PingThread() = 0;
 
 	template<typename T> 
 	void UnpackAndHandle(T aMessage, Buffer& aBuffer);
@@ -123,15 +141,18 @@ protected:
 
 	std::thread* myReceieveThread;
 	std::thread* mySendThread;
+	std::thread* myPingThread;
+
 
 	CU::StaticArray<CU::GrowingArray<Buffer>, 2> myReceieveBuffer;
 	CU::StaticArray<CU::GrowingArray<SendBufferMessage>, 2> mySendBuffer;
 	CU::GrowingArray<ImportantMessage> myImportantMessagesBuffer;
 	CU::GrowingArray<ImportantReceivedMessage> myImportantReceivedMessages;
-
+	CU::TimerManager* myTimeManager;
 	CU::StaticArray<CU::GrowingArray<NetworkSubscriberInfo>, static_cast<int>(eNetMessageType::_COUNT)> mySubscribers;
 
 	bool myAllowSendWithoutSubscribers;
+	bool myStopSendMessages;
 
 	bool myIsServer;
 	bool myIsOnline;
@@ -141,23 +162,39 @@ protected:
 	
 	unsigned int myGID;
 
+	volatile bool myHasSent;
 	volatile bool myIsRunning;
 	volatile bool myReceieveIsDone;
 	volatile bool myMainIsDone;
 	
+	volatile unsigned long long myCurrentTimeStamp;
+
 	float myPingTime;
 	float myResponsTime;
-	float myMS;
+	float myOtherResponsTime;
+	unsigned long long myMS;
 
 	double myDataSent;
 	double myDataToPrint;
 
+	int myReplyCount;
+	float myRepliesPerSecond;
+
 	unsigned int myImportantID;
+
+	sockaddr_in myBroadcastAddress;
+
+	unsigned short myMessageGameIdentifier;
 
 	bool AlreadyReceived(const NetMessage& aMessage);
 private:
 	void UpdateImportantReceivedMessages(float aDelta);
 };
+
+inline void SharedNetworkManager::StopSendMessages(const bool aStopMessagesFlag)
+{
+	myStopSendMessages = aStopMessagesFlag;
+}
 
 template<typename T>
 inline void SharedNetworkManager::AddMessage(T aMessage)
@@ -168,6 +205,10 @@ inline void SharedNetworkManager::AddMessage(T aMessage)
 template<typename T>
 inline void SharedNetworkManager::AddMessage(T aMessage, unsigned int aTargetID)
 {
+	if (myStopSendMessages == true)
+	{
+		return;
+	}
 	aMessage.myTargetID = aTargetID;
 	aMessage.mySenderID = 0;
 	if (myIsServer == false)
@@ -189,6 +230,33 @@ inline void SharedNetworkManager::AddMessage(T aMessage, unsigned int aTargetID)
 	}
 	myDataSent += aMessage.myStream.size() * sizeof(char);
 	AddNetworkMessage(aMessage.myStream, aTargetID);
+}
+
+template<typename T>
+inline void SharedNetworkManager::AddMessage(T aMessage, const sockaddr_in aTargetAddress)
+{
+	aTargetAddress;
+	aMessage.myGameID = myMessageGameIdentifier;
+	aMessage.mySenderID = 0;
+	if (myIsServer == false)
+	{
+		aMessage.mySenderID = myGID;
+	}
+	bool isImportant = aMessage.GetIsImportant();
+	unsigned int importantID = 0;
+	if (isImportant == true)
+	{
+		importantID = myImportantID;
+		aMessage.SetImportantID(myImportantID++);
+	}
+
+	aMessage.PackMessage();
+	if (isImportant == true)
+	{
+		AddImportantMessage(aMessage.myStream, importantID, aTargetAddress);
+	}
+	myDataSent += aMessage.myStream.size() * sizeof(char);
+	AddNetworkMessage(aMessage.myStream, aTargetAddress);
 }
 
 template<typename T>
@@ -225,6 +293,12 @@ void SharedNetworkManager::SendToSubscriber(const T& aMessage, const sockaddr_in
 	}
 	else if (myAllowSendWithoutSubscribers == false)
 	{
+		DL_DEBUG("Message id %i", static_cast<int>(aMessage.myID));
 		DL_ASSERT("Network message sent without subscriber.");
 	}
+}
+
+inline const sockaddr_in& SharedNetworkManager::GetBroadcastAddress() const
+{
+	return myBroadcastAddress;
 }

@@ -48,6 +48,8 @@ namespace Prism
 #endif
 		, myInitDone(false)
 		, myCurrentIndex(0)
+		, myIsSwapping(false)
+		, myIsReading(false)
 	{
 		myRaycastJobs[0].Init(64);
 		myRaycastJobs[1].Init(64);
@@ -205,6 +207,8 @@ namespace Prism
 		myQuit = true;
 		myLogicDone = true;
 		mySwapDone = true;
+		myIsSwapping = false;
+		myIsReading = false;
 		myPhysicsThread->join();
 	}
 
@@ -221,7 +225,7 @@ namespace Prism
 				SetPhysicsDone();
 				//WaitForSwap();
 			}
-			myTimerManager->CapFrameRate(60.f);
+			std::this_thread::sleep_for(std::chrono::milliseconds(16));
 		}
 	}
 #endif
@@ -236,6 +240,11 @@ namespace Prism
 
 	void PhysicsManager::Swap()
 	{
+		while (myIsReading == true)
+		{
+		}
+
+		myIsSwapping = true;
 		for each (const PhysicsCallbackStruct& obj in myPhysicsComponentCallbacks)
 		{
 			obj.mySwapOrientationCallback();
@@ -256,6 +265,7 @@ namespace Prism
 		//std::swap(myActorsToWakeUp[0], myActorsToWakeUp[1]);
 
 		//myMoveJobs[myCurrentIndex].myId = -1;
+		myIsSwapping = false;
 	}
 
 	void PhysicsManager::Update()
@@ -295,7 +305,6 @@ namespace Prism
 				myControllerPositions[myCurrentIndex ^ 1][i].z = float(pos.z);
 			}
 		}
-		//myMoveJobs[myCurrentIndex].RemoveAll();
 
 		for (int i = 0; i < myActorsToWakeUp[myCurrentIndex ^ 1].Size(); ++i)
 		{
@@ -379,9 +388,11 @@ namespace Prism
 		myActorsToRemove[myCurrentIndex ^ 1].RemoveAll();
 	}
 
-	void PhysicsManager::RayCast(const CU::Vector3<float>& aOrigin, const CU::Vector3<float>& aNormalizedDirection, float aMaxRayDistance, std::function<void(PhysicsComponent*, const CU::Vector3<float>&, const CU::Vector3<float>&)> aFunctionToCall)
+	void PhysicsManager::RayCast(const CU::Vector3<float>& aOrigin, const CU::Vector3<float>& aNormalizedDirection
+		, float aMaxRayDistance, std::function<void(PhysicsComponent*, const CU::Vector3<float>&
+		, const CU::Vector3<float>&, const CU::Vector3<float>&)> aFunctionToCall, const PhysicsComponent* aComponent)
 	{
-		myRaycastJobs[myCurrentIndex].Add(RaycastJob(aOrigin, aNormalizedDirection, aMaxRayDistance, aFunctionToCall));
+		myRaycastJobs[myCurrentIndex].Add(RaycastJob(aOrigin, aNormalizedDirection, aMaxRayDistance, aFunctionToCall, aComponent));
 	}
 
 	void PhysicsManager::onTrigger(physx::PxTriggerPair* somePairs, physx::PxU32 aCount)
@@ -417,6 +428,7 @@ namespace Prism
 
 		returnValue = myScene->raycast(origin, unitDirection, maxDistance, buffer);
 		CU::Vector3<float> hitPosition;
+		CU::Vector3<float> hitNormal;
 		
 		PhysicsComponent* ent = nullptr;//static_cast<PhysEntity*>(buffer.touches[myCurrentIndex].actor->userData);
 		if (returnValue == true)
@@ -426,7 +438,8 @@ namespace Prism
 			{
 				if (buffer.touches[i].distance < closestDist)
 				{
-					if (buffer.touches[i].distance == 0.f)
+					if (buffer.touches[i].distance == 0.f
+						|| buffer.touches[i].actor->userData == aRaycastJob.myRaycasterComponent)
 					{
 						continue;
 					}
@@ -435,10 +448,14 @@ namespace Prism
 					hitPosition.x = buffer.touches[i].position.x;
 					hitPosition.y = buffer.touches[i].position.y;
 					hitPosition.z = buffer.touches[i].position.z;
+					
+					hitNormal.x = buffer.touches[i].normal.x;
+					hitNormal.y = buffer.touches[i].normal.y;
+					hitNormal.z = buffer.touches[i].normal.z;
 				}
 			}
 		}
-		myRaycastResults[myCurrentIndex ^ 1].Add(RaycastResult(ent, aRaycastJob.myNormalizedDirection, hitPosition, aRaycastJob.myFunctionToCall));
+		myRaycastResults[myCurrentIndex ^ 1].Add(RaycastResult(ent, aRaycastJob.myNormalizedDirection, hitPosition, hitNormal, aRaycastJob.myFunctionToCall));
 	}
 
 	void PhysicsManager::AddForce(physx::PxRigidDynamic* aDynamicBody, const CU::Vector3<float>& aDirection, float aMagnitude)
@@ -540,7 +557,7 @@ namespace Prism
 
 	void PhysicsManager::Move(int aId, const CU::Vector3<float>& aDirection, float aMinDisplacement, float aDeltaTime)
 	{
-		myMoveJobs[myCurrentIndex][aId] = MoveJob(aId, aDirection, aMinDisplacement, aDeltaTime);
+		myMoveJobs[myCurrentIndex][aId] = MoveJob(aId, aDirection, aMinDisplacement, myTimestep);
 	}
 
 	void PhysicsManager::Move(const MoveJob& aMoveJob)
@@ -626,7 +643,7 @@ namespace Prism
 
 	void PhysicsManager::GetPosition(int aId, CU::Vector3<float>& aPositionOut)
 	{
-		aPositionOut = myControllerPositions[myCurrentIndex][aId];
+		aPositionOut = myControllerPositions[myCurrentIndex ^1][aId];
 	}
 
 	void PhysicsManager::Create(PhysicsComponent* aComponent, const PhysicsCallbackStruct& aPhysData
@@ -878,11 +895,20 @@ namespace Prism
 
 	void PhysicsManager::EndFrame()
 	{
+		while (myIsSwapping == true)
+		{
+		}
+		myIsReading = true;
+
 		for (int i = 0; i < myRaycastResults[myCurrentIndex].Size(); ++i)
 		{
-			myRaycastResults[myCurrentIndex][i].myFunctionToCall(myRaycastResults[myCurrentIndex][i].myPhysicsComponent, myRaycastResults[myCurrentIndex][i].myDirection, myRaycastResults[myCurrentIndex][i].myHitPosition);
+			myRaycastResults[myCurrentIndex][i].myFunctionToCall(myRaycastResults[myCurrentIndex][i].myPhysicsComponent
+				, myRaycastResults[myCurrentIndex][i].myDirection, myRaycastResults[myCurrentIndex][i].myHitPosition
+				, myRaycastResults[myCurrentIndex][i].myHitNormal);
 		}
-
 		myRaycastResults[myCurrentIndex].RemoveAll();
+		//myMoveJobs[myCurrentIndex].RemoveAll();
+
+		myIsReading = false;
 	}
 }

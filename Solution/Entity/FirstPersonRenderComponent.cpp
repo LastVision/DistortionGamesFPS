@@ -10,8 +10,12 @@
 #include "HealthComponent.h"
 #include <Instance.h>
 #include "InputComponent.h"
+#include <ModelProxy.h>
 #include <ModelLoader.h>
+#include <NetMessageDisplayMarker.h>
+#include <NetMessageDisplayRespawn.h>
 #include <NetMessageHealth.h>
+#include <NetMessagePressEText.h>
 #include <Scene.h>
 #include "ShootingComponent.h"
 #include <SpriteProxy.h>
@@ -27,19 +31,28 @@ FirstPersonRenderComponent::FirstPersonRenderComponent(Entity& aEntity, Prism::S
 	, myIntentions(8)
 	, myFirstTimeActivateAnimation(false)
 	, myCoOpPositions(8)
+	, myCoOpRespawns(8)
 	, myDisplayDamageIndicatorTimer(0)
 	, myMaxHealth(10)
 	, myCurrentHealth(myMaxHealth)
-	, myHasDied(false) 
+	, myHasDied(false)
+	, myScene(aScene)
+	, myRenderMarker(false)
+	, myPressETexts(16)
+	, myPistolHasUpdated(false)
+	, myShotgunHasUpdated(false)
+	, myGrenadeLauncherHasUpdated(false)
 {
+	bool shouldUseSpecialFoV = true;
 	CU::Vector2<float> size(128.f, 128.f);
 	myCrosshair = Prism::ModelLoader::GetInstance()->LoadSprite("Data/Resource/Texture/UI/T_crosshair.dds", size, size * 0.5f);
 	CU::Vector2<float> damageSize(Prism::Engine::GetInstance()->GetWindowSize().x, Prism::Engine::GetInstance()->GetWindowSize().y);
 	myDamageIndicator = Prism::ModelLoader::GetInstance()->LoadSprite("Data/Resource/Texture/UI/T_damage_indicator.dds", damageSize, damageSize * 0.5f);
 	myCoOpSprite = Prism::ModelLoader::GetInstance()->LoadSprite("Data/Resource/Texture/UI/T_coopmarker.dds", size, size * 0.5f);
+	myMarker = Prism::ModelLoader::GetInstance()->LoadSprite("Data/Resource/Texture/UI/T_marker.dds", size, size * 0.5f);
 
 	Prism::ModelProxy* model = Prism::ModelLoader::GetInstance()->LoadModelAnimated("Data/Resource/Model/First_person/Pistol/SK_arm_pistol_idle.fbx", "Data/Resource/Shader/S_effect_pbl_animated.fx");
-	myModel = new Prism::Instance(*model, myInputComponentEyeOrientation);
+	myModel = new Prism::Instance(*model, myInputComponentEyeOrientation, shouldUseSpecialFoV);
 	aScene->AddInstance(myModel, eObjectRoomType::ALWAYS_RENDER);
 
 	AddAnimation(ePlayerState::PISTOL_IDLE, "Data/Resource/Model/First_person/Pistol/SK_arm_pistol_idle.fbx", true, true);
@@ -62,16 +75,10 @@ FirstPersonRenderComponent::FirstPersonRenderComponent(Entity& aEntity, Prism::S
 
 	myModel->Update(1.f / 30.f);
 
-	
-	/*while (myModel->GetCurrentAnimation() == nullptr)
-	{
-
-	}*/
-
 	for (int i = 0; i < static_cast<int>(ePlayerState::_COUNT); ++i)
 	{
-		Prism::ModelLoader::GetInstance()->GetHierarchyToBone(myAnimations[i].myData.myFile, "ui_jnt3", myAnimations[i].myUIBone);
-		Prism::ModelLoader::GetInstance()->GetHierarchyToBone(myAnimations[i].myData.myFile, "health_jnt3", myAnimations[i].myHealthBone);
+		Prism::ModelLoader::GetInstance()->GetHierarchyToBone(myAnimations[i].myData.myFile, "ui_jnt2", myAnimations[i].myUIBone);
+		Prism::ModelLoader::GetInstance()->GetHierarchyToBone(myAnimations[i].myData.myFile, "health_jnt2", myAnimations[i].myHealthBone);
 	}
 
 	ShootingComponent* shooting = myEntity.GetComponent<ShootingComponent>();
@@ -82,25 +89,89 @@ FirstPersonRenderComponent::FirstPersonRenderComponent(Entity& aEntity, Prism::S
 
 	SharedNetworkManager::GetInstance()->Subscribe(eNetMessageType::ON_HIT, this);
 	SharedNetworkManager::GetInstance()->Subscribe(eNetMessageType::HEALTH, this);
-	
-}
+	SharedNetworkManager::GetInstance()->Subscribe(eNetMessageType::DISPLAY_MARKER, this);
+	SharedNetworkManager::GetInstance()->Subscribe(eNetMessageType::DISPLAY_RESPAWN, this);
+	SharedNetworkManager::GetInstance()->Subscribe(eNetMessageType::PRESS_E_TEXT, this);
 
+	myPistolProxy = Prism::ModelLoader::GetInstance()->LoadModelAnimated("Data/Resource/Model/First_person/Pistol/SK_pistol_idle.fbx", "Data/Resource/Shader/S_effect_pbl_animated.fx");
+	myPistolModel = new Prism::Instance(*myPistolProxy, myInputComponentEyeOrientation, shouldUseSpecialFoV);
+	AddWeaponAnimation(ePlayerState::PISTOL_IDLE, "Data/Resource/Model/First_person/Pistol/SK_pistol_idle.fbx", true, true);
+	AddWeaponAnimation(ePlayerState::PISTOL_HOLSTER, "Data/Resource/Model/First_person/Pistol/SK_pistol_holster.fbx", false, true);
+	AddWeaponAnimation(ePlayerState::PISTOL_DRAW, "Data/Resource/Model/First_person/Pistol/SK_pistol_draw.fbx", false, true);
+	AddWeaponAnimation(ePlayerState::PISTOL_RELOAD, "Data/Resource/Model/First_person/Pistol/SK_pistol_reload.fbx", false, true);
+	AddWeaponAnimation(ePlayerState::PISTOL_FIRE, "Data/Resource/Model/First_person/Pistol/SK_pistol_fire.fbx", false, true);
+	//myPistolModel->Update(1.f / 30.f);
+	
+	myShotgunProxy = Prism::ModelLoader::GetInstance()->LoadModelAnimated("Data/Resource/Model/First_person/Shotgun/SK_shotgun_idle.fbx", "Data/Resource/Shader/S_effect_pbl_animated.fx");
+	myShotgunModel = new Prism::Instance(*myShotgunProxy, myInputComponentEyeOrientation, shouldUseSpecialFoV);
+	AddWeaponAnimation(ePlayerState::SHOTGUN_IDLE, "Data/Resource/Model/First_person/Shotgun/SK_shotgun_idle.fbx", true, true);
+	AddWeaponAnimation(ePlayerState::SHOTGUN_HOLSTER, "Data/Resource/Model/First_person/Shotgun/SK_shotgun_holster.fbx", false, true);
+	AddWeaponAnimation(ePlayerState::SHOTGUN_DRAW, "Data/Resource/Model/First_person/Shotgun/SK_shotgun_draw.fbx", false, true);
+	AddWeaponAnimation(ePlayerState::SHOTGUN_RELOAD, "Data/Resource/Model/First_person/Shotgun/SK_shotgun_reload.fbx", false, true);
+	AddWeaponAnimation(ePlayerState::SHOTGUN_FIRE, "Data/Resource/Model/First_person/Shotgun/SK_shotgun_fire.fbx", false, true);
+	//myShotgunModel->Update(1.f / 30.f);
+
+	myGrenadeLauncherProxy = Prism::ModelLoader::GetInstance()->LoadModelAnimated("Data/Resource/Model/First_person/GrenadeLauncher/SK_grenade_launcher_idle.fbx", "Data/Resource/Shader/S_effect_pbl_animated.fx");
+	myGrenadeLauncherModel = new Prism::Instance(*myGrenadeLauncherProxy, myInputComponentEyeOrientation, shouldUseSpecialFoV);
+	AddWeaponAnimation(ePlayerState::GRENADE_LAUNCHER_IDLE, "Data/Resource/Model/First_person/GrenadeLauncher/SK_grenade_launcher_idle.fbx", true, true);
+	AddWeaponAnimation(ePlayerState::GRENADE_LAUNCHER_HOLSTER, "Data/Resource/Model/First_person/GrenadeLauncher/SK_grenade_launcher_holster.fbx", false, true);
+	AddWeaponAnimation(ePlayerState::GRENADE_LAUNCHER_DRAW, "Data/Resource/Model/First_person/GrenadeLauncher/SK_grenade_launcher_draw.fbx", false, true);
+	AddWeaponAnimation(ePlayerState::GRENADE_LAUNCHER_RELOAD, "Data/Resource/Model/First_person/GrenadeLauncher/SK_grenade_launcher_reload.fbx", false, true);
+	AddWeaponAnimation(ePlayerState::GRENADE_LAUNCHER_FIRE, "Data/Resource/Model/First_person/GrenadeLauncher/SK_grenade_launcher_fire.fbx", false, true);
+	//myGrenadeLauncherModel->Update(1.f / 30.f);
+
+	myCurrentWeaponModel = myPistolModel;
+	aScene->AddInstance(myCurrentWeaponModel, eObjectRoomType::ALWAYS_RENDER);
+
+	for (int i = 0; i < static_cast<int>(ePlayerState::_COUNT); ++i)
+	{
+		Prism::ModelLoader::GetInstance()->GetHierarchyToBone(myWeaponAnimations[i].myData.myFile, "barrel_jnt1", myWeaponAnimations[i].myMuzzleBone);
+	}
+}
 
 FirstPersonRenderComponent::~FirstPersonRenderComponent()
 {
 	SharedNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::ON_HIT, this);
 	SharedNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::HEALTH, this);
+	SharedNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::DISPLAY_MARKER, this);
+	SharedNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::DISPLAY_RESPAWN, this);
+	SharedNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::PRESS_E_TEXT, this);
 	SAFE_DELETE(myCrosshair);
 	SAFE_DELETE(myDamageIndicator);
 	SAFE_DELETE(my3DGUIManager);
 	SAFE_DELETE(myModel);
 	SAFE_DELETE(myCoOpSprite);
+	SAFE_DELETE(myCurrentWeaponModel);
+	SAFE_DELETE(myPistolModel);
+	SAFE_DELETE(myShotgunModel);
+	SAFE_DELETE(myGrenadeLauncherModel);
+	SAFE_DELETE(myPistolProxy);
+	SAFE_DELETE(myShotgunProxy);
+	SAFE_DELETE(myGrenadeLauncherProxy);
+	SAFE_DELETE(myMarker);
 	myCoOpPositions.RemoveAll();
+	myCoOpRespawns.RemoveAll();
 }
 
 
 void FirstPersonRenderComponent::Update(float aDelta)
 {
+	if (myPistolProxy->IsLoaded() == true && myPistolHasUpdated == false)
+	{
+		myPistolHasUpdated = true;
+		myPistolModel->Update(0.f);
+	}
+	if (myShotgunProxy->IsLoaded() == true && myShotgunHasUpdated == false)
+	{
+		myShotgunHasUpdated = true;
+		myShotgunModel->Update(0.f);
+	}
+	if (myGrenadeLauncherProxy->IsLoaded() == true && myGrenadeLauncherHasUpdated == false)
+	{
+		myGrenadeLauncherHasUpdated = true;
+		myGrenadeLauncherModel->Update(0.f);
+	}
+
 	if (myEntity.GetState() == eEntityState::DIE && myHasDied == false)
 	{
 		myHasDied = true;
@@ -136,30 +207,76 @@ void FirstPersonRenderComponent::Update(float aDelta)
 		}
 	}
 
+
+
 	Prism::AnimationData& data = myAnimations[int(myCurrentState)].myData;
-	if (myModel->IsAnimationDone() == false || data.myShouldLoop == true)
-	{
-		myModel->Update(aDelta);
-	}
 	if (myModel->IsAnimationDone() == true && data.myShouldLoop == false)
 	{
+		bool shouldGetNextIntention = false;
 		switch (myEntity.GetComponent<ShootingComponent>()->GetCurrentWeapon()->GetWeaponType())
 		{
 		case eWeaponType::PISTOL:
-			myCurrentState = ePlayerState::PISTOL_IDLE;
-			PlayAnimation(myCurrentState);
+			if (myCurrentState == ePlayerState::SHOTGUN_HOLSTER
+				|| myCurrentState == ePlayerState::GRENADE_LAUNCHER_HOLSTER)
+			{
+				shouldGetNextIntention = true;
+			}
+			else
+			{
+				myCurrentState = ePlayerState::PISTOL_IDLE;
+				PlayAnimation(myCurrentState);
+			}
 			break;
 		case eWeaponType::GRENADE_LAUNCHER:
-			myCurrentState = ePlayerState::GRENADE_LAUNCHER_IDLE;
-			PlayAnimation(myCurrentState);
+			if (myCurrentState == ePlayerState::PISTOL_HOLSTER
+				|| myCurrentState == ePlayerState::SHOTGUN_HOLSTER)
+			{
+				shouldGetNextIntention = true;
+			}
+			else
+			{
+				myCurrentState = ePlayerState::GRENADE_LAUNCHER_IDLE;
+				PlayAnimation(myCurrentState);
+			}
 			break;
 		case eWeaponType::SHOTGUN:
-			myCurrentState = ePlayerState::SHOTGUN_IDLE;
-			PlayAnimation(myCurrentState);
+			if (myCurrentState == ePlayerState::PISTOL_HOLSTER
+				|| myCurrentState == ePlayerState::GRENADE_LAUNCHER_HOLSTER)
+			{
+				shouldGetNextIntention = true;
+			}
+			else
+			{
+				myCurrentState = ePlayerState::SHOTGUN_IDLE;
+				PlayAnimation(myCurrentState);
+			}
 			break;
 		}
+		if (shouldGetNextIntention == true)
+		{
+			if (myIntentions.Size() > 0)
+			{
+				myCurrentState = myIntentions[0];
+				myIntentions.RemoveNonCyclicAtIndex(0);
+
+				PlayAnimation(myCurrentState);
+			}
+		}
+	}
+	if (myModel->IsAnimationDone() == false || data.myShouldLoop == true)
+	{
+		myModel->Update(aDelta);
+
 	}
 	data.myElapsedTime += aDelta;
+
+	Prism::AnimationData& weaponData = myWeaponAnimations[int(myCurrentState)].myData;
+	if (myCurrentWeaponModel->IsAnimationDone() == false || weaponData.myShouldLoop == true)
+	{
+		myCurrentWeaponModel->Update(aDelta);
+
+	}
+	weaponData.myElapsedTime += aDelta;
 }
 
 void FirstPersonRenderComponent::UpdateCoOpPositions(const CU::GrowingArray<Entity*>& somePlayers)
@@ -181,7 +298,35 @@ void FirstPersonRenderComponent::Render()
 	}
 	my3DGUIManager->Render();
 
-	
+	if (myRenderMarker == true)
+	{
+		CU::Matrix44<float> renderPos;
+		CU::Vector3<float> tempPos(myMarkerPosition);
+		tempPos.y += 2.f;
+		float toBuddy = CU::Dot(tempPos - myInputComponentEyeOrientation.GetPos(), myInputComponentEyeOrientation.GetForward());
+		if (toBuddy >= 0.f)
+		{
+			renderPos.SetPos(tempPos);
+			renderPos = renderPos * CU::InverseSimple(myInputComponentEyeOrientation);
+			renderPos = renderPos * myEntity.GetComponent<InputComponent>()->GetCamera()->GetProjection();
+
+			CU::Vector3<float> newRenderPos = renderPos.GetPos();
+			newRenderPos /= renderPos.GetPos4().w;
+
+			newRenderPos += 1.f;
+			newRenderPos *= 0.5f;
+			newRenderPos.x *= windowSize.x;
+			newRenderPos.y *= windowSize.y;
+			newRenderPos.y -= windowSize.y;
+
+			newRenderPos.x = fmaxf(0.f, fminf(newRenderPos.x, windowSize.x));
+			newRenderPos.y += windowSize.y;
+			newRenderPos.y = fmaxf(0.f, fminf(newRenderPos.y, windowSize.y));
+			myMarker->Render({ newRenderPos.x, newRenderPos.y });
+			Prism::Engine::GetInstance()->PrintText(std::to_string(int(toBuddy)) + " m", { newRenderPos.x, newRenderPos.y }, Prism::eTextType::RELEASE_TEXT);
+		}
+	}
+
 	for (int i = 0; i < myCoOpPositions.Size(); ++i)
 	{
 		CU::Matrix44<float> renderPos;
@@ -211,6 +356,73 @@ void FirstPersonRenderComponent::Render()
 
 		myCoOpSprite->Render({ newRenderPos.x, newRenderPos.y });
 	}
+
+	for (int i = 0; i < myCoOpRespawns.Size(); ++i)
+	{
+		CU::Matrix44<float> renderPos;
+		CU::Vector3<float> tempPos(myCoOpRespawns[i].myPosition);
+		tempPos.y += 2.f;
+		float toBuddy = CU::Dot(tempPos - myInputComponentEyeOrientation.GetPos(), myInputComponentEyeOrientation.GetForward());
+		if (toBuddy < 0.f)
+		{
+			continue;
+		}
+		renderPos.SetPos(tempPos);
+		renderPos = renderPos * CU::InverseSimple(myInputComponentEyeOrientation);
+		renderPos = renderPos * myEntity.GetComponent<InputComponent>()->GetCamera()->GetProjection();
+
+		CU::Vector3<float> newRenderPos = renderPos.GetPos();
+		newRenderPos /= renderPos.GetPos4().w;
+
+		newRenderPos += 1.f;
+		newRenderPos *= 0.5f;
+		newRenderPos.x *= windowSize.x;
+		newRenderPos.y *= windowSize.y;
+		newRenderPos.y -= windowSize.y;
+
+		newRenderPos.x = fmaxf(0.f, fminf(newRenderPos.x, windowSize.x));
+		newRenderPos.y += windowSize.y;
+		newRenderPos.y = fmaxf(0.f, fminf(newRenderPos.y, windowSize.y));
+
+		//myCoOpSprite->Render({ newRenderPos.x, newRenderPos.y });
+		Prism::Engine::GetInstance()->PrintText(myCoOpRespawns[i].myCurrentValue, { newRenderPos.x, newRenderPos.y }, Prism::eTextType::RELEASE_TEXT);
+	}
+
+	for (int i = 0; i < myPressETexts.Size(); ++i)
+	{
+		CU::Matrix44<float> renderPos;
+		CU::Vector3<float> tempPos(myPressETexts[i].myPosition);
+		float lengthToText = CU::Length(tempPos - myInputComponentEyeOrientation.GetPos());
+		if (lengthToText > 10.f)
+		{
+			continue;
+		}
+
+		float toBuddy = CU::Dot(tempPos - myInputComponentEyeOrientation.GetPos(), myInputComponentEyeOrientation.GetForward());
+		if (toBuddy < 0.f)
+		{
+			continue;
+		}
+		renderPos.SetPos(tempPos);
+		renderPos = renderPos * CU::InverseSimple(myInputComponentEyeOrientation);
+		renderPos = renderPos * myEntity.GetComponent<InputComponent>()->GetCamera()->GetProjection();
+
+		CU::Vector3<float> newRenderPos = renderPos.GetPos();
+		newRenderPos /= renderPos.GetPos4().w;
+
+		newRenderPos += 1.f;
+		newRenderPos *= 0.5f;
+		newRenderPos.x *= windowSize.x;
+		newRenderPos.y *= windowSize.y;
+		newRenderPos.y -= windowSize.y;
+
+		newRenderPos.x = fmaxf(0.f, fminf(newRenderPos.x, windowSize.x));
+		newRenderPos.y += windowSize.y;
+		newRenderPos.y = fmaxf(0.f, fminf(newRenderPos.y, windowSize.y));
+
+		//myCoOpSprite->Render({ newRenderPos.x, newRenderPos.y });
+		Prism::Engine::GetInstance()->PrintText("Press E", { newRenderPos.x, newRenderPos.y }, Prism::eTextType::RELEASE_TEXT,1.f, CU::Vector4<float>(1.f, 1.f, 1.f, 1.f -  (lengthToText / 10.f)));
+	}
 }
 
 bool FirstPersonRenderComponent::IsCurrentAnimationDone() const
@@ -228,6 +440,11 @@ const CU::Matrix44<float>& FirstPersonRenderComponent::GetUIJointOrientation() c
 	return myUIJoint;
 }
 
+const CU::Matrix44<float>& FirstPersonRenderComponent::GetMuzzleJointOrientation() const
+{
+	return myMuzzleJoint;
+}
+
 void FirstPersonRenderComponent::AddAnimation(ePlayerState aState, const std::string& aAnimationPath
 	, bool aLoopFlag, bool aResetTimeOnRestart)
 {
@@ -240,9 +457,39 @@ void FirstPersonRenderComponent::AddAnimation(ePlayerState aState, const std::st
 	myAnimations[int(aState)].myData = newData;
 }
 
+void FirstPersonRenderComponent::AddWeaponAnimation(ePlayerState aState, const std::string& aAnimationPath, bool aLoopFlag, bool aResetTimeOnRestart)
+{
+	Prism::AnimationSystem::GetInstance()->GetAnimation(aAnimationPath.c_str());
+	Prism::AnimationData newData;
+	newData.myElapsedTime = 0.f;
+	newData.myFile = aAnimationPath;
+	newData.myShouldLoop = aLoopFlag;
+	newData.myResetTimeOnRestart = aResetTimeOnRestart;
+	myWeaponAnimations[int(aState)].myData = newData;
+}
+
 void FirstPersonRenderComponent::PlayAnimation(ePlayerState aAnimationState)
 {
 	myCurrentState = aAnimationState;
+	if (myCurrentState == ePlayerState::PISTOL_DRAW)
+	{
+		myScene->RemoveInstance(myCurrentWeaponModel);
+		myCurrentWeaponModel = myPistolModel;
+		myScene->AddInstance(myCurrentWeaponModel, eObjectRoomType::ALWAYS_RENDER);
+	}
+	else if (myCurrentState == ePlayerState::SHOTGUN_DRAW)
+	{
+		myScene->RemoveInstance(myCurrentWeaponModel);
+		myCurrentWeaponModel = myShotgunModel;
+		myScene->AddInstance(myCurrentWeaponModel, eObjectRoomType::ALWAYS_RENDER);
+	}
+	else if (myCurrentState == ePlayerState::GRENADE_LAUNCHER_DRAW)
+	{
+		myScene->RemoveInstance(myCurrentWeaponModel);
+		myCurrentWeaponModel = myGrenadeLauncherModel;
+		myScene->AddInstance(myCurrentWeaponModel, eObjectRoomType::ALWAYS_RENDER);
+	}
+
 	Prism::AnimationData& data = myAnimations[int(aAnimationState)].myData;
 	myModel->SetAnimation(Prism::AnimationSystem::GetInstance()->GetAnimation(data.myFile.c_str()));
 
@@ -253,6 +500,18 @@ void FirstPersonRenderComponent::PlayAnimation(ePlayerState aAnimationState)
 	else
 	{
 		myModel->ResetAnimationTime(data.myElapsedTime);
+	}
+
+	Prism::AnimationData& weaponData = myWeaponAnimations[int(aAnimationState)].myData;
+	myCurrentWeaponModel->SetAnimation(Prism::AnimationSystem::GetInstance()->GetAnimation(weaponData.myFile.c_str()));
+
+	if (weaponData.myResetTimeOnRestart == true)
+	{
+		myCurrentWeaponModel->ResetAnimationTime(0.f);
+	}
+	else
+	{
+		myCurrentWeaponModel->ResetAnimationTime(weaponData.myElapsedTime);
 	}
 }
 
@@ -265,15 +524,15 @@ void FirstPersonRenderComponent::AddIntention(ePlayerState aPlayerState, bool aC
 		{
 		case eWeaponType::PISTOL:
 			myCurrentState = ePlayerState::PISTOL_IDLE;
-			myEntity.GetComponent<FirstPersonRenderComponent>()->PlayAnimation(myCurrentState);
+			PlayAnimation(myCurrentState);
 			break;
 		case eWeaponType::GRENADE_LAUNCHER:
 			myCurrentState = ePlayerState::GRENADE_LAUNCHER_IDLE;
-			myEntity.GetComponent<FirstPersonRenderComponent>()->PlayAnimation(myCurrentState);
+			PlayAnimation(myCurrentState);
 			break;
 		case eWeaponType::SHOTGUN:
 			myCurrentState = ePlayerState::SHOTGUN_IDLE;
-			myEntity.GetComponent<FirstPersonRenderComponent>()->PlayAnimation(myCurrentState);
+			PlayAnimation(myCurrentState);
 			break;
 		}
 	}
@@ -290,8 +549,61 @@ void FirstPersonRenderComponent::ReceiveNetworkMessage(const NetMessageOnHit& aM
 
 void FirstPersonRenderComponent::ReceiveNetworkMessage(const NetMessageHealth& aMessage, const sockaddr_in&)
 {
-	myMaxHealth = aMessage.myMaxHealth;
-	myCurrentHealth = aMessage.myCurrentHealth;
+	if (aMessage.myGID == myEntity.GetGID())
+	{
+		myMaxHealth = aMessage.myMaxHealth;
+		myCurrentHealth = aMessage.myCurrentHealth;
+	}
+}
+
+void FirstPersonRenderComponent::ReceiveNetworkMessage(const NetMessageDisplayMarker& aMessage, const sockaddr_in&)
+{
+	myRenderMarker = aMessage.myDisplayMarker;
+	myMarkerPosition = aMessage.myPosition;
+}
+
+void FirstPersonRenderComponent::ReceiveNetworkMessage(const NetMessageDisplayRespawn& aMessage, const sockaddr_in&)
+{
+	for (int i = 0; i < myCoOpRespawns.Size(); i++)
+	{
+		if (myCoOpRespawns[i].myGID == aMessage.myGID)
+		{
+			myCoOpRespawns.RemoveCyclicAtIndex(i);
+			break;
+		}
+	}
+
+	if (aMessage.myDisplayRespawn == true)
+	{
+		CoOpRespawn respawn;
+		respawn.myMaxValue = aMessage.myMaxValue;
+		respawn.myCurrentValue = aMessage.myCurrentValue;
+		respawn.myPosition = aMessage.myPosition;
+		respawn.myGID = aMessage.myGID;
+		myCoOpRespawns.Add(respawn);
+	}
+}
+
+void FirstPersonRenderComponent::ReceiveNetworkMessage(const NetMessagePressEText& aMessage, const sockaddr_in&)
+{
+	if (aMessage.myShouldAdd == true)
+	{
+		PressEText text;
+		text.myGID = aMessage.myGID;
+		text.myPosition = aMessage.myPosition;
+		myPressETexts.Add(text);
+	}
+	else
+	{
+		for (int i = myPressETexts.Size() - 1; i >= 0; --i)
+		{
+			if (myPressETexts[i].myGID == aMessage.myGID)
+			{
+				myPressETexts.RemoveCyclicAtIndex(i);
+				break;
+			}
+		}
+	}
 }
 
 void FirstPersonRenderComponent::UpdateJoints()
@@ -308,5 +620,18 @@ void FirstPersonRenderComponent::UpdateJoints()
 
 		myUIJoint = CU::InverseSimple(*currentAnimation.myUIBone.myBind) * (*currentAnimation.myUIBone.myJoint) * myInputComponentEyeOrientation;
 		myHealthJoint = CU::InverseSimple(*currentAnimation.myHealthBone.myBind) * (*currentAnimation.myHealthBone.myJoint) * myInputComponentEyeOrientation;
+	}
+
+	WeaponAnimationData& currentWeaponAnimation = myWeaponAnimations[static_cast<int>(myCurrentState)];
+	if (currentWeaponAnimation.IsValid() == true)
+	{
+		//if (myFirstTimeActivateAnimation == false)
+		//{
+		//	myFirstTimeActivateAnimation = true;
+		//	//PlayAnimation(ePlayerState::PISTOL_IDLE);
+		//	AddIntention(ePlayerState::PISTOL_FIRE, true);
+		//}
+
+		myMuzzleJoint = CU::InverseSimple(*currentWeaponAnimation.myMuzzleBone.myBind) * (*currentWeaponAnimation.myMuzzleBone.myJoint) * myInputComponentEyeOrientation;
 	}
 }

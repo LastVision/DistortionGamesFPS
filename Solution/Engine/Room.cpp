@@ -10,6 +10,7 @@ namespace Prism
 		: myAABB(aPosition, aScale)
 		, myPortals(8)
 		, myInstances(128)
+		, myPointLights(128)
 		, myName(aName)
 		, myType(aType)
 	{
@@ -19,6 +20,7 @@ namespace Prism
 	{
 		myPortals.RemoveAll();
 		myInstances.RemoveAll();
+		myPointLights.RemoveAll();
 	}
 
 	bool Room::Inside(const CU::Vector3<float>& aPosition, float aRadius) const
@@ -39,5 +41,10 @@ namespace Prism
 	void Room::Add(Instance* anInstance)
 	{
 		myInstances.Add(anInstance);
+	}
+
+	void Room::Add(PointLight* aPointLight)
+	{
+		myPointLights.Add(aPointLight);
 	}
 }

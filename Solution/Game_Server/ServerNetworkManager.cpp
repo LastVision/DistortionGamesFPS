@@ -20,13 +20,16 @@
 #include <NetMessageOnDeath.h>
 #include <NetMessageLevelLoaded.h>
 
+#include <TimerManager.h>
+
 #define BUFFERSIZE 512
-#define RECONNECT_ATTEMPTS 10000
+#define RECONNECT_ATTEMPTS 100
 
 ServerNetworkManager::ServerNetworkManager()
 	: myAllowNewConnections(false)
+	, myPingTime(1.f)
 {
-	
+
 }
 
 ServerNetworkManager::~ServerNetworkManager()
@@ -44,16 +47,21 @@ ServerNetworkManager::~ServerNetworkManager()
 	if (myReceieveThread != nullptr)
 	{
 		myReceieveThread->join();
-		delete myReceieveThread;
-		myReceieveThread = nullptr;
+		SAFE_DELETE(myReceieveThread);
 	}
 
 	if (mySendThread != nullptr)
 	{
 		mySendThread->join();
-		delete mySendThread;
-		mySendThread = nullptr;
+		SAFE_DELETE(mySendThread);
 	}
+
+	if (myPingThread != nullptr)
+	{
+		myPingThread->join();
+		SAFE_DELETE(myPingThread);
+	}
+
 	delete myNetwork;
 	myNetwork = nullptr;
 }
@@ -66,6 +74,7 @@ void ServerNetworkManager::Initiate()
 	myGID = 0;
 	myIDCount = 0;
 	__super::Initiate();
+	myTimeManager = new CU::TimerManager();
 	Subscribe(eNetMessageType::POSITION, this);
 	Subscribe(eNetMessageType::PING_REPLY, this);
 	Subscribe(eNetMessageType::PING_REQUEST, this);
@@ -139,7 +148,12 @@ void ServerNetworkManager::ReceieveThread()
 		}
 		for (Buffer message : someBuffers)
 		{
-			myReceieveBuffer[myCurrentBuffer ^ 1].Add(message);
+			NetMessage toDeserialize;
+			toDeserialize.DeSerializeFirst(message.myData);
+			if (toDeserialize.myGameID == myMessageGameIdentifier)
+			{
+				myReceieveBuffer[myCurrentBuffer ^ 1].Add(message);
+			}
 		}
 		ReceieveIsDone();
 		WaitForMain();
@@ -155,21 +169,25 @@ void ServerNetworkManager::SendThread()
 	{
 		for (SendBufferMessage arr : mySendBuffer[myCurrentSendBuffer])
 		{
-			if (arr.myTargetID == 0)
+			if (arr.myTargetID == UINT_MAX)
+			{
+				myNetwork->Send(arr.myBuffer, arr.myTargetAddress);
+			}
+			else if (arr.myTargetID == 0)
 			{
 				for (Connection& connection : myClients)
 				{
-					if (connection.myID != static_cast<unsigned int>(arr.myBuffer[5]))
+					if (connection.myID != static_cast<unsigned int>(arr.myBuffer[7]))
 					{
 						myNetwork->Send(arr.myBuffer, connection.myAddress);
 					}
 				}
 			}
-			else 
+			else
 			{
 				for (Connection& connection : myClients)
 				{
-					if (connection.myID == arr.myTargetID && connection.myID != static_cast<unsigned int>(arr.myBuffer[5]))
+					if (connection.myID == arr.myTargetID && connection.myID != static_cast<unsigned int>(arr.myBuffer[7]))
 					{
 						myNetwork->Send(arr.myBuffer, connection.myAddress);
 						break;
@@ -183,20 +201,50 @@ void ServerNetworkManager::SendThread()
 	}
 }
 
+void ServerNetworkManager::PingThread()
+{
+	while (myIsRunning == true)
+	{
+		if (myClients.Size() > 0)
+		{
+			NetMessagePingRequest toSend;
+			toSend.PackMessage();
+			for (Connection& connection : myClients)
+			{
+				myNetwork->Send(toSend.myStream, connection.myAddress);
+			}
+
+			if (myHasSent == false)
+			{
+				myResponsTime = 0.f;
+			}
+
+			Sleep(1000);
+		}
+		Sleep(1);
+	}
+}
+
 void ServerNetworkManager::CreateConnection(const std::string& aName, const sockaddr_in& aSender)
 {
+	if (myAllowNewConnections == false)
+	{
+		AddMessage(NetMessageConnectReply(NetMessageConnectReply::eType::FAIL), aSender);
+		return;
+	}
 	myIDCount++;
 
-	NetMessageConnectReply connectReply(NetMessageConnectReply::eType::SUCCESS, myIDCount);
+	/*NetMessageConnectReply connectReply(NetMessageConnectReply::eType::SUCCESS, myIDCount);
 	connectReply.PackMessage();
-	myNetwork->Send(connectReply.myStream, aSender);
+	myNetwork->Send(connectReply.myStream, aSender);*/
+	AddMessage(NetMessageConnectReply(NetMessageConnectReply::eType::SUCCESS, myIDCount), aSender);
 
 	Sleep(200);
 	//for (Connection& connection : myClients)
 	//{
 	//	if (connection.myAddress.sin_addr.S_un.S_addr == aSender.sin_addr.S_un.S_addr) //._.
 	//	{
-	//		Utility::PrintEndl("User already connected!", (DARK_RED_BACK | WHITE_TEXT));
+	//		Utility::Printf("User already connected!", (DARK_RED_BACK | WHITE_TEXT));
 	//		return;
 	//	}
 	//}
@@ -219,9 +267,29 @@ void ServerNetworkManager::CreateConnection(const std::string& aName, const sock
 	}
 
 	std::string conn(aName + " connected to the server!");
-	Utility::PrintEndl(conn, LIGHT_GREEN_TEXT);
+	Utility::Printf(conn, LIGHT_GREEN_TEXT);
 
 	AddMessage(NetMessageOnJoin(aName, myIDCount));
+}
+
+void ServerNetworkManager::Update(float aDelta)
+{
+	__super::Update(aDelta);
+	myTimeManager->Update();
+	myCurrentTimeStamp = myTimeManager->GetMasterTimer().GetTime().GetMilliseconds();
+	myPingTime -= aDelta;
+	if (myPingTime < 0.f)
+	{
+		for (Connection& clients : myClients)
+		{
+			clients.myPingCount++;
+			if (clients.myPingCount > RECONNECT_ATTEMPTS)
+			{
+				DisconnectConnection(clients);
+			}
+		}
+		myPingTime = 1.f;
+	}
 }
 
 void ServerNetworkManager::DisconnectConnection(const Connection& aConnection)
@@ -229,9 +297,9 @@ void ServerNetworkManager::DisconnectConnection(const Connection& aConnection)
 	NetMessageDisconnect onDisconnect = NetMessageDisconnect(aConnection.myID);
 	onDisconnect.PackMessage();
 	myNetwork->Send(onDisconnect.myStream, aConnection.myAddress);
-	
+
 	std::string msg(aConnection.myName + " disconnected from server!");
-	Utility::PrintEndl(msg, LIGHT_BLUE_TEXT);
+	Utility::Printf(msg, LIGHT_BLUE_TEXT);
 
 	//auto reply on all important messages
 	for (ImportantMessage& impMsg : myImportantMessagesBuffer)
@@ -272,19 +340,19 @@ void ServerNetworkManager::UpdateImportantMessages(float aDeltaTime)
 				if (client.myTimer >= 1.f)
 				{
 					client.myTimer = 0.f;
-					
-					std::string resend = "Sending important message " + std::to_string(msg.myImportantID) + " of message type " 
+
+					std::string resend = "Sending important message " + std::to_string(msg.myImportantID) + " of message type "
 						+ ConvertNetworkEnumToString(static_cast<eNetMessageType>(msg.myMessageType)) + " to client id " + std::to_string(client.myGID) + " - " + client.myName;
-					Utility::PrintEndl(resend, AQUA_TEXT);
+					Utility::Printf(resend, AQUA_TEXT);
 					myNetwork->Send(msg.myData, client.myNetworkAddress);
 				}
 			}
 		}
 		if (finished == true)
 		{
-			std::string resend = "All client has replied to the message id " + std::to_string(msg.myImportantID) 
+			std::string resend = "All client has replied to the message id " + std::to_string(msg.myImportantID)
 				+ " of message type " + ConvertNetworkEnumToString(static_cast<eNetMessageType>(msg.myMessageType));
-			Utility::PrintEndl(resend, YELLOW_TEXT);
+			Utility::Printf(resend, YELLOW_TEXT);
 			myImportantMessagesBuffer.RemoveCyclic(msg);
 		}
 	}
@@ -297,20 +365,42 @@ void ServerNetworkManager::AddImportantMessage(std::vector<char> aBuffer, unsign
 		ImportantMessage msg;
 		msg.myData = aBuffer;
 		msg.myImportantID = aImportantID;
-		msg.myMessageType = aBuffer[0];
+		msg.myMessageType = aBuffer[2];
 		msg.mySenders.Init(myClients.Size());
 		for (Connection c : myClients)
 		{
-			ImportantClient client;
-			client.myGID = c.myID;
-			client.myNetworkAddress = c.myAddress;
-			client.myName = c.myName;
-			client.myTimer = 0.f;
-			client.myHasReplied = false;
-			msg.mySenders.Add(client);
+			if (aBuffer[11] == 0 || aBuffer[11] == static_cast<int>(c.myID))
+			{
+				ImportantClient client;
+				client.myGID = c.myID;
+				client.myNetworkAddress = c.myAddress;
+				client.myName = c.myName;
+				client.myTimer = 0.f;
+				client.myHasReplied = false;
+				msg.mySenders.Add(client);
+			}
 		}
 		myImportantMessagesBuffer.Add(msg);
 	}
+}
+
+void ServerNetworkManager::AddImportantMessage(std::vector<char> aBuffer, unsigned int aImportantID, const sockaddr_in& aTargetAddress)
+{
+		ImportantMessage msg;
+		msg.myData = aBuffer;
+		msg.myImportantID = aImportantID;
+		msg.myMessageType = aBuffer[2];
+		msg.mySenders.Init(16);
+
+			ImportantClient client;
+			client.myGID = UINT_MAX;
+			client.myNetworkAddress = aTargetAddress;
+			client.myName = inet_ntoa(aTargetAddress.sin_addr);
+			client.myTimer = 0.f;
+			client.myHasReplied = false;
+			msg.mySenders.Add(client);
+
+		myImportantMessagesBuffer.Add(msg);
 }
 
 void ServerNetworkManager::ReceiveNetworkMessage(const NetMessageRequestConnect& aMessage, const sockaddr_in& aSenderAddress)
@@ -319,16 +409,17 @@ void ServerNetworkManager::ReceiveNetworkMessage(const NetMessageRequestConnect&
 	{
 		NetMessageImportantReply toReply(aMessage.GetImportantID());
 		toReply.PackMessage();
-		
+
 		myNetwork->Send(toReply.myStream, aSenderAddress);
 	}
 	if (AlreadyReceived(aMessage) == false)
 	{
 		if (myAllowNewConnections == false)
 		{
-			NetMessageConnectReply connectReply(NetMessageConnectReply::eType::FAIL);
+			/*NetMessageConnectReply connectReply(NetMessageConnectReply::eType::FAIL);
 			connectReply.PackMessage();
-			myNetwork->Send(connectReply.myStream, aSenderAddress);
+			myNetwork->Send(connectReply.myStream, aSenderAddress);*/
+			AddMessage(NetMessageConnectReply(NetMessageConnectReply::eType::FAIL), aSenderAddress);
 			//Bounce
 		}
 	}
@@ -363,15 +454,17 @@ void ServerNetworkManager::ReceiveNetworkMessage(const NetMessagePosition& aMess
 	AddMessage(aMessage);
 }
 
-void ServerNetworkManager::ReceiveNetworkMessage(const NetMessagePingRequest& aMessage, const sockaddr_in&)
+void ServerNetworkManager::ReceiveNetworkMessage(const NetMessagePingRequest&, const sockaddr_in&)
 {
-	AddMessage(NetMessagePingReply(), aMessage.mySenderID);
-	for (Connection& c : myClients)
+	NetMessagePingReply toSend;
+	toSend.PackMessage();
+	for (Connection& connection : myClients)
 	{
-		c.myPingCount++;
-		if (c.myPingCount > RECONNECT_ATTEMPTS)
-		{
-			DisconnectConnection(c);
-		}
+		myNetwork->Send(toSend.myStream, connection.myAddress);
 	}
+}
+
+const std::string& ServerNetworkManager::GetIP() const
+{
+	return myNetwork->GetIP();
 }

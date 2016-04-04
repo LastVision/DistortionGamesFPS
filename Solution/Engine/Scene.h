@@ -45,6 +45,7 @@ namespace Prism
 		RoomManager* GetRoomManager() const;
 
 		const CU::GrowingArray<PointLight*>& GetPointLights() const;
+		const CU::GrowingArray<SpotLight*>& GetSpotLights() const;
 
 	private:
 		void operator=(Scene&) = delete;
@@ -70,10 +71,6 @@ namespace Prism
 		return myCamera;
 	}
 
-	inline const CU::GrowingArray<PointLight*>& Scene::GetPointLights() const
-	{
-		return myPointLights;
-	}
 
 	inline RoomManager* Scene::GetRoomManager() const
 	{

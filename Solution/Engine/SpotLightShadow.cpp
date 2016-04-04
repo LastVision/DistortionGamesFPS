@@ -8,7 +8,8 @@
 namespace Prism
 {
 	SpotLightShadow::SpotLightShadow(const CU::Matrix44<float>& aPlayerOrientation)
-		: myPlayerOrientation(aPlayerOrientation)
+		: SpotLight(0)
+		, myPlayerOrientation(aPlayerOrientation)
 	{
 		//myCamera = new Camera(myOrientation, 25.f, 1024, 1024);
 		//myOrientation.myMatrix[0] = 0.728f;
