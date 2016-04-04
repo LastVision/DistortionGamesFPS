@@ -157,6 +157,10 @@ void EntityFactory::LoadEntity(const char* aEntityPath)
 		{
 			myComponentLoader->LoadBulletComponent(entityDocument, e, newData.myProjecileData);
 		}
+		else if (elementName == CU::ToLower("SoundComponent"))
+		{
+			myComponentLoader->LoadSoundComponent(entityDocument, e, newData.mySoundData);
+		}
 		else
 		{
 			std::string errorMessage = "The component " + elementName +
