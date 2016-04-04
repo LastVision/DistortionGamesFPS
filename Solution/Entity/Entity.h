@@ -65,8 +65,8 @@ public:
 	const std::string& GetSubType() const;
 
 	void ReceiveNetworkMessage(const NetMessageOnDeath& aMessage, const sockaddr_in& aSenderAddress) override;
-	bool GetIsUnit();
-	void SetIsUnit(bool aIsUnit);
+	bool GetIsEnemy();
+	void SetIsEnemy(bool aIsEnemy);
 private:
 	void operator=(Entity&) = delete;
 
@@ -87,7 +87,7 @@ private:
 	CU::Matrix44<float> myOrientation;
 
 	unsigned int myGID;
-	bool myIsUnit;
+	bool myIsEnemy;
 };
 
 template <typename T>
@@ -177,12 +177,12 @@ inline const std::string& Entity::GetSubType() const
 	return mySubType;
 }
 
-inline bool Entity::GetIsUnit()
+inline bool Entity::GetIsEnemy()
 {
-	return myIsUnit;
+	return myIsEnemy;
 }
 
-inline void Entity::SetIsUnit(bool aIsUnit)
+inline void Entity::SetIsEnemy(bool aIsEnemy)
 {
-	myIsUnit = aIsUnit;
+	myIsEnemy = aIsEnemy;
 }

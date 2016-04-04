@@ -36,7 +36,7 @@ AnimationComponent::AnimationComponent(Entity& aEntity, const AnimationComponent
 		AddAnimation(loadAnimation.myEntityState, loadAnimation.myAnimationPath, loadAnimation.myLoopFlag, loadAnimation.myResetTimeOnRestart);
 	}
 	
-	if (myEntity.GetType() == eEntityType::UNIT && myEntity.GetSubType() == "gundroid")
+	if (myEntity.GetType() == eEntityType::UNIT && myEntity.GetIsEnemy() == true)
 	{
 		myIsEnemy = true;
 		for (int i = 0; i < animations; ++i)
