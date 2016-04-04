@@ -101,5 +101,6 @@ inline EmitterMessage::EmitterMessage(const std::string& aParticleType, const CU
 	, myParticleTypeString(aParticleType)
 	, myPosition(aPosition)
 	, myDirection(aDirection)
+	, myUseDirection(true)
 {
 }

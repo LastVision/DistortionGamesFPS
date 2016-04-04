@@ -44,6 +44,7 @@ namespace Prism
 			LogicalParticle tempLogic;
 			myLogicalParticles.Add(tempLogic);
 		}
+		myParticleSpeed = myParticleEmitterData->myData.mySpeed;
 
 		Reset();
 
@@ -106,7 +107,6 @@ namespace Prism
 		myDiffColor = (myParticleEmitterData->myData.myEndColor - myParticleEmitterData->myData.myStartColor)
 			/ myParticleEmitterData->myData.myParticleLifeTime;
 
-		myParticleSpeed = myParticleEmitterData->myData.mySpeed;
 		if (myParticleEmitterData->myIsActiveAtStart == true)
 		{
 			myStates[ACTIVE] = TRUE;
@@ -350,6 +350,8 @@ namespace Prism
 				myGraphicalParticles[i].mySize += myParticleEmitterData->myData.mySizeDelta * aDeltaTime;
 			}
 
+			myGraphicalParticles[i].myAlpha += myParticleEmitterData->myData.myAlphaDelta * aDeltaTime;
+
 			myGraphicalParticles[i].myAlpha = CU::Math::CapValue(0.f, 1.f, myGraphicalParticles[i].myAlpha);
 
 			myGraphicalParticles[i].myColor += myDiffColor  * aDeltaTime;
@@ -380,6 +382,7 @@ namespace Prism
 
 			//myLogicalParticles[myParticleIndex].myDirection = CalculateDirection(myDirection);
 			myLogicalParticles[myParticleIndex].mySpeed = myParticleSpeed;
+
 			myLogicalParticles[myParticleIndex].myDirection = myDirection;
 			if (myOverrideDirection == false)
 			{
