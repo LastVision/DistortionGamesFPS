@@ -28,7 +28,16 @@ void BulletComponent::Activate(const CU::Matrix44<float>& anOrientation)
 	myLifetimeLeft = myData->myLifetime;
 	myOrientation = anOrientation;
 	myOrientation.SetPos(myOrientation.GetPos() + CU::Vector3<float>(0, 0, 1.f) * myOrientation + CU::Vector3<float>(0, 1.f, 0));
+	CU::Vector3<float> oldPos(myOrientation.GetPos());
+	myOrientation.SetPos({ 0.f, 0.f, 0.f });
+
+	myOrientation = myOrientation * CU::Matrix44<float>::CreateRotateAroundY(CU::Math::RandomRange(myData->myMinRotation, myData->myMaxRotation));
+	myOrientation = myOrientation * CU::Matrix44<float>::CreateRotateAroundZ(CU::Math::RandomRange(myData->myMinRotation, myData->myMaxRotation));
+	myOrientation = myOrientation * CU::Matrix44<float>::CreateRotateAroundX(CU::Math::RandomRange(myData->myMinRotation, myData->myMaxRotation));
+
+	myOrientation.SetPos(oldPos);
 	myEntity.GetComponent<PhysicsComponent>()->AddToScene();
+
 
 }
 

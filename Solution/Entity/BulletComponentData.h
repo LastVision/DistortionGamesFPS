@@ -7,4 +7,6 @@ struct BulletComponentData
 	int myDamage;
 	float mySpeed;
 	float myLifetime;
+	float myMinRotation;
+	float myMaxRotation;
 };
