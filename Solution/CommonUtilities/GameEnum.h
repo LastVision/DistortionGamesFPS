@@ -197,6 +197,7 @@ enum class eComponentType
 	AI,
 	BULLET,
 	SPAWNPOINT,
+	SOUND,
 	_COUNT,
 };
 

@@ -21,6 +21,7 @@
 #include "TriggerComponent.h"
 #include "UpgradeComponent.h"
 #include "BulletComponent.h"
+#include "SoundComponent.h"
 
 Entity::Entity(unsigned int aGID, const EntityData& aEntityData, Prism::Scene* aScene, bool aClientSide, const CU::Vector3<float>& aStartPosition,
 	const CU::Vector3f& aRotation, const CU::Vector3f& aScale, const std::string& aSubType)
@@ -120,6 +121,11 @@ Entity::Entity(unsigned int aGID, const EntityData& aEntityData, Prism::Scene* a
 	if (aEntityData.mySpawnpointData.myExistsInEntity == true)
 	{
 		myComponents[static_cast<int>(eComponentType::SPAWNPOINT)] = new SpawnpointComponent(*this, aEntityData.mySpawnpointData);
+	}
+
+	if (aEntityData.mySoundData.myExistsInEntity == true && myIsClientSide == true)
+	{
+		myComponents[static_cast<int>(eComponentType::SOUND)] = new SoundComponent(*this);
 	}
 
 	if (aEntityData.myPhysicsData.myExistsInEntity == true)

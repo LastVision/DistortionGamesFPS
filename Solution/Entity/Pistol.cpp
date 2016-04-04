@@ -15,7 +15,7 @@
 #include <XMLReader.h>
 #include <SharedNetworkManager.h>
 #include <NetMessageOnHit.h>
-#include "AIComponent.h"
+#include "SoundComponent.h"
 
 Pistol::Pistol(Entity* aOwnerEntity)
 	: Weapon(eWeaponType::PISTOL, "pistol", aOwnerEntity)
@@ -89,8 +89,8 @@ bool Pistol::Shoot(const CU::Matrix44<float>& aOrientation)
 {
 	if (myAmmoInClip > 0 && myShootTimer <= 0.f)
 	{
-		CU::Vector3<float> forward = CU::Vector3<float>(0, 0, 1.f)
-			* (CU::Matrix44<float>::CreateRotateAroundX(CU::Math::RandomRange(myMinSpreadRotation, myMaxSpreadRotation))
+		CU::Vector3<float> forward = CU::Vector3<float>(0, 0, 1.f) 
+			* (CU::Matrix44<float>::CreateRotateAroundX(CU::Math::RandomRange(myMinSpreadRotation, myMaxSpreadRotation)) 
 			* aOrientation);
 		forward = forward * CU::Matrix44<float>::CreateRotateAroundY(CU::Math::RandomRange(myMinSpreadRotation, myMaxSpreadRotation));
 
@@ -147,12 +147,16 @@ void Pistol::HandleRaycast(PhysicsComponent* aComponent, const CU::Vector3<float
 			aComponent->AddForce(aDirection, myForceStrength);
 		}
 
+		if (aComponent->GetEntity().GetComponent<SoundComponent>() != nullptr)
+		{
+			//Prism::Audio::AudioInterface::GetInstance()->PostEvent("Play_Shotgun", aComponent->GetEntity().GetComponent<SoundComponent>()->GetAudioSFXID());
+		}
 
 		CU::Vector3<float> toSend = CU::Reflect<float>(aDirection, aHitNormal);
 
 		if (aComponent->GetEntity().GetIsUnit() == true)
 		{
-			PostMaster::GetInstance()->SendMessage(EmitterMessage("Shotgun", aHitPosition, toSend));
+		PostMaster::GetInstance()->SendMessage(EmitterMessage("Shotgun", aHitPosition, toSend));
 		}
 		else
 		{
@@ -162,9 +166,9 @@ void Pistol::HandleRaycast(PhysicsComponent* aComponent, const CU::Vector3<float
 		//aComponent->GetEntity().SendNote<DamageNote>(DamageNote(myDamage));
 
 		//SharedNetworkManager::GetInstance()->AddMessage(NetMessageOnHit(float(myDamage), aComponent->GetEntity().GetGID()));
-
+		
 		SharedNetworkManager::GetInstance()->AddMessage(NetMessageOnHit(myDamage, aComponent->GetEntity().GetGID()));
-
+		
 	}
 }
 

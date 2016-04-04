@@ -47,5 +47,5 @@ void ServerStartState::ReceiveNetworkMessage(const NetMessageRequestConnect& aMe
 	ServerNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::ON_CONNECT, this);
 	SET_RUNTIME(false);
 	ServerNetworkManager::GetInstance()->CreateConnection(aMessage.myName, aSenderAddress);
-	myStateStack->PushMainState(new ServerLobbyState(aMessage.myGameType));
+	myStateStack->PushMainState(new ServerLobbyState(static_cast<eGameType>(aMessage.myGameType)));
 }
