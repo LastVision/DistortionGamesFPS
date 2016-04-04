@@ -53,6 +53,15 @@
     <ClCompile Include="TextEventManager.cpp">
       <Filter>Managers</Filter>
     </ClCompile>
+    <ClCompile Include="CreditMenuState.cpp">
+      <Filter>StateStack</Filter>
+    </ClCompile>
+    <ClCompile Include="MainMenuState.cpp">
+      <Filter>StateStack</Filter>
+    </ClCompile>
+    <ClCompile Include="SplashState.cpp">
+      <Filter>StateStack</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
@@ -112,6 +121,15 @@
     <ClInclude Include="ClientUnitManager.h" />
     <ClInclude Include="TextEventManager.h">
       <Filter>Managers</Filter>
+    </ClInclude>
+    <ClInclude Include="CreditMenuState.h">
+      <Filter>StateStack</Filter>
+    </ClInclude>
+    <ClInclude Include="MainMenuState.h">
+      <Filter>StateStack</Filter>
+    </ClInclude>
+    <ClInclude Include="SplashState.h">
+      <Filter>StateStack</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -209,6 +209,7 @@
     <ClInclude Include="ConsoleHistoryManager.h" />
     <ClInclude Include="ConsoleState.h" />
     <ClInclude Include="Console.h" />
+    <ClInclude Include="CreditMenuState.h" />
     <ClInclude Include="EmitterManager.h" />
     <ClInclude Include="ClientGame.h" />
     <ClInclude Include="GameState.h" />
@@ -216,8 +217,10 @@
     <ClInclude Include="ClientLevel.h" />
     <ClInclude Include="ClientLevelFactory.h" />
     <ClInclude Include="LobbyState.h" />
+    <ClInclude Include="MainMenuState.h" />
     <ClInclude Include="ServerSelectState.h" />
     <ClInclude Include="ScriptInterface.h" />
+    <ClInclude Include="SplashState.h" />
     <ClInclude Include="StateEnums.h" />
     <ClInclude Include="StateStack.h" />
     <ClInclude Include="StateStackProxy.h" />
@@ -233,14 +236,17 @@
     <ClCompile Include="ConsoleHistoryManager.cpp" />
     <ClCompile Include="ConsoleState.cpp" />
     <ClCompile Include="Console.cpp" />
+    <ClCompile Include="CreditMenuState.cpp" />
     <ClCompile Include="EmitterManager.cpp" />
     <ClCompile Include="ClientGame.cpp" />
     <ClCompile Include="InGameState.cpp" />
     <ClCompile Include="ClientLevel.cpp" />
     <ClCompile Include="ClientLevelFactory.cpp" />
     <ClCompile Include="LobbyState.cpp" />
+    <ClCompile Include="MainMenuState.cpp" />
     <ClCompile Include="ServerSelectState.cpp" />
     <ClCompile Include="ScriptInterface.cpp" />
+    <ClCompile Include="SplashState.cpp" />
     <ClCompile Include="StateStack.cpp" />
     <ClCompile Include="StateStackProxy.cpp" />
     <ClCompile Include="stdafx.cpp">
