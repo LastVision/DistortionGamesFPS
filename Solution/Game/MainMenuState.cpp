@@ -5,11 +5,13 @@
 #include <Cursor.h>
 #include <FadeMessage.h>
 #include <GUIManager.h>
+#include "HelpState.h"
 #include "InGameState.h"
 #include <InputWrapper.h>
 #include "MainMenuState.h"
 #include <ModelLoader.h>
 #include <OnClickMessage.h>
+#include "OptionsState.h"
 #include <PostMaster.h>
 #include <PollingStation.h>
 #include "ServerSelectState.h"
@@ -169,22 +171,21 @@ void MainMenuState::ReceiveMessage(const OnClickMessage& aMessage)
 			SET_RUNTIME(false);
 			myStateStack->PushMainGameState(new ServerSelectState());
 			break;
+		case eOnClickEvent::HELP:
+			PostMaster::GetInstance()->UnSubscribe(eMessageType::ON_CLICK, this);
+			SET_RUNTIME(false);
+			myStateStack->PushSubGameState(new HelpState());
+			break;
 		case eOnClickEvent::CREDITS:
-		{
 			PostMaster::GetInstance()->UnSubscribe(eMessageType::ON_CLICK, this);
 			SET_RUNTIME(false);
 			myStateStack->PushSubGameState(new CreditMenuState());
 			break;
-		}
-		//case eOnClickEvent::OPTIONS_MENU:
-		//{
-		//	//bool oldRuntime = ////Prism::MemoryTracker::GetInstance()->GetRunTime();
-		//	////Prism::MemoryTracker::GetInstance()->SetRunTime(false);
-		//	PostMaster::GetInstance()->UnSubscribe(eMessageType::ON_CLICK, this);
-		//	myStateStack->PushSubGameState(new OptionsState());
-		//	////Prism::MemoryTracker::GetInstance()->SetRunTime(oldRuntime);
-		//	break;
-		//}
+		case eOnClickEvent::OPTIONS:
+			PostMaster::GetInstance()->UnSubscribe(eMessageType::ON_CLICK, this);
+			SET_RUNTIME(false);
+			myStateStack->PushSubGameState(new OptionsState());
+			break;
 		case eOnClickEvent::GAME_QUIT:
 			myStateStatus = eStateStatus::ePopMainState;
 			break;

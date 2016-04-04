@@ -173,9 +173,21 @@ namespace GUI
 		{
 			myClickEvent = new OnClickMessage(eOnClickEvent::CREDITS);
 		}
+		else if (clickEvent == "help")
+		{
+			myClickEvent = new OnClickMessage(eOnClickEvent::HELP);
+		}
 		else if (clickEvent == "quit")
 		{
 			myClickEvent = new OnClickMessage(eOnClickEvent::GAME_QUIT);
+		}
+		else if (clickEvent == "options_menu")
+		{
+			myClickEvent = new OnClickMessage(eOnClickEvent::OPTIONS);
+		}
+		else if (clickEvent == "resume_game")
+		{
+			myClickEvent = new OnClickMessage(eOnClickEvent::RESUME_GAME);
 		}
 		else
 		{

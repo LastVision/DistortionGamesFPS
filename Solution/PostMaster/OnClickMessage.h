@@ -10,6 +10,9 @@ enum class eOnClickEvent
 	JOIN_MULTIPLAYER,
 	CREDITS,
 	GAME_QUIT,
+	RESUME_GAME,
+	OPTIONS,
+	HELP,
 };
 
 struct OnClickMessage : public Message

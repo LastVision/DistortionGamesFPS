@@ -62,6 +62,12 @@
     <ClCompile Include="SplashState.cpp">
       <Filter>StateStack</Filter>
     </ClCompile>
+    <ClCompile Include="HelpState.cpp">
+      <Filter>StateStack</Filter>
+    </ClCompile>
+    <ClCompile Include="OptionsState.cpp">
+      <Filter>StateStack</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
@@ -129,6 +135,12 @@
       <Filter>StateStack</Filter>
     </ClInclude>
     <ClInclude Include="SplashState.h">
+      <Filter>StateStack</Filter>
+    </ClInclude>
+    <ClInclude Include="HelpState.h">
+      <Filter>StateStack</Filter>
+    </ClInclude>
+    <ClInclude Include="OptionsState.h">
       <Filter>StateStack</Filter>
     </ClInclude>
   </ItemGroup>

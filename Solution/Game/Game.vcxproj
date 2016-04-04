@@ -213,11 +213,13 @@
     <ClInclude Include="EmitterManager.h" />
     <ClInclude Include="ClientGame.h" />
     <ClInclude Include="GameState.h" />
+    <ClInclude Include="HelpState.h" />
     <ClInclude Include="InGameState.h" />
     <ClInclude Include="ClientLevel.h" />
     <ClInclude Include="ClientLevelFactory.h" />
     <ClInclude Include="LobbyState.h" />
     <ClInclude Include="MainMenuState.h" />
+    <ClInclude Include="OptionsState.h" />
     <ClInclude Include="ServerSelectState.h" />
     <ClInclude Include="ScriptInterface.h" />
     <ClInclude Include="SplashState.h" />
@@ -239,11 +241,13 @@
     <ClCompile Include="CreditMenuState.cpp" />
     <ClCompile Include="EmitterManager.cpp" />
     <ClCompile Include="ClientGame.cpp" />
+    <ClCompile Include="HelpState.cpp" />
     <ClCompile Include="InGameState.cpp" />
     <ClCompile Include="ClientLevel.cpp" />
     <ClCompile Include="ClientLevelFactory.cpp" />
     <ClCompile Include="LobbyState.cpp" />
     <ClCompile Include="MainMenuState.cpp" />
+    <ClCompile Include="OptionsState.cpp" />
     <ClCompile Include="ServerSelectState.cpp" />
     <ClCompile Include="ScriptInterface.cpp" />
     <ClCompile Include="SplashState.cpp" />
