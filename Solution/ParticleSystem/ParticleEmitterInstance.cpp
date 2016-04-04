@@ -563,7 +563,7 @@ namespace Prism
 
 	void ParticleEmitterInstance::SetSize(const CU::Vector3f& aSize)
 	{
-		myParticleEmitterData->myEmitterSize = aSize * 0.25f;
+		myParticleEmitterData->myEmitterSize = aSize * 0.5f;
 		CreatePoints();
 	}
 

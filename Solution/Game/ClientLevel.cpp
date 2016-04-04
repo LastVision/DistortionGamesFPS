@@ -262,11 +262,16 @@ void ClientLevel::Render()
 
 		//myScene->Render();
 		//myDeferredRenderer->Render(myScene);
-
-		myScene->GetRoomManager()->GetPlayerRoom()->GetEmitter()->SetShouldRender(true);
+		if (myScene->GetRoomManager()->GetPlayerRoom()->GetEmitter() != nullptr)
+		{
+			myScene->GetRoomManager()->GetPlayerRoom()->GetEmitter()->SetShouldRender(true);
+		}
 		if (myScene->GetRoomManager()->GetPreviousPlayerRoom() != nullptr)
 		{
-			myScene->GetRoomManager()->GetPreviousPlayerRoom()->GetEmitter()->SetShouldAlwaysShow(false);
+			if (myScene->GetRoomManager()->GetPreviousPlayerRoom()->GetEmitter() != nullptr)
+			{
+				myScene->GetRoomManager()->GetPreviousPlayerRoom()->GetEmitter()->SetShouldAlwaysShow(false);
+			}
 		}
 		myEmitterManager->RenderEmitters();
 
@@ -412,7 +417,7 @@ void ClientLevel::ReceiveNetworkMessage(const NetMessageExplosion& aMessage, con
 {
 	ClientProjectileManager::GetInstance()->RequestExplosion(aMessage.myPosition, aMessage.myGID);
 	ClientProjectileManager::GetInstance()->KillGrenade(aMessage.myGID - 1);
-	PostMaster::GetInstance()->SendMessage(EmitterMessage("Explosion", aMessage.myPosition,true));
+	PostMaster::GetInstance()->SendMessage(EmitterMessage("Explosion", aMessage.myPosition, true));
 }
 
 void ClientLevel::ReceiveNetworkMessage(const NetMessageRayCastRequest& aMessage, const sockaddr_in&)
@@ -498,7 +503,7 @@ void ClientLevel::AddWorldText(const std::string& aText, const CU::Vector3<float
 	toAdd.myProxy->SetOffset(aPosition);
 	toAdd.myProxy->SetColor(aColor);
 	toAdd.myProxy->Rotate3dText(aRotationAroundY);
-	
+
 	myWorldTexts.Add(toAdd);
 }
 
