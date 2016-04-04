@@ -18,6 +18,7 @@ namespace Prism
 
 	Room::~Room()
 	{
+		myEmitter = nullptr;
 		myPortals.RemoveAll();
 		myInstances.RemoveAll();
 		myPointLights.RemoveAll();
@@ -47,4 +48,15 @@ namespace Prism
 	{
 		myPointLights.Add(aPointLight);
 	}
+
+	void Room::AddEmitter(Prism::ParticleEmitterInstance* anEmitter)
+	{
+		myEmitter = anEmitter;
+	}
+
+	Prism::ParticleEmitterInstance* Room::GetEmitter()
+	{
+		return myEmitter;
+	}
+
 }

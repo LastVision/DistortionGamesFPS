@@ -22,6 +22,7 @@ namespace Prism
 		, myOverrideDirection(false)
 		, myParticleToGraphicsCard(256)
 		, myDrawDebugLines(false)
+		, myShouldRender(true)
 	{
 		myStates.reset();
 		myParticleEmitterData = someData;
@@ -105,7 +106,6 @@ namespace Prism
 			Prism::DebugDrawer::GetInstance()->RenderLine3D(myPoints[6], myPoints[4], eColorDebug::YELLOW, eColorDebug::RED);
 		}
 #endif
-
 	}
 
 	void ParticleEmitterInstance::Update(float aDeltaTime, const CU::Matrix44f& aWorldMatrix)
@@ -576,6 +576,16 @@ namespace Prism
 	void ParticleEmitterInstance::ToggleDebugLines()
 	{
 		myDrawDebugLines = !myDrawDebugLines;
+	}
+
+	bool ParticleEmitterInstance::GetShouldRender()
+	{
+		return myShouldRender;
+	}
+
+	void ParticleEmitterInstance::SetShouldRender(bool aShouldRender)
+	{
+		myShouldRender = aShouldRender;
 	}
 
 	void ParticleEmitterInstance::KillEmitter(float aKillTime)

@@ -42,6 +42,9 @@ namespace Prism
 
 		void SetDirection(const CU::Vector3<float>& aDirection);
 		void ToggleDebugLines();
+
+		bool GetShouldRender();
+		void SetShouldRender(bool aShouldRender);
 	private:
 		void Reset();
 		CU::Vector3f CalculateDirection(float aYVariation, float aZVariation);
@@ -81,7 +84,7 @@ namespace Prism
 		bool myAlwaysShow;
 		bool myHasEmitted;
 		bool myOverrideDirection;
-
+		bool myShouldRender;
 		bool myDrawDebugLines;
 
 		CU::Vector3<float> myDirection;

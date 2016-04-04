@@ -102,6 +102,9 @@ void ClientLevelFactory::LoadRooms(XMLReader& aReader, tinyxml2::XMLElement* aEl
 
 		Prism::eRoomType typeEnum(Prism::eRoomType::ROOM);
 
+		Prism::Room *newRoom = new Prism::Room(position, scale, name, typeEnum);
+
+
 		if (type == "connector")
 		{
 			typeEnum = Prism::eRoomType::CONNECTOR;
@@ -109,11 +112,11 @@ void ClientLevelFactory::LoadRooms(XMLReader& aReader, tinyxml2::XMLElement* aEl
 		else
 		{
 #ifdef USE_ATMOSPHERE_PARTICLES
-			PostMaster::GetInstance()->SendMessage(EmitterMessage("Atmosphere", position, scale, 0));
+			PostMaster::GetInstance()->SendMessage(EmitterMessage("Atmosphere", position, scale, newRoom));
 #endif
 		}
 
-		static_cast<ClientLevel*>(myCurrentLevel)->GetScene()->AddRoom(new Prism::Room(position, scale, name, typeEnum));
+		static_cast<ClientLevel*>(myCurrentLevel)->GetScene()->AddRoom(newRoom);
 	}
 
 	static_cast<ClientLevel*>(myCurrentLevel)->GetScene()->GetRoomManager()->CalcPortals();

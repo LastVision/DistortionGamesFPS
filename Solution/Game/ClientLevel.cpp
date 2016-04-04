@@ -57,9 +57,10 @@
 #include "ClientUnitManager.h"
 #include <NetMessageActivateSpawnpoint.h>
 #include "TextEventManager.h"
-
 #include <TextProxy.h>
-
+#include <RoomManager.h>
+#include <ParticleEmitterInstance.h>
+#include <Room.h>
 ClientLevel::ClientLevel()
 	: myInstanceOrientations(16)
 	, myInstances(16)
@@ -262,7 +263,14 @@ void ClientLevel::Render()
 		//myScene->Render();
 		//myDeferredRenderer->Render(myScene);
 
+		myScene->GetRoomManager()->GetPlayerRoom()->GetEmitter()->SetShouldRender(true);
+		if (myScene->GetRoomManager()->GetPreviousPlayerRoom() != nullptr)
+		{
+			myScene->GetRoomManager()->GetPreviousPlayerRoom()->GetEmitter()->SetShouldAlwaysShow(false);
+		}
 		myEmitterManager->RenderEmitters();
+
+
 		myPlayer->GetComponent<FirstPersonRenderComponent>()->Render();
 		//myPlayer->GetComponent<ShootingComponent>()->Render();
 
