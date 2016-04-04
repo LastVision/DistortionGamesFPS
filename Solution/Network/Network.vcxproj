@@ -121,6 +121,7 @@
     <ClInclude Include="NetMessageSetActive.h" />
     <ClInclude Include="NetMessageLoadLevel.h" />
     <ClInclude Include="NetMessageShootGrenade.h" />
+    <ClInclude Include="NetMessageStartLobby.h" />
     <ClInclude Include="NetMessageText.h" />
     <ClInclude Include="NetworkMessageTypes.h" />
     <ClInclude Include="NetworkSubscriber.h" />

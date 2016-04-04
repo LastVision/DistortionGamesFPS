@@ -159,17 +159,17 @@ void MainMenuState::ReceiveMessage(const OnClickMessage& aMessage)
 		case eOnClickEvent::START_SINGLEPLAYER:
 			PostMaster::GetInstance()->UnSubscribe(eMessageType::ON_CLICK, this);
 			SET_RUNTIME(false);
-			myStateStack->PushMainGameState(new ServerSelectState());
+			myStateStack->PushMainGameState(new ServerSelectState(ServerSelectState::eType::SINGLEPLAYER));
 			break;
-		case eOnClickEvent::HOST_MULTIPLAYER:
+		case eOnClickEvent::MULTIPLAYER_HOST:
 			PostMaster::GetInstance()->UnSubscribe(eMessageType::ON_CLICK, this);
 			SET_RUNTIME(false);
-			myStateStack->PushMainGameState(new ServerSelectState());
+			myStateStack->PushMainGameState(new ServerSelectState(ServerSelectState::eType::MULTIPLAYER_HOST));
 			break;
-		case eOnClickEvent::JOIN_MULTIPLAYER:
+		case eOnClickEvent::MULTIPLAYER_JOIN:
 			PostMaster::GetInstance()->UnSubscribe(eMessageType::ON_CLICK, this);
 			SET_RUNTIME(false);
-			myStateStack->PushMainGameState(new ServerSelectState());
+			myStateStack->PushMainGameState(new ServerSelectState(ServerSelectState::eType::MULTIPLAYER_JOIN));
 			break;
 		case eOnClickEvent::HELP:
 			PostMaster::GetInstance()->UnSubscribe(eMessageType::ON_CLICK, this);

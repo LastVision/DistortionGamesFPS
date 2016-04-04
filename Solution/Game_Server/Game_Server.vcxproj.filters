@@ -72,6 +72,9 @@
     <ClInclude Include="EventMission.h">
       <Filter>Mission</Filter>
     </ClInclude>
+    <ClInclude Include="ServerStartState.h">
+      <Filter>StateStack</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -115,6 +118,9 @@
     <ClCompile Include="ServerUnitManager.cpp" />
     <ClCompile Include="EventMission.cpp">
       <Filter>Mission</Filter>
+    </ClCompile>
+    <ClCompile Include="ServerStartState.cpp">
+      <Filter>StateStack</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

@@ -13,10 +13,11 @@
 #include "ServerSelectState.h"
 
 
-ServerSelectState::ServerSelectState()
+ServerSelectState::ServerSelectState(eType aType)
 	: myGUIManager(nullptr)
 	, myServer(nullptr)
 	, myServers(16)
+	, myType(aType)
 {
 }
 
@@ -87,59 +88,77 @@ void ServerSelectState::OnResize(int aX, int aY)
 
 const eStateStatus ServerSelectState::Update(const float& aDeltaTime)
 {
-	if (CU::InputWrapper::GetInstance()->KeyDown(DIK_ESCAPE) == true
-		|| CU::InputWrapper::GetInstance()->KeyDown(DIK_N) == true)
+	switch (myType)
 	{
-		return eStateStatus::ePopSubState;
-	}
-
-	if (CU::InputWrapper::GetInstance()->KeyDown(DIK_SPACE) == true)
-	{
-		myServer = &myLocalhost;
-	}
-
-	if (myServer != nullptr)
-	{
-		if (myTriedToConnect == false)
+	case eType::SINGLEPLAYER:
+		ClientNetworkManager::GetInstance()->ConnectToServer(eGameType::SINGLEPLAYER, myLocalhost.myIp.c_str());
+		SET_RUNTIME(false);
+		PostMaster::GetInstance()->UnSubscribe(eMessageType::ON_CLICK, this);
+		myStateStack->PushMainGameState(new LobbyState());
+		break;
+	case eType::MULTIPLAYER_HOST:
+		ClientNetworkManager::GetInstance()->ConnectToServer(eGameType::MULTIPLAYER, myLocalhost.myIp.c_str());
+		SET_RUNTIME(false);
+		PostMaster::GetInstance()->UnSubscribe(eMessageType::ON_CLICK, this);
+		myStateStack->PushMainGameState(new LobbyState());
+		break;
+	case eType::MULTIPLAYER_JOIN:
+		if (CU::InputWrapper::GetInstance()->KeyDown(DIK_ESCAPE) == true
+			|| CU::InputWrapper::GetInstance()->KeyDown(DIK_N) == true)
 		{
-			ClientNetworkManager::GetInstance()->ConnectToServer(myServer->myIp.c_str());
-			myTriedToConnect = true;
-			myWaitForResponseTimer = 1.f;
+			return eStateStatus::ePopSubState;
 		}
-		else if (myTriedToConnect == true)
+
+		if (CU::InputWrapper::GetInstance()->KeyDown(DIK_SPACE) == true)
 		{
-			myWaitForResponseTimer -= aDeltaTime;
-			if (myWaitForResponseTimer <= 0.f)
+			myServer = &myLocalhost;
+		}
+
+		if (myServer != nullptr)
+		{
+			if (myTriedToConnect == false)
 			{
-				//Show Failed to connect message
-				Prism::Engine::GetInstance()->PrintText("Failed to connect to the server, the server is either down or ingame. Try again!", 
-				{50.f,Prism::Engine::GetInstance()->GetWindowSize().y - 50.f}, Prism::eTextType::RELEASE_TEXT);
+				ClientNetworkManager::GetInstance()->ConnectToServer(eGameType::MULTIPLAYER, myServer->myIp.c_str());
+				myTriedToConnect = true;
+				myWaitForResponseTimer = 1.f;
 			}
+			else if (myTriedToConnect == true)
+			{
+				myWaitForResponseTimer -= aDeltaTime;
+				if (myWaitForResponseTimer <= 0.f)
+				{
+					//Show Failed to connect message
+					Prism::Engine::GetInstance()->PrintText("Failed to connect to the server, the server is either down or ingame. Try again!"
+						, { 50.f, Prism::Engine::GetInstance()->GetWindowSize().y - 50.f }, Prism::eTextType::RELEASE_TEXT);
+				}
+			}
+			if (ClientNetworkManager::GetInstance()->GetGID() != 0)
+			{
+				SET_RUNTIME(false);
+				PostMaster::GetInstance()->UnSubscribe(eMessageType::ON_CLICK, this);
+				myStateStack->PushMainGameState(new LobbyState());
+			}
+			//return eStateStatus::ePopSubState;
 		}
-		if (ClientNetworkManager::GetInstance()->GetGID() != 0)
+
+		myRefreshServerTimer -= aDeltaTime;
+		if (myRefreshServerTimer <= 0)
 		{
-			SET_RUNTIME(false);
-			PostMaster::GetInstance()->UnSubscribe(eMessageType::ON_CLICK, this);
-			myStateStack->PushMainGameState(new LobbyState());
+			myRefreshServerTimer = 2.f;
+			for (int i = 0; i < myServers.Size(); ++i)
+			{
+				myGUIManager->SetButtonText(i, "");
+			}
+			myServers.RemoveAll();
+			myTriedToConnect = false;
+			myServer = nullptr;
+			ClientNetworkManager::GetInstance()->AddMessage(NetMessageRequestServer(), ClientNetworkManager::GetInstance()->GetBroadcastAddress());
 		}
-		//return eStateStatus::ePopSubState;
+		myGUIManager->Update(aDeltaTime);
+
+		break;
 	}
 
-	myRefreshServerTimer -= aDeltaTime;
-	if (myRefreshServerTimer <= 0)
-	{
-		myRefreshServerTimer = 2.f;
-		for (int i = 0; i < myServers.Size(); ++i)
-		{
-			myGUIManager->SetButtonText(i, "");
-		}
-		myServers.RemoveAll();
-		myTriedToConnect = false;
-		myServer = nullptr;
-		ClientNetworkManager::GetInstance()->AddMessage(NetMessageRequestServer(), ClientNetworkManager::GetInstance()->GetBroadcastAddress());
-	}
-
-	myGUIManager->Update(aDeltaTime);
 
 	return myStateStatus;
 }

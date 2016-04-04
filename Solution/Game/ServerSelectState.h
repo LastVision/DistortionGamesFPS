@@ -12,7 +12,13 @@ namespace GUI
 class ServerSelectState : public GameState, public Subscriber, public NetworkSubscriber
 {
 public:
-	ServerSelectState();
+	enum class eType
+	{
+		SINGLEPLAYER,
+		MULTIPLAYER_HOST,
+		MULTIPLAYER_JOIN,
+	};
+	ServerSelectState(eType aType);
 	~ServerSelectState();
 
 	void InitState(StateStackProxy* aStateStackProxy, GUI::Cursor* aCursor) override;
@@ -36,6 +42,8 @@ private:
 		bool operator==(const Server& aServer){ return (aServer.myIp == myIp && aServer.myName == myName); }
 	};
 	GUI::GUIManager* myGUIManager;
+
+	const eType myType;
 
 	CU::GrowingArray<Server> myServers;
 

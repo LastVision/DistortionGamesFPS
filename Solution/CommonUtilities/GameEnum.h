@@ -1,5 +1,11 @@
 #pragma once
 
+enum class eGameType : unsigned char
+{
+	SINGLEPLAYER,
+	MULTIPLAYER,
+};
+
 enum class eWeaponType
 {
 	PISTOL,

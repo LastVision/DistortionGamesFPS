@@ -157,5 +157,8 @@
     <ClInclude Include="NetMessagePressEText.h">
       <Filter>Messages</Filter>
     </ClInclude>
+    <ClInclude Include="NetMessageStartLobby.h">
+      <Filter>Messages</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
