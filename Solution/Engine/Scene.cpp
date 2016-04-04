@@ -134,11 +134,11 @@ namespace Prism
 		{
 			mySpotLights[i]->Update();
 
-			mySpotLightData[i].myPosition = mySpotLights[i]->GetPosition();
-			mySpotLightData[i].myDirection = mySpotLights[i]->GetDir();
-			mySpotLightData[i].myColor = mySpotLights[i]->GetColor();
-			mySpotLightData[i].myRange = mySpotLights[i]->GetRange();
-			mySpotLightData[i].myCone = mySpotLights[i]->GetCone();
+			//mySpotLightData[i].myPosition = mySpotLights[i]->GetPosition();
+			//mySpotLightData[i].myDirection = mySpotLights[i]->GetDir();
+			//mySpotLightData[i].myColor = mySpotLights[i]->GetColor();
+			//mySpotLightData[i].myRange = mySpotLights[i]->GetRange();
+			//mySpotLightData[i].myCone = mySpotLights[i]->GetCone();
 		}
 	}
 
@@ -155,5 +155,10 @@ namespace Prism
 		//return myPointLights;
 		//return myActivePointLights;
 		return myRoomManager->GetActivePointLights();
+	}
+
+	const CU::GrowingArray<SpotLight*>& Scene::GetSpotLights() const
+	{
+		return mySpotLights;
 	}
 }

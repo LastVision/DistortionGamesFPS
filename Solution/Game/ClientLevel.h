@@ -13,6 +13,7 @@ namespace Prism
 	class Instance;
 	class Room;
 	class PointLight;
+	class SpotLight;
 }
 
 class EmitterManager;
@@ -41,8 +42,10 @@ public:
 	void ReceiveNetworkMessage(const NetMessageExplosion& aMessage, const sockaddr_in& aSenderAddress) override;
 	void ReceiveNetworkMessage(const NetMessageRayCastRequest& aMessage, const sockaddr_in& aSenderAddress) override;
 	void AddLight(Prism::PointLight* aLight);
+	void AddLight(Prism::SpotLight* aLight);
 	void CollisionCallback(PhysicsComponent* aFirst, PhysicsComponent* aSecond, bool aHasEntered) override;
 	void DebugMusic();
+	void AddWorldText(const std::string& aText, const CU::Vector3<float>& aPosition, float aRotationAroundY, const CU::Vector4<float>& aColor);
 
 private:
 	void HandleTrigger(Entity& aFirstEntity, Entity& aSecondEntity, bool aHasEntered) override;
@@ -60,6 +63,7 @@ private:
 	CU::GrowingArray<Entity*> myInstances;
 	CU::GrowingArray<CU::Matrix44f> myInstanceOrientations;
 	CU::GrowingArray<Prism::PointLight*> myPointLights;
+	CU::GrowingArray<Prism::SpotLight*> mySpotLights;
 
 	Entity* myPlayer;
 	EmitterManager* myEmitterManager;
@@ -73,6 +77,15 @@ private:
 
 	float myForceStrengthPistol;
 	float myForceStrengthShotgun;
+
+	Prism::TextProxy* myTestText;
+
+	struct WorldText
+	{
+		Prism::TextProxy* myProxy;
+		std::string myText;
+	};
+	CU::GrowingArray<WorldText> myWorldTexts;
 };
 
 inline Prism::Scene* ClientLevel::GetScene()

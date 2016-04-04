@@ -51,7 +51,7 @@ namespace Prism
 			, const CU::Vector2<float>& aHotSpot = { 0.f, 0.f });
 
 		FontProxy* LoadFont(const std::string& aFilePath, const CU::Vector2<int>& aTextureSize);
-		TextProxy* LoadText(FontProxy* aFontProxy, bool aIs3d = false);
+		TextProxy* LoadText(FontProxy* aFontProxy, bool aIs3d = false, bool aShouldFollowCamera = false);
 
 		void GetHierarchyToBone(const std::string& aAnimationPath, const std::string& aBoneName, GUIBone& aBoneOut);
 
@@ -90,6 +90,7 @@ namespace Prism
 			FontProxy* myFontProxyToUse;
 
 			bool myIs3dText;
+			bool myShouldFollowCamera;
 		};
 
 		ModelLoader();

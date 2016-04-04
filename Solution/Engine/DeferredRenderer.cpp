@@ -7,6 +7,7 @@
 #include "Texture.h"
 #include "Scene.h"
 #include "PointLight.h"
+#include "SpotLight.h"
 
 namespace Prism
 {
@@ -46,18 +47,27 @@ namespace Prism
 #endif
 	}
 
-	void LightPass::OnEffectLoad()
+	void PointLightPass::OnEffectLoad()
 	{
 		myAlbedo = myEffect->GetEffect()->GetVariableByName("AlbedoTexture")->AsShaderResource();
 		myNormal = myEffect->GetEffect()->GetVariableByName("NormalTexture")->AsShaderResource();
-		myDepth = myEffect->GetEffect()->GetVariableByName("DepthTexture")->AsShaderResource();
-		myMetalness = myEffect->GetEffect()->GetVariableByName("MetalnessTexture")->AsShaderResource();
-		myAmbientOcclusion = myEffect->GetEffect()->GetVariableByName("AOTexture")->AsShaderResource();
-		myRoughness = myEffect->GetEffect()->GetVariableByName("RoughnessTexture")->AsShaderResource();
 		myEmissive = myEffect->GetEffect()->GetVariableByName("EmissiveTexture")->AsShaderResource();
 		myCubemap = myEffect->GetEffect()->GetVariableByName("CubeMap")->AsShaderResource();
 
 		myPointLightVariable = myEffect->GetEffect()->GetVariableByName("PointLights");
+
+		myInvertedProjection = myEffect->GetEffect()->GetVariableByName("InvertedProjection")->AsMatrix();
+		myNotInvertedView = myEffect->GetEffect()->GetVariableByName("NotInvertedView")->AsMatrix();
+	}
+
+	void SpotLightPass::OnEffectLoad()
+	{
+		myAlbedo = myEffect->GetEffect()->GetVariableByName("AlbedoTexture")->AsShaderResource();
+		myNormal = myEffect->GetEffect()->GetVariableByName("NormalTexture")->AsShaderResource();
+		myEmissive = myEffect->GetEffect()->GetVariableByName("EmissiveTexture")->AsShaderResource();
+		myCubemap = myEffect->GetEffect()->GetVariableByName("CubeMap")->AsShaderResource();
+
+		mySpotLightVariable = myEffect->GetEffect()->GetVariableByName("SpotLights");
 
 		myInvertedProjection = myEffect->GetEffect()->GetVariableByName("InvertedProjection")->AsMatrix();
 		myNotInvertedView = myEffect->GetEffect()->GetVariableByName("NotInvertedView")->AsMatrix();
@@ -276,6 +286,7 @@ namespace Prism
 #ifdef USE_LIGHT
 		aScene->UpdateLights();
 		RenderPointLights(aScene);
+		RenderSpotLights(aScene);
 #endif
 	}
 
@@ -288,6 +299,7 @@ namespace Prism
 #ifdef USE_LIGHT
 		aScene->UpdateLights();
 		RenderPointLights(aScene);
+		RenderSpotLights(aScene);
 #endif
 	}
 
@@ -296,7 +308,7 @@ namespace Prism
 		const Camera& camera = *aScene->GetCamera();
 
 		Engine::GetInstance()->RestoreViewPort();
-		SetLightPassData(camera);
+		SetPointLightData(camera);
 
 
 		const CU::GrowingArray<PointLight*>& lights = aScene->GetPointLights();
@@ -305,13 +317,36 @@ namespace Prism
 		Engine::GetInstance()->SetDepthBufferState(eDepthStencil::READ_NO_WRITE);
 		for (int i = 0; i < lights.Size(); ++i)
 		{
-			myLightPass.myPointLightVariable->SetRawValue(&lights[i]->GetLightData(), 0, sizeof(PointLightData));
+			myPointLightPass.myPointLightVariable->SetRawValue(&lights[i]->GetLightData(), 0, sizeof(PointLightData));
 			lights[i]->Render(camera);
 		}
 		Engine::GetInstance()->SetDepthBufferState(eDepthStencil::Z_ENABLED);
 		Engine::GetInstance()->SetRasterizeState(eRasterizer::CULL_BACK);
 
-		RemoveLightPassData();
+		RemovePointLightData();
+	}
+
+	void DeferredRenderer::RenderSpotLights(Scene* aScene)
+	{
+		const Camera& camera = *aScene->GetCamera();
+
+		Engine::GetInstance()->RestoreViewPort();
+		SetSpotLightData(camera);
+
+
+		const CU::GrowingArray<SpotLight*>& lights = aScene->GetSpotLights();
+
+		Engine::GetInstance()->SetRasterizeState(eRasterizer::NO_CULLING);
+		Engine::GetInstance()->SetDepthBufferState(eDepthStencil::READ_NO_WRITE);
+		for (int i = 0; i < lights.Size(); ++i)
+		{
+			mySpotLightPass.mySpotLightVariable->SetRawValue(&lights[i]->GetLightData(), 0, sizeof(SpotLightData));
+			lights[i]->Render(camera);
+		}
+		Engine::GetInstance()->SetDepthBufferState(eDepthStencil::Z_ENABLED);
+		Engine::GetInstance()->SetRasterizeState(eRasterizer::CULL_BACK);
+
+		RemoveSpotLightData();
 	}
 
 	void DeferredRenderer::RenderAmbientPass(Scene* aScene)
@@ -388,11 +423,18 @@ namespace Prism
 
 	void DeferredRenderer::SetupLightData()
 	{
-		myLightPass.myEffect = EffectContainer::GetInstance()->GetEffect(
-			"Data/Resource/Shader/S_effect_deferred_light_mesh.fx");
+		myPointLightPass.myEffect = EffectContainer::GetInstance()->GetEffect(
+			"Data/Resource/Shader/S_effect_deferred_light_mesh_point.fx");
 
-		myLightPass.OnEffectLoad();
-		myLightPass.myEffect->AddListener(&myLightPass);
+		myPointLightPass.OnEffectLoad();
+		myPointLightPass.myEffect->AddListener(&myPointLightPass);
+
+
+		mySpotLightPass.myEffect = EffectContainer::GetInstance()->GetEffect(
+			"Data/Resource/Shader/S_effect_deferred_light_mesh_spot.fx");
+
+		mySpotLightPass.OnEffectLoad();
+		mySpotLightPass.myEffect->AddListener(&mySpotLightPass);
 	}
 
 	void DeferredRenderer::SetupGBufferData()
@@ -434,24 +476,37 @@ namespace Prism
 			, myDepthStencilTexture->GetDepthStencilView());
 	}
 
-	void DeferredRenderer::SetLightPassData(const Camera& aCamera)
+	void DeferredRenderer::SetPointLightData(const Camera& aCamera)
 	{
-		myLightPass.myAlbedo->SetResource(myGBufferData.myAlbedoTexture->GetShaderView());
-		myLightPass.myNormal->SetResource(myGBufferData.myNormalTexture->GetShaderView());
-		myLightPass.myEmissive->SetResource(myGBufferData.myEmissiveTexture->GetShaderView());
-		myLightPass.myCubemap->SetResource(myCubemap->GetShaderView());
-		myLightPass.myInvertedProjection->SetMatrix(&CU::InverseReal(aCamera.GetProjection()).myMatrix[0]);
-		myLightPass.myNotInvertedView->SetMatrix(&aCamera.GetOrientation().myMatrix[0]);
+		myPointLightPass.myAlbedo->SetResource(myGBufferData.myAlbedoTexture->GetShaderView());
+		myPointLightPass.myNormal->SetResource(myGBufferData.myNormalTexture->GetShaderView());
+		myPointLightPass.myEmissive->SetResource(myGBufferData.myEmissiveTexture->GetShaderView());
+		myPointLightPass.myCubemap->SetResource(myCubemap->GetShaderView());
+		myPointLightPass.myInvertedProjection->SetMatrix(&CU::InverseReal(aCamera.GetProjection()).myMatrix[0]);
+		myPointLightPass.myNotInvertedView->SetMatrix(&aCamera.GetOrientation().myMatrix[0]);
 	}
 
-	void DeferredRenderer::RemoveLightPassData()
+	void DeferredRenderer::RemovePointLightData()
 	{
-		myLightPass.myAlbedo->SetResource(nullptr);
-		myLightPass.myNormal->SetResource(nullptr);
-		myLightPass.myDepth->SetResource(nullptr);
-		myLightPass.myMetalness->SetResource(nullptr);
-		myLightPass.myAmbientOcclusion->SetResource(nullptr);
-		myLightPass.myRoughness->SetResource(nullptr);
+		myPointLightPass.myAlbedo->SetResource(nullptr);
+		myPointLightPass.myNormal->SetResource(nullptr);
+		myPointLightPass.myEmissive->SetResource(nullptr);
 	}
 
+	void DeferredRenderer::SetSpotLightData(const Camera& aCamera)
+	{
+		mySpotLightPass.myAlbedo->SetResource(myGBufferData.myAlbedoTexture->GetShaderView());
+		mySpotLightPass.myNormal->SetResource(myGBufferData.myNormalTexture->GetShaderView());
+		mySpotLightPass.myEmissive->SetResource(myGBufferData.myEmissiveTexture->GetShaderView());
+		mySpotLightPass.myCubemap->SetResource(myCubemap->GetShaderView());
+		mySpotLightPass.myInvertedProjection->SetMatrix(&CU::InverseReal(aCamera.GetProjection()).myMatrix[0]);
+		mySpotLightPass.myNotInvertedView->SetMatrix(&aCamera.GetOrientation().myMatrix[0]);
+	}
+
+	void DeferredRenderer::RemoveSpotLightData()
+	{
+		mySpotLightPass.myAlbedo->SetResource(nullptr);
+		mySpotLightPass.myNormal->SetResource(nullptr);
+		mySpotLightPass.myEmissive->SetResource(nullptr);
+	}
 }

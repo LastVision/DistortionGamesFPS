@@ -490,7 +490,7 @@ namespace Prism
 		return proxy;
 	}
 
-	TextProxy* ModelLoader::LoadText(FontProxy* aFontProxy, bool aIs3d)
+	TextProxy* ModelLoader::LoadText(FontProxy* aFontProxy, bool aIs3d, bool aShouldFollowCamera)
 	{
 		TextProxy* proxy = new TextProxy();
 
@@ -503,6 +503,7 @@ namespace Prism
 		newData.myFontProxyToUse = aFontProxy;
 		newData.myLoadType = eLoadType::TEXT;
 		newData.myIs3dText = aIs3d;
+		newData.myShouldFollowCamera = aShouldFollowCamera;
 
 		myBuffers[myInactiveBuffer].Add(newData);
 		myCanCopyArray = true;
@@ -680,7 +681,7 @@ namespace Prism
 
 	void ModelLoader::CreateText(LoadData& someData)
 	{
-		someData.myTextProxy->SetText(new Text(*someData.myFontProxyToUse, someData.myIs3dText));
+		someData.myTextProxy->SetText(new Text(*someData.myFontProxyToUse, someData.myIs3dText, someData.myShouldFollowCamera));
 	}
 
 	void ModelLoader::GetHierarchyToBone(LoadData& someData)

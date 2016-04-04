@@ -11,7 +11,7 @@ namespace Prism
 	class Text : public BaseModel
 	{
 	public:
-		Text(const FontProxy& aFont, bool aIs3d = false);
+		Text(const FontProxy& aFont, bool aIs3d = false, bool aShouldFollowCamera = false);
 		void SetPosition(const CU::Vector2<float>& aPosition);
 		void SetText(const std::string& aText);
 		void SetColor(const CU::Vector4<float>& aColor);
@@ -31,6 +31,8 @@ namespace Prism
 		std::string myText;
 
 		CU::Vector4<float> myColor;
+
+		bool myShouldFollowCamera;
 
 	};
 }
