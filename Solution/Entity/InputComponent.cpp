@@ -147,10 +147,12 @@ void InputComponent::UpdateMovement(float aDelta)
 
 	if (CU::InputWrapper::GetInstance()->KeyDown(DIK_SPACE))
 	{
-		/*if (Prism::PhysicsInterface::GetInstance()->GetAllowedToJump(myCapsuleControllerId) == true)
-		{*/
+#ifdef RELEASE_BUILD
+		if (Prism::PhysicsInterface::GetInstance()->GetAllowedToJump(myEntity.GetComponent<PhysicsComponent>()->GetCapsuleControllerId()) == true)
+#endif
+		{
 		myVerticalSpeed = 0.25f;
-		//}
+		}
 	}
 
 	myVerticalSpeed -= aDelta;
