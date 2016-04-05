@@ -56,7 +56,7 @@ Entity::Entity(unsigned int aGID, const EntityData& aEntityData, Prism::Scene* a
 		myRoomType = eObjectRoomType::NONE;
 		if (aEntityData.myAnimationData.myExistsInEntity == true)
 		{
-			myComponents[static_cast<int>(eComponentType::ANIMATION)] = new AnimationComponent(*this, aEntityData.myAnimationData);
+			myComponents[static_cast<int>(eComponentType::ANIMATION)] = new AnimationComponent(*this, aEntityData.myAnimationData, aScene);
 			//GetComponent<AnimationComponent>()->SetRotation(aRotation);
 			GetComponent<AnimationComponent>()->SetScale(aScale);
 			myRoomType = aEntityData.myAnimationData.myRoomType;

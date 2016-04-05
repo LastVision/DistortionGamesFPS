@@ -207,5 +207,5 @@ void AIComponent::Shoot(Entity* aClosestPlayer)
 	Entity* requestedBullet = SharedProjectileManager::GetInstance()->RequestBullet(myBulletData);
 	myAttackAnimationTimeCurrent = myData.myAttackAnimationTime;
 	requestedBullet->GetComponent<BulletComponent>()->Activate(myEntity.GetOrientation());
-	SharedNetworkManager::GetInstance()->AddMessage<NetMessageEnemyShooting>(NetMessageEnemyShooting(requestedBullet->GetGID()));
+	SharedNetworkManager::GetInstance()->AddMessage<NetMessageEnemyShooting>(NetMessageEnemyShooting(requestedBullet->GetGID(), myEntity.GetGID()));
 }

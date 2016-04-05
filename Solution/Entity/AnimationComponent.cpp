@@ -15,13 +15,15 @@
 
 //#define BOX_MODE
 
-AnimationComponent::AnimationComponent(Entity& aEntity, const AnimationComponentData& aComponentData)
+AnimationComponent::AnimationComponent(Entity& aEntity, const AnimationComponentData& aComponentData, Prism::Scene* aScene)
 	: Component(aEntity)
 	, myComponentData(aComponentData)
 	, myInstance(nullptr)
 	, myCullingRadius(10.f)
 	, myIsEnemy(false)
 	, myHasSetCalcedMuzzle(false)
+	, myMuzzleflashTimer(0.f)
+	, myCurrentMuzzleflash(0)
 {
 #ifndef BOX_MODE
 	Prism::ModelProxy* model = Prism::ModelLoader::GetInstance()->LoadModelAnimated(myComponentData.myModelPath
@@ -49,18 +51,26 @@ AnimationComponent::AnimationComponent(Entity& aEntity, const AnimationComponent
 
 		Prism::ModelLoader::GetInstance()->GetHierarchyToBone("Data/Resource/Model/Enemy_weapon/SK_enemy_weapon_rifle.fbx", "weapon_muzzle_tip-1", myMuzzleBone);
 	}
+	else
+	{
+		Prism::ModelLoader::GetInstance()->GetHierarchyToBone("Data/Resource/Model/Player/SK_player_fire.fbx", "r_wrist_jnt11", myMuzzleBone);
+	}
 
+	LoadMuzzleFlashes(aScene);
 #endif
 }
 
 AnimationComponent::~AnimationComponent()
 {
-#ifndef BOX_MODE
-
 	myEntity.GetScene()->RemoveInstance(myInstance);
 	SAFE_DELETE(myInstance);
 	SAFE_DELETE(myWeapon);
-#endif
+
+	SAFE_DELETE(myMuzzleflash[0]);
+	SAFE_DELETE(myMuzzleflash[1]);
+	SAFE_DELETE(myMuzzleflash[2]);
+	SAFE_DELETE(myMuzzleflash[3]);
+	SAFE_DELETE(myMuzzleflash[4]);
 }
 
 void AnimationComponent::Reset()
@@ -72,7 +82,6 @@ void AnimationComponent::Reset()
 void AnimationComponent::AddAnimation(eEntityState aState, const std::string& aAnimationPath
 	, bool aLoopFlag, bool aResetTimeOnRestart)
 {
-#ifndef BOX_MODE
 	Prism::AnimationSystem::GetInstance()->GetAnimation(aAnimationPath.c_str());
 	AnimationData newData;
 	newData.myElapsedTime = 0.f;
@@ -80,17 +89,21 @@ void AnimationComponent::AddAnimation(eEntityState aState, const std::string& aA
 	newData.myShouldLoop = aLoopFlag;
 	newData.myResetTimeOnRestart = aResetTimeOnRestart;
 	myAnimations[int(aState)] = newData;
-#endif
 }
 
 void AnimationComponent::Update(float aDeltaTime)
 {
+	for (int i = 0; i < 5; ++i)
+	{
+		myMuzzleflash[i]->SetShouldRender(false);
+	}
+
 	if (myMuzzleBone.IsValid() == true && myHasSetCalcedMuzzle == false)
 	{
 		myHasSetCalcedMuzzle = true;
 		myMuzzleBoneCalced = CU::InverseSimple(*myMuzzleBone.myBind) * (*myMuzzleBone.myJoint);
 	}
-#ifndef BOX_MODE
+
 	AnimationData& data = myAnimations[int(myEntity.GetState())];
 	if (myPrevEntityState != myEntity.GetState())
 	{
@@ -114,19 +127,38 @@ void AnimationComponent::Update(float aDeltaTime)
 		
 		myMuzzleOrientation = myMuzzleBoneCalced * myWeaponJoint;
 
-		//Prism::DebugDrawer::GetInstance()->RenderLine3D(CU::Vector3<float>(), myMuzzleOrientation.GetPos());
 
 	}
-#endif
+	else
+	{
+		myMuzzleOrientation = CU::InverseSimple(*myMuzzleBone.myBind) * (*myMuzzleBone.myJoint) *myEntity.GetOrientation();
+	}
+
+
+
+	myMuzzleflashTimer -= aDeltaTime;
+	if (myMuzzleflashTimer > 0.f)
+	{
+		int prev = myCurrentMuzzleflash;
+		myCurrentMuzzleflash = rand() % 5;
+		if (prev == myCurrentMuzzleflash)
+		{
+			++myCurrentMuzzleflash;
+			if (myCurrentMuzzleflash > 4)
+			{
+				myCurrentMuzzleflash = 0;
+			}
+		}
+		myMuzzleflash[myCurrentMuzzleflash]->SetShouldRender(true);
+	}
+	//Prism::DebugDrawer::GetInstance()->RenderLine3D(CU::Vector3<float>(), myMuzzleOrientation.GetPos());
+
+
 }
 
 bool AnimationComponent::IsCurrentAnimationDone() const
 {
-#ifndef BOX_MODE
 	return myInstance->IsAnimationDone();
-#else
-	return true;
-#endif
 }
 
 void AnimationComponent::RestartCurrentAnimation()
@@ -184,5 +216,44 @@ void AnimationComponent::RemoveWeaponFromScene(Prism::Scene* aScene)
 	if (myIsEnemy == true)
 	{
 		aScene->RemoveInstance(myWeapon);
+	}
+}
+
+void AnimationComponent::PlayMuzzleFlash()
+{
+	myMuzzleflashTimer = 0.2f;
+	myMuzzleflash[myCurrentMuzzleflash]->SetShouldRender(true);
+}
+
+void AnimationComponent::LoadMuzzleFlashes(Prism::Scene* aScene)
+{
+	Prism::ModelProxy* model = Prism::ModelLoader::GetInstance()->LoadModel("Data/Resource/Model/Muzzleflash/SM_muzzleflash0.fbx"
+		, "Data/Resource/Shader/S_effect_pbl_deferred.fx");
+	myMuzzleflash[0] = new Prism::Instance(*model, myMuzzleOrientation);
+	aScene->AddInstance(myMuzzleflash[0], eObjectRoomType::ALWAYS_RENDER);
+
+	model = Prism::ModelLoader::GetInstance()->LoadModel("Data/Resource/Model/Muzzleflash/SM_muzzleflash1.fbx"
+		, "Data/Resource/Shader/S_effect_pbl_deferred.fx");
+	myMuzzleflash[1] = new Prism::Instance(*model, myMuzzleOrientation);
+	aScene->AddInstance(myMuzzleflash[1], eObjectRoomType::ALWAYS_RENDER);
+
+	model = Prism::ModelLoader::GetInstance()->LoadModel("Data/Resource/Model/Muzzleflash/SM_muzzleflash2.fbx"
+		, "Data/Resource/Shader/S_effect_pbl_deferred.fx");
+	myMuzzleflash[2] = new Prism::Instance(*model, myMuzzleOrientation);
+	aScene->AddInstance(myMuzzleflash[2], eObjectRoomType::ALWAYS_RENDER);
+
+	model = Prism::ModelLoader::GetInstance()->LoadModel("Data/Resource/Model/Muzzleflash/SM_muzzleflash3.fbx"
+		, "Data/Resource/Shader/S_effect_pbl_deferred.fx");
+	myMuzzleflash[3] = new Prism::Instance(*model, myMuzzleOrientation);
+	aScene->AddInstance(myMuzzleflash[3], eObjectRoomType::ALWAYS_RENDER);
+
+	model = Prism::ModelLoader::GetInstance()->LoadModel("Data/Resource/Model/Muzzleflash/SM_muzzleflash4.fbx"
+		, "Data/Resource/Shader/S_effect_pbl_deferred.fx");
+	myMuzzleflash[4] = new Prism::Instance(*model, myMuzzleOrientation);
+	aScene->AddInstance(myMuzzleflash[4], eObjectRoomType::ALWAYS_RENDER);
+
+	for (int i = 0; i < 5; ++i)
+	{
+		myMuzzleflash[i]->SetShouldRender(false);
 	}
 }
