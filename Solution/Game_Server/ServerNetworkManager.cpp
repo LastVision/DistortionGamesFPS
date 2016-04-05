@@ -246,7 +246,23 @@ void ServerNetworkManager::CreateConnection(const std::string& aName, const sock
 			return;
 		}
 	}
-	myIDCount++;
+	myIDCount = 1;
+	for (short i = 1; i <= 16; ++i)
+	{
+		bool idExist = false;
+		for each (const Connection& connection in myClients)
+		{
+			if (connection.myID == static_cast<unsigned int>(i))
+			{
+				idExist = true;
+			}
+		}
+		if (idExist == false)
+		{
+			myIDCount = i;
+			break;
+		}
+	}
 	AddMessage(NetMessageConnectReply(NetMessageConnectReply::eType::SUCCESS, myIDCount), aSender);
 	Sleep(200);
 	Connection newConnection;
@@ -318,9 +334,11 @@ void ServerNetworkManager::DisconnectConnection(const Connection& aConnection)
 	{
 		if (aConnection.myID == myClients[i].myID)
 		{
+			myClients.GetLast().myID = aConnection.myID;
 			myClients.RemoveCyclicAtIndex(i);
 			break;
 		}
+
 	}
 	//Send to all other clients which client has been disconnected
 	AddMessage(NetMessageDisconnect(aConnection.myID));

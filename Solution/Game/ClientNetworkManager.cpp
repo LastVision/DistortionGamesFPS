@@ -237,8 +237,17 @@ void ClientNetworkManager::ReceiveNetworkMessage(const NetMessageDisconnect& aMe
 		{
 			if (myClients[i].myID == aMessage.myClientID)
 			{
-				myClients.RemoveCyclicAtIndex(i);
-				return;
+				if (myGID < myClients.GetLast().myID)
+				{
+					myClients.GetLast().myID = aMessage.myClientID;
+					myClients.RemoveCyclicAtIndex(i);
+					return;
+				}
+				else 
+				{
+					myGID = aMessage.myClientID;
+					return;
+				}
 			}
 		}
 	}
