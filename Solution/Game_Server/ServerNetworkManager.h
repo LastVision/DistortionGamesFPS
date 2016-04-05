@@ -32,6 +32,8 @@ public:
 	const std::string& GetIP() const;
 
 	void DisconnectAll();
+
+	const bool IsAllowedNewConnection() const;
 private:
 	ServerNetworkManager();
 	~ServerNetworkManager();
@@ -67,4 +69,9 @@ inline const CU::GrowingArray<Connection>& ServerNetworkManager::GetClients() co
 inline const short ServerNetworkManager::GetLastJoinedID() const
 {
 	return myIDCount;
+}
+
+inline const bool ServerNetworkManager::IsAllowedNewConnection() const
+{
+	return myAllowNewConnections;
 }

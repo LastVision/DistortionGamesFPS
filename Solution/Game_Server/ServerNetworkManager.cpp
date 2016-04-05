@@ -233,6 +233,8 @@ void ServerNetworkManager::CreateConnection(const std::string& aName, const sock
 		return;
 	}
 
+	
+
 	/*NetMessageConnectReply connectReply(NetMessageConnectReply::eType::SUCCESS, myIDCount);
 	connectReply.PackMessage();
 	myNetwork->Send(connectReply.myStream, aSender);*/
@@ -263,6 +265,7 @@ void ServerNetworkManager::CreateConnection(const std::string& aName, const sock
 			break;
 		}
 	}
+	std::cout << myIDCount << std::endl;
 	AddMessage(NetMessageConnectReply(NetMessageConnectReply::eType::SUCCESS, myIDCount), aSender);
 	Sleep(200);
 	Connection newConnection;
@@ -286,6 +289,11 @@ void ServerNetworkManager::CreateConnection(const std::string& aName, const sock
 	Utility::Printf(conn, LIGHT_GREEN_TEXT);
 
 	AddMessage(NetMessageOnJoin(aName, myIDCount));
+
+	if (myClients.Size() >= 2)
+	{
+		myAllowNewConnections = false;
+	}
 }
 
 void ServerNetworkManager::Update(float aDelta)

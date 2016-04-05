@@ -101,7 +101,7 @@ void ServerLobbyState::ReceiveNetworkMessage(const NetMessageRequestConnect& aMe
 
 void ServerLobbyState::ReceiveNetworkMessage(const NetMessageRequestServer&, const sockaddr_in& aSenderAddress)
 {
-	if (myGameType == eGameType::MULTIPLAYER)
+	if (myGameType == eGameType::MULTIPLAYER && ServerNetworkManager::GetInstance()->IsAllowedNewConnection() == true)
 	{
 		char username[256 + 1];
 		DWORD username_len = 256 + 1;
