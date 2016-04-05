@@ -138,8 +138,6 @@ void SpawnpointComponent::SpawnUnit(float aDelta)
 	mySpawnTimer -= aDelta;
 	if (mySpawnTimer < 0.f)
 	{
-		printf("Active units from spawnpoint %i", myActiveCount);
-
 		for (int i = 0; i < myData.mySpawnPerInterval; ++i)
 		{
 			if (myActiveCount < myData.myUnitCount)

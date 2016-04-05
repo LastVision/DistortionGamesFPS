@@ -30,6 +30,8 @@ public:
 	const CU::GrowingArray<Connection>& GetClients() const;
 
 	const std::string& GetIP() const;
+
+	void DisconnectAll();
 private:
 	ServerNetworkManager();
 	~ServerNetworkManager();

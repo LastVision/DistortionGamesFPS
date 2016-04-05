@@ -37,7 +37,9 @@ void ServerNetwork::StartServer(unsigned int aPortNum)
 	}
 	else
 	{
+#ifdef _DEBUG
 		std::cout << "WSAStartup succeeded!\n";
+#endif
 	}
 
 	result = getaddrinfo(nullptr, myPort.c_str(), &hints, &addrResult);
@@ -112,8 +114,6 @@ void ServerNetwork::Receieve(std::vector<Buffer>& someBuffers)
 
 void ServerNetwork::PrintStatus()
 {
-	
-
 	std::string toPrint = "------ SERVER ONLINE ------\n------- SERVER INFO -------\n";
 	toPrint += "Server IP: " + std::string(myIP) + "\nServer Port: " + myPort + "\n---------------------------\n";
 	Utility::Printf(toPrint, eConsoleColor::LIGHT_BLUE_TEXT);
