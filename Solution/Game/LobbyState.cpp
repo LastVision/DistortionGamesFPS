@@ -150,6 +150,10 @@ void LobbyState::ReceiveMessage(const OnClickMessage& aMessage)
 		case eOnClickEvent::START_GAME:
 			ClientNetworkManager::GetInstance()->AddMessage(NetMessageRequestStartLevel());
 			break;
+		case eOnClickEvent::GAME_QUIT:
+			ClientNetworkManager::GetInstance()->AddMessage(NetMessageDisconnect(ClientNetworkManager::GetInstance()->GetGID()));
+			myStateStatus = eStateStatus::ePopMainState;
+			break;
 		default:
 			DL_ASSERT("Unknown event.");
 			break;
