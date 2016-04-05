@@ -95,27 +95,14 @@ void ShootingComponent::Update(float aDelta)
 
 	if (CU::InputWrapper::GetInstance()->KeyDown(DIK_R) == true)
 	{
-		if (myCurrentWeapon->GetAmmoTotal() > 0)
-		{
-			switch (myCurrentWeapon->GetWeaponType())
-			{
-			case eWeaponType::PISTOL:
-				myEntity.GetComponent<FirstPersonRenderComponent>()->AddIntention(ePlayerState::PISTOL_RELOAD, true);
-				break;
-			case eWeaponType::SHOTGUN:
-				myEntity.GetComponent<FirstPersonRenderComponent>()->AddIntention(ePlayerState::SHOTGUN_RELOAD, true);
-				break;
-			case eWeaponType::GRENADE_LAUNCHER:
-				myEntity.GetComponent<FirstPersonRenderComponent>()->AddIntention(ePlayerState::GRENADE_LAUNCHER_RELOAD, true);
-				break;
-			default:
-				break;
-			}
-			myCurrentWeapon->Reload();
-		}
+		ReloadWeaponIntention();
 	}
 
-	if (CU::InputWrapper::GetInstance()->MouseIsPressed(0) == true)
+	if (CU::InputWrapper::GetInstance()->MouseDown(0) == true && myCurrentWeapon->GetAmmoInClip() == 0)
+	{
+		ReloadWeaponIntention();
+	}
+	else if (CU::InputWrapper::GetInstance()->MouseIsPressed(0) == true)
 	{
 		if (myCurrentWeapon == myPistol)
 		{
@@ -186,6 +173,32 @@ float ShootingComponent::GetWeaponForceStrength(eWeaponType aWeaponType) const
 	}
 	DL_ASSERT("Get Weapon force crash!");
 	return 0.f;
+}
+
+void ShootingComponent::ReloadWeaponIntention()
+{
+	if (myCurrentWeapon->GetAmmoTotal() > 0)
+	{
+		switch (myCurrentWeapon->GetWeaponType())
+		{
+		case eWeaponType::PISTOL:
+			myEntity.GetComponent<FirstPersonRenderComponent>()->AddIntention(ePlayerState::PISTOL_RELOAD, true);
+			break;
+		case eWeaponType::SHOTGUN:
+			myEntity.GetComponent<FirstPersonRenderComponent>()->AddIntention(ePlayerState::SHOTGUN_RELOAD, true);
+			break;
+		case eWeaponType::GRENADE_LAUNCHER:
+			myEntity.GetComponent<FirstPersonRenderComponent>()->AddIntention(ePlayerState::GRENADE_LAUNCHER_RELOAD, true);
+			break;
+		default:
+			break;
+		}	
+	}
+}
+
+void ShootingComponent::ReloadWeapon()
+{
+	myCurrentWeapon->Reload();
 }
 
 void ShootingComponent::ReceiveNote(const UpgradeNote& aNote)

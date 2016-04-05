@@ -33,7 +33,7 @@ Pistol::Pistol(Entity* aOwnerEntity)
 	reader.CloseDocument();
 
 	myAmmoInClip = myClipSize;
-	myAmmoTotal = INT_MAX;
+	myAmmoTotal = 10;
 	myShootTimer = myShootTime;
 
 	myRaycastHandler = [=](PhysicsComponent* aComponent, const CU::Vector3<float>& aDirection, const CU::Vector3<float>& aHitPosition, const CU::Vector3<float>& aHitNormal)
