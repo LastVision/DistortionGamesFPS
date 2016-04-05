@@ -95,21 +95,24 @@ void ShootingComponent::Update(float aDelta)
 
 	if (CU::InputWrapper::GetInstance()->KeyDown(DIK_R) == true)
 	{
-		switch (myCurrentWeapon->GetWeaponType())
+		if (myCurrentWeapon->GetAmmoTotal() > 0)
 		{
-		case eWeaponType::PISTOL:
-			myEntity.GetComponent<FirstPersonRenderComponent>()->AddIntention(ePlayerState::PISTOL_RELOAD, true);
-			break;
-		case eWeaponType::SHOTGUN:
-			myEntity.GetComponent<FirstPersonRenderComponent>()->AddIntention(ePlayerState::SHOTGUN_RELOAD, true);
-			break;
-		case eWeaponType::GRENADE_LAUNCHER:
-			myEntity.GetComponent<FirstPersonRenderComponent>()->AddIntention(ePlayerState::GRENADE_LAUNCHER_RELOAD, true);
-			break;
-		default:
-			break;
+			switch (myCurrentWeapon->GetWeaponType())
+			{
+			case eWeaponType::PISTOL:
+				myEntity.GetComponent<FirstPersonRenderComponent>()->AddIntention(ePlayerState::PISTOL_RELOAD, true);
+				break;
+			case eWeaponType::SHOTGUN:
+				myEntity.GetComponent<FirstPersonRenderComponent>()->AddIntention(ePlayerState::SHOTGUN_RELOAD, true);
+				break;
+			case eWeaponType::GRENADE_LAUNCHER:
+				myEntity.GetComponent<FirstPersonRenderComponent>()->AddIntention(ePlayerState::GRENADE_LAUNCHER_RELOAD, true);
+				break;
+			default:
+				break;
+			}
+			myCurrentWeapon->Reload();
 		}
-		myCurrentWeapon->Reload();
 	}
 
 	if (CU::InputWrapper::GetInstance()->MouseIsPressed(0) == true)
