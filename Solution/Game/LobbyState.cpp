@@ -168,6 +168,14 @@ void LobbyState::ReceiveMessage(const OnRadioButtonMessage& aMessage)
 	ClientNetworkManager::GetInstance()->AddMessage(NetMessageSetLevel(aMessage.myID));
 }
 
+void LobbyState::ReceiveNetworkMessage(const NetMessageDisconnect& aMessage, const sockaddr_in&)
+{
+	if (aMessage.myClientID == ClientNetworkManager::GetInstance()->GetGID())
+	{
+		myStateStatus = eStateStatus::ePopMainState;
+	}
+}
+
 void LobbyState::ReceiveNetworkMessage(const NetMessageSetLevel& aMessage, const sockaddr_in&)
 {
 	myLevelToStart = aMessage.myLevelID;

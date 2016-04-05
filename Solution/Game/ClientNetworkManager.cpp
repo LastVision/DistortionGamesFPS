@@ -226,7 +226,9 @@ void ClientNetworkManager::ReceiveNetworkMessage(const NetMessageDisconnect& aMe
 {
 	if (aMessage.myClientID == myGID)
 	{
-		MessageBox(NULL, "You have been disconnected!", "Connection Lost!", MB_ICONERROR | MB_OK);
+		myGID = 0;
+		myIsOnline = false;
+		//MessageBox(NULL, "You have been disconnected!", "Connection Lost!", MB_ICONERROR | MB_OK);
 	}
 }
 
