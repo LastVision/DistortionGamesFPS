@@ -164,6 +164,7 @@ void ClientLevel::Init(const std::string& aWeaponSettingsPath)
 	myEmitterManager->Initiate(myPlayer->GetComponent<InputComponent>()->GetCamera());
 
 	myPlayer->GetComponent<ShootingComponent>()->ReadXMLSettings(aWeaponSettingsPath);
+	myPlayer->GetComponent<FirstPersonRenderComponent>()->Init();
 }
 
 void ClientLevel::SetMinMax(const CU::Vector3<float>& aMinPoint, const CU::Vector3<float>& aMaxPoint)
