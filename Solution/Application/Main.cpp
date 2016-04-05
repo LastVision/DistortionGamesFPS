@@ -59,8 +59,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPTSTR, int aNumberCommands)
 {
 	ShowCursor(false);
 	DL_Debug::Debug::Create();
-	//Global_GenerateLightData = false;
-	GC::GenerateLightData = false;
+
 	if (aNumberCommands > 2)
 	{
 		int commandCount = 0;
