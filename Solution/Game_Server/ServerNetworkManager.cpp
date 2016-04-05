@@ -468,3 +468,12 @@ const std::string& ServerNetworkManager::GetIP() const
 {
 	return myNetwork->GetIP();
 }
+
+void ServerNetworkManager::DisconnectAll()
+{
+	for (int i = 0; i < myClients.Size(); ++i)
+	{
+		DisconnectConnection(myClients[i]);
+	}
+	myIDCount = 0;
+}

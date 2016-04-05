@@ -7,6 +7,7 @@
 #include "ServerLobbyState.h"
 #include "ServerNetworkManager.h"
 #include "ServerStateStackProxy.h"
+#include <NetMessageDisconnect.h>
 #include <NetMessageLoadLevel.h>
 #include <NetMessageRequestConnect.h>
 #include <NetMessageSetLevel.h>
@@ -24,6 +25,7 @@ ServerLobbyState::ServerLobbyState(eGameType aGameType)
 
 ServerLobbyState::~ServerLobbyState()
 {
+	ServerNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::ON_DISCONNECT, this);
 	ServerNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::SET_LEVEL, this);
 	ServerNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::REQUEST_START_LEVEL, this);
 	ServerNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::SERVER_REQUEST, this);
@@ -36,6 +38,7 @@ void ServerLobbyState::InitState(ServerStateStackProxy* aStateStackProxy)
 	myStateStack = aStateStackProxy;
 	myStateStatus = eStateStatus::KEEP_STATE;
 
+	ServerNetworkManager::GetInstance()->Subscribe(eNetMessageType::ON_DISCONNECT, this);
 	ServerNetworkManager::GetInstance()->Subscribe(eNetMessageType::SET_LEVEL, this);
 	ServerNetworkManager::GetInstance()->Subscribe(eNetMessageType::REQUEST_START_LEVEL, this);
 	ServerNetworkManager::GetInstance()->Subscribe(eNetMessageType::SERVER_REQUEST, this);
@@ -60,6 +63,7 @@ const eStateStatus ServerLobbyState::Update(const float aDeltaTime)
 void ServerLobbyState::ResumeState()
 {
 	myIsActiveState = true;
+	ServerNetworkManager::GetInstance()->Subscribe(eNetMessageType::ON_DISCONNECT, this);
 	ServerNetworkManager::GetInstance()->Subscribe(eNetMessageType::SET_LEVEL, this);
 	ServerNetworkManager::GetInstance()->Subscribe(eNetMessageType::REQUEST_START_LEVEL, this);
 	ServerNetworkManager::GetInstance()->Subscribe(eNetMessageType::SERVER_REQUEST, this);
@@ -79,6 +83,7 @@ void ServerLobbyState::ReceiveNetworkMessage(const NetMessageRequestStartLevel&,
 	unsigned int levelHashValue = Hash(CU::ReadFileToString(myLevelFactory->GetLevelPath(myCurrentLevelID)).c_str());
 	ServerNetworkManager::GetInstance()->AddMessage(NetMessageLoadLevel(myCurrentLevelID, levelHashValue));
 
+	ServerNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::ON_DISCONNECT, this);
 	ServerNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::SET_LEVEL, this);
 	ServerNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::REQUEST_START_LEVEL, this);
 	ServerNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::SERVER_REQUEST, this);
@@ -102,5 +107,14 @@ void ServerLobbyState::ReceiveNetworkMessage(const NetMessageRequestServer&, con
 		DWORD username_len = 256 + 1;
 		GetUserNameA(username, &username_len);
 		ServerNetworkManager::GetInstance()->AddMessage(NetMessageReplyServer(username, ServerNetworkManager::GetInstance()->GetIP()), aSenderAddress);
+	}
+}
+
+void ServerLobbyState::ReceiveNetworkMessage(const NetMessageDisconnect& aMessage, const sockaddr_in&)
+{
+	if (aMessage.mySenderID == 1)
+	{
+		ServerNetworkManager::GetInstance()->DisconnectAll();
+		myStateStatus = eStateStatus::POP_MAIN_STATE;
 	}
 }

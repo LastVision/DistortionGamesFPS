@@ -587,10 +587,7 @@ namespace Prism
 	{
 		//CU::TimerManager::GetInstance()->StartTimer("ConvertDGFX");
 
-		FBXData* data = new FBXData();
 		FbxModelData* fbxModelData = myLoader->loadModel(aInputPath, someOutErrors);
-		data->myData = fbxModelData;
-		data->myPath = aInputPath;
 
 		CU::BuildFoldersInPath(aOutputPath);
 		std::fstream file;
@@ -604,7 +601,7 @@ namespace Prism
 		//	CU::TimerManager::GetInstance()->StopTimer("ConvertDGFX").GetMilliseconds());
 		//RESOURCE_LOG("Converting FBX->DGFX \"%s\" took %d ms", aOutputPath, elapsed);
 
-		delete data;
+		delete fbxModelData;
 	}
 
 
