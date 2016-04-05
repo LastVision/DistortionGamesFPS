@@ -225,6 +225,16 @@ void AnimationComponent::PlayMuzzleFlash()
 	myMuzzleflash[myCurrentMuzzleflash]->SetShouldRender(true);
 }
 
+void AnimationComponent::StopMuzzleFlash()
+{
+	for (int i = 0; i < 5; ++i)
+	{
+		myMuzzleflash[i]->SetShouldRender(false);
+	}
+	myMuzzleflashTimer = 0.f;
+	myCurrentMuzzleflash = 0;
+}
+
 void AnimationComponent::LoadMuzzleFlashes(Prism::Scene* aScene)
 {
 	Prism::ModelProxy* model = Prism::ModelLoader::GetInstance()->LoadModel("Data/Resource/Model/Muzzleflash/SM_muzzleflash0.fbx"

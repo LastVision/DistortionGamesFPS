@@ -42,6 +42,7 @@ public:
 	void RemoveWeaponFromScene(Prism::Scene* aScene);
 
 	void PlayMuzzleFlash();
+	void StopMuzzleFlash();
 
 private:
 	void LoadMuzzleFlashes(Prism::Scene* aScene);
