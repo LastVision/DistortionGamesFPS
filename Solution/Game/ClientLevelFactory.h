@@ -30,7 +30,7 @@ private:
 	void LoadLights(XMLReader& aReader, tinyxml2::XMLElement* aElement);
 	void LoadParticles(XMLReader& aReader, tinyxml2::XMLElement* aElement);
 	void LoadText(XMLReader& aReader, tinyxml2::XMLElement* aElement);
-
+	void LoadPlayerStartPosition(XMLReader& aReader, tinyxml2::XMLElement* aElement) override;
 
 	ClientLevel* myCurrentLevel;
 

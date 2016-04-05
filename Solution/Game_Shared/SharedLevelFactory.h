@@ -45,6 +45,7 @@ protected:
 	virtual void LoadDoors(XMLReader& aReader, tinyxml2::XMLElement* aElement) = 0;
 	virtual void LoadUnits(XMLReader& aReader, tinyxml2::XMLElement* aElement) = 0;
 	virtual void LoadTriggers(XMLReader& aReader, tinyxml2::XMLElement* aElement) = 0;
+	virtual void LoadPlayerStartPosition(XMLReader& aReader, tinyxml2::XMLElement* aElement) = 0;
 	virtual void LoadSpawnpoint(XMLReader& aReader, tinyxml2::XMLElement* anElement);
 
 	void ReadGID(XMLReader& aReader, tinyxml2::XMLElement* aElement, unsigned int& aOutGID);

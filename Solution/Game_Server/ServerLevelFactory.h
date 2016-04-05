@@ -18,6 +18,7 @@ private:
 	void LoadUnits(XMLReader& aReader, tinyxml2::XMLElement* aElement) override;
 	void LoadTriggers(XMLReader& aReader, tinyxml2::XMLElement* aElement) override;
 	void LoadSpawnpoint(XMLReader& aReader, tinyxml2::XMLElement* anElement) override;
+	void LoadPlayerStartPosition(XMLReader& aReader, tinyxml2::XMLElement* aElement) override;
 
 	ServerLevel* myCurrentLevel;
 	std::string myMissionXMLPath;
