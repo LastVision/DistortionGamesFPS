@@ -4,8 +4,10 @@
 #include <NetMessageDisplayMarker.h>
 #include <NetMessageDisplayRespawn.h>
 #include <NetMessageSetActive.h>
+#include <NetMessageText.h>
 #include "PhysicsComponent.h"
 #include <PostMaster.h>
+#include <PrintTextMessage.h>
 #include <RespawnMessage.h>
 #include "TriggerComponent.h"
 #include "TriggerComponentData.h"
@@ -71,7 +73,6 @@ void TriggerComponent::ReceiveNote(const CollisionNote& aNote)
 
 			if (myData.myIsOneTime == true)
 			{
-				//myEntity.GetComponent<PhysicsComponent>()->RemoveFromScene();
 				if (myData.myIsClientSide == false && myData.myIsPressable == false)
 				{
 					SharedNetworkManager::GetInstance()->AddMessage<NetMessageSetActive>(NetMessageSetActive(false, true, myEntity.GetGID()));
@@ -79,9 +80,18 @@ void TriggerComponent::ReceiveNote(const CollisionNote& aNote)
 				else if (myData.myIsClientSide == true)
 				{
 					myEntity.GetComponent<PhysicsComponent>()->RemoveFromScene();
-					myEntity.RemoveFromScene();
+					myEntity.RemoveFromScene();		
 				}
 				PostMaster::GetInstance()->SendMessage<SetActiveMessage>(SetActiveMessage(myEntity.GetGID(), false));
+			}
+
+			if (myData.myIsClientSide == false && myData.myIsPressable == false && myData.myPickupText.size() > 0)
+			{
+				SharedNetworkManager::GetInstance()->AddMessage<NetMessageText>(NetMessageText(myData.myPickupText, myData.myPickupTextTime));
+			}
+			else if (myData.myIsClientSide == true)
+			{
+				PostMaster::GetInstance()->SendMessage<PrintTextMessage>(PrintTextMessage(myData.myPickupText, myData.myPickupTextTime));
 			}
 		}
 		else if (myTriggerType == eTriggerType::RESPAWN)

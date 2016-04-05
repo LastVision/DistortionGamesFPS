@@ -14,6 +14,7 @@ enum class eMessageType
 	RESPAWN,
 	SEND_TEXT_TO_CLIENTS,
 	ACTIVATE_SPAWNPOINT,
+	PRINT_TEXT,
 	
 	COUNT,
 };

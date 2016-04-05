@@ -1,5 +1,6 @@
 #pragma once
 #include <NetworkSubscriber.h>
+#include <Subscriber.h>
 
 namespace Prism
 {
@@ -19,7 +20,7 @@ struct NotificationText
 	bool myIsActive;
 };
 
-class TextEventManager : public NetworkSubscriber
+class TextEventManager : public NetworkSubscriber, public Subscriber
 {
 public:
 	TextEventManager(const Prism::Camera* aCamera);
@@ -30,6 +31,7 @@ public:
 
 	void AddNotification(std::string aText, float aLifeTime = 5.f, CU::Vector4<float> aColor = { 1.f, 1.f, 1.f, 1.f });
 	void ReceiveNetworkMessage(const NetMessageText& aMessage, const sockaddr_in& aSenderAddress) override;
+	void ReceiveMessage(const PrintTextMessage& aMessage) override;
 
 private:
 

@@ -70,5 +70,8 @@
     <ClInclude Include="ActivateSpawnpointMessage.h">
       <Filter>Message</Filter>
     </ClInclude>
+    <ClInclude Include="PrintTextMessage.h">
+      <Filter>Message</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

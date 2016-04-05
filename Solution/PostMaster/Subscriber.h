@@ -11,6 +11,7 @@ struct ResizeMessage;
 struct StartGameMessage;
 struct SendTextToClientsMessage;
 struct SetActiveMessage;
+struct PrintTextMessage;
 struct RespawnMessage;
 struct RespawnTriggerMessage;
 struct ActivateSpawnpointMessage;
@@ -34,6 +35,7 @@ public:
 	virtual void ReceiveMessage(const StartGameMessage& aMessage);
 	virtual void ReceiveMessage(const SendTextToClientsMessage& aMessage);
 	virtual void ReceiveMessage(const SetActiveMessage& aMessage);
+	virtual void ReceiveMessage(const PrintTextMessage& aMessage);
 	virtual void ReceiveMessage(const RespawnMessage& aMessage);
 	virtual void ReceiveMessage(const RespawnTriggerMessage& aMessage);
 	virtual void ReceiveMessage(const ActivateSpawnpointMessage& aMessage);

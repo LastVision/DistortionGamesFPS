@@ -172,6 +172,8 @@ void ComponentLoader::LoadTriggerComponent(XMLReader& aDocument, tinyxml2::XMLEl
 	aOutputData.myIsOneTime = false; 
 	aOutputData.myIsPressable = false;
 	aOutputData.myTriggerType = -1;
+	aOutputData.myPickupText = "";
+	aOutputData.myPickupTextTime = 0.f;
 
 	for (tinyxml2::XMLElement* e = aDocument.FindFirstChild(aSourceElement); e != nullptr; e = aDocument.FindNextElement(e))
 	{
@@ -186,6 +188,8 @@ void ComponentLoader::LoadTriggerComponent(XMLReader& aDocument, tinyxml2::XMLEl
 			aDocument.ForceReadAttribute(e, "isClientSide", aOutputData.myIsClientSide);
 			aDocument.ReadAttribute(e, "activeFromStart", aOutputData.myIsActiveFromStart);
 			aDocument.ReadAttribute(e, "isPressable", aOutputData.myIsPressable);
+			aDocument.ReadAttribute(e, "pickupText", aOutputData.myPickupText);
+			aDocument.ReadAttribute(e, "pickupTextTime", aOutputData.myPickupTextTime);
 
 			aOutputData.myTriggerType = ConvertToTriggerEnum(name);
 

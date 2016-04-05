@@ -1,10 +1,11 @@
 #include "stdafx.h"
 #include <Camera.h>
 #include "ClientNetworkManager.h"
-#include <NetMessageText.h>
-#include "TextEventManager.h"
-//#include <Text.h>
 #include <ModelLoader.h>
+#include <NetMessageText.h>
+#include <PostMaster.h>
+#include <PrintTextMessage.h>
+#include "TextEventManager.h"
 #include <TextProxy.h>
 
 TextEventManager::TextEventManager(const Prism::Camera* aCamera)
@@ -35,11 +36,13 @@ TextEventManager::TextEventManager(const Prism::Camera* aCamera)
 	myMissionText->SetOffset(myMissionOffset);
 	myMissionText->SetText("");
 	ClientNetworkManager::GetInstance()->Subscribe(eNetMessageType::TEXT, this);
+	PostMaster::GetInstance()->Subscribe(eMessageType::PRINT_TEXT, this);
 }
 
 TextEventManager::~TextEventManager()
 {
 	ClientNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::TEXT, this);
+	PostMaster::GetInstance()->UnSubscribe(eMessageType::PRINT_TEXT, this);
 	for (int i = 0; i < myNotifications.Size(); ++i)
 	{
 		SAFE_DELETE(myNotifications[i]->my3dText);
@@ -141,4 +144,9 @@ void TextEventManager::ReceiveNetworkMessage(const NetMessageText& aMessage, con
 		myMissionText->SetText(aMessage.myText);
 		myShouldRender = aMessage.myShouldShow;
 	}
+}
+
+void TextEventManager::ReceiveMessage(const PrintTextMessage& aMessage)
+{
+	AddNotification(aMessage.myText, aMessage.myTime);
 }
