@@ -173,7 +173,7 @@ void LobbyState::ReceiveMessage(const OnRadioButtonMessage& aMessage)
 
 void LobbyState::ReceiveNetworkMessage(const NetMessageDisconnect& aMessage, const sockaddr_in&)
 {
-	if (aMessage.myClientID == ClientNetworkManager::GetInstance()->GetGID())
+	if (aMessage.myClientID == ClientNetworkManager::GetInstance()->GetGID() || ClientNetworkManager::GetInstance()->GetGID() == 0)
 	{
 		myStateStatus = eStateStatus::ePopMainState;
 	}
