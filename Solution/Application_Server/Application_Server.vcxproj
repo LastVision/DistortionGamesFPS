@@ -48,7 +48,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <IntDir>$(SolutionDir)..\temp\$(ProjectName)\</IntDir>
     <OutDir>$(SolutionDir)..\Workbed\bin\</OutDir>
-    <TargetName>$(ProjectName)_$(Configuration)</TargetName>
+    <TargetName>Machina_Server</TargetName>
     <IncludePath>$(SolutionDir)\Memory;$(SolutionDir)Timer\;$(SolutionDir)Game_Shared\;$(SolutionDir)Game_Server\;$(IncludePath)</IncludePath>
     <LibraryPath>$(SolutionDir)..\Libs3rdParty;$(LibraryPath)</LibraryPath>
   </PropertyGroup>

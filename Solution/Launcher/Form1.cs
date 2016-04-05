@@ -17,8 +17,8 @@ namespace Launcher
     {
         private string myDocumentFolder = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
         private string myConfigPath = "Data\\Setting\\SET_config.bin";
-        private string myExePath = "Application_Client_Release.exe";
-        private string myServerPath = "Application_Server_Release.exe";
+        private string myExePath = "Machina_Client.exe";
+        private string myServerPath = "Machina_Server.exe";
         private string myLogo = "bin\\Data\\Resource\\Texture\\Logo\\T_launcher_logo.png";
         private string myGameName = "Machina";
 
@@ -271,7 +271,7 @@ namespace Launcher
             {
                 myServer.Kill();
             }
-            if (myGame.HasExited == false)
+            if (myGame.StartInfo.FileName != "" && myGame.HasExited == false)
             {
                 myGame.Kill();
             }
