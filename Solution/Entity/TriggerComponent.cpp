@@ -50,7 +50,7 @@ void TriggerComponent::Update(float aDelta)
 			myEntity.GetComponent<PhysicsComponent>()->RemoveFromScene();
 			myHasTriggered = false;
 			SharedNetworkManager::GetInstance()->AddMessage(NetMessageDisplayRespawn({ 0.f, 0.f, 0.f }
-				, false, myData.myValue, myData.myValue, myEntity.GetGID()));
+			, false, myData.myValue, myData.myValue, myEntity.GetGID()));
 		}
 	}
 }
@@ -73,25 +73,28 @@ void TriggerComponent::ReceiveNote(const CollisionNote& aNote)
 
 			if (myData.myIsOneTime == true)
 			{
-				if (myData.myIsClientSide == false && myData.myIsPressable == false)
+				if (myData.myIsClientSide == false)
 				{
 					SharedNetworkManager::GetInstance()->AddMessage<NetMessageSetActive>(NetMessageSetActive(false, true, myEntity.GetGID()));
 				}
 				else if (myData.myIsClientSide == true)
 				{
 					myEntity.GetComponent<PhysicsComponent>()->RemoveFromScene();
-					myEntity.RemoveFromScene();		
+					myEntity.RemoveFromScene();
 				}
 				PostMaster::GetInstance()->SendMessage<SetActiveMessage>(SetActiveMessage(myEntity.GetGID(), false));
 			}
 
-			if (myData.myIsClientSide == false && myData.myIsPressable == false && myData.myPickupText.size() > 0)
+			if (myData.myPickupText.size() > 0)
 			{
-				SharedNetworkManager::GetInstance()->AddMessage<NetMessageText>(NetMessageText(myData.myPickupText, myData.myPickupTextTime));
-			}
-			else if (myData.myIsClientSide == true)
-			{
-				PostMaster::GetInstance()->SendMessage<PrintTextMessage>(PrintTextMessage(myData.myPickupText, myData.myPickupTextTime));
+				if (myData.myIsClientSide == false)
+				{
+					SharedNetworkManager::GetInstance()->AddMessage<NetMessageText>(NetMessageText(myData.myPickupText, myData.myPickupTextTime));
+				}
+				else if (myData.myIsClientSide == true)
+				{
+					PostMaster::GetInstance()->SendMessage<PrintTextMessage>(PrintTextMessage(myData.myPickupText, myData.myPickupTextTime));
+				}
 			}
 		}
 		else if (myTriggerType == eTriggerType::RESPAWN)
