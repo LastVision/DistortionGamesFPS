@@ -549,7 +549,7 @@ void ClientLevel::HandleTrigger(Entity& aFirstEntity, Entity& aSecondEntity, boo
 			TriggerComponent* firstTrigger = aFirstEntity.GetComponent<TriggerComponent>();
 			if (firstTrigger->GetTriggerType() == eTriggerType::UPGRADE)
 			{
-				myTextManager->AddNotification("upgrade");
+				//myTextManager->AddNotification("upgrade");
 				if (aSecondEntity.GetType() == eEntityType::PLAYER)
 				{
 					aSecondEntity.SendNote<UpgradeNote>(aFirstEntity.GetComponent<UpgradeComponent>()->GetData());
@@ -558,7 +558,7 @@ void ClientLevel::HandleTrigger(Entity& aFirstEntity, Entity& aSecondEntity, boo
 			}
 			else if (firstTrigger->GetTriggerType() == eTriggerType::HEALTH_PACK)
 			{
-				myTextManager->AddNotification("healthpack");
+				//myTextManager->AddNotification("healthpack");
 				ClientNetworkManager::GetInstance()->AddMessage<NetMessageHealthPack>(NetMessageHealthPack(firstTrigger->GetValue()));
 				Prism::Audio::AudioInterface::GetInstance()->PostEvent("FadeInSecondLayer", 0);
 			}

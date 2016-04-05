@@ -168,6 +168,7 @@
     <ClInclude Include="MessageEnum.h" />
     <ClInclude Include="OnClickMessage.h" />
     <ClInclude Include="PostMaster.h" />
+    <ClInclude Include="PrintTextMessage.h" />
     <ClInclude Include="ResizeMessage.h" />
     <ClInclude Include="RespawnMessage.h" />
     <ClInclude Include="RespawnTriggerMessage.h" />

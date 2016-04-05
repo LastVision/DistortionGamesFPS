@@ -11,4 +11,6 @@ struct TriggerComponentData
 	int myTriggerType;
 	int myValue;
 	CU::Vector3<float> myPosition;
+	std::string myPickupText;
+	float myPickupTextTime;
 };
