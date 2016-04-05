@@ -508,7 +508,7 @@ namespace Prism
 		myBuffers[myInactiveBuffer].Add(newData);
 		myCanCopyArray = true;
 #else
-		proxy->SetText(new Text(*aFontProxy, aIs3d));
+		proxy->SetText(new Text(*aFontProxy, aIs3d, aShouldFollowCamera));
 #endif	
 
 		return proxy;
