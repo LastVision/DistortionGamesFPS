@@ -78,6 +78,7 @@
       <AdditionalIncludeDirectories>$(SolutionDir)DL_Debug\;$(SolutionDir)CommonUtilities\;$(SolutionDir)Network\;$(SolutionDir)Game_Shared\;$(SolutionDir)Game_Server\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalOptions>-D_SCL_SECURE_NO_WARNINGS %(AdditionalOptions)</AdditionalOptions>
       <TreatWarningAsError>true</TreatWarningAsError>
+      <PreprocessorDefinitions>RELEASE_BUILD;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>

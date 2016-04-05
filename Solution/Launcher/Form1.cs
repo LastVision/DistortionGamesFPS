@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.IO;
 using System.Diagnostics;
+using System.Threading;
 
 namespace Launcher
 {
@@ -20,6 +21,9 @@ namespace Launcher
         private string myServerPath = "Application_Server_Release.exe";
         private string myLogo = "bin\\Data\\Resource\\Texture\\Logo\\T_launcher_logo.png";
         private string myGameName = "Machina";
+
+        private Process myServer = new Process();
+        private Process myGame = new Process();
 
         enum eResolutions
         {
@@ -93,6 +97,15 @@ namespace Launcher
                     ReadWindowedFromFile(reader);
                 }
             }
+
+            myServer.StartInfo.FileName = myServerPath;
+            myServer.StartInfo.WorkingDirectory = "bin\\";
+            myServer.StartInfo.CreateNoWindow = true;
+            myServer.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
+            if (IsProcessOpen(myServer.StartInfo.FileName) == false)
+            {
+                myServer.Start();
+            }
         }
 
         public bool IsProcessOpen(string name)
@@ -128,27 +141,16 @@ namespace Launcher
                 }
                 else
                 {
-                    Process server = new Process();
-                    server.StartInfo.FileName = myServerPath;
-                    server.StartInfo.WorkingDirectory = "bin\\";
-                    server.Start();
-                    
-                    Process newProcess = new Process();
-                    newProcess.StartInfo.FileName = myExePath;
-                    newProcess.StartInfo.WorkingDirectory = "bin\\";
-                    newProcess.Start();
-
-                    newProcess.WaitForInputIdle();
-                    
+                    myGame.StartInfo.FileName = myExePath;
+                    myGame.StartInfo.WorkingDirectory = "bin\\";
+                    myGame.Start();
+                    myGame.WaitForInputIdle();
                 }
-                
             }
             else
             {
                 MessageBox.Show("Could not find a Release executable :(");
             }
-
-
         }
 
         void WriteResolutionToFile(BinaryWriter aWriter)
@@ -261,6 +263,18 @@ namespace Launcher
             //{
             //    resolutionDropdown.Enabled = false;
             //}
+        }
+
+        private void Form1_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            if (myServer.HasExited == false)
+            {
+                myServer.Kill();
+            }
+            if (myGame.HasExited == false)
+            {
+                myGame.Kill();
+            }
         }
     }
 }
