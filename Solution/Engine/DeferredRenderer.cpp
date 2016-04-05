@@ -298,20 +298,19 @@ namespace Prism
 
 #ifdef USE_LIGHT
 		aScene->UpdateLights();
-		RenderPointLights(aScene);
-		RenderSpotLights(aScene);
+		RenderPointLights(aScene, false);
+		RenderSpotLights(aScene, false);
 #endif
 	}
 
-	void DeferredRenderer::RenderPointLights(Scene* aScene)
+	void DeferredRenderer::RenderPointLights(Scene* aScene, bool aUseRoomManager)
 	{
 		const Camera& camera = *aScene->GetCamera();
 
 		Engine::GetInstance()->RestoreViewPort();
 		SetPointLightData(camera);
 
-
-		const CU::GrowingArray<PointLight*>& lights = aScene->GetPointLights();
+		const CU::GrowingArray<PointLight*>& lights = aScene->GetPointLights(aUseRoomManager);
 
 		Engine::GetInstance()->SetRasterizeState(eRasterizer::NO_CULLING);
 		Engine::GetInstance()->SetDepthBufferState(eDepthStencil::READ_NO_WRITE);
@@ -326,7 +325,7 @@ namespace Prism
 		RemovePointLightData();
 	}
 
-	void DeferredRenderer::RenderSpotLights(Scene* aScene)
+	void DeferredRenderer::RenderSpotLights(Scene* aScene, bool aUseRoomManager)
 	{
 		const Camera& camera = *aScene->GetCamera();
 
@@ -334,7 +333,7 @@ namespace Prism
 		SetSpotLightData(camera);
 
 
-		const CU::GrowingArray<SpotLight*>& lights = aScene->GetSpotLights();
+		const CU::GrowingArray<SpotLight*>& lights = aScene->GetSpotLights(aUseRoomManager);
 
 		Engine::GetInstance()->SetRasterizeState(eRasterizer::NO_CULLING);
 		Engine::GetInstance()->SetDepthBufferState(eDepthStencil::READ_NO_WRITE);

@@ -119,8 +119,8 @@ namespace Prism
 		void Render(Effect* aEffect);
 		void RenderDeferred(Scene* aScene);
 		void RenderCubemapDeferred(Scene* aScene, ID3D11RenderTargetView* aTarget, ID3D11DepthStencilView* aDepth);
-		void RenderPointLights(Scene* aScene);
-		void RenderSpotLights(Scene* aScene);
+		void RenderPointLights(Scene* aScene, bool aUseRoomManager = true);
+		void RenderSpotLights(Scene* aScene, bool aUseRoomManager = true);
 		void RenderAmbientPass(Scene* aScene);
 		void SetAmbientData(bool aClearTextures);
 

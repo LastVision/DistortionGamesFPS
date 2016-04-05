@@ -44,8 +44,8 @@ namespace Prism
 		const Camera* GetCamera() const;
 		RoomManager* GetRoomManager() const;
 
-		const CU::GrowingArray<PointLight*>& GetPointLights() const;
-		const CU::GrowingArray<SpotLight*>& GetSpotLights() const;
+		const CU::GrowingArray<PointLight*>& GetPointLights(bool aUseRoomManager) const;
+		const CU::GrowingArray<SpotLight*>& GetSpotLights(bool aUseRoomManager) const;
 
 	private:
 		void operator=(Scene&) = delete;
