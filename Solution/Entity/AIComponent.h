@@ -46,8 +46,9 @@ private:
 
 	float myAttackAnimationTimeCurrent;
 
-	Entity* myTarget;
+	//Entity* myTarget;
 	Entity* myDefendTarget;
+	Entity* myTargetPlayer;
 
 	bool myHasJustSpawned;
 };

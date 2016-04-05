@@ -1,6 +1,7 @@
 #include <CommonHelper.h>
 #include "DGFXReader.h"
 #include <iostream>
+#include <MemoryMacros.h>
 
 struct ModelData
 {

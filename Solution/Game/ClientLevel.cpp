@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include <Instance.h>
 #include <AudioInterface.h>
-
+#include <AnimationComponent.h>
 #include "ClientLevel.h"
 #include <ModelLoader.h>
 #include "Player.h"
@@ -397,6 +397,16 @@ void ClientLevel::ReceiveNetworkMessage(const NetMessageEnemyShooting& aMessage,
 	Entity* requestedBullet = ClientProjectileManager::GetInstance()->RequestBullet(aMessage.myGID);
 	requestedBullet->AddToScene();
 	ClientProjectileManager::GetInstance()->ActivateBullet(requestedBullet);
+
+	const CU::GrowingArray<Entity*>& units = SharedUnitManager::GetInstance()->GetUnits();
+
+	for (int i = 0; i < units.Size(); ++i)
+	{
+		if (units[i]->GetGID() == aMessage.myEnemyGID)
+		{
+			units[i]->GetComponent<AnimationComponent>()->PlayMuzzleFlash();
+		}
+	}
 }
 
 void ClientLevel::ReceiveNetworkMessage(const NetMessageShootGrenade&, const sockaddr_in&)
@@ -424,15 +434,30 @@ void ClientLevel::ReceiveNetworkMessage(const NetMessageRayCastRequest& aMessage
 {
 	if (myPlayer->GetGID() != aMessage.myGID)
 	{
+		Entity* otherPlayer = nullptr;
+
+		for (int i = 0; i < myPlayers.Size(); i++)
+		{
+			if (myPlayers[i]->GetGID() == aMessage.myGID)
+			{
+				otherPlayer = myPlayers[i];
+				break;
+			}
+		}
+
 		switch (eNetRayCastType(aMessage.myRayCastType))
 		{
 		case eNetRayCastType::CLIENT_SHOOT_PISTOL:
-			Prism::PhysicsInterface::GetInstance()->RayCast(aMessage.myPosition, aMessage.myDirection, 500.f, myOtherClientRaycastHandlerPistol, myPlayer->GetComponent<PhysicsComponent>());
+			Prism::PhysicsInterface::GetInstance()->RayCast(aMessage.myPosition, aMessage.myDirection, 500.f
+				, myOtherClientRaycastHandlerPistol, otherPlayer->GetComponent<PhysicsComponent>());
 			break;
 		case eNetRayCastType::CLIENT_SHOOT_SHOTGUN:
-			Prism::PhysicsInterface::GetInstance()->RayCast(aMessage.myPosition, aMessage.myDirection, 500.f, myOtherClientRaycastHandlerShotgun, myPlayer->GetComponent<PhysicsComponent>());
+			Prism::PhysicsInterface::GetInstance()->RayCast(aMessage.myPosition, aMessage.myDirection, 500.f
+				, myOtherClientRaycastHandlerShotgun, otherPlayer->GetComponent<PhysicsComponent>());
 			break;
 		}
+
+		otherPlayer->GetComponent<AnimationComponent>()->PlayMuzzleFlash();
 	}
 }
 
