@@ -16,5 +16,6 @@ private:
 	Prism::FBXFactory myFactory;
 
 	CU::GrowingArray<std::string> myErrors;
+	CU::GrowingArray<CU::Vector3<float>> myVertices;
 };
 

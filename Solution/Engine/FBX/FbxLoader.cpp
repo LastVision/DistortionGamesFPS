@@ -1698,5 +1698,6 @@ FbxModelData* FBXLoader::loadModel(const char* aFile, CU::GrowingArray<std::stri
 		reader.CloseDocument();
 	}
 
+	scene->Clear();
 	return myLoadingModel;
 }

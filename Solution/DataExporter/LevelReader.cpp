@@ -5,6 +5,7 @@
 #include <XMLReader.h>
 #include <Vertices.h>
 #include <iostream>
+#include <MemoryMacros.h>
 
 LevelReader::LevelReader()
 {
