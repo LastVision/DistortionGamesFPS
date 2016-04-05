@@ -11,6 +11,8 @@ public:
 	Shotgun(Entity* aOwnerEntity);
 	~Shotgun();
 
+	void Init(std::string aWeaponSettingsPath, std::string aXMLTagName) override;
+
 	bool Shoot(const CU::Matrix44<float>& aOrientation) override;
 	void Reload() override;
 	void Update(float aDelta) override;

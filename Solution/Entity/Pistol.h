@@ -15,8 +15,9 @@ class Pistol : public Weapon
 public:
 	Pistol(Entity* aOwnerEntity);
 	~Pistol();
-	void Init(Prism::Scene* aScene, const CU::Matrix44<float>& aOrientation);
 
+	void Init(Prism::Scene* aScene, const CU::Matrix44<float>& aOrientation); // init for muzle flashes
+	void Init(std::string aWeaponSettingsPath, std::string aXMLTagName) override; // init for reading xml settings
 
 	bool Shoot(const CU::Matrix44<float>& aOrientation) override;
 	void Reload() override;

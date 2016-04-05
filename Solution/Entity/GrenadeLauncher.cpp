@@ -10,22 +10,32 @@
 #include <SharedNetworkManager.h>
 
 GrenadeLauncher::GrenadeLauncher(Prism::Scene* aScene, unsigned int aEntityGID, Entity* aOwnerEntity)
-	: Weapon(eWeaponType::GRENADE_LAUNCHER, "grenadelauncher", aOwnerEntity)
+	: Weapon(eWeaponType::GRENADE_LAUNCHER, aOwnerEntity)
 	, myScene(aScene)
 	, myBullets(16)
 	, myCurrentBulletToUse(0)
 	, myEntityGID(aEntityGID)
 {
+}
+
+GrenadeLauncher::~GrenadeLauncher()
+{
+	myBullets.DeleteAll();
+}
+
+void GrenadeLauncher::Init(std::string aWeaponSettingsPath, std::string aXMLTagName)
+{
+	Weapon::Init(aWeaponSettingsPath, aXMLTagName);
+
 	XMLReader reader;
-	reader.OpenDocument("Data/Setting/SET_weapons.xml");
+	reader.OpenDocument(aWeaponSettingsPath);
 	tinyxml2::XMLElement* root = reader.ForceFindFirstChild("root");
 	tinyxml2::XMLElement* grenadeLauncherElement = reader.ForceFindFirstChild(root, "grenadelauncher");
-	
+
 	reader.ForceReadAttribute(reader.ForceFindFirstChild(grenadeLauncherElement, "startammo"), "value", myAmmoTotal);
 	reader.ForceReadAttribute(reader.ForceFindFirstChild(grenadeLauncherElement, "maxAmountOfGrenades"), "value", myMaxGrenades);
 
 	reader.CloseDocument();
-
 
 	for (int i = 0; i < myMaxGrenades; ++i)
 	{
@@ -33,11 +43,6 @@ GrenadeLauncher::GrenadeLauncher(Prism::Scene* aScene, unsigned int aEntityGID, 
 		myBullets.Add(bullet);
 		bullet->GetComponent<PhysicsComponent>()->Sleep();
 	}
-}
-
-GrenadeLauncher::~GrenadeLauncher()
-{
-	myBullets.DeleteAll();
 }
 
 bool GrenadeLauncher::Shoot(const CU::Matrix44<float>&)
