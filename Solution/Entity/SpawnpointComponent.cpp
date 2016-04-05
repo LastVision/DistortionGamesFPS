@@ -13,7 +13,7 @@
 
 #include <PostMaster.h>
 #include <ActivateSpawnpointMessage.h>
-
+#include <EmitterMessage.h>
 SpawnpointComponent::SpawnpointComponent(Entity& anEntity, const SpawnpointComponentData& aSpawnpointComponentData)
 	: Component(anEntity)
 	, myData(aSpawnpointComponentData)
@@ -152,7 +152,7 @@ void SpawnpointComponent::SpawnUnit(float aDelta)
 				{
 					SharedUnitManager::GetInstance()->ActivateUnit(toActivate, spawnPosition);
 					SharedNetworkManager::GetInstance()->AddMessage(NetMessageActivateUnit(toActivate->GetGID(), spawnPosition));
-
+					
 					myActiveCount++;
 				}
 			}
