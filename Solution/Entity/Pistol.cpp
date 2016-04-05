@@ -86,7 +86,7 @@ void Pistol::Init(std::string aWeaponSettingsPath, std::string aXMLTagName)
 	reader.CloseDocument();
 
 	myAmmoInClip = myClipSize;
-	myAmmoTotal = INT_MAX;
+	myAmmoTotal = 10;
 	myShootTimer = myShootTime;
 }
 

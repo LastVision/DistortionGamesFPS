@@ -188,6 +188,10 @@ void ClientLevel::Update(const float aDeltaTime)
 		myDeferredRenderer->GenerateSHData(myScene, myMinPoint, myMaxPoint, myName);
 		RESET_RUNTIME;
 	}
+	if (myInitDone == false)
+	{
+		return;
+	}
 	ClientProjectileManager::GetInstance()->Update(aDeltaTime);
 	ClientUnitManager::GetInstance()->Update(aDeltaTime);
 	//if (CU::InputWrapper::GetInstance()->KeyDown(DIK_U))

@@ -6,6 +6,9 @@
 #include "ClientNetworkManager.h"
 #include "NetMessageEntityState.h"
 
+#include <PostMaster.h>
+#include <EmitterMessage.h>
+
 ClientUnitManager::ClientUnitManager()
 {
 	ClientNetworkManager::GetInstance()->Subscribe(eNetMessageType::ACTIVATE_UNIT, this);
@@ -62,6 +65,10 @@ ClientUnitManager* ClientUnitManager::GetInstance()
 
 void ClientUnitManager::ReceiveNetworkMessage(const NetMessageActivateUnit& aMessage, const sockaddr_in&)
 {
+	PostMaster::GetInstance()->SendMessage(EmitterMessage("SpawnEnemy", { aMessage.myPosition.x
+		, aMessage.myPosition.y + 2.f
+		, aMessage.myPosition.z }
+	, CU::Vector3<float>(0.f, -1.f, 0.f)));
 	Entity* toActivate = RequestUnit(aMessage.myGID);
 	if (toActivate != nullptr)
 	{

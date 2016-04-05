@@ -217,7 +217,6 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPTSTR, int aNumberCommands)
 		}
 		else
 		{
-
 			if (globalGame->Update() == false)
 			{
 				break;
@@ -294,13 +293,14 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			{
 				if (globalIsActive == false)
 				{
+#ifndef RELEASE_BUILD
 					bool currFullscreen = Prism::Engine::GetInstance()->IsFullscreen();
 					if (currFullscreen != globalPreviousFullscreenState)
 					{
 						Prism::Engine::GetInstance()->SetFullscreen(globalPreviousFullscreenState);
 
 					}
-#ifdef RELEASE_BUILD
+#else
 					Prism::Engine::GetInstance()->SetFullscreen(true);
 #endif
 
@@ -375,6 +375,10 @@ void OnResize()
 				globalGame->UnPause();
 			}
 			globalGame->OnResize(globalClientWidth, globalClientHeight);
+#ifdef RELEASE_BUILD
+			Prism::Engine::GetInstance()->SetFullscreen(true);
+			globalPreviousFullscreenState = true;
+#endif
 		}
 		Prism::ModelLoader::GetInstance()->UnPause();
 	}

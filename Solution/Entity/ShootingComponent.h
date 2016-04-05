@@ -29,7 +29,9 @@ public:
 	eComponentType GetType() override;
 
 	float GetWeaponForceStrength(eWeaponType aWeaponType) const;
+	void ReloadWeapon();
 private:
+	void ReloadWeaponIntention();
 	Weapon* myCurrentWeapon;
 	Pistol* myPistol;
 	Shotgun* myShotgun;

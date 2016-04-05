@@ -212,6 +212,13 @@ void FirstPersonRenderComponent::Update(float aDelta)
 	Prism::AnimationData& data = myAnimations[int(myCurrentState)].myData;
 	if (myModel->IsAnimationDone() == true && data.myShouldLoop == false)
 	{
+		if (myCurrentState == ePlayerState::PISTOL_RELOAD
+			|| myCurrentState == ePlayerState::SHOTGUN_RELOAD
+			|| myCurrentState == ePlayerState::GRENADE_LAUNCHER_RELOAD)
+		{
+			myEntity.GetComponent<ShootingComponent>()->ReloadWeapon();
+		}
+
 		bool shouldGetNextIntention = false;
 		switch (myEntity.GetComponent<ShootingComponent>()->GetCurrentWeapon()->GetWeaponType())
 		{

@@ -18,6 +18,7 @@ public:
 	const int& GetClipSize() const;
 	eWeaponType GetWeaponType();
 	float GetForceStrength() const;
+	const int GetAmmoTotal() const;
 
 	virtual void Upgrade(const UpgradeComponentData& aData);
 
@@ -54,4 +55,9 @@ inline eWeaponType Weapon::GetWeaponType()
 inline float Weapon::GetForceStrength() const
 {
 	return myForceStrength;
+}
+
+inline const int Weapon::GetAmmoTotal() const
+{
+	return myAmmoTotal;
 }
