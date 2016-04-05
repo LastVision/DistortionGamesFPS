@@ -94,8 +94,8 @@ bool Pistol::Shoot(const CU::Matrix44<float>& aOrientation)
 {
 	if (myAmmoInClip > 0 && myShootTimer <= 0.f)
 	{
-		CU::Vector3<float> forward = CU::Vector3<float>(0, 0, 1.f) 
-			* (CU::Matrix44<float>::CreateRotateAroundX(CU::Math::RandomRange(myMinSpreadRotation, myMaxSpreadRotation)) 
+		CU::Vector3<float> forward = CU::Vector3<float>(0, 0, 1.f)
+			* (CU::Matrix44<float>::CreateRotateAroundX(CU::Math::RandomRange(myMinSpreadRotation, myMaxSpreadRotation))
 			* aOrientation);
 		forward = forward * CU::Matrix44<float>::CreateRotateAroundY(CU::Math::RandomRange(myMinSpreadRotation, myMaxSpreadRotation));
 
@@ -160,20 +160,16 @@ void Pistol::HandleRaycast(PhysicsComponent* aComponent, const CU::Vector3<float
 		CU::Vector3<float> toSend = CU::Reflect<float>(aDirection, aHitNormal);
 
 		if (aComponent->GetEntity().GetIsEnemy() == true)
-		{
-			PostMaster::GetInstance()->SendMessage(EmitterMessage("Shotgun", aHitPosition, toSend));
-		}
+			PostMaster::GetInstance()->SendMessage(EmitterMessage("OnHit", aHitPosition, toSend));
 		else
-		{
-			PostMaster::GetInstance()->SendMessage(EmitterMessage("Shotgun", aHitPosition, toSend));
-		}
+			PostMaster::GetInstance()->SendMessage(EmitterMessage("OnEnvHit", aHitPosition, aHitNormal));
 
 		//aComponent->GetEntity().SendNote<DamageNote>(DamageNote(myDamage));
 
 		//SharedNetworkManager::GetInstance()->AddMessage(NetMessageOnHit(float(myDamage), aComponent->GetEntity().GetGID()));
-		
+
 		SharedNetworkManager::GetInstance()->AddMessage(NetMessageOnHit(myDamage, aComponent->GetEntity().GetGID()));
-		
+
 	}
 }
 

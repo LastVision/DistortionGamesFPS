@@ -50,7 +50,7 @@ bool Shotgun::Shoot(const CU::Matrix44<float>& aOrientation)
 		ShootRowAround(aOrientation, CU::Vector3<float>(0, 0, 1.f) * (CU::Matrix44<float>::CreateRotateAroundX(CU::Math::RandomRange(myMinSpreadRotation, myMaxSpreadRotation)) * aOrientation));
 		myAmmoInClip -= 1;
 		myShootTimer = myShootTime;
-		Prism::Audio::AudioInterface::GetInstance()->PostEvent("Play_Shotgun", 0);	
+		Prism::Audio::AudioInterface::GetInstance()->PostEvent("Play_Shotgun", 0);
 		return true;
 	}
 	return false;
@@ -78,7 +78,12 @@ void Shotgun::HandleRaycast(PhysicsComponent* aComponent, const CU::Vector3<floa
 		}
 		SharedNetworkManager::GetInstance()->AddMessage(NetMessageOnHit(myDamage, aComponent->GetEntity().GetGID()));
 		CU::Vector3<float> toSend = CU::Reflect(aDirection, aHitNormal);
-		PostMaster::GetInstance()->SendMessage(EmitterMessage("Shotgun", aHitPosition, toSend));
+
+		if (aComponent->GetEntity().GetIsEnemy() == true)
+			PostMaster::GetInstance()->SendMessage(EmitterMessage("OnHit", aHitPosition, toSend));
+		else
+			PostMaster::GetInstance()->SendMessage(EmitterMessage("OnEnvHit", aHitPosition, aHitNormal));
+
 	}
 }
 
