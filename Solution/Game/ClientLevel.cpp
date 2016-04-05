@@ -273,7 +273,7 @@ void ClientLevel::Render()
 				myScene->GetRoomManager()->GetPreviousPlayerRoom()->GetEmitter()->SetShouldAlwaysShow(false);
 			}
 		}
-		//myEmitterManager->RenderEmitters();
+		myEmitterManager->RenderEmitters();
 
 
 		myPlayer->GetComponent<FirstPersonRenderComponent>()->Render();
