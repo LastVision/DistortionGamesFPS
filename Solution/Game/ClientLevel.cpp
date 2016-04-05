@@ -274,9 +274,10 @@ void ClientLevel::Render()
 		{
 			if (myScene->GetRoomManager()->GetPreviousPlayerRoom()->GetEmitter() != nullptr)
 			{
-				myScene->GetRoomManager()->GetPreviousPlayerRoom()->GetEmitter()->SetShouldAlwaysShow(false);
+				myScene->GetRoomManager()->GetPreviousPlayerRoom()->GetEmitter()->SetShouldRender(false);
 			}
 		}
+
 		myEmitterManager->RenderEmitters();
 
 
