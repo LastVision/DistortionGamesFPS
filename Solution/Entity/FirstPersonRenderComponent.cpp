@@ -81,11 +81,6 @@ FirstPersonRenderComponent::FirstPersonRenderComponent(Entity& aEntity, Prism::S
 		Prism::ModelLoader::GetInstance()->GetHierarchyToBone(myAnimations[i].myData.myFile, "health_jnt2", myAnimations[i].myHealthBone);
 	}
 
-	ShootingComponent* shooting = myEntity.GetComponent<ShootingComponent>();
-	my3DGUIManager = new GUI::GUIManager3D(myModel, aScene
-		, shooting->GetWeapon(eWeaponType::PISTOL)->GetClipSize(), shooting->GetWeapon(eWeaponType::PISTOL)->GetAmmoInClip()
-		, shooting->GetWeapon(eWeaponType::SHOTGUN)->GetClipSize(), shooting->GetWeapon(eWeaponType::SHOTGUN)->GetAmmoInClip()
-		, shooting->GetWeapon(eWeaponType::GRENADE_LAUNCHER)->GetClipSize(), shooting->GetWeapon(eWeaponType::GRENADE_LAUNCHER)->GetAmmoInClip());
 
 	SharedNetworkManager::GetInstance()->Subscribe(eNetMessageType::ON_HIT, this);
 	SharedNetworkManager::GetInstance()->Subscribe(eNetMessageType::HEALTH, this);
@@ -153,6 +148,14 @@ FirstPersonRenderComponent::~FirstPersonRenderComponent()
 	myCoOpRespawns.RemoveAll();
 }
 
+void FirstPersonRenderComponent::Init()
+{
+	ShootingComponent* shooting = myEntity.GetComponent<ShootingComponent>();
+	my3DGUIManager = new GUI::GUIManager3D(myModel, myScene
+		, shooting->GetWeapon(eWeaponType::PISTOL)->GetClipSize(), shooting->GetWeapon(eWeaponType::PISTOL)->GetAmmoInClip()
+		, shooting->GetWeapon(eWeaponType::SHOTGUN)->GetClipSize(), shooting->GetWeapon(eWeaponType::SHOTGUN)->GetAmmoInClip()
+		, shooting->GetWeapon(eWeaponType::GRENADE_LAUNCHER)->GetClipSize(), shooting->GetWeapon(eWeaponType::GRENADE_LAUNCHER)->GetAmmoInClip());
+}
 
 void FirstPersonRenderComponent::Update(float aDelta)
 {

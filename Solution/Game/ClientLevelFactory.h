@@ -33,4 +33,6 @@ private:
 
 
 	ClientLevel* myCurrentLevel;
+
+	std::string myWeaponSettingsPath;
 };

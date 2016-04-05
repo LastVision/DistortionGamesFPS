@@ -14,6 +14,7 @@ public:
 	~ShootingComponent();
 
 	void Init(Prism::Scene* aScene);
+	void ReadXMLSettings(const std::string& aXMLPath);
 
 	void Update(float aDelta) override;
 	void Render();

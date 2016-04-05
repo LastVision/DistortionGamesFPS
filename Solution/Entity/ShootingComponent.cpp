@@ -38,6 +38,13 @@ void ShootingComponent::Init(Prism::Scene* aScene)
 	myPistol->Init(aScene, myEntity.GetComponent<FirstPersonRenderComponent>()->GetMuzzleJointOrientation());
 }
 
+void ShootingComponent::ReadXMLSettings(const std::string& aXMLPath)
+{
+	myPistol->Init(aXMLPath, "pistol");
+	myShotgun->Init(aXMLPath, "shotgun");
+	myGrenadeLauncher->Init(aXMLPath, "grenadelauncher");
+}
+
 void ShootingComponent::Update(float aDelta)
 {
 	CU::Matrix44<float> aOrientation = myEntity.GetComponent<InputComponent>()->GetEyeOrientation();
