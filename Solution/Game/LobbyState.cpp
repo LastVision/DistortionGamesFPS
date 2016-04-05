@@ -36,6 +36,7 @@ LobbyState::~LobbyState()
 	myCursor = nullptr;
 	PostMaster::GetInstance()->UnSubscribe(eMessageType::ON_CLICK, this);
 	PostMaster::GetInstance()->UnSubscribe(eMessageType::ON_RADIO_BUTTON, this);
+	SharedNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::ON_DISCONNECT, this);
 	SharedNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::SET_LEVEL, this);
 	SharedNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::LOAD_LEVEL, this);
 }
@@ -44,6 +45,7 @@ void LobbyState::InitState(StateStackProxy* aStateStackProxy, GUI::Cursor* aCurs
 {
 	PostMaster::GetInstance()->Subscribe(eMessageType::ON_CLICK, this);
 	PostMaster::GetInstance()->Subscribe(eMessageType::ON_RADIO_BUTTON, this);
+	SharedNetworkManager::GetInstance()->Subscribe(eNetMessageType::ON_DISCONNECT, this);
 	SharedNetworkManager::GetInstance()->Subscribe(eNetMessageType::SET_LEVEL, this);
 	SharedNetworkManager::GetInstance()->Subscribe(eNetMessageType::LOAD_LEVEL, this);
 	myCursor = aCursor;
@@ -100,6 +102,7 @@ const eStateStatus LobbyState::Update(const float& aDeltaTime)
 		DL_ASSERT_EXP(myLevelToStart != -1, "Can't start level -1.");
 		PostMaster::GetInstance()->UnSubscribe(eMessageType::ON_CLICK, this);
 		PostMaster::GetInstance()->UnSubscribe(eMessageType::ON_RADIO_BUTTON, this);
+		SharedNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::ON_DISCONNECT, this);
 		SharedNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::SET_LEVEL, this);
 		SharedNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::LOAD_LEVEL, this);
 
