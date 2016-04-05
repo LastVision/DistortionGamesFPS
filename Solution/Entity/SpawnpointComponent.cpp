@@ -13,7 +13,7 @@
 
 #include <PostMaster.h>
 #include <ActivateSpawnpointMessage.h>
-
+#include <EmitterMessage.h>
 SpawnpointComponent::SpawnpointComponent(Entity& anEntity, const SpawnpointComponentData& aSpawnpointComponentData)
 	: Component(anEntity)
 	, myData(aSpawnpointComponentData)
@@ -138,8 +138,6 @@ void SpawnpointComponent::SpawnUnit(float aDelta)
 	mySpawnTimer -= aDelta;
 	if (mySpawnTimer < 0.f)
 	{
-		printf("Active units from spawnpoint %i", myActiveCount);
-
 		for (int i = 0; i < myData.mySpawnPerInterval; ++i)
 		{
 			if (myActiveCount < myData.myUnitCount)
@@ -152,7 +150,7 @@ void SpawnpointComponent::SpawnUnit(float aDelta)
 				{
 					SharedUnitManager::GetInstance()->ActivateUnit(toActivate, spawnPosition);
 					SharedNetworkManager::GetInstance()->AddMessage(NetMessageActivateUnit(toActivate->GetGID(), spawnPosition));
-
+					
 					myActiveCount++;
 				}
 			}

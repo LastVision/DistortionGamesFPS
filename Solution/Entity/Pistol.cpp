@@ -18,24 +18,11 @@
 #include "SoundComponent.h"
 
 Pistol::Pistol(Entity* aOwnerEntity)
-	: Weapon(eWeaponType::PISTOL, "pistol", aOwnerEntity)
+	: Weapon(eWeaponType::PISTOL, aOwnerEntity)
 	, myOrientation(nullptr)
 	, myMuzzleflashTimer(0.f)
 	, myCurrentMuzzleflash(0)
 {
-	XMLReader reader;
-	reader.OpenDocument("Data/Setting/SET_weapons.xml");
-	tinyxml2::XMLElement* root = reader.ForceFindFirstChild("root");
-	tinyxml2::XMLElement* shotgunElement = reader.ForceFindFirstChild(root, "pistol");
-	reader.ForceReadAttribute(reader.ForceFindFirstChild(shotgunElement, "minspreadrotation"), "value", myMinSpreadRotation);
-	reader.ForceReadAttribute(reader.ForceFindFirstChild(shotgunElement, "maxspreadrotation"), "value", myMaxSpreadRotation);
-
-	reader.CloseDocument();
-
-	myAmmoInClip = myClipSize;
-	myAmmoTotal = INT_MAX;
-	myShootTimer = myShootTime;
-
 	myRaycastHandler = [=](PhysicsComponent* aComponent, const CU::Vector3<float>& aDirection, const CU::Vector3<float>& aHitPosition, const CU::Vector3<float>& aHitNormal)
 	{
 		this->HandleRaycast(aComponent, aDirection, aHitPosition, aHitNormal);
@@ -83,6 +70,24 @@ void Pistol::Init(Prism::Scene* aScene, const CU::Matrix44<float>& aOrientation)
 		, "Data/Resource/Shader/S_effect_pbl_deferred.fx");
 	myMuzzleflash[4] = new Prism::Instance(*model, *myOrientation);
 	aScene->AddInstance(myMuzzleflash[4], eObjectRoomType::ALWAYS_RENDER);
+}
+
+void Pistol::Init(std::string aWeaponSettingsPath, std::string aXMLTagName)
+{
+	Weapon::Init(aWeaponSettingsPath, aXMLTagName);
+
+	XMLReader reader;
+	reader.OpenDocument(aWeaponSettingsPath);
+	tinyxml2::XMLElement* root = reader.ForceFindFirstChild("root");
+	tinyxml2::XMLElement* shotgunElement = reader.ForceFindFirstChild(root, "pistol");
+	reader.ForceReadAttribute(reader.ForceFindFirstChild(shotgunElement, "minspreadrotation"), "value", myMinSpreadRotation);
+	reader.ForceReadAttribute(reader.ForceFindFirstChild(shotgunElement, "maxspreadrotation"), "value", myMaxSpreadRotation);
+
+	reader.CloseDocument();
+
+	myAmmoInClip = myClipSize;
+	myAmmoTotal = 10;
+	myShootTimer = myShootTime;
 }
 
 bool Pistol::Shoot(const CU::Matrix44<float>& aOrientation)

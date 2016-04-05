@@ -69,11 +69,14 @@ namespace Prism
 		myInstance->mySetupInfo = &aSetupInfo;
 
 		bool result = myInstance->Init(aHwnd, aWndProc);
-
+#ifndef RELEASE_BUILD
 		if (aSetupInfo.myWindowed == false)
 		{
 			myInstance->myDirectX->SetFullscreen(true);
 		}
+#else
+		myInstance->myDirectX->SetFullscreen(true);
+#endif
 
 
 		ModelLoader::GetInstance()->Pause();

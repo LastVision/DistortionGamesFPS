@@ -36,6 +36,7 @@ LobbyState::~LobbyState()
 	myCursor = nullptr;
 	PostMaster::GetInstance()->UnSubscribe(eMessageType::ON_CLICK, this);
 	PostMaster::GetInstance()->UnSubscribe(eMessageType::ON_RADIO_BUTTON, this);
+	SharedNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::ON_DISCONNECT, this);
 	SharedNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::SET_LEVEL, this);
 	SharedNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::LOAD_LEVEL, this);
 }
@@ -44,6 +45,7 @@ void LobbyState::InitState(StateStackProxy* aStateStackProxy, GUI::Cursor* aCurs
 {
 	PostMaster::GetInstance()->Subscribe(eMessageType::ON_CLICK, this);
 	PostMaster::GetInstance()->Subscribe(eMessageType::ON_RADIO_BUTTON, this);
+	SharedNetworkManager::GetInstance()->Subscribe(eNetMessageType::ON_DISCONNECT, this);
 	SharedNetworkManager::GetInstance()->Subscribe(eNetMessageType::SET_LEVEL, this);
 	SharedNetworkManager::GetInstance()->Subscribe(eNetMessageType::LOAD_LEVEL, this);
 	myCursor = aCursor;
@@ -100,6 +102,7 @@ const eStateStatus LobbyState::Update(const float& aDeltaTime)
 		DL_ASSERT_EXP(myLevelToStart != -1, "Can't start level -1.");
 		PostMaster::GetInstance()->UnSubscribe(eMessageType::ON_CLICK, this);
 		PostMaster::GetInstance()->UnSubscribe(eMessageType::ON_RADIO_BUTTON, this);
+		SharedNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::ON_DISCONNECT, this);
 		SharedNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::SET_LEVEL, this);
 		SharedNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::LOAD_LEVEL, this);
 
@@ -150,6 +153,10 @@ void LobbyState::ReceiveMessage(const OnClickMessage& aMessage)
 		case eOnClickEvent::START_GAME:
 			ClientNetworkManager::GetInstance()->AddMessage(NetMessageRequestStartLevel());
 			break;
+		case eOnClickEvent::GAME_QUIT:
+			ClientNetworkManager::GetInstance()->AddMessage(NetMessageDisconnect(ClientNetworkManager::GetInstance()->GetGID()));
+			myStateStatus = eStateStatus::ePopMainState;
+			break;
 		default:
 			DL_ASSERT("Unknown event.");
 			break;
@@ -162,6 +169,14 @@ void LobbyState::ReceiveMessage(const OnRadioButtonMessage& aMessage)
 	DL_ASSERT_EXP(aMessage.myEvent == eOnRadioButtonEvent::LEVEL_SELECT, "Only level select in lobby state.");
 
 	ClientNetworkManager::GetInstance()->AddMessage(NetMessageSetLevel(aMessage.myID));
+}
+
+void LobbyState::ReceiveNetworkMessage(const NetMessageDisconnect& aMessage, const sockaddr_in&)
+{
+	if (aMessage.myClientID == ClientNetworkManager::GetInstance()->GetGID() || ClientNetworkManager::GetInstance()->GetGID() == 0)
+	{
+		myStateStatus = eStateStatus::ePopMainState;
+	}
 }
 
 void LobbyState::ReceiveNetworkMessage(const NetMessageSetLevel& aMessage, const sockaddr_in&)

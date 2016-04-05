@@ -1,5 +1,6 @@
 #include "stdafx.h"
 
+#include <AudioInterface.h>
 #include "ClientLevel.h"
 #include "ClientLevelFactory.h"
 #include "Console.h"
@@ -23,6 +24,7 @@
 #include <ScriptSystem.h>
 #include <VTuneApi.h>
 #include <TextProxy.h>
+#include <SpriteProxy.h>
 #include <Cursor.h>
 #include "ClientNetworkManager.h"
 
@@ -35,10 +37,18 @@ InGameState::InGameState(int aLevelID, unsigned int aServerHashLevelValue)
 	, myCanStartNextLevel(false)
 	, myFailedLevelHash(false)
 	, myServerHashLevelValue(aServerHashLevelValue)
+	, myHasStartedMusicBetweenLevels(false)
+	, myLastLevel(0)
 {
 	myIsActiveState = false;
 	myLevelFactory = new ClientLevelFactory("Data/Level/LI_level.xml");
 	myHashLevelValue = Hash(CU::ReadFileToString(myLevelFactory->GetLevelPath(aLevelID)).c_str());
+	
+	
+	myElevatorSprite = Prism::ModelLoader::GetInstance()->LoadSprite(
+		"Data/Resource/Texture/Menu/BetweenLevels/T_background_elevator.dds", { 1920.f, 1080.f });
+	CU::Vector2<int> windowSize = Prism::Engine::GetInstance()->GetWindowSizeInt();
+	OnResize(windowSize.x, windowSize.y);
 }
 
 InGameState::~InGameState()
@@ -136,6 +146,14 @@ const eStateStatus InGameState::Update(const float& aDeltaTime)
 	if (myLevelComplete == true)
 	{
 		DEBUG_PRINT("LEVEL COMPLETE");
+		myElevatorSprite->Render({ 0.f, 0.f });
+		if (myHasStartedMusicBetweenLevels == false)
+		{
+			int levelMusic = myLastLevel + 1;
+			std::string musicEvent("Play_ElevatorToLevel" + std::to_string(levelMusic));
+			myHasStartedMusicBetweenLevels = true;
+			Prism::Audio::AudioInterface::GetInstance()->PostEvent(musicEvent.c_str(), 0);
+		}
 
 		if (myCanStartNextLevel == true)
 		{
@@ -156,7 +174,6 @@ const eStateStatus InGameState::Update(const float& aDeltaTime)
 		DL_ASSERT_EXP(myLevel != nullptr, "Invalid level");
 		myLevel->Update(aDeltaTime);
 	}
-	
 
 	//LUA::ScriptSystem::GetInstance()->CallFunction("Update", { aDeltaTime });
 	//LUA::ScriptSystem::GetInstance()->Update();
@@ -205,7 +222,7 @@ void InGameState::ReceiveNetworkMessage(const NetMessageAllClientsComplete& aMes
 	switch (aMessage.myType)
 	{
 	case NetMessageAllClientsComplete::eType::LEVEL_COMPLETE:
-		myCanStartNextLevel = true;
+ 		myCanStartNextLevel = true;
 		break;
 	case NetMessageAllClientsComplete::eType::LEVEL_LOAD:
 		myLevelComplete = false;
@@ -219,6 +236,7 @@ void InGameState::ReceiveNetworkMessage(const NetMessageLevelComplete&, const so
 	ClientNetworkManager::GetInstance()->AllowSendWithoutSubscriber(true);
 	SAFE_DELETE(myLevel);
 	myLevelComplete = true;
+	myHasStartedMusicBetweenLevels = false;
 }
 
 void InGameState::ReceiveNetworkMessage(const NetMessageLoadLevel& aMessage, const sockaddr_in&)
@@ -231,10 +249,18 @@ void InGameState::ReceiveNetworkMessage(const NetMessageLoadLevel& aMessage, con
 	//DL_ASSERT_EXP(myLevel == nullptr, "Level has to be nullptr here");
 	SET_RUNTIME(false);
 	myLevel = static_cast<ClientLevel*>(myLevelFactory->LoadLevel(aMessage.myLevelID));
+	
+	int levelMusic = myLastLevel + 1;
+	std::string musicEvent("Stop_ElevatorToLevel" + std::to_string(levelMusic));
+	myHasStartedMusicBetweenLevels = true;
+	Prism::Audio::AudioInterface::GetInstance()->PostEvent(musicEvent.c_str(), 0);
+
+	myLastLevel = aMessage.myLevelID;
 	ClientNetworkManager::GetInstance()->AllowSendWithoutSubscriber(false);
 	ClientNetworkManager::GetInstance()->AddMessage(NetMessageLevelLoaded());
 }
 
-void InGameState::OnResize(int, int)
+void InGameState::OnResize(int aWidth, int aHeight)
 {
+	myElevatorSprite->SetSize({ float(aWidth), float(aHeight )}, { 0.f, 0.f });
 }

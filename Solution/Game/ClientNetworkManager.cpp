@@ -226,7 +226,21 @@ void ClientNetworkManager::ReceiveNetworkMessage(const NetMessageDisconnect& aMe
 {
 	if (aMessage.myClientID == myGID)
 	{
-		MessageBox(NULL, "You have been disconnected!", "Connection Lost!", MB_ICONERROR | MB_OK);
+		myGID = 0;
+		myIsOnline = false;
+		myClients.RemoveAll();
+		//MessageBox(NULL, "You have been disconnected!", "Connection Lost!", MB_ICONERROR | MB_OK);
+	}
+	else
+	{ 
+		for (int i = 0; i < myClients.Size(); ++i)
+		{
+			if (myClients[i].myID == aMessage.myClientID)
+			{
+				myClients.RemoveCyclicAtIndex(i);
+				return;
+			}
+		}
 	}
 }
 

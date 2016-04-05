@@ -5,8 +5,10 @@ struct UpgradeComponentData;
 class Weapon
 {
 public:
-	Weapon(eWeaponType aWeaponType, std::string aXMLTagName, Entity* aOwnerEntity);
+	Weapon(eWeaponType aWeaponType, Entity* aOwnerEntity);
 	virtual ~Weapon();
+
+	virtual void Init(std::string aWeaponSettingsPath, std::string aXMLTagName);
 
 	virtual bool Shoot(const CU::Matrix44<float>& aOrientation) = 0;
 	virtual void Reload() = 0;
@@ -16,6 +18,7 @@ public:
 	const int& GetClipSize() const;
 	eWeaponType GetWeaponType();
 	float GetForceStrength() const;
+	const int GetAmmoTotal() const;
 
 	virtual void Upgrade(const UpgradeComponentData& aData);
 
@@ -52,4 +55,9 @@ inline eWeaponType Weapon::GetWeaponType()
 inline float Weapon::GetForceStrength() const
 {
 	return myForceStrength;
+}
+
+inline const int Weapon::GetAmmoTotal() const
+{
+	return myAmmoTotal;
 }

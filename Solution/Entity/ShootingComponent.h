@@ -14,6 +14,7 @@ public:
 	~ShootingComponent();
 
 	void Init(Prism::Scene* aScene);
+	void ReadXMLSettings(const std::string& aXMLPath);
 
 	void Update(float aDelta) override;
 	void Render();
@@ -28,7 +29,9 @@ public:
 	eComponentType GetType() override;
 
 	float GetWeaponForceStrength(eWeaponType aWeaponType) const;
+	void ReloadWeapon();
 private:
+	void ReloadWeaponIntention();
 	Weapon* myCurrentWeapon;
 	Pistol* myPistol;
 	Shotgun* myShotgun;

@@ -47,7 +47,7 @@ void EmitterManager::Initiate(Prism::Camera* aCamera)
 
 void EmitterManager::UpdateEmitters(float aDeltaTime, CU::Matrix44f aWorldMatrix)
 {
-	
+
 	for (int i = 0; i < myEmitterList.Size(); ++i)
 	{
 		if (myEmitterList[i]->myTypeIsActive == false)
@@ -101,14 +101,14 @@ void EmitterManager::RenderEmitters()
 			for (int j = 0; j < myEmitterList[i]->myEmitters[k].Size(); ++j)
 			{
 				Prism::ParticleEmitterInstance* instance = myEmitterList[i]->myEmitters[k][j];
-				if (instance->GetShouldRender() == true)
+				if (instance->IsActive() == false)
 				{
-					if (instance->IsActive() == false)
-					{
-						finished++;
+					finished++;
 
-					}
-					else
+				}
+				else
+				{
+					if (instance->GetShouldRender() == true)
 					{
 						instance->Render();
 					}
@@ -130,7 +130,7 @@ void EmitterManager::RenderEmitters()
 
 void EmitterManager::ReceiveMessage(const EmitterMessage& aMessage)
 {
-	
+
 	CU::Vector3f position = aMessage.myPosition;
 
 	if (aMessage.myEmitter != nullptr)
