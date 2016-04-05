@@ -55,7 +55,7 @@ void TriggerComponent::Update(float aDelta)
 
 void TriggerComponent::ReceiveNote(const CollisionNote& aNote)
 {
-	if (aNote.myOther->GetSubType() == "playerserver")
+	if (aNote.myOther->GetSubType() == "playerserver" || aNote.myOther->GetSubType() == "localplayer")
 	{
 		if (aNote.myHasEntered == true)
 		{
@@ -75,6 +75,11 @@ void TriggerComponent::ReceiveNote(const CollisionNote& aNote)
 				if (myData.myIsClientSide == false && myData.myIsPressable == false)
 				{
 					SharedNetworkManager::GetInstance()->AddMessage<NetMessageSetActive>(NetMessageSetActive(false, true, myEntity.GetGID()));
+				}
+				else if (myData.myIsClientSide == true)
+				{
+					myEntity.GetComponent<PhysicsComponent>()->RemoveFromScene();
+					myEntity.RemoveFromScene();
 				}
 				PostMaster::GetInstance()->SendMessage<SetActiveMessage>(SetActiveMessage(myEntity.GetGID(), false));
 			}

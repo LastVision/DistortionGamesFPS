@@ -45,23 +45,38 @@ namespace Utility
 {
 	inline void Printf(const char* aSomethingToPrint, WORD aColour)
 	{
+#ifdef _DEBUG
 		SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), aColour);
 		printf("\n%s", aSomethingToPrint);
 		SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7); //Colour reset
+#else
+		aSomethingToPrint;
+		aColour;
+#endif
 	}
 
 	inline void Printf(const std::string& aSomethingToPrint, WORD aColour)
 	{
+#ifdef _DEBUG
 		SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), aColour);
 		printf("\n%s", aSomethingToPrint.c_str());
 		SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7); //Colour reset
+#else
+		aSomethingToPrint;
+		aColour;
+#endif
 	}
 
 	inline void Printf(int aSomethingToPrint, WORD aColour)
 	{
+#ifdef _DEBUG
 		SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), aColour);
 		printf("\n%i", aSomethingToPrint);
 		SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7); //Colour reset
+#else
+		aSomethingToPrint;
+		aColour;
+#endif
 	}
 
 	inline HWND GetConsoleHwnd(void)
