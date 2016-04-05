@@ -232,12 +232,10 @@ void ServerNetworkManager::CreateConnection(const std::string& aName, const sock
 		AddMessage(NetMessageConnectReply(NetMessageConnectReply::eType::FAIL), aSender);
 		return;
 	}
-	myIDCount++;
 
 	/*NetMessageConnectReply connectReply(NetMessageConnectReply::eType::SUCCESS, myIDCount);
 	connectReply.PackMessage();
 	myNetwork->Send(connectReply.myStream, aSender);*/
-	AddMessage(NetMessageConnectReply(NetMessageConnectReply::eType::SUCCESS, myIDCount), aSender);
 
 	Sleep(200);
 	for (Connection& connection : myClients)
@@ -248,7 +246,9 @@ void ServerNetworkManager::CreateConnection(const std::string& aName, const sock
 			return;
 		}
 	}
-
+	myIDCount++;
+	AddMessage(NetMessageConnectReply(NetMessageConnectReply::eType::SUCCESS, myIDCount), aSender);
+	Sleep(200);
 	Connection newConnection;
 	newConnection.myAddress = aSender;
 	newConnection.myID = myIDCount;
