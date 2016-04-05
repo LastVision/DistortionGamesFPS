@@ -150,7 +150,7 @@ const eStateStatus InGameState::Update(const float& aDeltaTime)
 		if (myHasStartedMusicBetweenLevels == false)
 		{
 			int levelMusic = myLastLevel + 1;
-			std::string musicEvent("ElevatorToLevel" + std::to_string(levelMusic));
+			std::string musicEvent("Play_ElevatorToLevel" + std::to_string(levelMusic));
 			myHasStartedMusicBetweenLevels = true;
 			Prism::Audio::AudioInterface::GetInstance()->PostEvent(musicEvent.c_str(), 0);
 		}
@@ -249,6 +249,12 @@ void InGameState::ReceiveNetworkMessage(const NetMessageLoadLevel& aMessage, con
 	//DL_ASSERT_EXP(myLevel == nullptr, "Level has to be nullptr here");
 	SET_RUNTIME(false);
 	myLevel = static_cast<ClientLevel*>(myLevelFactory->LoadLevel(aMessage.myLevelID));
+	
+	int levelMusic = myLastLevel + 1;
+	std::string musicEvent("Stop_ElevatorToLevel" + std::to_string(levelMusic));
+	myHasStartedMusicBetweenLevels = true;
+	Prism::Audio::AudioInterface::GetInstance()->PostEvent(musicEvent.c_str(), 0);
+
 	myLastLevel = aMessage.myLevelID;
 	ClientNetworkManager::GetInstance()->AllowSendWithoutSubscriber(false);
 	ClientNetworkManager::GetInstance()->AddMessage(NetMessageLevelLoaded());
