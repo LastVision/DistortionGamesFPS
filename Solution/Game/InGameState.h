@@ -19,6 +19,7 @@ namespace Prism
 {
 	class Sprite;
 	class TextProxy;
+	class SpriteProxy;
 }
 
 namespace GUI
@@ -64,4 +65,8 @@ private:
 	unsigned int myHashLevelValue;
 
 	Prism::TextProxy* myText;
+
+	bool myHasStartedMusicBetweenLevels;
+	int myLastLevel;
+	Prism::SpriteProxy* myElevatorSprite;
 };
