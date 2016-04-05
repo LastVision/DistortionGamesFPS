@@ -22,7 +22,8 @@ AIComponent::AIComponent(Entity& anEntity, const AIComponentData& aData, CU::Mat
 	, myBehavior(new BlendedBehavior(myEntity, aData))
 	, myShootTimer(2.f)
 	, myAttackAnimationTimeCurrent(0.f)
-	, myTarget(nullptr)
+	, myDefendTarget(nullptr)
+	, myTargetPlayer(nullptr)
 	, myHasRaycasted(false)
 	, myHasJustSpawned(true)
 	, myBulletData(aBulletData)
@@ -44,7 +45,8 @@ void AIComponent::Reset()
 	myHasJustSpawned = true;
 	myShootTimer = 2.f;
 	myAttackAnimationTimeCurrent = 0.f;
-	myTarget = nullptr;
+	myDefendTarget = nullptr;
+	myTargetPlayer = nullptr;
 	myHasRaycasted = false;
 }
 
@@ -60,20 +62,20 @@ void AIComponent::Update(float aDelta)
 
 	if (myEntity.GetState() != eEntityState::DIE)
 	{
-		myDefendTarget = PollingStation::GetInstance()->GetCurrentDefendTarget(myEntity.GetOrientation().GetPos());
-		if (myDefendTarget != nullptr && myTarget == nullptr)
+		if (myTargetPlayer == nullptr)
 		{
-			myTarget = myDefendTarget;
-		}
-		else if (myDefendTarget == nullptr && myTarget != nullptr && myTarget->GetType() == eEntityType::TRIGGER)
-		{
-			myTarget = nullptr;
+			myDefendTarget = PollingStation::GetInstance()->GetCurrentDefendTarget(myEntity.GetOrientation().GetPos());
 		}
 
 
 		if (myHasRaycasted == false)
 		{
 			Entity* closestPlayer = PollingStation::GetInstance()->FindClosestPlayer(myEntity.GetOrientation().GetPos(), myData.myVisionRange);
+
+			if (closestPlayer == nullptr)
+			{
+				myTargetPlayer = nullptr;
+			}
 
 			if (closestPlayer != nullptr)
 			{
@@ -87,15 +89,20 @@ void AIComponent::Update(float aDelta)
 
 		myShootTimer -= aDelta;
 		
-		Move(aDelta, myTarget);
-		if (myTarget != nullptr && myTarget != myDefendTarget)
+		if (myTargetPlayer != nullptr)
 		{
+			Move(aDelta, myTargetPlayer);
 			if (myShootTimer < 0.f)
 			{
-				Shoot(myTarget);
+				Shoot(myTargetPlayer);
 				myShootTimer = 2.f;
 			}
 		}
+		else
+		{
+			Move(aDelta, myDefendTarget);
+		}
+		
 
 		if (myEntity.GetState() == eEntityState::ATTACK)
 		{
@@ -119,12 +126,12 @@ void AIComponent::HandleRaycast(PhysicsComponent* aComponent, const CU::Vector3<
 
 	myHasRaycasted = false;
 
-	myTarget = nullptr;
+	myTargetPlayer = nullptr;
 	if (aComponent != nullptr)
 	{
 		if (aComponent->GetEntity().GetSubType() == "playerserver")
 		{
-			myTarget = &aComponent->GetEntity();
+			myTargetPlayer = &aComponent->GetEntity();
 		}
 	}
 }
@@ -207,5 +214,5 @@ void AIComponent::Shoot(Entity* aClosestPlayer)
 	Entity* requestedBullet = SharedProjectileManager::GetInstance()->RequestBullet(myBulletData);
 	myAttackAnimationTimeCurrent = myData.myAttackAnimationTime;
 	requestedBullet->GetComponent<BulletComponent>()->Activate(myEntity.GetOrientation());
-	SharedNetworkManager::GetInstance()->AddMessage<NetMessageEnemyShooting>(NetMessageEnemyShooting(requestedBullet->GetGID()));
+	SharedNetworkManager::GetInstance()->AddMessage<NetMessageEnemyShooting>(NetMessageEnemyShooting(requestedBullet->GetGID(), myEntity.GetGID()));
 }

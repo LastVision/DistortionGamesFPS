@@ -10,6 +10,7 @@ namespace Prism
 	class Camera;
 	class Texture;
 	class Terrain;
+	class Scene;
 };
 
 struct AnimationComponentData;
@@ -17,7 +18,7 @@ struct AnimationComponentData;
 class AnimationComponent : public Component
 {
 public:
-	AnimationComponent(Entity& aEntity, const AnimationComponentData& aComponentData);
+	AnimationComponent(Entity& aEntity, const AnimationComponentData& aComponentData, Prism::Scene* aScene);
 	~AnimationComponent();
 
 	void Reset() override;
@@ -40,7 +41,10 @@ public:
 	void AddWeaponToScene(Prism::Scene* aScene);
 	void RemoveWeaponFromScene(Prism::Scene* aScene);
 
+	void PlayMuzzleFlash();
+
 private:
+	void LoadMuzzleFlashes(Prism::Scene* aScene);
 	void PlayAnimation(eEntityState aAnimationState);
 	struct AnimationData
 	{
@@ -63,7 +67,7 @@ private:
 	CU::StaticArray<AnimationData, int(eEntityState::_COUNT)> myAnimations;
 	eEntityState myPrevEntityState;
 
-	const AnimationComponentData myComponentData;
+	const AnimationComponentData& myComponentData;
 
 
 	Prism::Instance* myWeapon;
@@ -84,6 +88,10 @@ private:
 	CU::Matrix44<float> myMuzzleBoneCalced;
 	CU::Matrix44<float> myMuzzleOrientation;
 	bool myHasSetCalcedMuzzle;
+
+	Prism::Instance* myMuzzleflash[5];
+	int myCurrentMuzzleflash;
+	float myMuzzleflashTimer;
 };
 
 inline Prism::Instance* AnimationComponent::GetInstance()
