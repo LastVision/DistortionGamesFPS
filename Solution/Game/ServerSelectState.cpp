@@ -94,25 +94,24 @@ const eStateStatus ServerSelectState::Update(const float& aDeltaTime)
 		ClientNetworkManager::GetInstance()->ConnectToServer(eGameType::SINGLEPLAYER, myLocalhost.myIp.c_str());
 		SET_RUNTIME(false);
 		PostMaster::GetInstance()->UnSubscribe(eMessageType::ON_CLICK, this);
-		myStateStack->PushMainGameState(new LobbyState());
+		myStateStack->PushSubGameState(new LobbyState());
 		break;
 	case eType::MULTIPLAYER_HOST:
 		ClientNetworkManager::GetInstance()->ConnectToServer(eGameType::MULTIPLAYER, myLocalhost.myIp.c_str());
 		SET_RUNTIME(false);
 		PostMaster::GetInstance()->UnSubscribe(eMessageType::ON_CLICK, this);
-		myStateStack->PushMainGameState(new LobbyState());
+		myStateStack->PushSubGameState(new LobbyState());
 		break;
 	case eType::MULTIPLAYER_JOIN:
-		if (CU::InputWrapper::GetInstance()->KeyDown(DIK_ESCAPE) == true
-			|| CU::InputWrapper::GetInstance()->KeyDown(DIK_N) == true)
+		if (CU::InputWrapper::GetInstance()->KeyDown(DIK_ESCAPE) == true)
 		{
 			return eStateStatus::ePopSubState;
 		}
 
-		if (CU::InputWrapper::GetInstance()->KeyDown(DIK_SPACE) == true)
-		{
-			myServer = &myLocalhost;
-		}
+		//if (CU::InputWrapper::GetInstance()->KeyDown(DIK_SPACE) == true)
+		//{
+		//	myServer = &myLocalhost;
+		//}
 
 		if (myServer != nullptr)
 		{
@@ -136,7 +135,7 @@ const eStateStatus ServerSelectState::Update(const float& aDeltaTime)
 			{
 				SET_RUNTIME(false);
 				PostMaster::GetInstance()->UnSubscribe(eMessageType::ON_CLICK, this);
-				myStateStack->PushMainGameState(new LobbyState());
+				myStateStack->PushSubGameState(new LobbyState());
 			}
 			//return eStateStatus::ePopSubState;
 		}
@@ -183,6 +182,9 @@ void ServerSelectState::ReceiveMessage(const OnClickMessage& aMessage)
 		{
 		case eOnClickEvent::CONNECT:
 			myServer = &myServers[aMessage.myID];
+			break;
+		case eOnClickEvent::GAME_QUIT:
+			myStateStatus = eStateStatus::ePopMainState;
 			break;
 		default:
 			DL_ASSERT("Unknown event.");
