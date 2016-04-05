@@ -18,6 +18,7 @@
 
 ClientLevelFactory::ClientLevelFactory(const std::string& aLevelListPath)
 	: SharedLevelFactory(aLevelListPath)
+	, myWeaponSettingsPath("")
 {
 
 }
@@ -45,7 +46,7 @@ ClientLevel* ClientLevelFactory::LoadCurrentLevel()
 	myIsLoadingLevel = true;
 	myCurrentLevel = new ClientLevel();
 	ReadLevel(myLevelPaths[myCurrentID]);
-	myCurrentLevel->Init();
+	myCurrentLevel->Init(myWeaponSettingsPath);
 	myCurrentLevel->SetMinMax(myMinPoint, myMaxPoint);
 
 
@@ -65,6 +66,8 @@ void ClientLevelFactory::ReadLevel(const std::string& aLevelPath)
 	reader.OpenDocument(aLevelPath);
 	tinyxml2::XMLElement* levelElement = reader.ForceFindFirstChild("root");
 	levelElement = reader.ForceFindFirstChild(levelElement, "scene");
+
+	reader.ForceReadAttribute(reader.ForceFindFirstChild(levelElement, "weaponXML"), "path", myWeaponSettingsPath);
 
 	LoadRooms(reader, levelElement);
 	LoadProps(reader, levelElement);

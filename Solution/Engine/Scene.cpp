@@ -150,15 +150,26 @@ namespace Prism
 		}
 	}
 
-	const CU::GrowingArray<PointLight*>& Scene::GetPointLights() const
+	const CU::GrowingArray<PointLight*>& Scene::GetPointLights(bool aUseRoomManager) const
 	{
 		//return myPointLights;
 		//return myActivePointLights;
-		return myRoomManager->GetActivePointLights();
+		if (aUseRoomManager == true)
+		{
+			return myRoomManager->GetActivePointLights();
+		}
+
+		return myPointLights;
 	}
 
-	const CU::GrowingArray<SpotLight*>& Scene::GetSpotLights() const
+	const CU::GrowingArray<SpotLight*>& Scene::GetSpotLights(bool aUseRoomManager) const
 	{
+		if (aUseRoomManager == true)
+		{
+			//return myRoomManager->GetActiveSpotLights();
+			return mySpotLights;
+		}
+
 		return mySpotLights;
 	}
 }

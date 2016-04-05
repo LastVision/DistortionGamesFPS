@@ -14,29 +14,32 @@
 #include <XMLReader.h>
 
 Shotgun::Shotgun(Entity* aOwnerEntity)
-	: Weapon(eWeaponType::SHOTGUN, "shotgun", aOwnerEntity)
+	: Weapon(eWeaponType::SHOTGUN, aOwnerEntity)
 {
-	XMLReader reader;
-	reader.OpenDocument("Data/Setting/SET_weapons.xml");
-	tinyxml2::XMLElement* root = reader.ForceFindFirstChild("root");
-	tinyxml2::XMLElement* shotgunElement = reader.ForceFindFirstChild(root, "shotgun");
-	reader.ForceReadAttribute(reader.ForceFindFirstChild(shotgunElement, "startammo"), "value", myAmmoTotal);
-	reader.ForceReadAttribute(reader.ForceFindFirstChild(shotgunElement, "minspreadrotation"), "value", myMinSpreadRotation);
-	reader.ForceReadAttribute(reader.ForceFindFirstChild(shotgunElement, "maxspreadrotation"), "value", myMaxSpreadRotation);
-	
-	reader.CloseDocument();
-
 	myRaycastHandler = [=](PhysicsComponent* aComponent, const CU::Vector3<float>& aDirection, const CU::Vector3<float>& aHitPosition, const CU::Vector3<float>& aHitNormal)
 	{
 		this->HandleRaycast(aComponent, aDirection, aHitPosition, aHitNormal);
 	};
 }
 
-
 Shotgun::~Shotgun()
 {
 }
 
+void Shotgun::Init(std::string aWeaponSettingsPath, std::string aXMLTagName)
+{
+	Weapon::Init(aWeaponSettingsPath, aXMLTagName);
+
+	XMLReader reader;
+	reader.OpenDocument(aWeaponSettingsPath);
+	tinyxml2::XMLElement* root = reader.ForceFindFirstChild("root");
+	tinyxml2::XMLElement* shotgunElement = reader.ForceFindFirstChild(root, "shotgun");
+	reader.ForceReadAttribute(reader.ForceFindFirstChild(shotgunElement, "startammo"), "value", myAmmoTotal);
+	reader.ForceReadAttribute(reader.ForceFindFirstChild(shotgunElement, "minspreadrotation"), "value", myMinSpreadRotation);
+	reader.ForceReadAttribute(reader.ForceFindFirstChild(shotgunElement, "maxspreadrotation"), "value", myMaxSpreadRotation);
+
+	reader.CloseDocument();
+}
 
 bool Shotgun::Shoot(const CU::Matrix44<float>& aOrientation)
 {

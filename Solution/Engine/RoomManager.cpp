@@ -40,7 +40,7 @@ namespace Prism
 
 	static bool cmp(Room* a, Room* b)
 	{
-		return int(a->GetType())< int(b->GetType());
+		return int(a->GetType()) < int(b->GetType());
 	}
 
 
@@ -153,63 +153,63 @@ namespace Prism
 		myActivePointLights.RemoveAll();
 		myActiveInstances.RemoveAll();
 
-for (int i = 0; i < myPortals.Size(); ++i)
-{
-	myPortals[i]->SetAlreadyPassed(false);
-}
+		for (int i = 0; i < myPortals.Size(); ++i)
+		{
+			myPortals[i]->SetAlreadyPassed(false);
+		}
 
-myPlayerRoom = GetRoomId(aCamera.GetOrientation().GetPos());
+		myPlayerRoom = GetRoomId(aCamera.GetOrientation().GetPos());
 
-FindActiveRooms(aCamera.GetFrustum(), aCamera.GetOrientation(), myPlayerRoom);
+		FindActiveRooms(aCamera.GetFrustum(), aCamera.GetOrientation(), myPlayerRoom);
 
-//for (int i = 0; i < myCurrentRoomIds.Size(); ++i)
-//{
-//	const Room* current(myRooms[myCurrentRoomIds[i]]);
-//	if (current->GetType() == eRoomType::ROOM)
-//	{
-//		for (int j = 0; j < current->GetPortals().Size(); ++j)
-//		{
-//			const Room* other(current->GetPortals()[j]->GetOther(current));
-//			if (myCurrentRoomIds.Find(other->GetRoomId()) == myCurrentRoomIds.FoundNone)
-//			{
-//				myCurrentRoomIds.Add(other->GetRoomId());
-//			}
-//		}
-//	}
-//}
+		//for (int i = 0; i < myCurrentRoomIds.Size(); ++i)
+		//{
+		//	const Room* current(myRooms[myCurrentRoomIds[i]]);
+		//	if (current->GetType() == eRoomType::ROOM)
+		//	{
+		//		for (int j = 0; j < current->GetPortals().Size(); ++j)
+		//		{
+		//			const Room* other(current->GetPortals()[j]->GetOther(current));
+		//			if (myCurrentRoomIds.Find(other->GetRoomId()) == myCurrentRoomIds.FoundNone)
+		//			{
+		//				myCurrentRoomIds.Add(other->GetRoomId());
+		//			}
+		//		}
+		//	}
+		//}
 
-for each (Instance* instance in myAlwaysRenderInstances)
-{
-	myActiveInstances.Add(instance);
-}
+		for each (Instance* instance in myAlwaysRenderInstances)
+		{
+			myActiveInstances.Add(instance);
+		}
 
-//for each (const InstanceInRoom& instance in myInstances)
-//{
-//	for each (int id in myCurrentRoomIds)
-//	{
-//		if (instance.myRoomId == id)
-//		{
-//			myActiveInstances.Add(instance.myInstance);
-//			break;
-//		}
-//	}
-//}
+		//for each (const InstanceInRoom& instance in myInstances)
+		//{
+		//	for each (int id in myCurrentRoomIds)
+		//	{
+		//		if (instance.myRoomId == id)
+		//		{
+		//			myActiveInstances.Add(instance.myInstance);
+		//			break;
+		//		}
+		//	}
+		//}
 
 
 
 #ifndef RELEASE_BUILD
 #ifdef SHOW_PORTAL_CULLING_DEBUG_TEXT
-DEBUG_PRINT(myRooms[myPlayerRoom]->GetName());
-DEBUG_PRINT(myActiveInstances.Size());
+		DEBUG_PRINT(myRooms[myPlayerRoom]->GetName());
+		DEBUG_PRINT(myActiveInstances.Size());
 		DEBUG_PRINT(myTotalObjects);
 		DEBUG_PRINT(myObjectsInDuplicateRooms);
 		float objectsInDuplicateRoomsPercent = 100.f * static_cast<float>(myObjectsInDuplicateRooms) / static_cast<float>(myTotalObjects);
 		DEBUG_PRINT(objectsInDuplicateRoomsPercent);
 		DEBUG_PRINT(myActivePointLights.Size());
-//DEBUG_PRINT(myInstances.Size());
-//float renderPercentage = 100.f * float(myActiveInstances.Size())
-//	/ (myInstances.Size() + myAlwaysRenderInstances.Size());
-//DEBUG_PRINT(renderPercentage);
+		//DEBUG_PRINT(myInstances.Size());
+		//float renderPercentage = 100.f * float(myActiveInstances.Size())
+		//	/ (myInstances.Size() + myAlwaysRenderInstances.Size());
+		//DEBUG_PRINT(renderPercentage);
 		//for (int j = 0; j < myCurrentRoomIds.Size(); ++j)
 		//{
 		//	const std::string& roomName(myRooms[myCurrentRoomIds[j]]->GetName());
@@ -220,17 +220,17 @@ DEBUG_PRINT(myActiveInstances.Size());
 		//	}
 		//	DEBUG_PRINT(roomName);
 		//}
-//if (renderPercentage > 25.f)
-//{
-//	for (float i = 25.f; i < renderPercentage; i += 5.f)
-//	{
-//		DEBUG_PRINT("WARNING, rendering huge part of level");
+		//if (renderPercentage > 25.f)
+		//{
+		//	for (float i = 25.f; i < renderPercentage; i += 5.f)
+		//	{
+		//		DEBUG_PRINT("WARNING, rendering huge part of level");
 
-//	}
-//}
+		//	}
+		//}
 #endif
 #endif
-return myActiveInstances;
+		return myActiveInstances;
 	}
 
 	const CU::GrowingArray<Instance*>& RoomManager::GetAllInstances()
@@ -245,8 +245,11 @@ return myActiveInstances;
 
 	Prism::Room* RoomManager::GetPlayerRoom()
 	{
-		myPreviousPlayerRoom = myCurrentPlayerRoom;
-		myCurrentPlayerRoom = myRooms[myPlayerRoom];
+		if (myCurrentPlayerRoom != myRooms[myPlayerRoom])
+		{
+			myPreviousPlayerRoom = myCurrentPlayerRoom;
+			myCurrentPlayerRoom = myRooms[myPlayerRoom];
+		}
 		return myCurrentPlayerRoom;
 	}
 
@@ -331,8 +334,8 @@ return myActiveInstances;
 			//	|| AllPointsBehind(pointBehind) == false && !(planeOutside[0] == planeOutside[1] && planeOutside[0] == planeOutside[2] && planeOutside[0] == planeOutside[3]))) //naive solution
 			//	
 			//	//|| aFrustum.Inside(current->GetCenterPosition(), current->GetRadius() * 0.1f) == true)) // needs to be tweaked for portal size
-				
-				
+
+
 			if (current->GetAlreadyPassed() == false
 				&& (aFrustum.CheckAABBInside(current->GetBottomLeft(), current->GetTopRight()) == true))
 			{

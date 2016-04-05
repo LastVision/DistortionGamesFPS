@@ -166,8 +166,9 @@ namespace Prism
 		}
 
 		myEmitterLife = myParticleEmitterData->myEmitterLifeTime;
-
+#ifdef _DEBUG
 		CreatePoints();
+#endif
 	}
 
 	CU::Vector3f ParticleEmitterInstance::CalculateDirection(float aYVariation, float aZVariation)
@@ -564,7 +565,9 @@ namespace Prism
 	void ParticleEmitterInstance::SetSize(const CU::Vector3f& aSize)
 	{
 		myParticleEmitterData->myEmitterSize = aSize * 0.5f;
+#ifdef _DEBUG
 		CreatePoints();
+#endif
 	}
 
 	void ParticleEmitterInstance::SetDirection(const CU::Vector3<float>& aDirection)

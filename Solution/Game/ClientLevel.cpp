@@ -138,7 +138,7 @@ ClientLevel::~ClientLevel()
 	Prism::Audio::AudioInterface::GetInstance()->PostEvent("StopSecondLayer", 0);
 }
 
-void ClientLevel::Init(const std::string&)
+void ClientLevel::Init(const std::string& aWeaponSettingsPath)
 {
 	CreatePlayers();
 	myForceStrengthPistol = myPlayer->GetComponent<ShootingComponent>()->GetWeaponForceStrength(eWeaponType::PISTOL);
@@ -162,6 +162,9 @@ void ClientLevel::Init(const std::string&)
 
 	myTextManager = new TextEventManager(myPlayer->GetComponent<InputComponent>()->GetCamera());
 	myEmitterManager->Initiate(myPlayer->GetComponent<InputComponent>()->GetCamera());
+
+	myPlayer->GetComponent<ShootingComponent>()->ReadXMLSettings(aWeaponSettingsPath);
+	myPlayer->GetComponent<FirstPersonRenderComponent>()->Init();
 }
 
 void ClientLevel::SetMinMax(const CU::Vector3<float>& aMinPoint, const CU::Vector3<float>& aMaxPoint)
@@ -274,9 +277,10 @@ void ClientLevel::Render()
 		{
 			if (myScene->GetRoomManager()->GetPreviousPlayerRoom()->GetEmitter() != nullptr)
 			{
-				myScene->GetRoomManager()->GetPreviousPlayerRoom()->GetEmitter()->SetShouldAlwaysShow(false);
+				myScene->GetRoomManager()->GetPreviousPlayerRoom()->GetEmitter()->SetShouldRender(false);
 			}
 		}
+
 		myEmitterManager->RenderEmitters();
 
 

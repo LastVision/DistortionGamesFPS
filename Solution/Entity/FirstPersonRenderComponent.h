@@ -30,6 +30,8 @@ public:
 	FirstPersonRenderComponent(Entity& aEntity, Prism::Scene* aScene);
 	~FirstPersonRenderComponent();
 
+	void Init();
+
 	void Update(float aDelta) override;
 	void UpdateCoOpPositions(const CU::GrowingArray<Entity*>& somePlayers);
 	void Render();

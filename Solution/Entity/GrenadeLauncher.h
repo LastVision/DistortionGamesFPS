@@ -14,6 +14,8 @@ public:
 	GrenadeLauncher(Prism::Scene* aScene, unsigned int aEntityGID, Entity* aOwnerEntity);
 	~GrenadeLauncher();
 
+	void Init(std::string aWeaponSettingsPath, std::string aXMLTagName) override;
+
 	bool Shoot(const CU::Matrix44<float>& aOrientation) override;
 	void Reload() override;
 
