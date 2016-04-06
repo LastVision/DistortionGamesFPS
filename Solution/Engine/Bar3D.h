@@ -30,6 +30,8 @@ namespace Prism
 
 		void SetValue(float aValue);
 
+		void Rebuild(int aNumberOfQuads);
+
 	private:
 		void CreateVertices(int aNumberOfQuads);
 		CU::Vector2<float> myQuadSize;

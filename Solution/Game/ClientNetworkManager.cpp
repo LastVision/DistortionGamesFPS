@@ -190,7 +190,7 @@ void ClientNetworkManager::ConnectToServer(eGameType aType, const char* aServerI
 	char username[256 + 1];
 	DWORD username_len = 256 + 1;
 	GetUserNameA(username, &username_len);
-
+	myName = username;
 	AddMessage(NetMessageRequestConnect(aType, username, 0));
 }
 

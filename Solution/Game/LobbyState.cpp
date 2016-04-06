@@ -24,6 +24,7 @@ LobbyState::LobbyState()
 	, myLevelToStart(-1)
 	, myStartGame(false)
 	, myServerLevelHash(0)
+	, myRefreshPlayerListTimer(0)
 {
 }
 
@@ -33,6 +34,8 @@ LobbyState::~LobbyState()
 	SAFE_DELETE(myGUIManager);
 	SAFE_DELETE(myGUIManagerHost);
 	SAFE_DELETE(myText);
+	SAFE_DELETE(myPlayerListText);
+	SAFE_DELETE(myWaitingForHostText);
 	myCursor = nullptr;
 	PostMaster::GetInstance()->UnSubscribe(eMessageType::ON_CLICK, this);
 	PostMaster::GetInstance()->UnSubscribe(eMessageType::ON_RADIO_BUTTON, this);
@@ -62,6 +65,16 @@ void LobbyState::InitState(StateStackProxy* aStateStackProxy, GUI::Cursor* aCurs
 	myText->SetText("No current level selected.");
 	myText->SetScale({ 1.f, 1.f });
 
+	myPlayerListText = Prism::ModelLoader::GetInstance()->LoadText(Prism::Engine::GetInstance()->GetFont(Prism::eFont::CONSOLE));
+	myPlayerListText->SetPosition({ 20, 800.f });
+	myPlayerListText->SetText("Player Online:\n");
+	myPlayerListText->SetScale({ 1.f, 1.f });
+
+	myWaitingForHostText = Prism::ModelLoader::GetInstance()->LoadText(Prism::Engine::GetInstance()->GetFont(Prism::eFont::CONSOLE));
+	myWaitingForHostText->SetPosition({ 800.f, 200.f });
+	myWaitingForHostText->SetText("Waiting for host...");
+	myWaitingForHostText->SetScale({ 1.f, 1.f });
+
 	const CU::Vector2<int>& windowSize = Prism::Engine::GetInstance()->GetWindowSizeInt();
 	OnResize(windowSize.x, windowSize.y);
 
@@ -88,6 +101,20 @@ const eStateStatus LobbyState::Update(const float& aDeltaTime)
 	{
 		ClientNetworkManager::GetInstance()->AddMessage(NetMessageDisconnect(ClientNetworkManager::GetInstance()->GetGID()));
 		return eStateStatus::ePopMainState;
+	}
+
+	myRefreshPlayerListTimer -= aDeltaTime;
+	if (myRefreshPlayerListTimer <= 0)
+	{
+		myRefreshPlayerListTimer = 1.f;
+		std::string playerListText = "Players Online:\n";
+		playerListText += ClientNetworkManager::GetInstance()->GetName() + "\n";
+		const CU::GrowingArray<OtherClients>& playerList = ClientNetworkManager::GetInstance()->GetClients();
+		for each (const OtherClients& player in playerList)
+		{
+			playerListText += player.myName + "\n";
+		}
+		myPlayerListText->SetText(playerListText);
 	}
 
 	ClientNetworkManager::GetInstance()->DebugPrint();
@@ -127,10 +154,13 @@ void LobbyState::Render()
 	if (ClientNetworkManager::GetInstance()->GetGID() == 1)
 	{
 		myGUIManagerHost->Render();
+		myPlayerListText->Render();
 	}
 	else
 	{
 		myGUIManager->Render();
+		myPlayerListText->Render();
+		myWaitingForHostText->Render();
 		myText->Render();
 	}
 
