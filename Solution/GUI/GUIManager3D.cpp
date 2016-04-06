@@ -9,20 +9,24 @@
 #include <Instance.h>
 #include <Scene.h>
 #include <TextureContainer.h>
+#include <TextProxy.h>
+
 namespace GUI
 {
-	GUIManager3D::GUIManager3D(const Prism::Instance*, Prism::Scene* aScene
+	GUIManager3D::GUIManager3D(const Prism::Instance* aModel, Prism::Scene* aScene
 		, const int& aPistolClipSize, const int& aPistolAmmoInClip
-		, const int& aShotgunClipSize, const int& aShotgunAmmoInClip
-		, const int& aGrenadeLauncherClipSize, const int& aGrenadeLauncherAmmoInClip)
+		, const int& aShotgunClipSize, const int& aShotgunAmmoInClip, const int& aShotgunAmmoTotal
+		, const int& aGrenadeLauncherClipSize, const int& aGrenadeLauncherAmmoInClip, const int& aGrenadeLauncherAmmoTotal)
 		: myScene(aScene)
 		, myTestValue(0.f)
 		, myPistolClipSize(aPistolClipSize)
 		, myPistolAmmoInClip(aPistolAmmoInClip)
 		, myShotgunClipSize(aShotgunClipSize)
 		, myShotgunAmmoInClip(aShotgunAmmoInClip)
+		, myShotgunAmmoTotal(aShotgunAmmoTotal)
 		, myGrenadeLauncherClipSize(aGrenadeLauncherClipSize)
 		, myGrenadeLauncherAmmoInClip(aGrenadeLauncherAmmoInClip)
+		, myGrenadeLauncherAmmoTotal(aGrenadeLauncherAmmoTotal)
 	{
 		Prism::ModelLoader::GetInstance()->Pause();
 		myEffect = Prism::EffectContainer::GetInstance()->GetEffect("Data/Resource/Shader/S_effect_3dgui.fx");
@@ -46,6 +50,11 @@ namespace GUI
 		myGrenadeLauncherIcon = new Prism::Bar3D({ 0.025f, 0.025f }, 1, myEffect, eBarPosition::GRENADE_LAUNCHER_ICON, "Data/Resource/Texture/UI/T_grenadeLauncherIcon.dds");
 		myGrenadeLauncherIcon->SetValue(1.f);
 			
+		myAmmoTotalText = Prism::ModelLoader::GetInstance()->LoadText(Prism::Engine::GetInstance()->GetFont(Prism::eFont::DIALOGUE), true);
+		myAmmoTotalText->Rotate3dText(-0.8f);
+		myAmmoTotalText->SetOffset({ -1.f, 1.f, 2.f });
+		
+
 		Prism::ModelLoader::GetInstance()->UnPause();
 	}
 
@@ -64,8 +73,27 @@ namespace GUI
 
 	void GUIManager3D::Update(const CU::Matrix44<float>& aUIJointOrientation
 		, const CU::Matrix44<float>& aHealthJointOrientation
-		, int aCurrentHealth, int aMaxHealth, float aDeltaTime)
+		, int aCurrentHealth, int aMaxHealth, float aDeltaTime, eWeaponType aCurrentWeaponType)
 	{
+		if (aCurrentWeaponType == eWeaponType::PISTOL)
+		{
+			float colorValue = myPistolAmmoInClip / float(myPistolClipSize);
+			myAmmoTotalText->SetText("#inf");
+			myAmmoTotalText->SetColor({ 1.f - colorValue, colorValue, 0.f, 0.5f });
+		}
+		else if (aCurrentWeaponType == eWeaponType::SHOTGUN)
+		{
+			float colorValue = myShotgunAmmoInClip / float(myShotgunClipSize);
+			myAmmoTotalText->SetText(std::to_string(myShotgunAmmoTotal));
+			myAmmoTotalText->SetColor({ 1.f - colorValue, colorValue, 0.5f, 0.5f });
+		}
+		else if (aCurrentWeaponType == eWeaponType::GRENADE_LAUNCHER)
+		{
+			float colorValue = myGrenadeLauncherAmmoInClip / float(myGrenadeLauncherClipSize);
+			myAmmoTotalText->SetText(std::to_string(myGrenadeLauncherAmmoTotal));
+			myAmmoTotalText->SetColor({ 1.f - colorValue, colorValue, 1.f, 0.5f });
+		}
+
 		myTestValue += aDeltaTime;
 		myEffect->SetGradiantValue(cos(myTestValue));
 		myEffect->SetGradiantDirection({ 0.f, 1.f });
@@ -92,6 +120,10 @@ namespace GUI
 		myPistolIcon->Render(*myScene->GetCamera(), myWristOrientation);
 		myShotgunIcon->Render(*myScene->GetCamera(), myWristOrientation);
 		myGrenadeLauncherIcon->Render(*myScene->GetCamera(), myWristOrientation);
+		
+		myAmmoTotalText->SetOrientation(myWristOrientation);
+
+		myAmmoTotalText->Render(myScene->GetCamera());
 	}
 
 	void GUIManager3D::Rebuild(const eWeaponType aWeaponType, int aSize)

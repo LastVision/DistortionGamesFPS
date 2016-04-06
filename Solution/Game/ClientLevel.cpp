@@ -109,10 +109,6 @@ ClientLevel::ClientLevel(GUI::Cursor* aCursor, eStateStatus& aStateStatus)
 	};
 	myEmitterManager = new EmitterManager();
 
-	myTestText = Prism::ModelLoader::GetInstance()->LoadText(Prism::Engine::GetInstance()->GetFont(Prism::eFont::DIALOGUE), true, false);
-
-	myTestText->SetOffset({ 0.f, 1.f, 10.f });
-
 	myEscapeMenu = new GUI::GUIManager(aCursor, "Data/Resource/GUI/GUI_options_menu.xml", myScene->GetCamera(), -1);
 
 	mySFXText = Prism::ModelLoader::GetInstance()->LoadText(Prism::Engine::GetInstance()->GetFont(Prism::eFont::DIALOGUE));
@@ -142,7 +138,6 @@ ClientLevel::~ClientLevel()
 	{
 		SAFE_DELETE(myWorldTexts[i].myProxy);
 	}
-	SAFE_DELETE(myTestText);
 #ifdef THREAD_PHYSICS
 	Prism::PhysicsInterface::GetInstance()->ShutdownThread();
 #endif
@@ -275,21 +270,6 @@ void ClientLevel::Update(const float aDeltaTime)
 
 	DebugMusic();
 
-	if (Prism::ModelLoader::GetInstance()->IsLoading() == false && myTestText->IsLoaded() == true)
-	{
-		static float totalTime = 0.f;
-		totalTime += aDeltaTime;
-		myTestText->SetText("Press W to walk forward.");
-		myTestText->SetColor({ 0.f, abs(cos(totalTime)), abs(cos(-totalTime)), 1.f });
-		myTestText->SetOffset({ 0.f, 1.f + (cos(totalTime * 2.f) * 0.5f), 10.f });
-		//myTestText->Rotate3dText((cos(totalTime * 2.f) * 0.5f));
-
-		for (int i = 0; i < myWorldTexts.Size(); ++i)
-		{
-			myWorldTexts[i].myProxy->SetText(myWorldTexts[i].myText);
-		}
-	}
-
 	if (myEscapeMenuActive == true)
 	{
 		myEscapeMenu->Update(aDeltaTime);
@@ -333,7 +313,7 @@ void ClientLevel::Render()
 		//myPlayer->GetComponent<ShootingComponent>()->Render();
 
 		myTextManager->Render();
-		myTestText->Render(myScene->GetCamera());
+
 		for (int i = 0; i < myWorldTexts.Size(); ++i)
 		{
 			myWorldTexts[i].myProxy->Render(myScene->GetCamera());

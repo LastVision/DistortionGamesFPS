@@ -90,8 +90,6 @@ private:
 	float myForceStrengthPistol;
 	float myForceStrengthShotgun;
 
-	Prism::TextProxy* myTestText;
-
 	struct WorldText
 	{
 		Prism::TextProxy* myProxy;

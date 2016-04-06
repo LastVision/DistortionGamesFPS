@@ -7,6 +7,7 @@ namespace Prism
 	class Instance;
 	class Scene;
 	class Effect;
+	class TextProxy;
 }
 
 namespace GUI
@@ -16,12 +17,12 @@ namespace GUI
 	public:
 		GUIManager3D(const Prism::Instance* aModel, Prism::Scene* aScene
 			, const int& aPistolClipSize, const int& aPistolAmmoInClip
-			, const int& aShotgunClipSize, const int& aShotgunAmmoInClip
-			, const int& aGrenadeLauncherClipSize, const int& aGrenadeLauncherAmmoInClip);
+			, const int& aShotgunClipSize, const int& aShotgunAmmoInClip, const int& aShotgunAmmoTotal
+			, const int& aGrenadeLauncherClipSize, const int& aGrenadeLauncherAmmoInClip, const int& aGrenadeLauncherAmmoTotal);
 		~GUIManager3D();
 
 		void Update(const CU::Matrix44<float>& aUIJointOrientation, const CU::Matrix44<float>& aHealthJointOrientation
-			, int aCurrentHealth, int aMaxHealth, float aDeltaTime);
+			, int aCurrentHealth, int aMaxHealth, float aDeltaTime, eWeaponType aCurrentWeaponType);
 		void Render();
 
 		void Rebuild(const eWeaponType aWeaponType, int aSize);
@@ -44,13 +45,17 @@ namespace GUI
 		const int& myPistolAmmoInClip;
 		const int& myShotgunClipSize;
 		const int& myShotgunAmmoInClip;
+		const int& myShotgunAmmoTotal;
 		const int& myGrenadeLauncherClipSize;
 		const int& myGrenadeLauncherAmmoInClip;
+		const int& myGrenadeLauncherAmmoTotal;
 
 		Prism::Bar3D* myHealthIcon;
 		Prism::Bar3D* myPistolIcon;
 		Prism::Bar3D* myShotgunIcon;
 		Prism::Bar3D* myGrenadeLauncherIcon;
+
+		Prism::TextProxy* myAmmoTotalText;
 	};
 
 }
