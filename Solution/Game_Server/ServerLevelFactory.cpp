@@ -69,6 +69,7 @@ void ServerLevelFactory::ReadLevel(const std::string& aLevelPath)
 	//LoadUnits(reader, levelElement);
 	LoadSpawnpoint(reader, levelElement);
 	LoadTriggers(reader, levelElement);
+	LoadPlayerStartPosition(reader, levelElement);
 
 	reader.CloseDocument();
 }
@@ -264,5 +265,20 @@ void ServerLevelFactory::LoadSpawnpoint(XMLReader& aReader, tinyxml2::XMLElement
 		//Read bound to trigger
 
 		myCurrentLevel->AddEntity(newEntity);
+	}
+}
+
+void ServerLevelFactory::LoadPlayerStartPosition(XMLReader& aReader, tinyxml2::XMLElement* aElement)
+{
+	for (tinyxml2::XMLElement* entityElement = aReader.ForceFindFirstChild(aElement, "startPosition"); entityElement != nullptr;
+		entityElement = aReader.FindNextElement(entityElement, "startPosition"))
+	{
+		CU::Vector3<float> position;
+		unsigned int gid = 0;
+
+		aReader.ForceReadAttribute(aReader.ForceFindFirstChild(entityElement, "gid"), "value", gid);
+		aReader.ForceReadAttribute(aReader.ForceFindFirstChild(entityElement, "position"), "X", "Y", "Z", position);
+
+		myCurrentLevel->AddPlayerStartPosition(gid, position);
 	}
 }

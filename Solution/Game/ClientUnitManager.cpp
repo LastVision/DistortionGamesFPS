@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include <AnimationComponent.h>
 #include "ClientUnitManager.h"
 #include <EntityFactory.h>
 #include <PhysicsComponent.h>
@@ -84,6 +85,7 @@ void ClientUnitManager::ReceiveNetworkMessage(const NetMessageEntityState& aMess
 		if (aMessage.myEntityState == static_cast<unsigned char>(eEntityState::DIE))
 		{
 			myUnitsMap[aMessage.myGID]->Kill();
+			myUnitsMap[aMessage.myGID]->GetComponent<AnimationComponent>()->StopMuzzleFlash();
 		}
 	}
 }

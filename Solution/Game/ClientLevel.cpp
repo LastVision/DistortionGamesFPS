@@ -570,13 +570,14 @@ void ClientLevel::HandleTrigger(Entity& aFirstEntity, Entity& aSecondEntity, boo
 
 void ClientLevel::CreatePlayers()
 {
-	myPlayer = EntityFactory::GetInstance()->CreateEntity(ClientNetworkManager::GetInstance()->GetGID(), eEntityType::UNIT, "localplayer", myScene, true, CU::Vector3<float>(0.f, 0.f, 0.f));
+	myPlayer = EntityFactory::GetInstance()->CreateEntity(ClientNetworkManager::GetInstance()->GetGID(), eEntityType::UNIT, "localplayer", myScene, true
+		, myPlayerStartPositions[ClientNetworkManager::GetInstance()->GetGID()]);
 
 	myScene->SetCamera(*myPlayer->GetComponent<InputComponent>()->GetCamera());
 
 	for each (const OtherClients& client in ClientNetworkManager::GetInstance()->GetClients())
 	{
-		Entity* newPlayer = EntityFactory::CreateEntity(client.myID, eEntityType::UNIT, "player", myScene, true, { 0.f, 0.f, 0.f });
+		Entity* newPlayer = EntityFactory::CreateEntity(client.myID, eEntityType::UNIT, "player", myScene, true, myPlayerStartPositions[client.myID]);
 		newPlayer->GetComponent<NetworkComponent>()->SetPlayer(true);
 		newPlayer->AddToScene();
 		newPlayer->Reset();

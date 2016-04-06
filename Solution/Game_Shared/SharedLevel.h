@@ -17,6 +17,7 @@ public:
 
 	void AddEntity(Entity* aEntity);
 	void AddEnemy(Entity* anEntity);
+	void AddPlayerStartPosition(unsigned int aGID, const CU::Vector3<float>& aPosition);
 
 	virtual void Update(const float aDeltaTime);
 
@@ -37,5 +38,7 @@ protected:
 	std::unordered_map<unsigned int, Entity*> myActiveEntitiesMap;
 
 	std::unordered_map<unsigned int, Entity*> myActiveUnitsMap;
+
+	std::unordered_map<unsigned int, CU::Vector3<float>> myPlayerStartPositions;
 };
 

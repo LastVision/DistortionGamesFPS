@@ -91,7 +91,14 @@ void AIComponent::Update(float aDelta)
 		
 		if (myTargetPlayer != nullptr)
 		{
-			Move(aDelta, myTargetPlayer);
+			if (myEntity.GetState() == eEntityState::ATTACK && myAttackAnimationTimeCurrent > 0.f)
+			{
+				Move(aDelta, nullptr);
+			}
+			else
+			{
+				Move(aDelta, myTargetPlayer);
+			}
 			if (myShootTimer < 0.f)
 			{
 				Shoot(myTargetPlayer);
@@ -100,7 +107,14 @@ void AIComponent::Update(float aDelta)
 		}
 		else
 		{
-			Move(aDelta, myDefendTarget);
+			if (myEntity.GetState() == eEntityState::ATTACK && myAttackAnimationTimeCurrent > 0.f)
+			{
+				Move(aDelta, nullptr);
+			}
+			else
+			{
+				Move(aDelta, myDefendTarget);
+			}
 		}
 		
 

@@ -46,6 +46,11 @@ void SharedLevel::AddEnemy(Entity* anEntity)
 	myActiveUnitsMap[anEntity->GetGID()] = anEntity;
 }
 
+void SharedLevel::AddPlayerStartPosition(unsigned int aGID, const CU::Vector3<float>& aPosition)
+{
+	myPlayerStartPositions[aGID] = aPosition;
+}
+
 void SharedLevel::Update(const float aDeltaTime)
 {
 	for (Entity* entity : myPlayers)
