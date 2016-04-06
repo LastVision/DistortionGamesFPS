@@ -98,6 +98,9 @@ namespace Prism
 				DL_PRINT_VA("%f %% of SHNodes Generated.", float(finishedCount) / float(totalNodeCount) * 100.f);
 			}
 
+			DL_PRINT("Generation DONE");
+
+
 			CU::Vector4<float>* cAr = new CU::Vector4<float>[totalNodeCount];
 			CU::Vector4<float>* cAg = new CU::Vector4<float>[totalNodeCount];
 			CU::Vector4<float>* cAb = new CU::Vector4<float>[totalNodeCount];
