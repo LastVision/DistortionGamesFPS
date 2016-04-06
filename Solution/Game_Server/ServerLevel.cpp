@@ -283,6 +283,7 @@ void ServerLevel::ReceiveMessage(const RespawnTriggerMessage& aMessage)
 {
 	myRespawnTriggers[aMessage.myGID - 1]->GetComponent<TriggerComponent>()->Activate();
 	myRespawnTriggers[aMessage.myGID - 1]->GetComponent<TriggerComponent>()->SetRespawnValue(aMessage.myGID);
+	myRespawnTriggers[aMessage.myGID - 1]->GetComponent<TriggerComponent>()->SetPlayerRespawnPosition(myPlayers[aMessage.myGID - 1]->GetOrientation().GetPos());
 	myRespawnTriggers[aMessage.myGID - 1]->GetComponent<PhysicsComponent>()->AddToScene();
 	myRespawnTriggers[aMessage.myGID - 1]->GetComponent<PhysicsComponent>()->TeleportToPosition(myPlayers[aMessage.myGID - 1]->GetOrientation().GetPos());
 	myRespawnTriggers[aMessage.myGID - 1]->GetComponent<PhysicsComponent>()->UpdateOrientationStatic();
