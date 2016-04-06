@@ -54,6 +54,8 @@ public:
 	void ReceiveNetworkMessage(const NetMessageDisplayRespawn& aMessage, const sockaddr_in& aSenderAddress) override;
 	void ReceiveNetworkMessage(const NetMessagePressEText& aMessage, const sockaddr_in& aSenderAddress) override;
 
+	void ReceiveNote(const UpgradeNote& aNote) override;
+
 private:
 	void UpdateJoints();
 

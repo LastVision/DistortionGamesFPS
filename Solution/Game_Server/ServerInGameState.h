@@ -33,5 +33,7 @@ private:
 	eInGameStates myState;
 
 	CU::GrowingArray<unsigned int> myRespondedClients;
+
+	bool myGameComplete;
 };
 

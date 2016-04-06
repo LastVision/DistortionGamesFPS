@@ -179,7 +179,7 @@ void MainMenuState::ReceiveMessage(const OnClickMessage& aMessage)
 		case eOnClickEvent::CREDITS:
 			PostMaster::GetInstance()->UnSubscribe(eMessageType::ON_CLICK, this);
 			SET_RUNTIME(false);
-			myStateStack->PushSubGameState(new CreditMenuState());
+			myStateStack->PushMainGameState(new CreditMenuState());
 			break;
 		case eOnClickEvent::OPTIONS:
 			PostMaster::GetInstance()->UnSubscribe(eMessageType::ON_CLICK, this);

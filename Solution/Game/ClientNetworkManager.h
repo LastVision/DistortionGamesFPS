@@ -27,6 +27,8 @@ public:
 
 	void DebugPrint();
 
+	const std::string& GetName() const;
+
 private:
 	ClientNetworkManager();
 	~ClientNetworkManager();
@@ -45,3 +47,7 @@ private:
 	std::string myName;
 };
 
+inline const std::string& ClientNetworkManager::GetName() const
+{
+	return myName;
+}

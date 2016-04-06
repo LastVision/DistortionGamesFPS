@@ -90,7 +90,7 @@ void ServerLobbyState::ReceiveNetworkMessage(const NetMessageRequestStartLevel&,
 	ServerNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::ON_CONNECT, this);
 
 	SET_RUNTIME(false);
-	myStateStack->PushMainState(new ServerInGameState(myCurrentLevelID, levelHashValue));
+	myStateStack->PushSubState(new ServerInGameState(myCurrentLevelID, levelHashValue));
 }
 
 void ServerLobbyState::ReceiveNetworkMessage(const NetMessageRequestConnect& aMessage, const sockaddr_in& aSenderAddress)
