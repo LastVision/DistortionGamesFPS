@@ -147,29 +147,30 @@ void Pistol::HandleRaycast(PhysicsComponent* aComponent, const CU::Vector3<float
 {
 	if (aComponent != nullptr)
 	{
-		if (aComponent->GetPhysicsType() == ePhysics::DYNAMIC)
-		{
-			aComponent->AddForce(aDirection, myForceStrength);
-		}
-
 		if (aComponent->GetEntity().GetComponent<SoundComponent>() != nullptr)
 		{
 			//Prism::Audio::AudioInterface::GetInstance()->PostEvent("Play_Shotgun", aComponent->GetEntity().GetComponent<SoundComponent>()->GetAudioSFXID());
 		}
+		if (aComponent->GetEntity().GetSubType() != "player")
+		{
+			if (aComponent->GetPhysicsType() == ePhysics::DYNAMIC)
+			{
+				aComponent->AddForce(aDirection, myForceStrength);
+			}
 
-		CU::Vector3<float> toSend = CU::Reflect<float>(aDirection, aHitNormal);
+			CU::Vector3<float> toSend = CU::Reflect<float>(aDirection, aHitNormal);
 
-		if (aComponent->GetEntity().GetIsEnemy() == true)
-			PostMaster::GetInstance()->SendMessage(EmitterMessage("OnHit", aHitPosition, toSend));
-		else
-			PostMaster::GetInstance()->SendMessage(EmitterMessage("OnEnvHit", aHitPosition, aHitNormal));
+			if (aComponent->GetEntity().GetIsEnemy() == true)
+				PostMaster::GetInstance()->SendMessage(EmitterMessage("OnHit", aHitPosition, toSend));
+			else
+				PostMaster::GetInstance()->SendMessage(EmitterMessage("OnEnvHit", aHitPosition, aHitNormal));
 
-		//aComponent->GetEntity().SendNote<DamageNote>(DamageNote(myDamage));
+			//aComponent->GetEntity().SendNote<DamageNote>(DamageNote(myDamage));
 
-		//SharedNetworkManager::GetInstance()->AddMessage(NetMessageOnHit(float(myDamage), aComponent->GetEntity().GetGID()));
+			//SharedNetworkManager::GetInstance()->AddMessage(NetMessageOnHit(float(myDamage), aComponent->GetEntity().GetGID()));
 
-		SharedNetworkManager::GetInstance()->AddMessage(NetMessageOnHit(myDamage, aComponent->GetEntity().GetGID()));
-
+			SharedNetworkManager::GetInstance()->AddMessage(NetMessageOnHit(myDamage, aComponent->GetEntity().GetGID()));
+		}
 	}
 }
 
