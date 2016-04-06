@@ -210,15 +210,46 @@ void ShootingComponent::ReloadWeapon()
 
 void ShootingComponent::ReceiveNote(const UpgradeNote& aNote)
 {
+	if (aNote.myData.myAmmoTotalModifier == 0 && myCurrentWeapon->GetWeaponType() != aNote.myData.myWeaponType)
+	{
+		switch (myCurrentWeapon->GetWeaponType())
+		{
+		case eWeaponType::PISTOL:
+			myEntity.GetComponent<FirstPersonRenderComponent>()->AddIntention(ePlayerState::PISTOL_HOLSTER, true);
+			break;
+		case eWeaponType::SHOTGUN:
+			myEntity.GetComponent<FirstPersonRenderComponent>()->AddIntention(ePlayerState::SHOTGUN_HOLSTER, true);
+			break;
+		case eWeaponType::GRENADE_LAUNCHER:
+			myEntity.GetComponent<FirstPersonRenderComponent>()->AddIntention(ePlayerState::GRENADE_LAUNCHER_HOLSTER, true);
+			break;
+		}
+		switch (aNote.myData.myWeaponType)
+		{
+		case eWeaponType::PISTOL:
+			myEntity.GetComponent<FirstPersonRenderComponent>()->AddIntention(ePlayerState::PISTOL_DRAW, false);
+			myCurrentWeapon = myPistol;
+			break;
+		case eWeaponType::SHOTGUN:
+			myEntity.GetComponent<FirstPersonRenderComponent>()->AddIntention(ePlayerState::SHOTGUN_DRAW, false);
+			myCurrentWeapon = myShotgun;
+			break;
+		case eWeaponType::GRENADE_LAUNCHER:
+			myEntity.GetComponent<FirstPersonRenderComponent>()->AddIntention(ePlayerState::GRENADE_LAUNCHER_HOLSTER, false);
+			myCurrentWeapon = myGrenadeLauncher;
+			break;
+		}
+	}
+
 	if (aNote.myData.myWeaponType == eWeaponType::PISTOL)
 	{
 		myPistol->Upgrade(aNote.myData);
 	}
-	else if (aNote.myData.myWeaponType == eWeaponType::SHOTGUN)
+	else if (aNote.myData.myAmmoTotalModifier == 0 && aNote.myData.myWeaponType == eWeaponType::SHOTGUN)
 	{
 		myShotgun->Upgrade(aNote.myData);
 	}
-	else if (aNote.myData.myWeaponType == eWeaponType::GRENADE_LAUNCHER)
+	else if (aNote.myData.myAmmoTotalModifier == 0 && aNote.myData.myWeaponType == eWeaponType::GRENADE_LAUNCHER)
 	{
 		myGrenadeLauncher->Upgrade(aNote.myData);
 	}
