@@ -18,6 +18,7 @@ ShootingComponent::ShootingComponent(Entity& anEntity, Prism::Scene* aScene)
 	, myPistol(nullptr)
 	, myShotgun(nullptr)
 	, myGrenadeLauncher(nullptr)
+	, myIsInOptionsMenu(false)
 {
 
 	myPistol = new Pistol(&myEntity);
@@ -47,93 +48,96 @@ void ShootingComponent::ReadXMLSettings(const std::string& aXMLPath)
 
 void ShootingComponent::Update(float aDelta)
 {
-	CU::Matrix44<float> aOrientation = myEntity.GetComponent<InputComponent>()->GetEyeOrientation();
-	if (CU::InputWrapper::GetInstance()->KeyDown(DIK_1) == true)
+	if (myIsInOptionsMenu == false)
 	{
-		if (myCurrentWeapon != myPistol)
+		CU::Matrix44<float> aOrientation = myEntity.GetComponent<InputComponent>()->GetEyeOrientation();
+		if (CU::InputWrapper::GetInstance()->KeyDown(DIK_1) == true)
 		{
-			switch (myCurrentWeapon->GetWeaponType())
+			if (myCurrentWeapon != myPistol)
 			{
-			case eWeaponType::SHOTGUN:
-				myEntity.GetComponent<FirstPersonRenderComponent>()->AddIntention(ePlayerState::SHOTGUN_HOLSTER, true);
-				break;
-			case eWeaponType::GRENADE_LAUNCHER:
-				myEntity.GetComponent<FirstPersonRenderComponent>()->AddIntention(ePlayerState::GRENADE_LAUNCHER_HOLSTER, false);
-				break;
+				switch (myCurrentWeapon->GetWeaponType())
+				{
+				case eWeaponType::SHOTGUN:
+					myEntity.GetComponent<FirstPersonRenderComponent>()->AddIntention(ePlayerState::SHOTGUN_HOLSTER, true);
+					break;
+				case eWeaponType::GRENADE_LAUNCHER:
+					myEntity.GetComponent<FirstPersonRenderComponent>()->AddIntention(ePlayerState::GRENADE_LAUNCHER_HOLSTER, false);
+					break;
+				}
+				myEntity.GetComponent<FirstPersonRenderComponent>()->AddIntention(ePlayerState::PISTOL_DRAW, false);
+				myCurrentWeapon = myPistol;
 			}
-			myEntity.GetComponent<FirstPersonRenderComponent>()->AddIntention(ePlayerState::PISTOL_DRAW, false);
-			myCurrentWeapon = myPistol;
 		}
-	}
-	if (CU::InputWrapper::GetInstance()->KeyDown(DIK_2) == true)
-	{
-		if (myCurrentWeapon != myShotgun)
+		if (CU::InputWrapper::GetInstance()->KeyDown(DIK_2) == true)
 		{
-			switch (myCurrentWeapon->GetWeaponType())
+			if (myCurrentWeapon != myShotgun)
 			{
-			case eWeaponType::PISTOL:
-				myEntity.GetComponent<FirstPersonRenderComponent>()->AddIntention(ePlayerState::PISTOL_HOLSTER, true);
-				break;
-			case eWeaponType::GRENADE_LAUNCHER:
-				myEntity.GetComponent<FirstPersonRenderComponent>()->AddIntention(ePlayerState::GRENADE_LAUNCHER_HOLSTER, false);
-				break;
+				switch (myCurrentWeapon->GetWeaponType())
+				{
+				case eWeaponType::PISTOL:
+					myEntity.GetComponent<FirstPersonRenderComponent>()->AddIntention(ePlayerState::PISTOL_HOLSTER, true);
+					break;
+				case eWeaponType::GRENADE_LAUNCHER:
+					myEntity.GetComponent<FirstPersonRenderComponent>()->AddIntention(ePlayerState::GRENADE_LAUNCHER_HOLSTER, false);
+					break;
+				}
+				myEntity.GetComponent<FirstPersonRenderComponent>()->AddIntention(ePlayerState::SHOTGUN_DRAW, false);
+				myCurrentWeapon = myShotgun;
 			}
-			myEntity.GetComponent<FirstPersonRenderComponent>()->AddIntention(ePlayerState::SHOTGUN_DRAW, false);
-			myCurrentWeapon = myShotgun;
 		}
-	}
-	if (CU::InputWrapper::GetInstance()->KeyDown(DIK_3) == true)
-	{
-		if (myCurrentWeapon != myGrenadeLauncher)
+		if (CU::InputWrapper::GetInstance()->KeyDown(DIK_3) == true)
 		{
-			switch (myCurrentWeapon->GetWeaponType())
+			if (myCurrentWeapon != myGrenadeLauncher)
 			{
-			case eWeaponType::PISTOL:
-				myEntity.GetComponent<FirstPersonRenderComponent>()->AddIntention(ePlayerState::PISTOL_HOLSTER, true);
-				break;
-			case eWeaponType::SHOTGUN:
-				myEntity.GetComponent<FirstPersonRenderComponent>()->AddIntention(ePlayerState::SHOTGUN_HOLSTER, false);
-				break;
+				switch (myCurrentWeapon->GetWeaponType())
+				{
+				case eWeaponType::PISTOL:
+					myEntity.GetComponent<FirstPersonRenderComponent>()->AddIntention(ePlayerState::PISTOL_HOLSTER, true);
+					break;
+				case eWeaponType::SHOTGUN:
+					myEntity.GetComponent<FirstPersonRenderComponent>()->AddIntention(ePlayerState::SHOTGUN_HOLSTER, false);
+					break;
+				}
+				myEntity.GetComponent<FirstPersonRenderComponent>()->AddIntention(ePlayerState::GRENADE_LAUNCHER_DRAW, false);
+				myCurrentWeapon = myGrenadeLauncher;
 			}
-			myEntity.GetComponent<FirstPersonRenderComponent>()->AddIntention(ePlayerState::GRENADE_LAUNCHER_DRAW, false);
-			myCurrentWeapon = myGrenadeLauncher;
 		}
-	}
 
-	if (CU::InputWrapper::GetInstance()->KeyDown(DIK_R) == true)
-	{
-		ReloadWeaponIntention();
-	}
+		if (CU::InputWrapper::GetInstance()->KeyDown(DIK_R) == true)
+		{
+			ReloadWeaponIntention();
+		}
 
-	if (CU::InputWrapper::GetInstance()->MouseDown(0) == true && myCurrentWeapon->GetAmmoInClip() == 0)
-	{
-		ReloadWeaponIntention();
-	}
-	else if (CU::InputWrapper::GetInstance()->MouseIsPressed(0) == true)
-	{
-		if (myCurrentWeapon == myPistol)
+		if (CU::InputWrapper::GetInstance()->MouseDown(0) == true && myCurrentWeapon->GetAmmoInClip() == 0)
 		{
-			if (myCurrentWeapon->Shoot(aOrientation) == true)
-			{
-				myEntity.GetComponent<FirstPersonRenderComponent>()->AddIntention(ePlayerState::PISTOL_FIRE, true);
-				SharedNetworkManager::GetInstance()->AddMessage<NetMessageEntityState>(NetMessageEntityState(eEntityState::ATTACK, myEntity.GetGID()));
-			}
+			ReloadWeaponIntention();
 		}
-		else if (myCurrentWeapon == myShotgun)
+		else if (CU::InputWrapper::GetInstance()->MouseIsPressed(0) == true)
 		{
-			if (myCurrentWeapon->Shoot(aOrientation) == true)
+			if (myCurrentWeapon == myPistol)
 			{
-				myEntity.GetComponent<FirstPersonRenderComponent>()->AddIntention(ePlayerState::SHOTGUN_FIRE, true);
-				SharedNetworkManager::GetInstance()->AddMessage<NetMessageEntityState>(NetMessageEntityState(eEntityState::ATTACK, myEntity.GetGID()));
+				if (myCurrentWeapon->Shoot(aOrientation) == true)
+				{
+					myEntity.GetComponent<FirstPersonRenderComponent>()->AddIntention(ePlayerState::PISTOL_FIRE, true);
+					SharedNetworkManager::GetInstance()->AddMessage<NetMessageEntityState>(NetMessageEntityState(eEntityState::ATTACK, myEntity.GetGID()));
+				}
 			}
-		}
-		else if (myCurrentWeapon == myGrenadeLauncher)
-		{
-			//ShootAtDirection(aOrientation);
-			if (myCurrentWeapon->Shoot(aOrientation) == true)
+			else if (myCurrentWeapon == myShotgun)
 			{
-				myEntity.GetComponent<FirstPersonRenderComponent>()->AddIntention(ePlayerState::GRENADE_LAUNCHER_FIRE, true);
-				SharedNetworkManager::GetInstance()->AddMessage<NetMessageEntityState>(NetMessageEntityState(eEntityState::ATTACK, myEntity.GetGID()));
+				if (myCurrentWeapon->Shoot(aOrientation) == true)
+				{
+					myEntity.GetComponent<FirstPersonRenderComponent>()->AddIntention(ePlayerState::SHOTGUN_FIRE, true);
+					SharedNetworkManager::GetInstance()->AddMessage<NetMessageEntityState>(NetMessageEntityState(eEntityState::ATTACK, myEntity.GetGID()));
+				}
+			}
+			else if (myCurrentWeapon == myGrenadeLauncher)
+			{
+				//ShootAtDirection(aOrientation);
+				if (myCurrentWeapon->Shoot(aOrientation) == true)
+				{
+					myEntity.GetComponent<FirstPersonRenderComponent>()->AddIntention(ePlayerState::GRENADE_LAUNCHER_FIRE, true);
+					SharedNetworkManager::GetInstance()->AddMessage<NetMessageEntityState>(NetMessageEntityState(eEntityState::ATTACK, myEntity.GetGID()));
+				}
 			}
 		}
 	}
@@ -210,15 +214,46 @@ void ShootingComponent::ReloadWeapon()
 
 void ShootingComponent::ReceiveNote(const UpgradeNote& aNote)
 {
+	if (aNote.myData.myAmmoTotalModifier == 0 && myCurrentWeapon->GetWeaponType() != aNote.myData.myWeaponType)
+	{
+		switch (myCurrentWeapon->GetWeaponType())
+		{
+		case eWeaponType::PISTOL:
+			myEntity.GetComponent<FirstPersonRenderComponent>()->AddIntention(ePlayerState::PISTOL_HOLSTER, true);
+			break;
+		case eWeaponType::SHOTGUN:
+			myEntity.GetComponent<FirstPersonRenderComponent>()->AddIntention(ePlayerState::SHOTGUN_HOLSTER, true);
+			break;
+		case eWeaponType::GRENADE_LAUNCHER:
+			myEntity.GetComponent<FirstPersonRenderComponent>()->AddIntention(ePlayerState::GRENADE_LAUNCHER_HOLSTER, true);
+			break;
+		}
+		switch (aNote.myData.myWeaponType)
+		{
+		case eWeaponType::PISTOL:
+			myEntity.GetComponent<FirstPersonRenderComponent>()->AddIntention(ePlayerState::PISTOL_DRAW, false);
+			myCurrentWeapon = myPistol;
+			break;
+		case eWeaponType::SHOTGUN:
+			myEntity.GetComponent<FirstPersonRenderComponent>()->AddIntention(ePlayerState::SHOTGUN_DRAW, false);
+			myCurrentWeapon = myShotgun;
+			break;
+		case eWeaponType::GRENADE_LAUNCHER:
+			myEntity.GetComponent<FirstPersonRenderComponent>()->AddIntention(ePlayerState::GRENADE_LAUNCHER_HOLSTER, false);
+			myCurrentWeapon = myGrenadeLauncher;
+			break;
+		}
+	}
+
 	if (aNote.myData.myWeaponType == eWeaponType::PISTOL)
 	{
 		myPistol->Upgrade(aNote.myData);
 	}
-	else if (aNote.myData.myWeaponType == eWeaponType::SHOTGUN)
+	else if (aNote.myData.myAmmoTotalModifier == 0 && aNote.myData.myWeaponType == eWeaponType::SHOTGUN)
 	{
 		myShotgun->Upgrade(aNote.myData);
 	}
-	else if (aNote.myData.myWeaponType == eWeaponType::GRENADE_LAUNCHER)
+	else if (aNote.myData.myAmmoTotalModifier == 0 && aNote.myData.myWeaponType == eWeaponType::GRENADE_LAUNCHER)
 	{
 		myGrenadeLauncher->Upgrade(aNote.myData);
 	}

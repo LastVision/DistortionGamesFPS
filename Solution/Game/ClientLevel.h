@@ -3,6 +3,7 @@
 #include <Matrix.h>
 #include <NetworkMessageTypes.h>
 #include <SharedLevel.h>
+#include "StateEnums.h"
 
 namespace Prism
 {
@@ -16,13 +17,19 @@ namespace Prism
 	class SpotLight;
 }
 
+namespace GUI
+{
+	class Cursor;
+	class GUIManager;
+}
+
 class EmitterManager;
 class TextEventManager;
 
 class ClientLevel : public SharedLevel
 {
 public:
-	ClientLevel();
+	ClientLevel(GUI::Cursor* aCursor, eStateStatus& aStateStatus);
 	~ClientLevel();
 
 	void Init(const std::string& aWeaponSettingsPath) override;
@@ -41,11 +48,16 @@ public:
 	void ReceiveNetworkMessage(const NetMessageShootGrenade& aMessage, const sockaddr_in& aSenderAddress) override;
 	void ReceiveNetworkMessage(const NetMessageExplosion& aMessage, const sockaddr_in& aSenderAddress) override;
 	void ReceiveNetworkMessage(const NetMessageRayCastRequest& aMessage, const sockaddr_in& aSenderAddress) override;
+
+	void ReceiveMessage(const OnClickMessage& aMessage) override;
+
 	void AddLight(Prism::PointLight* aLight);
 	void AddLight(Prism::SpotLight* aLight);
 	void CollisionCallback(PhysicsComponent* aFirst, PhysicsComponent* aSecond, bool aHasEntered) override;
 	void DebugMusic();
 	void AddWorldText(const std::string& aText, const CU::Vector3<float>& aPosition, float aRotationAroundY, const CU::Vector4<float>& aColor);
+
+	void ToggleEscapeMenu();
 
 private:
 	void HandleTrigger(Entity& aFirstEntity, Entity& aSecondEntity, bool aHasEntered) override;
@@ -86,6 +98,19 @@ private:
 		std::string myText;
 	};
 	CU::GrowingArray<WorldText> myWorldTexts;
+
+	bool myEscapeMenuActive;
+	GUI::GUIManager* myEscapeMenu;
+
+	Prism::TextProxy* mySFXText;
+	Prism::TextProxy* myMusicText;
+	Prism::TextProxy* myVoiceText;
+
+	int	myMusicVolume;
+	int	mySfxVolume;
+	int	myVoiceVolume;
+
+	eStateStatus& myStateStatus;
 };
 
 inline Prism::Scene* ClientLevel::GetScene()

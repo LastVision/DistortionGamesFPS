@@ -27,6 +27,7 @@ InputComponent::InputComponent(Entity& anEntity, const InputComponentData& aData
 	, myData(aData)
 	, mySprintEnergy(0.f)
 	, myEnergyOverheat(false)
+	, myIsInOptionsMenu(false)
 {
 	XMLReader reader;
 	reader.OpenDocument("Data/Setting/SET_player.xml");
@@ -64,33 +65,36 @@ void InputComponent::Update(float aDelta)
 
 	if (myEntity.GetState() != eEntityState::DIE)
 	{
-		UpdateMovement(aDelta);
-		
-		Prism::Audio::AudioInterface::GetInstance()->SetListenerPosition(myOrientation.GetPos().x, myOrientation.GetPos().y, myOrientation.GetPos().z);
-
-		if (CU::InputWrapper::GetInstance()->KeyDown(DIK_E) == true)
+		if (myIsInOptionsMenu == false)
 		{
-			//Prism::PhysicsInterface::GetInstance()->RayCast(myEntity.GetOrientation().GetPos()
-			//	, myEntity.GetOrientation().GetForward(), 10.f, myRaycastHandler, myEntity.GetComponent<PhysicsComponent>());
-			//SharedNetworkManager::GetInstance()->AddMessage(NetMessageRayCastRequest(myEntity.GetOrientation().GetPos(), myEntity.GetOrientation().GetForward()
-			//	, int(eNetRayCastType::CLIENT_PRESSED_E), 10.f, myEntity.GetGID()));
-			SharedNetworkManager::GetInstance()->AddMessage(NetMessagePressE(myEntity.GetGID()));
+			UpdateMovement(aDelta);
+
+			Prism::Audio::AudioInterface::GetInstance()->SetListenerPosition(myOrientation.GetPos().x, myOrientation.GetPos().y, myOrientation.GetPos().z);
+
+			if (CU::InputWrapper::GetInstance()->KeyDown(DIK_E) == true)
+			{
+				//Prism::PhysicsInterface::GetInstance()->RayCast(myEntity.GetOrientation().GetPos()
+				//	, myEntity.GetOrientation().GetForward(), 10.f, myRaycastHandler, myEntity.GetComponent<PhysicsComponent>());
+				//SharedNetworkManager::GetInstance()->AddMessage(NetMessageRayCastRequest(myEntity.GetOrientation().GetPos(), myEntity.GetOrientation().GetForward()
+				//	, int(eNetRayCastType::CLIENT_PRESSED_E), 10.f, myEntity.GetGID()));
+				SharedNetworkManager::GetInstance()->AddMessage(NetMessagePressE(myEntity.GetGID()));
+			}
+
+			myEyeOrientation = myOrientation;
+
+			CU::Vector3<float> position(myOrientation.GetPos());
+
+			if (CU::InputWrapper::GetInstance()->KeyIsPressed(DIK_LCONTROL) == true)
+			{
+				position.y += myCrouchHeight;
+			}
+			else
+			{
+				position.y += myHeight;
+			}
+
+			myEyeOrientation.SetPos(position);
 		}
-
-		myEyeOrientation = myOrientation;
-
-		CU::Vector3<float> position(myOrientation.GetPos());
-
-		if (CU::InputWrapper::GetInstance()->KeyIsPressed(DIK_LCONTROL) == true)
-		{
-			position.y += myCrouchHeight;
-		}
-		else
-		{
-			position.y += myHeight;
-		}
-
-		myEyeOrientation.SetPos(position);
 	}
 	else
 	{
