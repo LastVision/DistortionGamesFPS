@@ -241,6 +241,17 @@ void ClientLevel::Update(const float aDeltaTime)
 	//	myActiveEnemies.GetLast()->SetState(eEntityState::ATTACK);
 	//}
 
+	if (myWorldTexts.Size() > 0)
+	{
+		if (Prism::ModelLoader::GetInstance()->IsLoading() == false && myWorldTexts[0].myProxy->IsLoaded() == true)
+		{
+			for (int i = 0; i < myWorldTexts.Size(); ++i)
+			{
+				myWorldTexts[i].myProxy->SetText(myWorldTexts[i].myText);
+			}
+		}
+	}
+
 	if (CU::InputWrapper::GetInstance()->KeyDown(DIK_B) == true)
 	{
 		ClientNetworkManager::GetInstance()->AddMessage(NetMessageActivateSpawnpoint(17));
