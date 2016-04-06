@@ -177,8 +177,6 @@ ClientLevel::~ClientLevel()
 void ClientLevel::Init(const std::string& aWeaponSettingsPath)
 {
 	CreatePlayers();
-	myForceStrengthPistol = myPlayer->GetComponent<ShootingComponent>()->GetWeaponForceStrength(eWeaponType::PISTOL);
-	myForceStrengthShotgun = myPlayer->GetComponent<ShootingComponent>()->GetWeaponForceStrength(eWeaponType::SHOTGUN);
 
 	Prism::ModelLoader::GetInstance()->Pause();
 	myDeferredRenderer = new Prism::DeferredRenderer();
@@ -201,6 +199,9 @@ void ClientLevel::Init(const std::string& aWeaponSettingsPath)
 
 	myPlayer->GetComponent<ShootingComponent>()->ReadXMLSettings(aWeaponSettingsPath);
 	myPlayer->GetComponent<FirstPersonRenderComponent>()->Init();
+
+	myForceStrengthPistol = myPlayer->GetComponent<ShootingComponent>()->GetWeaponForceStrength(eWeaponType::PISTOL);
+	myForceStrengthShotgun = myPlayer->GetComponent<ShootingComponent>()->GetWeaponForceStrength(eWeaponType::SHOTGUN);
 }
 
 void ClientLevel::SetMinMax(const CU::Vector3<float>& aMinPoint, const CU::Vector3<float>& aMaxPoint)
