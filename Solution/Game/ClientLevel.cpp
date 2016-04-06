@@ -113,7 +113,7 @@ ClientLevel::ClientLevel(GUI::Cursor* aCursor, eStateStatus& aStateStatus)
 
 	myTestText->SetOffset({ 0.f, 1.f, 10.f });
 
-	myEscapeMenu = new GUI::GUIManager(aCursor, "Data/Resource/GUI/GUI_options_menu.xml", myScene->GetCamera(), -1);
+	myEscapeMenu = new GUI::GUIManager(aCursor, "Data/Resource/GUI/GUI_options_menu_ingame.xml", myScene->GetCamera(), -1);
 
 	mySFXText = Prism::ModelLoader::GetInstance()->LoadText(Prism::Engine::GetInstance()->GetFont(Prism::eFont::DIALOGUE));
 	myMusicText = Prism::ModelLoader::GetInstance()->LoadText(Prism::Engine::GetInstance()->GetFont(Prism::eFont::DIALOGUE));
