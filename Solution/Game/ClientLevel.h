@@ -3,6 +3,7 @@
 #include <Matrix.h>
 #include <NetworkMessageTypes.h>
 #include <SharedLevel.h>
+#include "StateEnums.h"
 
 namespace Prism
 {
@@ -28,7 +29,7 @@ class TextEventManager;
 class ClientLevel : public SharedLevel
 {
 public:
-	ClientLevel(GUI::Cursor* aCursor);
+	ClientLevel(GUI::Cursor* aCursor, eStateStatus& aStateStatus);
 	~ClientLevel();
 
 	void Init(const std::string& aWeaponSettingsPath) override;
@@ -108,6 +109,8 @@ private:
 	int	myMusicVolume;
 	int	mySfxVolume;
 	int	myVoiceVolume;
+
+	eStateStatus& myStateStatus;
 };
 
 inline Prism::Scene* ClientLevel::GetScene()

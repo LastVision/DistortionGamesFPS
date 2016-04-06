@@ -27,7 +27,7 @@ ClientLevelFactory::~ClientLevelFactory()
 {
 }
 
-ClientLevel* ClientLevelFactory::LoadLevel(int aID, GUI::Cursor* aCursor)
+ClientLevel* ClientLevelFactory::LoadLevel(int aID, GUI::Cursor* aCursor, eStateStatus& aStateStatus)
 {
 	myIsLoadingLevel = true;
 	if (myLevelPaths.find(aID) == myLevelPaths.end())
@@ -38,13 +38,13 @@ ClientLevel* ClientLevelFactory::LoadLevel(int aID, GUI::Cursor* aCursor)
 			
 	myCurrentID = aID;
 		
-	return LoadCurrentLevel(aCursor);
+	return LoadCurrentLevel(aCursor, aStateStatus);
 }
 
-ClientLevel* ClientLevelFactory::LoadCurrentLevel(GUI::Cursor* aCursor)
+ClientLevel* ClientLevelFactory::LoadCurrentLevel(GUI::Cursor* aCursor, eStateStatus& aStateStatus)
 {
 	myIsLoadingLevel = true;
-	myCurrentLevel = new ClientLevel(aCursor);
+	myCurrentLevel = new ClientLevel(aCursor, aStateStatus);
 	ReadLevel(myLevelPaths[myCurrentID]);
 	myCurrentLevel->Init(myWeaponSettingsPath);
 	myCurrentLevel->SetMinMax(myMinPoint, myMaxPoint);

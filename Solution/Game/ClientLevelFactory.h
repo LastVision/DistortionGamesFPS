@@ -17,8 +17,8 @@ public:
 	ClientLevelFactory(const std::string& aLevelListPath);
 	~ClientLevelFactory();
 
-	ClientLevel* LoadLevel(int aID, GUI::Cursor* aCursor);
-	ClientLevel* LoadCurrentLevel(GUI::Cursor* aCursor);
+	ClientLevel* LoadLevel(int aID, GUI::Cursor* aCursor, eStateStatus& aStateStatus);
+	ClientLevel* LoadCurrentLevel(GUI::Cursor* aCursor, eStateStatus& aStateStatus);
 
 private:
 	void ReadLevel(const std::string& aLevelPath) override;

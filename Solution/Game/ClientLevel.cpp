@@ -63,7 +63,7 @@
 #include <RoomManager.h>
 #include <ParticleEmitterInstance.h>
 #include <Room.h>
-ClientLevel::ClientLevel(GUI::Cursor* aCursor)
+ClientLevel::ClientLevel(GUI::Cursor* aCursor, eStateStatus& aStateStatus)
 	: myInstanceOrientations(16)
 	, myInstances(16)
 	, myPointLights(64)
@@ -80,6 +80,7 @@ ClientLevel::ClientLevel(GUI::Cursor* aCursor)
 	, mySfxVolume(0)
 	, myMusicVolume(0)
 	, myVoiceVolume(0)
+	, myStateStatus(aStateStatus)
 {
 	Prism::PhysicsInterface::Create(std::bind(&ClientLevel::CollisionCallback, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3), false);
 
@@ -532,6 +533,7 @@ void ClientLevel::ReceiveMessage(const OnClickMessage& aMessage)
 		break;
 	case eOnClickEvent::GAME_QUIT:
 		ClientNetworkManager::GetInstance()->AddMessage(NetMessageDisconnect(ClientNetworkManager::GetInstance()->GetGID()));
+		myStateStatus = eStateStatus::ePopMainState;
 		break;
 	case eOnClickEvent::INCREASE_VOLUME:
 		Prism::Audio::AudioInterface::GetInstance()->PostEvent("IncreaseVolume", 0);
