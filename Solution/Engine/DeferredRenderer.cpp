@@ -176,7 +176,7 @@ namespace Prism
 
 		ModelLoader::GetInstance()->WaitUntilFinished();
 		myCubeMapGenerator->GenerateSHTextures(this, aScene, mySHTextures, myAmbientPass.mySHGridSize
-			, myAmbientPass.mySHGridOffset, 4.f, aName);
+			, myAmbientPass.mySHGridOffset, 8.f, aName);
 
 		myAmbientPass.mySHGridOffset *= -1.f;
 	}

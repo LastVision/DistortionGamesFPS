@@ -27,7 +27,7 @@ private:
 	void SpawnUnit(float aDelta);
 
 	const SpawnpointComponentData& myData;
-	//CU::GrowingArray<Entity*> myUnits;
+	CU::GrowingArray<Entity*> myActiveUnits;
 	SharedUnitManager* myUnitManager;
 
 	CU::GrowingArray<unsigned int> myTriggerConnections;

@@ -170,6 +170,7 @@ Entity::~Entity()
 	//}
 	if (GetComponent<PhysicsComponent>() != nullptr)
 	{
+		SET_RUNTIME(false);
 		GetComponent<PhysicsComponent>()->RemoveFromScene();
 	}
 	for (int i = 0; i < static_cast<int>(eComponentType::_COUNT); ++i)

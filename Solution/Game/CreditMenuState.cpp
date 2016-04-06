@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include <Cursor.h>
 #include "CreditMenuState.h"
 #include "PostMaster.h"
 #include "GUIManager.h"
@@ -28,6 +29,7 @@ void CreditMenuState::InitState(StateStackProxy* aStateStackProxy, GUI::Cursor* 
 	myStateStatus = eStateStatus::eKeepState;
 	myStateStack = aStateStackProxy;
 	myCursor = aCursor;
+	myCursor->SetShouldRender(true);
 	myGUIManager = new GUI::GUIManager(myCursor, "Data/Resource/GUI/GUI_credit_screen.xml", nullptr, -1);
 
 	CU::Vector2<int> windowSize = Prism::Engine::GetInstance()->GetWindowSizeInt();
@@ -57,8 +59,7 @@ const eStateStatus CreditMenuState::Update(const float& aDeltaTime)
 	if (input->KeyDown(DIK_ESCAPE) == true || input->KeyDown(DIK_SPACE) == true || input->KeyDown(DIK_RETURN) == true
 		|| input->MouseUp(0) == true || input->MouseUp(1) == true)
 	{
-		bool notDone = true;
-		//PostMaster::GetInstance()->SendMessage(OnClickMessage(eOnClickEvent::GAME_QUIT));
+		myStateStatus = eStateStatus::ePopMainState;
 	}
 
 	myGUIManager->Update(aDeltaTime);
@@ -90,7 +91,7 @@ void CreditMenuState::ReceiveMessage(const OnClickMessage& aMessage)
 			break;*/
 
 		case eOnClickEvent::GAME_QUIT:
-			myStateStatus = eStateStatus::ePopSubState;
+			myStateStatus = eStateStatus::ePopMainState;
 			break;
 		default:
 			DL_ASSERT("Unknown event type.");

@@ -38,8 +38,12 @@ private:
 	GUI::GUIManager* myGUIManagerHost;
 	GUI::GUIManager* myGUIManager;
 	Prism::TextProxy* myText;
+	Prism::TextProxy* myPlayerListText;
+	Prism::TextProxy* myWaitingForHostText;
 	int myLevelToStart;
 	unsigned int myServerLevelHash;
 	bool myStartGame;
+
+	float myRefreshPlayerListTimer;
 };
 

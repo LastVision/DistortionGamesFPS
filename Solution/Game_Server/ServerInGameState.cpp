@@ -19,6 +19,7 @@ ServerInGameState::ServerInGameState(int aLevelID, unsigned int aLevelHashValue)
 	, myState(eInGameStates::LEVEL_LOAD)
 	, myRespondedClients(16)
 	, myLevelHashValue(aLevelHashValue)
+	, myGameComplete(false)
 {
 	myIsActiveState = false;
 	myLevelFactory = new ServerLevelFactory("Data/Level/LI_level.xml");
@@ -126,6 +127,11 @@ void ServerInGameState::LevelUpdate(float aDeltaTime)
 	int nextLevel;
 	if (myLevel->ChangeLevel(nextLevel) == true)
 	{
+		if (nextLevel == 0 && myLevelID != 0)
+		{
+			myGameComplete = true;
+			myStateStatus = eStateStatus::POP_MAIN_STATE;
+		}
 		myState = eInGameStates::LEVEL_COMPLETE;
 		myLevelID = nextLevel;
 		myRespondedClients.RemoveAll();

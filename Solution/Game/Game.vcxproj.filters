@@ -68,6 +68,9 @@
     <ClCompile Include="OptionsState.cpp">
       <Filter>StateStack</Filter>
     </ClCompile>
+    <ClCompile Include="CompleteGameState.cpp">
+      <Filter>StateStack</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
@@ -141,6 +144,9 @@
       <Filter>StateStack</Filter>
     </ClInclude>
     <ClInclude Include="OptionsState.h">
+      <Filter>StateStack</Filter>
+    </ClInclude>
+    <ClInclude Include="CompleteGameState.h">
       <Filter>StateStack</Filter>
     </ClInclude>
   </ItemGroup>

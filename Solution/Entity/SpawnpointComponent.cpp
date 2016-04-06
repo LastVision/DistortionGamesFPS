@@ -18,7 +18,7 @@ SpawnpointComponent::SpawnpointComponent(Entity& anEntity, const SpawnpointCompo
 	: Component(anEntity)
 	, myData(aSpawnpointComponentData)
 	, myIsActive(false)
-	//, myUnits(512)
+	, myActiveUnits(aSpawnpointComponentData.myUnitCount + 4)
 	, myTriggerConnections(4)
 	, myBoundToTiggers(false)
 	, myActivateOnce(false)
@@ -117,11 +117,12 @@ void SpawnpointComponent::ReceiveMessage(const ActivateSpawnpointMessage& aMessa
 
 void SpawnpointComponent::ReceiveMessage(const EnemyKilledMessage& aMessage)
 {
-	for each (Entity* unit in myUnitManager->GetUnits())
+	for (int i = 0; i < myActiveUnits.Size(); ++i)
 	{
-		if (unit->GetGID() == aMessage.myEnemy->GetGID())
+		if (myActiveUnits[i]->GetGID() == aMessage.myEnemy->GetGID())
 		{
 			myActiveCount--;
+			myActiveUnits.RemoveCyclicAtIndex(i);
 			return;
 		}
 	}
@@ -148,13 +149,15 @@ void SpawnpointComponent::SpawnUnit(float aDelta)
 				Entity* toActivate = myUnitManager->RequestUnit(myData.myUnitTypes[randomType] + "Server");
 				if (toActivate != nullptr)
 				{
+					myActiveUnits.Add(toActivate);
 					SharedUnitManager::GetInstance()->ActivateUnit(toActivate, spawnPosition);
 					SharedNetworkManager::GetInstance()->AddMessage(NetMessageActivateUnit(toActivate->GetGID(), spawnPosition));
 					
 					myActiveCount++;
+					mySpawnTimer = myData.mySpawnInterval;
 				}
 			}
 		}
-		mySpawnTimer = myData.mySpawnInterval;
+
 	}
 }

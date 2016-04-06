@@ -5,6 +5,7 @@
 #include "ClientLevelFactory.h"
 #include "Console.h"
 #include <CommonHelper.h>
+#include "CompleteGameState.h"
 #include <GameStateMessage.h>
 #include <EffectContainer.h>
 #include <FadeMessage.h>
@@ -38,7 +39,7 @@ InGameState::InGameState(int aLevelID, unsigned int aServerHashLevelValue)
 	, myFailedLevelHash(false)
 	, myServerHashLevelValue(aServerHashLevelValue)
 	, myHasStartedMusicBetweenLevels(false)
-	, myLastLevel(0)
+	, myLastLevel(aLevelID)
 {
 	myIsActiveState = false;
 	myLevelFactory = new ClientLevelFactory("Data/Level/LI_level.xml");
@@ -107,11 +108,7 @@ const eStateStatus InGameState::Update(const float& aDeltaTime)
 
 	if (CU::InputWrapper::GetInstance()->KeyDown(DIK_ESCAPE))
 	{
-		myLevel->ToggleEscapeMenu();
-		//if (myLastLevel->WantsToQuit() == true)
-		//{
-		//	return eStateStatus::ePopMainState;
-		//}
+		return eStateStatus::ePopMainState;
 	}
 
 	//if (CU::InputWrapper::GetInstance()->KeyDown(DIK_NUMPAD1))
@@ -143,10 +140,9 @@ const eStateStatus InGameState::Update(const float& aDeltaTime)
 		myShouldLoadLevel = false;
 		SET_RUNTIME(false);
 		SAFE_DELETE(myLevel);
-		myLevel = static_cast<ClientLevel*>(myLevelFactory->LoadLevel(myLevelToLoad, myCursor));
+		myLevel = static_cast<ClientLevel*>(myLevelFactory->LoadLevel(myLevelToLoad));
 		myLevelToLoad = -1;
 	}
-
 
 	if (myLevelComplete == true)
 	{
@@ -198,6 +194,7 @@ void InGameState::Render()
 	{
 		myText->Render();
 	}
+
 	VTUNE_EVENT_END();
 }
 
@@ -236,7 +233,14 @@ void InGameState::ReceiveNetworkMessage(const NetMessageAllClientsComplete& aMes
 
 void InGameState::ReceiveNetworkMessage(const NetMessageLevelComplete&, const sockaddr_in&)
 {
-	ClientNetworkManager::GetInstance()->AddMessage(NetMessageLevelComplete());
+	if (myLastLevel == 3)
+	{
+		myStateStack->PushSubGameState(new CompleteGameState());
+	}
+	else
+	{
+		ClientNetworkManager::GetInstance()->AddMessage(NetMessageLevelComplete());
+	}
 	ClientNetworkManager::GetInstance()->AllowSendWithoutSubscriber(true);
 	SAFE_DELETE(myLevel);
 	myLevelComplete = true;
@@ -251,13 +255,14 @@ void InGameState::ReceiveNetworkMessage(const NetMessageLoadLevel& aMessage, con
 		return;
 	}
 	//DL_ASSERT_EXP(myLevel == nullptr, "Level has to be nullptr here");
-	SET_RUNTIME(false);
-	myLevel = static_cast<ClientLevel*>(myLevelFactory->LoadLevel(aMessage.myLevelID, myCursor));
-	
 	int levelMusic = myLastLevel + 1;
 	std::string musicEvent("Stop_ElevatorToLevel" + std::to_string(levelMusic));
 	myHasStartedMusicBetweenLevels = true;
 	Prism::Audio::AudioInterface::GetInstance()->PostEvent(musicEvent.c_str(), 0);
+
+	SET_RUNTIME(false);
+
+	myLevel = static_cast<ClientLevel*>(myLevelFactory->LoadLevel(aMessage.myLevelID));
 
 	myLastLevel = aMessage.myLevelID;
 	ClientNetworkManager::GetInstance()->AllowSendWithoutSubscriber(false);
