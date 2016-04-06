@@ -189,6 +189,30 @@ namespace GUI
 		{
 			myClickEvent = new OnClickMessage(eOnClickEvent::RESUME_GAME);
 		}
+		else if (clickEvent == "IncreaseVolume")
+		{
+			myClickEvent = new OnClickMessage(eOnClickEvent::INCREASE_VOLUME);
+		}
+		else if (clickEvent == "LowerVolume")
+		{
+			myClickEvent = new OnClickMessage(eOnClickEvent::LOWER_VOLUME);
+		}
+		else if (clickEvent == "IncreaseMusic")
+		{
+			myClickEvent = new OnClickMessage(eOnClickEvent::INCREASE_MUSIC);
+		}
+		else if (clickEvent == "LowerMusic")
+		{
+			myClickEvent = new OnClickMessage(eOnClickEvent::LOWER_MUSIC);
+		}
+		else if (clickEvent == "IncreaseVoice")
+		{
+			myClickEvent = new OnClickMessage(eOnClickEvent::INCREASE_VOICE);
+		}
+		else if (clickEvent == "LowerVoice")
+		{
+			myClickEvent = new OnClickMessage(eOnClickEvent::LOWER_VOICE);
+		}
 		else
 		{
 			std::string message = "[ButtonWidget]: No onclick event named " + clickEvent;

@@ -10,14 +10,15 @@ namespace tinyxml2
 	class XMLElement;
 }
 
+
 class ClientLevelFactory : public SharedLevelFactory
 {
 public:
 	ClientLevelFactory(const std::string& aLevelListPath);
 	~ClientLevelFactory();
 
-	ClientLevel* LoadLevel(int aID);
-	ClientLevel* LoadCurrentLevel();
+	ClientLevel* LoadLevel(int aID, GUI::Cursor* aCursor, eStateStatus& aStateStatus);
+	ClientLevel* LoadCurrentLevel(GUI::Cursor* aCursor, eStateStatus& aStateStatus);
 
 private:
 	void ReadLevel(const std::string& aLevelPath) override;
