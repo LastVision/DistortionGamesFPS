@@ -24,6 +24,8 @@ namespace GUI
 			, int aCurrentHealth, int aMaxHealth, float aDeltaTime);
 		void Render();
 
+		void Rebuild(const eWeaponType aWeaponType, int aSize);
+
 	private:
 		void operator=(GUIManager3D&) = delete;
 

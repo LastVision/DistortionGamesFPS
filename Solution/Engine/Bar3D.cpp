@@ -99,6 +99,12 @@ namespace Prism
 		myValue = aValue;
 	}
 
+	void Bar3D::Rebuild(int aNumberOfQuads)
+	{
+		myNbrOfQuads = aNumberOfQuads;
+		CreateVertices(myNbrOfQuads);
+	}
+
 	void Bar3D::CreateVertices(int aNumberOfQuads)
 	{
 		int numbersToMake = aNumberOfQuads + 1;

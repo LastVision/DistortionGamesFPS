@@ -23,6 +23,7 @@
 #include <SharedNetworkManager.h>
 #include <Engine.h>
 #include <NetMessageOnHit.h>
+#include "UpgradeNote.h"
 
 FirstPersonRenderComponent::FirstPersonRenderComponent(Entity& aEntity, Prism::Scene* aScene)
 	: Component(aEntity)
@@ -613,6 +614,15 @@ void FirstPersonRenderComponent::ReceiveNetworkMessage(const NetMessagePressETex
 				break;
 			}
 		}
+	}
+}
+
+void FirstPersonRenderComponent::ReceiveNote(const UpgradeNote& aNote)
+{
+	if (aNote.myData.myClipSizeModifier > 0)
+	{
+		my3DGUIManager->Rebuild(aNote.myData.myWeaponType, aNote.myData.myClipSizeModifier);
+
 	}
 }
 

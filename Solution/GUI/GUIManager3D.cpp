@@ -93,4 +93,24 @@ namespace GUI
 		myShotgunIcon->Render(*myScene->GetCamera(), myWristOrientation);
 		myGrenadeLauncherIcon->Render(*myScene->GetCamera(), myWristOrientation);
 	}
+
+	void GUIManager3D::Rebuild(const eWeaponType aWeaponType, int aSize)
+	{
+		switch (aWeaponType)
+		{
+		case eWeaponType::PISTOL:
+			myTopBar->Rebuild(myPistolClipSize);
+			break;
+		case eWeaponType::SHOTGUN:
+			myRightBar->Rebuild(myShotgunClipSize);
+			break;
+		case eWeaponType::GRENADE_LAUNCHER:
+			myLeftBar->Rebuild(myGrenadeLauncherClipSize);
+			break;
+		default:
+			break;
+		}
+
+
+	}
 }
