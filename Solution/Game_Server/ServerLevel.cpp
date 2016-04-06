@@ -274,7 +274,7 @@ void ServerLevel::ReceiveMessage(const RespawnMessage &aMessage)
 
 	myPlayers[gid]->GetComponent<HealthComponent>()->Heal(myPlayers[gid]->GetComponent<HealthComponent>()->GetMaxHealth());
 	myPlayers[gid]->SetState(eEntityState::IDLE);
-	SharedNetworkManager::GetInstance()->AddMessage<NetMessageEntityState>(NetMessageEntityState(eEntityState::IDLE, gid + 1), gid);
+	SharedNetworkManager::GetInstance()->AddMessage<NetMessageEntityState>(NetMessageEntityState(eEntityState::IDLE, gid + 1), gid + 1);
 	myRespawnTriggers[gid]->GetComponent<PhysicsComponent>()->RemoveFromScene();
 	myPlayers[gid]->GetComponent<PhysicsComponent>()->Wake();
 }
