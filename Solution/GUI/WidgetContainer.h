@@ -36,6 +36,11 @@ namespace GUI
 
 		void SetButtonText(int aButtonId, const std::string& aText, bool& aSuccessOut) override;
 
+
+		Widget* At(const int& aIndex);
+		const Widget* At(const int& aIndex) const;
+
+
 	private:
 		CU::GrowingArray<Widget*> myWidgets;
 		Prism::SpriteProxy* myBackground;
@@ -48,5 +53,15 @@ namespace GUI
 	inline int WidgetContainer::GetSize() const
 	{
 		return myWidgets.Size();
+	}
+
+	inline Widget* WidgetContainer::At(const int& aIndex)
+	{
+		return myWidgets[aIndex];
+	}
+
+	inline const Widget* WidgetContainer::At(const int& aIndex) const
+	{
+		return myWidgets[aIndex];
 	}
 }

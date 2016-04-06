@@ -69,6 +69,7 @@ namespace GUI
 		SAFE_DELETE(myPistolIcon);
 		SAFE_DELETE(myShotgunIcon);
 		SAFE_DELETE(myGrenadeLauncherIcon);
+		SAFE_DELETE(myAmmoTotalText);
 	}
 
 	void GUIManager3D::Update(const CU::Matrix44<float>& aUIJointOrientation
