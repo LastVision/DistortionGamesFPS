@@ -107,7 +107,11 @@ const eStateStatus InGameState::Update(const float& aDeltaTime)
 
 	if (CU::InputWrapper::GetInstance()->KeyDown(DIK_ESCAPE))
 	{
-		return eStateStatus::ePopMainState;
+		myLevel->ToggleEscapeMenu();
+		//if (myLastLevel->WantsToQuit() == true)
+		//{
+		//	return eStateStatus::ePopMainState;
+		//}
 	}
 
 	//if (CU::InputWrapper::GetInstance()->KeyDown(DIK_NUMPAD1))
@@ -139,9 +143,10 @@ const eStateStatus InGameState::Update(const float& aDeltaTime)
 		myShouldLoadLevel = false;
 		SET_RUNTIME(false);
 		SAFE_DELETE(myLevel);
-		myLevel = static_cast<ClientLevel*>(myLevelFactory->LoadLevel(myLevelToLoad));
+		myLevel = static_cast<ClientLevel*>(myLevelFactory->LoadLevel(myLevelToLoad, myCursor));
 		myLevelToLoad = -1;
 	}
+
 
 	if (myLevelComplete == true)
 	{
@@ -193,7 +198,6 @@ void InGameState::Render()
 	{
 		myText->Render();
 	}
-
 	VTUNE_EVENT_END();
 }
 
@@ -248,7 +252,7 @@ void InGameState::ReceiveNetworkMessage(const NetMessageLoadLevel& aMessage, con
 	}
 	//DL_ASSERT_EXP(myLevel == nullptr, "Level has to be nullptr here");
 	SET_RUNTIME(false);
-	myLevel = static_cast<ClientLevel*>(myLevelFactory->LoadLevel(aMessage.myLevelID));
+	myLevel = static_cast<ClientLevel*>(myLevelFactory->LoadLevel(aMessage.myLevelID, myCursor));
 	
 	int levelMusic = myLastLevel + 1;
 	std::string musicEvent("Stop_ElevatorToLevel" + std::to_string(levelMusic));

@@ -30,12 +30,17 @@ public:
 
 	float GetWeaponForceStrength(eWeaponType aWeaponType) const;
 	void ReloadWeapon();
+
+
+	void SetIsInOptionsMenu(bool aIsInOptionsMenu);
 private:
 	void ReloadWeaponIntention();
 	Weapon* myCurrentWeapon;
 	Pistol* myPistol;
 	Shotgun* myShotgun;
 	GrenadeLauncher* myGrenadeLauncher;
+
+	bool myIsInOptionsMenu;
 };
 
 inline Weapon* ShootingComponent::GetCurrentWeapon()
@@ -52,4 +57,10 @@ inline eComponentType ShootingComponent::GetType()
 {
 	return GetTypeStatic();
 }
+
+inline void ShootingComponent::SetIsInOptionsMenu(bool aIsInOptionsMenu)
+{
+	myIsInOptionsMenu = aIsInOptionsMenu;
+}
+
 
