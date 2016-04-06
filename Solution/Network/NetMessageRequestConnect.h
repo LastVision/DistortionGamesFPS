@@ -3,7 +3,7 @@
 #include <GrowingArray.h>
 #include <GameEnum.h>
 
-class NetMessageRequestConnect : public NetImportantMessage
+class NetMessageRequestConnect : public NetMessage
 {
 public:
 	NetMessageRequestConnect(eGameType aGameType, const std::string& aName, short aServerID);
@@ -26,7 +26,7 @@ protected:
 };
 
 inline NetMessageRequestConnect::NetMessageRequestConnect(eGameType aGameType, const std::string& aName, short aServerID)
-	: NetImportantMessage(eNetMessageType::ON_CONNECT)
+	: NetMessage(eNetMessageType::ON_CONNECT)
 	, myName(aName)
 	, myServerID(aServerID)
 {
@@ -34,12 +34,12 @@ inline NetMessageRequestConnect::NetMessageRequestConnect(eGameType aGameType, c
 }
 
 inline NetMessageRequestConnect::NetMessageRequestConnect()
-	: NetImportantMessage(eNetMessageType::ON_CONNECT)
+	: NetMessage(eNetMessageType::ON_CONNECT)
 {
 }
 
 inline NetMessageRequestConnect::NetMessageRequestConnect(eGameType aGameType, const std::string& aName, short aServerID, short aOtherClientID)
-	: NetImportantMessage(eNetMessageType::ON_CONNECT)
+	: NetMessage(eNetMessageType::ON_CONNECT)
 	, myName(aName)
 	, myServerID(aServerID)
 	, myOtherClientID(aOtherClientID)
