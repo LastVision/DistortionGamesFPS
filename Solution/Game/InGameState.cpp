@@ -140,7 +140,7 @@ const eStateStatus InGameState::Update(const float& aDeltaTime)
 		myShouldLoadLevel = false;
 		SET_RUNTIME(false);
 		SAFE_DELETE(myLevel);
-		myLevel = static_cast<ClientLevel*>(myLevelFactory->LoadLevel(myLevelToLoad));
+		myLevel = static_cast<ClientLevel*>(myLevelFactory->LoadLevel(myLevelToLoad, myCursor));
 		myLevelToLoad = -1;
 	}
 
@@ -262,7 +262,7 @@ void InGameState::ReceiveNetworkMessage(const NetMessageLoadLevel& aMessage, con
 
 	SET_RUNTIME(false);
 
-	myLevel = static_cast<ClientLevel*>(myLevelFactory->LoadLevel(aMessage.myLevelID));
+	myLevel = static_cast<ClientLevel*>(myLevelFactory->LoadLevel(aMessage.myLevelID, myCursor));
 
 	myLastLevel = aMessage.myLevelID;
 	ClientNetworkManager::GetInstance()->AllowSendWithoutSubscriber(false);
