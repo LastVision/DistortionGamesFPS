@@ -56,7 +56,10 @@ void ServerLobbyState::EndState()
 const eStateStatus ServerLobbyState::Update(const float aDeltaTime)
 {
 	aDeltaTime;
-
+	if (ServerNetworkManager::GetInstance()->GetClients().Size() <= 0)
+	{
+		myStateStatus = eStateStatus::POP_MAIN_STATE;
+	}
 	return myStateStatus;
 }
 
@@ -112,7 +115,7 @@ void ServerLobbyState::ReceiveNetworkMessage(const NetMessageRequestServer&, con
 
 void ServerLobbyState::ReceiveNetworkMessage(const NetMessageDisconnect& aMessage, const sockaddr_in&)
 {
-	if (aMessage.mySenderID == 1)
+	if (aMessage.mySenderID == 1 || ServerNetworkManager::GetInstance()->GetClients().Size() <= 0)
 	{
 		ServerNetworkManager::GetInstance()->DisconnectAll();
 		myStateStatus = eStateStatus::POP_MAIN_STATE;
