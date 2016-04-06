@@ -93,7 +93,7 @@ void HealthComponent::TakeDamage(int aDamage)
 
 void HealthComponent::ReceiveNetworkMessage(const NetMessageOnHit& aMessage, const sockaddr_in&)
 {
-	if (myEntity.GetIsClient() == false && myEntity.GetGID() == aMessage.myGID)
+	if (myEntity.GetIsClient() == false && myEntity.GetGID() == aMessage.myGID && myEntity.GetState() != eEntityState::DIE)
 	{
 		TakeDamage(aMessage.myDamage);
 	}
