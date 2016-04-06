@@ -34,6 +34,8 @@ LobbyState::~LobbyState()
 	SAFE_DELETE(myGUIManager);
 	SAFE_DELETE(myGUIManagerHost);
 	SAFE_DELETE(myText);
+	SAFE_DELETE(myPlayerListText);
+	SAFE_DELETE(myWaitingForHostText);
 	myCursor = nullptr;
 	PostMaster::GetInstance()->UnSubscribe(eMessageType::ON_CLICK, this);
 	PostMaster::GetInstance()->UnSubscribe(eMessageType::ON_RADIO_BUTTON, this);
