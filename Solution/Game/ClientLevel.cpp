@@ -540,6 +540,13 @@ void ClientLevel::AddWorldText(const std::string& aText, const CU::Vector3<float
 	myWorldTexts.Add(toAdd);
 }
 
+void ClientLevel::OnResize(float aWidth, float aHeight)
+{
+	myFullscreenRenderer->OnResize(aWidth, aHeight);
+	myDeferredRenderer->OnResize(aWidth, aHeight);
+	bool escapeMenuResizeHere = true;
+}
+
 void ClientLevel::HandleTrigger(Entity& aFirstEntity, Entity& aSecondEntity, bool aHasEntered)
 {
 	if (aSecondEntity.GetType() == eEntityType::PLAYER)

@@ -272,4 +272,8 @@ void InGameState::ReceiveNetworkMessage(const NetMessageLoadLevel& aMessage, con
 void InGameState::OnResize(int aWidth, int aHeight)
 {
 	myElevatorSprite->SetSize({ float(aWidth), float(aHeight )}, { 0.f, 0.f });
+	if (myLevel != nullptr)
+	{
+		myLevel->OnResize(float(aWidth), float(aHeight));
+	}
 }

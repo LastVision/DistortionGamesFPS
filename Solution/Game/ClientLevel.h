@@ -47,6 +47,8 @@ public:
 	void DebugMusic();
 	void AddWorldText(const std::string& aText, const CU::Vector3<float>& aPosition, float aRotationAroundY, const CU::Vector4<float>& aColor);
 
+	void OnResize(float aWidth, float aHeight);
+
 private:
 	void HandleTrigger(Entity& aFirstEntity, Entity& aSecondEntity, bool aHasEntered) override;
 	void CreatePlayers();
