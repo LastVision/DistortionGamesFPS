@@ -215,7 +215,7 @@ void LobbyState::ReceiveNetworkMessage(const NetMessageDisconnect& aMessage, con
 void LobbyState::ReceiveNetworkMessage(const NetMessageSetLevel& aMessage, const sockaddr_in&)
 {
 	myLevelToStart = aMessage.myLevelID;
-	myText->SetText(CU::Concatenate("Current level: %i", myLevelToStart+1));
+	myText->SetText(CU::Concatenate("Current level: %i", min(myLevelToStart+1, 3)));
 }
 
 void LobbyState::ReceiveNetworkMessage(const NetMessageLoadLevel& aMessage, const sockaddr_in&)
