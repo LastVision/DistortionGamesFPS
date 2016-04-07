@@ -146,7 +146,7 @@ void ServerInGameState::LevelUpdate(float aDeltaTime)
 		myState = eInGameStates::LEVEL_COMPLETE;
 		myLevelID = nextLevel;
 		myRespondedClients.RemoveAll();
-		ServerNetworkManager::GetInstance()->AddMessage(NetMessageLevelComplete());
+		ServerNetworkManager::GetInstance()->AddMessage(NetMessageLevelComplete(false));
 	}
 	else
 	{

@@ -35,6 +35,7 @@ InGameState::InGameState(int aLevelID, unsigned int aServerHashLevelValue)
 	, myShouldLoadLevel(true)
 	, myLevel(nullptr)
 	, myLevelComplete(false)
+	, myFailedLevel(false)
 	, myCanStartNextLevel(false)
 	, myFailedLevelHash(false)
 	, myServerHashLevelValue(aServerHashLevelValue)
@@ -46,8 +47,10 @@ InGameState::InGameState(int aLevelID, unsigned int aServerHashLevelValue)
 	myHashLevelValue = Hash(CU::ReadFileToString(myLevelFactory->GetLevelPath(aLevelID)).c_str());
 	
 	
-	myElevatorSprite = Prism::ModelLoader::GetInstance()->LoadSprite(
+	myLevelCompleteSprite = Prism::ModelLoader::GetInstance()->LoadSprite(
 		"Data/Resource/Texture/Menu/BetweenLevels/T_background_elevator.dds", { 1920.f, 1080.f });
+	myLevelFailedSprite = Prism::ModelLoader::GetInstance()->LoadSprite(
+		"Data/Resource/Texture/Menu/T_background_gameover.dds", { 1920.f, 1080.f });
 	CU::Vector2<int> windowSize = Prism::Engine::GetInstance()->GetWindowSizeInt();
 	OnResize(windowSize.x, windowSize.y);
 }
@@ -59,7 +62,8 @@ InGameState::~InGameState()
 	ClientNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::ALL_CLIENTS_COMPLETE, this);
 	ClientNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::LOAD_LEVEL, this);
 	Console::Destroy();
-	SAFE_DELETE(myElevatorSprite);
+	SAFE_DELETE(myLevelCompleteSprite);
+	SAFE_DELETE(myLevelFailedSprite);
 	SAFE_DELETE(myLevel);
 	SAFE_DELETE(myLevelFactory);
 	SAFE_DELETE(myText);
@@ -148,8 +152,7 @@ const eStateStatus InGameState::Update(const float& aDeltaTime)
 
 	if (myLevelComplete == true)
 	{
-		DEBUG_PRINT("LEVEL COMPLETE");
-		myElevatorSprite->Render({ 0.f, 0.f });
+		myLevelCompleteSprite->Render({ 0.f, 0.f });
 		if (myHasStartedMusicBetweenLevels == false)
 		{
 			int levelMusic = myLastLevel + 1;
@@ -161,15 +164,32 @@ const eStateStatus InGameState::Update(const float& aDeltaTime)
 		if (myCanStartNextLevel == true)
 		{
 			DEBUG_PRINT("Press space to continue!");
-			myText->SetText("Level Complete or Game Over\nPress space to continue");
+			myText->SetText("Press space to continue");
 			if (CU::InputWrapper::GetInstance()->KeyDown(DIK_SPACE) == true)
 			{
 				ClientNetworkManager::GetInstance()->AddMessage(NetMessageRequestStartLevel());
 			}
 		}
-		else
+	}
+	else if (myFailedLevel == true)
+	{
+		myLevelFailedSprite->Render({ 0.f, 0.f });
+		if (myHasStartedMusicBetweenLevels == false)
 		{
-			myText->SetText("Level Complete or Game Over");
+			int levelMusic = myLastLevel + 1;
+			std::string musicEvent("Play_ElevatorToLevel" + std::to_string(levelMusic));
+			myHasStartedMusicBetweenLevels = true;
+			Prism::Audio::AudioInterface::GetInstance()->PostEvent(musicEvent.c_str(), 0);
+		}
+
+		if (myCanStartNextLevel == true)
+		{
+			DEBUG_PRINT("Press space to continue!");
+			myText->SetText("Press space to continue");
+			if (CU::InputWrapper::GetInstance()->KeyDown(DIK_SPACE) == true)
+			{
+				ClientNetworkManager::GetInstance()->AddMessage(NetMessageRequestStartLevel());
+			}
 		}
 	}
 	else
@@ -188,7 +208,7 @@ void InGameState::Render()
 {
 	VTUNE_EVENT_BEGIN(VTUNE::GAME_RENDER);
 
-	if (myLevelComplete == false)
+	if (myLevelComplete == false && myFailedLevel == false)
 	{
 		myLevel->Render();
 	}
@@ -229,24 +249,35 @@ void InGameState::ReceiveNetworkMessage(const NetMessageAllClientsComplete& aMes
 		break;
 	case NetMessageAllClientsComplete::eType::LEVEL_LOAD:
 		myLevelComplete = false;
+		myFailedLevel = false;
 		break;
 	}
 }
 
-void InGameState::ReceiveNetworkMessage(const NetMessageLevelComplete&, const sockaddr_in&)
+void InGameState::ReceiveNetworkMessage(const NetMessageLevelComplete& aMsg, const sockaddr_in&)
 {
-	if (myLastLevel == 3)
+	if (myLastLevel == 3 && aMsg.myAllPlayersDied == false)
 	{
 		myStateStack->PushSubGameState(new CompleteGameState());
 	}
 	else
 	{
-		ClientNetworkManager::GetInstance()->AddMessage(NetMessageLevelComplete());
+		ClientNetworkManager::GetInstance()->AddMessage(NetMessageLevelComplete(aMsg.myAllPlayersDied));
 	}
 	ClientNetworkManager::GetInstance()->AllowSendWithoutSubscriber(true);
 	SAFE_DELETE(myLevel);
-	myLevelComplete = true;
 	myHasStartedMusicBetweenLevels = false;
+
+	if (aMsg.myAllPlayersDied == true)
+	{
+		myFailedLevel = true;
+		DL_ASSERT_EXP(myLevelComplete == false, "Level error");
+	}
+	else
+	{
+		myLevelComplete = true;
+		DL_ASSERT_EXP(myFailedLevel == false, "Level error");
+	}
 }
 
 void InGameState::ReceiveNetworkMessage(const NetMessageLoadLevel& aMessage, const sockaddr_in&)
@@ -273,7 +304,8 @@ void InGameState::ReceiveNetworkMessage(const NetMessageLoadLevel& aMessage, con
 
 void InGameState::OnResize(int aWidth, int aHeight)
 {
-	myElevatorSprite->SetSize({ float(aWidth), float(aHeight )}, { 0.f, 0.f });
+	myLevelCompleteSprite->SetSize({ float(aWidth), float(aHeight) }, { 0.f, 0.f });
+	myLevelFailedSprite->SetSize({ float(aWidth), float(aHeight) }, { 0.f, 0.f });
 	if (myLevel != nullptr)
 	{
 		myLevel->OnResize(float(aWidth), float(aHeight));

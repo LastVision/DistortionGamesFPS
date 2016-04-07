@@ -113,7 +113,7 @@ void PollingStation::HasDied(Entity* anEntity)
 
 		if (allPlayersDead == true)
 		{
-			SharedNetworkManager::GetInstance()->AddMessage(NetMessageLevelComplete());
+			SharedNetworkManager::GetInstance()->AddMessage(NetMessageLevelComplete(true));
 		}
 	}
 	else
