@@ -122,9 +122,9 @@ namespace GUI
 		myShotgunIcon->Render(*myScene->GetCamera(), myWristOrientation);
 		myGrenadeLauncherIcon->Render(*myScene->GetCamera(), myWristOrientation);
 		
-		myAmmoTotalText->SetOrientation(myWristOrientation);
+		myAmmoTotalText->SetOrientation(myHealthOrientation);
 
-		myAmmoTotalText->Render(myScene->GetCamera(), 300.f);
+		myAmmoTotalText->Render(myScene->GetCamera(), 500.f);
 	}
 
 	void GUIManager3D::Rebuild(const eWeaponType aWeaponType, int aSize)
