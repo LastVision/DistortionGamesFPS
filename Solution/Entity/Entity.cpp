@@ -235,6 +235,11 @@ void Entity::AddToScene()
 	DL_ASSERT_EXP(myIsInScene == false, "Tried to add Entity to scene twice");
 	DL_ASSERT_EXP(myIsClientSide == true, "You can't add Entity to scene on server side.");
 
+	if (myIsInScene == true || myIsClientSide == false)
+	{
+		return;
+	}
+
 	if (GetComponent<GraphicsComponent>() != nullptr && GetComponent<GraphicsComponent>()->GetInstance() != nullptr)
 	{
 		myScene->AddInstance(GetComponent<GraphicsComponent>()->GetInstance(), myRoomType);
