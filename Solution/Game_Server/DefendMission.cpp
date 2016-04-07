@@ -7,14 +7,17 @@
 #include <PollingStation.h>
 #include <PostMaster.h>
 
-DefendMission::DefendMission(const std::string& aMissionType, float aSecondsToDefend, bool aShouldLoopMissionEvents)
-	: Mission(aMissionType, aShouldLoopMissionEvents)
+DefendMission::DefendMission(const std::string& aMissionType, int aMissionID, float aSecondsToDefend, bool aShouldLoopMissionEvents
+	, const std::string& aProgressText, bool aProgressShouldCountDown)
+	: Mission(aMissionType, aMissionID, aShouldLoopMissionEvents)
 	, myDefendTime(aSecondsToDefend)
 	, myMaxDefendTime(aSecondsToDefend)
 	, myShouldCountDown(true)
 	, myEnemiesInside(0)
 	, myLastSecondToWarn(int(aSecondsToDefend))
 	, mySendTime(2.f)
+	, myProgressText(aProgressText)
+	, myProgressShouldCountDown(aProgressShouldCountDown)
 {
 }
 
@@ -44,8 +47,12 @@ bool DefendMission::Update(float aDeltaTime)
 		mySendTime -= aDeltaTime;
 		if (mySendTime <= 0.f)
 		{
-			int percentage = 100 - (int((myDefendTime / myMaxDefendTime) * 100));
-			ServerNetworkManager::GetInstance()->AddMessage(NetMessageText("Virus upload: " + std::to_string(percentage) + " %", 1.f, true, true));
+			int progress = (int((myDefendTime / myMaxDefendTime) * 100));
+			if (myProgressShouldCountDown == false)
+			{
+				progress = 100 - progress;
+			}
+			ServerNetworkManager::GetInstance()->AddMessage(NetMessageText(myProgressText + std::to_string(progress) + " %", 1.f, true, true));
 			mySendTime = 2.f;
 		}
 
@@ -78,12 +85,6 @@ bool DefendMission::Update(float aDeltaTime)
 				}
 			}
 		}
-		//test:
-		//if (myLastSecondToWarn == int(myDefendTime))
-		//{
-		//	myLastSecondToWarn = int(myDefendTime);
-		//	PostMaster::GetInstance()->SendMessage<SendTextToClientsMessage>(SendTextToClientsMessage("Hold out: " + std::to_string(myLastSecondToWarn), 1.f));
-		//}
 		return false;
 	}
 	else if (myEndEvents.Size() > 0)
@@ -96,9 +97,6 @@ bool DefendMission::Update(float aDeltaTime)
 		}
 		return false;
 	}
-
-	//PostMaster::GetInstance()->SendMessage<SendTextToClientsMessage>(SendTextToClientsMessage("Mission complete"));
-	//ServerNetworkManager::GetInstance()->AddMessage(NetMessageDisplayMarker({ 0.f, 0.f, 0.f }, false));
 	PollingStation::GetInstance()->ResetEnemyTargetPosition();
 	return true;
 }
@@ -112,7 +110,6 @@ void DefendMission::AddValue(int aValue)
 		text = "A unit left defend zone";
 	}
 
-	//PostMaster::GetInstance()->SendMessage<SendTextToClientsMessage>(SendTextToClientsMessage(text));
 	ServerNetworkManager::GetInstance()->AddMessage(NetMessageText(text));
 
 	myEnemiesInside += aValue;
