@@ -126,10 +126,13 @@ ClientLevel::ClientLevel(GUI::Cursor* aCursor, eStateStatus& aStateStatus)
 	mySfxVolume = Prism::Audio::AudioInterface::GetInstance()->GetSFXVolume();
 	myMusicVolume = Prism::Audio::AudioInterface::GetInstance()->GetMusicVolume();
 	myVoiceVolume = Prism::Audio::AudioInterface::GetInstance()->GetVoiceVolume();
-
+	while (myVoiceText->IsLoaded() == false || mySFXText->IsLoaded() == false || myMusicText->IsLoaded() == false)
+	{
+	}
 	mySFXText->SetText("SFX: " + std::to_string(mySfxVolume));
 	myMusicText->SetText("Music: " + std::to_string(myMusicVolume));
 	myVoiceText->SetText("Voice: " + std::to_string(myVoiceVolume));
+
 }
 
 ClientLevel::~ClientLevel()

@@ -6,6 +6,7 @@
 #include "PhysicsComponent.h"
 #include <PhysicsInterface.h>
 #include "GrenadeComponent.h"
+#include "InputComponent.h"
 #include <NetMessageShootGrenade.h>
 #include <SharedNetworkManager.h>
 
@@ -50,7 +51,9 @@ bool GrenadeLauncher::Shoot(const CU::Matrix44<float>&)
 	if (myAmmoInClip > 0 && myShootTimer <= 0.f && myBullets.Size() < 1024)
 	{
 		//Skicka grenademessage(aOrientation.GetForward());
-		SharedNetworkManager::GetInstance()->AddMessage<NetMessageShootGrenade>(NetMessageShootGrenade(int(myForceStrength)));
+		
+		SharedNetworkManager::GetInstance()->AddMessage<NetMessageShootGrenade>(NetMessageShootGrenade(int(myForceStrength)
+			, myOwnerEntity->GetComponent<InputComponent>()->GetEyeOrientation().GetForward()));
 
 		//ShootAtDirection(aOrientation);
 		myAmmoInClip -= 1;

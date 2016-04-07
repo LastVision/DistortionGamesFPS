@@ -6,11 +6,13 @@
 #include <GUIManager.h>
 #include <InputWrapper.h>
 #include "LobbyState.h"
+#include <ModelLoader.h>
 #include <NetMessageReplyServer.h>
 #include <NetMessageRequestServer.h>
 #include <OnClickMessage.h>
 #include <PostMaster.h>
 #include "ServerSelectState.h"
+#include <TextProxy.h>
 
 
 ServerSelectState::ServerSelectState(eType aType)
@@ -24,6 +26,7 @@ ServerSelectState::ServerSelectState(eType aType)
 
 ServerSelectState::~ServerSelectState()
 {
+	SAFE_DELETE(mySearchingForServers);
 	SAFE_DELETE(myGUIManager);
 	myCursor = nullptr;
 	PostMaster::GetInstance()->UnSubscribe(eMessageType::ON_CLICK, this);
@@ -44,6 +47,12 @@ void ServerSelectState::InitState(StateStackProxy* aStateStackProxy, GUI::Cursor
 
 	const CU::Vector2<int>& windowSize = Prism::Engine::GetInstance()->GetWindowSizeInt();
 	OnResize(windowSize.x, windowSize.y);
+
+	mySearchingForServers = Prism::ModelLoader::GetInstance()->LoadText(Prism::Engine::GetInstance()->GetFont(Prism::eFont::CONSOLE));
+	Prism::ModelLoader::GetInstance()->WaitUntilFinished();
+	mySearchingForServers->SetPosition({ 800.f, 200.f });
+	mySearchingForServers->SetText("Searching for servers...");
+	mySearchingForServers->SetScale({ 1.f, 1.f });
 	/*
 	std::ifstream stream;
 	stream.open("Data/Setting/ip.txt");
@@ -165,6 +174,10 @@ const eStateStatus ServerSelectState::Update(const float& aDeltaTime)
 void ServerSelectState::Render()
 {
 	myGUIManager->Render();
+	if (myServers.Size() <= 0)
+	{
+		mySearchingForServers->Render();
+	}
 }
 
 void ServerSelectState::ResumeState()
