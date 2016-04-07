@@ -62,19 +62,19 @@ void LobbyState::InitState(StateStackProxy* aStateStackProxy, GUI::Cursor* aCurs
 	myGUIManagerHost = new GUI::GUIManager(myCursor, "Data/Resource/GUI/GUI_Lobby_host.xml", nullptr, -1);
 
 	myText = Prism::ModelLoader::GetInstance()->LoadText(Prism::Engine::GetInstance()->GetFont(Prism::eFont::CONSOLE));
+	myPlayerListText = Prism::ModelLoader::GetInstance()->LoadText(Prism::Engine::GetInstance()->GetFont(Prism::eFont::CONSOLE));
+	myWaitingForHostText = Prism::ModelLoader::GetInstance()->LoadText(Prism::Engine::GetInstance()->GetFont(Prism::eFont::CONSOLE));
 	Prism::ModelLoader::GetInstance()->WaitUntilFinished();
+
+
 	myText->SetPosition({ 800.f, 800.f });
 	myText->SetText("No current level selected.");
 	myText->SetScale({ 1.f, 1.f });
 
-	myPlayerListText = Prism::ModelLoader::GetInstance()->LoadText(Prism::Engine::GetInstance()->GetFont(Prism::eFont::CONSOLE));
-	Prism::ModelLoader::GetInstance()->WaitUntilFinished();
 	myPlayerListText->SetPosition({ 20, 800.f });
 	myPlayerListText->SetText("Player Online:\n");
 	myPlayerListText->SetScale({ 1.f, 1.f });
 
-	myWaitingForHostText = Prism::ModelLoader::GetInstance()->LoadText(Prism::Engine::GetInstance()->GetFont(Prism::eFont::CONSOLE));
-	Prism::ModelLoader::GetInstance()->WaitUntilFinished();
 	myWaitingForHostText->SetPosition({ 800.f, 200.f });
 	myWaitingForHostText->SetText("Waiting for host...");
 	myWaitingForHostText->SetScale({ 1.f, 1.f });

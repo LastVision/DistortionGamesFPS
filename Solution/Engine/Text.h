@@ -21,6 +21,8 @@ namespace Prism
 		void SetScale(const CU::Vector2<float>& aScale);
 		float GetWidth() const;
 
+		const std::string& GetText() const;
+
 	private:
 		void operator=(Text&) = delete;
 		void ConstructBuffers();
@@ -53,4 +55,9 @@ inline void Prism::Text::SetScale(const CU::Vector2<float>&)
 inline void Prism::Text::SetColor(const CU::Vector4<float>& aColor)
 {
 	myColor = aColor;
+}
+
+inline const std::string& Prism::Text::GetText() const
+{
+	return myText;
 }

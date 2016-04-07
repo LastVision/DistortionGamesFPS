@@ -225,7 +225,7 @@ void ClientLevel::Update(const float aDeltaTime, bool aLoadingScreen)
 		ClientNetworkManager::GetInstance()->AddMessage(NetMessageLevelLoaded());
 
 		SET_RUNTIME(false);
-		myDeferredRenderer->GenerateSHData(myScene, myMinPoint, myMaxPoint, myName);
+		myDeferredRenderer->LoadSHData(myMinPoint, myMaxPoint, myName);
 		RESET_RUNTIME;
 	}
 
@@ -250,10 +250,14 @@ void ClientLevel::Update(const float aDeltaTime, bool aLoadingScreen)
 	{
 		myDeferredRenderer->GenerateCubemap(myScene, myName);
 	}
+	if (CU::InputWrapper::GetInstance()->KeyDown(DIK_L))
+	{
+		myDeferredRenderer->GenerateSHData(myScene, myMinPoint, myMaxPoint, myName);
+	}
 
 	if (myWorldTexts.Size() > 0)
 	{
-		if (Prism::ModelLoader::GetInstance()->IsLoading() == false && myWorldTexts[0].myProxy->IsLoaded() == true)
+		//if (Prism::ModelLoader::GetInstance()->IsLoading() == false && myWorldTexts[0].myProxy->IsLoaded() == true)
 		{
 			for (int i = 0; i < myWorldTexts.Size(); ++i)
 			{
@@ -330,9 +334,7 @@ void ClientLevel::Render()
 
 		myEmitterManager->RenderEmitters();
 
-
 		myPlayer->GetComponent<FirstPersonRenderComponent>()->Render();
-		//myPlayer->GetComponent<ShootingComponent>()->Render();
 
 		myTextManager->Render();
 

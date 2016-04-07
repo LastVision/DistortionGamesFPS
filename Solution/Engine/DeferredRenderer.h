@@ -100,6 +100,8 @@ namespace Prism
 		void GenerateCubemap(Scene* aScene, const std::string& aName);
 		void GenerateSHData(Scene* aScene
 			, const CU::Vector3<float>& aMinPoint, const CU::Vector3<float>& aMaxPoint, const std::string& aName);
+		void LoadSHData(const CU::Vector3<float>& aMinPoint, const CU::Vector3<float>& aMaxPoint, const std::string& aName);
+
 		void SetCubeMap(const std::string& aFilePath);
 
 		Texture* GetFinishedTexture();

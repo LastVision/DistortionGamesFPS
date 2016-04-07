@@ -10,7 +10,7 @@ namespace Prism
 	class PointLight
 	{
 	public:
-		PointLight(unsigned int aGID);
+		PointLight(unsigned int aGID, bool aAmbientOnly);
 		~PointLight();
 		void Render(const Camera& aCamera);
 		void Update();
@@ -24,6 +24,8 @@ namespace Prism
 		void SetRange(float aRange);
 		float GetRange() const;
 
+		bool GetAmbientOnly() const;
+
 		const PointLightData& GetLightData() const;
 	private:
 		unsigned int myGID;
@@ -31,6 +33,7 @@ namespace Prism
 		CU::Matrix44<float> myOrientation;
 
 		float myRange;
+		bool myAmbientOnly;
 
 		Instance* myLightMesh; 
 		PointLightData myLightData;
@@ -64,6 +67,11 @@ namespace Prism
 	inline float PointLight::GetRange() const
 	{
 		return myRange;
+	}
+
+	inline bool PointLight::GetAmbientOnly() const
+	{
+		return myAmbientOnly;
 	}
 
 	inline const PointLightData& PointLight::GetLightData() const

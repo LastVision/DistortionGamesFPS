@@ -52,6 +52,7 @@ namespace Prism
 
 		CU::GrowingArray<DirectionalLight*> myDirectionalLights;
 		CU::GrowingArray<PointLight*> myPointLights;
+		CU::GrowingArray<PointLight*> myAmbientPointLights;
 		CU::GrowingArray<SpotLight*> mySpotLights;
 		InstancingHelper* myInstancingHelper;
 

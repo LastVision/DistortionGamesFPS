@@ -20,6 +20,7 @@ namespace Prism
 	{
 		myDirectionalLights.Init(4);
 		myPointLights.Init(128);
+		myAmbientPointLights.Init(128);
 		mySpotLights.Init(4);
 
 		memset(&myDirectionalLightData[0], 0, sizeof(DirectionalLightData) * NUMBER_OF_DIRECTIONAL_LIGHTS);
@@ -100,8 +101,13 @@ namespace Prism
 
 	void Scene::AddLight(PointLight* aLight)
 	{
-		myPointLights.Add(aLight);
-		myRoomManager->Add(aLight);
+		myAmbientPointLights.Add(aLight);
+
+		if (aLight->GetAmbientOnly() == false)
+		{
+			myPointLights.Add(aLight);
+			myRoomManager->Add(aLight);
+		}
 	}
 
 	void Scene::AddLight(SpotLight* aLight)
@@ -159,7 +165,7 @@ namespace Prism
 			return myRoomManager->GetActivePointLights();
 		}
 
-		return myPointLights;
+		return myAmbientPointLights;
 	}
 
 	const CU::GrowingArray<SpotLight*>& Scene::GetSpotLights(bool aUseRoomManager) const

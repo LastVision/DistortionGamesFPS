@@ -11,6 +11,7 @@ Prism::Text::Text(const FontProxy& aFont, bool aIs3d, bool aShouldFollowCamera)
 	: myFont(aFont)
 	, myColor(1.f, 1.f, 1.f, 1.f)
 	, myShouldFollowCamera(aShouldFollowCamera)
+	, myText("")
 {
 	if (aIs3d == false)
 	{
