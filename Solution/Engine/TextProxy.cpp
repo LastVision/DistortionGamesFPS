@@ -70,7 +70,12 @@ namespace Prism
 
 	void TextProxy::Render(const Camera* aCamera)
 	{
-		myText->Render(aCamera, my3DOrientation, myScale, myColor);
+		myText->Render(aCamera, my3DOrientation, myColor);
+	}
+
+	void TextProxy::Render(const Camera* aCamera, float aScaleValue)
+	{
+		myText->Render(aCamera, my3DOrientation, { aScaleValue, aScaleValue }, myColor);
 	}
 
 	void TextProxy::SetScale(const CU::Vector2<float>&)

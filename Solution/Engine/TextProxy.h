@@ -18,6 +18,7 @@ namespace Prism
 		void SetColor(const CU::Vector4<float>& aColor);
 		void Render();
 		void Render(const Camera* aCamera);
+		void Render(const Camera* aCamera, float aScaleValue);
 		void SetScale(const CU::Vector2<float>& aScale);
 		float GetWidth() const;
 

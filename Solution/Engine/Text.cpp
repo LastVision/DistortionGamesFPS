@@ -89,7 +89,7 @@ void Prism::Text::Render(const CU::Vector2<float>& aPosition, const CU::Vector2<
 	Engine::GetInstance()->SetDepthBufferState(eDepthStencil::Z_ENABLED);
 }
 
-void Prism::Text::Render(const Camera* aCamera, const CU::Matrix44<float>& aOrientation, const CU::Vector2<float>&, const CU::Vector4<float>& aColor)
+void Prism::Text::Render(const Camera* aCamera, const CU::Matrix44<float>& aOrientation, const CU::Vector4<float>& aColor)
 {
 	Engine::GetInstance()->SetDepthBufferState(eDepthStencil::Z_DISABLED);
 	float blendFactor[4];
@@ -110,7 +110,35 @@ void Prism::Text::Render(const Camera* aCamera, const CU::Matrix44<float>& aOrie
 	myEffect->SetViewMatrix(CU::InverseSimple(aCamera->GetOrientation()));
 	myEffect->SetProjectionMatrix(aCamera->GetProjection());
 	myEffect->SetViewProjectionMatrix(aCamera->GetViewProjection());
-	//myEffect->SetPosAndScale(aPosition, aScale);
+	myEffect->SetPosAndScale({ 0.f, 0.f }, { 200.f, 200.f });
+	myEffect->SetColor(aColor);
+
+	BaseModel::Render();
+	Engine::GetInstance()->SetDepthBufferState(eDepthStencil::Z_ENABLED);
+}
+
+void Prism::Text::Render(const Camera* aCamera, const CU::Matrix44<float>& aOrientation, const CU::Vector2<float>& aScale, const CU::Vector4<float>& aColor)
+{
+	Engine::GetInstance()->SetDepthBufferState(eDepthStencil::Z_DISABLED);
+	float blendFactor[4];
+	blendFactor[0] = 0.f;
+	blendFactor[1] = 0.f;
+	blendFactor[2] = 0.f;
+	blendFactor[3] = 0.f;
+
+	myEffect->SetBlendState(myBlendState, blendFactor);
+	if (myShouldFollowCamera == true)
+	{
+		myEffect->SetWorldMatrix(aOrientation * aCamera->GetOrientation());
+	}
+	else
+	{
+		myEffect->SetWorldMatrix(aOrientation);
+	}
+	myEffect->SetViewMatrix(CU::InverseSimple(aCamera->GetOrientation()));
+	myEffect->SetProjectionMatrix(aCamera->GetProjection());
+	myEffect->SetViewProjectionMatrix(aCamera->GetViewProjection());
+	myEffect->SetPosAndScale({ 0.f, 0.f }, aScale);
 	myEffect->SetColor(aColor);
 
 	BaseModel::Render();
