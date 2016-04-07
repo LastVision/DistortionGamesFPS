@@ -36,7 +36,7 @@ public:
 	void SetMinMax(const CU::Vector3<float>& aMinPoint, const CU::Vector3<float>& aMaxPoint);
 	void SetName(const std::string& aName);
 
-	void Update(const float aDeltaTime) override;
+	void Update(const float aDeltaTime, bool aLoadingScreen) override;
 	void Render();
 	
 	Prism::Scene* GetScene();
@@ -57,6 +57,7 @@ public:
 	void DebugMusic();
 	void AddWorldText(const std::string& aText, const CU::Vector3<float>& aPosition, float aRotationAroundY, const CU::Vector4<float>& aColor);
 
+	void OnResize(float aWidth, float aHeight);
 	void ToggleEscapeMenu();
 
 private:

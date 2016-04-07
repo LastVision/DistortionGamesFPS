@@ -3,6 +3,7 @@
 #include <Room.h>
 #include "EmitterManager.h"
 #include <EmitterMessage.h>
+#include <ModelLoader.h>
 #include <ParticleDataContainer.h>
 #include <ParticleEmitterInstance.h>
 #include <PostMaster.h>
@@ -20,12 +21,14 @@ EmitterManager::EmitterManager()
 {
 	PostMaster* postMaster = PostMaster::GetInstance();
 	postMaster->Subscribe(eMessageType::PARTICLE, this);
+	Prism::ModelLoader::GetInstance()->Pause();
 	ReadListOfLists("Data/Resource/Particle/LI_emitter_lists.xml");
 
 	for (auto it = myEmitters.begin(); it != myEmitters.end(); ++it)
 	{
 		myEmitterList.Add(it->second);
 	}
+	Prism::ModelLoader::GetInstance()->UnPause();
 }
 
 EmitterManager::~EmitterManager()
@@ -47,23 +50,24 @@ void EmitterManager::Initiate(Prism::Camera* aCamera)
 
 void EmitterManager::UpdateEmitters(float aDeltaTime, CU::Matrix44f aWorldMatrix)
 {
-
 	for (int i = 0; i < myEmitterList.Size(); ++i)
 	{
-		if (myEmitterList[i]->myTypeIsActive == false)
+		EmitterData* emitterData = myEmitterList[i];
+		if (emitterData->myTypeIsActive == false)
 		{
 			continue;
 		}
 		for (int k = 0; k < PREALLOCATED_EMITTERGROUP; k++)
 		{
-			if (myEmitterList[i]->myFinishedGroups[k] == FINISHED)
+			if (emitterData->myFinishedGroups[k] == FINISHED)
 			{
 				continue;
 			}
 
-			for (int j = 0; j < myEmitterList[i]->myEmitters[k].Size(); ++j)
+			int emitterSize = emitterData->myEmitters[k].Size();
+			for (int j = 0; j < emitterSize; ++j)
 			{
-				Prism::ParticleEmitterInstance* instance = myEmitterList[i]->myEmitters[k][j];
+				Prism::ParticleEmitterInstance* instance = emitterData->myEmitters[k][j];
 
 				if (instance->IsActive() == false)
 				{
@@ -86,21 +90,22 @@ void EmitterManager::RenderEmitters()
 	Prism::ParticleDataContainer::GetInstance()->SetGPUData(*myCamera);
 	for (int i = 0; i < myEmitterList.Size(); ++i)
 	{
-		if (myEmitterList[i]->myTypeIsActive == false)
+		EmitterData* emitter = myEmitterList[i];
+		if (emitter->myTypeIsActive == false)
 		{
 			continue;
 		}
 		for (int k = 0; k < PREALLOCATED_EMITTERGROUP; k++)
 		{
 			int finished = 0;
-			if (myEmitterList[i]->myFinishedGroups[k] == FINISHED)
+			if (emitter->myFinishedGroups[k] == FINISHED)
 			{
 				continue;
 			}
 
-			for (int j = 0; j < myEmitterList[i]->myEmitters[k].Size(); ++j)
+			for (int j = 0; j < emitter->myEmitters[k].Size(); ++j)
 			{
-				Prism::ParticleEmitterInstance* instance = myEmitterList[i]->myEmitters[k][j];
+				Prism::ParticleEmitterInstance* instance = emitter->myEmitters[k][j];
 				if (instance->IsActive() == false)
 				{
 					finished++;
@@ -115,13 +120,13 @@ void EmitterManager::RenderEmitters()
 				}
 			}
 
-			if (finished >= myEmitterList[i]->myEmitters[k].Size())
+			if (finished >= emitter->myEmitters[k].Size())
 			{
-				myEmitterList[i]->myActiveCount--;
-				myEmitterList[i]->myFinishedGroups[k] = FINISHED;
-				if (myEmitterList[i]->myActiveCount <= 0)
+				emitter->myActiveCount--;
+				emitter->myFinishedGroups[k] = FINISHED;
+				if (emitter->myActiveCount <= 0)
 				{
-					myEmitterList[i]->myTypeIsActive = false;
+					emitter->myTypeIsActive = false;
 				}
 			}
 		}
@@ -148,19 +153,20 @@ void EmitterManager::ReceiveMessage(const EmitterMessage& aMessage)
 	}
 	//DL_ASSERT_EXP(myEmitters.find(particleType) != myEmitters.end(), "Effect did not exist!");
 
+	EmitterData* emitter = myEmitters[particleType];
 
 
-	if (myEmitters[particleType]->myCurrentIndex > (PREALLOCATED_EMITTERGROUP - 1))
+	if (emitter->myCurrentIndex > (PREALLOCATED_EMITTERGROUP - 1))
 	{
-		myEmitters[particleType]->myCurrentIndex = 0;
+		emitter->myCurrentIndex = 0;
 	}
 
-	short index = myEmitters[particleType]->myCurrentIndex;
+	short index = emitter->myCurrentIndex;
 
 
-	for (int i = 0; i < myEmitters[particleType]->myEmitters[index].Size(); ++i)
+	for (int i = 0; i < emitter->myEmitters[index].Size(); ++i)
 	{
-		Prism::ParticleEmitterInstance* instance = myEmitters[particleType]->myEmitters[index][i];
+		Prism::ParticleEmitterInstance* instance = emitter->myEmitters[index][i];
 
 		if (aMessage.myRoom != nullptr)
 		{
@@ -199,10 +205,10 @@ void EmitterManager::ReceiveMessage(const EmitterMessage& aMessage)
 		}
 	}
 
-	myEmitters[particleType]->myFinishedGroups[index] = UNFINISHED;
-	myEmitters[particleType]->myActiveCount++;
-	myEmitters[particleType]->myTypeIsActive = true;
-	myEmitters[particleType]->myCurrentIndex++;
+	emitter->myFinishedGroups[index] = UNFINISHED;
+	emitter->myActiveCount++;
+	emitter->myTypeIsActive = true;
+	emitter->myCurrentIndex++;
 }
 
 void EmitterManager::ReadListOfLists(const std::string& aPath)

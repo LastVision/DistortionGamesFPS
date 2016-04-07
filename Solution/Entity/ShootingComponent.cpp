@@ -188,22 +188,25 @@ float ShootingComponent::GetWeaponForceStrength(eWeaponType aWeaponType) const
 
 void ShootingComponent::ReloadWeaponIntention()
 {
-	if (myCurrentWeapon->GetAmmoTotal() > 0)
+	if (myEntity.GetComponent<FirstPersonRenderComponent>()->IsReloading() == false)
 	{
-		switch (myCurrentWeapon->GetWeaponType())
+		if (myCurrentWeapon->GetAmmoTotal() > 0)
 		{
-		case eWeaponType::PISTOL:
-			myEntity.GetComponent<FirstPersonRenderComponent>()->AddIntention(ePlayerState::PISTOL_RELOAD, true);
-			break;
-		case eWeaponType::SHOTGUN:
-			myEntity.GetComponent<FirstPersonRenderComponent>()->AddIntention(ePlayerState::SHOTGUN_RELOAD, true);
-			break;
-		case eWeaponType::GRENADE_LAUNCHER:
-			myEntity.GetComponent<FirstPersonRenderComponent>()->AddIntention(ePlayerState::GRENADE_LAUNCHER_RELOAD, true);
-			break;
-		default:
-			break;
-		}	
+			switch (myCurrentWeapon->GetWeaponType())
+			{
+			case eWeaponType::PISTOL:
+				myEntity.GetComponent<FirstPersonRenderComponent>()->AddIntention(ePlayerState::PISTOL_RELOAD, true);
+				break;
+			case eWeaponType::SHOTGUN:
+				myEntity.GetComponent<FirstPersonRenderComponent>()->AddIntention(ePlayerState::SHOTGUN_RELOAD, true);
+				break;
+			case eWeaponType::GRENADE_LAUNCHER:
+				myEntity.GetComponent<FirstPersonRenderComponent>()->AddIntention(ePlayerState::GRENADE_LAUNCHER_RELOAD, true);
+				break;
+			default:
+				break;
+			}
+		}
 	}
 }
 
@@ -249,11 +252,11 @@ void ShootingComponent::ReceiveNote(const UpgradeNote& aNote)
 	{
 		myPistol->Upgrade(aNote.myData);
 	}
-	else if (aNote.myData.myAmmoTotalModifier == 0 && aNote.myData.myWeaponType == eWeaponType::SHOTGUN)
+	else if (aNote.myData.myWeaponType == eWeaponType::SHOTGUN)
 	{
 		myShotgun->Upgrade(aNote.myData);
 	}
-	else if (aNote.myData.myAmmoTotalModifier == 0 && aNote.myData.myWeaponType == eWeaponType::GRENADE_LAUNCHER)
+	else if (aNote.myData.myWeaponType == eWeaponType::GRENADE_LAUNCHER)
 	{
 		myGrenadeLauncher->Upgrade(aNote.myData);
 	}

@@ -100,6 +100,7 @@
     <ClInclude Include="NetMessageExplosion.h" />
     <ClInclude Include="NetMessageHealth.h" />
     <ClInclude Include="NetMessageHealthPack.h" />
+    <ClInclude Include="NetMessageKillServer.h" />
     <ClInclude Include="NetMessageLevelComplete.h" />
     <ClInclude Include="NetMessagePressE.h" />
     <ClInclude Include="NetMessagePressEText.h" />

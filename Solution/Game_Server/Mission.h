@@ -6,7 +6,7 @@
 class Mission 
 {
 public:
-	Mission(const std::string& aMissionType, bool aShouldLoopMissionEvents);
+	Mission(const std::string& aMissionType, int aMissionID, bool aShouldLoopMissionEvents);
 	virtual ~Mission();
 
 	virtual bool Update(float aDeltaTime) = 0;
@@ -17,6 +17,7 @@ public:
 
 	const eMissionType GetMissionType() const;
 	virtual void AddValue(int) {};
+	int GetID() const;
 
 protected:
 	void SendMissionMessage(ActionEvent anEvent);
@@ -25,10 +26,16 @@ protected:
 	CU::GrowingArray<ActionEvent> myEndEvents;
 	bool myShouldLoopMissionEvents;
 	int myCurrentMissionEvent;
+	int myMissionID;
 	eMissionType myMissionType;
 };
 
 inline const eMissionType Mission::GetMissionType() const
 {
 	return myMissionType;
+}
+
+inline int Mission::GetID() const
+{
+	return myMissionID;
 }

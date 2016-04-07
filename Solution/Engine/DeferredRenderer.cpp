@@ -164,6 +164,7 @@ namespace Prism
 		myGBufferData.myNormalTexture->Resize(aWidth, aHeight);
 		myGBufferData.myEmissiveTexture->Resize(aWidth, aHeight);
 		myDepthStencilTexture->Resize(aWidth, aHeight);
+		myFinishedTexture->Resize(aWidth, aHeight);
 	}
 
 	void DeferredRenderer::GenerateSHData(Scene* aScene

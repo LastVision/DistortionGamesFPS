@@ -56,6 +56,8 @@ public:
 
 	void ReceiveNote(const UpgradeNote& aNote) override;
 
+	bool IsReloading() const;
+
 private:
 	void UpdateJoints();
 
@@ -149,4 +151,15 @@ inline eComponentType FirstPersonRenderComponent::GetType()
 	return GetTypeStatic();
 }
 
+
+inline bool FirstPersonRenderComponent::IsReloading() const
+{
+	return (myCurrentState == ePlayerState::PISTOL_RELOAD
+		|| myCurrentState == ePlayerState::SHOTGUN_RELOAD
+		|| myCurrentState == ePlayerState::GRENADE_LAUNCHER_RELOAD);
+	//{
+	//	return true;
+	//}
+	//return false;
+}
 

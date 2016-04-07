@@ -46,6 +46,9 @@ namespace Prism
 		SAFE_DELETE(myFadeData.mySprite);
 		SAFE_DELETE(myModelFactory);
 
+		SAFE_DELETE(myDialogueFont);
+		SAFE_DELETE(myConsoleFont);
+
 		SAFE_DELETE(myText);
 		SAFE_DELETE(myDebugText);
 

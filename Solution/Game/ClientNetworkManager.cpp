@@ -222,6 +222,11 @@ void ClientNetworkManager::DebugPrint()
 	}
 }
 
+const sockaddr_in& ClientNetworkManager::GetLocalServerAddress() const
+{
+	return myNetwork->GetLocalServerAddress();
+}
+
 void ClientNetworkManager::ReceiveNetworkMessage(const NetMessageDisconnect& aMessage, const sockaddr_in&)
 {
 	aMessage;

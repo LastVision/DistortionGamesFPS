@@ -2,6 +2,7 @@
 
 #include <CommonHelper.h>
 #include <NetMessageAllClientsComplete.h>
+#include <NetMessageDisconnect.h>
 #include <NetMessageLevelComplete.h>
 #include <NetMessageLevelLoaded.h>
 #include <NetMessageLoadLevel.h>
@@ -13,6 +14,7 @@
 #include "ServerNetworkManager.h"
 #include "ServerStateStackProxy.h"
 #include <iostream>
+#include <PhysicsInterface.h>
 
 ServerInGameState::ServerInGameState(int aLevelID, unsigned int aLevelHashValue)
 	: myLevelID(aLevelID)
@@ -26,7 +28,7 @@ ServerInGameState::ServerInGameState(int aLevelID, unsigned int aLevelHashValue)
 	ServerNetworkManager::GetInstance()->Subscribe(eNetMessageType::LEVEL_COMPLETE, this);
 	ServerNetworkManager::GetInstance()->Subscribe(eNetMessageType::REQUEST_START_LEVEL, this);
 	ServerNetworkManager::GetInstance()->Subscribe(eNetMessageType::LEVEL_LOADED, this);
-
+	ServerNetworkManager::GetInstance()->Subscribe(eNetMessageType::ON_DISCONNECT, this);
 }
 
 ServerInGameState::~ServerInGameState()
@@ -34,6 +36,7 @@ ServerInGameState::~ServerInGameState()
 	ServerNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::LEVEL_COMPLETE, this);
 	ServerNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::REQUEST_START_LEVEL, this);
 	ServerNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::LEVEL_LOADED, this);
+	ServerNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::ON_DISCONNECT, this);
 	SAFE_DELETE(myLevel);
 	SAFE_DELETE(myLevelFactory);
 }
@@ -68,6 +71,13 @@ const eStateStatus ServerInGameState::Update(const float aDeltaTime)
 		// only waiting for messages from clients
 		break;
 	case eInGameStates::LEVEL_LOAD:
+		if (Prism::PhysicsInterface::GetInstance()->GetInitDone() 
+			&& ServerNetworkManager::GetInstance()->ListContainsAllClients(myRespondedClients) == true)
+		{
+			myRespondedClients.RemoveAll();
+			myState = eInGameStates::LEVEL_UPDATE;
+			ServerNetworkManager::GetInstance()->AddMessage(NetMessageAllClientsComplete(NetMessageAllClientsComplete::eType::LEVEL_LOAD));
+		}
 		// only waiting for messages from clients
 		break;
 	default:
@@ -114,11 +124,15 @@ void ServerInGameState::ReceiveNetworkMessage(const NetMessageRequestStartLevel&
 void ServerInGameState::ReceiveNetworkMessage(const NetMessageLevelLoaded& aMessage, const sockaddr_in&)
 {
 	myRespondedClients.Add(aMessage.mySenderID);
-	if (ServerNetworkManager::GetInstance()->ListContainsAllClients(myRespondedClients) == true)
+	
+}
+
+void ServerInGameState::ReceiveNetworkMessage(const NetMessageDisconnect& aMessage, const sockaddr_in&)
+{
+	if (aMessage.mySenderID == 1 || ServerNetworkManager::GetInstance()->GetClients().Size() <= 0)
 	{
-		myRespondedClients.RemoveAll();
-		myState = eInGameStates::LEVEL_UPDATE;
-		ServerNetworkManager::GetInstance()->AddMessage(NetMessageAllClientsComplete(NetMessageAllClientsComplete::eType::LEVEL_LOAD));
+		ServerNetworkManager::GetInstance()->DisconnectAll();
+		myStateStatus = eStateStatus::POP_MAIN_STATE;
 	}
 }
 
@@ -135,10 +149,10 @@ void ServerInGameState::LevelUpdate(float aDeltaTime)
 		myState = eInGameStates::LEVEL_COMPLETE;
 		myLevelID = nextLevel;
 		myRespondedClients.RemoveAll();
-		ServerNetworkManager::GetInstance()->AddMessage(NetMessageLevelComplete());
+		ServerNetworkManager::GetInstance()->AddMessage(NetMessageLevelComplete(false));
 	}
 	else
 	{
-		myLevel->Update(aDeltaTime);
+		myLevel->Update(aDeltaTime, false);
 	}
 }

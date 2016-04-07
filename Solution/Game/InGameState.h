@@ -58,7 +58,9 @@ private:
 	bool myShouldLoadLevel;
 
 	bool myLevelComplete;
+	bool myFailedLevel;
 	bool myCanStartNextLevel;
+	bool myLoadingScreen;
 	bool myFailedLevelHash;
 
 	unsigned int myServerHashLevelValue;
@@ -68,5 +70,7 @@ private:
 
 	bool myHasStartedMusicBetweenLevels;
 	int myLastLevel;
-	Prism::SpriteProxy* myElevatorSprite;
+	Prism::SpriteProxy* myLevelCompleteSprite;
+	Prism::SpriteProxy* myLevelFailedSprite;
+	Prism::SpriteProxy* myLoadingScreenSprite;
 };

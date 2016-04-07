@@ -193,6 +193,11 @@ namespace Prism
 		}
 	}
 
+	void CubeMapGenerator::OnResize(float aWidth, float aHeight)
+	{
+		myCamera->OnResize(int(aWidth), int(aHeight));
+	}
+
 	Texture* CubeMapGenerator::GenerateCubeMap(DeferredRenderer* aRenderer, Scene* aScene, const CU::Vector3<float> aCameraPosition, const std::string& aFileName)
 	{
 		

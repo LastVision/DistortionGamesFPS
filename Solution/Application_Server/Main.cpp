@@ -14,6 +14,7 @@ static BOOL WINAPI HandleExit(DWORD aCtrlType)
 	switch (aCtrlType)
 	{
 	case CTRL_CLOSE_EVENT:
+		DL_DEBUG("Exit server");
 		DL_Debug::Debug::Destroy();
 		delete globalServerGame;
 		globalServerGame = nullptr;
@@ -31,4 +32,9 @@ void main()
 	globalServerGame = new ServerGame();
 	globalServerGame->Init();
 	while (globalServerGame->Update() == true);
+
+	DL_DEBUG("Exit server");
+	DL_Debug::Debug::Destroy();
+	delete globalServerGame;
+	globalServerGame = nullptr;
 }
