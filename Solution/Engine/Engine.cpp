@@ -6,6 +6,7 @@
 #include "Engine.h"
 #include "FBXFactory.h"
 #include "Font.h"
+#include "FontProxy.h"
 #include "Model.h"
 #include "ModelLoader.h"
 #include "ModelProxy.h"
@@ -70,7 +71,7 @@ namespace Prism
 	{
 		myInstance = new Engine();
 		myInstance->mySetupInfo = &aSetupInfo;
-
+		
 		bool result = myInstance->Init(aHwnd, aWndProc);
 #ifndef RELEASE_BUILD
 		if (aSetupInfo.myWindowed == false)
@@ -82,9 +83,6 @@ namespace Prism
 #endif
 
 
-		ModelLoader::GetInstance()->Pause();
-		DebugDrawer::GetInstance();
-		ModelLoader::GetInstance()->UnPause();
 
 		myInstance->Render();
 
@@ -314,6 +312,7 @@ namespace Prism
 		myModelLoaderThread = new std::thread(&ModelLoader::Run, ModelLoader::GetInstance());
 		myModelLoaderThreadID = myModelLoaderThread->get_id();
 
+		DebugDrawer::GetInstance();
 		myFadeData.mySprite = new Sprite(myDirectX->GetBackbufferTexture(), { float(myWindowSize.x), float(myWindowSize.y) }, { 0.f, 0.f });
 
 		ShowWindow(aHwnd, 10);

@@ -2,4 +2,4 @@
 #include "GameConstants.h"
 
 bool GC::GenerateLightData = false; 
-bool GC::GenerateCubeMap = true;
+bool GC::GenerateCubeMap = false;

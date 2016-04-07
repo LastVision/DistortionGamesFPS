@@ -1,5 +1,6 @@
 #include "stdafx.h"
 
+#include <AudioInterface.h>
 #include "ClientNetworkManager.h"
 #include <Cursor.h>
 #include <fstream>
@@ -61,19 +62,19 @@ void LobbyState::InitState(StateStackProxy* aStateStackProxy, GUI::Cursor* aCurs
 	myGUIManagerHost = new GUI::GUIManager(myCursor, "Data/Resource/GUI/GUI_Lobby_host.xml", nullptr, -1);
 
 	myText = Prism::ModelLoader::GetInstance()->LoadText(Prism::Engine::GetInstance()->GetFont(Prism::eFont::CONSOLE));
+	myPlayerListText = Prism::ModelLoader::GetInstance()->LoadText(Prism::Engine::GetInstance()->GetFont(Prism::eFont::CONSOLE));
+	myWaitingForHostText = Prism::ModelLoader::GetInstance()->LoadText(Prism::Engine::GetInstance()->GetFont(Prism::eFont::CONSOLE));
 	Prism::ModelLoader::GetInstance()->WaitUntilFinished();
+
+
 	myText->SetPosition({ 800.f, 800.f });
 	myText->SetText("No current level selected.");
 	myText->SetScale({ 1.f, 1.f });
 
-	myPlayerListText = Prism::ModelLoader::GetInstance()->LoadText(Prism::Engine::GetInstance()->GetFont(Prism::eFont::CONSOLE));
-	Prism::ModelLoader::GetInstance()->WaitUntilFinished();
 	myPlayerListText->SetPosition({ 20, 800.f });
 	myPlayerListText->SetText("Player Online:\n");
 	myPlayerListText->SetScale({ 1.f, 1.f });
 
-	myWaitingForHostText = Prism::ModelLoader::GetInstance()->LoadText(Prism::Engine::GetInstance()->GetFont(Prism::eFont::CONSOLE));
-	Prism::ModelLoader::GetInstance()->WaitUntilFinished();
 	myWaitingForHostText->SetPosition({ 800.f, 200.f });
 	myWaitingForHostText->SetText("Waiting for host...");
 	myWaitingForHostText->SetScale({ 1.f, 1.f });
@@ -187,6 +188,7 @@ void LobbyState::ReceiveMessage(const OnClickMessage& aMessage)
 			ClientNetworkManager::GetInstance()->AddMessage(NetMessageRequestStartLevel());
 			break;
 		case eOnClickEvent::GAME_QUIT:
+			Prism::Audio::AudioInterface::GetInstance()->PostEvent("Stop_AllElevators", 0);
 			ClientNetworkManager::GetInstance()->AddMessage(NetMessageDisconnect(ClientNetworkManager::GetInstance()->GetGID()));
 			myStateStatus = eStateStatus::ePopMainState;
 			break;
@@ -200,6 +202,12 @@ void LobbyState::ReceiveMessage(const OnClickMessage& aMessage)
 void LobbyState::ReceiveMessage(const OnRadioButtonMessage& aMessage)
 {
 	DL_ASSERT_EXP(aMessage.myEvent == eOnRadioButtonEvent::LEVEL_SELECT, "Only level select in lobby state.");
+	Prism::Audio::AudioInterface::GetInstance()->PostEvent("Stop_AllElevators", 0);
+	
+	int levelMusic = aMessage.myID;
+	levelMusic = min(levelMusic, 2);
+	std::string musicEvent("Play_ElevatorToLevel" + std::to_string(levelMusic));
+	Prism::Audio::AudioInterface::GetInstance()->PostEvent(musicEvent.c_str(), 0);
 
 	ClientNetworkManager::GetInstance()->AddMessage(NetMessageSetLevel(aMessage.myID));
 }

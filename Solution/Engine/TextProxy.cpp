@@ -41,12 +41,13 @@ namespace Prism
 
 	void TextProxy::SetText(const std::string& aText)
 	{
+		myString = aText;
 		if (IsLoaded() == true)
 		{
 			//NOT THREAD-SAFE
-			Prism::ModelLoader::GetInstance()->Pause();
-			myText->SetText(aText);
-			Prism::ModelLoader::GetInstance()->UnPause();
+			//Prism::ModelLoader::GetInstance()->Pause();
+			//myText->SetText(aText);
+			//Prism::ModelLoader::GetInstance()->UnPause();
 
 
 
@@ -64,17 +65,36 @@ namespace Prism
 	{
 		if (IsLoaded() == true)
 		{
+			if (myText->GetText() != myString)
+			{
+				Prism::ModelLoader::GetInstance()->Pause();
+				myText->SetText(myString);
+				Prism::ModelLoader::GetInstance()->UnPause();
+			}
+
 			myText->Render(myPosition, myScale, myColor);
 		}
 	}
 
 	void TextProxy::Render(const Camera* aCamera)
 	{
+		if (myText->GetText() != myString)
+		{
+			Prism::ModelLoader::GetInstance()->Pause();
+			myText->SetText(myString);
+			Prism::ModelLoader::GetInstance()->UnPause();
+		}
 		myText->Render(aCamera, my3DOrientation, myColor);
 	}
 
 	void TextProxy::Render(const Camera* aCamera, float aScaleValue)
 	{
+		if (myText->GetText() != myString)
+		{
+			Prism::ModelLoader::GetInstance()->Pause();
+			myText->SetText(myString);
+			Prism::ModelLoader::GetInstance()->UnPause();
+		}
 		myText->Render(aCamera, my3DOrientation, { aScaleValue, aScaleValue }, myColor);
 	}
 
@@ -113,5 +133,10 @@ namespace Prism
 	void TextProxy::SetOrientation(const CU::Matrix44<float>& aOrientation)
 	{
 		my3DOrientation = aOrientation;
+	}
+
+	const CU::Vector3<float>& TextProxy::Get3DPosition() const
+	{
+		return my3DOrientation.GetPos();
 	}
 }

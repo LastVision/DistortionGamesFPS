@@ -116,9 +116,9 @@ namespace Prism
 
 		/*DL_ASSERT_EXP(myInstancedCount.find(name) != myInstancedCount.end()
 			, CU::Concatenate("GetInstancedCount on %s failed", aModelPath.c_str()));*/
-		//if (myInstancedCount.find(name) == myInstancedCount.end())
+		if (myInstancedCount.find(name) == myInstancedCount.end())
 		{
-			return 1024;
+			return 2048;
 		}
 
 		return myInstancedCount[name];
@@ -139,6 +139,8 @@ namespace Prism
 
 			WaitUntilCopyIsAllowed();
 			myCanAddToLoadArray = false;
+
+			DEBUG_PRINT("MODELLOADER IS WORKING");
 
 			CopyLoadJobs();
 

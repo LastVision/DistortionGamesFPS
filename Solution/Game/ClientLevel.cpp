@@ -126,12 +126,10 @@ ClientLevel::ClientLevel(GUI::Cursor* aCursor, eStateStatus& aStateStatus)
 	mySfxVolume = Prism::Audio::AudioInterface::GetInstance()->GetSFXVolume();
 	myMusicVolume = Prism::Audio::AudioInterface::GetInstance()->GetMusicVolume();
 	myVoiceVolume = Prism::Audio::AudioInterface::GetInstance()->GetVoiceVolume();
-	while (myVoiceText->IsLoaded() == false || mySFXText->IsLoaded() == false || myMusicText->IsLoaded() == false)
-	{
-	}
-	mySFXText->SetText("SFX: " + std::to_string(mySfxVolume));
-	myMusicText->SetText("Music: " + std::to_string(myMusicVolume));
-	myVoiceText->SetText("Voice: " + std::to_string(myVoiceVolume));
+	//while (myVoiceText->IsLoaded() == false || mySFXText->IsLoaded() == false || myMusicText->IsLoaded() == false)
+	//{
+	//}
+
 
 }
 
@@ -161,6 +159,7 @@ ClientLevel::~ClientLevel()
 	myInstances.DeleteAll();
 	myPointLights.DeleteAll();
 	mySpotLights.DeleteAll();
+	myPlayers.DeleteAll();
 	SAFE_DELETE(myPlayer);
 	SAFE_DELETE(myScene);
 	SAFE_DELETE(myDeferredRenderer);
@@ -190,7 +189,7 @@ void ClientLevel::Init(const std::string& aWeaponSettingsPath)
 	Prism::ModelLoader::GetInstance()->UnPause();
 	CU::Matrix44f orientation;
 	myInstanceOrientations.Add(orientation);
-
+	Prism::Audio::AudioInterface::GetInstance()->PostEvent("Stop_AllElevators", 0);
 	Prism::Audio::AudioInterface::GetInstance()->PostEvent("PlayAll", 0);
 	ClientProjectileManager::GetInstance()->CreateBullets(myScene);
 	ClientProjectileManager::GetInstance()->CreateGrenades(myScene);
@@ -226,7 +225,7 @@ void ClientLevel::Update(const float aDeltaTime, bool aLoadingScreen)
 		ClientNetworkManager::GetInstance()->AddMessage(NetMessageLevelLoaded());
 
 		SET_RUNTIME(false);
-		myDeferredRenderer->GenerateSHData(myScene, myMinPoint, myMaxPoint, myName);
+		myDeferredRenderer->LoadSHData(myMinPoint, myMaxPoint, myName);
 		RESET_RUNTIME;
 	}
 
@@ -251,10 +250,14 @@ void ClientLevel::Update(const float aDeltaTime, bool aLoadingScreen)
 	{
 		myDeferredRenderer->GenerateCubemap(myScene, myName);
 	}
+	if (CU::InputWrapper::GetInstance()->KeyDown(DIK_L))
+	{
+		myDeferredRenderer->GenerateSHData(myScene, myMinPoint, myMaxPoint, myName);
+	}
 
 	if (myWorldTexts.Size() > 0)
 	{
-		if (Prism::ModelLoader::GetInstance()->IsLoading() == false && myWorldTexts[0].myProxy->IsLoaded() == true)
+		//if (Prism::ModelLoader::GetInstance()->IsLoading() == false && myWorldTexts[0].myProxy->IsLoaded() == true)
 		{
 			for (int i = 0; i < myWorldTexts.Size(); ++i)
 			{
@@ -331,15 +334,16 @@ void ClientLevel::Render()
 
 		myEmitterManager->RenderEmitters();
 
-
 		myPlayer->GetComponent<FirstPersonRenderComponent>()->Render();
-		//myPlayer->GetComponent<ShootingComponent>()->Render();
 
 		myTextManager->Render();
 
 		for (int i = 0; i < myWorldTexts.Size(); ++i)
 		{
-			myWorldTexts[i].myProxy->Render(myScene->GetCamera());
+			if (CU::Length(myWorldTexts[i].myProxy->Get3DPosition() - myPlayer->GetOrientation().GetPos()) <= 10.f)
+			{
+				myWorldTexts[i].myProxy->Render(myScene->GetCamera());
+			}
 		}
 
 		if (myEscapeMenuActive == true)
@@ -647,6 +651,10 @@ void ClientLevel::AddWorldText(const std::string& aText, const CU::Vector3<float
 
 void ClientLevel::ToggleEscapeMenu()
 {
+	mySFXText->SetText("SFX: " + std::to_string(mySfxVolume));
+	myMusicText->SetText("Music: " + std::to_string(myMusicVolume));
+	myVoiceText->SetText("Voice: " + std::to_string(myVoiceVolume));
+
 	myEscapeMenuActive = !myEscapeMenuActive;
 	myEscapeMenu->SetMouseShouldRender(myEscapeMenuActive);
 

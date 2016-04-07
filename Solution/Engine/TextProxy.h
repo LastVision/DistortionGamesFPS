@@ -26,9 +26,11 @@ namespace Prism
 		void SetText(Text* aText);
 
 		void SetOrientation(const CU::Matrix44<float>& aOrientation);
+		const CU::Vector3<float>& Get3DPosition() const;
 
 	private:
 		Text* myText;
+		std::string myString;
 			
 		CU::Vector2<float> myPosition;
 		CU::Vector2<float> myScale;
