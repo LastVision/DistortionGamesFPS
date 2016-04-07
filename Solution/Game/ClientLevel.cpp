@@ -647,7 +647,7 @@ void ClientLevel::OnResize(float aWidth, float aHeight)
 {
 	myFullscreenRenderer->OnResize(aWidth, aHeight);
 	myDeferredRenderer->OnResize(aWidth, aHeight);
-	bool escapeMenuResizeHere = true;
+	myEscapeMenu->OnResize(aWidth, aHeight);
 }
 
 void ClientLevel::HandleTrigger(Entity& aFirstEntity, Entity& aSecondEntity, bool aHasEntered)
