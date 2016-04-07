@@ -36,7 +36,7 @@ public:
 	void SetMinMax(const CU::Vector3<float>& aMinPoint, const CU::Vector3<float>& aMaxPoint);
 	void SetName(const std::string& aName);
 
-	void Update(const float aDeltaTime) override;
+	void Update(const float aDeltaTime, bool aLoadingScreen) override;
 	void Render();
 	
 	Prism::Scene* GetScene();

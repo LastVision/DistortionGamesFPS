@@ -215,7 +215,7 @@ void ClientLevel::SetName(const std::string& aName)
 	myName = aName;
 }
 
-void ClientLevel::Update(const float aDeltaTime)
+void ClientLevel::Update(const float aDeltaTime, bool aLoadingScreen)
 {
 	if (myInitDone == false && Prism::PhysicsInterface::GetInstance()->GetInitDone() == true)
 	{
@@ -226,10 +226,12 @@ void ClientLevel::Update(const float aDeltaTime)
 		myDeferredRenderer->GenerateSHData(myScene, myMinPoint, myMaxPoint, myName);
 		RESET_RUNTIME;
 	}
-	if (myInitDone == false)
+
+	if (myInitDone == false || aLoadingScreen == true)
 	{
 		return;
 	}
+
 	ClientProjectileManager::GetInstance()->Update(aDeltaTime);
 	ClientUnitManager::GetInstance()->Update(aDeltaTime);
 	//if (CU::InputWrapper::GetInstance()->KeyDown(DIK_U))
@@ -257,7 +259,7 @@ void ClientLevel::Update(const float aDeltaTime)
 		ClientNetworkManager::GetInstance()->AddMessage(NetMessageActivateSpawnpoint(17));
 	}
 
-	SharedLevel::Update(aDeltaTime);
+	SharedLevel::Update(aDeltaTime, aLoadingScreen);
 	myPlayer->GetComponent<FirstPersonRenderComponent>()->UpdateCoOpPositions(myPlayers);
 	myPlayer->Update(aDeltaTime);
 	myEmitterManager->UpdateEmitters(aDeltaTime, CU::Matrix44f());

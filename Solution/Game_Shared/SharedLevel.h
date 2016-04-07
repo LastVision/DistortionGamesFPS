@@ -19,7 +19,7 @@ public:
 	void AddEnemy(Entity* anEntity);
 	void AddPlayerStartPosition(unsigned int aGID, const CU::Vector3<float>& aPosition);
 
-	virtual void Update(const float aDeltaTime);
+	virtual void Update(const float aDeltaTime, bool aLoadingScreen);
 
 	virtual void CollisionCallback(PhysicsComponent* aFirst, PhysicsComponent* aSecond, bool aHasEntered) = 0;
 

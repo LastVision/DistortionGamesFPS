@@ -12,6 +12,7 @@ namespace GUI
 namespace Prism
 {
 	class TextProxy;
+	class SpriteProxy;
 }
 
 class LobbyState : public GameState, public Subscriber, public NetworkSubscriber
@@ -40,6 +41,7 @@ private:
 	Prism::TextProxy* myText;
 	Prism::TextProxy* myPlayerListText;
 	Prism::TextProxy* myWaitingForHostText;
+
 	int myLevelToStart;
 	unsigned int myServerLevelHash;
 	bool myStartGame;

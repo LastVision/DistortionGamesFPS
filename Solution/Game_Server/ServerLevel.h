@@ -11,7 +11,7 @@ public:
 
 	void Init(const std::string& aMissionXMLPath) override;
 
-	void Update(const float aDeltaTime) override;
+	void Update(const float aDeltaTime, bool aLoadingScreen) override;
 	void CollisionCallback(PhysicsComponent* aFirst, PhysicsComponent* aSecond, bool aHasEntered) override;
 
 	bool ChangeLevel(int& aNextLevel);
