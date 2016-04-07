@@ -7,7 +7,7 @@ UpgradeComponent::UpgradeComponent(Entity& aEntity, const UpgradeComponentData& 
 	: Component(aEntity)
 	, myData(aData)
 {
-	PostMaster::GetInstance()->SendMessage(EmitterMessage("Upgrade", myEntity.GetOrientation().GetPos(), { 0.f, 1.f, 0.f }));
+	PostMaster::GetInstance()->SendMessage(EmitterMessage("Upgrade", myEntity.GetOrientation().GetPos(), { 0.f, 1.f, 0.f }, &myEntity));
 }
 
 

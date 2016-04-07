@@ -143,15 +143,16 @@ void EmitterManager::ReceiveMessage(const EmitterMessage& aMessage)
 		if (aMessage.myShouldKillEmitter == true)
 		{
 			aMessage.myEmitter->KillEmitter(1.f);
+			return;
 		}
 	}
 
 	std::string particleType = CU::ToLower(aMessage.myParticleTypeString);
-	if (myEmitters.find(particleType) == myEmitters.end())
-	{
-		return;
-	}
-	//DL_ASSERT_EXP(myEmitters.find(particleType) != myEmitters.end(), "Effect did not exist!");
+	//if (myEmitters.find(particleType) == myEmitters.end())
+	//{
+	//	return;
+	//}
+	DL_ASSERT_EXP(myEmitters.find(particleType) != myEmitters.end(), "Effect did not exist!");
 
 	EmitterData* emitter = myEmitters[particleType];
 
@@ -168,15 +169,18 @@ void EmitterManager::ReceiveMessage(const EmitterMessage& aMessage)
 	{
 		Prism::ParticleEmitterInstance* instance = emitter->myEmitters[index][i];
 
-		if (aMessage.myRoom != nullptr)
+		if (aMessage.myRoom)
 		{
 			aMessage.myRoom->AddEmitter(instance);
 		}
 
-		instance->SetEntity(nullptr);
+		instance->SetEntity(aMessage.myEntity);
+		if (aMessage.myEntity)
+			aMessage.myEntity->AddEmitter(instance);
 
 		instance->SetPosition(position);
 		instance->Activate();
+
 		if (aMessage.myEmitterLifeTime > 0.f)
 		{
 			instance->SetEmitterLifeTime(aMessage.myEmitterLifeTime);

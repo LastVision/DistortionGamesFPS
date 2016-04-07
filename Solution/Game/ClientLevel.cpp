@@ -666,6 +666,7 @@ void ClientLevel::HandleTrigger(Entity& aFirstEntity, Entity& aSecondEntity, boo
 				{
 					aSecondEntity.SendNote<UpgradeNote>(aFirstEntity.GetComponent<UpgradeComponent>()->GetData());
 					Prism::Audio::AudioInterface::GetInstance()->PostEvent("FadeInFirstLayer", 0);
+					PostMaster::GetInstance()->SendMessage(EmitterMessage(firstTrigger->GetEntity().GetEmitter(), true));
 				}
 			}
 			else if (firstTrigger->GetTriggerType() == eTriggerType::HEALTH_PACK)

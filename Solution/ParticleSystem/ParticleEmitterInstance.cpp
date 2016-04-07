@@ -557,4 +557,10 @@ namespace Prism
 		}
 	}
 
+	void ParticleEmitterInstance::SetEntity(Entity* anEntity)
+	{
+		myEntity = anEntity;
+	}
+
+
 }

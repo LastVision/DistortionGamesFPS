@@ -146,10 +146,6 @@ namespace Prism
 		return myStates[ACTIVE];
 	}
 
-	inline void ParticleEmitterInstance::SetEntity(Entity* anEntity)
-	{
-		myEntity = anEntity;
-	}
 
 	inline void ParticleEmitterInstance::SetRadius(float aRadius)
 	{
