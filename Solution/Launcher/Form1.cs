@@ -100,7 +100,6 @@ namespace Launcher
 
             myServer.StartInfo.FileName = myServerPath;
             myServer.StartInfo.WorkingDirectory = "bin\\";
-            myServer.StartInfo.CreateNoWindow = true;
             myServer.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
             if (IsProcessOpen(myServer.StartInfo.FileName) == false)
             {
@@ -145,6 +144,8 @@ namespace Launcher
                     myGame.StartInfo.WorkingDirectory = "bin\\";
                     myGame.Start();
                     myGame.WaitForInputIdle();
+
+                    Application.Exit();
                 }
             }
             else
@@ -263,18 +264,6 @@ namespace Launcher
             //{
             //    resolutionDropdown.Enabled = false;
             //}
-        }
-
-        private void Form1_FormClosing(object sender, FormClosingEventArgs e)
-        {
-            if (myServer.HasExited == false)
-            {
-                myServer.Kill();
-            }
-            if (myGame.StartInfo.FileName != "" && myGame.HasExited == false)
-            {
-                myGame.Kill();
-            }
         }
     }
 }

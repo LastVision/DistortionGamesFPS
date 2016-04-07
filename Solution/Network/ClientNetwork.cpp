@@ -34,6 +34,11 @@ void ClientNetwork::StartNetwork(int aPortNum)
 	myServerAddress.sin_family = AF_INET;
 	myServerAddress.sin_port = htons(myPort);
 
+	ZeroMemory(&myLocalServerAddress, sizeof(myLocalServerAddress));
+	myLocalServerAddress.sin_family = AF_INET;
+	myLocalServerAddress.sin_port = htons(myPort);
+	myLocalServerAddress.sin_addr.S_un.S_addr = inet_addr("127.0.0.1");
+
 	DWORD nonBlocking = 1;
 	if (ioctlsocket(mySocket, FIONBIO, &nonBlocking) != 0)
 	{

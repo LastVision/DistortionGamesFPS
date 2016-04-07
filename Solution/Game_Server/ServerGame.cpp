@@ -16,6 +16,7 @@ ServerGame::ServerGame()
 
 ServerGame::~ServerGame()
 {
+	ServerNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::KILL_SERVER, this);
 	myStateStack.Clear();
 	ServerNetworkManager::Destroy();
 	PostMaster::Destroy();
@@ -27,6 +28,7 @@ bool ServerGame::Init()
 	PostMaster::Create();
 	ServerNetworkManager::Create();
 	ServerNetworkManager::GetInstance()->StartNetwork();
+	ServerNetworkManager::GetInstance()->Subscribe(eNetMessageType::KILL_SERVER, this);
 	myStateStack.PushMainState(new ServerStartState());
 	return true;
 }
@@ -61,4 +63,9 @@ bool ServerGame::Update()
 	ServerNetworkManager::GetInstance()->MainIsDone();
 	ServerNetworkManager::GetInstance()->WaitForReceieve();
 	return true;
+}
+
+void ServerGame::ReceiveNetworkMessage(const NetMessageKillServer&, const sockaddr_in&)
+{
+	myIsQuiting = true;
 }

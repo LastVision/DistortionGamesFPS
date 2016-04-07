@@ -5,6 +5,7 @@ enum class eNetMessageType
 {
 	NONE,
 	IMPORTANT_REPLY,
+	KILL_SERVER,
 	
 	START_LOBBY,
 	CONNECT_REPLY,

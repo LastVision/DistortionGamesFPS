@@ -13,6 +13,7 @@ void NetworkSubscriber::ReceiveNetworkMessage(const NetMessageExplosion&, const 
 void NetworkSubscriber::ReceiveNetworkMessage(const NetMessageImportantReply&, const sockaddr_in&){}
 void NetworkSubscriber::ReceiveNetworkMessage(const NetMessageLevelLoaded&, const sockaddr_in&){}
 void NetworkSubscriber::ReceiveNetworkMessage(const NetMessageLevelComplete&, const sockaddr_in&){}
+void NetworkSubscriber::ReceiveNetworkMessage(const NetMessageKillServer&, const sockaddr_in&){}
 void NetworkSubscriber::ReceiveNetworkMessage(const NetMessageHealth&, const sockaddr_in&){}
 void NetworkSubscriber::ReceiveNetworkMessage(const NetMessageHealthPack&, const sockaddr_in&){}
 void NetworkSubscriber::ReceiveNetworkMessage(const NetMessageOnDeath&, const sockaddr_in&){}

@@ -11,6 +11,8 @@ static std::string ConvertNetworkEnumToString(eNetMessageType aType)
 		return "NONE";
 	case eNetMessageType::IMPORTANT_REPLY:
 		return "IMPORTANT REPLY";
+	case eNetMessageType::KILL_SERVER:
+		return "KILL SERVER";
 	case eNetMessageType::CONNECT_REPLY:
 		return "CONNECT REPLY";
 	case eNetMessageType::ON_CONNECT:
