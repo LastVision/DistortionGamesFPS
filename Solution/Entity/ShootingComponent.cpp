@@ -33,6 +33,7 @@ ShootingComponent::~ShootingComponent()
 	SAFE_DELETE(myPistol);
 	SAFE_DELETE(myShotgun);
 	SAFE_DELETE(myGrenadeLauncher);
+	SAFE_DELETE(myCurrentWeapon);
 }
 
 void ShootingComponent::Init(Prism::Scene* aScene)
@@ -66,7 +67,7 @@ void ShootingComponent::Update(float aDelta)
 					break;
 				}
 				myEntity.GetComponent<FirstPersonRenderComponent>()->AddIntention(ePlayerState::PISTOL_DRAW, false);
-				myCurrentWeapon = myPistol;
+				//myCurrentWeapon = myPistol;
 			}
 		}
 		if (CU::InputWrapper::GetInstance()->KeyDown(DIK_2) == true)
@@ -83,7 +84,7 @@ void ShootingComponent::Update(float aDelta)
 					break;
 				}
 				myEntity.GetComponent<FirstPersonRenderComponent>()->AddIntention(ePlayerState::SHOTGUN_DRAW, false);
-				myCurrentWeapon = myShotgun;
+				//myCurrentWeapon = myShotgun;
 			}
 		}
 		if (CU::InputWrapper::GetInstance()->KeyDown(DIK_3) == true)
@@ -100,7 +101,7 @@ void ShootingComponent::Update(float aDelta)
 					break;
 				}
 				myEntity.GetComponent<FirstPersonRenderComponent>()->AddIntention(ePlayerState::GRENADE_LAUNCHER_DRAW, false);
-				myCurrentWeapon = myGrenadeLauncher;
+				//myCurrentWeapon = myGrenadeLauncher;
 			}
 		}
 
@@ -150,6 +151,24 @@ void ShootingComponent::Update(float aDelta)
 void ShootingComponent::Render()
 {
 	myCurrentWeapon->Render();
+}
+
+void ShootingComponent::SetCurrentWeapon(eWeaponType aWeaponType)
+{
+	switch (aWeaponType)
+	{
+	case eWeaponType::PISTOL:
+		myCurrentWeapon = myPistol;
+		break;
+	case eWeaponType::SHOTGUN:
+		myCurrentWeapon = myShotgun;
+		break;
+	case eWeaponType::GRENADE_LAUNCHER:
+		myCurrentWeapon = myGrenadeLauncher;
+		break;
+	default:
+		break;
+	}
 }
 
 Weapon* ShootingComponent::GetWeapon(eWeaponType aWeaponType)

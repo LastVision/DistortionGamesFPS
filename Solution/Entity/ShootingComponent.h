@@ -22,6 +22,7 @@ public:
 
 	Weapon* GetWeapon(eWeaponType aWeaponType);
 	Weapon* GetCurrentWeapon();
+	void SetCurrentWeapon(eWeaponType aWeaponType);
 
 	void ReceiveNote(const UpgradeNote&) override;
 

@@ -137,16 +137,18 @@ FirstPersonRenderComponent::~FirstPersonRenderComponent()
 	SAFE_DELETE(my3DGUIManager);
 	SAFE_DELETE(myModel);
 	SAFE_DELETE(myCoOpSprite);
-	SAFE_DELETE(myCurrentWeaponModel);
 	SAFE_DELETE(myPistolModel);
 	SAFE_DELETE(myShotgunModel);
 	SAFE_DELETE(myGrenadeLauncherModel);
+	SAFE_DELETE(myCurrentWeaponModel);
 	SAFE_DELETE(myPistolProxy);
 	SAFE_DELETE(myShotgunProxy);
 	SAFE_DELETE(myGrenadeLauncherProxy);
 	SAFE_DELETE(myMarker);
 	myCoOpPositions.RemoveAll();
 	myCoOpRespawns.RemoveAll();
+
+
 }
 
 void FirstPersonRenderComponent::Init()
@@ -187,15 +189,6 @@ void FirstPersonRenderComponent::Update(float aDelta)
 		myEntity.GetScene()->AddInstance(myModel, eObjectRoomType::DYNAMIC);
 	}
 
-	UpdateJoints();
-	if (myDisplayDamageIndicatorTimer >= 0.f)
-	{
-		myDisplayDamageIndicatorTimer -= aDelta;
-	}
-
-	my3DGUIManager->Update(myUIJoint, myHealthJoint, myCurrentHealth
-		, myMaxHealth, aDelta, myEntity.GetComponent<ShootingComponent>()->GetCurrentWeapon()->GetWeaponType());
-
 
 
 	if (myCurrentState == ePlayerState::PISTOL_IDLE
@@ -222,6 +215,25 @@ void FirstPersonRenderComponent::Update(float aDelta)
 		{
 			myEntity.GetComponent<ShootingComponent>()->ReloadWeapon();
 		}
+
+		if (myCurrentState == ePlayerState::PISTOL_HOLSTER
+			|| myCurrentState == ePlayerState::SHOTGUN_HOLSTER
+			|| myCurrentState == ePlayerState::GRENADE_LAUNCHER_HOLSTER)
+		{
+			if (myIntentions[0] == ePlayerState::PISTOL_DRAW)
+			{
+				myEntity.GetComponent<ShootingComponent>()->SetCurrentWeapon(eWeaponType::PISTOL);
+			}
+			else if (myIntentions[0] == ePlayerState::SHOTGUN_DRAW)
+			{
+				myEntity.GetComponent<ShootingComponent>()->SetCurrentWeapon(eWeaponType::SHOTGUN);
+			}
+			else if (myIntentions[0] == ePlayerState::GRENADE_LAUNCHER_DRAW)
+			{
+				myEntity.GetComponent<ShootingComponent>()->SetCurrentWeapon(eWeaponType::GRENADE_LAUNCHER);
+			}
+		}
+		
 
 		bool shouldGetNextIntention = false;
 		switch (myEntity.GetComponent<ShootingComponent>()->GetCurrentWeapon()->GetWeaponType())
@@ -288,6 +300,17 @@ void FirstPersonRenderComponent::Update(float aDelta)
 
 	}
 	weaponData.myElapsedTime += aDelta;
+
+	UpdateJoints();
+	if (myDisplayDamageIndicatorTimer >= 0.f)
+	{
+		myDisplayDamageIndicatorTimer -= aDelta;
+	}
+
+	my3DGUIManager->Update(myUIJoint, myHealthJoint, myCurrentHealth
+		, myMaxHealth, aDelta, myEntity.GetComponent<ShootingComponent>()->GetCurrentWeapon()->GetWeaponType());
+
+
 }
 
 void FirstPersonRenderComponent::UpdateCoOpPositions(const CU::GrowingArray<Entity*>& somePlayers)
