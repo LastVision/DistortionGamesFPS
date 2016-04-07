@@ -712,9 +712,10 @@ namespace Prism
 		}
 		else if (aPhysData.myData->myPhysicsType == ePhysics::KINEMATIC)
 		{
+			//insane flip to make enemy kinematic objects correct on client side (flip X and Y values)
 			physx::PxVec3 dimensions(
-				aPhysData.myData->myPhysicsMax.x - aPhysData.myData->myPhysicsMin.x
-				, aPhysData.myData->myPhysicsMax.y - aPhysData.myData->myPhysicsMin.y
+				aPhysData.myData->myPhysicsMax.y - aPhysData.myData->myPhysicsMin.y
+				, aPhysData.myData->myPhysicsMax.x - aPhysData.myData->myPhysicsMin.x
 				, aPhysData.myData->myPhysicsMax.z - aPhysData.myData->myPhysicsMin.z);
 			physx::PxBoxGeometry geometry(dimensions / 2.f);
 			*aDynamicBodyOut = physx::PxCreateDynamic(*core, transform, geometry, *myDefaultMaterial, density);
