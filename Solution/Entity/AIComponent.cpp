@@ -82,7 +82,7 @@ void AIComponent::Update(float aDelta)
 			{
 				CU::Vector3<float> toPlayer(CU::GetNormalized(closestPlayer->GetOrientation().GetPos() - myOrientation.GetPos()));
 
-				Prism::PhysicsInterface::GetInstance()->RayCast(myOrientation.GetPos() + CU::Vector3<float>(0.f, 1.7f, 0.f)
+				Prism::PhysicsInterface::GetInstance()->RayCast(myOrientation.GetPos() + CU::Vector3<float>(0.f, 1.5f, 0.f)
 					, toPlayer, myData.myVisionRange, myRaycastHandler, myEntity.GetComponent<PhysicsComponent>());
 				myHasRaycasted = true;
 			}
