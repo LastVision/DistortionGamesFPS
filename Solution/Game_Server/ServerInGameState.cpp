@@ -2,6 +2,7 @@
 
 #include <CommonHelper.h>
 #include <NetMessageAllClientsComplete.h>
+#include <NetMessageDisconnect.h>
 #include <NetMessageLevelComplete.h>
 #include <NetMessageLevelLoaded.h>
 #include <NetMessageLoadLevel.h>
@@ -26,7 +27,7 @@ ServerInGameState::ServerInGameState(int aLevelID, unsigned int aLevelHashValue)
 	ServerNetworkManager::GetInstance()->Subscribe(eNetMessageType::LEVEL_COMPLETE, this);
 	ServerNetworkManager::GetInstance()->Subscribe(eNetMessageType::REQUEST_START_LEVEL, this);
 	ServerNetworkManager::GetInstance()->Subscribe(eNetMessageType::LEVEL_LOADED, this);
-
+	ServerNetworkManager::GetInstance()->Subscribe(eNetMessageType::ON_DISCONNECT, this);
 }
 
 ServerInGameState::~ServerInGameState()
@@ -34,6 +35,7 @@ ServerInGameState::~ServerInGameState()
 	ServerNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::LEVEL_COMPLETE, this);
 	ServerNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::REQUEST_START_LEVEL, this);
 	ServerNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::LEVEL_LOADED, this);
+	ServerNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::ON_DISCONNECT, this);
 	SAFE_DELETE(myLevel);
 	SAFE_DELETE(myLevelFactory);
 }
@@ -119,6 +121,15 @@ void ServerInGameState::ReceiveNetworkMessage(const NetMessageLevelLoaded& aMess
 		myRespondedClients.RemoveAll();
 		myState = eInGameStates::LEVEL_UPDATE;
 		ServerNetworkManager::GetInstance()->AddMessage(NetMessageAllClientsComplete(NetMessageAllClientsComplete::eType::LEVEL_LOAD));
+	}
+}
+
+void ServerInGameState::ReceiveNetworkMessage(const NetMessageDisconnect& aMessage, const sockaddr_in&)
+{
+	if (aMessage.mySenderID == 1 || ServerNetworkManager::GetInstance()->GetClients().Size() <= 0)
+	{
+		ServerNetworkManager::GetInstance()->DisconnectAll();
+		myStateStatus = eStateStatus::POP_MAIN_STATE;
 	}
 }
 

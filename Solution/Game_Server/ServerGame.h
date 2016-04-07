@@ -13,5 +13,6 @@ private:
 	ServerStateStack myStateStack;
 	float myDeltaTime;
 	float myTextUpdate;
+	bool myIsQuiting;
 };
 

@@ -10,14 +10,16 @@
 
 ServerGame::ServerGame()
 	: myTextUpdate(1.f)
+	, myIsQuiting(false)
 {
 }
 
 ServerGame::~ServerGame()
 {
-	ServerNetworkManager::Destroy();
 	myStateStack.Clear();
+	ServerNetworkManager::Destroy();
 	PostMaster::Destroy();
+	myIsQuiting = true;
 }
 
 bool ServerGame::Init()
@@ -31,6 +33,10 @@ bool ServerGame::Init()
 
 bool ServerGame::Update()
 {
+	if (myIsQuiting == true)
+	{
+		return false;
+	}
 	myDeltaTime = myTimerManager->GetMasterTimer().GetTime().GetFrameTime();
 
 	myTextUpdate -= myDeltaTime;

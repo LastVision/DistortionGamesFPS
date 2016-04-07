@@ -59,6 +59,7 @@ InGameState::~InGameState()
 	ClientNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::ALL_CLIENTS_COMPLETE, this);
 	ClientNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::LOAD_LEVEL, this);
 	Console::Destroy();
+	SAFE_DELETE(myElevatorSprite);
 	SAFE_DELETE(myLevel);
 	SAFE_DELETE(myLevelFactory);
 	SAFE_DELETE(myText);
