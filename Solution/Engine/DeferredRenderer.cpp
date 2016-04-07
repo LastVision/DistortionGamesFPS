@@ -106,7 +106,7 @@ namespace Prism
 
 		InitFullscreenQuad();
 
-		myCubemap = TextureContainer::GetInstance()->GetTexture("Data/Resource/Texture/CubeMap/T_cubemap_level01.dds");
+		//myCubemap = TextureContainer::GetInstance()->GetTexture("Data/Resource/Texture/CubeMap/T_cubemap_level01.dds");
 		myCubeMapGenerator = new CubeMapGenerator();
 
 		myFinishedTexture = new Texture();
@@ -143,7 +143,7 @@ namespace Prism
 	}
 
 	void DeferredRenderer::RenderCubeMap(Scene* aScene, ID3D11RenderTargetView* aRenderTarget, ID3D11DepthStencilView* aDepth,
-		D3D11_VIEWPORT* aViewPort)
+		D3D11_VIEWPORT* aViewPort, bool aUseAmbientPass)
 	{
 		Engine::GetInstance()->GetContex()->RSSetViewports(1, aViewPort);
 		ClearGBuffer();
@@ -155,7 +155,7 @@ namespace Prism
 
 		ActivateBuffers();
 
-		RenderCubemapDeferred(aScene, aRenderTarget, aDepth);
+		RenderCubemapDeferred(aScene, aRenderTarget, aDepth, aUseAmbientPass);
 	}
 
 	void DeferredRenderer::OnResize(float aWidth, float aHeight)
@@ -165,6 +165,14 @@ namespace Prism
 		myGBufferData.myEmissiveTexture->Resize(aWidth, aHeight);
 		myDepthStencilTexture->Resize(aWidth, aHeight);
 		myFinishedTexture->Resize(aWidth, aHeight);
+	}
+
+	void DeferredRenderer::GenerateCubemap(Scene* aScene, const std::string& aName)
+	{
+		if (GC::GenerateCubeMap == true)
+		{
+			myCubeMapGenerator->GenerateCubeMap(this, aScene, { 0.f, 1.75f, 0.f }, { 1024.f, 1024.f }, true, "LightData/" + aName + "_cubemap.dds");
+		}
 	}
 
 	void DeferredRenderer::GenerateSHData(Scene* aScene
@@ -184,7 +192,10 @@ namespace Prism
 
 	void DeferredRenderer::SetCubeMap(const std::string& aFilePath)
 	{
-		myCubemap = TextureContainer::GetInstance()->GetTexture(aFilePath);
+		ModelLoader::GetInstance()->Pause();
+		myCubemap = TextureContainer::GetInstance()->GetTexture("LightData/" + aFilePath + "_cubemap.dds");
+		ModelLoader::GetInstance()->UnPause();
+
 	}
 
 	Prism::Texture* DeferredRenderer::GetFinishedTexture()
@@ -292,8 +303,13 @@ namespace Prism
 	}
 
 	void DeferredRenderer::RenderCubemapDeferred(Scene* aScene, ID3D11RenderTargetView* aTarget
-		, ID3D11DepthStencilView* aDepth)
+		, ID3D11DepthStencilView* aDepth, bool aUseAmbientPass)
 	{
+		if (aUseAmbientPass == true)
+		{
+			RenderAmbientPass(aScene);
+		}
+
 		ID3D11DeviceContext* context = Engine::GetInstance()->GetContex();
 		context->OMSetRenderTargets(1, &aTarget, aDepth);
 

@@ -180,7 +180,6 @@ void ClientLevel::Init(const std::string& aWeaponSettingsPath)
 
 	Prism::ModelLoader::GetInstance()->Pause();
 	myDeferredRenderer = new Prism::DeferredRenderer();
-	myDeferredRenderer->SetCubeMap("Data/Resource/Texture/CubeMap/church_horizontal_cross_cube_specular_pow2.dds");
 
 	myFullscreenRenderer = new Prism::Renderer();
 
@@ -213,6 +212,7 @@ void ClientLevel::SetMinMax(const CU::Vector3<float>& aMinPoint, const CU::Vecto
 void ClientLevel::SetName(const std::string& aName)
 {
 	myName = aName;
+	myDeferredRenderer->SetCubeMap(aName);
 }
 
 void ClientLevel::Update(const float aDeltaTime, bool aLoadingScreen)
@@ -242,6 +242,12 @@ void ClientLevel::Update(const float aDeltaTime, bool aLoadingScreen)
 	//{
 	//	myActiveEnemies.GetLast()->SetState(eEntityState::ATTACK);
 	//}
+
+
+	if (CU::InputWrapper::GetInstance()->KeyDown(DIK_C))
+	{
+		myDeferredRenderer->GenerateCubemap(myScene, myName);
+	}
 
 	if (myWorldTexts.Size() > 0)
 	{
