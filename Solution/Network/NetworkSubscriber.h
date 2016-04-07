@@ -11,6 +11,7 @@ class NetMessageLevelLoaded;
 class NetMessageHealth;
 class NetMessageHealthPack;
 class NetMessageLevelComplete;
+class NetMessageKillServer;
 class NetMessageOnDeath;
 class NetMessageOnHit;
 class NetMessageOnJoin;
@@ -50,6 +51,7 @@ public:
 	virtual void ReceiveNetworkMessage(const NetMessageImportantReply& aMessage, const sockaddr_in& aSenderAddress);
 	virtual void ReceiveNetworkMessage(const NetMessageLevelLoaded& aMessage, const sockaddr_in& aSenderAddress);
 	virtual void ReceiveNetworkMessage(const NetMessageLevelComplete& aMessage, const sockaddr_in& aSenderAddress);
+	virtual void ReceiveNetworkMessage(const NetMessageKillServer& aMessage, const sockaddr_in& aSenderAddress);
 	virtual void ReceiveNetworkMessage(const NetMessageHealth& aMessage, const sockaddr_in& aSenderAddress);
 	virtual void ReceiveNetworkMessage(const NetMessageHealthPack& aMessage, const sockaddr_in& aSenderAddress);
 	virtual void ReceiveNetworkMessage(const NetMessageOnDeath& aMessage, const sockaddr_in& aSenderAddress);

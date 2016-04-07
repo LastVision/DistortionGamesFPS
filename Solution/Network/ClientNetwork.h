@@ -18,6 +18,7 @@ public:
 	const CU::GrowingArray<OtherClients>& GetClientList();
 
 	const sockaddr_in& GetServerAddress() const;
+	const sockaddr_in& GetLocalServerAddress() const;
 private:
 
 	//CleintInterface * myInstance;
@@ -26,6 +27,7 @@ private:
 	int myPingCount;
 	WSADATA myWSAData;
 	sockaddr_in myServerAddress;
+	sockaddr_in myLocalServerAddress;
 
 	uint16_t myPort;
 	SOCKET mySocket;
@@ -40,4 +42,9 @@ private:
 inline const sockaddr_in& ClientNetwork::GetServerAddress() const
 {
 	return myServerAddress;
+}
+
+inline const sockaddr_in& ClientNetwork::GetLocalServerAddress() const
+{
+	return myLocalServerAddress;
 }

@@ -29,6 +29,8 @@ public:
 
 	const std::string& GetName() const;
 
+	const sockaddr_in& GetLocalServerAddress() const;
+
 private:
 	ClientNetworkManager();
 	~ClientNetworkManager();

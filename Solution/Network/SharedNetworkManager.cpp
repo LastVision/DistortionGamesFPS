@@ -36,6 +36,7 @@
 #include "NetMessageSetActive.h"
 #include "NetMessageLoadLevel.h"
 #include "NetMessageLevelLoaded.h"
+#include "NetMessageKillServer.h"
 #include "NetMessageEnemyShooting.h"
 #include "NetMessageLevelComplete.h"
 #include "NetMessageText.h"
@@ -330,6 +331,9 @@ void SharedNetworkManager::HandleMessage()
 		{
 		case eNetMessageType::IMPORTANT_REPLY:
 			UnpackAndHandle(NetMessageImportantReply(), buffer);
+			break;
+		case eNetMessageType::KILL_SERVER:
+			UnpackAndHandle(NetMessageKillServer(), buffer);
 			break;
 		case eNetMessageType::CONNECT_REPLY:
 			UnpackAndHandle(NetMessageConnectReply(), buffer);

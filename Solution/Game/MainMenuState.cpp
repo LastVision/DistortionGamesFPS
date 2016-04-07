@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include <AudioInterface.h>
 #include <Camera.h>
+#include "ClientNetworkManager.h"
 #include "CreditMenuState.h"
 #include <Cursor.h>
 #include <FadeMessage.h>
@@ -10,6 +11,7 @@
 #include <InputWrapper.h>
 #include "MainMenuState.h"
 #include <ModelLoader.h>
+#include <NetMessageKillServer.h>
 #include <OnClickMessage.h>
 #include "OptionsState.h"
 #include <PostMaster.h>
@@ -187,6 +189,7 @@ void MainMenuState::ReceiveMessage(const OnClickMessage& aMessage)
 			myStateStack->PushSubGameState(new OptionsState());
 			break;
 		case eOnClickEvent::GAME_QUIT:
+			ClientNetworkManager::GetInstance()->AddMessage(NetMessageKillServer(), ClientNetworkManager::GetInstance()->GetLocalServerAddress());
 			myStateStatus = eStateStatus::ePopMainState;
 			break;
 		
