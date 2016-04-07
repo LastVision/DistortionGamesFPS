@@ -138,7 +138,7 @@ void Prism::Text::Render(const Camera* aCamera, const CU::Matrix44<float>& aOrie
 	myEffect->SetViewMatrix(CU::InverseSimple(aCamera->GetOrientation()));
 	myEffect->SetProjectionMatrix(aCamera->GetProjection());
 	myEffect->SetViewProjectionMatrix(aCamera->GetViewProjection());
-	myEffect->SetPosAndScale({ 0.f, 0.f }, aScale);
+	myEffect->SetPosAndScale({ 0.1f, 0.9f }, aScale);
 	myEffect->SetColor(aColor);
 
 	BaseModel::Render();

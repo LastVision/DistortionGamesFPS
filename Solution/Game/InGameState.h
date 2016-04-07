@@ -56,6 +56,7 @@ private:
 
 	int myLevelToLoad;
 	bool myShouldLoadLevel;
+	bool myShouldShowLoadingScreen;
 
 	bool myLevelComplete;
 	bool myFailedLevel;
