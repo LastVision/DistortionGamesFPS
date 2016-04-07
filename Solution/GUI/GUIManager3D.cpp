@@ -124,7 +124,7 @@ namespace GUI
 		
 		myAmmoTotalText->SetOrientation(myWristOrientation);
 
-		myAmmoTotalText->Render(myScene->GetCamera());
+		myAmmoTotalText->Render(myScene->GetCamera(), 300.f);
 	}
 
 	void GUIManager3D::Rebuild(const eWeaponType aWeaponType, int aSize)
