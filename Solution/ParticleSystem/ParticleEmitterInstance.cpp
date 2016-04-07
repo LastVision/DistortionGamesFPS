@@ -339,33 +339,43 @@ namespace Prism
 	{
 		for (int i = 0; i < myLogicalParticles.Size(); ++i)
 		{
-			myGraphicalParticles[i].myLifeTime -= aDeltaTime;
+			LogicalParticle& logicParticle = myLogicalParticles[i];
+
+			if (logicParticle.myIsAlive == false)
+			{
+				continue;
+			}
+
+			GraphicalParticle& gfxParticle = myGraphicalParticles[i];
+			ParticleData& particleData = myParticleEmitterData->myData;
+
+			gfxParticle.myLifeTime -= aDeltaTime;
 			
-			if (myParticleEmitterData->myData.mySpeedDelta > 0.f)
+			if (particleData.mySpeedDelta > 0.f)
 			{
-				myParticleEmitterData->myData.mySpeed += myParticleEmitterData->myData.mySpeedDelta * aDeltaTime;
+				particleData.mySpeed += particleData.mySpeedDelta * aDeltaTime;
 			}
 
-			myGraphicalParticles[i].myPosition += (myLogicalParticles[i].myDirection * (myParticleEmitterData->myData.mySpeed)) * aDeltaTime;
+			gfxParticle.myPosition += (logicParticle.myDirection * particleData.mySpeed) * aDeltaTime;
 
-			if (myGraphicalParticles[i].mySize >= 0.f)
+			if (gfxParticle.mySize >= 0.f)
 			{
-				myGraphicalParticles[i].mySize += myParticleEmitterData->myData.mySizeDelta * aDeltaTime;
+				gfxParticle.mySize += particleData.mySizeDelta * aDeltaTime;
 			}
 
-			myGraphicalParticles[i].myAlpha += myParticleEmitterData->myData.myAlphaDelta * aDeltaTime;
+			gfxParticle.myAlpha += particleData.myAlphaDelta * aDeltaTime;
 
-			myGraphicalParticles[i].myAlpha = CU::Math::CapValue(0.f, 1.f, myGraphicalParticles[i].myAlpha);
+			gfxParticle.myAlpha = CU::Math::CapValue(0.f, 1.f, gfxParticle.myAlpha);
 
-			myGraphicalParticles[i].myColor += myDiffColor  * aDeltaTime;
+			gfxParticle.myColor += myDiffColor  * aDeltaTime;
 
-			myGraphicalParticles[i].myRotation += myGraphicalParticles[i].myRotation * (myLogicalParticles[i].myRotationDelta * aDeltaTime);
+			gfxParticle.myRotation += gfxParticle.myRotation * (logicParticle.myRotationDelta * aDeltaTime);
 
 
-			if (myGraphicalParticles[i].myLifeTime < 0.0f && myLogicalParticles[i].myIsAlive == true)
+			if (gfxParticle.myLifeTime < 0.0f && logicParticle.myIsAlive == true)
 			{
 				myLiveParticleCount--;
-				myLogicalParticles[i].myIsAlive = false;
+				logicParticle.myIsAlive = false;
 				continue;
 			}
 		}

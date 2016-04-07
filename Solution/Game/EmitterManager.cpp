@@ -47,23 +47,24 @@ void EmitterManager::Initiate(Prism::Camera* aCamera)
 
 void EmitterManager::UpdateEmitters(float aDeltaTime, CU::Matrix44f aWorldMatrix)
 {
-
 	for (int i = 0; i < myEmitterList.Size(); ++i)
 	{
-		if (myEmitterList[i]->myTypeIsActive == false)
+		EmitterData* emitterData = myEmitterList[i];
+		if (emitterData->myTypeIsActive == false)
 		{
 			continue;
 		}
 		for (int k = 0; k < PREALLOCATED_EMITTERGROUP; k++)
 		{
-			if (myEmitterList[i]->myFinishedGroups[k] == FINISHED)
+			if (emitterData->myFinishedGroups[k] == FINISHED)
 			{
 				continue;
 			}
 
-			for (int j = 0; j < myEmitterList[i]->myEmitters[k].Size(); ++j)
+			int emitterSize = emitterData->myEmitters[k].Size();
+			for (int j = 0; j < emitterSize; ++j)
 			{
-				Prism::ParticleEmitterInstance* instance = myEmitterList[i]->myEmitters[k][j];
+				Prism::ParticleEmitterInstance* instance = emitterData->myEmitters[k][j];
 
 				if (instance->IsActive() == false)
 				{
