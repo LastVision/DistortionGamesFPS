@@ -38,9 +38,7 @@ void TriggerComponent::Update(float aDelta)
 		if (myLastRespawnValue > int(myRespawnTime))
 		{
 			myLastRespawnValue = int(myRespawnTime);
-			CU::Vector3<float> position;
-			memcpy(&position, myEntity.GetComponent<PhysicsComponent>()->GetPosition(), sizeof(float) * 3);
-			SharedNetworkManager::GetInstance()->AddMessage(NetMessageDisplayRespawn(position
+			SharedNetworkManager::GetInstance()->AddMessage(NetMessageDisplayRespawn(myPlayerRespawnPosition
 				, true, myLastRespawnValue, myData.myValue, myEntity.GetGID()));
 		}
 

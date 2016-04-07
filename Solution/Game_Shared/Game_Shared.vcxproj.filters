@@ -10,6 +10,9 @@
     <Filter Include="Level\Factory">
       <UniqueIdentifier>{b26b5a5b-ad6a-4e6e-a2cc-165c8e5a07e4}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Managers">
+      <UniqueIdentifier>{4a711f31-9602-414e-b9e9-6de7d3dfe37c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="SharedGame.h" />
@@ -22,7 +25,9 @@
     <ClInclude Include="SharedLevel.h">
       <Filter>Level</Filter>
     </ClInclude>
-    <ClInclude Include="SharedProjectileManager.h" />
+    <ClInclude Include="SharedProjectileManager.h">
+      <Filter>Managers</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="SharedGame.cpp" />
@@ -35,6 +40,8 @@
     <ClCompile Include="stdafx.cpp">
       <Filter>Precompile</Filter>
     </ClCompile>
-    <ClCompile Include="SharedProjectileManager.cpp" />
+    <ClCompile Include="SharedProjectileManager.cpp">
+      <Filter>Managers</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

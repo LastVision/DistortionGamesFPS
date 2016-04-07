@@ -48,7 +48,7 @@ void ShootingComponent::ReadXMLSettings(const std::string& aXMLPath)
 
 void ShootingComponent::Update(float aDelta)
 {
-	if (myIsInOptionsMenu == false)
+	if (myIsInOptionsMenu == false && myEntity.GetState() != eEntityState::DIE)
 	{
 		CU::Matrix44<float> aOrientation = myEntity.GetComponent<InputComponent>()->GetEyeOrientation();
 		if (CU::InputWrapper::GetInstance()->KeyDown(DIK_1) == true)
