@@ -24,6 +24,8 @@ namespace Prism
 		bool IsLoaded() const;
 		void SetText(Text* aText);
 
+		void SetOrientation(const CU::Matrix44<float>& aOrientation);
+
 	private:
 		Text* myText;
 			

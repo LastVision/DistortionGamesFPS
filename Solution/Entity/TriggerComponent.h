@@ -27,8 +27,11 @@ public:
 	int GetRespawnValue() const;
 	bool IsPressable() const;
 
+	void SetPlayerRespawnPosition(const CU::Vector3<float>& aPlayerRespawnPosition);
+
 private:
 
+	CU::Vector3<float> myPlayerRespawnPosition;
 	const TriggerComponentData& myData;
 	eTriggerType myTriggerType;
 
@@ -63,4 +66,9 @@ inline void TriggerComponent::SetRespawnValue(int aValue)
 inline int TriggerComponent::GetRespawnValue() const
 {
 	return myRespawnValue;
+}
+
+inline void TriggerComponent::SetPlayerRespawnPosition(const CU::Vector3<float>& aPlayerRespawnPosition)
+{
+	myPlayerRespawnPosition = aPlayerRespawnPosition;
 }

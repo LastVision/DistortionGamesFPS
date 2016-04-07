@@ -13,6 +13,12 @@ enum class eOnClickEvent
 	RESUME_GAME,
 	OPTIONS,
 	HELP,
+	INCREASE_VOLUME, 
+	LOWER_VOLUME,
+	INCREASE_MUSIC,
+	LOWER_MUSIC,
+	INCREASE_VOICE,
+	LOWER_VOICE,
 };
 
 struct OnClickMessage : public Message

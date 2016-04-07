@@ -41,6 +41,10 @@ void ServerStateStack::PushMainState(ServerState* aMainState)
 
 bool ServerStateStack::UpdateCurrentState(const float aDeltaTime)
 {
+	if (myStates.Size() <= 0)
+	{
+		return false;
+	}
 	switch (myStates[myMainIndex][mySubIndex]->Update(aDeltaTime))
 	{
 	case eStateStatus::POP_SUB_STATE:

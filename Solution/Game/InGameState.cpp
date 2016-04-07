@@ -59,6 +59,7 @@ InGameState::~InGameState()
 	ClientNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::ALL_CLIENTS_COMPLETE, this);
 	ClientNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::LOAD_LEVEL, this);
 	Console::Destroy();
+	SAFE_DELETE(myElevatorSprite);
 	SAFE_DELETE(myLevel);
 	SAFE_DELETE(myLevelFactory);
 	SAFE_DELETE(myText);
@@ -108,7 +109,8 @@ const eStateStatus InGameState::Update(const float& aDeltaTime)
 
 	if (CU::InputWrapper::GetInstance()->KeyDown(DIK_ESCAPE))
 	{
-		return eStateStatus::ePopMainState;
+		myLevel->ToggleEscapeMenu();
+		//return eStateStatus::ePopMainState;
 	}
 
 	//if (CU::InputWrapper::GetInstance()->KeyDown(DIK_NUMPAD1))
@@ -140,7 +142,7 @@ const eStateStatus InGameState::Update(const float& aDeltaTime)
 		myShouldLoadLevel = false;
 		SET_RUNTIME(false);
 		SAFE_DELETE(myLevel);
-		myLevel = static_cast<ClientLevel*>(myLevelFactory->LoadLevel(myLevelToLoad));
+		myLevel = static_cast<ClientLevel*>(myLevelFactory->LoadLevel(myLevelToLoad, myCursor, myStateStatus));
 		myLevelToLoad = -1;
 	}
 
@@ -262,7 +264,7 @@ void InGameState::ReceiveNetworkMessage(const NetMessageLoadLevel& aMessage, con
 
 	SET_RUNTIME(false);
 
-	myLevel = static_cast<ClientLevel*>(myLevelFactory->LoadLevel(aMessage.myLevelID));
+	myLevel = static_cast<ClientLevel*>(myLevelFactory->LoadLevel(aMessage.myLevelID, myCursor, myStateStatus));
 
 	myLastLevel = aMessage.myLevelID;
 	ClientNetworkManager::GetInstance()->AllowSendWithoutSubscriber(false);

@@ -34,6 +34,7 @@
 #include <NetMessageSetActive.h>
 #include <NetMessageEnemyShooting.h>
 #include <NetMessageRayCastRequest.h>
+#include <OnClickMessage.h>
 
 #include "ClientNetworkManager.h"
 #include "DeferredRenderer.h"
@@ -42,6 +43,7 @@
 #include <PointLight.h>
 #include <SpotLight.h>
 #include <GrenadeComponent.h>
+#include <GUIManager.h>
 
 #include <PhysicsInterface.h>
 #include <PostMaster.h>
@@ -61,7 +63,7 @@
 #include <RoomManager.h>
 #include <ParticleEmitterInstance.h>
 #include <Room.h>
-ClientLevel::ClientLevel()
+ClientLevel::ClientLevel(GUI::Cursor* aCursor, eStateStatus& aStateStatus)
 	: myInstanceOrientations(16)
 	, myInstances(16)
 	, myPointLights(64)
@@ -70,6 +72,15 @@ ClientLevel::ClientLevel()
 	, myForceStrengthPistol(0.f)
 	, myForceStrengthShotgun(0.f)
 	, myWorldTexts(64)
+	, myEscapeMenuActive(false)
+	, myEscapeMenu(nullptr)
+	, mySFXText(nullptr)
+	, myMusicText(nullptr)
+	, myVoiceText(nullptr)
+	, mySfxVolume(0)
+	, myMusicVolume(0)
+	, myVoiceVolume(0)
+	, myStateStatus(aStateStatus)
 {
 	Prism::PhysicsInterface::Create(std::bind(&ClientLevel::CollisionCallback, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3), false);
 
@@ -80,6 +91,8 @@ ClientLevel::ClientLevel()
 	ClientNetworkManager::GetInstance()->Subscribe(eNetMessageType::SHOOT_GRENADE, this);
 	ClientNetworkManager::GetInstance()->Subscribe(eNetMessageType::EXPLOSION, this);
 	ClientNetworkManager::GetInstance()->Subscribe(eNetMessageType::RAY_CAST_REQUEST, this);
+
+	PostMaster::GetInstance()->Subscribe(eMessageType::ON_CLICK, this);
 
 	ClientProjectileManager::Create();
 	ClientUnitManager::Create();
@@ -96,10 +109,27 @@ ClientLevel::ClientLevel()
 	};
 	myEmitterManager = new EmitterManager();
 
-	myTestText = Prism::ModelLoader::GetInstance()->LoadText(Prism::Engine::GetInstance()->GetFont(Prism::eFont::DIALOGUE), true, false);
+	myEscapeMenu = new GUI::GUIManager(aCursor, "Data/Resource/GUI/GUI_options_menu_ingame.xml", myScene->GetCamera(), -1);
 
-	myTestText->SetOffset({ 0.f, 1.f, 10.f });
+	mySFXText = Prism::ModelLoader::GetInstance()->LoadText(Prism::Engine::GetInstance()->GetFont(Prism::eFont::DIALOGUE));
+	myMusicText = Prism::ModelLoader::GetInstance()->LoadText(Prism::Engine::GetInstance()->GetFont(Prism::eFont::DIALOGUE));
+	myVoiceText = Prism::ModelLoader::GetInstance()->LoadText(Prism::Engine::GetInstance()->GetFont(Prism::eFont::DIALOGUE));
 
+	CU::Vector2<float> textPos(860.f, 660.f);
+
+	mySFXText->SetPosition(textPos);
+	textPos.y -= 60.f;
+	myMusicText->SetPosition(textPos);
+	textPos.y -= 60.f;
+	myVoiceText->SetPosition(textPos);
+
+	mySfxVolume = Prism::Audio::AudioInterface::GetInstance()->GetSFXVolume();
+	myMusicVolume = Prism::Audio::AudioInterface::GetInstance()->GetMusicVolume();
+	myVoiceVolume = Prism::Audio::AudioInterface::GetInstance()->GetVoiceVolume();
+
+	mySFXText->SetText("SFX: " + std::to_string(mySfxVolume));
+	myMusicText->SetText("Music: " + std::to_string(myMusicVolume));
+	myVoiceText->SetText("Voice: " + std::to_string(myVoiceVolume));
 }
 
 ClientLevel::~ClientLevel()
@@ -108,7 +138,6 @@ ClientLevel::~ClientLevel()
 	{
 		SAFE_DELETE(myWorldTexts[i].myProxy);
 	}
-	SAFE_DELETE(myTestText);
 #ifdef THREAD_PHYSICS
 	Prism::PhysicsInterface::GetInstance()->ShutdownThread();
 #endif
@@ -124,6 +153,8 @@ ClientLevel::~ClientLevel()
 	ClientNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::EXPLOSION, this);
 	ClientNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::RAY_CAST_REQUEST, this);
 
+	PostMaster::GetInstance()->UnSubscribe(eMessageType::ON_CLICK, this);
+
 	myInstances.DeleteAll();
 	myPointLights.DeleteAll();
 	mySpotLights.DeleteAll();
@@ -132,6 +163,11 @@ ClientLevel::~ClientLevel()
 	SAFE_DELETE(myDeferredRenderer);
 	SAFE_DELETE(myFullscreenRenderer);
 	SAFE_DELETE(myTextManager);
+	SAFE_DELETE(myEscapeMenu);
+
+	SAFE_DELETE(mySFXText);
+	SAFE_DELETE(myMusicText);
+	SAFE_DELETE(myVoiceText);
 
 	Prism::Audio::AudioInterface::GetInstance()->PostEvent("StopBackground", 0);
 	Prism::Audio::AudioInterface::GetInstance()->PostEvent("StopFirstLayer", 0);
@@ -141,8 +177,6 @@ ClientLevel::~ClientLevel()
 void ClientLevel::Init(const std::string& aWeaponSettingsPath)
 {
 	CreatePlayers();
-	myForceStrengthPistol = myPlayer->GetComponent<ShootingComponent>()->GetWeaponForceStrength(eWeaponType::PISTOL);
-	myForceStrengthShotgun = myPlayer->GetComponent<ShootingComponent>()->GetWeaponForceStrength(eWeaponType::SHOTGUN);
 
 	Prism::ModelLoader::GetInstance()->Pause();
 	myDeferredRenderer = new Prism::DeferredRenderer();
@@ -165,6 +199,9 @@ void ClientLevel::Init(const std::string& aWeaponSettingsPath)
 
 	myPlayer->GetComponent<ShootingComponent>()->ReadXMLSettings(aWeaponSettingsPath);
 	myPlayer->GetComponent<FirstPersonRenderComponent>()->Init();
+
+	myForceStrengthPistol = myPlayer->GetComponent<ShootingComponent>()->GetWeaponForceStrength(eWeaponType::PISTOL);
+	myForceStrengthShotgun = myPlayer->GetComponent<ShootingComponent>()->GetWeaponForceStrength(eWeaponType::SHOTGUN);
 }
 
 void ClientLevel::SetMinMax(const CU::Vector3<float>& aMinPoint, const CU::Vector3<float>& aMaxPoint)
@@ -204,6 +241,17 @@ void ClientLevel::Update(const float aDeltaTime)
 	//	myActiveEnemies.GetLast()->SetState(eEntityState::ATTACK);
 	//}
 
+	if (myWorldTexts.Size() > 0)
+	{
+		if (Prism::ModelLoader::GetInstance()->IsLoading() == false && myWorldTexts[0].myProxy->IsLoaded() == true)
+		{
+			for (int i = 0; i < myWorldTexts.Size(); ++i)
+			{
+				myWorldTexts[i].myProxy->SetText(myWorldTexts[i].myText);
+			}
+		}
+	}
+
 	if (CU::InputWrapper::GetInstance()->KeyDown(DIK_B) == true)
 	{
 		ClientNetworkManager::GetInstance()->AddMessage(NetMessageActivateSpawnpoint(17));
@@ -234,22 +282,11 @@ void ClientLevel::Update(const float aDeltaTime)
 
 	DebugMusic();
 
-	if (Prism::ModelLoader::GetInstance()->IsLoading() == false && myTestText->IsLoaded() == true)
+	if (myEscapeMenuActive == true)
 	{
-		static float totalTime = 0.f;
-		totalTime += aDeltaTime;
-		myTestText->SetText("Press W to walk forward.");
-		myTestText->SetColor({ 0.f, abs(cos(totalTime)), abs(cos(-totalTime)), 1.f });
-		myTestText->SetOffset({ 0.f, 1.f + (cos(totalTime * 2.f) * 0.5f), 10.f });
-		//myTestText->Rotate3dText((cos(totalTime * 2.f) * 0.5f));
+		myEscapeMenu->Update(aDeltaTime);
 
-		for (int i = 0; i < myWorldTexts.Size(); ++i)
-		{
-			myWorldTexts[i].myProxy->SetText(myWorldTexts[i].myText);
-		}
 	}
-
-
 	Prism::PhysicsInterface::GetInstance()->EndFrame();
 
 	ClientNetworkManager::GetInstance()->Update(aDeltaTime);
@@ -288,10 +325,18 @@ void ClientLevel::Render()
 		//myPlayer->GetComponent<ShootingComponent>()->Render();
 
 		myTextManager->Render();
-		myTestText->Render(myScene->GetCamera());
+
 		for (int i = 0; i < myWorldTexts.Size(); ++i)
 		{
 			myWorldTexts[i].myProxy->Render(myScene->GetCamera());
+		}
+
+		if (myEscapeMenuActive == true)
+		{
+			myEscapeMenu->Render();
+			mySFXText->Render();
+			myMusicText->Render();
+			myVoiceText->Render();
 		}
 	}
 }
@@ -469,6 +514,55 @@ void ClientLevel::ReceiveNetworkMessage(const NetMessageRayCastRequest& aMessage
 	}
 }
 
+void ClientLevel::ReceiveMessage(const OnClickMessage& aMessage)
+{
+	switch (aMessage.myEvent)
+	{
+	case eOnClickEvent::RESUME_GAME:
+		ToggleEscapeMenu();
+		break;
+	case eOnClickEvent::HELP:
+		break;
+	case eOnClickEvent::GAME_QUIT:
+		ClientNetworkManager::GetInstance()->AddMessage(NetMessageDisconnect(ClientNetworkManager::GetInstance()->GetGID()));
+		myStateStatus = eStateStatus::ePopMainState;
+		break;
+	case eOnClickEvent::INCREASE_VOLUME:
+		Prism::Audio::AudioInterface::GetInstance()->PostEvent("IncreaseVolume", 0);
+		mySfxVolume = Prism::Audio::AudioInterface::GetInstance()->GetSFXVolume();
+		mySFXText->SetText("SFX: " + std::to_string(mySfxVolume));
+		break;
+	case eOnClickEvent::LOWER_VOLUME:
+		Prism::Audio::AudioInterface::GetInstance()->PostEvent("LowerVolume", 0);
+		mySfxVolume = Prism::Audio::AudioInterface::GetInstance()->GetSFXVolume();
+		mySFXText->SetText("SFX: " + std::to_string(mySfxVolume));
+		break;
+	case eOnClickEvent::INCREASE_MUSIC:
+		Prism::Audio::AudioInterface::GetInstance()->PostEvent("IncreaseMusic", 0);
+		myMusicVolume = Prism::Audio::AudioInterface::GetInstance()->GetMusicVolume();
+		myMusicText->SetText("Music: " + std::to_string(myMusicVolume));
+		break;
+	case eOnClickEvent::LOWER_MUSIC:
+		Prism::Audio::AudioInterface::GetInstance()->PostEvent("LowerMusic", 0);
+		myMusicVolume = Prism::Audio::AudioInterface::GetInstance()->GetMusicVolume();
+		myMusicText->SetText("Music: " + std::to_string(myMusicVolume));
+		break;
+	case eOnClickEvent::INCREASE_VOICE:
+		Prism::Audio::AudioInterface::GetInstance()->PostEvent("IncreaseVoice", 0);
+		myVoiceVolume = Prism::Audio::AudioInterface::GetInstance()->GetVoiceVolume();
+		myVoiceText->SetText("Voice: " + std::to_string(myVoiceVolume));
+		break;
+	case eOnClickEvent::LOWER_VOICE:
+		Prism::Audio::AudioInterface::GetInstance()->PostEvent("LowerVoice", 0);
+		myVoiceVolume = Prism::Audio::AudioInterface::GetInstance()->GetVoiceVolume();
+		myVoiceText->SetText("Voice: " + std::to_string(myVoiceVolume));
+		break;
+	default:
+		DL_ASSERT("Not implemented this onclickevent");
+		break;
+	}
+}
+
 void ClientLevel::AddLight(Prism::PointLight* aLight)
 {
 	myPointLights.Add(aLight);
@@ -538,6 +632,15 @@ void ClientLevel::AddWorldText(const std::string& aText, const CU::Vector3<float
 	toAdd.myProxy->Rotate3dText(aRotationAroundY);
 
 	myWorldTexts.Add(toAdd);
+}
+
+void ClientLevel::ToggleEscapeMenu()
+{
+	myEscapeMenuActive = !myEscapeMenuActive;
+	myEscapeMenu->SetMouseShouldRender(myEscapeMenuActive);
+
+	myPlayer->GetComponent<InputComponent>()->SetIsInOptionsMenu(myEscapeMenuActive);
+	myPlayer->GetComponent<ShootingComponent>()->SetIsInOptionsMenu(myEscapeMenuActive);
 }
 
 void ClientLevel::OnResize(float aWidth, float aHeight)

@@ -124,6 +124,11 @@ namespace GUI
 		DL_ASSERT_EXP(success == true, CU::Concatenate("ID: %d, Text: %s, Failed to set button text.", aButtonId, aText.c_str()));
 	}
 
+	void GUIManager::SetMouseShouldRender(bool aShouldRender)
+	{
+		myCursor->SetShouldRender(aShouldRender);
+	}
+
 	void GUIManager::ReadContainers(XMLReader& aReader, tinyxml2::XMLElement* aContainerElement)
 	{
 		std::string path = "";

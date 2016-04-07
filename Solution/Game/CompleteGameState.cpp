@@ -62,6 +62,7 @@ const eStateStatus CompleteGameState::Update(const float& aDeltaTime)
 	if (myWaitTimer < 0 &&
 		(CU::InputWrapper::GetInstance()->KeyDown(DIK_ESCAPE) == true
 		|| CU::InputWrapper::GetInstance()->KeyDown(DIK_RETURN) == true
+		|| CU::InputWrapper::GetInstance()->KeyDown(DIK_SPACE) == true
 		|| CU::InputWrapper::GetInstance()->MouseDown(0) == true
 		|| CU::InputWrapper::GetInstance()->MouseDown(1) == true
 		|| CU::InputWrapper::GetInstance()->MouseDown(2) == true))

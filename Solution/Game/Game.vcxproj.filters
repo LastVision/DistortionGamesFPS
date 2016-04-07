@@ -48,8 +48,6 @@
     <ClCompile Include="LobbyState.cpp">
       <Filter>StateStack</Filter>
     </ClCompile>
-    <ClCompile Include="ClientProjectileManager.cpp" />
-    <ClCompile Include="ClientUnitManager.cpp" />
     <ClCompile Include="TextEventManager.cpp">
       <Filter>Managers</Filter>
     </ClCompile>
@@ -70,6 +68,12 @@
     </ClCompile>
     <ClCompile Include="CompleteGameState.cpp">
       <Filter>StateStack</Filter>
+    </ClCompile>
+    <ClCompile Include="ClientProjectileManager.cpp">
+      <Filter>Managers</Filter>
+    </ClCompile>
+    <ClCompile Include="ClientUnitManager.cpp">
+      <Filter>Managers</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -126,8 +130,6 @@
     <ClInclude Include="LobbyState.h">
       <Filter>StateStack</Filter>
     </ClInclude>
-    <ClInclude Include="ClientProjectileManager.h" />
-    <ClInclude Include="ClientUnitManager.h" />
     <ClInclude Include="TextEventManager.h">
       <Filter>Managers</Filter>
     </ClInclude>
@@ -148,6 +150,12 @@
     </ClInclude>
     <ClInclude Include="CompleteGameState.h">
       <Filter>StateStack</Filter>
+    </ClInclude>
+    <ClInclude Include="ClientProjectileManager.h">
+      <Filter>Managers</Filter>
+    </ClInclude>
+    <ClInclude Include="ClientUnitManager.h">
+      <Filter>Managers</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

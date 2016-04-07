@@ -224,33 +224,34 @@ void ClientNetworkManager::DebugPrint()
 
 void ClientNetworkManager::ReceiveNetworkMessage(const NetMessageDisconnect& aMessage, const sockaddr_in&)
 {
-	if (aMessage.myClientID == myGID)
-	{
-		myGID = 0;
-		myIsOnline = false;
-		myClients.RemoveAll();
-		//MessageBox(NULL, "You have been disconnected!", "Connection Lost!", MB_ICONERROR | MB_OK);
-	}
-	else
-	{ 
-		for (int i = 0; i < myClients.Size(); ++i)
-		{
-			if (myClients[i].myID == aMessage.myClientID)
-			{
-				if (myGID < myClients.GetLast().myID)
-				{
-					myClients.GetLast().myID = aMessage.myClientID;
-					myClients.RemoveCyclicAtIndex(i);
-					return;
-				}
-				else 
-				{
-					myGID = aMessage.myClientID;
-					return;
-				}
-			}
-		}
-	}
+	aMessage;
+	myGID = 0;
+	myIsOnline = false;
+	myClients.RemoveAll();
+	//if (aMessage.myClientID == myGID)
+	//{
+	//	//MessageBox(NULL, "You have been disconnected!", "Connection Lost!", MB_ICONERROR | MB_OK);
+	//}
+	//else
+	//{ 
+	//	for (int i = 0; i < myClients.Size(); ++i)
+	//	{
+	//		if (myClients[i].myID == aMessage.myClientID)
+	//		{
+	//			if (myGID < myClients.GetLast().myID)
+	//			{
+	//				myClients.GetLast().myID = aMessage.myClientID;
+	//				myClients.RemoveCyclicAtIndex(i);
+	//				return;
+	//			}
+	//			else 
+	//			{
+	//				myGID = aMessage.myClientID;
+	//				return;
+	//			}
+	//		}
+	//	}
+	//}
 }
 
 void ClientNetworkManager::ReceiveNetworkMessage(const NetMessagePingRequest&, const sockaddr_in&)

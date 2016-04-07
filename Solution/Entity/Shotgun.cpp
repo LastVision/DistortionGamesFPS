@@ -72,18 +72,24 @@ void Shotgun::HandleRaycast(PhysicsComponent* aComponent, const CU::Vector3<floa
 {
 	if (aComponent != nullptr)
 	{
-		if (aComponent->GetPhysicsType() == ePhysics::DYNAMIC)
+		if (aComponent->GetEntity().GetSubType() != "player")
 		{
-			aComponent->AddForce(aDirection, myForceStrength);
+			if (aComponent->GetPhysicsType() == ePhysics::DYNAMIC)
+			{
+				aComponent->AddForce(aDirection, myForceStrength);
+			}
+			SharedNetworkManager::GetInstance()->AddMessage(NetMessageOnHit(myDamage, aComponent->GetEntity().GetGID()));
+			CU::Vector3<float> toSend = CU::Reflect(aDirection, aHitNormal);
+
+			if (aComponent->GetEntity().GetIsEnemy() == true)
+			{
+				PostMaster::GetInstance()->SendMessage(EmitterMessage("OnHit", aHitPosition, toSend));
+			}
+			else
+			{
+				PostMaster::GetInstance()->SendMessage(EmitterMessage("OnEnvHit", aHitPosition, aHitNormal));
+			}
 		}
-		SharedNetworkManager::GetInstance()->AddMessage(NetMessageOnHit(myDamage, aComponent->GetEntity().GetGID()));
-		CU::Vector3<float> toSend = CU::Reflect(aDirection, aHitNormal);
-
-		if (aComponent->GetEntity().GetIsEnemy() == true)
-			PostMaster::GetInstance()->SendMessage(EmitterMessage("OnHit", aHitPosition, toSend));
-		else
-			PostMaster::GetInstance()->SendMessage(EmitterMessage("OnEnvHit", aHitPosition, aHitNormal));
-
 	}
 }
 

@@ -154,8 +154,8 @@ void FirstPersonRenderComponent::Init()
 	ShootingComponent* shooting = myEntity.GetComponent<ShootingComponent>();
 	my3DGUIManager = new GUI::GUIManager3D(myModel, myScene
 		, shooting->GetWeapon(eWeaponType::PISTOL)->GetClipSize(), shooting->GetWeapon(eWeaponType::PISTOL)->GetAmmoInClip()
-		, shooting->GetWeapon(eWeaponType::SHOTGUN)->GetClipSize(), shooting->GetWeapon(eWeaponType::SHOTGUN)->GetAmmoInClip()
-		, shooting->GetWeapon(eWeaponType::GRENADE_LAUNCHER)->GetClipSize(), shooting->GetWeapon(eWeaponType::GRENADE_LAUNCHER)->GetAmmoInClip());
+		, shooting->GetWeapon(eWeaponType::SHOTGUN)->GetClipSize(), shooting->GetWeapon(eWeaponType::SHOTGUN)->GetAmmoInClip(), shooting->GetWeapon(eWeaponType::SHOTGUN)->GetAmmoTotal()
+		, shooting->GetWeapon(eWeaponType::GRENADE_LAUNCHER)->GetClipSize(), shooting->GetWeapon(eWeaponType::GRENADE_LAUNCHER)->GetAmmoInClip(), shooting->GetWeapon(eWeaponType::GRENADE_LAUNCHER)->GetAmmoTotal());
 }
 
 void FirstPersonRenderComponent::Update(float aDelta)
@@ -194,7 +194,7 @@ void FirstPersonRenderComponent::Update(float aDelta)
 	}
 
 	my3DGUIManager->Update(myUIJoint, myHealthJoint, myCurrentHealth
-		, myMaxHealth, aDelta);
+		, myMaxHealth, aDelta, myEntity.GetComponent<ShootingComponent>()->GetCurrentWeapon()->GetWeaponType());
 
 
 

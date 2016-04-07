@@ -102,4 +102,9 @@ namespace Prism
 	{
 		myText = aText;
 	}
+
+	void TextProxy::SetOrientation(const CU::Matrix44<float>& aOrientation)
+	{
+		my3DOrientation = aOrientation;
+	}
 }

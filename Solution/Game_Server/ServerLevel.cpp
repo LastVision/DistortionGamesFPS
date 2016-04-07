@@ -274,7 +274,7 @@ void ServerLevel::ReceiveMessage(const RespawnMessage &aMessage)
 
 	myPlayers[gid]->GetComponent<HealthComponent>()->Heal(myPlayers[gid]->GetComponent<HealthComponent>()->GetMaxHealth());
 	myPlayers[gid]->SetState(eEntityState::IDLE);
-	SharedNetworkManager::GetInstance()->AddMessage<NetMessageEntityState>(NetMessageEntityState(eEntityState::IDLE, gid + 1), gid);
+	SharedNetworkManager::GetInstance()->AddMessage<NetMessageEntityState>(NetMessageEntityState(eEntityState::IDLE, gid + 1), gid + 1);
 	myRespawnTriggers[gid]->GetComponent<PhysicsComponent>()->RemoveFromScene();
 	myPlayers[gid]->GetComponent<PhysicsComponent>()->Wake();
 }
@@ -283,6 +283,7 @@ void ServerLevel::ReceiveMessage(const RespawnTriggerMessage& aMessage)
 {
 	myRespawnTriggers[aMessage.myGID - 1]->GetComponent<TriggerComponent>()->Activate();
 	myRespawnTriggers[aMessage.myGID - 1]->GetComponent<TriggerComponent>()->SetRespawnValue(aMessage.myGID);
+	myRespawnTriggers[aMessage.myGID - 1]->GetComponent<TriggerComponent>()->SetPlayerRespawnPosition(myPlayers[aMessage.myGID - 1]->GetOrientation().GetPos());
 	myRespawnTriggers[aMessage.myGID - 1]->GetComponent<PhysicsComponent>()->AddToScene();
 	myRespawnTriggers[aMessage.myGID - 1]->GetComponent<PhysicsComponent>()->TeleportToPosition(myPlayers[aMessage.myGID - 1]->GetOrientation().GetPos());
 	myRespawnTriggers[aMessage.myGID - 1]->GetComponent<PhysicsComponent>()->UpdateOrientationStatic();
