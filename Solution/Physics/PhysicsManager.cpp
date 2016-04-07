@@ -649,7 +649,7 @@ namespace Prism
 	void PhysicsManager::Create(PhysicsComponent* aComponent, const PhysicsCallbackStruct& aPhysData
 		, float* aOrientation, const std::string& aFBXPath
 		, physx::PxRigidDynamic** aDynamicBodyOut, physx::PxRigidStatic** aStaticBodyOut
-		, physx::PxShape*** someShapesOut, bool aShouldAddToScene)
+		, physx::PxShape*** someShapesOut, bool aShouldAddToScene, bool aShouldBeSphere)
 	{
 		if (myPhysicsThread != nullptr)
 		{
@@ -683,12 +683,21 @@ namespace Prism
 		}
 		else if (aPhysData.myData->myPhysicsType == ePhysics::DYNAMIC)
 		{
-			physx::PxVec3 dimensions(
-				aPhysData.myData->myPhysicsMax.x - aPhysData.myData->myPhysicsMin.x
-				, aPhysData.myData->myPhysicsMax.y - aPhysData.myData->myPhysicsMin.y
-				, aPhysData.myData->myPhysicsMax.z - aPhysData.myData->myPhysicsMin.z);
-			physx::PxBoxGeometry geometry(dimensions / 2.f);
-			*aDynamicBodyOut = physx::PxCreateDynamic(*core, transform, geometry, *myDefaultMaterial, density);
+			if (aShouldBeSphere == true)
+			{
+				physx::PxSphereGeometry geometry;
+				geometry.radius = aPhysData.myData->myPhysicsMax.x;
+				*aDynamicBodyOut = physx::PxCreateDynamic(*core, transform, geometry, *myDefaultMaterial, density);
+			}
+			else
+			{
+				physx::PxVec3 dimensions(
+					aPhysData.myData->myPhysicsMax.x - aPhysData.myData->myPhysicsMin.x
+					, aPhysData.myData->myPhysicsMax.y - aPhysData.myData->myPhysicsMin.y
+					, aPhysData.myData->myPhysicsMax.z - aPhysData.myData->myPhysicsMin.z);
+				physx::PxBoxGeometry geometry(dimensions / 2.f);
+				*aDynamicBodyOut = physx::PxCreateDynamic(*core, transform, geometry, *myDefaultMaterial, density);
+			}
 			(*aDynamicBodyOut)->setAngularDamping(0.75);
 			(*aDynamicBodyOut)->setLinearVelocity(physx::PxVec3(0, 0, 0));
 			(*aDynamicBodyOut)->setName(aFBXPath.c_str());

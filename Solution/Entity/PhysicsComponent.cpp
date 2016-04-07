@@ -49,8 +49,10 @@ PhysicsComponent::PhysicsComponent(Entity& aEntity, const PhysicsComponentData& 
 
 	if (myPhysicsType != ePhysics::CAPSULE)
 	{
-		myCallbackStruct = Prism::PhysicsCallbackStruct(myData, std::bind(&PhysicsComponent::SwapOrientations, this), std::bind(&PhysicsComponent::UpdateOrientation, this));
-		Prism::PhysicsInterface::GetInstance()->Create(this, myCallbackStruct, my4x4Float, aFBXPath, &myDynamicBody, &myStaticBody, &myShapes, shouldAddToPhysicsScene);
+		myCallbackStruct = Prism::PhysicsCallbackStruct(myData, std::bind(&PhysicsComponent::SwapOrientations, this)
+			, std::bind(&PhysicsComponent::UpdateOrientation, this));
+		Prism::PhysicsInterface::GetInstance()->Create(this, myCallbackStruct, my4x4Float, aFBXPath, &myDynamicBody
+			, &myStaticBody, &myShapes, shouldAddToPhysicsScene, myEntity.GetType() == eEntityType::GRENADE);
 	}
 	else if (myPhysicsType == ePhysics::CAPSULE)
 	{

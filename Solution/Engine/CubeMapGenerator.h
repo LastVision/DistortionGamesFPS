@@ -48,12 +48,13 @@ namespace Prism
 		void GenerateSHTextures(DeferredRenderer* aRenderer, Scene* aScene, SHTextures& someTextures
 			, const CU::Vector3<float>& aGridSize, const CU::Vector3<float>& aOffset, float aNodeSize
 			, const std::string& aName);
+		Texture* GenerateCubeMap(DeferredRenderer* aRenderer, Scene* aScene, const CU::Vector3<float> aCameraPosition
+			, const CU::Vector2<float>& aTextureSize, bool aUseAmbientPass, const std::string& aFileName);
 		
 		void OnResize(float aWidth, float aHeight);
 
 	private:
 
-		Texture* GenerateCubeMap(DeferredRenderer* aRenderer, Scene* aScene, const CU::Vector3<float> aCameraPosition, const std::string& aFileName);
 		SHNode GenerateSHNode(Texture* aTexture, const CU::Vector3<float> aCameraPosition);
 		SHGridNode GetSHGridNode(const SHNode& aNode);
 

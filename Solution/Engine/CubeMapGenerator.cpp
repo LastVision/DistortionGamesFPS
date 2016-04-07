@@ -84,7 +84,8 @@ namespace Prism
 						pos *= aNodeSize;
 						pos += aOffset;
 
-						cubeMap = GenerateCubeMap(aRenderer, aScene, pos, ss.str());
+						//cubeMap = GenerateCubeMap(aRenderer, aScene, pos, { 32.f, 32.f }, ss.str());
+						cubeMap = GenerateCubeMap(aRenderer, aScene, pos, { 32.f, 32.f }, false, "");
 						gridNodes[x][y][z] = GetSHGridNode(GenerateSHNode(cubeMap, pos));
 
 						SAFE_DELETE(cubeMap);
@@ -198,13 +199,14 @@ namespace Prism
 		myCamera->OnResize(int(aWidth), int(aHeight));
 	}
 
-	Texture* CubeMapGenerator::GenerateCubeMap(DeferredRenderer* aRenderer, Scene* aScene, const CU::Vector3<float> aCameraPosition, const std::string& aFileName)
+	Texture* CubeMapGenerator::GenerateCubeMap(DeferredRenderer* aRenderer, Scene* aScene, const CU::Vector3<float> aCameraPosition
+		, const CU::Vector2<float>& aTextureSize, bool aUseAmbientPass, const std::string& aFileName)
 	{
 		
 		const Camera* sceneCamera = aScene->GetCamera();
 		Texture* cubemapTexture = new Texture();
-		cubemapTexture->CreateCubemap(32.f, 32.f);
-		cubemapTexture->CreateDepthStencilView(32.f, 32.f, 1);
+		cubemapTexture->CreateCubemap(aTextureSize.x, aTextureSize.y);
+		cubemapTexture->CreateDepthStencilView(aTextureSize.x, aTextureSize.y, 1);
 
 		//cubemapTexture->CreateCubemap(512.f, 512.f);
 		//cubemapTexture->CreateDepthStencilView(512.f, 512.f, 1);
@@ -227,7 +229,7 @@ namespace Prism
 			myCameraOrientations[i].SetPos(aCameraPosition);
 			myCurrentCameraOrientation = myCameraOrientations[i];
 			myCamera->Update(1.f / 30.f);
-			aRenderer->RenderCubeMap(aScene, target, depth, cubemapTexture->GetViewPort());
+			aRenderer->RenderCubeMap(aScene, target, depth, cubemapTexture->GetViewPort(), aUseAmbientPass);
 		}
 
 
@@ -238,7 +240,11 @@ namespace Prism
 			, Engine::GetInstance()->GetDepthView());
 
 		aScene->SetCamera(*sceneCamera);
-		//cubemapTexture->SaveToFile(aFileName);
+		if (aFileName != "")
+		{
+			cubemapTexture->SaveToFile(aFileName);
+		}
+
 		return cubemapTexture;
 	}
 

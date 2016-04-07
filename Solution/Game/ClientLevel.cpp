@@ -126,10 +126,13 @@ ClientLevel::ClientLevel(GUI::Cursor* aCursor, eStateStatus& aStateStatus)
 	mySfxVolume = Prism::Audio::AudioInterface::GetInstance()->GetSFXVolume();
 	myMusicVolume = Prism::Audio::AudioInterface::GetInstance()->GetMusicVolume();
 	myVoiceVolume = Prism::Audio::AudioInterface::GetInstance()->GetVoiceVolume();
-
+	while (myVoiceText->IsLoaded() == false || mySFXText->IsLoaded() == false || myMusicText->IsLoaded() == false)
+	{
+	}
 	mySFXText->SetText("SFX: " + std::to_string(mySfxVolume));
 	myMusicText->SetText("Music: " + std::to_string(myMusicVolume));
 	myVoiceText->SetText("Voice: " + std::to_string(myVoiceVolume));
+
 }
 
 ClientLevel::~ClientLevel()
@@ -180,7 +183,6 @@ void ClientLevel::Init(const std::string& aWeaponSettingsPath)
 
 	Prism::ModelLoader::GetInstance()->Pause();
 	myDeferredRenderer = new Prism::DeferredRenderer();
-	myDeferredRenderer->SetCubeMap("Data/Resource/Texture/CubeMap/church_horizontal_cross_cube_specular_pow2.dds");
 
 	myFullscreenRenderer = new Prism::Renderer();
 
@@ -213,6 +215,7 @@ void ClientLevel::SetMinMax(const CU::Vector3<float>& aMinPoint, const CU::Vecto
 void ClientLevel::SetName(const std::string& aName)
 {
 	myName = aName;
+	myDeferredRenderer->SetCubeMap(aName);
 }
 
 void ClientLevel::Update(const float aDeltaTime, bool aLoadingScreen)
@@ -242,6 +245,12 @@ void ClientLevel::Update(const float aDeltaTime, bool aLoadingScreen)
 	//{
 	//	myActiveEnemies.GetLast()->SetState(eEntityState::ATTACK);
 	//}
+
+
+	if (CU::InputWrapper::GetInstance()->KeyDown(DIK_C))
+	{
+		myDeferredRenderer->GenerateCubemap(myScene, myName);
+	}
 
 	if (myWorldTexts.Size() > 0)
 	{

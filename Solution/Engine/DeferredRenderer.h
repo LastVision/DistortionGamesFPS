@@ -94,9 +94,10 @@ namespace Prism
 
 		void Render(Scene* aScene);
 		void RenderCubeMap(Scene* aScene, ID3D11RenderTargetView* aRenderTarget, ID3D11DepthStencilView* aDepth,
-			D3D11_VIEWPORT* aViewPort);
+			D3D11_VIEWPORT* aViewPort, bool aUseAmbientPass);
 		void OnResize(float aWidth, float aHeight);
 
+		void GenerateCubemap(Scene* aScene, const std::string& aName);
 		void GenerateSHData(Scene* aScene
 			, const CU::Vector3<float>& aMinPoint, const CU::Vector3<float>& aMaxPoint, const std::string& aName);
 		void SetCubeMap(const std::string& aFilePath);
@@ -118,7 +119,7 @@ namespace Prism
 		void ActivateBuffers();
 		void Render(Effect* aEffect);
 		void RenderDeferred(Scene* aScene);
-		void RenderCubemapDeferred(Scene* aScene, ID3D11RenderTargetView* aTarget, ID3D11DepthStencilView* aDepth);
+		void RenderCubemapDeferred(Scene* aScene, ID3D11RenderTargetView* aTarget, ID3D11DepthStencilView* aDepth, bool aUseAmbientPass);
 		void RenderPointLights(Scene* aScene, bool aUseRoomManager = true);
 		void RenderSpotLights(Scene* aScene, bool aUseRoomManager = true);
 		void RenderAmbientPass(Scene* aScene);

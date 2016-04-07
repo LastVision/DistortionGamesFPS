@@ -146,9 +146,9 @@ namespace Prism
 	void PhysicsInterface::Create(PhysicsComponent* aComponent, const PhysicsCallbackStruct& aPhysData
 		, float* aOrientation, const std::string& aFBXPath
 		, physx::PxRigidDynamic** aDynamicBodyOut, physx::PxRigidStatic** aStaticBodyOut
-		, physx::PxShape*** someShapesOut, bool aShouldAddToScene)
+		, physx::PxShape*** someShapesOut, bool aShouldAddToScene, bool aShouldBeSphere)
 	{
-		myManager->Create(aComponent, aPhysData, aOrientation, aFBXPath, aDynamicBodyOut, aStaticBodyOut, someShapesOut, aShouldAddToScene);
+		myManager->Create(aComponent, aPhysData, aOrientation, aFBXPath, aDynamicBodyOut, aStaticBodyOut, someShapesOut, aShouldAddToScene, aShouldBeSphere);
 	}
 
 	void PhysicsInterface::Add(physx::PxRigidDynamic* aDynamic)
