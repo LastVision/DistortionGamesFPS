@@ -32,7 +32,8 @@
 InGameState::InGameState(int aLevelID, unsigned int aServerHashLevelValue)
 	: myGUIManager(nullptr)
 	, myLevelToLoad(aLevelID)
-	, myShouldLoadLevel(true)
+	, myShouldLoadLevel(false)
+	, myShouldShowLoadingScreen(true)
 	, myLevel(nullptr)
 	, myLevelComplete(false)
 	, myFailedLevel(false)
@@ -113,6 +114,29 @@ const eStateStatus InGameState::Update(const float& aDeltaTime)
 	{
 		return eStateStatus::ePopMainState;
 	}
+
+	if (myShouldShowLoadingScreen == true)
+	{
+		myShouldShowLoadingScreen = false;
+		myShouldLoadLevel = true;
+		myLoadingScreen = true;
+		myLevelComplete = false;
+		myFailedLevel = false;
+		myCanStartNextLevel = false;
+		return myStateStatus;
+	}
+	
+	if (myShouldLoadLevel == true)
+	{
+		myShouldLoadLevel = false;
+		SET_RUNTIME(false);
+		SAFE_DELETE(myLevel);
+		myLevel = static_cast<ClientLevel*>(myLevelFactory->LoadLevel(myLevelToLoad, myCursor, myStateStatus));
+
+		myLastLevel = myLevelToLoad;
+		myLevelToLoad = -1;
+	}
+
 	Prism::EffectContainer::GetInstance()->Update(aDeltaTime);
 
 	if (CU::InputWrapper::GetInstance()->KeyDown(DIK_ESCAPE))
@@ -144,15 +168,7 @@ const eStateStatus InGameState::Update(const float& aDeltaTime)
 	//}
 
 
-
-	if (myShouldLoadLevel == true)
-	{
-		myShouldLoadLevel = false;
-		SET_RUNTIME(false);
-		SAFE_DELETE(myLevel);
-		myLevel = static_cast<ClientLevel*>(myLevelFactory->LoadLevel(myLevelToLoad, myCursor, myStateStatus));
-		myLevelToLoad = -1;
-	}
+	
 
 	if (myLevelComplete == true)
 	{
@@ -302,13 +318,8 @@ void InGameState::ReceiveNetworkMessage(const NetMessageLoadLevel& aMessage, con
 	myHasStartedMusicBetweenLevels = true;
 	Prism::Audio::AudioInterface::GetInstance()->PostEvent(musicEvent.c_str(), 0);
 
-	SET_RUNTIME(false);
-
-	myLevel = static_cast<ClientLevel*>(myLevelFactory->LoadLevel(aMessage.myLevelID, myCursor, myStateStatus));
-
-	myLastLevel = aMessage.myLevelID;
-	ClientNetworkManager::GetInstance()->AllowSendWithoutSubscriber(false);
-	ClientNetworkManager::GetInstance()->AddMessage(NetMessageLevelLoaded());
+	myLevelToLoad = aMessage.myLevelID;
+	myShouldShowLoadingScreen = true;
 }
 
 void InGameState::OnResize(int aWidth, int aHeight)
