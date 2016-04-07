@@ -226,7 +226,7 @@ void ClientLevel::Update(const float aDeltaTime, bool aLoadingScreen)
 		ClientNetworkManager::GetInstance()->AddMessage(NetMessageLevelLoaded());
 
 		SET_RUNTIME(false);
-		myDeferredRenderer->GenerateSHData(myScene, myMinPoint, myMaxPoint, myName);
+		myDeferredRenderer->LoadSHData(myMinPoint, myMaxPoint, myName);
 		RESET_RUNTIME;
 	}
 
@@ -250,6 +250,10 @@ void ClientLevel::Update(const float aDeltaTime, bool aLoadingScreen)
 	if (CU::InputWrapper::GetInstance()->KeyDown(DIK_C))
 	{
 		myDeferredRenderer->GenerateCubemap(myScene, myName);
+	}
+	if (CU::InputWrapper::GetInstance()->KeyDown(DIK_L))
+	{
+		myDeferredRenderer->GenerateSHData(myScene, myMinPoint, myMaxPoint, myName);
 	}
 
 	if (myWorldTexts.Size() > 0)

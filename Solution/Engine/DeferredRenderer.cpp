@@ -178,16 +178,44 @@ namespace Prism
 	void DeferredRenderer::GenerateSHData(Scene* aScene
 		, const CU::Vector3<float>& aMinPoint, const CU::Vector3<float>& aMaxPoint, const std::string& aName)
 	{
+		if (GC::GenerateLightData == true)
+		{
+			myAmbientPass.mySHGridSize.x = CU::Math::ClosestPowerOfTwo(abs(int(aMaxPoint.x - aMinPoint.x)));
+			myAmbientPass.mySHGridSize.y = CU::Math::ClosestPowerOfTwo(abs(int(aMaxPoint.y - aMinPoint.y)));
+			myAmbientPass.mySHGridSize.z = CU::Math::ClosestPowerOfTwo(abs(int(aMaxPoint.z - aMinPoint.z)));
+			myAmbientPass.mySHGridOffset = aMinPoint;
+
+			ModelLoader::GetInstance()->WaitUntilFinished();
+			myCubeMapGenerator->GenerateSHTextures(this, aScene, mySHTextures, myAmbientPass.mySHGridSize
+				, myAmbientPass.mySHGridOffset, 8.f, aName);
+
+			myAmbientPass.mySHGridOffset *= -1.f;
+		}
+	}
+
+	void DeferredRenderer::LoadSHData(const CU::Vector3<float>& aMinPoint, const CU::Vector3<float>& aMaxPoint, const std::string& aName)
+	{
 		myAmbientPass.mySHGridSize.x = CU::Math::ClosestPowerOfTwo(abs(int(aMaxPoint.x - aMinPoint.x)));
 		myAmbientPass.mySHGridSize.y = CU::Math::ClosestPowerOfTwo(abs(int(aMaxPoint.y - aMinPoint.y)));
 		myAmbientPass.mySHGridSize.z = CU::Math::ClosestPowerOfTwo(abs(int(aMaxPoint.z - aMinPoint.z)));
 		myAmbientPass.mySHGridOffset = aMinPoint;
-
-		ModelLoader::GetInstance()->WaitUntilFinished();
-		myCubeMapGenerator->GenerateSHTextures(this, aScene, mySHTextures, myAmbientPass.mySHGridSize
-			, myAmbientPass.mySHGridOffset, 8.f, aName);
-
 		myAmbientPass.mySHGridOffset *= -1.f;
+
+		mySHTextures.cAr = new Texture();
+		mySHTextures.cAg = new Texture();
+		mySHTextures.cAb = new Texture();
+		mySHTextures.cBr = new Texture();
+		mySHTextures.cBg = new Texture();
+		mySHTextures.cBb = new Texture();
+		mySHTextures.cC = new Texture();
+
+		mySHTextures.cAr->LoadTexture("LightData/" + aName + "_cAr.dds");
+		mySHTextures.cAg->LoadTexture("LightData/" + aName + "_cAg.dds");
+		mySHTextures.cAb->LoadTexture("LightData/" + aName + "_cAb.dds");
+		mySHTextures.cBr->LoadTexture("LightData/" + aName + "_cBr.dds");
+		mySHTextures.cBg->LoadTexture("LightData/" + aName + "_cBg.dds");
+		mySHTextures.cBb->LoadTexture("LightData/" + aName + "_cBb.dds");
+		mySHTextures.cC->LoadTexture("LightData/" + aName + "_cC.dds");
 	}
 
 	void DeferredRenderer::SetCubeMap(const std::string& aFilePath)
@@ -195,7 +223,6 @@ namespace Prism
 		ModelLoader::GetInstance()->Pause();
 		myCubemap = TextureContainer::GetInstance()->GetTexture("LightData/" + aFilePath + "_cubemap.dds");
 		ModelLoader::GetInstance()->UnPause();
-
 	}
 
 	Prism::Texture* DeferredRenderer::GetFinishedTexture()

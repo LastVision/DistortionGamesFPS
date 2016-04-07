@@ -303,7 +303,36 @@ void ClientLevelFactory::LoadLights(XMLReader& aReader, tinyxml2::XMLElement* aE
 
 		ReadGID(aReader, lightElement, gid);
 
-		Prism::PointLight* light = new Prism::PointLight(gid);
+		Prism::PointLight* light = new Prism::PointLight(gid, false);
+		light->SetPosition(position);
+		light->SetColor(color);
+		light->SetRange(range);
+		static_cast<ClientLevel*>(myCurrentLevel)->AddLight(light);
+	}
+
+	for (tinyxml2::XMLElement* lightElement = aReader.FindFirstChild(aElement, "pointlightambient"); lightElement != nullptr;
+		lightElement = aReader.FindNextElement(lightElement, "pointlightambient"))
+	{
+		CU::Vector3<float> position;
+		CU::Vector4<float> color;
+		float range;
+
+		aReader.ForceReadAttribute(aReader.ForceFindFirstChild(lightElement, "position"), "X", position.x);
+		aReader.ForceReadAttribute(aReader.ForceFindFirstChild(lightElement, "position"), "Y", position.y);
+		aReader.ForceReadAttribute(aReader.ForceFindFirstChild(lightElement, "position"), "Z", position.z);
+
+		aReader.ForceReadAttribute(aReader.ForceFindFirstChild(lightElement, "color"), "R", color.x);
+		aReader.ForceReadAttribute(aReader.ForceFindFirstChild(lightElement, "color"), "G", color.y);
+		aReader.ForceReadAttribute(aReader.ForceFindFirstChild(lightElement, "color"), "B", color.z);
+		aReader.ForceReadAttribute(aReader.ForceFindFirstChild(lightElement, "color"), "A", color.w);
+
+		aReader.ForceReadAttribute(aReader.ForceFindFirstChild(lightElement, "range"), "value", range);
+
+		unsigned int gid(UINT32_MAX);
+
+		ReadGID(aReader, lightElement, gid);
+
+		Prism::PointLight* light = new Prism::PointLight(gid, true);
 		light->SetPosition(position);
 		light->SetColor(color);
 		light->SetRange(range);
