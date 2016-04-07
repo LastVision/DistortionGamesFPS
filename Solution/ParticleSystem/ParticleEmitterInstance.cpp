@@ -12,13 +12,12 @@
 
 namespace Prism
 {
+
 	ParticleEmitterInstance::ParticleEmitterInstance(ParticleEmitterData* someData, bool anAllowManyParticles)
 		: myVertexWrapper(nullptr)
 		, myEmissionTime(0)
 		, myParticleIndex(0)
 		, myLiveParticleCount(0)
-		, myAlwaysShow(false)
-		, myHasEmitted(false)
 		, myOverrideDirection(false)
 		, myParticleToGraphicsCard(256)
 		, myDrawDebugLines(false)
@@ -110,7 +109,6 @@ namespace Prism
 
 	void ParticleEmitterInstance::Update(float aDeltaTime, const CU::Matrix44f& aWorldMatrix)
 	{
-		
 		UpdateEmitter(aDeltaTime, aWorldMatrix);
 	}
 
@@ -315,6 +313,22 @@ namespace Prism
 			myEmissionTime -= aDeltaTime;
 			myEmitterLife -= aDeltaTime;
 
+			if (myRotation.x > 0.f)
+			{
+				myOrientation = CU::Matrix44f::CreateRotateAroundX(CU::Math::DegreeToRad(myRotation.x) * aDeltaTime) * myOrientation;
+			}
+
+			if (myRotation.y > 0.f)
+			{
+				myOrientation = CU::Matrix44f::CreateRotateAroundX(CU::Math::DegreeToRad(myRotation.y) * aDeltaTime) * myOrientation;
+			}
+
+
+			if (myRotation.z > 0.f)
+			{
+				myOrientation = CU::Matrix44f::CreateRotateAroundX(CU::Math::DegreeToRad(myRotation.z) * aDeltaTime) * myOrientation;
+			}
+
 
 			if (myEmissionTime <= 0.f && (myEmitterLife > 0.f || myStates[EMITTERLIFE] == FALSE))
 			{
@@ -340,7 +354,7 @@ namespace Prism
 		for (int i = 0; i < myLogicalParticles.Size(); ++i)
 		{
 			myGraphicalParticles[i].myLifeTime -= aDeltaTime;
-			
+
 			if (myParticleEmitterData->myData.mySpeedDelta > 0.f)
 			{
 				myParticleEmitterData->myData.mySpeed += myParticleEmitterData->myData.mySpeedDelta * aDeltaTime;
@@ -514,81 +528,10 @@ namespace Prism
 		return toReturn;
 	}
 
-	void ParticleEmitterInstance::SetPosition(const CU::Vector3f& aPosition)
-	{
-		myOrientation.SetPos(aPosition);
-	}
-
-	void ParticleEmitterInstance::SetEmitterLifeTime(float aLifeTime)
-	{
-		myEmitterLife = aLifeTime;
-	}
-
 	void ParticleEmitterInstance::Activate()
 	{
 		Reset();
 		myStates[ACTIVE] = TRUE;
-	}
-
-	bool ParticleEmitterInstance::IsActive()
-	{
-		return myStates[ACTIVE];
-	}
-
-	void ParticleEmitterInstance::SetEntity(Entity* anEntity)
-	{
-		myEntity = anEntity;
-	}
-
-	Entity* ParticleEmitterInstance::GetEntity()
-	{
-		return myEntity;
-	}
-
-	bool ParticleEmitterInstance::GetShouldAlwaysShow()
-	{
-		return myAlwaysShow;
-	}
-
-	void ParticleEmitterInstance::SetShouldAlwaysShow(bool aShouldAlwaysShow)
-	{
-		myAlwaysShow = aShouldAlwaysShow;
-	}
-
-	void ParticleEmitterInstance::SetRadius(float aRadius)
-	{
-		myParticleEmitterData->myEmitterSize.x = aRadius;
-		myParticleEmitterData->myEmitterSize.z = aRadius;
-		myParticleEmitterData->myEmitterSize.y = 0.f;
-	}
-
-	void ParticleEmitterInstance::SetSize(const CU::Vector3f& aSize)
-	{
-		myParticleEmitterData->myEmitterSize = aSize * 0.5f;
-#ifdef _DEBUG
-		CreatePoints();
-#endif
-	}
-
-	void ParticleEmitterInstance::SetDirection(const CU::Vector3<float>& aDirection)
-	{
-		myOverrideDirection = true;
-		myDirection = aDirection;
-	}
-
-	void ParticleEmitterInstance::ToggleDebugLines()
-	{
-		myDrawDebugLines = !myDrawDebugLines;
-	}
-
-	bool ParticleEmitterInstance::GetShouldRender()
-	{
-		return myShouldRender;
-	}
-
-	void ParticleEmitterInstance::SetShouldRender(bool aShouldRender)
-	{
-		myShouldRender = aShouldRender;
 	}
 
 	void ParticleEmitterInstance::KillEmitter(float aKillTime)
@@ -600,4 +543,5 @@ namespace Prism
 			myEntity = nullptr;
 		}
 	}
+
 }

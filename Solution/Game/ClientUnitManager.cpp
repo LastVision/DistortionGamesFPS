@@ -46,7 +46,9 @@ void ClientUnitManager::CreateUnits(Prism::Scene* aScene)
 	{
 		for (int i = 0; i < myUnits.GetCapacity() / types.Size(); ++i)
 		{
-			Entity* unit = EntityFactory::CreateEntity(index++, eEntityType::UNIT, CU::ToLower(types[j]), aScene, true, CU::Vector3<float>(0.f, -200.f, 0.f));
+			Entity* unit = EntityFactory::CreateEntity(index++, eEntityType::UNIT, CU::ToLower(types[j]), aScene, true
+				, CU::Vector3<float>(0.f, -200.f, 0.f));
+
 			unit->SetIsEnemy(true);
 			unit->GetComponent<PhysicsComponent>()->RemoveFromScene();
 			unit->Kill();
@@ -67,9 +69,11 @@ ClientUnitManager* ClientUnitManager::GetInstance()
 void ClientUnitManager::ReceiveNetworkMessage(const NetMessageActivateUnit& aMessage, const sockaddr_in&)
 {
 	PostMaster::GetInstance()->SendMessage(EmitterMessage("SpawnEnemy", { aMessage.myPosition.x
-		, aMessage.myPosition.y + 2.f
+		, aMessage.myPosition.y + 1.5f
 		, aMessage.myPosition.z }
-	, CU::Vector3<float>(0.f, -1.f, 0.f)));
+		, CU::Vector3<float>(0.f, -1.f, 0.f)
+		, CU::Vector3<float>(0.f, 180.f, 0.f)));
+
 	Entity* toActivate = RequestUnit(aMessage.myGID);
 	if (toActivate != nullptr)
 	{

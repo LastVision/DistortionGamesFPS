@@ -169,11 +169,6 @@ void EmitterManager::ReceiveMessage(const EmitterMessage& aMessage)
 
 		instance->SetEntity(nullptr);
 
-		if (aMessage.myShouldAlwaysShow == true)
-		{
-			instance->SetShouldAlwaysShow(true);
-		}
-
 		instance->SetPosition(position);
 		instance->Activate();
 		if (aMessage.myEmitterLifeTime > 0.f)
@@ -198,6 +193,10 @@ void EmitterManager::ReceiveMessage(const EmitterMessage& aMessage)
 			instance->SetDirection(aMessage.myDirection);
 		}
 
+		if (aMessage.myRotation.x > 0.f || aMessage.myRotation.y > 0.f || aMessage.myRotation.z > 0.f)
+		{
+			instance->SetRotation(aMessage.myRotation);
+		}
 	}
 
 	myEmitters[particleType]->myFinishedGroups[index] = UNFINISHED;
@@ -247,7 +246,6 @@ void EmitterManager::ReadList(const std::string& aPath, const std::string& anID,
 		Prism::ParticleEmitterInstance* newEmitter;
 		newEmitter = new Prism::ParticleEmitterInstance(Prism::ParticleDataContainer::GetInstance()->
 			GetParticleData(entityPath), true);
-		newEmitter->SetShouldAlwaysShow(false);
 		myEmitters[anID]->myEmitters[anIndex].Add(newEmitter);
 
 	}

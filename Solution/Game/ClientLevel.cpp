@@ -712,6 +712,10 @@ void ClientLevel::HandleOtherClientRayCastShotgun(PhysicsComponent* aComponent, 
 			aComponent->AddForce(aDirection, myForceStrengthShotgun);
 		}
 		CU::Vector3<float> toSend = CU::Reflect(aDirection, aHitNormal);
-		PostMaster::GetInstance()->SendMessage(EmitterMessage("Shotgun", aHitPosition, toSend));
+
+		if (aComponent->GetEntity().GetIsEnemy() == true)
+			PostMaster::GetInstance()->SendMessage(EmitterMessage("OnHit", aHitPosition, toSend));
+		else
+			PostMaster::GetInstance()->SendMessage(EmitterMessage("OnEnvHit", aHitPosition, aHitNormal));
 	}
 }
