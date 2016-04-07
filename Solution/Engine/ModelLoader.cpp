@@ -677,6 +677,7 @@ namespace Prism
 	{
 		CU::Vector2<int> size(int(someData.mySize.x), int(someData.mySize.y));
 		someData.myFontProxy->SetFont(new Font(someData.myResourcePath, size));
+		myFontProxies[someData.myFontProxy->GetFilePath()] = someData.myFontProxy;
 	}
 
 	void ModelLoader::CreateText(LoadData& someData)
