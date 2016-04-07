@@ -131,9 +131,9 @@ namespace Prism
 			myDirectionalLightData[i].myColor = myDirectionalLights[i]->GetColor();
 		}
 
-		for (int i = 0; i < myPointLights.Size(); ++i)
+		for (int i = 0; i < myAmbientPointLights.Size(); ++i)
 		{
-			myPointLights[i]->Update();
+			myAmbientPointLights[i]->Update();
 		}
 		
 		for (int i = 0; i < mySpotLights.Size(); ++i)
