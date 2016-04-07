@@ -160,7 +160,7 @@ void ServerLevel::CollisionCallback(PhysicsComponent* aFirst, PhysicsComponent* 
 		}
 		break;
 	case eEntityType::BULLET:
-		if (second.GetComponent<HealthComponent>() != nullptr)
+		if (second.GetComponent<HealthComponent>() != nullptr && second.GetIsEnemy() == false)
 		{
 			second.GetComponent<HealthComponent>()->TakeDamage(first.GetComponent<BulletComponent>()->GetDamage());
 		}

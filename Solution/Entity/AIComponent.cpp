@@ -32,6 +32,7 @@ AIComponent::AIComponent(Entity& anEntity, const AIComponentData& aData, CU::Mat
 	{
 		this->HandleRaycast(aComponent, aDirection, aHitPosition, aHitNormal);
 	};
+	myEntity.SetIsEnemy(true);
 }
 
 AIComponent::~AIComponent()
