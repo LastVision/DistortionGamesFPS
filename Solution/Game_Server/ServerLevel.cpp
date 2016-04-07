@@ -91,6 +91,8 @@ ServerLevel::~ServerLevel()
 	{
 		it->second.RemoveAll();
 	}
+	myRespawnTriggers.DeleteAll();
+	myPressETriggers.DeleteAll();
 }
 
 void ServerLevel::Init(const std::string& aMissionXMLPath)

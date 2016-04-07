@@ -158,6 +158,7 @@ ClientLevel::~ClientLevel()
 	myInstances.DeleteAll();
 	myPointLights.DeleteAll();
 	mySpotLights.DeleteAll();
+	myPlayers.DeleteAll();
 	SAFE_DELETE(myPlayer);
 	SAFE_DELETE(myScene);
 	SAFE_DELETE(myDeferredRenderer);
