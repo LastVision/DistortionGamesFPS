@@ -79,7 +79,7 @@ namespace GUI
 		if (aCurrentWeaponType == eWeaponType::PISTOL)
 		{
 			float colorValue = myPistolAmmoInClip / float(myPistolClipSize);
-			myAmmoTotalText->SetText("#inf");
+			myAmmoTotalText->SetText("-");
 			myAmmoTotalText->SetColor({ 1.f - colorValue, colorValue, 0.f, 0.5f });
 		}
 		else if (aCurrentWeaponType == eWeaponType::SHOTGUN)
