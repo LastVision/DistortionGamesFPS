@@ -257,7 +257,7 @@ void ClientLevel::Update(const float aDeltaTime, bool aLoadingScreen)
 
 	if (myWorldTexts.Size() > 0)
 	{
-		if (Prism::ModelLoader::GetInstance()->IsLoading() == false && myWorldTexts[0].myProxy->IsLoaded() == true)
+		//if (Prism::ModelLoader::GetInstance()->IsLoading() == false && myWorldTexts[0].myProxy->IsLoaded() == true)
 		{
 			for (int i = 0; i < myWorldTexts.Size(); ++i)
 			{
@@ -334,9 +334,7 @@ void ClientLevel::Render()
 
 		myEmitterManager->RenderEmitters();
 
-
 		myPlayer->GetComponent<FirstPersonRenderComponent>()->Render();
-		//myPlayer->GetComponent<ShootingComponent>()->Render();
 
 		myTextManager->Render();
 

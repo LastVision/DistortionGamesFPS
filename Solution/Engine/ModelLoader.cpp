@@ -140,6 +140,8 @@ namespace Prism
 			WaitUntilCopyIsAllowed();
 			myCanAddToLoadArray = false;
 
+			DEBUG_PRINT("MODELLOADER IS WORKING");
+
 			CopyLoadJobs();
 
 			for (int i = myLoadArray.Size() - 1; i >= 0; --i)

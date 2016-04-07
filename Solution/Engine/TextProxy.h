@@ -29,6 +29,7 @@ namespace Prism
 
 	private:
 		Text* myText;
+		std::string myString;
 			
 		CU::Vector2<float> myPosition;
 		CU::Vector2<float> myScale;

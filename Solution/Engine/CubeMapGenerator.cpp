@@ -78,7 +78,7 @@ namespace Prism
 				for (int x = 0; x < mySH_GRID_X; ++x)
 				{
 					std::stringstream ss;
-					ss << "Data/SHNodes/Node_" << x << "_" << y << "_" << z << ".dds";
+					ss << "Data/SHNodes/Node_" << x << "_" << y << "_" << z << "_new.dds";
 					CU::Vector3<float> pos = CU::Vector3<float>(float(x), float(y), float(z));
 					pos *= aNodeSize;
 					pos += aOffset;
@@ -147,13 +147,13 @@ namespace Prism
 		someTextures.cBb->Create3DTexture(&cBb[0].x, mySH_GRID_X, mySH_GRID_Y, mySH_GRID_Z);
 		someTextures.cC->Create3DTexture(&cC[0].x, mySH_GRID_X, mySH_GRID_Y, mySH_GRID_Z);
 
-		someTextures.cAr->Save3DToFile("LightData/" + aName + "_cAr.dds");
-		someTextures.cAg->Save3DToFile("LightData/" + aName + "_cAg.dds");
-		someTextures.cAb->Save3DToFile("LightData/" + aName + "_cAb.dds");
-		someTextures.cBr->Save3DToFile("LightData/" + aName + "_cBr.dds");
-		someTextures.cBg->Save3DToFile("LightData/" + aName + "_cBg.dds");
-		someTextures.cBb->Save3DToFile("LightData/" + aName + "_cBb.dds");
-		someTextures.cC->Save3DToFile( "LightData/" + aName + "_cC.dds" );
+		someTextures.cAr->Save3DToFile("LightData/" + aName + "_cAr_new.dds");
+		someTextures.cAg->Save3DToFile("LightData/" + aName + "_cAg_new.dds");
+		someTextures.cAb->Save3DToFile("LightData/" + aName + "_cAb_new.dds");
+		someTextures.cBr->Save3DToFile("LightData/" + aName + "_cBr_new.dds");
+		someTextures.cBg->Save3DToFile("LightData/" + aName + "_cBg_new.dds");
+		someTextures.cBb->Save3DToFile("LightData/" + aName + "_cBb_new.dds");
+		someTextures.cC->Save3DToFile( "LightData/" + aName + "_cC_new.dds" );
 
 		SAFE_ARRAY_DELETE(cAr);
 		SAFE_ARRAY_DELETE(cAg);
