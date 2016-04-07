@@ -47,6 +47,8 @@ private:
 
 	CU::GrowingArray<Server> myServers;
 
+	Prism::TextProxy* mySearchingForServers;
+
 	Server* myServer;
 	Server myLocalhost;
 
