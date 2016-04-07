@@ -48,6 +48,10 @@ void OptionsState::InitState(StateStackProxy* aStateStackProxy, GUI::Cursor* aCu
 	mySfxVolume = Prism::Audio::AudioInterface::GetInstance()->GetSFXVolume();
 	myVoiceVolume = Prism::Audio::AudioInterface::GetInstance()->GetVoiceVolume();
 
+	while (myVoiceText->IsLoaded() == false || mySfxText->IsLoaded() == false || myMusicText->IsLoaded() == false)
+	{
+	}
+
 	myMusicText->SetText("Music: " + std::to_string(myMusicVolume));
 	mySfxText->SetText("SFX: " + std::to_string(mySfxVolume));
 

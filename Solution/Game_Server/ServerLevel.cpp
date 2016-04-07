@@ -212,12 +212,15 @@ void ServerLevel::ReceiveNetworkMessage(const NetMessageShootGrenade& aMessage, 
 	bullet->Reset();
 	CU::Vector3<float> pos = playerOrientation.GetPos();
 	pos.y += 1.5f;
+	pos += aMessage.myForwardVector * 2.f;
+	pos += playerOrientation.GetRight() * 0.5f;
+	pos -= playerOrientation.GetUp() * 0.2f;
 	bullet->GetComponent<PhysicsComponent>()->TeleportToPosition(pos);
 	bullet->GetComponent<GrenadeComponent>()->Activate(aMessage.mySenderID);
-	bullet->GetComponent<PhysicsComponent>()->AddForce(playerOrientation.GetForward(), float(aMessage.myForceStrength));
+	bullet->GetComponent<PhysicsComponent>()->AddForce(aMessage.myForwardVector, float(aMessage.myForceStrength));
 
 	//Skicka samma meddelande till clienten
-	SharedNetworkManager::GetInstance()->AddMessage<NetMessageShootGrenade>(NetMessageShootGrenade(aMessage.myForceStrength));
+	SharedNetworkManager::GetInstance()->AddMessage<NetMessageShootGrenade>(NetMessageShootGrenade(aMessage.myForceStrength, pos));
 }
 
 void ServerLevel::ReceiveNetworkMessage(const NetMessagePressE& aMessage, const sockaddr_in&)
