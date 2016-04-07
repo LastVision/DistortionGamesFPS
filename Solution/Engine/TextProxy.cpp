@@ -44,7 +44,9 @@ namespace Prism
 		if (IsLoaded() == true)
 		{
 			//NOT THREAD-SAFE
+			Prism::ModelLoader::GetInstance()->Pause();
 			myText->SetText(aText);
+			Prism::ModelLoader::GetInstance()->UnPause();
 
 
 

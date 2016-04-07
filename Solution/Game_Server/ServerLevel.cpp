@@ -117,11 +117,16 @@ void ServerLevel::Init(const std::string& aMissionXMLPath)
 
 }
 
-void ServerLevel::Update(const float aDeltaTime)
+void ServerLevel::Update(const float aDeltaTime, bool aLoadingScreen)
 {
+	if (aLoadingScreen == true)
+	{
+		return;
+	}
+
 	if (myAllClientsLoaded == true && Prism::PhysicsInterface::GetInstance()->GetInitDone() == true)
 	{
-		__super::Update(aDeltaTime);
+		__super::Update(aDeltaTime, aLoadingScreen);
 
 		for (int i = 0; i < myPressETriggers.Size(); ++i)
 		{
