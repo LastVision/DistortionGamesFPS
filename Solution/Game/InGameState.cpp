@@ -36,6 +36,7 @@ InGameState::InGameState(int aLevelID, unsigned int aServerHashLevelValue)
 	, myLevel(nullptr)
 	, myLevelComplete(false)
 	, myFailedLevel(false)
+	, myLoadingScreen(true)
 	, myCanStartNextLevel(false)
 	, myFailedLevelHash(false)
 	, myServerHashLevelValue(aServerHashLevelValue)
@@ -51,6 +52,8 @@ InGameState::InGameState(int aLevelID, unsigned int aServerHashLevelValue)
 		"Data/Resource/Texture/Menu/BetweenLevels/T_background_elevator.dds", { 1920.f, 1080.f });
 	myLevelFailedSprite = Prism::ModelLoader::GetInstance()->LoadSprite(
 		"Data/Resource/Texture/Menu/T_background_gameover.dds", { 1920.f, 1080.f });
+	myLoadingScreenSprite= Prism::ModelLoader::GetInstance()->LoadSprite(
+		"Data/Resource/Texture/Menu/T_background_story01.dds", { 1920.f, 1080.f });
 	CU::Vector2<int> windowSize = Prism::Engine::GetInstance()->GetWindowSizeInt();
 	OnResize(windowSize.x, windowSize.y);
 }
@@ -64,6 +67,7 @@ InGameState::~InGameState()
 	Console::Destroy();
 	SAFE_DELETE(myLevelCompleteSprite);
 	SAFE_DELETE(myLevelFailedSprite);
+	SAFE_DELETE(myLoadingScreenSprite);
 	SAFE_DELETE(myLevel);
 	SAFE_DELETE(myLevelFactory);
 	SAFE_DELETE(myText);
@@ -195,7 +199,7 @@ const eStateStatus InGameState::Update(const float& aDeltaTime)
 	else
 	{
 		DL_ASSERT_EXP(myLevel != nullptr, "Invalid level");
-		myLevel->Update(aDeltaTime);
+		myLevel->Update(aDeltaTime, myLoadingScreen);
 	}
 
 	//LUA::ScriptSystem::GetInstance()->CallFunction("Update", { aDeltaTime });
@@ -208,7 +212,11 @@ void InGameState::Render()
 {
 	VTUNE_EVENT_BEGIN(VTUNE::GAME_RENDER);
 
-	if (myLevelComplete == false && myFailedLevel == false)
+	if (myLoadingScreen == true)
+	{
+		myLoadingScreenSprite->Render({ 0.f, 0.f });
+	}
+	else if (myLevelComplete == false && myFailedLevel == false)
 	{
 		myLevel->Render();
 	}
@@ -250,6 +258,7 @@ void InGameState::ReceiveNetworkMessage(const NetMessageAllClientsComplete& aMes
 	case NetMessageAllClientsComplete::eType::LEVEL_LOAD:
 		myLevelComplete = false;
 		myFailedLevel = false;
+		myLoadingScreen = false;
 		break;
 	}
 }
@@ -306,6 +315,7 @@ void InGameState::OnResize(int aWidth, int aHeight)
 {
 	myLevelCompleteSprite->SetSize({ float(aWidth), float(aHeight) }, { 0.f, 0.f });
 	myLevelFailedSprite->SetSize({ float(aWidth), float(aHeight) }, { 0.f, 0.f });
+	myLoadingScreenSprite->SetSize({ float(aWidth), float(aHeight) }, { 0.f, 0.f });
 	if (myLevel != nullptr)
 	{
 		myLevel->OnResize(float(aWidth), float(aHeight));
