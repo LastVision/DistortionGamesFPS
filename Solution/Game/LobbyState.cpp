@@ -1,5 +1,6 @@
 #include "stdafx.h"
 
+#include <AudioInterface.h>
 #include "ClientNetworkManager.h"
 #include <Cursor.h>
 #include <fstream>
@@ -187,6 +188,7 @@ void LobbyState::ReceiveMessage(const OnClickMessage& aMessage)
 			ClientNetworkManager::GetInstance()->AddMessage(NetMessageRequestStartLevel());
 			break;
 		case eOnClickEvent::GAME_QUIT:
+			Prism::Audio::AudioInterface::GetInstance()->PostEvent("Stop_AllElevators", 0);
 			ClientNetworkManager::GetInstance()->AddMessage(NetMessageDisconnect(ClientNetworkManager::GetInstance()->GetGID()));
 			myStateStatus = eStateStatus::ePopMainState;
 			break;
@@ -200,6 +202,12 @@ void LobbyState::ReceiveMessage(const OnClickMessage& aMessage)
 void LobbyState::ReceiveMessage(const OnRadioButtonMessage& aMessage)
 {
 	DL_ASSERT_EXP(aMessage.myEvent == eOnRadioButtonEvent::LEVEL_SELECT, "Only level select in lobby state.");
+	Prism::Audio::AudioInterface::GetInstance()->PostEvent("Stop_AllElevators", 0);
+	
+	int levelMusic = aMessage.myID;
+	levelMusic = min(levelMusic, 2);
+	std::string musicEvent("Play_ElevatorToLevel" + std::to_string(levelMusic));
+	Prism::Audio::AudioInterface::GetInstance()->PostEvent(musicEvent.c_str(), 0);
 
 	ClientNetworkManager::GetInstance()->AddMessage(NetMessageSetLevel(aMessage.myID));
 }
