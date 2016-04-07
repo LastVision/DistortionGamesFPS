@@ -1,5 +1,6 @@
 #include "stdafx.h"
 
+#include <AudioInterface.h>
 #include "FirstPersonRenderComponent.h"
 #include "GrenadeLauncher.h"
 #include <InputWrapper.h>
@@ -195,12 +196,15 @@ void ShootingComponent::ReloadWeaponIntention()
 			switch (myCurrentWeapon->GetWeaponType())
 			{
 			case eWeaponType::PISTOL:
+				Prism::Audio::AudioInterface::GetInstance()->PostEvent("Play_PistolReload", 0);
 				myEntity.GetComponent<FirstPersonRenderComponent>()->AddIntention(ePlayerState::PISTOL_RELOAD, true);
 				break;
 			case eWeaponType::SHOTGUN:
+				Prism::Audio::AudioInterface::GetInstance()->PostEvent("Play_ShotgunReload", 0);
 				myEntity.GetComponent<FirstPersonRenderComponent>()->AddIntention(ePlayerState::SHOTGUN_RELOAD, true);
 				break;
 			case eWeaponType::GRENADE_LAUNCHER:
+				Prism::Audio::AudioInterface::GetInstance()->PostEvent("Play_GrenadeLauncherReload", 0);
 				myEntity.GetComponent<FirstPersonRenderComponent>()->AddIntention(ePlayerState::GRENADE_LAUNCHER_RELOAD, true);
 				break;
 			default:
@@ -217,7 +221,7 @@ void ShootingComponent::ReloadWeapon()
 
 void ShootingComponent::ReceiveNote(const UpgradeNote& aNote)
 {
-	if (aNote.myData.myAmmoTotalModifier == 0 && myCurrentWeapon->GetWeaponType() != aNote.myData.myWeaponType)
+	if (myCurrentWeapon->GetWeaponType() != aNote.myData.myWeaponType)
 	{
 		switch (myCurrentWeapon->GetWeaponType())
 		{

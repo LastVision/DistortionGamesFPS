@@ -33,7 +33,7 @@ MainMenuState::MainMenuState()
 	, myGUIManager(nullptr)
 	, myHasRunOnce(false)
 {
-	CU::Vector2<float> logoSize(512.f, 512.f);
+	CU::Vector2<float> logoSize(1024.f, 256.f);
 	myLogo = Prism::ModelLoader::GetInstance()->LoadSprite("Data/Resource/Texture/Menu/MainMenu/T_gamelogo.dds"
 		, logoSize, logoSize * 0.5f);
 	myLogoDust = Prism::ModelLoader::GetInstance()->LoadSprite("Data/Resource/Texture/Menu/MainMenu/T_gamelogo_dust.dds"

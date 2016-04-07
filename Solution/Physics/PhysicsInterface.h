@@ -63,7 +63,7 @@ namespace Prism
 		void Create(PhysicsComponent* aComponent, const PhysicsCallbackStruct& aPhysData
 			, float* aOrientation, const std::string& aFBXPath
 			, physx::PxRigidDynamic** aDynamicBodyOut, physx::PxRigidStatic** aStaticBodyOut
-			, physx::PxShape*** someShapesOut, bool aShouldAddToScene);
+			, physx::PxShape*** someShapesOut, bool aShouldAddToScene, bool aShouldBeSphere);
 		void Add(physx::PxRigidDynamic* aDynamic);
 		void Add(physx::PxRigidStatic* aStatic);
 		void Add(int aCapsuleID);
