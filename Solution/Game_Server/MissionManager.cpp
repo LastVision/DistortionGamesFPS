@@ -14,6 +14,7 @@
 #include <XMLReader.h>
 
 MissionManager::MissionManager(const std::string& aMissionXMLPath)
+	: myActiveMissionsQueue(8)
 {
 	LoadMissions(aMissionXMLPath);
 	PostMaster::GetInstance()->Subscribe(eMessageType::ENEMY_KILLED, this);
@@ -24,6 +25,7 @@ MissionManager::~MissionManager()
 {
 	PostMaster::GetInstance()->UnSubscribe(eMessageType::ENEMY_KILLED, this);
 	PostMaster::GetInstance()->UnSubscribe(eMessageType::DEFEND_TOUCH, this);
+	myActiveMissionsQueue.RemoveAll();
 	for (auto it = myMissions.begin(); it != myMissions.end(); ++it)
 	{
 		SAFE_DELETE(it->second);
@@ -32,76 +34,98 @@ MissionManager::~MissionManager()
 
 void MissionManager::Update(float aDeltaTime)
 {
-	if (myCurrentMission != nullptr)
+	if (myActiveMissionsQueue.Size() > 0)
 	{
-		if (myCurrentMission->Update(aDeltaTime) == true)
+		if (myActiveMissionsQueue[0]->Update(aDeltaTime) == true)
 		{
-			myCurrentMission = nullptr;
+			myActiveMissionsQueue.RemoveNonCyclicAtIndex(0);
 		}
 	}
 }
 
 void MissionManager::SetMission(int aId)
 {
-	if (myCurrentMission == nullptr)
+	if (myActiveMissionsQueue.Size() == 0)
 	{
-		myCurrentMission = myMissions[aId];
-		if (myCurrentMission->GetMissionType() == eMissionType::DEFEND)
+		myActiveMissionsQueue.Add(myMissions[aId]);
+
+#ifndef RELEASE_BUILD
+		if (myMissions[aId]->GetMissionType() == eMissionType::DEFEND)
 		{
 			printf("Defend Mission started \n");
-			//PostMaster::GetInstance()->SendMessage<SendTextToClientsMessage>(SendTextToClientsMessage("Defend Mission started"));
 		}
-		else if (myCurrentMission->GetMissionType() == eMissionType::KILL_X)
+		else if (myMissions[aId]->GetMissionType() == eMissionType::KILL_X)
 		{
 			printf("KillX Mission started \n");
-			//PostMaster::GetInstance()->SendMessage<SendTextToClientsMessage>(SendTextToClientsMessage("KillX Mission started"));
 		}
-		else if (myCurrentMission->GetMissionType() == eMissionType::EVENT)
+		else if (myMissions[aId]->GetMissionType() == eMissionType::EVENT)
 		{
 			printf("Event Mission started \n");
-			//PostMaster::GetInstance()->SendMessage<SendTextToClientsMessage>(SendTextToClientsMessage("KillX Mission started"));
 		}
+#endif
 	}
 	else
 	{
-		int apa;
-		apa = 5;
+		for (int i = 0; i < myActiveMissionsQueue.Size(); i++)
+		{
+			if (myActiveMissionsQueue[i]->GetID() == aId)
+			{
+				return;
+			}
+		}
+
+		myActiveMissionsQueue.Add(myMissions[aId]);
+
+#ifndef RELEASE_BUILD
+		if (myMissions[aId]->GetMissionType() == eMissionType::DEFEND)
+		{
+			printf("Defend Mission started \n");
+		}
+		else if (myMissions[aId]->GetMissionType() == eMissionType::KILL_X)
+		{
+			printf("KillX Mission started \n");
+		}
+		else if (myMissions[aId]->GetMissionType() == eMissionType::EVENT)
+		{
+			printf("Event Mission started \n");
+		}
+#endif
 	}
 }
 
 eMissionType MissionManager::GetCurrentMissionType() const
 {
-	if (myCurrentMission != nullptr)
+	if (myActiveMissionsQueue.Size() > 0)
 	{
-		return myCurrentMission->GetMissionType();
+		return myActiveMissionsQueue[0]->GetMissionType();
 	}
 	return eMissionType::NONE;
 }
 
 void MissionManager::ReceiveMessage(const EnemyKilledMessage&)
 {
-	if (myCurrentMission != nullptr)
+	if (myActiveMissionsQueue.Size() > 0)
 	{
-		if (myCurrentMission->GetMissionType() == eMissionType::KILL_X)
+		if (myActiveMissionsQueue[0]->GetMissionType() == eMissionType::KILL_X)
 		{
-			myCurrentMission->AddValue(1);
+			myActiveMissionsQueue[0]->AddValue(1);
 		}
 	}
 }
 
 void MissionManager::ReceiveMessage(const DefendTouchMessage& aMessage)
 {
-	if (myCurrentMission != nullptr)
+	if (myActiveMissionsQueue.Size() > 0)
 	{
-		if (myCurrentMission->GetMissionType() == eMissionType::DEFEND)
+		if (myActiveMissionsQueue[0]->GetMissionType() == eMissionType::DEFEND)
 		{
 			if (aMessage.myHasEntered == true)
 			{
-				myCurrentMission->AddValue(1);
+				myActiveMissionsQueue[0]->AddValue(1);
 			}
 			else
 			{
-				myCurrentMission->AddValue(-1);
+				myActiveMissionsQueue[0]->AddValue(-1);
 			}
 		}
 	}
@@ -127,19 +151,25 @@ void MissionManager::LoadMissions(const std::string& aMissionXMLPath)
 		{
 			int enemiesToKill = 0;
 			reader.ForceReadAttribute(rootElement, "value", enemiesToKill);
-			KillXMission* mission = new KillXMission(missionType, enemiesToKill, shouldLoopMissionEvents);
+			KillXMission* mission = new KillXMission(missionType, missionId, enemiesToKill, shouldLoopMissionEvents);
 			myMissions[missionId] = mission;
 		}
 		else if (missionType == "defend")
 		{
 			float secondsToDefend = 0;
+			bool progressShouldCountDown = false;
+			std::string progressText = "Progression: ";
+
 			reader.ForceReadAttribute(rootElement, "value", secondsToDefend);
-			DefendMission* mission = new DefendMission(missionType, secondsToDefend, shouldLoopMissionEvents);
+			reader.ReadAttribute(rootElement, "progressText", progressText);
+			reader.ReadAttribute(rootElement, "progressShouldCountDown", progressShouldCountDown);
+
+			DefendMission* mission = new DefendMission(missionType, missionId, secondsToDefend, shouldLoopMissionEvents, progressText, progressShouldCountDown);
 			myMissions[missionId] = mission;
 		}
 		else if (missionType == "event")
 		{
-			EventMission* mission = new EventMission(missionType);
+			EventMission* mission = new EventMission(missionType, missionId);
 			myMissions[missionId] = mission;
 		}
 		else
@@ -151,15 +181,6 @@ void MissionManager::LoadMissions(const std::string& aMissionXMLPath)
 		for (eventElement = reader.FindFirstChild(eventElement, "Event"); eventElement != nullptr;
 			eventElement = reader.FindNextElement(eventElement, "Event"))
 		{
-			//std::string eventType;
-			//reader.ForceReadAttribute(eventElement, "type", eventType);
-			//int gid = 0;
-			//reader.ForceReadAttribute(eventElement, "gid", gid);
-			//float timeBeforeStart = 0.f;
-			//reader.ForceReadAttribute(eventElement, "timeBeforeStarting", timeBeforeStart);
-			//
-			//eActionEventType actionType = GetType(eventType);
-
 			myMissions[missionId]->AddStartEvent(CreateActionEvent(eventElement, &reader));
 		}
 
@@ -167,14 +188,6 @@ void MissionManager::LoadMissions(const std::string& aMissionXMLPath)
 		for (eventElement = reader.FindFirstChild(eventElement, "Event"); eventElement != nullptr;
 			eventElement = reader.FindNextElement(eventElement, "Event"))
 		{
-			//std::string eventType;
-			//reader.ForceReadAttribute(eventElement, "type", eventType);
-			//int gid = 0;
-			//reader.ForceReadAttribute(eventElement, "gid", gid);
-			//float timeBeforeStart = 0.f;
-			//reader.ForceReadAttribute(eventElement, "timeBeforeStarting", timeBeforeStart);
-			//myMissions[missionId]->AddMissionEvent(ActionEvent(GetType(eventType), gid, timeBeforeStart));
-
 			myMissions[missionId]->AddMissionEvent(CreateActionEvent(eventElement, &reader));
 		}
 
@@ -182,14 +195,6 @@ void MissionManager::LoadMissions(const std::string& aMissionXMLPath)
 		for (eventElement = reader.FindFirstChild(eventElement, "Event"); eventElement != nullptr;
 			eventElement = reader.FindNextElement(eventElement, "Event"))
 		{
-			//std::string eventType;
-			//reader.ForceReadAttribute(eventElement, "type", eventType);
-			//int gid = 0;
-			//reader.ForceReadAttribute(eventElement, "gid", gid);
-			//float timeBeforeStart = 0.f;
-			//reader.ForceReadAttribute(eventElement, "timeBeforeStarting", timeBeforeStart);
-			//myMissions[missionId]->AddEndEvent(ActionEvent(GetType(eventType), gid, timeBeforeStart));
-
 			myMissions[missionId]->AddEndEvent(CreateActionEvent(eventElement, &reader));
 		}
 	}

@@ -8,12 +8,13 @@
 #include <SetActiveMessage.h>
 #include <SendTextToClientsMessage.h>
 
-Mission::Mission(const std::string& aMissionType, bool aShouldLoopMissionEvents)
+Mission::Mission(const std::string& aMissionType, int aMissionID, bool aShouldLoopMissionEvents)
 	: myShouldLoopMissionEvents(aShouldLoopMissionEvents)
 	, myStartEvents(8)
 	, myMissionEvents(8)
 	, myEndEvents(8)
 	, myCurrentMissionEvent(0)
+	, myMissionID(aMissionID)
 {
 	if (aMissionType == "killx")
 	{

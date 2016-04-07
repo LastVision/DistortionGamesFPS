@@ -151,7 +151,9 @@ void Pistol::HandleRaycast(PhysicsComponent* aComponent, const CU::Vector3<float
 		{
 			//Prism::Audio::AudioInterface::GetInstance()->PostEvent("Play_Shotgun", aComponent->GetEntity().GetComponent<SoundComponent>()->GetAudioSFXID());
 		}
+#ifdef RELEASE_BUILD
 		if (aComponent->GetEntity().GetSubType() != "player")
+#endif
 		{
 			if (aComponent->GetPhysicsType() == ePhysics::DYNAMIC)
 			{
@@ -161,9 +163,13 @@ void Pistol::HandleRaycast(PhysicsComponent* aComponent, const CU::Vector3<float
 			CU::Vector3<float> toSend = CU::Reflect<float>(aDirection, aHitNormal);
 
 			if (aComponent->GetEntity().GetIsEnemy() == true)
+			{
 				PostMaster::GetInstance()->SendMessage(EmitterMessage("OnHit", aHitPosition, toSend));
+			}
 			else
+			{
 				PostMaster::GetInstance()->SendMessage(EmitterMessage("OnEnvHit", aHitPosition, aHitNormal));
+			}
 
 			//aComponent->GetEntity().SendNote<DamageNote>(DamageNote(myDamage));
 

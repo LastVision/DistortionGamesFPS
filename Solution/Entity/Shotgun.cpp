@@ -72,7 +72,9 @@ void Shotgun::HandleRaycast(PhysicsComponent* aComponent, const CU::Vector3<floa
 {
 	if (aComponent != nullptr)
 	{
+#ifdef RELEASE_BUILD
 		if (aComponent->GetEntity().GetSubType() != "player")
+#endif
 		{
 			if (aComponent->GetPhysicsType() == ePhysics::DYNAMIC)
 			{

@@ -1,8 +1,8 @@
 #include "stdafx.h"
 #include "EventMission.h"
 
-EventMission::EventMission(const std::string& aMissionType)
-	: Mission(aMissionType, false)
+EventMission::EventMission(const std::string& aMissionType, int aMissionID)
+	: Mission(aMissionType, aMissionID, false)
 {
 }
 

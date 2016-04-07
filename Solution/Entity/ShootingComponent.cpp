@@ -249,11 +249,11 @@ void ShootingComponent::ReceiveNote(const UpgradeNote& aNote)
 	{
 		myPistol->Upgrade(aNote.myData);
 	}
-	else if (aNote.myData.myAmmoTotalModifier == 0 && aNote.myData.myWeaponType == eWeaponType::SHOTGUN)
+	else if (aNote.myData.myWeaponType == eWeaponType::SHOTGUN)
 	{
 		myShotgun->Upgrade(aNote.myData);
 	}
-	else if (aNote.myData.myAmmoTotalModifier == 0 && aNote.myData.myWeaponType == eWeaponType::GRENADE_LAUNCHER)
+	else if (aNote.myData.myWeaponType == eWeaponType::GRENADE_LAUNCHER)
 	{
 		myGrenadeLauncher->Upgrade(aNote.myData);
 	}

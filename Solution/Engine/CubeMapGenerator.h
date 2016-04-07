@@ -48,6 +48,8 @@ namespace Prism
 		void GenerateSHTextures(DeferredRenderer* aRenderer, Scene* aScene, SHTextures& someTextures
 			, const CU::Vector3<float>& aGridSize, const CU::Vector3<float>& aOffset, float aNodeSize
 			, const std::string& aName);
+		
+		void OnResize(float aWidth, float aHeight);
 
 	private:
 
