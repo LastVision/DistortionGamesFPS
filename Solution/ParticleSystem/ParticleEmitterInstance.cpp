@@ -12,13 +12,12 @@
 
 namespace Prism
 {
+
 	ParticleEmitterInstance::ParticleEmitterInstance(ParticleEmitterData* someData, bool anAllowManyParticles)
 		: myVertexWrapper(nullptr)
 		, myEmissionTime(0)
 		, myParticleIndex(0)
 		, myLiveParticleCount(0)
-		, myAlwaysShow(false)
-		, myHasEmitted(false)
 		, myOverrideDirection(false)
 		, myParticleToGraphicsCard(256)
 		, myDrawDebugLines(false)
@@ -110,7 +109,6 @@ namespace Prism
 
 	void ParticleEmitterInstance::Update(float aDeltaTime, const CU::Matrix44f& aWorldMatrix)
 	{
-		
 		UpdateEmitter(aDeltaTime, aWorldMatrix);
 	}
 
@@ -315,6 +313,22 @@ namespace Prism
 			myEmissionTime -= aDeltaTime;
 			myEmitterLife -= aDeltaTime;
 
+			if (myRotation.x > 0.f)
+			{
+				myOrientation = CU::Matrix44f::CreateRotateAroundX(CU::Math::DegreeToRad(myRotation.x) * aDeltaTime) * myOrientation;
+			}
+
+			if (myRotation.y > 0.f)
+			{
+				myOrientation = CU::Matrix44f::CreateRotateAroundX(CU::Math::DegreeToRad(myRotation.y) * aDeltaTime) * myOrientation;
+			}
+
+
+			if (myRotation.z > 0.f)
+			{
+				myOrientation = CU::Matrix44f::CreateRotateAroundX(CU::Math::DegreeToRad(myRotation.z) * aDeltaTime) * myOrientation;
+			}
+
 
 			if (myEmissionTime <= 0.f && (myEmitterLife > 0.f || myStates[EMITTERLIFE] == FALSE))
 			{
@@ -340,7 +354,7 @@ namespace Prism
 		for (int i = 0; i < myLogicalParticles.Size(); ++i)
 		{
 			LogicalParticle& logicParticle = myLogicalParticles[i];
-
+			
 			if (logicParticle.myIsAlive == false)
 			{
 				continue;
@@ -391,14 +405,17 @@ namespace Prism
 			}
 			myLiveParticleCount++;
 
-			myGraphicalParticles[myParticleIndex].myColor = myParticleEmitterData->myData.myStartColor;
+			GraphicalParticle &gfxParticle = myGraphicalParticles[myParticleIndex];
+			LogicalParticle &logicParticle = myLogicalParticles[myParticleIndex];
 
-			myLogicalParticles[myParticleIndex].mySpeed = myParticleSpeed;
+			gfxParticle.myColor = myParticleEmitterData->myData.myStartColor;
 
-			myLogicalParticles[myParticleIndex].myDirection = myDirection;
+			logicParticle.mySpeed = myParticleSpeed;
+
+			logicParticle.myDirection = myDirection;
 			if (myOverrideDirection == false)
 			{
-				myLogicalParticles[myParticleIndex].myDirection = CalculateDirection(myParticleEmitterData->myVariation.x,
+				logicParticle.myDirection = CalculateDirection(myParticleEmitterData->myVariation.x,
 					myParticleEmitterData->myVariation.y);
 			}
 
@@ -406,43 +423,43 @@ namespace Prism
 			if (myStates[CIRCLE] == TRUE && myStates[HOLLOW] == TRUE)
 			{
 				CU::Vector3<float> pos = CreateCirclePositions();
-				myGraphicalParticles[myParticleIndex].myPosition = aWorldMatrix.GetPos() + pos;
+				gfxParticle.myPosition = aWorldMatrix.GetPos() + pos;
 			}
 			else if (myStates[CIRCLE] == TRUE)
 			{
 				CU::Vector3<float> pos = CreateCirclePositions();
-				myGraphicalParticles[myParticleIndex].myPosition = CU::Math::RandomVector(aWorldMatrix.GetPos() - pos
+				gfxParticle.myPosition = CU::Math::RandomVector(aWorldMatrix.GetPos() - pos
 					, aWorldMatrix.GetPos() + pos);
 			}
 			else if (myStates[HOLLOW] == TRUE)
 			{
 				CU::Vector3<float> pos = CreateHollowSquare();
-				myGraphicalParticles[myParticleIndex].myPosition = aWorldMatrix.GetPos() + pos;
+				gfxParticle.myPosition = aWorldMatrix.GetPos() + pos;
 			}
 			else
 			{
-				myGraphicalParticles[myParticleIndex].myPosition =
+				gfxParticle.myPosition =
 					CU::Math::RandomVector(aWorldMatrix.GetPos() - myParticleEmitterData->myEmitterSize
 					, aWorldMatrix.GetPos() + myParticleEmitterData->myEmitterSize);
 			}
 #pragma endregion
 
-			myGraphicalParticles[myParticleIndex].myLifeTime = myParticleEmitterData->myData.myParticleLifeTime;
+			gfxParticle.myLifeTime = myParticleEmitterData->myData.myParticleLifeTime;
 
-			myGraphicalParticles[myParticleIndex].myAlpha = myParticleEmitterData->myData.myStartAlpha;
+			gfxParticle.myAlpha = myParticleEmitterData->myData.myStartAlpha;
 
 			myParticleScaling = CU::Math::RandomRange(myParticleEmitterData->myData.myMinStartSize
 				, myParticleEmitterData->myData.myMaxStartSize);
 
-			myGraphicalParticles[myParticleIndex].mySize = myParticleScaling;
+			gfxParticle.mySize = myParticleScaling;
 
-			myLogicalParticles[myParticleIndex].myIsAlive = true;
+			logicParticle.myIsAlive = true;
 
-			myLogicalParticles[myParticleIndex].myRotation = CU::Math::RandomRange(-360.f, 360.f);
+			logicParticle.myRotation = CU::Math::RandomRange(-360.f, 360.f);
 
-			myGraphicalParticles[myParticleIndex].myRotation = myLogicalParticles[myParticleIndex].myRotation;
+			gfxParticle.myRotation = logicParticle.myRotation;
 
-			myLogicalParticles[myParticleIndex].myRotationDelta = myParticleEmitterData->myRotationDelta;
+			logicParticle.myRotationDelta = myParticleEmitterData->myRotationDelta;
 
 
 			myParticleIndex += 1;
@@ -524,81 +541,10 @@ namespace Prism
 		return toReturn;
 	}
 
-	void ParticleEmitterInstance::SetPosition(const CU::Vector3f& aPosition)
-	{
-		myOrientation.SetPos(aPosition);
-	}
-
-	void ParticleEmitterInstance::SetEmitterLifeTime(float aLifeTime)
-	{
-		myEmitterLife = aLifeTime;
-	}
-
 	void ParticleEmitterInstance::Activate()
 	{
 		Reset();
 		myStates[ACTIVE] = TRUE;
-	}
-
-	bool ParticleEmitterInstance::IsActive()
-	{
-		return myStates[ACTIVE];
-	}
-
-	void ParticleEmitterInstance::SetEntity(Entity* anEntity)
-	{
-		myEntity = anEntity;
-	}
-
-	Entity* ParticleEmitterInstance::GetEntity()
-	{
-		return myEntity;
-	}
-
-	bool ParticleEmitterInstance::GetShouldAlwaysShow()
-	{
-		return myAlwaysShow;
-	}
-
-	void ParticleEmitterInstance::SetShouldAlwaysShow(bool aShouldAlwaysShow)
-	{
-		myAlwaysShow = aShouldAlwaysShow;
-	}
-
-	void ParticleEmitterInstance::SetRadius(float aRadius)
-	{
-		myParticleEmitterData->myEmitterSize.x = aRadius;
-		myParticleEmitterData->myEmitterSize.z = aRadius;
-		myParticleEmitterData->myEmitterSize.y = 0.f;
-	}
-
-	void ParticleEmitterInstance::SetSize(const CU::Vector3f& aSize)
-	{
-		myParticleEmitterData->myEmitterSize = aSize * 0.5f;
-#ifdef _DEBUG
-		CreatePoints();
-#endif
-	}
-
-	void ParticleEmitterInstance::SetDirection(const CU::Vector3<float>& aDirection)
-	{
-		myOverrideDirection = true;
-		myDirection = aDirection;
-	}
-
-	void ParticleEmitterInstance::ToggleDebugLines()
-	{
-		myDrawDebugLines = !myDrawDebugLines;
-	}
-
-	bool ParticleEmitterInstance::GetShouldRender()
-	{
-		return myShouldRender;
-	}
-
-	void ParticleEmitterInstance::SetShouldRender(bool aShouldRender)
-	{
-		myShouldRender = aShouldRender;
 	}
 
 	void ParticleEmitterInstance::KillEmitter(float aKillTime)
@@ -610,4 +556,11 @@ namespace Prism
 			myEntity = nullptr;
 		}
 	}
+
+	void ParticleEmitterInstance::SetEntity(Entity* anEntity)
+	{
+		myEntity = anEntity;
+	}
+
+
 }

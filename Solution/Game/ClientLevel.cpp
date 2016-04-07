@@ -340,7 +340,10 @@ void ClientLevel::Render()
 
 		for (int i = 0; i < myWorldTexts.Size(); ++i)
 		{
-			myWorldTexts[i].myProxy->Render(myScene->GetCamera());
+			if (CU::Length(myWorldTexts[i].myProxy->Get3DPosition() - myPlayer->GetOrientation().GetPos()) <= 10.f)
+			{
+				myWorldTexts[i].myProxy->Render(myScene->GetCamera());
+			}
 		}
 
 		if (myEscapeMenuActive == true)
@@ -680,6 +683,7 @@ void ClientLevel::HandleTrigger(Entity& aFirstEntity, Entity& aSecondEntity, boo
 				{
 					aSecondEntity.SendNote<UpgradeNote>(aFirstEntity.GetComponent<UpgradeComponent>()->GetData());
 					Prism::Audio::AudioInterface::GetInstance()->PostEvent("FadeInFirstLayer", 0);
+					PostMaster::GetInstance()->SendMessage(EmitterMessage(firstTrigger->GetEntity().GetEmitter(), true));
 				}
 			}
 			else if (firstTrigger->GetTriggerType() == eTriggerType::HEALTH_PACK)
@@ -687,6 +691,7 @@ void ClientLevel::HandleTrigger(Entity& aFirstEntity, Entity& aSecondEntity, boo
 				//myTextManager->AddNotification("healthpack");
 				ClientNetworkManager::GetInstance()->AddMessage<NetMessageHealthPack>(NetMessageHealthPack(firstTrigger->GetValue()));
 				Prism::Audio::AudioInterface::GetInstance()->PostEvent("FadeInSecondLayer", 0);
+				PostMaster::GetInstance()->SendMessage(EmitterMessage(firstTrigger->GetEntity().GetEmitter(), true));
 			}
 			aSecondEntity.SendNote<CollisionNote>(CollisionNote(&aFirstEntity, aHasEntered));
 		}
@@ -735,6 +740,10 @@ void ClientLevel::HandleOtherClientRayCastShotgun(PhysicsComponent* aComponent, 
 			aComponent->AddForce(aDirection, myForceStrengthShotgun);
 		}
 		CU::Vector3<float> toSend = CU::Reflect(aDirection, aHitNormal);
-		PostMaster::GetInstance()->SendMessage(EmitterMessage("Shotgun", aHitPosition, toSend));
+
+		if (aComponent->GetEntity().GetIsEnemy() == true)
+			PostMaster::GetInstance()->SendMessage(EmitterMessage("OnHit", aHitPosition, toSend));
+		else
+			PostMaster::GetInstance()->SendMessage(EmitterMessage("OnEnvHit", aHitPosition, aHitNormal));
 	}
 }

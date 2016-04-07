@@ -134,4 +134,9 @@ namespace Prism
 	{
 		my3DOrientation = aOrientation;
 	}
+
+	const CU::Vector3<float>& TextProxy::Get3DPosition() const
+	{
+		return my3DOrientation.GetPos();
+	}
 }

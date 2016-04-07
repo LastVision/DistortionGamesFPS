@@ -1,5 +1,5 @@
 #include "stdafx.h"
 #include "GameConstants.h"
 
-bool GC::GenerateLightData = true; 
-bool GC::GenerateCubeMap = true;
+bool GC::GenerateLightData = false; 
+bool GC::GenerateCubeMap = false;
