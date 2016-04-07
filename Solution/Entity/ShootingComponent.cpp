@@ -217,7 +217,7 @@ void ShootingComponent::ReloadWeapon()
 
 void ShootingComponent::ReceiveNote(const UpgradeNote& aNote)
 {
-	if (aNote.myData.myAmmoTotalModifier == 0 && myCurrentWeapon->GetWeaponType() != aNote.myData.myWeaponType)
+	if (myCurrentWeapon->GetWeaponType() != aNote.myData.myWeaponType)
 	{
 		switch (myCurrentWeapon->GetWeaponType())
 		{
