@@ -31,6 +31,7 @@ private:
 	void LoadMissions(const std::string& aMissionXMLPath);
 	ActionEvent CreateActionEvent(tinyxml2::XMLElement* anEventElement, XMLReader* aReader);
 
-	Mission* myCurrentMission;
+	CU::GrowingArray<Mission*> myActiveMissionsQueue;
+
 	std::unordered_map<int, Mission*> myMissions;
 };

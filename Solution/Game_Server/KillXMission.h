@@ -4,7 +4,7 @@
 class KillXMission : public Mission
 {
 public:
-	KillXMission(const std::string& aMissionType, int aEnemiesToKill, bool aShouldLoopMissionEvents);
+	KillXMission(const std::string& aMissionType, int aMissionID, int aEnemiesToKill, bool aShouldLoopMissionEvents);
 	~KillXMission();
 
 	bool Update(float aDeltaTime) override;

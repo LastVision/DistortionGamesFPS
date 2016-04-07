@@ -3,8 +3,8 @@
 #include <SendTextToClientsMessage.h>
 #include <PostMaster.h>
 
-KillXMission::KillXMission(const std::string& aMissionType, int aEnemiesToKill, bool aShouldLoopMissionEvents)
-	: Mission(aMissionType, aShouldLoopMissionEvents)
+KillXMission::KillXMission(const std::string& aMissionType, int aMissionID, int aEnemiesToKill, bool aShouldLoopMissionEvents)
+	: Mission(aMissionType, aMissionID, aShouldLoopMissionEvents)
 	, myAmountToKill(aEnemiesToKill)
 {
 }
@@ -72,7 +72,7 @@ bool KillXMission::Update(float aDeltaTime)
 
 void KillXMission::AddValue(int aValue)
 {
-	PostMaster::GetInstance()->SendMessage<SendTextToClientsMessage>(SendTextToClientsMessage("Enemies left: " + std::to_string(myAmountToKill - myEnemiesKilled)));
 	myEnemiesKilled += aValue;
+	PostMaster::GetInstance()->SendMessage<SendTextToClientsMessage>(SendTextToClientsMessage("Enemies left: " + std::to_string(myAmountToKill - myEnemiesKilled)));
 	printf("Enemy killed! %i / %i \n", myEnemiesKilled, myAmountToKill);
 }
