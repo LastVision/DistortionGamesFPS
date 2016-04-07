@@ -153,7 +153,10 @@ void AnimationComponent::Update(float aDeltaTime)
 	}
 	//Prism::DebugDrawer::GetInstance()->RenderLine3D(CU::Vector3<float>(), myMuzzleOrientation.GetPos());
 
-
+	if (myEntity.GetState() == eEntityState::ATTACK && IsCurrentAnimationDone() == true)
+	{
+		myEntity.SetState(eEntityState::IDLE);
+	}
 }
 
 bool AnimationComponent::IsCurrentAnimationDone() const
