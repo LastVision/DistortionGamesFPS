@@ -338,7 +338,10 @@ void ClientLevel::Render()
 
 		for (int i = 0; i < myWorldTexts.Size(); ++i)
 		{
-			myWorldTexts[i].myProxy->Render(myScene->GetCamera());
+			if (CU::Length(myWorldTexts[i].myProxy->Get3DPosition() - myPlayer->GetOrientation().GetPos()) <= 10.f)
+			{
+				myWorldTexts[i].myProxy->Render(myScene->GetCamera());
+			}
 		}
 
 		if (myEscapeMenuActive == true)
