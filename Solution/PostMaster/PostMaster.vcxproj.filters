@@ -76,5 +76,8 @@
     <ClInclude Include="LevelLoadedMessage.h">
       <Filter>Message</Filter>
     </ClInclude>
+    <ClInclude Include="LevelCompleteMessage.h">
+      <Filter>Message</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

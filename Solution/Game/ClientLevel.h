@@ -29,7 +29,7 @@ class TextEventManager;
 class ClientLevel : public SharedLevel
 {
 public:
-	ClientLevel(GUI::Cursor* aCursor, eStateStatus& aStateStatus);
+	ClientLevel(GUI::Cursor* aCursor, eStateStatus& aStateStatus, int aLevelID);
 	~ClientLevel();
 
 	void Init(const std::string& aWeaponSettingsPath) override;
@@ -109,6 +109,8 @@ private:
 	int	myMusicVolume;
 	int	mySfxVolume;
 	int	myVoiceVolume;
+
+	int myLevelID;
 
 	eStateStatus& myStateStatus;
 };

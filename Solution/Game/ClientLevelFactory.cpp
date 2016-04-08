@@ -44,7 +44,7 @@ ClientLevel* ClientLevelFactory::LoadLevel(int aID, GUI::Cursor* aCursor, eState
 ClientLevel* ClientLevelFactory::LoadCurrentLevel(GUI::Cursor* aCursor, eStateStatus& aStateStatus)
 {
 	myIsLoadingLevel = true;
-	myCurrentLevel = new ClientLevel(aCursor, aStateStatus);
+	myCurrentLevel = new ClientLevel(aCursor, aStateStatus, myCurrentID);
 	ReadLevel(myLevelPaths[myCurrentID]);
 	myCurrentLevel->Init(myWeaponSettingsPath);
 	myCurrentLevel->SetMinMax(myMinPoint, myMaxPoint);

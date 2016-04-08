@@ -64,7 +64,7 @@
 #include <RoomManager.h>
 #include <ParticleEmitterInstance.h>
 #include <Room.h>
-ClientLevel::ClientLevel(GUI::Cursor* aCursor, eStateStatus& aStateStatus)
+ClientLevel::ClientLevel(GUI::Cursor* aCursor, eStateStatus& aStateStatus, int aLevelID)
 	: myInstanceOrientations(16)
 	, myInstances(16)
 	, myPointLights(64)
@@ -82,6 +82,7 @@ ClientLevel::ClientLevel(GUI::Cursor* aCursor, eStateStatus& aStateStatus)
 	, myMusicVolume(0)
 	, myVoiceVolume(0)
 	, myStateStatus(aStateStatus)
+	, myLevelID(aLevelID)
 {
 	Prism::PhysicsInterface::Create(std::bind(&ClientLevel::CollisionCallback, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3), false);
 
@@ -238,7 +239,8 @@ void ClientLevel::Update(const float aDeltaTime, bool aLoadingScreen)
 		//	}
 		//}
 
-		//PostMaster::GetInstance()->SendMessage<LevelLoadedMessage>(LevelLoadedMessage(0));
+		PostMaster::GetInstance()->SendMessage<LevelLoadedMessage>(LevelLoadedMessage(myLevelID));
+
 	}
 
 	if (myInitDone == false || aLoadingScreen == true)
