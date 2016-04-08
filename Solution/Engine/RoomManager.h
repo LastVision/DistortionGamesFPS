@@ -29,6 +29,8 @@ namespace Prism
 		const CU::GrowingArray<SpotLight*>& GetActiveSpotLights();
 		Prism::Room* GetPlayerRoom();
 		Prism::Room* GetPreviousPlayerRoom();
+
+		int GetRoomIndex(const CU::Vector3<float>& aPosition, float aRadius = 0.f);
 	private:
 		int GetRoomId(const CU::Vector3<float>& aPosition) const;
 		void FindActiveRooms(Frustum aFrustum, const CU::Matrix44<float>& aCameraOrientation, int aRoomId, Portal* anArrivePortal = nullptr);

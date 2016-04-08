@@ -279,6 +279,20 @@ namespace Prism
 		return myPreviousPlayerRoom;
 	}
 
+	int RoomManager::GetRoomIndex(const CU::Vector3<float>& aPosition, float aRadius)
+	{
+		for (int i = 0; i < myRooms.Size(); ++i)
+		{
+			if (myRooms[i]->Inside(aPosition, aRadius) == true)
+			{
+				return i;
+			}
+		}
+
+		DL_ASSERT("Found position outside room");
+		return 0;
+	}
+
 	int RoomManager::GetRoomId(const CU::Vector3<float>& aPosition) const
 	{
 		for (int i = 0; i < myRooms.Size(); ++i)
