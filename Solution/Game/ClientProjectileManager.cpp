@@ -1,8 +1,9 @@
 #include "stdafx.h"
+#include <AudioInterface.h>
 #include "ClientProjectileManager.h"
 #include <EntityFactory.h>
 #include <PhysicsComponent.h>
-
+#include <SoundComponent.h>
 
 ClientProjectileManager::ClientProjectileManager()
 {
@@ -81,7 +82,6 @@ void ClientProjectileManager::RequestExplosion(const CU::Vector3<float>& aPositi
 			myLiveExplosions.GetLast().myExplosion->GetComponent<PhysicsComponent>()->AddToScene();
 			myLiveExplosions.GetLast().myExplosion->GetComponent<PhysicsComponent>()->TeleportToPosition(aPosition);
 			explosionFound = true;
-
 		}
 	}
 	DL_ASSERT_EXP(explosionFound == true, "EXPLOSION NOT FOUND");
@@ -104,6 +104,9 @@ void ClientProjectileManager::KillGrenade(unsigned int aGID)
 	{
 		if (myLiveGrenades[i]->GetGID() == aGID)
 		{
+			Prism::Audio::AudioInterface::GetInstance()->PostEvent("Play_GrenadeExplosion"
+				, myLiveGrenades[i]->GetComponent<SoundComponent>()->GetAudioSFXID());
+
 			myLiveGrenades[i]->RemoveFromScene();
 			myLiveGrenades[i]->GetComponent<PhysicsComponent>()->RemoveFromScene();
 			myLiveGrenades.RemoveCyclicAtIndex(i);

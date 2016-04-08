@@ -7,6 +7,8 @@ namespace Prism
 	class Portal;
 	class PointLight;
 	class ParticleEmitterInstance;
+	class SpotLight;
+
 	enum class eRoomType
 	{
 		ROOM,
@@ -35,6 +37,9 @@ namespace Prism
 		void Add(PointLight* aPointLight);
 		const CU::GrowingArray<PointLight*>& GetPointLights() const;
 
+		void Add(SpotLight* aSpotLight);
+		const CU::GrowingArray<SpotLight*>& GetSpotLights() const;
+
 		const std::string& GetName() const;
 		eRoomType GetType() const;
 
@@ -49,6 +54,7 @@ namespace Prism
 		CU::GrowingArray<Portal*> myPortals;
 		CU::GrowingArray<Instance*> myInstances;
 		CU::GrowingArray<PointLight*> myPointLights;
+		CU::GrowingArray<SpotLight*> mySpotLights;
 		const std::string myName;
 		const eRoomType myType;
 		Prism::ParticleEmitterInstance* myEmitter;
@@ -82,6 +88,11 @@ namespace Prism
 	inline const CU::GrowingArray<PointLight*>& Room::GetPointLights() const
 	{
 		return myPointLights;
+	}
+
+	inline const CU::GrowingArray<SpotLight*>& Room::GetSpotLights() const
+	{
+		return mySpotLights;
 	}
 
 	inline const std::string& Room::GetName() const
