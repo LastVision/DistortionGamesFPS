@@ -29,6 +29,8 @@ EmitterManager::EmitterManager()
 		myEmitterList.Add(it->second);
 	}
 	Prism::ModelLoader::GetInstance()->UnPause();
+	short meter = 60;
+	myCullDistance = meter * meter;
 }
 
 EmitterManager::~EmitterManager()
@@ -113,9 +115,14 @@ void EmitterManager::RenderEmitters()
 				}
 				else
 				{
-					if (instance->GetShouldRender() == true)
+					CU::Vector3<float> pos = instance->GetPosition() - myCamera->GetOrientation().GetPos();
+					float length = CU::Length2(pos);
+					if (length < myCullDistance)
 					{
-						instance->Render();
+						if (instance->GetShouldRender() == true)
+						{
+							instance->Render();
+						}
 					}
 				}
 			}

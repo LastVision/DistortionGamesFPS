@@ -149,7 +149,10 @@ void Pistol::HandleRaycast(PhysicsComponent* aComponent, const CU::Vector3<float
 	{
 		if (aComponent->GetEntity().GetComponent<SoundComponent>() != nullptr)
 		{
-			//Prism::Audio::AudioInterface::GetInstance()->PostEvent("Play_Shotgun", aComponent->GetEntity().GetComponent<SoundComponent>()->GetAudioSFXID());
+			if (aComponent->GetEntity().GetType() == eEntityType::UNIT)
+			{
+				Prism::Audio::AudioInterface::GetInstance()->PostEvent("Play_EnemyTakeDamage", aComponent->GetEntity().GetComponent<SoundComponent>()->GetAudioSFXID());
+			}
 		}
 #ifdef RELEASE_BUILD
 		if (aComponent->GetEntity().GetSubType() != "player")
