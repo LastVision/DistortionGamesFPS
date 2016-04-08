@@ -14,6 +14,7 @@ namespace Prism
 	class Instance;
 	class ModelProxy;
 	class SpriteProxy;
+	class Texture;
 }
 
 struct CoOpRespawn
@@ -34,7 +35,7 @@ public:
 
 	void Update(float aDelta) override;
 	void UpdateCoOpPositions(const CU::GrowingArray<Entity*>& somePlayers);
-	void Render();
+	void Render(Prism::Texture* aArmDepthTexture);
 	bool IsCurrentAnimationDone() const;
 	void RestartCurrentAnimation();
 
