@@ -425,6 +425,7 @@ void ClientLevel::ReceiveNetworkMessage(const NetMessageSetActive& aMessage, con
 			if (aMessage.myIsInGraphicsScene == true)
 			{
 				myActiveEntitiesMap[aMessage.myGID]->RemoveFromScene();
+				PostMaster::GetInstance()->SendMessage(EmitterMessage(myActiveEntitiesMap[aMessage.myGID]->GetEmitter(), true));
 			}
 		}
 		else
@@ -686,13 +687,7 @@ void ClientLevel::HandleTrigger(Entity& aFirstEntity, Entity& aSecondEntity, boo
 					PostMaster::GetInstance()->SendMessage(EmitterMessage(firstTrigger->GetEntity().GetEmitter(), true));
 				}
 			}
-			else if (firstTrigger->GetTriggerType() == eTriggerType::HEALTH_PACK)
-			{
-				//myTextManager->AddNotification("healthpack");
-				ClientNetworkManager::GetInstance()->AddMessage<NetMessageHealthPack>(NetMessageHealthPack(firstTrigger->GetValue()));
-				Prism::Audio::AudioInterface::GetInstance()->PostEvent("FadeInSecondLayer", 0);
-				PostMaster::GetInstance()->SendMessage(EmitterMessage(firstTrigger->GetEntity().GetEmitter(), true));
-			}
+
 			aSecondEntity.SendNote<CollisionNote>(CollisionNote(&aFirstEntity, aHasEntered));
 		}
 		aFirstEntity.SendNote<CollisionNote>(CollisionNote(&aSecondEntity, aHasEntered));
