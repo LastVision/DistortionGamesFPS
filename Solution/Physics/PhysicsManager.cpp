@@ -293,6 +293,12 @@ namespace Prism
 
 		myInitDone = true;
 
+		for (int i = 0; i < myActorsToWakeUp[myCurrentIndex ^ 1].Size(); ++i)
+		{
+			myActorsToWakeUp[myCurrentIndex ^ 1][i]->setActorFlag(physx::PxActorFlag::Enum::eDISABLE_SIMULATION, false);
+		}
+		myActorsToWakeUp[myCurrentIndex ^ 1].RemoveAll();
+
 		for (int i = 0; i < myMoveJobs[myCurrentIndex ^ 1].Size(); ++i)
 		{
 			if (myMoveJobs[myCurrentIndex ^ 1][i].myId > -1)
@@ -304,13 +310,7 @@ namespace Prism
 				myControllerPositions[myCurrentIndex ^ 1][i].y = float(pos.y);
 				myControllerPositions[myCurrentIndex ^ 1][i].z = float(pos.z);
 			}
-		}
-
-		for (int i = 0; i < myActorsToWakeUp[myCurrentIndex ^ 1].Size(); ++i)
-		{
-			myActorsToWakeUp[myCurrentIndex ^ 1][i]->setActorFlag(physx::PxActorFlag::Enum::eDISABLE_SIMULATION, false);
-		}
-		myActorsToWakeUp[myCurrentIndex ^ 1].RemoveAll();
+		}	
 
 		for (int i = 0; i < myForceJobs[myCurrentIndex ^ 1].Size(); ++i)
 		{

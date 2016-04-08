@@ -81,6 +81,9 @@ private:
 
 	Prism::SpriteProxy* myCrosshair;
 	Prism::SpriteProxy* myDamageIndicator;
+	Prism::SpriteProxy* myPickupHealthIndicator;
+	Prism::SpriteProxy* myPickupUpgradeIndicator;
+	Prism::SpriteProxy* myLowLifeIndicator;
 	Prism::SpriteProxy* myMarker;
 	Prism::SpriteProxy* myCoOpSprite;
 
@@ -125,6 +128,8 @@ private:
 	CU::Matrix44<float> myHealthJoint;
 	bool myFirstTimeActivateAnimation;
 	float myDisplayDamageIndicatorTimer;
+	float myDisplayHealthIndicatorTimer;
+	float myDisplayUpgradeIndicatorTimer;
 	CU::GrowingArray<ePlayerState> myIntentions;
 
 	int myMaxHealth;
