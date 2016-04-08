@@ -16,6 +16,7 @@ enum class eMessageType
 	ACTIVATE_SPAWNPOINT,
 	PRINT_TEXT,
 	LEVEL_LOADED,
+	LEVEL_COMPLETE,
 	
 	COUNT,
 };
