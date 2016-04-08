@@ -64,6 +64,8 @@
 #include <RoomManager.h>
 #include <ParticleEmitterInstance.h>
 #include <Room.h>
+#include <LevelCompleteMessage.h>
+
 ClientLevel::ClientLevel(GUI::Cursor* aCursor, eStateStatus& aStateStatus, int aLevelID)
 	: myInstanceOrientations(16)
 	, myInstances(16)
@@ -176,6 +178,8 @@ ClientLevel::~ClientLevel()
 	Prism::Audio::AudioInterface::GetInstance()->PostEvent("StopBackground", 0);
 	Prism::Audio::AudioInterface::GetInstance()->PostEvent("StopFirstLayer", 0);
 	Prism::Audio::AudioInterface::GetInstance()->PostEvent("StopSecondLayer", 0);
+
+	PostMaster::GetInstance()->SendMessage<LevelCompleteMessage>(LevelCompleteMessage(myLevelID));
 }
 
 void ClientLevel::Init(const std::string& aWeaponSettingsPath)

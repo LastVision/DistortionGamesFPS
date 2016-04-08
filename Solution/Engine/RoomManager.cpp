@@ -17,6 +17,7 @@ namespace Prism
 	RoomManager::RoomManager()
 		: myRooms(128)
 		, myPortals(128)
+		, myActiveRoomIndices(128)
 		, myAlwaysRenderInstances(128)
 		, myActivePointLights(512)
 		, myActiveSpotLights(512)
@@ -167,6 +168,7 @@ namespace Prism
 		myActivePointLights.RemoveAll();
 		myActiveSpotLights.RemoveAll();
 		myActiveInstances.RemoveAll();
+		myActiveRoomIndices.RemoveAll();
 
 		for (int i = 0; i < myPortals.Size(); ++i)
 		{
@@ -249,19 +251,24 @@ namespace Prism
 		return myActiveInstances;
 	}
 
-	const CU::GrowingArray<Instance*>& RoomManager::GetAllInstances()
+	const CU::GrowingArray<Instance*>& RoomManager::GetAllInstances() const
 	{
 		return myAllInstances;
 	}
 
-	const CU::GrowingArray<PointLight*>& RoomManager::GetActivePointLights()
+	const CU::GrowingArray<PointLight*>& RoomManager::GetActivePointLights() const
 	{
 		return myActivePointLights;
 	}
 
-	const CU::GrowingArray<SpotLight*>& RoomManager::GetActiveSpotLights()
+	const CU::GrowingArray<SpotLight*>& RoomManager::GetActiveSpotLights() const
 	{
 		return myActiveSpotLights;
+	}
+
+	const CU::GrowingArray<int>& RoomManager::GetActiveRoomIndices() const
+	{
+		return myActiveRoomIndices;
 	}
 
 	Prism::Room* RoomManager::GetPlayerRoom()
@@ -277,6 +284,20 @@ namespace Prism
 	Prism::Room* RoomManager::GetPreviousPlayerRoom()
 	{
 		return myPreviousPlayerRoom;
+	}
+
+	int RoomManager::GetRoomIndex(const CU::Vector3<float>& aPosition, float aRadius)
+	{
+		for (int i = 0; i < myRooms.Size(); ++i)
+		{
+			if (myRooms[i]->Inside(aPosition, aRadius) == true)
+			{
+				return i;
+			}
+		}
+
+		DL_ASSERT("Found position outside room");
+		return 0;
 	}
 
 	int RoomManager::GetRoomId(const CU::Vector3<float>& aPosition) const
@@ -295,6 +316,12 @@ namespace Prism
 
 	void RoomManager::FindActiveRooms(Frustum aFrustum, const CU::Matrix44<float>& aCameraOrientation, int aRoomId, Portal* anArrivePortal)
 	{
+		if (myActiveRoomIndices.Size() < 3)
+		{
+			myActiveRoomIndices.Add(aRoomId);
+		}
+
+
 		if (anArrivePortal != nullptr)
 		{
 			aFrustum.Resize(anArrivePortal, aCameraOrientation, myDebugDraw);

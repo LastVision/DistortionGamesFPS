@@ -56,11 +56,12 @@ namespace Prism
 			}
 		}
 
-		void AudioInterface::SetListenerPosition(float aX, float aY, float aZ)
+		void AudioInterface::SetListenerPosition(float aX, float aY, float aZ, float aForwardX, float aForwardY, float aForwardZ
+			, float aUpX, float aUpY, float aUpZ)
 		{
 			if (myWwiseManager)
 			{
-				myWwiseManager->SetListenerPosition(aX, aY, aZ);
+				myWwiseManager->SetListenerPosition(aX, aY, aZ, aForwardX, aForwardY, aForwardZ, aUpX, aUpY, aUpZ);
 			}
 		}
 
