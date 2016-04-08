@@ -121,7 +121,7 @@ namespace Prism
 			return 2048;
 		}
 
-		return myInstancedCount[name];
+		return int(myInstancedCount[name] * 1.5f);
 	}
 
 	void ModelLoader::Run()

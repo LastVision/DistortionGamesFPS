@@ -60,6 +60,7 @@ public:
 
 private:
 	void UpdateJoints();
+	void PlayCorrectSound();
 
 	const CU::Matrix44<float>& myInputComponentEyeOrientation;
 	Prism::Instance* myModel;

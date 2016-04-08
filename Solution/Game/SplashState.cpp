@@ -61,7 +61,8 @@ void SplashState::InitState(StateStackProxy* aStateStackProxy, GUI::Cursor* aCur
 
 	if (myStartSound == true)
 	{
-		Prism::Audio::AudioInterface::GetInstance()->PostEvent("Play_Menu", 0);
+		//Prism::Audio::AudioInterface::GetInstance()->PostEvent("Play_Menu", 0);
+		Prism::Audio::AudioInterface::GetInstance()->PostEvent("Play_MainMenu", 0);
 	}
 
 	if (myVictoryScreen == true)
@@ -83,6 +84,7 @@ void SplashState::EndState()
 	{
 		//Prism::Audio::AudioInterface::GetInstance()->PostEvent("StopSplash", 0);
 		//Prism::Audio::AudioInterface::GetInstance()->PostEvent("Play_Menu", 0);
+		Prism::Audio::AudioInterface::GetInstance()->PostEvent("Play_MainMenu", 0);
 	}
 	SAFE_DELETE(myLogo);
 	SAFE_DELETE(myBackground);

@@ -143,7 +143,7 @@ void MainMenuState::ResumeState()
 {
 	PostMaster::GetInstance()->Subscribe(eMessageType::ON_CLICK, this);
 	myCursor->SetShouldRender(true);
-	Prism::Audio::AudioInterface::GetInstance()->PostEvent("Play_Menu", 0);
+	Prism::Audio::AudioInterface::GetInstance()->PostEvent("Play_MainMenu", 0);
 	PostMaster::GetInstance()->SendMessage(FadeMessage(1.f / 3.f));
 }
 
