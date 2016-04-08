@@ -314,6 +314,7 @@ void ClientLevelFactory::LoadLights(XMLReader& aReader, tinyxml2::XMLElement* aE
 		light->SetPosition(position);
 		light->SetColor(color);
 		light->SetRange(range);
+		light->Update();
 		static_cast<ClientLevel*>(myCurrentLevel)->AddLight(light);
 	}
 
@@ -343,6 +344,7 @@ void ClientLevelFactory::LoadLights(XMLReader& aReader, tinyxml2::XMLElement* aE
 		light->SetPosition(position);
 		light->SetColor(color);
 		light->SetRange(range);
+		light->Update();
 		static_cast<ClientLevel*>(myCurrentLevel)->AddLight(light);
 	}
 
@@ -385,6 +387,7 @@ void ClientLevelFactory::LoadLights(XMLReader& aReader, tinyxml2::XMLElement* aE
 		light->PerformTransformation(CU::Matrix44f::CreateRotateAroundX(rotation.x));
 		light->PerformTransformation(CU::Matrix44f::CreateRotateAroundY(rotation.y));
 
+		light->Update();
 		static_cast<ClientLevel*>(myCurrentLevel)->AddLight(light);
 	}
 }

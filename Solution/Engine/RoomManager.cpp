@@ -10,13 +10,16 @@
 #include "Room.h"
 #include "RoomManager.h"
 #include "PointLight.h"
+#include "SpotLight.h"
+
 namespace Prism
 {
 	RoomManager::RoomManager()
 		: myRooms(128)
 		, myPortals(128)
 		, myAlwaysRenderInstances(128)
-		, myActivePointLights(128)
+		, myActivePointLights(512)
+		, myActiveSpotLights(512)
 		, myActiveInstances(4096)
 		, myAllInstances(4096)
 		, myDebugDraw(false)
@@ -126,6 +129,17 @@ namespace Prism
 		}
 	}
 
+	void RoomManager::Add(SpotLight* aSpotLight)
+	{
+		for (int i = 0; i < myRooms.Size(); ++i)
+		{
+			if (myRooms[i]->Inside(aSpotLight->GetPosition().GetVector3(), aSpotLight->GetRange()) == true)
+			{
+				myRooms[i]->Add(aSpotLight);
+			}
+		}
+	}
+
 	void RoomManager::Remove(Instance* anInstance)
 	{
 		for (int i = 0; i < myAlwaysRenderInstances.Size(); ++i)
@@ -151,6 +165,7 @@ namespace Prism
 		}
 #endif
 		myActivePointLights.RemoveAll();
+		myActiveSpotLights.RemoveAll();
 		myActiveInstances.RemoveAll();
 
 		for (int i = 0; i < myPortals.Size(); ++i)
@@ -206,6 +221,7 @@ namespace Prism
 		float objectsInDuplicateRoomsPercent = 100.f * static_cast<float>(myObjectsInDuplicateRooms) / static_cast<float>(myTotalObjects);
 		DEBUG_PRINT(objectsInDuplicateRoomsPercent);
 		DEBUG_PRINT(myActivePointLights.Size());
+		DEBUG_PRINT(myActiveSpotLights.Size());
 		//DEBUG_PRINT(myInstances.Size());
 		//float renderPercentage = 100.f * float(myActiveInstances.Size())
 		//	/ (myInstances.Size() + myAlwaysRenderInstances.Size());
@@ -241,6 +257,11 @@ namespace Prism
 	const CU::GrowingArray<PointLight*>& RoomManager::GetActivePointLights()
 	{
 		return myActivePointLights;
+	}
+
+	const CU::GrowingArray<SpotLight*>& RoomManager::GetActiveSpotLights()
+	{
+		return myActiveSpotLights;
 	}
 
 	Prism::Room* RoomManager::GetPlayerRoom()
@@ -300,6 +321,17 @@ namespace Prism
 				if (myActivePointLights.Find(light) == myActivePointLights.FoundNone)
 				{
 					myActivePointLights.Add(light);
+				}
+			}
+		}
+
+		for each (SpotLight* light in myRooms[aRoomId]->GetSpotLights())
+		{
+			if (aFrustum.Inside(light->GetPosition().GetVector3(), light->GetRange()) == true)
+			{
+				if (myActiveSpotLights.Find(light) == myActiveSpotLights.FoundNone)
+				{
+					myActiveSpotLights.Add(light);
 				}
 			}
 		}

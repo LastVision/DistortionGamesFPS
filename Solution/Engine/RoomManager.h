@@ -8,6 +8,7 @@ namespace Prism
 	class Portal;
 	class Room;
 	class PointLight;
+	class SpotLight;
 
 	class RoomManager
 	{
@@ -19,11 +20,13 @@ namespace Prism
 		void CalcPortals();
 		void Add(Instance* anInstance, eObjectRoomType aRoomType);
 		void Add(PointLight* aPointLight);
+		void Add(SpotLight* aSpotLight);
 		void Remove(Instance* anInstance);
 
 		const CU::GrowingArray<Instance*>& GetActiveInstances(const Camera& aCamera);
 		const CU::GrowingArray<Instance*>& GetAllInstances();
 		const CU::GrowingArray<PointLight*>& GetActivePointLights();
+		const CU::GrowingArray<SpotLight*>& GetActiveSpotLights();
 		Prism::Room* GetPlayerRoom();
 		Prism::Room* GetPreviousPlayerRoom();
 	private:
@@ -50,6 +53,7 @@ namespace Prism
 		CU::GrowingArray<Instance*> myActiveInstances;
 		CU::GrowingArray<Instance*> myAllInstances;
 		CU::GrowingArray<PointLight*> myActivePointLights;
+		CU::GrowingArray<SpotLight*> myActiveSpotLights;
 
 		Prism::Room* myCurrentPlayerRoom;
 		Prism::Room* myPreviousPlayerRoom;
