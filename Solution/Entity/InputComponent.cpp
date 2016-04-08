@@ -62,14 +62,14 @@ void InputComponent::Update(float aDelta)
 	}
 
 	myPrevOrientation = myOrientation;
-
+	Prism::Audio::AudioInterface::GetInstance()->SetListenerPosition(myOrientation.GetPos().x, myOrientation.GetPos().y, myOrientation.GetPos().z);
 	if (myEntity.GetState() != eEntityState::DIE)
 	{
 		if (myIsInOptionsMenu == false)
 		{
 			UpdateMovement(aDelta);
 
-			Prism::Audio::AudioInterface::GetInstance()->SetListenerPosition(myOrientation.GetPos().x, myOrientation.GetPos().y, myOrientation.GetPos().z);
+
 
 			if (CU::InputWrapper::GetInstance()->KeyDown(DIK_E) == true)
 			{

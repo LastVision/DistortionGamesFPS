@@ -1,5 +1,6 @@
 #include "stdafx.h"
 
+#include <AudioInterface.h>
 #include "DamageNote.h"
 #include "EntityFactory.h"
 #include "GrenadeLauncher.h"
@@ -54,6 +55,8 @@ bool GrenadeLauncher::Shoot(const CU::Matrix44<float>&)
 		
 		SharedNetworkManager::GetInstance()->AddMessage<NetMessageShootGrenade>(NetMessageShootGrenade(int(myForceStrength)
 			, myOwnerEntity->GetComponent<InputComponent>()->GetEyeOrientation().GetForward()));
+
+		Prism::Audio::AudioInterface::GetInstance()->PostEvent("Play_GrenadeLauncher", 0);
 
 		//ShootAtDirection(aOrientation);
 		myAmmoInClip -= 1;

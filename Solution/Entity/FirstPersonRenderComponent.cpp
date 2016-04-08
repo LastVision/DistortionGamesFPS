@@ -1,5 +1,6 @@
 #include "stdafx.h"
 
+#include <AudioInterface.h>
 #include <Animation.h>
 #include <AnimationSystem.h>
 #include <Camera.h>
@@ -547,6 +548,8 @@ void FirstPersonRenderComponent::PlayAnimation(ePlayerState aAnimationState)
 	{
 		myCurrentWeaponModel->ResetAnimationTime(weaponData.myElapsedTime);
 	}
+
+	PlayCorrectSound();
 }
 
 void FirstPersonRenderComponent::AddIntention(ePlayerState aPlayerState, bool aClearIntentions)
@@ -676,5 +679,32 @@ void FirstPersonRenderComponent::UpdateJoints()
 		//}
 
 		myMuzzleJoint = CU::InverseSimple(*currentWeaponAnimation.myMuzzleBone.myBind) * (*currentWeaponAnimation.myMuzzleBone.myJoint) * myInputComponentEyeOrientation;
+	}
+}
+
+void FirstPersonRenderComponent::PlayCorrectSound()
+{
+	switch (myCurrentState)
+	{
+	case ePlayerState::PISTOL_DRAW:
+		Prism::Audio::AudioInterface::GetInstance()->PostEvent("Play_DrawPistol", 0);
+		break;
+	case ePlayerState::PISTOL_HOLSTER:
+		Prism::Audio::AudioInterface::GetInstance()->PostEvent("Play_HolsterPistol", 0);
+		break;
+	case ePlayerState::SHOTGUN_DRAW:
+		Prism::Audio::AudioInterface::GetInstance()->PostEvent("Play_DrawShotgun", 0);
+		break;
+	case ePlayerState::SHOTGUN_HOLSTER:
+		Prism::Audio::AudioInterface::GetInstance()->PostEvent("Play_HolsterShotgun", 0);
+		break;
+	case ePlayerState::GRENADE_LAUNCHER_DRAW:
+		Prism::Audio::AudioInterface::GetInstance()->PostEvent("Play_DrawGrenadeLauncher", 0);
+		break;
+	case ePlayerState::GRENADE_LAUNCHER_HOLSTER:
+		Prism::Audio::AudioInterface::GetInstance()->PostEvent("Play_HolsterGrenadeLauncher", 0);
+		break;
+	default:
+		break;
 	}
 }
