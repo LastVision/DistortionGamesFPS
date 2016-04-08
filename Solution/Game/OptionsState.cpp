@@ -65,7 +65,7 @@ void OptionsState::OnResize(int aWidth, int aHeight)
 {
 	myGUIManager->OnResize(aWidth, aHeight);
 	bool notDone = true;
-	CU::Vector2<float> floatScreenPos(aWidth, aHeight);
+	CU::Vector2<float> floatScreenPos(float(aWidth), float(aHeight));
 	GUI::WidgetContainer* widgetCont = reinterpret_cast<GUI::WidgetContainer*>(myGUIManager->GetWidgetContainer()->At(0));
 	CU::Vector2<float> firstRow = widgetCont->At(3)->GetPosition();
 	CU::Vector2<float> secondRow = widgetCont->At(1)->GetPosition();

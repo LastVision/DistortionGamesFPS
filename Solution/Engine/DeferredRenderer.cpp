@@ -89,6 +89,8 @@ namespace Prism
 
 		myDepthStencilTexture = new Texture();
 		myDepthStencilTexture->InitAsDepthBuffer(windowSize.x, windowSize.y);
+		myArmDepthStencilTexture = new Texture();
+		myArmDepthStencilTexture->InitAsDepthBuffer(windowSize.x, windowSize.y);
 
 		myClearColor[0] = 0.f;
 		myClearColor[1] = 0.f;
@@ -133,9 +135,16 @@ namespace Prism
 		ClearGBuffer();
 		Engine::GetInstance()->GetContex()->ClearDepthStencilView(myDepthStencilTexture->GetDepthStencilView()
 			, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
-		SetGBufferAsTarget();
+		Engine::GetInstance()->GetContex()->ClearDepthStencilView(myArmDepthStencilTexture->GetDepthStencilView()
+			, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
+
 		Engine::GetInstance()->GetContex()->RSSetViewports(1, myViewPort);
+
+		SetGBufferAsTarget(myDepthStencilTexture);
 		aScene->Render();
+
+		SetGBufferAsTarget(myArmDepthStencilTexture);
+		aScene->RenderArmAndWeapon();
 
 		ActivateBuffers();
 
@@ -149,7 +158,9 @@ namespace Prism
 		ClearGBuffer();
 		Engine::GetInstance()->GetContex()->ClearDepthStencilView(myDepthStencilTexture->GetDepthStencilView()
 			, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
-		SetGBufferAsTarget();
+		Engine::GetInstance()->GetContex()->ClearDepthStencilView(myArmDepthStencilTexture->GetDepthStencilView()
+			, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
+		SetGBufferAsTarget(myDepthStencilTexture);
 
 		aScene->RenderWithoutRoomManager();
 
@@ -164,6 +175,7 @@ namespace Prism
 		myGBufferData.myNormalTexture->Resize(aWidth, aHeight);
 		myGBufferData.myEmissiveTexture->Resize(aWidth, aHeight);
 		myDepthStencilTexture->Resize(aWidth, aHeight);
+		myArmDepthStencilTexture->Resize(aWidth, aHeight);
 		myFinishedTexture->Resize(aWidth, aHeight);
 	}
 
@@ -180,9 +192,9 @@ namespace Prism
 	{
 		if (GC::GenerateLightData == true)
 		{
-			myAmbientPass.mySHGridSize.x = CU::Math::ClosestPowerOfTwo(abs(int(aMaxPoint.x - aMinPoint.x)));
-			myAmbientPass.mySHGridSize.y = CU::Math::ClosestPowerOfTwo(abs(int(aMaxPoint.y - aMinPoint.y)));
-			myAmbientPass.mySHGridSize.z = CU::Math::ClosestPowerOfTwo(abs(int(aMaxPoint.z - aMinPoint.z)));
+			myAmbientPass.mySHGridSize.x = float(CU::Math::ClosestPowerOfTwo(abs(int(aMaxPoint.x - aMinPoint.x))));
+			myAmbientPass.mySHGridSize.y = float(CU::Math::ClosestPowerOfTwo(abs(int(aMaxPoint.y - aMinPoint.y))));
+			myAmbientPass.mySHGridSize.z = float(CU::Math::ClosestPowerOfTwo(abs(int(aMaxPoint.z - aMinPoint.z))));
 			myAmbientPass.mySHGridOffset = aMinPoint;
 
 			ModelLoader::GetInstance()->WaitUntilFinished();
@@ -196,9 +208,9 @@ namespace Prism
 	void DeferredRenderer::LoadSHData(const CU::Vector3<float>& aMinPoint, const CU::Vector3<float>& aMaxPoint, const std::string& aName)
 	{
 		ModelLoader::GetInstance()->WaitUntilFinished();
-		myAmbientPass.mySHGridSize.x = CU::Math::ClosestPowerOfTwo(abs(int(aMaxPoint.x - aMinPoint.x)));
-		myAmbientPass.mySHGridSize.y = CU::Math::ClosestPowerOfTwo(abs(int(aMaxPoint.y - aMinPoint.y)));
-		myAmbientPass.mySHGridSize.z = CU::Math::ClosestPowerOfTwo(abs(int(aMaxPoint.z - aMinPoint.z)));
+		myAmbientPass.mySHGridSize.x = float(CU::Math::ClosestPowerOfTwo(abs(int(aMaxPoint.x - aMinPoint.x))));
+		myAmbientPass.mySHGridSize.y = float(CU::Math::ClosestPowerOfTwo(abs(int(aMaxPoint.y - aMinPoint.y))));
+		myAmbientPass.mySHGridSize.z = float(CU::Math::ClosestPowerOfTwo(abs(int(aMaxPoint.z - aMinPoint.z))));
 		myAmbientPass.mySHGridOffset = aMinPoint;
 		myAmbientPass.mySHGridOffset *= -1.f;
 
@@ -239,6 +251,11 @@ namespace Prism
 	Prism::Texture* DeferredRenderer::GetDepthStencilTexture()
 	{
 		return myDepthStencilTexture;
+	}
+
+	Prism::Texture* DeferredRenderer::GetArmDepthStencilTexture()
+	{
+		return myArmDepthStencilTexture;
 	}
 
 	void DeferredRenderer::InitFullscreenQuad()
@@ -509,7 +526,7 @@ namespace Prism
 		context->ClearRenderTargetView(myGBufferData.myEmissiveTexture->GetRenderTargetView(), myClearColor);
 	}
 
-	void DeferredRenderer::SetGBufferAsTarget()
+	void DeferredRenderer::SetGBufferAsTarget(Texture* aDepthTexture)
 	{
 		ID3D11RenderTargetView* targets[3];
 		targets[0] = myGBufferData.myAlbedoTexture->GetRenderTargetView();
@@ -517,7 +534,7 @@ namespace Prism
 		targets[2] = myGBufferData.myEmissiveTexture->GetRenderTargetView();
 
 		Engine::GetInstance()->GetContex()->OMSetRenderTargets(3, targets
-			, myDepthStencilTexture->GetDepthStencilView());
+			, aDepthTexture->GetDepthStencilView());
 	}
 
 	void DeferredRenderer::SetPointLightData(const Camera& aCamera)

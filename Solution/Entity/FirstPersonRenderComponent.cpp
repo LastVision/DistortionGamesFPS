@@ -25,6 +25,7 @@
 #include <Engine.h>
 #include <NetMessageOnHit.h>
 #include "UpgradeNote.h"
+#include <Texture.h>
 
 FirstPersonRenderComponent::FirstPersonRenderComponent(Entity& aEntity, Prism::Scene* aScene)
 	: Component(aEntity)
@@ -55,7 +56,8 @@ FirstPersonRenderComponent::FirstPersonRenderComponent(Entity& aEntity, Prism::S
 
 	Prism::ModelProxy* model = Prism::ModelLoader::GetInstance()->LoadModelAnimated("Data/Resource/Model/First_person/Pistol/SK_arm_pistol_idle.fbx", "Data/Resource/Shader/S_effect_pbl_animated.fx");
 	myModel = new Prism::Instance(*model, myInputComponentEyeOrientation, shouldUseSpecialFoV);
-	aScene->AddInstance(myModel, eObjectRoomType::ALWAYS_RENDER);
+	//aScene->AddInstance(myModel, eObjectRoomType::ALWAYS_RENDER);
+	myScene->SetArmInstance(myModel);
 
 	AddAnimation(ePlayerState::PISTOL_IDLE, "Data/Resource/Model/First_person/Pistol/SK_arm_pistol_idle.fbx", true, true);
 	AddAnimation(ePlayerState::PISTOL_HOLSTER, "Data/Resource/Model/First_person/Pistol/SK_arm_pistol_holster.fbx", false, true);
@@ -118,7 +120,8 @@ FirstPersonRenderComponent::FirstPersonRenderComponent(Entity& aEntity, Prism::S
 	//myGrenadeLauncherModel->Update(1.f / 30.f);
 
 	myCurrentWeaponModel = myPistolModel;
-	aScene->AddInstance(myCurrentWeaponModel, eObjectRoomType::ALWAYS_RENDER);
+	//aScene->AddInstance(myCurrentWeaponModel, eObjectRoomType::ALWAYS_RENDER);
+	myScene->SetWeaponInstance(myCurrentWeaponModel);
 
 	for (int i = 0; i < static_cast<int>(ePlayerState::_COUNT); ++i)
 	{
@@ -182,12 +185,14 @@ void FirstPersonRenderComponent::Update(float aDelta)
 	if (myEntity.GetState() == eEntityState::DIE && myHasDied == false)
 	{
 		myHasDied = true;
-		myEntity.GetScene()->RemoveInstance(myModel);
+		//myEntity.GetScene()->RemoveInstance(myModel);
+		myScene->SetArmInstance(nullptr);
 	}
 	if (myEntity.GetState() != eEntityState::DIE && myHasDied == true)
 	{
 		myHasDied = false;
-		myEntity.GetScene()->AddInstance(myModel, eObjectRoomType::DYNAMIC);
+		//myEntity.GetScene()->AddInstance(myModel, eObjectRoomType::DYNAMIC);
+		myScene->SetArmInstance(myModel);
 	}
 
 
@@ -323,7 +328,7 @@ void FirstPersonRenderComponent::UpdateCoOpPositions(const CU::GrowingArray<Enti
 	}
 }
 
-void FirstPersonRenderComponent::Render()
+void FirstPersonRenderComponent::Render(Prism::Texture* aArmDepthTexture)
 {
 	const CU::Vector2<float>& windowSize = Prism::Engine::GetInstance()->GetWindowSize();
 	myCrosshair->Render(windowSize * 0.5f);
@@ -331,7 +336,10 @@ void FirstPersonRenderComponent::Render()
 	{
 		myDamageIndicator->Render(windowSize * 0.5f);
 	}
+
+	Prism::Engine::GetInstance()->SetDepthStencil(aArmDepthTexture->GetDepthStencilView());
 	my3DGUIManager->Render();
+	Prism::Engine::GetInstance()->RestoreDepthStencil();
 
 	if (myRenderMarker == true)
 	{
@@ -508,21 +516,27 @@ void FirstPersonRenderComponent::PlayAnimation(ePlayerState aAnimationState)
 	myCurrentState = aAnimationState;
 	if (myCurrentState == ePlayerState::PISTOL_DRAW)
 	{
-		myScene->RemoveInstance(myCurrentWeaponModel);
+		//myScene->RemoveInstance(myCurrentWeaponModel);
 		myCurrentWeaponModel = myPistolModel;
-		myScene->AddInstance(myCurrentWeaponModel, eObjectRoomType::ALWAYS_RENDER);
+		//myScene->AddInstance(myCurrentWeaponModel, eObjectRoomType::ALWAYS_RENDER);
+		
+		myScene->SetWeaponInstance(myCurrentWeaponModel);
 	}
 	else if (myCurrentState == ePlayerState::SHOTGUN_DRAW)
 	{
-		myScene->RemoveInstance(myCurrentWeaponModel);
+		//myScene->RemoveInstance(myCurrentWeaponModel);
 		myCurrentWeaponModel = myShotgunModel;
-		myScene->AddInstance(myCurrentWeaponModel, eObjectRoomType::ALWAYS_RENDER);
+		//myScene->AddInstance(myCurrentWeaponModel, eObjectRoomType::ALWAYS_RENDER);
+
+		myScene->SetWeaponInstance(myCurrentWeaponModel);
 	}
 	else if (myCurrentState == ePlayerState::GRENADE_LAUNCHER_DRAW)
 	{
-		myScene->RemoveInstance(myCurrentWeaponModel);
+		//myScene->RemoveInstance(myCurrentWeaponModel);
 		myCurrentWeaponModel = myGrenadeLauncherModel;
-		myScene->AddInstance(myCurrentWeaponModel, eObjectRoomType::ALWAYS_RENDER);
+		//myScene->AddInstance(myCurrentWeaponModel, eObjectRoomType::ALWAYS_RENDER);
+
+		myScene->SetWeaponInstance(myCurrentWeaponModel);
 	}
 
 	Prism::AnimationData& data = myAnimations[int(aAnimationState)].myData;

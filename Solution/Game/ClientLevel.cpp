@@ -333,7 +333,7 @@ void ClientLevel::Render()
 
 		myEmitterManager->RenderEmitters();
 
-		myPlayer->GetComponent<FirstPersonRenderComponent>()->Render();
+		myPlayer->GetComponent<FirstPersonRenderComponent>()->Render(myDeferredRenderer->GetArmDepthStencilTexture());
 
 		myTextManager->Render();
 
@@ -469,7 +469,7 @@ void ClientLevel::ReceiveNetworkMessage(const NetMessageEnemyShooting& aMessage,
 
 	for (int i = 0; i < units.Size(); ++i)
 	{
-		if (units[i]->GetGID() == aMessage.myEnemyGID)
+		if (units[i]->GetGID() == unsigned int(aMessage.myEnemyGID))
 		{
 			units[i]->GetComponent<AnimationComponent>()->PlayMuzzleFlash();
 		}
@@ -637,7 +637,7 @@ void ClientLevel::OnResize(float aWidth, float aHeight)
 {
 	myFullscreenRenderer->OnResize(aWidth, aHeight);
 	myDeferredRenderer->OnResize(aWidth, aHeight);
-	myEscapeMenu->OnResize(aWidth, aHeight);
+	myEscapeMenu->OnResize(int(aWidth), int(aHeight));
 }
 
 void ClientLevel::HandleTrigger(Entity& aFirstEntity, Entity& aSecondEntity, bool aHasEntered)

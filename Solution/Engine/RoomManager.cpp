@@ -347,8 +347,8 @@ namespace Prism
 		for (int i = 0; i < portals.Size(); ++i)
 		{
 			Portal* current = portals[i];
-			int planeOutside[4];
-			bool pointBehind[4];
+			//int planeOutside[4];
+			//bool pointBehind[4];
 
 
 

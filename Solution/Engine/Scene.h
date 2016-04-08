@@ -16,9 +16,6 @@ namespace Prism
 	class SpotLightShadow;
 	class InstancingHelper;
 	class Texture;
-#ifdef SCENE_USE_OCTREE
-	class Octree;
-#endif
 
 	class Scene
 	{
@@ -27,10 +24,9 @@ namespace Prism
 		~Scene();
 
 		void Render();
+		void RenderArmAndWeapon();
 		void RenderWithoutRoomManager();
 		void UpdateLights();
-
-		void OnResize(int aWidth, int aHeigth);
 
 		void AddRoom(Room* aRoom);
 		void AddInstance(Instance* aInstance, eObjectRoomType aRoomType);
@@ -47,6 +43,9 @@ namespace Prism
 		const CU::GrowingArray<PointLight*>& GetPointLights(bool aUseRoomManager) const;
 		const CU::GrowingArray<SpotLight*>& GetSpotLights(bool aUseRoomManager) const;
 
+		void SetArmInstance(Instance* aInstance);
+		void SetWeaponInstance(Instance* aInstance);
+
 	private:
 		void operator=(Scene&) = delete;
 
@@ -58,11 +57,8 @@ namespace Prism
 
 		const Camera* myCamera;
 		RoomManager* myRoomManager;
-
-		CU::StaticArray<DirectionalLightData, NUMBER_OF_DIRECTIONAL_LIGHTS> myDirectionalLightData;
-		CU::StaticArray<PointLightData, NUMBER_OF_POINT_LIGHTS> myPointLightData;
-		CU::StaticArray<SpotLightData, NUMBER_OF_SPOT_LIGHTS> mySpotLightData;
-		float myRenderRadius;
+		Instance* myArmInstance;
+		Instance* myWeaponInstance;
 	};
 
 

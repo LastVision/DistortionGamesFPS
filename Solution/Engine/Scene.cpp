@@ -1,7 +1,9 @@
 #include "stdafx.h"
 
+
 #include "Camera.h"
 #include <Defines.h>
+#include <d3dx11effect.h>
 #include "DirectionalLight.h"
 #include "EngineEnums.h"
 #include "Frustum.h"
@@ -11,21 +13,20 @@
 #include "Scene.h"
 #include "SpotLight.h"
 #include "InstancingHelper.h"
+#include "Texture.h"
+#include "Engine.h"
 
 namespace Prism
 {
 	Scene::Scene()
 		: myCamera(nullptr)
-		, myRenderRadius(-10.f)
+		, myArmInstance(nullptr)
+		, myWeaponInstance(nullptr)
 	{
 		myDirectionalLights.Init(4);
 		myPointLights.Init(128);
 		myAmbientPointLights.Init(128);
 		mySpotLights.Init(4);
-
-		memset(&myDirectionalLightData[0], 0, sizeof(DirectionalLightData) * NUMBER_OF_DIRECTIONAL_LIGHTS);
-		memset(&myPointLightData[0], 0, sizeof(PointLightData) * NUMBER_OF_POINT_LIGHTS);
-		memset(&mySpotLightData[0], 0, sizeof(SpotLightData) * NUMBER_OF_SPOT_LIGHTS);
 
 		myInstancingHelper = new InstancingHelper();
 		myInstancingHelper->SetCamera(myCamera);
@@ -49,7 +50,24 @@ namespace Prism
 			instances[i]->Render(*myCamera, *myInstancingHelper);
 		}
 
-		myInstancingHelper->Render(myDirectionalLightData);
+		myInstancingHelper->Render();
+	}
+
+	void Scene::RenderArmAndWeapon()
+	{
+		//Engine::GetInstance()->SetDepthBufferState(eDepthStencil::Z_DISABLED);
+
+		if (myArmInstance != nullptr)
+		{
+			myArmInstance->Render(*myCamera);
+		}
+
+		if (myWeaponInstance != nullptr)
+		{
+			myWeaponInstance->Render(*myCamera);
+		}
+
+		//Engine::GetInstance()->SetDepthBufferState(eDepthStencil::Z_ENABLED);
 	}
 
 	void Scene::RenderWithoutRoomManager()
@@ -63,23 +81,16 @@ namespace Prism
 			instances[i]->Render(*myCamera, *myInstancingHelper);
 		}
 
-		myInstancingHelper->Render(myDirectionalLightData);
-	}
+		myInstancingHelper->Render();
 
-	void Scene::OnResize(int aWidth, int aHeigth)
-	{
-		float ratio = static_cast<float>(aWidth) / static_cast<float>(aHeigth);
-
-		myRenderRadius = -10.f;
-
-		float epsilon = 0.1f;
-		if (ratio + epsilon >= 16.f / 9.f)
+		if (myArmInstance != nullptr)
 		{
-			myRenderRadius = -17.f;
+			myArmInstance->Render(*myCamera);
 		}
-		else if (ratio + epsilon >= 16.f / 10.f)
+
+		if (myWeaponInstance != nullptr)
 		{
-			myRenderRadius = -15.f;
+			myWeaponInstance->Render(*myCamera);
 		}
 	}
 
@@ -127,11 +138,8 @@ namespace Prism
 		//for (int i = 0; i < myDirectionalLights.Size(); ++i)
 		//{
 		//	myDirectionalLights[i]->Update();
-
-		//	myDirectionalLightData[i].myDirection = myDirectionalLights[i]->GetCurrentDir();
-		//	myDirectionalLightData[i].myColor = myDirectionalLights[i]->GetColor();
 		//}
-
+		//
 		//for (int i = 0; i < myAmbientPointLights.Size(); ++i)
 		//{
 		//	myAmbientPointLights[i]->Update();
@@ -140,12 +148,6 @@ namespace Prism
 		//for (int i = 0; i < mySpotLights.Size(); ++i)
 		//{
 		//	mySpotLights[i]->Update();
-
-		//	//mySpotLightData[i].myPosition = mySpotLights[i]->GetPosition();
-		//	//mySpotLightData[i].myDirection = mySpotLights[i]->GetDir();
-		//	//mySpotLightData[i].myColor = mySpotLights[i]->GetColor();
-		//	//mySpotLightData[i].myRange = mySpotLights[i]->GetRange();
-		//	//mySpotLightData[i].myCone = mySpotLights[i]->GetCone();
 		//}
 	}
 
@@ -177,5 +179,15 @@ namespace Prism
 		}
 
 		return mySpotLights;
+	}
+
+	void Scene::SetArmInstance(Instance* aInstance)
+	{
+		myArmInstance = aInstance;
+	}
+
+	void Scene::SetWeaponInstance(Instance* aInstance)
+	{
+		myWeaponInstance = aInstance;
 	}
 }
