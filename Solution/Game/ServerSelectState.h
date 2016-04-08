@@ -34,6 +34,8 @@ public:
 	void ReceiveNetworkMessage(const NetMessageReplyServer& aMessage, const sockaddr_in& aSenderAddress) override;
 
 private:
+	void operator=(ServerSelectState&) = delete;
+
 	struct Server
 	{
 		std::string myIp;

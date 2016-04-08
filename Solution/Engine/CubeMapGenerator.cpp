@@ -258,7 +258,7 @@ namespace Prism
 			coeff[i].x = -fC1*aNode.myData[i][3];
 			coeff[i].y = -fC1*aNode.myData[i][1];
 			coeff[i].z = fC1*aNode.myData[i][2];
-			coeff[i].w = fC1*aNode.myData[i][0] - fC3*aNode.myData[i][6];
+			coeff[i].w = fC0*aNode.myData[i][0] - fC3*aNode.myData[i][6];
 		}
 
 		gridNode.cAr = coeff[0];

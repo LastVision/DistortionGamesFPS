@@ -28,7 +28,7 @@ SpawnpointComponent::SpawnpointComponent(Entity& anEntity, const SpawnpointCompo
 	PostMaster::GetInstance()->Subscribe(eMessageType::ENEMY_KILLED, this);
 
 	/*myUnitCount = int((myData.mySpawnPerInterval * myData.mySpawnpointLifetime) / myData.mySpawnInterval);*/
-	mySpawnTimer = myData.mySpawnInterval;
+	mySpawnTimer = 0;
 	myLifetime = myData.mySpawnpointLifetime;
 
 	//for (int i = 0; i < myData.myUnitCount; ++i)
@@ -83,7 +83,7 @@ void SpawnpointComponent::Update(float aDelta)
 void SpawnpointComponent::Activate()
 {
 	myLifetime = myData.mySpawnpointLifetime;
-	mySpawnTimer = myData.mySpawnInterval;
+	mySpawnTimer = 0;
 	myIsActive = true;
 }
 
@@ -137,7 +137,7 @@ void SpawnpointComponent::BindToTrigger(unsigned int aGID)
 void SpawnpointComponent::SpawnUnit(float aDelta)
 {
 	mySpawnTimer -= aDelta;
-	if (mySpawnTimer < 0.f)
+	if (mySpawnTimer <= 0.f)
 	{
 		for (int i = 0; i < myData.mySpawnPerInterval; ++i)
 		{
