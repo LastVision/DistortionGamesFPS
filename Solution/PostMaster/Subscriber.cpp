@@ -21,3 +21,4 @@ void Subscriber::ReceiveMessage(const PrintTextMessage&){}
 void Subscriber::ReceiveMessage(const RespawnMessage&){}
 void Subscriber::ReceiveMessage(const RespawnTriggerMessage&){}
 void Subscriber::ReceiveMessage(const ActivateSpawnpointMessage&){}
+void Subscriber::ReceiveMessage(const LevelLoadedMessage&){}

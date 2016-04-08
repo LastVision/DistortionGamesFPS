@@ -162,6 +162,7 @@
     <ClInclude Include="DefendTouchMessage.h" />
     <ClInclude Include="EmitterMessage.h" />
     <ClInclude Include="EnemyKilledMessage.h" />
+    <ClInclude Include="LevelLoadedMessage.h" />
     <ClInclude Include="OnRadioButtonMessage.h" />
     <ClInclude Include="GameStateMessage.h" />
     <ClInclude Include="Message.h" />
