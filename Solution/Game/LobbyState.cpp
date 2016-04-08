@@ -84,6 +84,8 @@ void LobbyState::InitState(StateStackProxy* aStateStackProxy, GUI::Cursor* aCurs
 
 	myCursor->SetShouldRender(true);
 	myLevelToStart = -1;
+
+	Prism::Audio::AudioInterface::GetInstance()->PostEvent("Stop_MainMenu", 0);
 }
 
 void LobbyState::EndState()
@@ -202,12 +204,12 @@ void LobbyState::ReceiveMessage(const OnClickMessage& aMessage)
 void LobbyState::ReceiveMessage(const OnRadioButtonMessage& aMessage)
 {
 	DL_ASSERT_EXP(aMessage.myEvent == eOnRadioButtonEvent::LEVEL_SELECT, "Only level select in lobby state.");
-	Prism::Audio::AudioInterface::GetInstance()->PostEvent("Stop_AllElevators", 0);
+
 	
-	int levelMusic = aMessage.myID;
-	levelMusic = min(levelMusic, 2);
-	std::string musicEvent("Play_ElevatorToLevel" + std::to_string(levelMusic));
-	Prism::Audio::AudioInterface::GetInstance()->PostEvent(musicEvent.c_str(), 0);
+	//int levelMusic = aMessage.myID;
+	//levelMusic = min(levelMusic, 2);
+	//std::string musicEvent("Play_ElevatorToLevel" + std::to_string(levelMusic));
+	//Prism::Audio::AudioInterface::GetInstance()->PostEvent(musicEvent.c_str(), 0);
 
 	ClientNetworkManager::GetInstance()->AddMessage(NetMessageSetLevel(aMessage.myID));
 }
@@ -222,6 +224,13 @@ void LobbyState::ReceiveNetworkMessage(const NetMessageDisconnect& aMessage, con
 
 void LobbyState::ReceiveNetworkMessage(const NetMessageSetLevel& aMessage, const sockaddr_in&)
 {
+	Prism::Audio::AudioInterface::GetInstance()->PostEvent("Stop_AllElevators", 0);
+
+	int levelMusic = aMessage.myLevelID;
+	levelMusic = min(levelMusic, 2);
+	std::string musicEvent("Play_ElevatorToLevel" + std::to_string(levelMusic));
+	Prism::Audio::AudioInterface::GetInstance()->PostEvent(musicEvent.c_str(), 0);
+
 	myLevelToStart = aMessage.myLevelID;
 	myText->SetText(CU::Concatenate("Current level: %i", min(myLevelToStart+1, 3)));
 }
