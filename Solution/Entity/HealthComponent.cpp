@@ -84,7 +84,7 @@ void HealthComponent::TakeDamage(int aDamage)
 			myEntity.GetComponent<PhysicsComponent>()->Sleep();
 			if (myEntity.GetSubType() != "playerserver")
 			{
-				myEntity.Kill(false);
+				myEntity.SetActive(false);
 			}
 			PollingStation::GetInstance()->HasDied(&myEntity);
 		}

@@ -67,6 +67,10 @@ public:
 	void ReceiveNetworkMessage(const NetMessageOnDeath& aMessage, const sockaddr_in& aSenderAddress) override;
 	bool GetIsEnemy();
 	void SetIsEnemy(bool aIsEnemy);
+
+	bool IsActive() const;
+	void SetActive(bool aIsActive);
+
 private:
 	void operator=(Entity&) = delete;
 
@@ -76,6 +80,7 @@ private:
 	Prism::ParticleEmitterInstance* myEmitterConnection;
 
 	bool myAlive;
+	bool myIsActive;
 	bool myIsClientSide;
 	bool myIsInScene;
 	std::string mySubType;
@@ -88,6 +93,9 @@ private:
 
 	unsigned int myGID;
 	bool myIsEnemy;
+
+	float myTimeActiveBeforeKill;
+	float myTimeActiveBeforeKillTimer;
 };
 
 template <typename T>
@@ -185,4 +193,14 @@ inline bool Entity::GetIsEnemy()
 inline void Entity::SetIsEnemy(bool aIsEnemy)
 {
 	myIsEnemy = aIsEnemy;
+}
+
+inline bool Entity::IsActive() const
+{
+	return myIsActive;
+}
+
+inline void Entity::SetActive(bool aIsActive)
+{
+	myIsActive = aIsActive;
 }

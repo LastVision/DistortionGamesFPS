@@ -12,6 +12,7 @@ SharedUnitManager* SharedUnitManager::myInstance = nullptr;
 SharedUnitManager::SharedUnitManager()
 	: myUnits(128)
 	, myActiveUnits(128)
+	, myUnitIndex(0)
 {
 }
 
@@ -45,6 +46,8 @@ void SharedUnitManager::Update(float aDeltaTime)
 void SharedUnitManager::ActivateUnit(Entity* aUnit, const CU::Vector3<float>& aPosition)
 {
 	aUnit->Reset();
+	aUnit->SetActive(true);
+
 	if (aUnit->GetIsClient() == false)
 	{
 		aUnit->GetComponent<PhysicsComponent>()->Wake();

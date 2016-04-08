@@ -71,7 +71,7 @@ PhysicsComponent::~PhysicsComponent()
 
 void PhysicsComponent::Update(float)
 {
-	if (myPhysicsType == ePhysics::KINEMATIC && myIsAwake == true)
+	if (myPhysicsType == ePhysics::KINEMATIC && myIsAwake == true && myEntity.IsActive() == true)
 	{
 		Prism::PhysicsInterface::GetInstance()->MoveToPosition(myDynamicBody, myEntity.GetOrientation().GetPos() + CU::Vector3<float>(0, 1.f, 0));
 	}

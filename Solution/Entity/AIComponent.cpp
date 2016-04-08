@@ -53,6 +53,12 @@ void AIComponent::Reset()
 
 void AIComponent::Update(float aDelta)
 {
+	if (myEntity.IsActive() == false && myEntity.GetState() == eEntityState::DIE)
+	{
+		int apa;
+		apa = 5;
+	}
+
 	for each (Entity* bullet in myBullets)
 	{
 		if (bullet->IsAlive() == true)
