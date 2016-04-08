@@ -52,6 +52,7 @@ void ClientUnitManager::CreateUnits(Prism::Scene* aScene)
 			unit->SetIsEnemy(true);
 			unit->GetComponent<PhysicsComponent>()->RemoveFromScene();
 			unit->Kill();
+			unit->SetActive(false);
 			myUnits.Add(unit);
 		}
 	}
@@ -88,7 +89,9 @@ void ClientUnitManager::ReceiveNetworkMessage(const NetMessageEntityState& aMess
 		myUnitsMap[aMessage.myGID]->SetState(static_cast<eEntityState>(aMessage.myEntityState));
 		if (aMessage.myEntityState == static_cast<unsigned char>(eEntityState::DIE))
 		{
-			myUnitsMap[aMessage.myGID]->Kill();
+			//myUnitsMap[aMessage.myGID]->Kill();
+			myUnitsMap[aMessage.myGID]->GetComponent<PhysicsComponent>()->RemoveFromScene();
+			myUnitsMap[aMessage.myGID]->SetActive(false);
 			myUnitsMap[aMessage.myGID]->GetComponent<AnimationComponent>()->StopMuzzleFlash();
 		}
 	}

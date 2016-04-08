@@ -32,6 +32,9 @@ Entity::Entity(unsigned int aGID, const EntityData& aEntityData, Prism::Scene* a
 	, myIsClientSide(aClientSide)
 	, mySubType(aSubType)
 	, myIsEnemy(false)
+	, myIsActive(true)
+	, myTimeActiveBeforeKill(10.f)
+	, myTimeActiveBeforeKillTimer(10.f)
 {
 	for (int i = 0; i < static_cast<int>(eComponentType::_COUNT); ++i)
 	{
@@ -215,6 +218,18 @@ void Entity::Update(float aDeltaTime)
 			memcpy(&myOrientation.myMatrix[0], GetComponent<PhysicsComponent>()->GetOrientation(), sizeof(float) * 16);
 		}
 	}
+
+	if (myIsClientSide == false && myIsActive == false)
+	{
+		myTimeActiveBeforeKillTimer -= aDeltaTime;
+
+		if (myTimeActiveBeforeKillTimer <= 0.f)
+		{
+			myTimeActiveBeforeKillTimer = myTimeActiveBeforeKill;
+			myIsActive = true;
+			Kill();
+		}
+	}
 }
 
 void Entity::AddComponent(Component* aComponent)
@@ -283,6 +298,8 @@ void Entity::AddEmitter(Prism::ParticleEmitterInstance* anEmitterConnection)
 
 Prism::ParticleEmitterInstance* Entity::GetEmitter()
 {
+	if (myEmitterConnection == nullptr)
+		return nullptr;
 	return myEmitterConnection;
 }
 

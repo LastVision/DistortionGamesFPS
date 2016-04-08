@@ -443,6 +443,13 @@ namespace Prism
 					{
 						continue;
 					}
+					
+					physx::PxShapeFlags& flags = buffer.touches[i].shape->getFlags();
+					if (flags.isSet(physx::PxShapeFlag::eTRIGGER_SHAPE) == true)
+					{
+						continue;
+					}
+
 					closestDist = buffer.touches[i].distance;
 					ent = static_cast<PhysicsComponent*>(buffer.touches[i].actor->userData);
 					hitPosition.x = buffer.touches[i].position.x;

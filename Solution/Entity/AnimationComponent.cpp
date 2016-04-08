@@ -93,6 +93,12 @@ void AnimationComponent::AddAnimation(eEntityState aState, const std::string& aA
 
 void AnimationComponent::Update(float aDeltaTime)
 {
+	if (myEntity.IsActive() == false && myEntity.GetState() == eEntityState::DIE)
+	{
+		int apa;
+		apa = 5;
+	}
+
 	for (int i = 0; i < 5; ++i)
 	{
 		myMuzzleflash[i]->SetShouldRender(false);

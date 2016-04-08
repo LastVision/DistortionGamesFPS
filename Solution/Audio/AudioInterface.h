@@ -21,7 +21,8 @@ namespace Prism
 			void Update();
 			void SetRTPC(const char* aRTPC, int aValue, int anObjectID);
 			void SetPosition(float aX, float aY, float aZ, int aObjectID);
-			void SetListenerPosition(float aX, float aY, float aZ);
+			void SetListenerPosition(float aX, float aY, float aZ, float aForwardX, float aForwardY, float aForwardZ
+				, float aUpX, float aUpY, float aUpZ);
 
 			const int GetSFXVolume() const;
 			const int GetMusicVolume() const;

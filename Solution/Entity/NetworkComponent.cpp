@@ -46,6 +46,11 @@ void NetworkComponent::Reset()
 
 void NetworkComponent::Update(float aDelta)
 {
+	if (myEntity.IsActive() == false)
+	{
+		return;
+	}
+
 	myAlpha += aDelta * NETWORK_UPDATE_INTERVAL;
 	CU::Vector3<float> newPos = CU::Math::Lerp(myPrevPosition, myServerPosition, myAlpha);
 	myCurrentRotationY = CU::Math::Lerp(myPrevRotationY, myServerRotationY, myAlpha);
@@ -72,12 +77,13 @@ void NetworkComponent::Update(float aDelta)
 	myOrientation.myMatrix[9] = axisZ.y;
 	myOrientation.myMatrix[10] = axisZ.z;
 	//myOrientation.CreateRotateAroundY(10*aDelta);
+
 	myOrientation.SetPos(newPos);
 }
 
 void NetworkComponent::ReceiveNetworkMessage(const NetMessagePosition& aMessage, const sockaddr_in&)
 {
-	if (aMessage.myGID == myEntity.GetGID())
+	if (aMessage.myGID == myEntity.GetGID() && myEntity.IsActive() == true)
 	{
 		myPrevPosition = myServerPosition;
 		myServerPosition = aMessage.myPosition;
