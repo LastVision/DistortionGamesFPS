@@ -326,6 +326,11 @@ void FirstPersonRenderComponent::Update(float aDelta)
 		myDisplayHealthIndicatorTimer -= aDelta;
 	}
 
+	if (myDisplayUpgradeIndicatorTimer >= 0.f)
+	{
+		myDisplayUpgradeIndicatorTimer -= aDelta;
+	}
+
 	my3DGUIManager->Update(myUIJoint, myHealthJoint, myCurrentHealth
 		, myMaxHealth, aDelta, myEntity.GetComponent<ShootingComponent>()->GetCurrentWeapon()->GetWeaponType());
 
@@ -353,6 +358,10 @@ void FirstPersonRenderComponent::Render(Prism::Texture* aArmDepthTexture)
 	else if (myDisplayHealthIndicatorTimer > 0.f)
 	{
 		myPickupHealthIndicator->Render(windowSize * 0.5f);
+	}
+	else if (myDisplayUpgradeIndicatorTimer > 0.f)
+	{
+		myPickupUpgradeIndicator->Render(windowSize * 0.5f);
 	}
 
 	float lifePercentage = float(myCurrentHealth) / float(myMaxHealth);
@@ -694,8 +703,8 @@ void FirstPersonRenderComponent::ReceiveNote(const UpgradeNote& aNote)
 	if (aNote.myData.myClipSizeModifier > 0)
 	{
 		my3DGUIManager->Rebuild(aNote.myData.myWeaponType, aNote.myData.myClipSizeModifier);
-
 	}
+	myDisplayUpgradeIndicatorTimer = 0.7f;
 }
 
 void FirstPersonRenderComponent::UpdateJoints()
