@@ -44,4 +44,6 @@ private:
 	Prism::TextProxy* myMissionText;
 	CU::Vector3<float> myMissionOffset;
 	bool myShouldRender;
+
+	bool myHasStoppedSound[8];
 };

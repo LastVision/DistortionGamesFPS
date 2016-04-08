@@ -1,4 +1,6 @@
 #include "stdafx.h"
+
+#include <AudioInterface.h>
 #include <Camera.h>
 #include "ClientNetworkManager.h"
 #include <ModelLoader.h>
@@ -37,6 +39,11 @@ TextEventManager::TextEventManager(const Prism::Camera* aCamera)
 	myMissionText->SetText("");
 	ClientNetworkManager::GetInstance()->Subscribe(eNetMessageType::TEXT, this);
 	PostMaster::GetInstance()->Subscribe(eMessageType::PRINT_TEXT, this);
+
+	for (int i = 0; i < 8; ++i)
+	{
+		myHasStoppedSound[i] = false;
+	}
 }
 
 TextEventManager::~TextEventManager()
@@ -71,11 +78,18 @@ void TextEventManager::Update(float aDeltaTime)
 					
 					myNotifications[i]->my3dText->SetText(myNotifications[i]->myCurrentText);
 				}
+				if (myNotifications[i]->myRemainingText.size() == 0 && myHasStoppedSound[i] == false)
+				{
+					std::string eventName("Stop_Notification" + std::to_string(i));
+					Prism::Audio::AudioInterface::GetInstance()->PostEvent(eventName.c_str(), 0);
+					myHasStoppedSound[i] = true;
+				}
 			}
 
 			if (myNotifications[i]->myLifeTime <= 0.f)
 			{
 				myNotifications[i]->myIsActive = false;
+				
 			}
 			else if (myNotifications[i]->myLifeTime <= myTextStartFadingTime)
 			{
@@ -128,6 +142,10 @@ void TextEventManager::AddNotification(std::string aText, float aLifeTime, CU::V
 			myNotifications[i]->myCurrentLetterInterval = 0.f;
 			myNotifications[i]->myNextLetterInterval = (aLifeTime - myTextStartFadingTime) / aText.size();
 			myNotifications[i]->myNextLetterInterval = fmin(myNotifications[i]->myNextLetterInterval, 0.05f);
+
+			std::string eventName("Play_Notification" + std::to_string(i));
+			Prism::Audio::AudioInterface::GetInstance()->PostEvent(eventName.c_str(), 0);
+			myHasStoppedSound[i] = false;
 			return;
 		}
 	}

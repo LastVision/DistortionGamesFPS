@@ -258,15 +258,12 @@ void ShootingComponent::ReceiveNote(const UpgradeNote& aNote)
 		{
 		case eWeaponType::PISTOL:
 			myEntity.GetComponent<FirstPersonRenderComponent>()->AddIntention(ePlayerState::PISTOL_DRAW, false);
-			myCurrentWeapon = myPistol;
 			break;
 		case eWeaponType::SHOTGUN:
 			myEntity.GetComponent<FirstPersonRenderComponent>()->AddIntention(ePlayerState::SHOTGUN_DRAW, false);
-			myCurrentWeapon = myShotgun;
 			break;
 		case eWeaponType::GRENADE_LAUNCHER:
 			myEntity.GetComponent<FirstPersonRenderComponent>()->AddIntention(ePlayerState::GRENADE_LAUNCHER_HOLSTER, false);
-			myCurrentWeapon = myGrenadeLauncher;
 			break;
 		}
 	}
