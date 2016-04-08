@@ -227,7 +227,7 @@ void Entity::Update(float aDeltaTime)
 		{
 			myTimeActiveBeforeKillTimer = myTimeActiveBeforeKill;
 			myIsActive = true;
-			Kill();
+			Kill(false);
 		}
 	}
 }

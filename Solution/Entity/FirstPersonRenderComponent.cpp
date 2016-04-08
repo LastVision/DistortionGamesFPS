@@ -36,6 +36,8 @@ FirstPersonRenderComponent::FirstPersonRenderComponent(Entity& aEntity, Prism::S
 	, myCoOpPositions(8)
 	, myCoOpRespawns(8)
 	, myDisplayDamageIndicatorTimer(0)
+	, myDisplayHealthIndicatorTimer(0)
+	, myDisplayUpgradeIndicatorTimer(0)
 	, myMaxHealth(10)
 	, myCurrentHealth(myMaxHealth)
 	, myHasDied(false)
@@ -51,6 +53,9 @@ FirstPersonRenderComponent::FirstPersonRenderComponent(Entity& aEntity, Prism::S
 	myCrosshair = Prism::ModelLoader::GetInstance()->LoadSprite("Data/Resource/Texture/UI/T_crosshair.dds", size, size * 0.5f);
 	CU::Vector2<float> damageSize(Prism::Engine::GetInstance()->GetWindowSize().x, Prism::Engine::GetInstance()->GetWindowSize().y);
 	myDamageIndicator = Prism::ModelLoader::GetInstance()->LoadSprite("Data/Resource/Texture/UI/T_damage_indicator.dds", damageSize, damageSize * 0.5f);
+	myPickupHealthIndicator = Prism::ModelLoader::GetInstance()->LoadSprite("Data/Resource/Texture/UI/T_pickup_health.dds", damageSize, damageSize * 0.5f);
+	myPickupUpgradeIndicator = Prism::ModelLoader::GetInstance()->LoadSprite("Data/Resource/Texture/UI/T_pickup_upgrade.dds", damageSize, damageSize * 0.5f);
+	myLowLifeIndicator = Prism::ModelLoader::GetInstance()->LoadSprite("Data/Resource/Texture/UI/T_low_life_indicator.dds", damageSize, damageSize * 0.5f);
 	myCoOpSprite = Prism::ModelLoader::GetInstance()->LoadSprite("Data/Resource/Texture/UI/T_coopmarker.dds", size, size * 0.5f);
 	myMarker = Prism::ModelLoader::GetInstance()->LoadSprite("Data/Resource/Texture/UI/T_marker.dds", size, size * 0.5f);
 
@@ -138,6 +143,9 @@ FirstPersonRenderComponent::~FirstPersonRenderComponent()
 	SharedNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::PRESS_E_TEXT, this);
 	SAFE_DELETE(myCrosshair);
 	SAFE_DELETE(myDamageIndicator);
+	SAFE_DELETE(myPickupHealthIndicator);
+	SAFE_DELETE(myPickupUpgradeIndicator);
+	SAFE_DELETE(myLowLifeIndicator);
 	SAFE_DELETE(my3DGUIManager);
 	SAFE_DELETE(myModel);
 	SAFE_DELETE(myCoOpSprite);
@@ -313,6 +321,16 @@ void FirstPersonRenderComponent::Update(float aDelta)
 		myDisplayDamageIndicatorTimer -= aDelta;
 	}
 
+	if (myDisplayHealthIndicatorTimer >= 0.f)
+	{
+		myDisplayHealthIndicatorTimer -= aDelta;
+	}
+
+	if (myDisplayUpgradeIndicatorTimer >= 0.f)
+	{
+		myDisplayUpgradeIndicatorTimer -= aDelta;
+	}
+
 	my3DGUIManager->Update(myUIJoint, myHealthJoint, myCurrentHealth
 		, myMaxHealth, aDelta, myEntity.GetComponent<ShootingComponent>()->GetCurrentWeapon()->GetWeaponType());
 
@@ -332,9 +350,25 @@ void FirstPersonRenderComponent::Render(Prism::Texture* aArmDepthTexture)
 {
 	const CU::Vector2<float>& windowSize = Prism::Engine::GetInstance()->GetWindowSize();
 	myCrosshair->Render(windowSize * 0.5f);
+
 	if (myDisplayDamageIndicatorTimer > 0.f)
 	{
 		myDamageIndicator->Render(windowSize * 0.5f);
+	}
+	else if (myDisplayHealthIndicatorTimer > 0.f)
+	{
+		myPickupHealthIndicator->Render(windowSize * 0.5f);
+	}
+	else if (myDisplayUpgradeIndicatorTimer > 0.f)
+	{
+		myPickupUpgradeIndicator->Render(windowSize * 0.5f);
+	}
+
+	float lifePercentage = float(myCurrentHealth) / float(myMaxHealth);
+
+	if (lifePercentage < 0.3f)
+	{
+		myLowLifeIndicator->Render(windowSize * 0.5f, { 1.f, 1.f }, { 1.f, 1.f, 1.f, 1.f - lifePercentage });
 	}
 
 	Prism::Engine::GetInstance()->SetDepthStencil(aArmDepthTexture->GetDepthStencilView());
@@ -594,6 +628,7 @@ void FirstPersonRenderComponent::ReceiveNetworkMessage(const NetMessageOnHit& aM
 {
 	if (aMessage.myGID == myEntity.GetGID())
 	{
+		myDisplayDamageIndicatorTimer = 0.7f;
 		myDisplayDamageIndicatorTimer = 0.5f;
 		Prism::Audio::AudioInterface::GetInstance()->PostEvent("Play_TakeDamage", 0);
 	}
@@ -603,6 +638,11 @@ void FirstPersonRenderComponent::ReceiveNetworkMessage(const NetMessageHealth& a
 {
 	if (aMessage.myGID == myEntity.GetGID())
 	{
+		if (myCurrentHealth < aMessage.myCurrentHealth)
+		{
+			myDisplayHealthIndicatorTimer = 0.7f;
+		}
+
 		myMaxHealth = aMessage.myMaxHealth;
 		myCurrentHealth = aMessage.myCurrentHealth;
 	}
@@ -663,8 +703,8 @@ void FirstPersonRenderComponent::ReceiveNote(const UpgradeNote& aNote)
 	if (aNote.myData.myClipSizeModifier > 0)
 	{
 		my3DGUIManager->Rebuild(aNote.myData.myWeaponType, aNote.myData.myClipSizeModifier);
-
 	}
+	myDisplayUpgradeIndicatorTimer = 0.7f;
 }
 
 void FirstPersonRenderComponent::UpdateJoints()

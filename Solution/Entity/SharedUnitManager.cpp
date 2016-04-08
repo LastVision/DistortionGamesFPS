@@ -50,8 +50,8 @@ void SharedUnitManager::ActivateUnit(Entity* aUnit, const CU::Vector3<float>& aP
 
 	if (aUnit->GetIsClient() == false)
 	{
-		aUnit->GetComponent<PhysicsComponent>()->Wake();
 		aUnit->GetComponent<PhysicsComponent>()->AddToScene();
+		aUnit->GetComponent<PhysicsComponent>()->Wake();
 		Prism::PhysicsInterface::GetInstance()->TeleportToPosition(aUnit->GetComponent<PhysicsComponent>()->GetCapsuleControllerId(), aPosition);
 	}
 	else
