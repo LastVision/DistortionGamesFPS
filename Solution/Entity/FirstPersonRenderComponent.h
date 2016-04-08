@@ -128,6 +128,7 @@ private:
 	CU::Matrix44<float> myHealthJoint;
 	bool myFirstTimeActivateAnimation;
 	float myDisplayDamageIndicatorTimer;
+	float myDisplayDamageIndicatorTimerMax;
 	float myDisplayHealthIndicatorTimer;
 	float myDisplayUpgradeIndicatorTimer;
 	CU::GrowingArray<ePlayerState> myIntentions;
