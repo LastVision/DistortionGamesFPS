@@ -294,8 +294,6 @@ void ClientLevel::Update(const float aDeltaTime, bool aLoadingScreen)
 	//	myPlayers[i]->SetPosition(position);
 	//}
 
-	DebugMusic();
-
 	if (myEscapeMenuActive == true)
 	{
 		myEscapeMenu->Update(aDeltaTime);
@@ -606,34 +604,6 @@ void ClientLevel::CollisionCallback(PhysicsComponent* aFirst, PhysicsComponent* 
 			HandleExplosion(first, second);
 		}
 		break;
-	}
-}
-
-void ClientLevel::DebugMusic()
-{
-	if (CU::InputWrapper::GetInstance()->KeyDown(DIK_4) == true)
-	{
-		Prism::Audio::AudioInterface::GetInstance()->PostEvent("FadeInBackground", 0);
-	}
-	if (CU::InputWrapper::GetInstance()->KeyDown(DIK_5) == true)
-	{
-		Prism::Audio::AudioInterface::GetInstance()->PostEvent("FadeOutBackground", 0);
-	}
-	if (CU::InputWrapper::GetInstance()->KeyDown(DIK_6) == true)
-	{
-		Prism::Audio::AudioInterface::GetInstance()->PostEvent("FadeInFirstLayer", 0);
-	}
-	if (CU::InputWrapper::GetInstance()->KeyDown(DIK_7) == true)
-	{
-		Prism::Audio::AudioInterface::GetInstance()->PostEvent("FadeOutFirstLayer", 0);
-	}
-	if (CU::InputWrapper::GetInstance()->KeyDown(DIK_8) == true)
-	{
-		Prism::Audio::AudioInterface::GetInstance()->PostEvent("FadeInSecondLayer", 0);
-	}
-	if (CU::InputWrapper::GetInstance()->KeyDown(DIK_9) == true)
-	{
-		Prism::Audio::AudioInterface::GetInstance()->PostEvent("FadeOutSecondLayer", 0);
 	}
 }
 
