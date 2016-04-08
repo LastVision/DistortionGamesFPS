@@ -283,6 +283,8 @@ void Entity::AddEmitter(Prism::ParticleEmitterInstance* anEmitterConnection)
 
 Prism::ParticleEmitterInstance* Entity::GetEmitter()
 {
+	if (myEmitterConnection == nullptr)
+		return nullptr;
 	return myEmitterConnection;
 }
 

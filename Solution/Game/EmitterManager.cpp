@@ -138,13 +138,13 @@ void EmitterManager::ReceiveMessage(const EmitterMessage& aMessage)
 
 	CU::Vector3f position = aMessage.myPosition;
 
-	if (aMessage.myEmitter != nullptr)
+	if (aMessage.myShouldKillEmitter == true)
 	{
-		if (aMessage.myShouldKillEmitter == true)
+		if (aMessage.myEmitter != nullptr)
 		{
 			aMessage.myEmitter->KillEmitter(1.f);
-			return;
 		}
+		return;
 	}
 
 	std::string particleType = CU::ToLower(aMessage.myParticleTypeString);
@@ -169,14 +169,17 @@ void EmitterManager::ReceiveMessage(const EmitterMessage& aMessage)
 	{
 		Prism::ParticleEmitterInstance* instance = emitter->myEmitters[index][i];
 
-		if (aMessage.myRoom)
+		if (aMessage.myRoom != nullptr)
 		{
 			aMessage.myRoom->AddEmitter(instance);
 		}
 
 		instance->SetEntity(aMessage.myEntity);
-		if (aMessage.myEntity)
+
+		if (aMessage.myEntity != nullptr)
+		{
 			aMessage.myEntity->AddEmitter(instance);
+		}
 
 		instance->SetPosition(position);
 		instance->Activate();
