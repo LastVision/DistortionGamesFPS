@@ -382,7 +382,7 @@ namespace Prism
 
 				int otherRoomId = current->GetOther(myRooms[aRoomId])->GetRoomId();
 
-			//	FindActiveRooms(aFrustum, aCameraOrientation, otherRoomId, current);
+				FindActiveRooms(aFrustum, aCameraOrientation, otherRoomId, current);
 			}
 		}
 	}
