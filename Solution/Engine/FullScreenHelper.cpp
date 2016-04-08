@@ -96,7 +96,7 @@ namespace Prism
 		SAFE_DELETE(myBloomData.myDownSampleTextures[1]);
 	}
 
-	void FullScreenHelper::Process(Texture* aSource, Texture* aTarget, Texture* aEmissiveTexture, int aEffect, Texture* aFogOfWarTexture)
+	void FullScreenHelper::Process(Texture* aSource, Texture* aTarget, Texture* aEmissiveTexture, int aEffect)
 	{
 		ActivateBuffers();
 		Engine::GetInstance()->SetDepthBufferState(eDepthStencil::Z_DISABLED);

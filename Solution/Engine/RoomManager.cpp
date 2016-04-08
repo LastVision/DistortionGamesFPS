@@ -193,10 +193,10 @@ namespace Prism
 		//	}
 		//}
 
-		//for each (Instance* instance in myAlwaysRenderInstances)
-		//{
-		//	myActiveInstances.Add(instance);
-		//}
+		for each (Instance* instance in myAlwaysRenderInstances)
+		{
+			myActiveInstances.Add(instance);
+		}
 
 		//for each (const InstanceInRoom& instance in myInstances)
 		//{
@@ -347,8 +347,8 @@ namespace Prism
 		for (int i = 0; i < portals.Size(); ++i)
 		{
 			Portal* current = portals[i];
-			int planeOutside[4];
-			bool pointBehind[4];
+			//int planeOutside[4];
+			//bool pointBehind[4];
 
 
 
@@ -382,7 +382,7 @@ namespace Prism
 
 				int otherRoomId = current->GetOther(myRooms[aRoomId])->GetRoomId();
 
-				//FindActiveRooms(aFrustum, aCameraOrientation, otherRoomId, current);
+				FindActiveRooms(aFrustum, aCameraOrientation, otherRoomId, current);
 			}
 		}
 	}

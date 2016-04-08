@@ -60,6 +60,8 @@ public:
 	void ToggleEscapeMenu();
 
 private:
+	void operator=(ClientLevel&) = delete;
+
 	void HandleTrigger(Entity& aFirstEntity, Entity& aSecondEntity, bool aHasEntered) override;
 	void CreatePlayers();
 	void HandleOtherClientRayCastPistol(PhysicsComponent* aComponent, const CU::Vector3<float>& aDirection, const CU::Vector3<float>& aHitPosition, const CU::Vector3<float>& aHitNormal);

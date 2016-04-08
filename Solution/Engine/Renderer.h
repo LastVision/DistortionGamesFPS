@@ -25,7 +25,7 @@ namespace Prism
 		void ProcessShadow(SpotLightShadow* aShadowSpotLight, Scene* aScene);
 
 		void BeginScene();
-		void EndScene(int aEffect, Texture* aFogOfWarTexture);
+		void EndScene(int aEffect);
 
 		void FinalRender();
 

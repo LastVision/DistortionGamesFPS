@@ -495,7 +495,7 @@ namespace Prism
 		displayModeList = new DXGI_MODE_DESC[numModes];
 		result = adapterOutput->GetDisplayModeList(DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_ENUM_MODES_INTERLACED, &numModes, displayModeList);
 
-		for (int i = 0; i < numModes; ++i)
+		for (unsigned int i = 0; i < numModes; ++i)
 		{
 			if (displayModeList[i].Width == myWindowSize.x && displayModeList[i].Height == myWindowSize.y)
 			{

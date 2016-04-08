@@ -57,7 +57,7 @@ namespace Prism
 		FullScreenHelper();
 		~FullScreenHelper();
 
-		void Process(Texture* aSource, Texture* aTarget, Texture* aEmissiveTexture, int aEffect, Texture* aFogOfWarTexture);
+		void Process(Texture* aSource, Texture* aTarget, Texture* aEmissiveTexture, int aEffect);
 		void CopyTexture(Texture* aSource, Texture* aTarget);
 		void CombineTextures(Texture* aSourceA, Texture* aSourceB, Texture* aTarget, bool aUseDepth);
 		void FullScreenHelper::CombineTextures(Texture* aSourceA, Texture* aDepthA
