@@ -85,13 +85,13 @@ const eStateStatus MainMenuState::Update(const float& aDeltaTime)
 {
 	if (myHasRunOnce == false)
 	{
-#ifdef RELEASE_BUILD
+//#ifdef RELEASE_BUILD
 		PostMaster::GetInstance()->UnSubscribe(eMessageType::ON_CLICK, this);
 		SET_RUNTIME(false);
 		myStateStack->PushSubGameState(new SplashState("Data/Resource/Texture/Menu/Splash/T_logo_other.dds", false));
 		SET_RUNTIME(false);
 		myStateStack->PushSubGameState(new SplashState("Data/Resource/Texture/Menu/Splash/T_logo_our.dds", true));
-#endif
+//#endif
 		myHasRunOnce = true;
 	}
 	else 
@@ -143,7 +143,7 @@ void MainMenuState::ResumeState()
 {
 	PostMaster::GetInstance()->Subscribe(eMessageType::ON_CLICK, this);
 	myCursor->SetShouldRender(true);
-	Prism::Audio::AudioInterface::GetInstance()->PostEvent("Play_Menu", 0);
+	Prism::Audio::AudioInterface::GetInstance()->PostEvent("Play_MainMenu", 0);
 	PostMaster::GetInstance()->SendMessage(FadeMessage(1.f / 3.f));
 }
 

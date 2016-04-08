@@ -189,8 +189,6 @@ void ClientLevel::Init(const std::string& aWeaponSettingsPath)
 	Prism::ModelLoader::GetInstance()->UnPause();
 	CU::Matrix44f orientation;
 	myInstanceOrientations.Add(orientation);
-	Prism::Audio::AudioInterface::GetInstance()->PostEvent("Stop_AllElevators", 0);
-	Prism::Audio::AudioInterface::GetInstance()->PostEvent("PlayAll", 0);
 	ClientProjectileManager::GetInstance()->CreateBullets(myScene);
 	ClientProjectileManager::GetInstance()->CreateGrenades(myScene);
 	ClientProjectileManager::GetInstance()->CreateExplosions();
@@ -221,6 +219,9 @@ void ClientLevel::Update(const float aDeltaTime, bool aLoadingScreen)
 {
 	if (myInitDone == false && Prism::PhysicsInterface::GetInstance()->GetInitDone() == true)
 	{
+		Prism::Audio::AudioInterface::GetInstance()->PostEvent("Stop_AllElevators", 0);
+		Prism::Audio::AudioInterface::GetInstance()->PostEvent("PlayAll", 0);
+
 		myInitDone = true;
 		ClientNetworkManager::GetInstance()->AddMessage(NetMessageLevelLoaded());
 
@@ -293,8 +294,6 @@ void ClientLevel::Update(const float aDeltaTime, bool aLoadingScreen)
 	//	CU::Vector3f position = ClientNetworkManager::GetInstance()->GetClients()[i].myPosition;
 	//	myPlayers[i]->SetPosition(position);
 	//}
-
-	DebugMusic();
 
 	if (myEscapeMenuActive == true)
 	{
@@ -609,34 +608,6 @@ void ClientLevel::CollisionCallback(PhysicsComponent* aFirst, PhysicsComponent* 
 	}
 }
 
-void ClientLevel::DebugMusic()
-{
-	if (CU::InputWrapper::GetInstance()->KeyDown(DIK_4) == true)
-	{
-		Prism::Audio::AudioInterface::GetInstance()->PostEvent("FadeInBackground", 0);
-	}
-	if (CU::InputWrapper::GetInstance()->KeyDown(DIK_5) == true)
-	{
-		Prism::Audio::AudioInterface::GetInstance()->PostEvent("FadeOutBackground", 0);
-	}
-	if (CU::InputWrapper::GetInstance()->KeyDown(DIK_6) == true)
-	{
-		Prism::Audio::AudioInterface::GetInstance()->PostEvent("FadeInFirstLayer", 0);
-	}
-	if (CU::InputWrapper::GetInstance()->KeyDown(DIK_7) == true)
-	{
-		Prism::Audio::AudioInterface::GetInstance()->PostEvent("FadeOutFirstLayer", 0);
-	}
-	if (CU::InputWrapper::GetInstance()->KeyDown(DIK_8) == true)
-	{
-		Prism::Audio::AudioInterface::GetInstance()->PostEvent("FadeInSecondLayer", 0);
-	}
-	if (CU::InputWrapper::GetInstance()->KeyDown(DIK_9) == true)
-	{
-		Prism::Audio::AudioInterface::GetInstance()->PostEvent("FadeOutSecondLayer", 0);
-	}
-}
-
 void ClientLevel::AddWorldText(const std::string& aText, const CU::Vector3<float>& aPosition, float aRotationAroundY, const CU::Vector4<float>& aColor)
 {
 	WorldText toAdd;
@@ -728,9 +699,13 @@ void ClientLevel::HandleOtherClientRayCastPistol(PhysicsComponent* aComponent, c
 
 		CU::Vector3<float> toSend = CU::Reflect<float>(aDirection, aHitNormal);
 		if (aComponent->GetEntity().GetIsEnemy() == true)
+		{
 			PostMaster::GetInstance()->SendMessage(EmitterMessage("OnHit", aHitPosition, toSend));
+		}
 		else
+		{
 			PostMaster::GetInstance()->SendMessage(EmitterMessage("OnEnvHit", aHitPosition, aHitNormal));
+		}
 	}
 }
 
@@ -745,8 +720,12 @@ void ClientLevel::HandleOtherClientRayCastShotgun(PhysicsComponent* aComponent, 
 		CU::Vector3<float> toSend = CU::Reflect(aDirection, aHitNormal);
 
 		if (aComponent->GetEntity().GetIsEnemy() == true)
+		{
 			PostMaster::GetInstance()->SendMessage(EmitterMessage("OnHit", aHitPosition, toSend));
+		}
 		else
+		{
 			PostMaster::GetInstance()->SendMessage(EmitterMessage("OnEnvHit", aHitPosition, aHitNormal));
+		}
 	}
 }

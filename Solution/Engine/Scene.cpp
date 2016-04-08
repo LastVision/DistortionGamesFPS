@@ -101,18 +101,21 @@ namespace Prism
 
 	void Scene::AddLight(PointLight* aLight)
 	{
-		myAmbientPointLights.Add(aLight);
-
 		if (aLight->GetAmbientOnly() == false)
 		{
 			myPointLights.Add(aLight);
 			myRoomManager->Add(aLight);
 		}
+		else
+		{
+			myAmbientPointLights.Add(aLight);
+		}
 	}
 
 	void Scene::AddLight(SpotLight* aLight)
 	{
-		mySpotLights.Add(aLight);
+		//mySpotLights.Add(aLight);
+		myRoomManager->Add(aLight);
 	}
 
 	void Scene::SetCamera(const Camera& aCamera)
@@ -123,29 +126,29 @@ namespace Prism
 
 	void Scene::UpdateLights()
 	{
-		for (int i = 0; i < myDirectionalLights.Size(); ++i)
-		{
-			myDirectionalLights[i]->Update();
+		//for (int i = 0; i < myDirectionalLights.Size(); ++i)
+		//{
+		//	myDirectionalLights[i]->Update();
 
-			myDirectionalLightData[i].myDirection = myDirectionalLights[i]->GetCurrentDir();
-			myDirectionalLightData[i].myColor = myDirectionalLights[i]->GetColor();
-		}
+		//	myDirectionalLightData[i].myDirection = myDirectionalLights[i]->GetCurrentDir();
+		//	myDirectionalLightData[i].myColor = myDirectionalLights[i]->GetColor();
+		//}
 
-		for (int i = 0; i < myAmbientPointLights.Size(); ++i)
-		{
-			myAmbientPointLights[i]->Update();
-		}
-		
-		for (int i = 0; i < mySpotLights.Size(); ++i)
-		{
-			mySpotLights[i]->Update();
+		//for (int i = 0; i < myAmbientPointLights.Size(); ++i)
+		//{
+		//	myAmbientPointLights[i]->Update();
+		//}
+		//
+		//for (int i = 0; i < mySpotLights.Size(); ++i)
+		//{
+		//	mySpotLights[i]->Update();
 
-			//mySpotLightData[i].myPosition = mySpotLights[i]->GetPosition();
-			//mySpotLightData[i].myDirection = mySpotLights[i]->GetDir();
-			//mySpotLightData[i].myColor = mySpotLights[i]->GetColor();
-			//mySpotLightData[i].myRange = mySpotLights[i]->GetRange();
-			//mySpotLightData[i].myCone = mySpotLights[i]->GetCone();
-		}
+		//	//mySpotLightData[i].myPosition = mySpotLights[i]->GetPosition();
+		//	//mySpotLightData[i].myDirection = mySpotLights[i]->GetDir();
+		//	//mySpotLightData[i].myColor = mySpotLights[i]->GetColor();
+		//	//mySpotLightData[i].myRange = mySpotLights[i]->GetRange();
+		//	//mySpotLightData[i].myCone = mySpotLights[i]->GetCone();
+		//}
 	}
 
 	void Scene::RemoveInstance(Instance* aInstance)
@@ -172,8 +175,7 @@ namespace Prism
 	{
 		if (aUseRoomManager == true)
 		{
-			//return myRoomManager->GetActiveSpotLights();
-			return mySpotLights;
+			return myRoomManager->GetActiveSpotLights();
 		}
 
 		return mySpotLights;

@@ -11,6 +11,7 @@ namespace Prism
 		, myPortals(8)
 		, myInstances(128)
 		, myPointLights(128)
+		, mySpotLights(128)
 		, myName(aName)
 		, myType(aType)
 	{
@@ -22,6 +23,7 @@ namespace Prism
 		myPortals.RemoveAll();
 		myInstances.RemoveAll();
 		myPointLights.RemoveAll();
+		mySpotLights.RemoveAll();
 	}
 
 	bool Room::Inside(const CU::Vector3<float>& aPosition, float aRadius) const
@@ -47,6 +49,11 @@ namespace Prism
 	void Room::Add(PointLight* aPointLight)
 	{
 		myPointLights.Add(aPointLight);
+	}
+
+	void Room::Add(SpotLight* aSpotLight)
+	{
+		mySpotLights.Add(aSpotLight);
 	}
 
 	void Room::AddEmitter(Prism::ParticleEmitterInstance* anEmitter)
