@@ -20,6 +20,7 @@
 #include "GameEnum.h"
 #include <PhysicsComponent.h>
 #include <PhysicsInterface.h>
+#include <LevelLoadedMessage.h>
 
 #include <NetMessageConnectReply.h>
 #include <NetMessageDisconnect.h>
@@ -228,6 +229,16 @@ void ClientLevel::Update(const float aDeltaTime, bool aLoadingScreen)
 		SET_RUNTIME(false);
 		myDeferredRenderer->LoadSHData(myMinPoint, myMaxPoint, myName);
 		RESET_RUNTIME;
+
+		//for (int i = 0; i < myActiveEntities.Size(); ++i)
+		//{
+		//	if (myActiveEntities[i]->GetSubType() == "SM_elevator_a_open")
+		//	{
+		//		Prism::Audio::AudioInterface::GetInstance()->PostEvent("Play_3DElevatorToLevel0", 0);
+		//	}
+		//}
+
+		//PostMaster::GetInstance()->SendMessage<LevelLoadedMessage>(LevelLoadedMessage(0));
 	}
 
 	if (myInitDone == false || aLoadingScreen == true)

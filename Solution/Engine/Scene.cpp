@@ -101,18 +101,20 @@ namespace Prism
 
 	void Scene::AddLight(PointLight* aLight)
 	{
-		myAmbientPointLights.Add(aLight);
-
 		if (aLight->GetAmbientOnly() == false)
 		{
 			myPointLights.Add(aLight);
 			myRoomManager->Add(aLight);
 		}
+		else
+		{
+			myAmbientPointLights.Add(aLight);
+		}
 	}
 
 	void Scene::AddLight(SpotLight* aLight)
 	{
-		mySpotLights.Add(aLight);
+		//mySpotLights.Add(aLight);
 		myRoomManager->Add(aLight);
 	}
 
