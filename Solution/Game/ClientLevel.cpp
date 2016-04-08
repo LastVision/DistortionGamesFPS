@@ -189,8 +189,6 @@ void ClientLevel::Init(const std::string& aWeaponSettingsPath)
 	Prism::ModelLoader::GetInstance()->UnPause();
 	CU::Matrix44f orientation;
 	myInstanceOrientations.Add(orientation);
-	Prism::Audio::AudioInterface::GetInstance()->PostEvent("Stop_AllElevators", 0);
-	Prism::Audio::AudioInterface::GetInstance()->PostEvent("PlayAll", 0);
 	ClientProjectileManager::GetInstance()->CreateBullets(myScene);
 	ClientProjectileManager::GetInstance()->CreateGrenades(myScene);
 	ClientProjectileManager::GetInstance()->CreateExplosions();
@@ -221,6 +219,9 @@ void ClientLevel::Update(const float aDeltaTime, bool aLoadingScreen)
 {
 	if (myInitDone == false && Prism::PhysicsInterface::GetInstance()->GetInitDone() == true)
 	{
+		Prism::Audio::AudioInterface::GetInstance()->PostEvent("Stop_AllElevators", 0);
+		Prism::Audio::AudioInterface::GetInstance()->PostEvent("PlayAll", 0);
+
 		myInitDone = true;
 		ClientNetworkManager::GetInstance()->AddMessage(NetMessageLevelLoaded());
 
