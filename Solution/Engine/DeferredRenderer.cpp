@@ -361,7 +361,7 @@ namespace Prism
 #ifdef USE_LIGHT
 		aScene->UpdateLights();
 		RenderPointLights(aScene, false);
-		RenderSpotLights(aScene, false);
+		//RenderSpotLights(aScene, false);
 #endif
 	}
 
