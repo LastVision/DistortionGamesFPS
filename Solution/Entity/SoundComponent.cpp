@@ -42,6 +42,6 @@ void SoundComponent::ReceiveMessage(const LevelCompleteMessage& aMessage)
 {
 	if (myEntity.GetSubType() == "sm_elevator_a_open")
 	{
-		Prism::Audio::AudioInterface::GetInstance()->PostEvent("Stop 3DAllElevators", myAudioSFXID);
+		Prism::Audio::AudioInterface::GetInstance()->PostEvent("Stop_3DAllElevators", myAudioSFXID);
 	}
 }
