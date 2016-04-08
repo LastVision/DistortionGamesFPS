@@ -42,7 +42,6 @@ void SoundComponent::ReceiveMessage(const LevelCompleteMessage& aMessage)
 {
 	if (myEntity.GetSubType() == "sm_elevator_a_open")
 	{
-		std::string eventName("Play_3DElevatorToLevel" + std::to_string(min(2, aMessage.myLevelID)));
-		Prism::Audio::AudioInterface::GetInstance()->PostEvent(eventName.c_str(), myAudioSFXID);
+		Prism::Audio::AudioInterface::GetInstance()->PostEvent("Stop 3DAllElevators", myAudioSFXID);
 	}
 }
