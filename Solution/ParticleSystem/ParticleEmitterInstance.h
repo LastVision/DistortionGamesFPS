@@ -43,6 +43,8 @@ namespace Prism
 		void SetShouldRender(bool aShouldRender);
 
 		void SetRotation(const CU::Vector3<float>& aRotation);
+
+		const CU::Vector3<float>& GetPosition() const;
 	private:
 
 		void Reset();
@@ -136,16 +138,13 @@ namespace Prism
 	inline void ParticleEmitterInstance::SetSize(const CU::Vector3f& aSize)
 	{
 		myParticleEmitterData->myEmitterSize = aSize * 0.5f;
-#ifdef _DEBUG
 		CreatePoints();
-#endif
 	}
 
 	inline bool ParticleEmitterInstance::IsActive()
 	{
 		return myStates[ACTIVE];
 	}
-
 
 	inline void ParticleEmitterInstance::SetRadius(float aRadius)
 	{

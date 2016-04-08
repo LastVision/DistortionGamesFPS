@@ -86,7 +86,6 @@ namespace Prism
 			context->Draw(toGraphicsCard, 0);
 		}
 
-#ifdef _DEBUG
 		if (myDrawDebugLines == true)
 		{
 			Prism::DebugDrawer::GetInstance()->RenderLine3D(myPoints[0], myPoints[1], eColorDebug::RED, eColorDebug::BLUE);
@@ -104,7 +103,6 @@ namespace Prism
 			Prism::DebugDrawer::GetInstance()->RenderLine3D(myPoints[7], myPoints[6], eColorDebug::GREEN, eColorDebug::YELLOW);
 			Prism::DebugDrawer::GetInstance()->RenderLine3D(myPoints[6], myPoints[4], eColorDebug::YELLOW, eColorDebug::RED);
 		}
-#endif
 	}
 
 	void ParticleEmitterInstance::Update(float aDeltaTime, const CU::Matrix44f& aWorldMatrix)
@@ -164,9 +162,7 @@ namespace Prism
 		}
 
 		myEmitterLife = myParticleEmitterData->myEmitterLifeTime;
-#ifdef _DEBUG
 		CreatePoints();
-#endif
 	}
 
 	CU::Vector3f ParticleEmitterInstance::CalculateDirection(float aYVariation, float aZVariation)
@@ -562,5 +558,10 @@ namespace Prism
 		myEntity = anEntity;
 	}
 
+
+	const CU::Vector3<float>& ParticleEmitterInstance::GetPosition() const
+	{
+		return myOrientation.GetPos();
+	}
 
 }
