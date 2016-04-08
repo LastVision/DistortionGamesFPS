@@ -11,6 +11,7 @@
 #include "PhysicsComponent.h"
 #include "Shotgun.h"
 #include <SharedNetworkManager.h>
+#include "SoundComponent.h"
 #include <XMLReader.h>
 
 Shotgun::Shotgun(Entity* aOwnerEntity)
@@ -72,6 +73,13 @@ void Shotgun::HandleRaycast(PhysicsComponent* aComponent, const CU::Vector3<floa
 {
 	if (aComponent != nullptr)
 	{
+		if (aComponent->GetEntity().GetComponent<SoundComponent>() != nullptr)
+		{
+			if (aComponent->GetEntity().GetType() == eEntityType::UNIT)
+			{
+				Prism::Audio::AudioInterface::GetInstance()->PostEvent("Play_EnemyTakeDamage", aComponent->GetEntity().GetComponent<SoundComponent>()->GetAudioSFXID());
+			}
+		}
 #ifdef RELEASE_BUILD
 		if (aComponent->GetEntity().GetSubType() != "player")
 #endif
