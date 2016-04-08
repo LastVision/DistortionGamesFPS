@@ -42,7 +42,7 @@ private:
 	CU::GrowingArray<EmitterData*> myEmitterList;
 	Prism::Camera* myCamera;
 	short myEmitterIndex;
-
+	short myCullDistance;
 	void operator=(const EmitterManager&) = delete;
 
 
