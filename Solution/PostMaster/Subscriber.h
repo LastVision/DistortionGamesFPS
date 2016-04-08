@@ -17,6 +17,7 @@ struct RespawnTriggerMessage;
 struct ActivateSpawnpointMessage;
 struct Message;
 struct LevelLoadedMessage;
+struct LevelCompleteMessage;
 
 class Subscriber
 {
@@ -41,6 +42,7 @@ public:
 	virtual void ReceiveMessage(const RespawnTriggerMessage& aMessage);
 	virtual void ReceiveMessage(const ActivateSpawnpointMessage& aMessage);
 	virtual void ReceiveMessage(const LevelLoadedMessage& aMessage);
+	virtual void ReceiveMessage(const LevelCompleteMessage& aMessage);
 
 };
 

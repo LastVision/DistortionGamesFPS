@@ -120,7 +120,9 @@
       <Filter>Component</Filter>
     </ClCompile>
     <ClCompile Include="SharedUnitManager.cpp" />
-    <ClCompile Include="SoundComponent.cpp" />
+    <ClCompile Include="SoundComponent.cpp">
+      <Filter>Component</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
@@ -267,9 +269,11 @@
       <Filter>EntityFactory\EntityData\ComponentData</Filter>
     </ClInclude>
     <ClInclude Include="SharedUnitManager.h" />
-    <ClInclude Include="SoundComponent.h" />
     <ClInclude Include="SoundComponentData.h">
       <Filter>EntityFactory\EntityData\ComponentData</Filter>
+    </ClInclude>
+    <ClInclude Include="SoundComponent.h">
+      <Filter>Component</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
