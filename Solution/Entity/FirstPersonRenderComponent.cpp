@@ -595,6 +595,7 @@ void FirstPersonRenderComponent::ReceiveNetworkMessage(const NetMessageOnHit& aM
 	if (aMessage.myGID == myEntity.GetGID())
 	{
 		myDisplayDamageIndicatorTimer = 0.5f;
+		Prism::Audio::AudioInterface::GetInstance()->PostEvent("Play_TakeDamage", 0);
 	}
 }
 
