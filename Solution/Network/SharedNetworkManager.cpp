@@ -22,6 +22,7 @@
 #include "NetMessageSetLevel.h"
 #include "NetMessageRayCastRequest.h"
 #include "NetMessageRequestStartLevel.h"
+#include "NetMessageRequestLevel.h"
 #include "NetMessagePingRequest.h"
 #include "NetMessagePingReply.h"
 #include "NetMessagePosition.h"
@@ -349,6 +350,9 @@ void SharedNetworkManager::HandleMessage()
 			break;
 		case eNetMessageType::SET_LEVEL:
 			UnpackAndHandle(NetMessageSetLevel(), buffer);
+			break;
+		case eNetMessageType::REQUEST_LEVEL:
+			UnpackAndHandle(NetMessageRequestLevel(), buffer);
 			break;
 		case eNetMessageType::REQUEST_START_LEVEL:
 			UnpackAndHandle(NetMessageRequestStartLevel(), buffer);

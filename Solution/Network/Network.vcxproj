@@ -116,6 +116,7 @@
     <ClInclude Include="NetMessagePingReply.h" />
     <ClInclude Include="NetMessagePingRequest.h" />
     <ClInclude Include="NetMessagePosition.h" />
+    <ClInclude Include="NetMessageRequestLevel.h" />
     <ClInclude Include="NetMessageRequestServer.h" />
     <ClInclude Include="NetMessageSetLevel.h" />
     <ClInclude Include="NetMessageRequestStartLevel.h" />
