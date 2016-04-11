@@ -32,6 +32,7 @@ namespace Prism
 		ID3DX11EffectShaderResourceVariable* myAlbedo = nullptr;
 		ID3DX11EffectShaderResourceVariable* myNormal = nullptr;
 		ID3DX11EffectShaderResourceVariable* myEmissive = nullptr;
+		ID3DX11EffectShaderResourceVariable* myDepth = nullptr;
 		ID3DX11EffectShaderResourceVariable* myCubemap = nullptr;
 
 		ID3DX11EffectShaderResourceVariable* mySSAORandomTextureVariable = nullptr;
@@ -63,6 +64,7 @@ namespace Prism
 		ID3DX11EffectShaderResourceVariable* myAlbedo = nullptr;
 		ID3DX11EffectShaderResourceVariable* myNormal = nullptr;
 		ID3DX11EffectShaderResourceVariable* myEmissive = nullptr;
+		ID3DX11EffectShaderResourceVariable* myDepth = nullptr;
 		ID3DX11EffectShaderResourceVariable* myCubemap = nullptr;
 
 		ID3DX11EffectVariable* myPointLightVariable;
@@ -78,6 +80,7 @@ namespace Prism
 		ID3DX11EffectShaderResourceVariable* myAlbedo = nullptr;
 		ID3DX11EffectShaderResourceVariable* myNormal = nullptr;
 		ID3DX11EffectShaderResourceVariable* myEmissive = nullptr;
+		ID3DX11EffectShaderResourceVariable* myDepth = nullptr;
 		ID3DX11EffectShaderResourceVariable* myCubemap = nullptr;
 
 		ID3DX11EffectVariable* mySpotLightVariable;
@@ -115,6 +118,7 @@ namespace Prism
 			Texture* myAlbedoTexture; //DEPTH is stored in W
 			Texture* myNormalTexture; //METALNESS is stored in W
 			Texture* myEmissiveTexture;  //ROUGHNESS is stored in W
+			Texture* myDepthTexture;  //ROUGHNESS is stored in W
 		};
 
 		void InitFullscreenQuad();
