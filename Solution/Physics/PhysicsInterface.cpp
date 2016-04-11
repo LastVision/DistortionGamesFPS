@@ -201,6 +201,11 @@ namespace Prism
 		myManager->Wake(aCapsuleID);
 	}
 
+	int PhysicsInterface::GetFPS()
+	{
+		return myManager->physicsFPS;
+	}
+
 	PhysicsInterface::PhysicsInterface(std::function<void(PhysicsComponent*, PhysicsComponent*, bool)> anOnTriggerCallback, bool aIsServer)
 	{
 		myManager = new PhysicsManager(anOnTriggerCallback, aIsServer);

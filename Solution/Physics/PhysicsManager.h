@@ -13,6 +13,7 @@
 #include <Vector.h>
 #include <Matrix44.h>
 
+
 class Entity;
 class PhysicsComponent;
 struct PhysicsComponentData;
@@ -39,6 +40,7 @@ namespace Prism
 	class PhysicsManager : public physx::debugger::comm::PvdConnectionHandler, public physx::PxSimulationEventCallback
 	{
 	public:
+		int physicsFPS;
 		PhysicsManager(std::function<void(PhysicsComponent*, PhysicsComponent*, bool)> anOnTriggerCallback, bool aIsServer);
 		~PhysicsManager();
 

@@ -20,6 +20,8 @@ namespace physx
 	class PxActor;
 }
 
+
+
 namespace Prism
 {
 	struct PhysicsCallbackStruct;
@@ -74,7 +76,7 @@ namespace Prism
 		void Sleep(int aCapsuleID);
 		void Wake(physx::PxRigidDynamic* aDynamic);
 		void Wake(int aCapsuleID);
-
+		int GetFPS();
 	private:
 		// Requires PhysX includes!!
 		PhysicsManager* GetManager() const;

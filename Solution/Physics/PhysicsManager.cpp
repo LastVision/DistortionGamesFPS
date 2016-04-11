@@ -125,13 +125,13 @@ namespace Prism
 			DL_ASSERT("Failed to createScene");
 		}
 
-		myScene->setVisualizationParameter(physx::PxVisualizationParameter::eSCALE, 1.f);
-		myScene->setVisualizationParameter(physx::PxVisualizationParameter::eCOLLISION_SHAPES, 1.f);
 		myScene->setFlag(physx::PxSceneFlag::eENABLE_KINEMATIC_PAIRS, true);
 		myScene->setFlag(physx::PxSceneFlag::eENABLE_KINEMATIC_STATIC_PAIRS, true);
 		myScene->setSimulationEventCallback(this);
 
 #ifdef _DEBUG
+		myScene->setVisualizationParameter(physx::PxVisualizationParameter::eSCALE, 1.f);
+		myScene->setVisualizationParameter(physx::PxVisualizationParameter::eCOLLISION_SHAPES, 1.f);
 		if (aIsServer == true && SERVER_CONNECT_TO_DEBUGGER == true
 			|| aIsServer == false && SERVER_CONNECT_TO_DEBUGGER == false)
 		{
@@ -214,18 +214,26 @@ namespace Prism
 
 	void PhysicsManager::ThreadUpdate()
 	{
+		float totalTime = 0;
 		while (myQuit == false)
 		{
-			myTimerManager->Update();
-			Update();
 
-			Swap();
-			if (myLogicDone == true)
+			myTimerManager->Update();
+			totalTime += myTimerManager->GetMasterTimer().GetTime().GetFrameTime();
+			if (totalTime >= (1.0f / 60.0f))
 			{
-				SetPhysicsDone();
-				//WaitForSwap();
+				Update();
+
+				Swap();
+				if (myLogicDone == true)
+				{
+					SetPhysicsDone();
+					//WaitForSwap();
+				}
 			}
-			std::this_thread::sleep_for(std::chrono::milliseconds(16));
+
+			std::this_thread::yield();
+			//::Sleep(16);
 		}
 	}
 #endif
@@ -270,6 +278,9 @@ namespace Prism
 
 	void PhysicsManager::Update()
 	{
+
+		physicsFPS = int(myTimerManager->GetMasterTimer().GetTime().GetFPS());
+
 		if (!myScene)
 		{
 			DL_ASSERT("no scene in PhysicsManager");
@@ -310,7 +321,7 @@ namespace Prism
 				myControllerPositions[myCurrentIndex ^ 1][i].y = float(pos.y);
 				myControllerPositions[myCurrentIndex ^ 1][i].z = float(pos.z);
 			}
-		}	
+		}
 
 		for (int i = 0; i < myForceJobs[myCurrentIndex ^ 1].Size(); ++i)
 		{
@@ -389,8 +400,8 @@ namespace Prism
 	}
 
 	void PhysicsManager::RayCast(const CU::Vector3<float>& aOrigin, const CU::Vector3<float>& aNormalizedDirection
-		, float aMaxRayDistance, std::function<void(PhysicsComponent*, const CU::Vector3<float>&
-		, const CU::Vector3<float>&, const CU::Vector3<float>&)> aFunctionToCall, const PhysicsComponent* aComponent)
+		, float aMaxRayDistance, std::function < void(PhysicsComponent*, const CU::Vector3<float>&
+		, const CU::Vector3<float>&, const CU::Vector3<float>&) > aFunctionToCall, const PhysicsComponent* aComponent)
 	{
 		myRaycastJobs[myCurrentIndex].Add(RaycastJob(aOrigin, aNormalizedDirection, aMaxRayDistance, aFunctionToCall, aComponent));
 	}
@@ -429,7 +440,7 @@ namespace Prism
 		returnValue = myScene->raycast(origin, unitDirection, maxDistance, buffer);
 		CU::Vector3<float> hitPosition;
 		CU::Vector3<float> hitNormal;
-		
+
 		PhysicsComponent* ent = nullptr;//static_cast<PhysEntity*>(buffer.touches[myCurrentIndex].actor->userData);
 		if (returnValue == true)
 		{
@@ -443,7 +454,7 @@ namespace Prism
 					{
 						continue;
 					}
-					
+
 					physx::PxShapeFlags& flags = buffer.touches[i].shape->getFlags();
 					if (flags.isSet(physx::PxShapeFlag::eTRIGGER_SHAPE) == true)
 					{
@@ -455,7 +466,7 @@ namespace Prism
 					hitPosition.x = buffer.touches[i].position.x;
 					hitPosition.y = buffer.touches[i].position.y;
 					hitPosition.z = buffer.touches[i].position.z;
-					
+
 					hitNormal.x = buffer.touches[i].normal.x;
 					hitNormal.y = buffer.touches[i].normal.y;
 					hitNormal.z = buffer.touches[i].normal.z;
@@ -569,6 +580,12 @@ namespace Prism
 
 	void PhysicsManager::Move(const MoveJob& aMoveJob)
 	{
+		/*std::stringstream ss;
+		ss << "X : " << aMoveJob.myDirection.x << "\n"
+			<< "Y : " << aMoveJob.myDirection.y << "\n"
+			<< "Z : " << aMoveJob.myDirection.z << "\n";
+		OutputDebugStringA(ss.str().c_str());*/
+
 		physx::PxControllerFilters filter;
 		myControllerManager->getController(aMoveJob.myId)->move(
 			ConvertVector(aMoveJob.myDirection), aMoveJob.myMinDisplacement, aMoveJob.myDeltaTime, filter, nullptr);
@@ -650,7 +667,7 @@ namespace Prism
 
 	void PhysicsManager::GetPosition(int aId, CU::Vector3<float>& aPositionOut)
 	{
-		aPositionOut = myControllerPositions[myCurrentIndex ^1][aId];
+		aPositionOut = myControllerPositions[myCurrentIndex ^ 1][aId];
 	}
 
 	void PhysicsManager::Create(PhysicsComponent* aComponent, const PhysicsCallbackStruct& aPhysData
