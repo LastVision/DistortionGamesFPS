@@ -250,6 +250,8 @@ void ClientLevel::Update(const float aDeltaTime, bool aLoadingScreen)
 
 	}
 
+	SharedLevel::Update(aDeltaTime, aLoadingScreen);
+
 	if (myInitDone == false || aLoadingScreen == true)
 	{
 		return;
@@ -274,7 +276,6 @@ void ClientLevel::Update(const float aDeltaTime, bool aLoadingScreen)
 		}
 	}
 
-	SharedLevel::Update(aDeltaTime, aLoadingScreen);
 	myPlayer->GetComponent<FirstPersonRenderComponent>()->UpdateCoOpPositions(myPlayers);
 	myPlayer->Update(aDeltaTime);
 	myEmitterManager->UpdateEmitters(aDeltaTime, CU::Matrix44f());

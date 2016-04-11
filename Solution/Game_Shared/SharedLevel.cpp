@@ -51,12 +51,12 @@ void SharedLevel::AddPlayerStartPosition(unsigned int aGID, const CU::Vector3<fl
 	myPlayerStartPositions[aGID] = aPosition;
 }
 
-void SharedLevel::Update(const float aDeltaTime, bool aLoadingScreen)
+void SharedLevel::Update(const float aDeltaTime, bool)
 {
-	if (aLoadingScreen == true)
-	{
-		return;
-	}
+	//if (aLoadingScreen == true)
+	//{
+	//	return;
+	//}
 
 	for (Entity* entity : myPlayers)
 	{
