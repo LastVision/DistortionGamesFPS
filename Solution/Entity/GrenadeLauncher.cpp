@@ -14,7 +14,7 @@
 GrenadeLauncher::GrenadeLauncher(Prism::Scene* aScene, unsigned int aEntityGID, Entity* aOwnerEntity)
 	: Weapon(eWeaponType::GRENADE_LAUNCHER, aOwnerEntity)
 	, myScene(aScene)
-	, myBullets(16)
+	//, myBullets(16)
 	, myCurrentBulletToUse(0)
 	, myEntityGID(aEntityGID)
 {
@@ -22,7 +22,7 @@ GrenadeLauncher::GrenadeLauncher(Prism::Scene* aScene, unsigned int aEntityGID, 
 
 GrenadeLauncher::~GrenadeLauncher()
 {
-	myBullets.DeleteAll();
+	//myBullets.DeleteAll();
 }
 
 void GrenadeLauncher::Init(std::string aWeaponSettingsPath, std::string aXMLTagName)
@@ -39,17 +39,17 @@ void GrenadeLauncher::Init(std::string aWeaponSettingsPath, std::string aXMLTagN
 
 	reader.CloseDocument();
 
-	for (int i = 0; i < myMaxGrenades; ++i)
-	{
-		Entity* bullet = EntityFactory::CreateEntity((60000 + i), eEntityType::GRENADE, myScene, true, CU::Vector3<float>());
-		myBullets.Add(bullet);
-		bullet->GetComponent<PhysicsComponent>()->Sleep();
-	}
+	//for (int i = 0; i < myMaxGrenades; ++i)
+	//{
+	//	Entity* bullet = EntityFactory::CreateEntity((60000 + i), eEntityType::GRENADE, myScene, true, CU::Vector3<float>());
+	//	myBullets.Add(bullet);
+	//	bullet->GetComponent<PhysicsComponent>()->Sleep();
+	//}
 }
 
 bool GrenadeLauncher::Shoot(const CU::Matrix44<float>&)
 {
-	if (myAmmoInClip > 0 && myShootTimer <= 0.f && myBullets.Size() < 1024)
+	if (myAmmoInClip > 0 && myShootTimer <= 0.f)// && myBullets.Size() < 1024)
 	{
 		//Skicka grenademessage(aOrientation.GetForward());
 		
@@ -81,26 +81,26 @@ void GrenadeLauncher::Reload()
 
 void GrenadeLauncher::Update(float aDelta)
 {
-	for (int i = 0; i < myBullets.Size(); ++i)
-	{
-		if (myBullets[i]->GetComponent<GrenadeComponent>()->GetShouldBeUpdated() == true)
-		{
-			myBullets[i]->Update(aDelta);
-		}
-	}
+	//for (int i = 0; i < myBullets.Size(); ++i)
+	//{
+	//	if (myBullets[i]->GetComponent<GrenadeComponent>()->GetShouldBeUpdated() == true)
+	//	{
+	//		myBullets[i]->Update(aDelta);
+	//	}
+	//}
 	myShootTimer -= aDelta;
 }
 
 void GrenadeLauncher::ShootAtDirection(const CU::Matrix44<float>& aOrientation)
 {
-	myBullets[myCurrentBulletToUse]->Reset();
-	myBullets[myCurrentBulletToUse]->GetComponent<PhysicsComponent>()->TeleportToPosition(aOrientation.GetPos());
-	myBullets[myCurrentBulletToUse]->GetComponent<GrenadeComponent>()->Activate(myEntityGID);
-	myBullets[myCurrentBulletToUse]->GetComponent<PhysicsComponent>()->AddForce(aOrientation.GetForward(), myForceStrength);
-	++myCurrentBulletToUse;
-
-	if (myCurrentBulletToUse >= myMaxGrenades)
-	{
-		myCurrentBulletToUse = 0;
-	}
+	//myBullets[myCurrentBulletToUse]->Reset();
+	//myBullets[myCurrentBulletToUse]->GetComponent<PhysicsComponent>()->TeleportToPosition(aOrientation.GetPos());
+	//myBullets[myCurrentBulletToUse]->GetComponent<GrenadeComponent>()->Activate(myEntityGID);
+	//myBullets[myCurrentBulletToUse]->GetComponent<PhysicsComponent>()->AddForce(aOrientation.GetForward(), myForceStrength);
+	//++myCurrentBulletToUse;
+	//
+	//if (myCurrentBulletToUse >= myMaxGrenades)
+	//{
+	//	myCurrentBulletToUse = 0;
+	//}
 }
