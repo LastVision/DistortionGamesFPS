@@ -9,6 +9,7 @@ namespace Prism
 	class Room;
 	class PointLight;
 	class SpotLight;
+	class SpotLightTextureProjection;
 
 	class RoomManager
 	{
@@ -21,12 +22,14 @@ namespace Prism
 		void Add(Instance* anInstance, eObjectRoomType aRoomType);
 		void Add(PointLight* aPointLight);
 		void Add(SpotLight* aSpotLight);
+		void Add(SpotLightTextureProjection* aSpotLight);
 		void Remove(Instance* anInstance);
 
 		const CU::GrowingArray<Instance*>& GetActiveInstances(const Camera& aCamera);
 		const CU::GrowingArray<Instance*>& GetAllInstances() const;
 		const CU::GrowingArray<PointLight*>& GetActivePointLights() const;
 		const CU::GrowingArray<SpotLight*>& GetActiveSpotLights() const;
+		const CU::GrowingArray<SpotLightTextureProjection*>& GetActiveSpotLightsTextureProjection() const;
 		Prism::Room* GetPlayerRoom();
 		Prism::Room* GetPreviousPlayerRoom();
 
@@ -57,6 +60,7 @@ namespace Prism
 		CU::GrowingArray<Instance*> myAllInstances;
 		CU::GrowingArray<PointLight*> myActivePointLights;
 		CU::GrowingArray<SpotLight*> myActiveSpotLights;
+		CU::GrowingArray<SpotLightTextureProjection*> myActiveSpotLightsTextureProjection;
 		CU::GrowingArray<int> myActiveRoomIndices;
 
 		Prism::Room* myCurrentPlayerRoom;

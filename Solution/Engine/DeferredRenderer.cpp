@@ -8,6 +8,7 @@
 #include "Scene.h"
 #include "PointLight.h"
 #include "SpotLight.h"
+#include "SpotLightTextureProjection.h"
 
 namespace Prism
 {
@@ -344,6 +345,7 @@ namespace Prism
 		aScene->UpdateLights();
 		RenderPointLights(aScene);
 		RenderSpotLights(aScene);
+		RenderSpotLightsTextureProjection(aScene);
 #endif
 	}
 
@@ -408,6 +410,29 @@ namespace Prism
 		Engine::GetInstance()->SetRasterizeState(eRasterizer::CULL_BACK);
 
 		RemoveSpotLightData();
+	}
+
+	void DeferredRenderer::RenderSpotLightsTextureProjection(Scene* aScene, bool aUseRoomManager)
+	{
+		const Camera& camera = *aScene->GetCamera();
+
+		Engine::GetInstance()->RestoreViewPort();
+		SetSpotLightTextureProjectionData(camera);
+
+		const CU::GrowingArray<SpotLightTextureProjection*>& lights = aScene->GetSpotLightsTextureProjection(aUseRoomManager);
+
+		Engine::GetInstance()->SetRasterizeState(eRasterizer::NO_CULLING);
+		//Engine::GetInstance()->SetDepthBufferState(eDepthStencil::READ_NO_WRITE);
+		for (int i = 0; i < lights.Size(); ++i)
+		{
+			mySpotLightTextureProjectionPass.mySpotLightVariable->SetRawValue(&lights[i]->GetLightData(), 0, sizeof(SpotLightData));
+			
+			lights[i]->Render(camera);
+		}
+		//Engine::GetInstance()->SetDepthBufferState(eDepthStencil::Z_ENABLED);
+		Engine::GetInstance()->SetRasterizeState(eRasterizer::CULL_BACK);
+
+		RemoveSpotLightTextureProjectionData();
 	}
 
 	void DeferredRenderer::RenderAmbientPass(Scene* aScene)
@@ -496,6 +521,13 @@ namespace Prism
 
 		mySpotLightPass.OnEffectLoad();
 		mySpotLightPass.myEffect->AddListener(&mySpotLightPass);
+
+
+		mySpotLightTextureProjectionPass.myEffect = EffectContainer::GetInstance()->GetEffect(
+			"Data/Resource/Shader/S_effect_deferred_light_mesh_spot_textureprojection.fx");
+
+		mySpotLightTextureProjectionPass.OnEffectLoad();
+		mySpotLightTextureProjectionPass.myEffect->AddListener(&mySpotLightTextureProjectionPass);
 	}
 
 	void DeferredRenderer::SetupGBufferData()
@@ -569,5 +601,22 @@ namespace Prism
 		mySpotLightPass.myAlbedo->SetResource(nullptr);
 		mySpotLightPass.myNormal->SetResource(nullptr);
 		mySpotLightPass.myEmissive->SetResource(nullptr);
+	}
+
+	void DeferredRenderer::SetSpotLightTextureProjectionData(const Camera& aCamera)
+	{
+		mySpotLightTextureProjectionPass.myAlbedo->SetResource(myGBufferData.myAlbedoTexture->GetShaderView());
+		mySpotLightTextureProjectionPass.myNormal->SetResource(myGBufferData.myNormalTexture->GetShaderView());
+		mySpotLightTextureProjectionPass.myEmissive->SetResource(myGBufferData.myEmissiveTexture->GetShaderView());
+		mySpotLightTextureProjectionPass.myCubemap->SetResource(myCubemap->GetShaderView());
+		mySpotLightTextureProjectionPass.myInvertedProjection->SetMatrix(&CU::InverseReal(aCamera.GetProjection()).myMatrix[0]);
+		mySpotLightTextureProjectionPass.myNotInvertedView->SetMatrix(&aCamera.GetOrientation().myMatrix[0]);
+	}
+
+	void DeferredRenderer::RemoveSpotLightTextureProjectionData()
+	{
+		mySpotLightTextureProjectionPass.myAlbedo->SetResource(nullptr);
+		mySpotLightTextureProjectionPass.myNormal->SetResource(nullptr);
+		mySpotLightTextureProjectionPass.myEmissive->SetResource(nullptr);
 	}
 }

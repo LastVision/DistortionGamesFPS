@@ -11,11 +11,11 @@ namespace Prism
 	class SpotLight
 	{
 	public:
-		SpotLight(unsigned int aGID);
-		~SpotLight();
+		SpotLight(unsigned int aGID, bool aShouldDoInstance = true);
+		virtual ~SpotLight();
 
-		void Render(const Camera& aCamera);
-		void Update();
+		virtual void Render(const Camera& aCamera);
+		virtual void Update();
 
 		const CU::Vector4<float>& GetColor() const;
 		void SetColor(const CU::Vector4<float>& aVector);
@@ -42,18 +42,18 @@ namespace Prism
 
 	protected:
 		CU::Matrix44<float> myOrientation;
+		float myRange;
+		float myAngleInRad;
+		Instance* myLightMesh;
+		CU::Vector4<float> myPosition;
 
 	private:
 		unsigned int myGID;
-		CU::Vector4<float> myPosition;
 		CU::Vector4<float> myDirection;
 		CU::Vector4<float> myColor;
 
-		float myRange;
 		float myCone;
-		float myAngleInRad;
 
-		Instance* myLightMesh;
 		SpotLightData myLightData;
 	};
 

@@ -8,6 +8,7 @@
 #include <GraphicsComponent.h>
 #include <PointLight.h>
 #include <SpotLight.h>
+#include <SpotLightTextureProjection.h>
 #include <Room.h>
 #include <RoomManager.h>
 #include <Scene.h>
@@ -80,6 +81,9 @@ void ClientLevelFactory::ReadLevel(const std::string& aLevelPath)
 	LoadTriggers(reader, levelElement);
 	LoadLights(reader, levelElement);
 	LoadPlayerStartPosition(reader, levelElement);
+
+
+
 
 	reader.CloseDocument();
 }
@@ -154,6 +158,49 @@ void ClientLevelFactory::LoadProps(XMLReader& aReader, tinyxml2::XMLElement* aEl
 		newEntity->Reset();
 
 		myCurrentLevel->AddEntity(newEntity);
+
+		if (newEntity->GetSubType() == "sm_square_ceiling_lamp_a")
+		{
+			propPosition.y -= 0.37f;
+			Prism::SpotLightTextureProjection* light = new Prism::SpotLightTextureProjection(gid * 10000, false);
+			light->SetPosition(CU::Vector4<float>(propPosition, 1.f));
+			//light->SetColor(color);
+			light->SetRange(1.f);
+			light->SetAngle(CU::Math::DegreeToRad(175.f / 2.f));
+			light->Init();
+
+			//light->PerformTransformation(CU::Matrix44f::CreateRotateAroundZ(rotation.z));
+			light->PerformTransformation(CU::Matrix44f::CreateRotateAroundX(-3.14f * 0.5f));
+			//light->PerformTransformation(CU::Matrix44f::CreateRotateAroundY(rotation.y));
+
+			light->Update();
+			static_cast<ClientLevel*>(myCurrentLevel)->AddLight(light);
+		}
+
+		if (newEntity->GetSubType() == "sm_wall_lamp_a")
+		{
+			CU::Vector3<float> offsetBack(newEntity->GetOrientation().GetRight() * -1.1f);
+			CU::Vector3<float> offsetUp(newEntity->GetOrientation().GetUp() * 1.5f);
+
+			Prism::SpotLightTextureProjection* light = new Prism::SpotLightTextureProjection(gid * 10000, true);
+			//light->SetPosition(CU::Vector4<float>(21.f, 1.5f, -6.1f, 1.f));
+			propPosition += offsetBack;
+			propPosition += offsetUp;
+			light->SetPosition(CU::Vector4<float>(propPosition, 1.f));
+			//light->SetColor(color);
+			light->SetRange(1.f);
+			light->SetAngle(CU::Math::DegreeToRad(175.f / 2.f));
+			light->Init();
+
+
+			//light->PerformTransformation(CU::Matrix44f::CreateRotateAroundZ(propRotation.z));
+			//light->PerformTransformation(CU::Matrix44f::CreateRotateAroundX(propRotation.x));
+			light->PerformTransformation(CU::Matrix44f::CreateRotateAroundY(propRotation.y + (3.14f * 0.5f)));
+
+			light->Update();
+
+			static_cast<ClientLevel*>(myCurrentLevel)->AddLight(light);
+		}
 	}
 }
 
@@ -266,7 +313,7 @@ void ClientLevelFactory::LoadTriggers(XMLReader& aReader, tinyxml2::XMLElement* 
 			}
 			myCurrentLevel->AddEntity(newEntity);
 
-			
+
 		}
 		else
 		{
@@ -347,6 +394,8 @@ void ClientLevelFactory::LoadLights(XMLReader& aReader, tinyxml2::XMLElement* aE
 		light->Update();
 		static_cast<ClientLevel*>(myCurrentLevel)->AddLight(light);
 	}
+
+	bool hasAddedTextureThingy = false;
 
 	for (tinyxml2::XMLElement* lightElement = aReader.FindFirstChild(aElement, "spotlight"); lightElement != nullptr;
 		lightElement = aReader.FindNextElement(lightElement, "spotlight"))

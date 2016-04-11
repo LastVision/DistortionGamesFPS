@@ -10,15 +10,18 @@
 namespace Prism
 {
 
-	SpotLight::SpotLight(unsigned int aGID)
+	SpotLight::SpotLight(unsigned int aGID, bool aShouldDoInstance)
 		: myGID(aGID)
 		, myRange(0)
 		, myCone(0)
 		, myLightMesh(nullptr)
 	{
-		ModelProxy* model = ModelLoader::GetInstance()->LoadModel("Data/Resource/Model/Light_mesh/SM_cone.fbx"
-			, "Data/Resource/Shader/S_effect_deferred_light_mesh_spot.fx");
-		myLightMesh = new Instance(*model, myOrientation);
+		if (aShouldDoInstance == true)
+		{
+			ModelProxy* model = ModelLoader::GetInstance()->LoadModel("Data/Resource/Model/Light_mesh/SM_cone.fbx"
+				, "Data/Resource/Shader/S_effect_deferred_light_mesh_spot.fx");
+			myLightMesh = new Instance(*model, myOrientation);
+		}
 	}
 
 

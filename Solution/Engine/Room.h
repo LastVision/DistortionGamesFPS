@@ -8,6 +8,7 @@ namespace Prism
 	class PointLight;
 	class ParticleEmitterInstance;
 	class SpotLight;
+	class SpotLightTextureProjection;
 
 	enum class eRoomType
 	{
@@ -40,6 +41,9 @@ namespace Prism
 		void Add(SpotLight* aSpotLight);
 		const CU::GrowingArray<SpotLight*>& GetSpotLights() const;
 
+		void Add(SpotLightTextureProjection* aSpotLightTextureProjection);
+		const CU::GrowingArray<SpotLightTextureProjection*>& GetSpotLightsTextureProjection() const;
+
 		const std::string& GetName() const;
 		eRoomType GetType() const;
 
@@ -55,6 +59,7 @@ namespace Prism
 		CU::GrowingArray<Instance*> myInstances;
 		CU::GrowingArray<PointLight*> myPointLights;
 		CU::GrowingArray<SpotLight*> mySpotLights;
+		CU::GrowingArray<SpotLightTextureProjection*> mySpotLightTextureProjection;
 		const std::string myName;
 		const eRoomType myType;
 		Prism::ParticleEmitterInstance* myEmitter;
@@ -93,6 +98,11 @@ namespace Prism
 	inline const CU::GrowingArray<SpotLight*>& Room::GetSpotLights() const
 	{
 		return mySpotLights;
+	}
+
+	inline const CU::GrowingArray<SpotLightTextureProjection*>& Room::GetSpotLightsTextureProjection() const
+	{
+		return mySpotLightTextureProjection;
 	}
 
 	inline const std::string& Room::GetName() const

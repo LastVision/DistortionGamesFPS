@@ -12,6 +12,7 @@ namespace Prism
 		, myInstances(128)
 		, myPointLights(128)
 		, mySpotLights(128)
+		, mySpotLightTextureProjection(128)
 		, myName(aName)
 		, myType(aType)
 	{
@@ -24,6 +25,7 @@ namespace Prism
 		myInstances.RemoveAll();
 		myPointLights.RemoveAll();
 		mySpotLights.RemoveAll();
+		mySpotLightTextureProjection.RemoveAll();
 	}
 
 	bool Room::Inside(const CU::Vector3<float>& aPosition, float aRadius) const
@@ -54,6 +56,11 @@ namespace Prism
 	void Room::Add(SpotLight* aSpotLight)
 	{
 		mySpotLights.Add(aSpotLight);
+	}
+
+	void Room::Add(SpotLightTextureProjection* aSpotLightTextureProjection)
+	{
+		mySpotLightTextureProjection.Add(aSpotLightTextureProjection);
 	}
 
 	void Room::AddEmitter(Prism::ParticleEmitterInstance* anEmitter)
