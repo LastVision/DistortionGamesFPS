@@ -34,6 +34,8 @@ public:
 	void DisconnectAll();
 
 	const bool IsAllowedNewConnection() const;
+
+	void StopPing(const bool aStopFlag);
 private:
 	ServerNetworkManager();
 	~ServerNetworkManager();
@@ -55,6 +57,8 @@ private:
 	CU::GrowingArray<Connection> myClients;
 	std::unordered_map<std::string, int> myNames;
 	bool myAllowNewConnections;
+
+	bool myStopPingFlag;
 };
 
 inline void ServerNetworkManager::AllowNewConnections(bool aValue)
@@ -74,4 +78,9 @@ inline const short ServerNetworkManager::GetLastJoinedID() const
 inline const bool ServerNetworkManager::IsAllowedNewConnection() const
 {
 	return myAllowNewConnections;
+}
+
+inline void ServerNetworkManager::StopPing(const bool aStopFlag)
+{
+	myStopPingFlag = aStopFlag;
 }

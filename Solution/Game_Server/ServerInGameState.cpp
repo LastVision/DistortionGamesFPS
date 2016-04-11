@@ -46,6 +46,7 @@ void ServerInGameState::InitState(ServerStateStackProxy* aStateStackProxy)
 	myStateStack = aStateStackProxy;
 	myStateStatus = eStateStatus::KEEP_STATE;
 	ServerNetworkManager::GetInstance()->StopSendMessages(true);
+	ServerNetworkManager::GetInstance()->StopPing(true);
 	myLevel = static_cast<ServerLevel*>(myLevelFactory->LoadLevel(myLevelID));
 	ServerNetworkManager::GetInstance()->StopSendMessages(false);
 
@@ -62,6 +63,7 @@ const eStateStatus ServerInGameState::Update(const float aDeltaTime)
 	switch (myState)
 	{
 	case eInGameStates::LEVEL_UPDATE:
+		ServerNetworkManager::GetInstance()->StopPing(false);
 		LevelUpdate(aDeltaTime);
 		break;
 	case eInGameStates::LEVEL_COMPLETE:
@@ -103,6 +105,7 @@ void ServerInGameState::ReceiveNetworkMessage(const NetMessageLevelComplete& aMe
 		SAFE_DELETE(myLevel);
 		ServerNetworkManager::GetInstance()->AddMessage(NetMessageAllClientsComplete(NetMessageAllClientsComplete::eType::LEVEL_COMPLETE));
 		ServerNetworkManager::GetInstance()->StopSendMessages(true);
+		ServerNetworkManager::GetInstance()->StopPing(true);
 		myLevelHashValue = Hash(CU::ReadFileToString(myLevelFactory->GetLevelPath(myLevelID)).c_str());
 		myLevel = static_cast<ServerLevel*>(myLevelFactory->LoadLevel(myLevelID));
 		ServerNetworkManager::GetInstance()->StopSendMessages(false);

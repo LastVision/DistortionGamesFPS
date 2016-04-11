@@ -23,13 +23,13 @@
 #include <TimerManager.h>
 
 #define BUFFERSIZE 512
-#define RECONNECT_ATTEMPTS 100
+#define RECONNECT_ATTEMPTS 5
 
 ServerNetworkManager::ServerNetworkManager()
 	: myAllowNewConnections(false)
 	, myPingTime(1.f)
+	, myStopPingFlag(false)
 {
-
 }
 
 ServerNetworkManager::~ServerNetworkManager()
@@ -304,12 +304,15 @@ void ServerNetworkManager::Update(float aDelta)
 	myPingTime -= aDelta;
 	if (myPingTime < 0.f)
 	{
-		for (Connection& clients : myClients)
+		if (myStopPingFlag == false)
 		{
-			clients.myPingCount++;
-			if (clients.myPingCount > RECONNECT_ATTEMPTS)
+			for (Connection& clients : myClients)
 			{
-				DisconnectConnection(clients);
+				clients.myPingCount++;
+				if (clients.myPingCount > RECONNECT_ATTEMPTS)
+				{
+					DisconnectConnection(clients);
+				}
 			}
 		}
 		myPingTime = 1.f;
