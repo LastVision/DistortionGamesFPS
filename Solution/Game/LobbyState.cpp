@@ -107,11 +107,13 @@ void LobbyState::OnResize(int aX, int aY)
 
 const eStateStatus LobbyState::Update(const float& aDeltaTime)
 {
-	if (CU::InputWrapper::GetInstance()->KeyDown(DIK_ESCAPE) == true
-		|| CU::InputWrapper::GetInstance()->KeyDown(DIK_N) == true)
+	if (ClientNetworkManager::GetInstance()->GetGID() == 1)
 	{
-		ClientNetworkManager::GetInstance()->AddMessage(NetMessageDisconnect(ClientNetworkManager::GetInstance()->GetGID()));
-		return eStateStatus::ePopMainState;
+		if (CU::InputWrapper::GetInstance()->KeyDown(DIK_ESCAPE) == true)
+		{
+			ClientNetworkManager::GetInstance()->AddMessage(NetMessageDisconnect(ClientNetworkManager::GetInstance()->GetGID()));
+			return eStateStatus::ePopMainState;
+		}
 	}
 
 	myRefreshPlayerListTimer -= aDeltaTime;
@@ -129,12 +131,15 @@ const eStateStatus LobbyState::Update(const float& aDeltaTime)
 	}
 
 	ClientNetworkManager::GetInstance()->DebugPrint();
-
-	if (CU::InputWrapper::GetInstance()->KeyDown(DIK_SPACE) == true)
+#ifndef RELEASE_BUILD
+	if (ClientNetworkManager::GetInstance()->GetGID() == 1)
 	{
-		ClientNetworkManager::GetInstance()->AddMessage(NetMessageRequestStartLevel());
+		if (CU::InputWrapper::GetInstance()->KeyDown(DIK_SPACE) == true)
+		{
+			ClientNetworkManager::GetInstance()->AddMessage(NetMessageRequestStartLevel());
+		}
 	}
-
+#endif
 	if (myStartGame == true)
 	{
 		DL_ASSERT_EXP(myLevelToStart != -1, "Can't start level -1.");

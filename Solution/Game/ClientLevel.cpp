@@ -256,25 +256,12 @@ void ClientLevel::Update(const float aDeltaTime, bool aLoadingScreen)
 
 	ClientProjectileManager::GetInstance()->Update(aDeltaTime);
 	ClientUnitManager::GetInstance()->Update(aDeltaTime);
-	//if (CU::InputWrapper::GetInstance()->KeyDown(DIK_U))
-	//{
-	//	myActiveEnemies.GetLast()->SetState(eEntityState::WALK);
-	//}
-	//if (CU::InputWrapper::GetInstance()->KeyDown(DIK_Y))
-	//{
-	//	myActiveEnemies.GetLast()->SetState(eEntityState::ATTACK);
-	//}
 
 
-	if (CU::InputWrapper::GetInstance()->KeyDown(DIK_C))
-	{
-		myDeferredRenderer->GenerateCubemap(myScene, myName);
-	}
 	if (CU::InputWrapper::GetInstance()->KeyDown(DIK_L))
 	{
 		myDeferredRenderer->GenerateSHData(myScene, myMinPoint, myMaxPoint, myName);
 	}
-
 	if (myWorldTexts.Size() > 0)
 	{
 		//if (Prism::ModelLoader::GetInstance()->IsLoading() == false && myWorldTexts[0].myProxy->IsLoaded() == true)
@@ -286,33 +273,17 @@ void ClientLevel::Update(const float aDeltaTime, bool aLoadingScreen)
 		}
 	}
 
-	if (CU::InputWrapper::GetInstance()->KeyDown(DIK_B) == true)
-	{
-		ClientNetworkManager::GetInstance()->AddMessage(NetMessageActivateSpawnpoint(17));
-	}
-
 	SharedLevel::Update(aDeltaTime, aLoadingScreen);
 	myPlayer->GetComponent<FirstPersonRenderComponent>()->UpdateCoOpPositions(myPlayers);
 	myPlayer->Update(aDeltaTime);
 	myEmitterManager->UpdateEmitters(aDeltaTime, CU::Matrix44f());
 	myTextManager->Update(aDeltaTime);
 
-	if (CU::InputWrapper::GetInstance()->KeyDown(DIK_I))
-	{
-		ClientNetworkManager::GetInstance()->AddMessage(NetMessageDisconnect(ClientNetworkManager::GetInstance()->GetGID()));
-	}
-
 	unsigned long long ms = ClientNetworkManager::GetInstance()->GetResponsTime();
 	float kbs = static_cast<float>(ClientNetworkManager::GetInstance()->GetDataSent());
 
 	DEBUG_PRINT(int(ms));
 	DEBUG_PRINT(kbs);
-
-	//for (int i = 0; i < myPlayers.Size(); ++i)
-	//{
-	//	CU::Vector3f position = ClientNetworkManager::GetInstance()->GetClients()[i].myPosition;
-	//	myPlayers[i]->SetPosition(position);
-	//}
 
 	if (myEscapeMenuActive == true)
 	{
