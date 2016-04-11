@@ -39,7 +39,7 @@ FirstPersonRenderComponent::FirstPersonRenderComponent(Entity& aEntity, Prism::S
 	, myDisplayDamageIndicatorTimerMax(0.7f)
 	, myDisplayHealthIndicatorTimer(0)
 	, myDisplayUpgradeIndicatorTimer(0)
-	, myMaxHealth(10)
+	, myMaxHealth(1000)
 	, myCurrentHealth(myMaxHealth)
 	, myHasDied(false)
 	, myScene(aScene)
@@ -650,7 +650,7 @@ void FirstPersonRenderComponent::ReceiveNetworkMessage(const NetMessageHealth& a
 {
 	if (aMessage.myGID == myEntity.GetGID())
 	{
-		if (myCurrentHealth <= aMessage.myCurrentHealth)
+		if (myCurrentHealth < aMessage.myCurrentHealth)
 		{
 			myDisplayHealthIndicatorTimer = myDisplayPickupTime;
 		}

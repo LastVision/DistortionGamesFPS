@@ -249,11 +249,6 @@ void InputComponent::UpdateMovement(float aDelta)
 	{
 		myEnergyOverheat = false;
 	}
-#else
-	if (CU::InputWrapper::GetInstance()->KeyIsPressed(DIK_LSHIFT))
-	{
-		movement *= 10.f;
-	}
 #endif
 
 	movement = movement * myOrientation;
@@ -262,10 +257,17 @@ void InputComponent::UpdateMovement(float aDelta)
 	CU::Normalize(movement);
 	movement *= myData.mySpeed * magnitude;
 
+#ifdef RELEASE_BUILD
 	if (isSprinting == true)
 	{
 		movement *= myData.mySprintMultiplier;
 	}
+#else
+	if (CU::InputWrapper::GetInstance()->KeyIsPressed(DIK_LSHIFT))
+	{
+		movement *= 10.f;
+	}
+#endif
 
 	movement.y = myVerticalSpeed;
 	Prism::PhysicsInterface::GetInstance()->Move(myEntity.GetComponent<PhysicsComponent>()->GetCapsuleControllerId(), movement, 0.05f, aDelta);
