@@ -21,7 +21,8 @@ namespace Prism
 		, myOverrideDirection(false)
 		, myParticleToGraphicsCard(256)
 		, myDrawDebugLines(false)
-		, myShouldRender(true)
+		, myShouldRender(false)
+		, myHasRoom(false)
 	{
 		myStates.reset();
 		myParticleEmitterData = someData;
@@ -537,9 +538,10 @@ namespace Prism
 		return toReturn;
 	}
 
-	void ParticleEmitterInstance::Activate()
+	void ParticleEmitterInstance::Activate(bool aShouldRender)
 	{
 		Reset();
+		myShouldRender = aShouldRender;
 		myStates[ACTIVE] = TRUE;
 	}
 
@@ -558,6 +560,16 @@ namespace Prism
 		myEntity = anEntity;
 	}
 
+
+	void ParticleEmitterInstance::SetHasRoom(bool aHasRoom)
+	{
+		myHasRoom = aHasRoom;
+	}
+
+	bool ParticleEmitterInstance::GetHasRoom()
+	{
+		return myHasRoom;
+	}
 
 	const CU::Vector3<float>& ParticleEmitterInstance::GetPosition() const
 	{

@@ -1,5 +1,6 @@
 #include "stdafx.h"
 
+#include <InputWrapper.h>
 #include <AudioInterface.h>
 #include "DamageNote.h"
 #include "Entity.h"
@@ -48,27 +49,27 @@ void Pistol::Init(Prism::Scene* aScene, const CU::Matrix44<float>& aOrientation)
 	myOrientation = &aOrientation;
 	Prism::ModelProxy* model = Prism::ModelLoader::GetInstance()->LoadModel("Data/Resource/Model/Muzzleflash/SM_muzzleflash0.fbx"
 		, "Data/Resource/Shader/S_effect_pbl_deferred.fx");
-	myMuzzleflash[0] = new Prism::Instance(*model, *myOrientation);
+	myMuzzleflash[0] = new Prism::Instance(*model, myMuzzleflashOrientation);
 	aScene->AddInstance(myMuzzleflash[0], eObjectRoomType::ALWAYS_RENDER);
 
 	model = Prism::ModelLoader::GetInstance()->LoadModel("Data/Resource/Model/Muzzleflash/SM_muzzleflash1.fbx"
 		, "Data/Resource/Shader/S_effect_pbl_deferred.fx");
-	myMuzzleflash[1] = new Prism::Instance(*model, *myOrientation);
+	myMuzzleflash[1] = new Prism::Instance(*model, myMuzzleflashOrientation);
 	aScene->AddInstance(myMuzzleflash[1], eObjectRoomType::ALWAYS_RENDER);
 
 	model = Prism::ModelLoader::GetInstance()->LoadModel("Data/Resource/Model/Muzzleflash/SM_muzzleflash2.fbx"
 		, "Data/Resource/Shader/S_effect_pbl_deferred.fx");
-	myMuzzleflash[2] = new Prism::Instance(*model, *myOrientation);
+	myMuzzleflash[2] = new Prism::Instance(*model, myMuzzleflashOrientation);
 	aScene->AddInstance(myMuzzleflash[2], eObjectRoomType::ALWAYS_RENDER);
 
 	model = Prism::ModelLoader::GetInstance()->LoadModel("Data/Resource/Model/Muzzleflash/SM_muzzleflash3.fbx"
 		, "Data/Resource/Shader/S_effect_pbl_deferred.fx");
-	myMuzzleflash[3] = new Prism::Instance(*model, *myOrientation);
+	myMuzzleflash[3] = new Prism::Instance(*model, myMuzzleflashOrientation);
 	aScene->AddInstance(myMuzzleflash[3], eObjectRoomType::ALWAYS_RENDER);
 
 	model = Prism::ModelLoader::GetInstance()->LoadModel("Data/Resource/Model/Muzzleflash/SM_muzzleflash4.fbx"
 		, "Data/Resource/Shader/S_effect_pbl_deferred.fx");
-	myMuzzleflash[4] = new Prism::Instance(*model, *myOrientation);
+	myMuzzleflash[4] = new Prism::Instance(*model, myMuzzleflashOrientation);
 	aScene->AddInstance(myMuzzleflash[4], eObjectRoomType::ALWAYS_RENDER);
 }
 
@@ -121,6 +122,17 @@ void Pistol::Reload()
 
 void Pistol::Update(float aDelta)
 {
+	CU::Vector3<float> offset(0.08227f, 0.02079f, -0.09182f);
+
+	/*
+	CU::InputWrapper::GetInstance()->TweakValue(offset.x, 0.01, aDelta, DIK_7, DIK_8);
+	CU::InputWrapper::GetInstance()->TweakValue(offset.y, 0.01, aDelta, DIK_9, DIK_0);
+	CU::InputWrapper::GetInstance()->TweakValue(offset.z, 0.01, aDelta, DIK_I, DIK_O);
+
+	DEBUG_PRINT(offset);
+	*/
+	myMuzzleflashOrientation = *myOrientation;
+	myMuzzleflashOrientation.SetPos(myMuzzleflashOrientation.GetPos() + offset * myMuzzleflashOrientation);
 	for (int i = 0; i < 5; ++i)
 	{
 		myMuzzleflash[i]->SetShouldRender(false);

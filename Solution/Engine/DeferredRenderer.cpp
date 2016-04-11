@@ -209,7 +209,7 @@ namespace Prism
 
 	void DeferredRenderer::LoadSHData(const CU::Vector3<float>& aMinPoint, const CU::Vector3<float>& aMaxPoint, const std::string& aName)
 	{
-		ModelLoader::GetInstance()->WaitUntilFinished();
+		ModelLoader::GetInstance()->Pause();
 		myAmbientPass.mySHGridSize.x = float(CU::Math::ClosestPowerOfTwo(abs(int(aMaxPoint.x - aMinPoint.x))));
 		myAmbientPass.mySHGridSize.y = float(CU::Math::ClosestPowerOfTwo(abs(int(aMaxPoint.y - aMinPoint.y))));
 		myAmbientPass.mySHGridSize.z = float(CU::Math::ClosestPowerOfTwo(abs(int(aMaxPoint.z - aMinPoint.z))));
@@ -231,6 +231,8 @@ namespace Prism
 		mySHTextures.cBg->LoadTexture("LightData/" + aName + "_cBg.dds");
 		mySHTextures.cBb->LoadTexture("LightData/" + aName + "_cBb.dds");
 		mySHTextures.cC->LoadTexture("LightData/" + aName + "_cC.dds");
+
+		ModelLoader::GetInstance()->UnPause();
 	}
 
 	void DeferredRenderer::SetCubeMap(const std::string& aFilePath)

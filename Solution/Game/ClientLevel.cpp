@@ -250,6 +250,10 @@ void ClientLevel::Update(const float aDeltaTime, bool aLoadingScreen)
 
 	}
 
+	SharedLevel::Update(aDeltaTime, aLoadingScreen);
+	myPlayer->GetComponent<FirstPersonRenderComponent>()->UpdateCoOpPositions(myPlayers);
+	myPlayer->Update(aDeltaTime);
+
 	if (myInitDone == false || aLoadingScreen == true)
 	{
 		return;
@@ -274,9 +278,7 @@ void ClientLevel::Update(const float aDeltaTime, bool aLoadingScreen)
 		}
 	}
 
-	SharedLevel::Update(aDeltaTime, aLoadingScreen);
-	myPlayer->GetComponent<FirstPersonRenderComponent>()->UpdateCoOpPositions(myPlayers);
-	myPlayer->Update(aDeltaTime);
+	
 	myEmitterManager->UpdateEmitters(aDeltaTime, CU::Matrix44f());
 	myTextManager->Update(aDeltaTime);
 
@@ -324,7 +326,7 @@ void ClientLevel::Render()
 
 		myEmitterManager->RenderEmitters();
 
-		myPlayer->GetComponent<FirstPersonRenderComponent>()->Render(myDeferredRenderer->GetArmDepthStencilTexture());
+		myPlayer->GetComponent<FirstPersonRenderComponent>()->Render(myDeferredRenderer->GetArmDepthStencilTexture(), myLevelID == 0);
 
 		myTextManager->Render();
 

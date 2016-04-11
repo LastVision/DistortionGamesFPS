@@ -1,5 +1,5 @@
 #include "stdafx.h"
-
+#include <InputWrapper.h>
 #include "AnimationComponent.h"
 #include "AnimationSystem.h"
 #include <Effect.h>
@@ -137,7 +137,10 @@ void AnimationComponent::Update(float aDeltaTime)
 	}
 	else
 	{
-		myMuzzleOrientation = CU::InverseSimple(*myMuzzleBone.myBind) * (*myMuzzleBone.myJoint) *myEntity.GetOrientation();
+		myMuzzleOrientation = myEntity.GetOrientation();
+		CU::Vector3<float> offset(-0.04535f, 0.06111f, 0.1309f);
+
+		myMuzzleOrientation.SetPos((CU::InverseSimple(*myMuzzleBone.myBind) * (*myMuzzleBone.myJoint) *myEntity.GetOrientation()).GetPos() + offset * myEntity.GetOrientation());
 	}
 
 

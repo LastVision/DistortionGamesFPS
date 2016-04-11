@@ -224,6 +224,13 @@ ActionEvent MissionManager::CreateActionEvent(tinyxml2::XMLElement* anEventEleme
 	case eActionEventType::TEXT:
 		aReader->ForceReadAttribute(anEventElement, "timeForText", actionEvent.myShowTextTime);
 		aReader->ForceReadAttribute(anEventElement, "text", actionEvent.myText);
+		for each (char letter in actionEvent.myText)
+		{
+			if (letter == '\n')
+			{
+				actionEvent.myTextRows++;
+			}
+		}
 		break;
 	case eActionEventType::MARKER:
 		aReader->ForceReadAttribute(anEventElement, "show", actionEvent.myShow);

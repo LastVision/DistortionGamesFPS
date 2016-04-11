@@ -22,7 +22,18 @@ TriggerComponent::TriggerComponent(Entity& anEntity, const TriggerComponentData&
 	, myRespawnValue(-1)
 	, myPlayersInside(0)
 	, myRespawnTime(0.f)
+	, myPickupTextRows(0)
 {
+	if (myData.myPickupText.size() > 0)
+	{
+		for each (char letter in myData.myPickupText)
+		{
+			if (letter == '\n')
+			{
+				myPickupTextRows++;
+			}
+		}
+	}
 }
 
 TriggerComponent::~TriggerComponent()
@@ -87,11 +98,13 @@ void TriggerComponent::ReceiveNote(const CollisionNote& aNote)
 			{
 				if (myData.myIsClientSide == false)
 				{
-					SharedNetworkManager::GetInstance()->AddMessage<NetMessageText>(NetMessageText(myData.myPickupText, myData.myPickupTextTime));
+					SharedNetworkManager::GetInstance()->AddMessage<NetMessageText>(NetMessageText(myData.myPickupText
+						, myData.myPickupTextTime, { 1.f, 1.f, 1.f, 1.f }, myPickupTextRows));
 				}
 				else if (myData.myIsClientSide == true)
 				{
-					PostMaster::GetInstance()->SendMessage<PrintTextMessage>(PrintTextMessage(myData.myPickupText, myData.myPickupTextTime));
+					PostMaster::GetInstance()->SendMessage<PrintTextMessage>(PrintTextMessage(myData.myPickupText
+						, myData.myPickupTextTime, { 1.f, 1.f, 1.f, 1.f }, myPickupTextRows));
 				}
 			}
 		}

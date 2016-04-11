@@ -13,4 +13,5 @@ struct ActionEvent
 	std::string myText;
 	bool myShow;
 	CU::Vector3<float> myPosition;
+	int myTextRows = 0;
 };

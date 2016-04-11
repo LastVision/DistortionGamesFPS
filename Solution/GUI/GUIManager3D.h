@@ -23,14 +23,14 @@ namespace GUI
 
 		void Update(const CU::Matrix44<float>& aUIJointOrientation, const CU::Matrix44<float>& aHealthJointOrientation
 			, int aCurrentHealth, int aMaxHealth, float aDeltaTime, eWeaponType aCurrentWeaponType);
-		void Render();
+		void Render(bool aIsFirstLevel);
 
 		void Rebuild(const eWeaponType aWeaponType, int aSize);
 
 	private:
 		void operator=(GUIManager3D&) = delete;
 
-		float myTestValue;
+		float myShowGUITutorial;
 		CU::Matrix44<float> myWristOrientation;
 		//GUIBone myGUIBone;
 		CU::Matrix44<float> myHealthOrientation;

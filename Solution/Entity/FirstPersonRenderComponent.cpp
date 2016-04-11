@@ -347,7 +347,7 @@ void FirstPersonRenderComponent::UpdateCoOpPositions(const CU::GrowingArray<Enti
 	}
 }
 
-void FirstPersonRenderComponent::Render(Prism::Texture* aArmDepthTexture)
+void FirstPersonRenderComponent::Render(Prism::Texture* aArmDepthTexture, bool aIsFirstLevel)
 {
 	const CU::Vector2<float>& windowSize = Prism::Engine::GetInstance()->GetWindowSize();
 	myCrosshair->Render(windowSize * 0.5f);
@@ -374,7 +374,7 @@ void FirstPersonRenderComponent::Render(Prism::Texture* aArmDepthTexture)
 	}
 
 	Prism::Engine::GetInstance()->SetDepthStencil(aArmDepthTexture->GetDepthStencilView());
-	my3DGUIManager->Render();
+	my3DGUIManager->Render(aIsFirstLevel);
 	Prism::Engine::GetInstance()->RestoreDepthStencil();
 
 	if (myRenderMarker == true)
