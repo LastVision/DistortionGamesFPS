@@ -115,6 +115,11 @@ private:
 
 	int myLevelID;
 
+	bool myHasStartedFirstLayer;
+	bool myHasStartedSecondLayer;
+	bool myHasStoppedFirstLayer;
+	bool myHasStoppedSecondLayer;
+
 	eStateStatus& myStateStatus;
 };
 
