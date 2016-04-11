@@ -143,6 +143,7 @@ namespace Prism
 
 		SetGBufferAsTarget(myDepthStencilTexture);
 		aScene->Render();
+		aScene->RenderArmAndWeaponOnlyDepth();
 
 		SetGBufferAsTarget(myArmDepthStencilTexture);
 		aScene->RenderArmAndWeapon();

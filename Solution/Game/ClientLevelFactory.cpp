@@ -159,7 +159,7 @@ void ClientLevelFactory::LoadProps(XMLReader& aReader, tinyxml2::XMLElement* aEl
 
 		myCurrentLevel->AddEntity(newEntity);
 
-		if (newEntity->GetSubType() == "sm_square_ceiling_lamp_a")
+		if (newEntity->GetSubType() == "sm_square_ceiling_lamp_a_short")
 		{
 			propPosition.y -= 0.37f;
 			Prism::SpotLightTextureProjection* light = new Prism::SpotLightTextureProjection(gid * 10000, false);

@@ -68,6 +68,12 @@ namespace Prism
 		return myEffect;
 	}
 
+
+	void BaseModel::SetTechniqueName(const std::string& aName)
+	{
+		myTechniqueName = aName;
+	}
+
 	void BaseModel::EvaluateEffectTechnique(bool aInstanced)
 	{
 		int uvCount = 0;

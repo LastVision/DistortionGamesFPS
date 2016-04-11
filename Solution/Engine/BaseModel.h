@@ -26,6 +26,7 @@ namespace Prism
 		Effect* GetEffect();
 
 		virtual const std::string& GetTechniqueName() const;
+		void SetTechniqueName(const std::string& aName);
 
 		virtual void SetFileName(const std::string& aFileName);
 
