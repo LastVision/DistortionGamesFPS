@@ -124,9 +124,10 @@ namespace Prism
 		{
 			DL_ASSERT("Failed to createScene");
 		}
-
+#ifdef _DEBUG
 		myScene->setVisualizationParameter(physx::PxVisualizationParameter::eSCALE, 1.f);
 		myScene->setVisualizationParameter(physx::PxVisualizationParameter::eCOLLISION_SHAPES, 1.f);
+#endif
 		myScene->setFlag(physx::PxSceneFlag::eENABLE_KINEMATIC_PAIRS, true);
 		myScene->setFlag(physx::PxSceneFlag::eENABLE_KINEMATIC_STATIC_PAIRS, true);
 		myScene->setSimulationEventCallback(this);
@@ -526,9 +527,11 @@ namespace Prism
 
 	void PhysicsManager::onPvdConnected(physx::debugger::comm::PvdConnection&)
 	{
+#ifdef _DEBUG
 		myPhysicsSDK->getVisualDebugger()->setVisualizeConstraints(true);
 		myPhysicsSDK->getVisualDebugger()->setVisualDebuggerFlag(physx::PxVisualDebuggerFlag::eTRANSMIT_CONTACTS, true);
 		myPhysicsSDK->getVisualDebugger()->setVisualDebuggerFlag(physx::PxVisualDebuggerFlag::eTRANSMIT_SCENEQUERIES, true);
+#endif
 	}
 
 	void PhysicsManager::onPvdDisconnected(physx::debugger::comm::PvdConnection&)

@@ -130,6 +130,7 @@ private:
 	float myDisplayDamageIndicatorTimerMax;
 	float myDisplayHealthIndicatorTimer;
 	float myDisplayUpgradeIndicatorTimer;
+	float myDisplayPickupTime;
 	CU::GrowingArray<ePlayerState> myIntentions;
 
 	int myMaxHealth;
