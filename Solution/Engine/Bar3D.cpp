@@ -116,12 +116,16 @@ namespace Prism
 
 		if (myBarPosition == eBarPosition::HEALTH)
 		{
-			inner = 0.075f;
-			outer = 0.1f;
+			inner = 0.05f;
+			outer = 0.075f;
 		}
 		float zPosition = 0.f;
 		if (myBarPosition == eBarPosition::LEFT || myBarPosition == eBarPosition::RIGHT || myBarPosition == eBarPosition::TOP || myBarPosition == eBarPosition::HEALTH)
 		{
+			if (myBarPosition != eBarPosition::HEALTH && myBarPosition != eBarPosition::HEALTH_ICON)
+			{
+				zPosition = -0.0f;
+			}
 			for (int i = 0; i < numbersToMake; ++i)
 			{
 				float angle = 0.f;
@@ -150,8 +154,8 @@ namespace Prism
 					angle += 0.25f;
 					//angle = -angle;
 				}
-				CU::Vector4<float> vertexInner(inner * cos(angle), inner * sin(angle), 0.f, zPosition);
-				CU::Vector4<float> vertexOuter(outer * cos(angle), outer * sin(angle), 0.f, zPosition);
+				CU::Vector4<float> vertexInner(inner * cos(angle), inner * sin(angle), zPosition, 0.f);
+				CU::Vector4<float> vertexOuter(outer * cos(angle), outer * sin(angle), zPosition, 0.f);
 
 				torusPosition.Add(vertexInner);
 				torusPosition.Add(vertexOuter);
@@ -243,13 +247,13 @@ namespace Prism
 			float xOffset = 0.f;
 			if (myBarPosition == eBarPosition::HEALTH_ICON)
 			{
-				yOffset = 0.f;
-				xOffset = 0.1f;
+				yOffset = -0.01f;
+				xOffset = 0.065f;
 			}
 			else if (myBarPosition == eBarPosition::PISTOL_ICON)
 			{
-				yOffset = 0.1f;
-				xOffset = 0.11f;
+				yOffset = -0.5f;
+				xOffset = 0.f;
 			}
 			else if (myBarPosition == eBarPosition::SHOTGUN_ICON)
 			{
@@ -263,19 +267,19 @@ namespace Prism
 			}
 			GUIVertex vertex;
 			vertex.myPosition = { myQuadSize.x * 0.5f + xOffset, 0 + yOffset, 0, 0 };
-			vertex.myUV = { 1, 0 };
-			vertices.Add(vertex);
-
-			vertex.myPosition = { myQuadSize.x * 0.5f + xOffset, myQuadSize.y * 0.5f + yOffset, 0, 0 };
 			vertex.myUV = { 1, 1 };
 			vertices.Add(vertex);
 
-			vertex.myPosition = { -myQuadSize.x * 0.5f + xOffset, 0 + yOffset, 0, 0 };
-			vertex.myUV = { 0, 0 };
+			vertex.myPosition = { myQuadSize.x * 0.5f + xOffset, myQuadSize.y + yOffset, 0, 0 };
+			vertex.myUV = { 1, 0 };
 			vertices.Add(vertex);
 
-			vertex.myPosition = { -myQuadSize.x * 0.5f + xOffset, myQuadSize.y * 0.5f + yOffset, 0, 0 };
+			vertex.myPosition = { -myQuadSize.x * 0.5f + xOffset, 0 + yOffset, 0, 0 };
 			vertex.myUV = { 0, 1 };
+			vertices.Add(vertex);
+
+			vertex.myPosition = { -myQuadSize.x * 0.5f + xOffset, myQuadSize.y + yOffset, 0, 0 };
+			vertex.myUV = { 0, 0 };
 			vertices.Add(vertex);
 		}
 

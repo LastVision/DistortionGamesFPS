@@ -22,6 +22,8 @@ static std::string ConvertNetworkEnumToString(eNetMessageType aType)
 	case eNetMessageType::ON_DISCONNECT:
 		return "ON DISCONNECT";
 	case eNetMessageType::SET_LEVEL:
+		return "SET LEVEL";
+	case eNetMessageType::REQUEST_LEVEL:
 		return "REQUEST LEVEL";
 	case eNetMessageType::REQUEST_START_LEVEL:
 		return "REQUEST START GAME";

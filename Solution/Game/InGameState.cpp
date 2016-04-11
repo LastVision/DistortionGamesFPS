@@ -38,6 +38,7 @@ InGameState::InGameState(int aLevelID, unsigned int aServerHashLevelValue)
 	, myLevelComplete(false)
 	, myFailedLevel(false)
 	, myLoadingScreen(true)
+	, myLoadingScreenCanStart(false)
 	, myCanStartNextLevel(false)
 	, myFailedLevelHash(false)
 	, myServerHashLevelValue(aServerHashLevelValue)
@@ -53,8 +54,12 @@ InGameState::InGameState(int aLevelID, unsigned int aServerHashLevelValue)
 		"Data/Resource/Texture/Menu/BetweenLevels/T_background_elevator.dds", { 1920.f, 1080.f });
 	myLevelFailedSprite = Prism::ModelLoader::GetInstance()->LoadSprite(
 		"Data/Resource/Texture/Menu/T_background_gameover.dds", { 1920.f, 1080.f });
-	myLoadingScreenSprite= Prism::ModelLoader::GetInstance()->LoadSprite(
+	myLoadingScreenSprite = Prism::ModelLoader::GetInstance()->LoadSprite(
 		"Data/Resource/Texture/Menu/T_background_story01.dds", { 1920.f, 1080.f });
+	myRotatingThing = Prism::ModelLoader::GetInstance()->LoadSprite(
+		"Data/Resource/Texture/Menu/T_rotating_thing.dds", { 128.f, 128.f }, { 64.f, 64.f });
+	myPressToStart = Prism::ModelLoader::GetInstance()->LoadSprite(
+		"Data/Resource/Texture/Menu/T_press_to_start.dds", { 512.f, 64.f });
 	CU::Vector2<int> windowSize = Prism::Engine::GetInstance()->GetWindowSizeInt();
 	OnResize(windowSize.x, windowSize.y);
 }
@@ -69,6 +74,8 @@ InGameState::~InGameState()
 	SAFE_DELETE(myLevelCompleteSprite);
 	SAFE_DELETE(myLevelFailedSprite);
 	SAFE_DELETE(myLoadingScreenSprite);
+	SAFE_DELETE(myRotatingThing);
+	SAFE_DELETE(myPressToStart);
 	SAFE_DELETE(myLevel);
 	SAFE_DELETE(myLevelFactory);
 	SAFE_DELETE(myText);
@@ -120,10 +127,50 @@ const eStateStatus InGameState::Update(const float& aDeltaTime)
 		myShouldShowLoadingScreen = false;
 		myShouldLoadLevel = true;
 		myLoadingScreen = true;
+		myLoadingScreenCanStart = false;
 		myLevelComplete = false;
 		myFailedLevel = false;
 		myCanStartNextLevel = false;
 		return myStateStatus;
+	}
+
+	
+	if (myLoadingScreen == true)
+	{
+		myRotatingThing->Rotate(-aDeltaTime * 8.f);
+	}
+	else
+	{
+		if (CU::InputWrapper::GetInstance()->KeyDown(DIK_ESCAPE))
+		{
+			myLevel->ToggleEscapeMenu();
+		}
+	}
+	
+	bool firstFrame = false;
+
+	if (myLoadingScreenCanStart == true)
+	{
+		if (CU::InputWrapper::GetInstance()->KeyDown(DIK_RETURN) == true
+			|| CU::InputWrapper::GetInstance()->KeyDown(DIK_ESCAPE) == true
+			|| CU::InputWrapper::GetInstance()->KeyDown(DIK_SPACE) == true
+			|| CU::InputWrapper::GetInstance()->MouseDown(0) == true
+			|| CU::InputWrapper::GetInstance()->MouseDown(1) == true
+			|| CU::InputWrapper::GetInstance()->MouseDown(2) == true
+			|| CU::InputWrapper::GetInstance()->KeyDown(DIK_W) == true
+			|| CU::InputWrapper::GetInstance()->KeyDown(DIK_A) == true
+			|| CU::InputWrapper::GetInstance()->KeyDown(DIK_S) == true
+			|| CU::InputWrapper::GetInstance()->KeyDown(DIK_D) == true
+			|| CU::InputWrapper::GetInstance()->KeyDown(DIK_E) == true
+			|| CU::InputWrapper::GetInstance()->KeyDown(DIK_1) == true
+			|| CU::InputWrapper::GetInstance()->KeyDown(DIK_2) == true
+			|| CU::InputWrapper::GetInstance()->KeyDown(DIK_3) == true)
+		{
+			myLoadingScreen = false;
+			myLoadingScreenCanStart = false;
+			firstFrame = true;
+			PostMaster::GetInstance()->SendMessage(FadeMessage(1.f));
+		}
 	}
 	
 	if (myShouldLoadLevel == true)
@@ -139,36 +186,7 @@ const eStateStatus InGameState::Update(const float& aDeltaTime)
 
 	Prism::EffectContainer::GetInstance()->Update(aDeltaTime);
 
-	if (CU::InputWrapper::GetInstance()->KeyDown(DIK_ESCAPE))
-	{
-		myLevel->ToggleEscapeMenu();
-		//return eStateStatus::ePopMainState;
-	}
 
-	//if (CU::InputWrapper::GetInstance()->KeyDown(DIK_NUMPAD1))
-	//{
-	//	ClientNetworkManager::GetInstance()->AddMessage(NetMessageSetLevel(0));
-	//	//SET_RUNTIME(false);
-	//	//SAFE_DELETE(myLevel);
-	//	//myLevel = static_cast<ClientLevel*>(myLevelFactory->LoadLevel(0));
-	//}
-	//else if (CU::InputWrapper::GetInstance()->KeyDown(DIK_NUMPAD2))
-	//{
-	//	ClientNetworkManager::GetInstance()->AddMessage(NetMessageSetLevel(1));
-	//	//SET_RUNTIME(false);
-	//	//SAFE_DELETE(myLevel);
-	//	//myLevel = static_cast<ClientLevel*>(myLevelFactory->LoadLevel(1));
-	//}
-	//else if (CU::InputWrapper::GetInstance()->KeyDown(DIK_NUMPAD3))
-	//{
-	//	ClientNetworkManager::GetInstance()->AddMessage(NetMessageSetLevel(2));
-	//	//SET_RUNTIME(false);
-	//	//SAFE_DELETE(myLevel);
-	//	//myLevel = static_cast<ClientLevel*>(myLevelFactory->LoadLevel(2));
-	//}
-
-
-	
 
 	if (myLevelComplete == true)
 	{
@@ -215,7 +233,7 @@ const eStateStatus InGameState::Update(const float& aDeltaTime)
 	else
 	{
 		DL_ASSERT_EXP(myLevel != nullptr, "Invalid level");
-		myLevel->Update(aDeltaTime, myLoadingScreen);
+		myLevel->Update(aDeltaTime, myLoadingScreen || firstFrame);
 	}
 
 	//LUA::ScriptSystem::GetInstance()->CallFunction("Update", { aDeltaTime });
@@ -231,6 +249,14 @@ void InGameState::Render()
 	if (myLoadingScreen == true)
 	{
 		myLoadingScreenSprite->Render({ 0.f, 0.f });
+		if (myLoadingScreenCanStart == true)
+		{
+			myPressToStart->Render({ 200.f, 20.f });
+		}
+		else
+		{
+			myRotatingThing->Render({ 84.f, 84.f }, { 1.f, 1.f });
+		}
 	}
 	else if (myLevelComplete == false && myFailedLevel == false)
 	{
@@ -274,7 +300,7 @@ void InGameState::ReceiveNetworkMessage(const NetMessageAllClientsComplete& aMes
 	case NetMessageAllClientsComplete::eType::LEVEL_LOAD:
 		myLevelComplete = false;
 		myFailedLevel = false;
-		myLoadingScreen = false;
+		myLoadingScreenCanStart = true;
 		break;
 	}
 }

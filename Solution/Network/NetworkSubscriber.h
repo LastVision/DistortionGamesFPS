@@ -22,6 +22,7 @@ class NetMessagePosition;
 class NetMessagePressE;
 class NetMessageRayCastRequest;
 class NetMessageRequestConnect;
+class NetMessageRequestLevel;
 class NetMessageSetLevel;
 class NetMessageStartLobby;
 class NetMessageRequestStartLevel;
@@ -64,6 +65,7 @@ public:
 	virtual void ReceiveNetworkMessage(const NetMessagePressE& aMessage, const sockaddr_in& aSenderAddress);
 	virtual void ReceiveNetworkMessage(const NetMessageRayCastRequest& aMessage, const sockaddr_in& aSenderAddress);
 	virtual void ReceiveNetworkMessage(const NetMessageRequestConnect& aMessage, const sockaddr_in& aSenderAddress);
+	virtual void ReceiveNetworkMessage(const NetMessageRequestLevel& aMessage, const sockaddr_in& aSenderAddress);
 	virtual void ReceiveNetworkMessage(const NetMessageSetLevel& aMessage, const sockaddr_in& aSenderAddress);
 	virtual void ReceiveNetworkMessage(const NetMessageStartLobby& aMessage, const sockaddr_in& aSenderAddress);
 	virtual void ReceiveNetworkMessage(const NetMessageRequestStartLevel& aMessage, const sockaddr_in& aSenderAddress);
