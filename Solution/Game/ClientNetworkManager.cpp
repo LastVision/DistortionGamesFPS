@@ -135,7 +135,7 @@ void ClientNetworkManager::ReceieveThread()
 		}
 		ReceieveIsDone();
 		WaitForMain();
-		Sleep(1);
+		std::this_thread::yield();
 	}
 }
 
@@ -157,7 +157,7 @@ void ClientNetworkManager::SendThread()
 
 		mySendBuffer[myCurrentSendBuffer].RemoveAll();
 		myCurrentSendBuffer ^= 1;
-		Sleep(1);
+		std::this_thread::yield();
 	}
 }
 
@@ -179,7 +179,7 @@ void ClientNetworkManager::PingThread()
 
 			Sleep(1000);
 		}
-		Sleep(1);
+		std::this_thread::yield();
 	}
 }
 

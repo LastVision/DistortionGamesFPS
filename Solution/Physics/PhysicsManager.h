@@ -254,7 +254,9 @@ namespace Prism
 				, myPosition(aPosition)
 				, myType(aType)
 				, myID(-1)
-			{}
+			{
+				myPosition.y += 1.0f;
+			}
 
 			PositionJob(int aID, const CU::Vector3<float>& aPosition, PositionJobType aType)
 				: myRigidBody(nullptr)

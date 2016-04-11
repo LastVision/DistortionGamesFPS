@@ -210,7 +210,7 @@ void SharedNetworkManager::WaitForMain()
 {
 	while (myMainIsDone == false)
 	{
-		Sleep(1);
+		std::this_thread::yield();
 	}
 	myMainIsDone = false;
 }
@@ -219,7 +219,7 @@ void SharedNetworkManager::WaitForReceieve()
 {
 	while (myReceieveIsDone == false)
 	{
-		Sleep(1);
+		std::this_thread::yield();
 	}
 	myReceieveIsDone = false;
 }
