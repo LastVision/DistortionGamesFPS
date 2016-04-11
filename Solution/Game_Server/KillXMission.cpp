@@ -73,7 +73,7 @@ bool KillXMission::Update(float aDeltaTime)
 void KillXMission::AddValue(int aValue)
 {
 	myEnemiesKilled += aValue;
-	if (myEnemiesKilled < myAmountToKill)
+	if (myEnemiesKilled <= myAmountToKill)
 	{
 		PostMaster::GetInstance()->SendMessage<SendTextToClientsMessage>(SendTextToClientsMessage("Enemies left: " + std::to_string(myAmountToKill - myEnemiesKilled)));
 	}
