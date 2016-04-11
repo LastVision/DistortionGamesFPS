@@ -272,13 +272,17 @@ void ShootingComponent::ReceiveNote(const UpgradeNote& aNote)
 	if (aNote.myData.myWeaponType == eWeaponType::PISTOL)
 	{
 		myPistol->Upgrade(aNote.myData);
+		myPistol->FillClip();
 	}
 	else if (aNote.myData.myWeaponType == eWeaponType::SHOTGUN)
 	{
 		myShotgun->Upgrade(aNote.myData);
+		myShotgun->FillClip();
 	}
 	else if (aNote.myData.myWeaponType == eWeaponType::GRENADE_LAUNCHER)
 	{
 		myGrenadeLauncher->Upgrade(aNote.myData);
+		myGrenadeLauncher->FillClip();
 	}
+
 }
