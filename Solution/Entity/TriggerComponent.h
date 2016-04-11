@@ -41,6 +41,7 @@ private:
 	int myRespawnValue;
 	float myRespawnTime;
 	int myLastRespawnValue;
+	int myPickupTextRows;
 };
 
 inline eComponentType TriggerComponent::GetTypeStatic()
