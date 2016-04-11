@@ -207,7 +207,7 @@ void ServerLevel::ReceiveNetworkMessage(const NetMessageHealthPack& aMessage, co
 void ServerLevel::ReceiveNetworkMessage(const NetMessageShootGrenade& aMessage, const sockaddr_in&)
 {
 	Entity* bullet = ServerProjectileManager::GetInstance()->RequestGrenade();
-	CU::Matrix44<float> playerOrientation = myPlayers[aMessage.mySenderID - 1]->GetOrientation();
+	CU::Matrix44<float> playerOrientation = myPlayers[aMessage.myPlayerGID - 1]->GetOrientation();
 
 	bullet->Reset();
 	CU::Vector3<float> pos = playerOrientation.GetPos();
@@ -216,11 +216,12 @@ void ServerLevel::ReceiveNetworkMessage(const NetMessageShootGrenade& aMessage, 
 	pos += playerOrientation.GetRight() * 0.5f;
 	pos -= playerOrientation.GetUp() * 0.2f;
 	bullet->GetComponent<PhysicsComponent>()->TeleportToPosition(pos);
-	bullet->GetComponent<GrenadeComponent>()->Activate(aMessage.mySenderID);
+	bullet->GetComponent<GrenadeComponent>()->Activate(aMessage.myPlayerGID);
 	bullet->GetComponent<PhysicsComponent>()->AddForce(aMessage.myForwardVector, float(aMessage.myForceStrength));
 
 	//Skicka samma meddelande till clienten
-	SharedNetworkManager::GetInstance()->AddMessage<NetMessageShootGrenade>(NetMessageShootGrenade(aMessage.myForceStrength, pos));
+	SharedNetworkManager::GetInstance()->AddMessage<NetMessageShootGrenade>(NetMessageShootGrenade(aMessage.myForceStrength
+		, aMessage.myPlayerGID, pos));
 }
 
 void ServerLevel::ReceiveNetworkMessage(const NetMessagePressE& aMessage, const sockaddr_in&)

@@ -50,6 +50,7 @@ namespace Prism
 		, myCurrentIndex(0)
 		, myIsSwapping(false)
 		, myIsReading(false)
+		, myIsServer(aIsServer)
 	{
 		myRaycastJobs[0].Init(64);
 		myRaycastJobs[1].Init(64);
@@ -868,17 +869,21 @@ namespace Prism
 		objPath[aFBXPath.size() - 2] = 'b';
 		objPath[aFBXPath.size() - 1] = 'j';
 
-		cowPath[aFBXPath.size() - 3] = 'c';
-		cowPath[aFBXPath.size() - 2] = 'o';
-		cowPath[aFBXPath.size() - 1] = 'w';
-
-		cowPath = CU::GetGeneratedDataFolderFilePath(aFBXPath, "cow");
+		if (myIsServer == true)
+		{
+			cowPath = CU::GetGeneratedDataFolderFilePath(aFBXPath, "cos");
+		}
+		else
+		{
+			cowPath = CU::GetGeneratedDataFolderFilePath(aFBXPath, "cow");
+		}
 
 		physx::PxTriangleMesh* mesh = nullptr;
 		WavefrontObj wfo;
 
-		bool ok;
+		bool ok = true;
 
+#ifdef GENERATE_COW
 		if (CU::FileExists(cowPath) == false)
 		{
 
@@ -900,10 +905,8 @@ namespace Prism
 				ok = GetCooker()->cookTriangleMesh(meshDesc, stream);
 			}
 		}
-		else
-		{
-			ok = true;
-		}
+#endif
+
 		if (ok)
 		{
 			physx::PxDefaultFileInputData stream(cowPath.c_str());

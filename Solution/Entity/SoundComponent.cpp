@@ -36,6 +36,10 @@ void SoundComponent::ReceiveMessage(const LevelLoadedMessage& aMessage)
 		std::string eventName("Play_3DElevatorToLevel" + std::to_string(min(2, aMessage.myLevelID)));
 		Prism::Audio::AudioInterface::GetInstance()->PostEvent(eventName.c_str(), myAudioSFXID);
 	}
+	if (myEntity.GetSubType() == "sm_double_doors_a_400_300_laser")
+	{
+		Prism::Audio::AudioInterface::GetInstance()->PostEvent("Play_Door", myAudioSFXID);
+	}
 }
 
 void SoundComponent::ReceiveMessage(const LevelCompleteMessage& aMessage)
@@ -43,5 +47,9 @@ void SoundComponent::ReceiveMessage(const LevelCompleteMessage& aMessage)
 	if (myEntity.GetSubType() == "sm_elevator_a_open")
 	{
 		Prism::Audio::AudioInterface::GetInstance()->PostEvent("Stop_3DAllElevators", myAudioSFXID);
+	}
+	if (myEntity.GetSubType() == "sm_double_doors_a_400_300_laser")
+	{
+		Prism::Audio::AudioInterface::GetInstance()->PostEvent("Stop_Door", myAudioSFXID);
 	}
 }

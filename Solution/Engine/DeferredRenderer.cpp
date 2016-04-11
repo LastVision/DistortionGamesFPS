@@ -9,6 +9,7 @@
 #include "PointLight.h"
 #include "SpotLight.h"
 #include "SpotLightTextureProjection.h"
+#include <XMLReader.h>
 
 namespace Prism
 {
@@ -116,6 +117,12 @@ namespace Prism
 		myFinishedTexture->Init(windowSize.x, windowSize.y
 			, D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE
 			, DXGI_FORMAT_R8G8B8A8_UNORM);
+
+		XMLReader reader;
+		reader.OpenDocument("Data/Setting/SET_rendering.xml");
+		tinyxml2::XMLElement* root = reader.ForceFindFirstChild("root");
+		reader.ForceReadAttribute(reader.ForceFindFirstChild(root, "shsize"), "value", GC::SHNodeSize);
+		reader.CloseDocument();
 	}
 
 	DeferredRenderer::~DeferredRenderer()
@@ -201,7 +208,7 @@ namespace Prism
 
 			ModelLoader::GetInstance()->WaitUntilFinished();
 			myCubeMapGenerator->GenerateSHTextures(this, aScene, mySHTextures, myAmbientPass.mySHGridSize
-				, myAmbientPass.mySHGridOffset, 4.f, aName);
+				, myAmbientPass.mySHGridOffset, GC::SHNodeSize, aName);
 
 			myAmbientPass.mySHGridOffset *= -1.f;
 		}

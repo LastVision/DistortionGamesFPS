@@ -50,3 +50,6 @@
 #define HEALTH_COLOR { 0.4f, 0.8f, 0.4f, 1.f }
 
 #define UPGRADE_COLOR { 0.4f, 0.6f, 0.8f, 1.f }
+
+
+#define GENERATE_COW

@@ -22,6 +22,8 @@ public:
 
 	virtual void Upgrade(const UpgradeComponentData& aData);
 
+	void FillClip();
+
 protected:	
 	int myAmmoInClip;
 	int myClipSize;
@@ -60,4 +62,9 @@ inline float Weapon::GetForceStrength() const
 inline const int& Weapon::GetAmmoTotal() const
 {
 	return myAmmoTotal;
+}
+
+inline void Weapon::FillClip()
+{
+	myAmmoInClip = myClipSize;
 }

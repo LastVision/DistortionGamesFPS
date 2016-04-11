@@ -161,9 +161,12 @@ void ComponentLoader::LoadPhysicsComponent(XMLReader& aDocument, tinyxml2::XMLEl
 
 void ComponentLoader::LoadGrenadeComponent(XMLReader& aDocument, tinyxml2::XMLElement* aSourceElement, GrenadeComponentData& aOutputData)
 {
-	aDocument;
-	aSourceElement;
-	aOutputData.myExistsInEntity = true;
+ 	aOutputData.myExistsInEntity = true;
+
+	
+	//aDocument.ForceReadAttribute(aSourceElement, "value", aOutputData.myTimeToExplode);
+	aDocument.ForceReadAttribute(aDocument.ForceFindFirstChild(aSourceElement, "timeToExplode"), "value", aOutputData.myTimeToExplode);
+	
 }
 
 void ComponentLoader::LoadTriggerComponent(XMLReader& aDocument, tinyxml2::XMLElement* aSourceElement, TriggerComponentData& aOutputData)

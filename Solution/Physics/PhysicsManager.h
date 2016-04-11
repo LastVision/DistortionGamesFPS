@@ -300,6 +300,8 @@ namespace Prism
 
 		CU::GrowingArray<physx::PxActor*> myActorsToAdd[2];
 		CU::GrowingArray<physx::PxActor*> myActorsToRemove[2];
+
+		bool myIsServer;
 	};
 
 #ifdef THREAD_PHYSICS

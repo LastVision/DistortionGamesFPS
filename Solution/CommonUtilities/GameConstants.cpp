@@ -3,3 +3,4 @@
 
 bool GC::GenerateLightData = false; 
 bool GC::GenerateCubeMap = false;
+int GC::SHNodeSize = 4;

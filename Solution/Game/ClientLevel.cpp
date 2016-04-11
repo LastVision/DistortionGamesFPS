@@ -427,6 +427,14 @@ void ClientLevel::ReceiveNetworkMessage(const NetMessageSetActive& aMessage, con
 			{
 				myActiveEntitiesMap[aMessage.myGID]->AddToScene();
 			}
+			if (myActiveEntitiesMap[aMessage.myGID]->GetComponent<SoundComponent>() != nullptr)
+			{
+				if (myActiveEntitiesMap[aMessage.myGID]->GetSubType() == "sm_double_doors_a_400_300_laser")
+				{
+					Prism::Audio::AudioInterface::GetInstance()->PostEvent("Play_Door"
+						, myActiveEntitiesMap[aMessage.myGID]->GetComponent<SoundComponent>()->GetAudioSFXID());
+				}
+			}
 		}
 		else
 		{
@@ -444,6 +452,16 @@ void ClientLevel::ReceiveNetworkMessage(const NetMessageSetActive& aMessage, con
 			if (myActiveEntitiesMap[aMessage.myGID]->GetComponent<PhysicsComponent>() != nullptr)
 			{
 				myActiveEntitiesMap[aMessage.myGID]->GetComponent<PhysicsComponent>()->RemoveFromScene();
+				if (myActiveEntitiesMap[aMessage.myGID]->GetComponent<SoundComponent>() != nullptr)
+				{
+					if (myActiveEntitiesMap[aMessage.myGID]->GetSubType() == "sm_double_doors_a_400_300_laser")
+					{
+						Prism::Audio::AudioInterface::GetInstance()->PostEvent("Stop_Door"
+							, myActiveEntitiesMap[aMessage.myGID]->GetComponent<SoundComponent>()->GetAudioSFXID());
+						Prism::Audio::AudioInterface::GetInstance()->PostEvent("Play_DoorShutDown"
+							, myActiveEntitiesMap[aMessage.myGID]->GetComponent<SoundComponent>()->GetAudioSFXID());
+					}
+				}
 			}
 			if (aMessage.myIsInGraphicsScene == true)
 			{
