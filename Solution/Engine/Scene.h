@@ -26,6 +26,7 @@ namespace Prism
 
 		void Render();
 		void RenderArmAndWeapon();
+		void RenderArmAndWeaponOnlyDepth();
 		void RenderWithoutRoomManager();
 		void UpdateLights();
 

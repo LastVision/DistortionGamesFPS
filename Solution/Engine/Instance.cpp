@@ -55,7 +55,7 @@ namespace Prism
 		}
 	}
 
-	void Instance::Render(const Camera& aCamera)
+	void Instance::Render(const Camera& aCamera, bool aOnlyDepth)
 	{
 		if (myShouldRender == true && myProxy.IsLoaded())
 		{
@@ -72,8 +72,13 @@ namespace Prism
 
 			if (myProxy.IsAnimated() == true)
 			{
+				std::string oldTechnique = myProxy.myModelAnimated->GetTechniqueName();
+				myProxy.myModelAnimated->SetTechniqueName(oldTechnique + "_DEPTHONLY");
+
 				myProxy.GetEffect()->SetBones(myBones);
 				RenderModelAnimated(myProxy.myModelAnimated, myOrientation, aCamera, myHierarchy);
+
+				myProxy.myModelAnimated->SetTechniqueName(oldTechnique);
 			}
 			else
 			{
