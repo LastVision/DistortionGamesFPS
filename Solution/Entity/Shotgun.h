@@ -11,6 +11,7 @@ public:
 	Shotgun(Entity* aOwnerEntity);
 	~Shotgun();
 
+	void Init(Prism::Scene* aScene, const CU::Matrix44<float>& aOrientation); // init for muzle flashes
 	void Init(std::string aWeaponSettingsPath, std::string aXMLTagName) override;
 
 	bool Shoot(const CU::Matrix44<float>& aOrientation) override;
@@ -27,5 +28,13 @@ private:
 
 	float myMinSpreadRotation;
 	float myMaxSpreadRotation;
+
+	Prism::Instance* myMuzzleflash[5];
+	int myCurrentMuzzleflash1;
+	int myCurrentMuzzleflash2;
+	const CU::Matrix44<float>* myOrientation;
+	CU::Matrix44<float> myMuzzleflashOrientation1;
+	CU::Matrix44<float> myMuzzleflashOrientation2;
+	float myMuzzleflashTimer;
 };
 

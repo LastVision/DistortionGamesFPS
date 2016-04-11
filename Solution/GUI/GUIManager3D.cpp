@@ -135,7 +135,7 @@ namespace GUI
 		//myShotgunIcon->Render(*myScene->GetCamera(), myWristOrientation);
 		//myGrenadeLauncherIcon->Render(*myScene->GetCamera(), myWristOrientation);
 		
-		myAmmoTotalText->SetOrientation(myHealthOrientation * CU::Matrix44<float>::CreateRotateAroundZ(1.f));
+		myAmmoTotalText->SetOrientation(myHealthOrientation);
 
 		myAmmoTotalText->Render(myScene->GetCamera(), 500.f);
 	}
