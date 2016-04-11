@@ -112,6 +112,16 @@ namespace Prism
 		myManager->Move(aId, aDirection, aMinDisplacement, aDeltaTime);
 	}
 
+	void PhysicsInterface::MoveForward(bool move)
+	{
+		myManager->myMoveForward = move;
+	}
+
+	void PhysicsInterface::MoveBackward(bool move)
+	{
+		myManager->myMoveBackward = move;
+	}
+
 	void PhysicsInterface::UpdateOrientation(physx::PxRigidDynamic* aDynamicBody, physx::PxShape** aShape, float* aThread4x4)
 	{
 		myManager->UpdateOrientation(aDynamicBody, aShape, aThread4x4);

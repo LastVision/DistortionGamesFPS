@@ -225,19 +225,20 @@ namespace Prism
 			totalTime += myTimerManager->GetMasterTimer().GetTime().GetFrameTime();
 			if (totalTime >= (1.0f / 60.0f))
 			{
-			Update();
+				totalTime = 0;
+				Update();
 
-			Swap();
-			if (myLogicDone == true)
-			{
-				SetPhysicsDone();
-				//WaitForSwap();
+				Swap();
+				if (myLogicDone == true)
+				{
+					SetPhysicsDone();
+					//WaitForSwap();
+				}
 			}
-		}
 
 			std::this_thread::yield();
 			//::Sleep(16);
-	}
+		}
 	}
 #endif
 
@@ -282,7 +283,7 @@ namespace Prism
 	void PhysicsManager::Update()
 	{
 
-		physicsFPS = int(myTimerManager->GetMasterTimer().GetTime().GetFPS());
+
 
 		if (!myScene)
 		{
@@ -323,8 +324,11 @@ namespace Prism
 				myControllerPositions[myCurrentIndex ^ 1][i].x = float(pos.x);
 				myControllerPositions[myCurrentIndex ^ 1][i].y = float(pos.y);
 				myControllerPositions[myCurrentIndex ^ 1][i].z = float(pos.z);
+				myMoveJobs[myCurrentIndex ^ 1][i].myDirection.x = 0;
+				myMoveJobs[myCurrentIndex ^ 1][i].myDirection.y = 0;
+				myMoveJobs[myCurrentIndex ^ 1][i].myDirection.z = 0;
 			}
-		}	
+		}
 
 		for (int i = 0; i < myForceJobs[myCurrentIndex ^ 1].Size(); ++i)
 		{
@@ -443,7 +447,7 @@ namespace Prism
 		returnValue = myScene->raycast(origin, unitDirection, maxDistance, buffer);
 		CU::Vector3<float> hitPosition;
 		CU::Vector3<float> hitNormal;
-		
+
 		PhysicsComponent* ent = nullptr;//static_cast<PhysEntity*>(buffer.touches[myCurrentIndex].actor->userData);
 		if (returnValue == true)
 		{
@@ -457,7 +461,7 @@ namespace Prism
 					{
 						continue;
 					}
-					
+
 					physx::PxShapeFlags& flags = buffer.touches[i].shape->getFlags();
 					if (flags.isSet(physx::PxShapeFlag::eTRIGGER_SHAPE) == true)
 					{
@@ -469,7 +473,7 @@ namespace Prism
 					hitPosition.x = buffer.touches[i].position.x;
 					hitPosition.y = buffer.touches[i].position.y;
 					hitPosition.z = buffer.touches[i].position.z;
-					
+
 					hitNormal.x = buffer.touches[i].normal.x;
 					hitNormal.y = buffer.touches[i].normal.y;
 					hitNormal.z = buffer.touches[i].normal.z;
@@ -587,8 +591,8 @@ namespace Prism
 	{
 		/*std::stringstream ss;
 		ss << "X : " << aMoveJob.myDirection.x << "\n"
-			<< "Y : " << aMoveJob.myDirection.y << "\n"
-			<< "Z : " << aMoveJob.myDirection.z << "\n";
+		<< "Y : " << aMoveJob.myDirection.y << "\n"
+		<< "Z : " << aMoveJob.myDirection.z << "\n";
 		OutputDebugStringA(ss.str().c_str());*/
 
 		physx::PxControllerFilters filter;

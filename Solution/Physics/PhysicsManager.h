@@ -44,6 +44,9 @@ namespace Prism
 		PhysicsManager(std::function<void(PhysicsComponent*, PhysicsComponent*, bool)> anOnTriggerCallback, bool aIsServer);
 		~PhysicsManager();
 
+		bool myMoveForward;
+		bool myMoveBackward;
+
 #ifdef THREAD_PHYSICS
 		void InitThread();
 		void ShutdownThread();
@@ -106,6 +109,12 @@ namespace Prism
 		void Wake(int aCapsuleID);
 
 	private:
+
+
+		std::chrono::system_clock::time_point myStartOfTime;
+
+
+
 #ifdef THREAD_PHYSICS
 		CU::TimerManager* myTimerManager;
 		void ThreadUpdate();
