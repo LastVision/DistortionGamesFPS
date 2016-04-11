@@ -11,6 +11,8 @@
 #include <TextureContainer.h>
 #include <TextProxy.h>
 
+#define SHOWTUTORIALTIME 20.f
+
 namespace GUI
 {
 	GUIManager3D::GUIManager3D(const Prism::Instance* aModel, Prism::Scene* aScene
@@ -18,7 +20,7 @@ namespace GUI
 		, const int& aShotgunClipSize, const int& aShotgunAmmoInClip, const int& aShotgunAmmoTotal
 		, const int& aGrenadeLauncherClipSize, const int& aGrenadeLauncherAmmoInClip, const int& aGrenadeLauncherAmmoTotal)
 		: myScene(aScene)
-		, myTestValue(0.f)
+		, myShowGUITutorial(0.f)
 		, myPistolClipSize(aPistolClipSize)
 		, myPistolAmmoInClip(aPistolAmmoInClip)
 		, myShotgunClipSize(aShotgunClipSize)
@@ -43,7 +45,7 @@ namespace GUI
 		myHealthIcon = new Prism::Bar3D({ 0.025f, 0.025f }, 1, myEffect, eBarPosition::HEALTH_ICON, "Data/Resource/Texture/UI/T_healthIcon.dds");
 		myHealthIcon->SetValue(1.f);
 		
-		myPistolIcon = new Prism::Bar3D({ 0.025f, 0.025f }, 1, myEffect, eBarPosition::PISTOL_ICON, "Data/Resource/Texture/UI/T_pistolIcon.dds");
+		myPistolIcon = new Prism::Bar3D({ 1.f, 1.f }, 1, myEffect, eBarPosition::PISTOL_ICON, "Data/Resource/Texture/UI/T_pistolIcon.dds");
 		myPistolIcon->SetValue(1.f);
 		myShotgunIcon = new Prism::Bar3D({ 0.025f, 0.025f }, 1, myEffect, eBarPosition::SHOTGUN_ICON, "Data/Resource/Texture/UI/T_shotgunIcon.dds");
 		myShotgunIcon->SetValue(1.f);
@@ -95,9 +97,12 @@ namespace GUI
 			myAmmoTotalText->SetColor({ 1.f - colorValue, colorValue, 1.f, 0.5f });
 		}
 
-		myTestValue += aDeltaTime;
-		myEffect->SetGradiantValue(cos(myTestValue));
-		myEffect->SetGradiantDirection({ 0.f, 1.f });
+		if (myShowGUITutorial < SHOWTUTORIALTIME)
+		{
+			myShowGUITutorial += aDeltaTime;
+		}
+		//myEffect->SetGradiantValue(cos(myTestValue));
+		//myEffect->SetGradiantDirection({ 0.f, 1.f });
 
 		//myWristOrientation = CU::InverseSimple(*myGUIBone.myBind) * (*myGUIBone.myJoint) * aOrientation;
 		//myHealthOrientation = CU::InverseSimple(*myHealthBone.myBind) * (*myHealthBone.myJoint) * aOrientation;
@@ -110,19 +115,27 @@ namespace GUI
 		myHealthBar->SetValue(aCurrentHealth / float(aMaxHealth));
 	}
 
-	void GUIManager3D::Render()
+	void GUIManager3D::Render(bool aIsFirstLevel)
 	{
+		myEffect->SetGradiantValue(1.f);
 		myLeftBar->Render(*myScene->GetCamera(), myWristOrientation);
 		myRightBar->Render(*myScene->GetCamera(), myWristOrientation);
 		myTopBar->Render(*myScene->GetCamera(), myWristOrientation);
 		myHealthBar->Render(*myScene->GetCamera(), myHealthOrientation);
 		
 		myHealthIcon->Render(*myScene->GetCamera(), myHealthOrientation);
-		myPistolIcon->Render(*myScene->GetCamera(), myWristOrientation);
-		myShotgunIcon->Render(*myScene->GetCamera(), myWristOrientation);
-		myGrenadeLauncherIcon->Render(*myScene->GetCamera(), myWristOrientation);
+		if (aIsFirstLevel == true)
+		{
+			if (myShowGUITutorial < SHOWTUTORIALTIME)
+			{
+				myPistolIcon->GetEffect()->SetGradiantValue(fminf(fminf(1.f, myShowGUITutorial), SHOWTUTORIALTIME - myShowGUITutorial));
+				myPistolIcon->Render(*myScene->GetCamera(), myWristOrientation);
+			}
+		}
+		//myShotgunIcon->Render(*myScene->GetCamera(), myWristOrientation);
+		//myGrenadeLauncherIcon->Render(*myScene->GetCamera(), myWristOrientation);
 		
-		myAmmoTotalText->SetOrientation(myHealthOrientation);
+		myAmmoTotalText->SetOrientation(myHealthOrientation * CU::Matrix44<float>::CreateRotateAroundZ(1.f));
 
 		myAmmoTotalText->Render(myScene->GetCamera(), 500.f);
 	}

@@ -35,7 +35,7 @@ public:
 
 	void Update(float aDelta) override;
 	void UpdateCoOpPositions(const CU::GrowingArray<Entity*>& somePlayers);
-	void Render(Prism::Texture* aArmDepthTexture);
+	void Render(Prism::Texture* aArmDepthTexture, bool aIsFirstLevel);
 	bool IsCurrentAnimationDone() const;
 	void RestartCurrentAnimation();
 
