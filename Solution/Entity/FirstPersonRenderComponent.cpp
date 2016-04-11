@@ -355,7 +355,7 @@ void FirstPersonRenderComponent::Render(Prism::Texture* aArmDepthTexture, bool a
 	if (myDisplayDamageIndicatorTimer > 0.f)
 	{
 		float ratio = myDisplayDamageIndicatorTimer / myDisplayDamageIndicatorTimerMax;
-		myDamageIndicator->Render(windowSize * 0.5f, CU::Vector2<float>(1.f, 1.f) + (1.f - ratio * 0.3f), CU::Vector4<float>(1.f, 1.f, 1.f, ratio));
+		myDamageIndicator->Render(windowSize * 0.5f, CU::Vector2<float>(1.f, 1.f) + (1.f - ratio) * 0.3f, CU::Vector4<float>(1.f, 1.f, 1.f, ratio));
 	}
 	else if (myDisplayHealthIndicatorTimer > 0.f)
 	{

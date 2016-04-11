@@ -177,6 +177,14 @@ namespace Launcher
                 default:
                     width = scr.Bounds.Width;
                     height = scr.Bounds.Height;
+
+					if(width > 1920)
+					{
+						float ratio = (float)width / (float)height;
+						width = 1920;
+						height = (int)((float)width / ratio);
+					}
+
                     break;
             }
 

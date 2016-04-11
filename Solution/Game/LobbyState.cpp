@@ -12,6 +12,7 @@
 #include <NetMessageDisconnect.h>
 #include <NetMessageLoadLevel.h>
 #include <NetMessageSetLevel.h>
+#include <NetMessageRequestLevel.h>
 #include <NetMessageRequestStartLevel.h>
 #include <OnClickMessage.h>
 #include <OnRadioButtonMessage.h>
@@ -86,6 +87,10 @@ void LobbyState::InitState(StateStackProxy* aStateStackProxy, GUI::Cursor* aCurs
 	myLevelToStart = -1;
 
 	Prism::Audio::AudioInterface::GetInstance()->PostEvent("Stop_MainMenu", 0);
+	if (ClientNetworkManager::GetInstance()->GetGID() > 1)
+	{
+		ClientNetworkManager::GetInstance()->AddMessage(NetMessageRequestLevel());
+	}
 }
 
 void LobbyState::EndState()
@@ -102,11 +107,13 @@ void LobbyState::OnResize(int aX, int aY)
 
 const eStateStatus LobbyState::Update(const float& aDeltaTime)
 {
-	if (CU::InputWrapper::GetInstance()->KeyDown(DIK_ESCAPE) == true
-		|| CU::InputWrapper::GetInstance()->KeyDown(DIK_N) == true)
+	if (ClientNetworkManager::GetInstance()->GetGID() == 1)
 	{
-		ClientNetworkManager::GetInstance()->AddMessage(NetMessageDisconnect(ClientNetworkManager::GetInstance()->GetGID()));
-		return eStateStatus::ePopMainState;
+		if (CU::InputWrapper::GetInstance()->KeyDown(DIK_ESCAPE) == true)
+		{
+			ClientNetworkManager::GetInstance()->AddMessage(NetMessageDisconnect(ClientNetworkManager::GetInstance()->GetGID()));
+			return eStateStatus::ePopMainState;
+		}
 	}
 
 	myRefreshPlayerListTimer -= aDeltaTime;
@@ -124,12 +131,15 @@ const eStateStatus LobbyState::Update(const float& aDeltaTime)
 	}
 
 	ClientNetworkManager::GetInstance()->DebugPrint();
-
-	if (CU::InputWrapper::GetInstance()->KeyDown(DIK_SPACE) == true)
+#ifndef RELEASE_BUILD
+	if (ClientNetworkManager::GetInstance()->GetGID() == 1)
 	{
-		ClientNetworkManager::GetInstance()->AddMessage(NetMessageRequestStartLevel());
+		if (CU::InputWrapper::GetInstance()->KeyDown(DIK_SPACE) == true)
+		{
+			ClientNetworkManager::GetInstance()->AddMessage(NetMessageRequestStartLevel());
+		}
 	}
-
+#endif
 	if (myStartGame == true)
 	{
 		DL_ASSERT_EXP(myLevelToStart != -1, "Can't start level -1.");
@@ -210,8 +220,10 @@ void LobbyState::ReceiveMessage(const OnRadioButtonMessage& aMessage)
 	//levelMusic = min(levelMusic, 2);
 	//std::string musicEvent("Play_ElevatorToLevel" + std::to_string(levelMusic));
 	//Prism::Audio::AudioInterface::GetInstance()->PostEvent(musicEvent.c_str(), 0);
-
-	ClientNetworkManager::GetInstance()->AddMessage(NetMessageSetLevel(aMessage.myID));
+	if (ClientNetworkManager::GetInstance()->GetGID() == 1)
+	{
+		ClientNetworkManager::GetInstance()->AddMessage(NetMessageSetLevel(aMessage.myID));
+	}
 }
 
 void LobbyState::ReceiveNetworkMessage(const NetMessageDisconnect& aMessage, const sockaddr_in&)

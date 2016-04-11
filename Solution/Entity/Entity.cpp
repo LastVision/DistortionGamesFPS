@@ -273,6 +273,11 @@ void Entity::RemoveFromScene()
 	DL_ASSERT_EXP(myIsInScene == true, "Tried to remove Entity not in scene");
 	DL_ASSERT_EXP(myIsClientSide == true, "You can't remove Entity to scene on server side.");
 
+	if (myIsInScene == false || myIsClientSide == false)
+	{
+		return;
+	}
+
 	if (GetComponent<GraphicsComponent>() != nullptr)
 	{
 		myScene->RemoveInstance(GetComponent<GraphicsComponent>()->GetInstance());
