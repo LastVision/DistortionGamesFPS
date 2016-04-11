@@ -16,6 +16,7 @@ namespace Prism
 	class SpotLightShadow;
 	class InstancingHelper;
 	class Texture;
+	class SpotLightTextureProjection;
 
 	class Scene
 	{
@@ -33,6 +34,7 @@ namespace Prism
 		void AddLight(DirectionalLight* aLight);
 		void AddLight(PointLight* aLight);
 		void AddLight(SpotLight* aLight);
+		void AddLight(SpotLightTextureProjection* aLight);
 
 		void RemoveInstance(Instance* aInstance);
 
@@ -42,6 +44,7 @@ namespace Prism
 
 		const CU::GrowingArray<PointLight*>& GetPointLights(bool aUseRoomManager) const;
 		const CU::GrowingArray<SpotLight*>& GetSpotLights(bool aUseRoomManager) const;
+		const CU::GrowingArray<SpotLightTextureProjection*>& GetSpotLightsTextureProjection(bool aUseRoomManager) const;
 
 		void SetArmInstance(Instance* aInstance);
 		void SetWeaponInstance(Instance* aInstance);
@@ -53,6 +56,7 @@ namespace Prism
 		CU::GrowingArray<PointLight*> myPointLights;
 		CU::GrowingArray<PointLight*> myAmbientPointLights;
 		CU::GrowingArray<SpotLight*> mySpotLights;
+		CU::GrowingArray<SpotLightTextureProjection*> mySpotLightsTextureProjection;
 		InstancingHelper* myInstancingHelper;
 
 		const Camera* myCamera;

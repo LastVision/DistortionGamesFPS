@@ -183,6 +183,9 @@
     <ClCompile Include="CubeMapGenerator.cpp">
       <Filter>Rendering\Renderer</Filter>
     </ClCompile>
+    <ClCompile Include="SpotLightTextureProjection.cpp">
+      <Filter>Lights</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Engine.h" />
@@ -416,6 +419,9 @@
     </ClInclude>
     <ClInclude Include="CubeMapGenerator.h">
       <Filter>Rendering\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="SpotLightTextureProjection.h">
+      <Filter>Lights</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

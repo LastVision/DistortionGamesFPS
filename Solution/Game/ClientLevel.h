@@ -15,6 +15,7 @@ namespace Prism
 	class Room;
 	class PointLight;
 	class SpotLight;
+	class SpotLightTextureProjection;
 }
 
 namespace GUI
@@ -53,6 +54,7 @@ public:
 
 	void AddLight(Prism::PointLight* aLight);
 	void AddLight(Prism::SpotLight* aLight);
+	void AddLight(Prism::SpotLightTextureProjection* aLight);
 	void CollisionCallback(PhysicsComponent* aFirst, PhysicsComponent* aSecond, bool aHasEntered) override;
 	void AddWorldText(const std::string& aText, const CU::Vector3<float>& aPosition, float aRotationAroundY, const CU::Vector4<float>& aColor);
 
@@ -78,6 +80,7 @@ private:
 	CU::GrowingArray<CU::Matrix44f> myInstanceOrientations;
 	CU::GrowingArray<Prism::PointLight*> myPointLights;
 	CU::GrowingArray<Prism::SpotLight*> mySpotLights;
+	CU::GrowingArray<Prism::SpotLightTextureProjection*> mySpotLightsTextureProjection;
 
 	Entity* myPlayer;
 	EmitterManager* myEmitterManager;

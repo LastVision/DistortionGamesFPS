@@ -11,6 +11,7 @@
 #include "RoomManager.h"
 #include "PointLight.h"
 #include "SpotLight.h"
+#include "SpotLightTextureProjection.h"
 
 namespace Prism
 {
@@ -26,6 +27,7 @@ namespace Prism
 		, myDebugDraw(false)
 		, myTotalObjects(0)
 		, myObjectsInDuplicateRooms(0)
+		, myActiveSpotLightsTextureProjection(512)
 	{
 	}
 
@@ -141,6 +143,17 @@ namespace Prism
 		}
 	}
 
+	void RoomManager::Add(SpotLightTextureProjection* aSpotLightTextureProjection)
+	{
+		for (int i = 0; i < myRooms.Size(); ++i)
+		{
+			if (myRooms[i]->Inside(aSpotLightTextureProjection->GetPosition().GetVector3(), aSpotLightTextureProjection->GetRange()) == true)
+			{
+				myRooms[i]->Add(aSpotLightTextureProjection);
+			}
+		}
+	}
+
 	void RoomManager::Remove(Instance* anInstance)
 	{
 		for (int i = 0; i < myAlwaysRenderInstances.Size(); ++i)
@@ -167,6 +180,7 @@ namespace Prism
 #endif
 		myActivePointLights.RemoveAll();
 		myActiveSpotLights.RemoveAll();
+		myActiveSpotLightsTextureProjection.RemoveAll();
 		myActiveInstances.RemoveAll();
 		myActiveRoomIndices.RemoveAll();
 
@@ -266,6 +280,11 @@ namespace Prism
 		return myActiveSpotLights;
 	}
 
+	const CU::GrowingArray<SpotLightTextureProjection*>& RoomManager::GetActiveSpotLightsTextureProjection() const
+	{
+		return myActiveSpotLightsTextureProjection;
+	}
+
 	const CU::GrowingArray<int>& RoomManager::GetActiveRoomIndices() const
 	{
 		return myActiveRoomIndices;
@@ -359,6 +378,17 @@ namespace Prism
 				if (myActiveSpotLights.Find(light) == myActiveSpotLights.FoundNone)
 				{
 					myActiveSpotLights.Add(light);
+				}
+			}
+		}
+
+		for each (SpotLightTextureProjection* lightTexProj in myRooms[aRoomId]->GetSpotLightsTextureProjection())
+		{
+			if (aFrustum.Inside(lightTexProj->GetPosition().GetVector3(), lightTexProj->GetRange()) == true)
+			{
+				if (myActiveSpotLightsTextureProjection.Find(lightTexProj) == myActiveSpotLightsTextureProjection.FoundNone)
+				{
+					myActiveSpotLightsTextureProjection.Add(lightTexProj);
 				}
 			}
 		}

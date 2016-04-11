@@ -27,6 +27,7 @@ namespace Prism
 		myPointLights.Init(128);
 		myAmbientPointLights.Init(128);
 		mySpotLights.Init(4);
+		mySpotLightsTextureProjection.Init(4);
 
 		myInstancingHelper = new InstancingHelper();
 		myInstancingHelper->SetCamera(myCamera);
@@ -129,6 +130,11 @@ namespace Prism
 		myRoomManager->Add(aLight);
 	}
 
+	void Scene::AddLight(SpotLightTextureProjection* aLight)
+	{
+		myRoomManager->Add(aLight);
+	}
+
 	void Scene::SetCamera(const Camera& aCamera)
 	{
 		myCamera = &aCamera;
@@ -181,6 +187,16 @@ namespace Prism
 		}
 
 		return mySpotLights;
+	}
+
+	const CU::GrowingArray<SpotLightTextureProjection*>& Scene::GetSpotLightsTextureProjection(bool aUseRoomManager) const
+	{
+		if (aUseRoomManager == true)
+		{
+			return myRoomManager->GetActiveSpotLightsTextureProjection();
+		}
+
+		return mySpotLightsTextureProjection;
 	}
 
 	void Scene::SetArmInstance(Instance* aInstance)

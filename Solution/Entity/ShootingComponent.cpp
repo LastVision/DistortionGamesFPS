@@ -263,7 +263,7 @@ void ShootingComponent::ReceiveNote(const UpgradeNote& aNote)
 			myEntity.GetComponent<FirstPersonRenderComponent>()->AddIntention(ePlayerState::SHOTGUN_DRAW, false);
 			break;
 		case eWeaponType::GRENADE_LAUNCHER:
-			myEntity.GetComponent<FirstPersonRenderComponent>()->AddIntention(ePlayerState::GRENADE_LAUNCHER_HOLSTER, false);
+			myEntity.GetComponent<FirstPersonRenderComponent>()->AddIntention(ePlayerState::GRENADE_LAUNCHER_DRAW, false);
 			break;
 		}
 	}

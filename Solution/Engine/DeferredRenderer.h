@@ -125,6 +125,7 @@ namespace Prism
 		void RenderCubemapDeferred(Scene* aScene, ID3D11RenderTargetView* aTarget, ID3D11DepthStencilView* aDepth, bool aUseAmbientPass);
 		void RenderPointLights(Scene* aScene, bool aUseRoomManager = true);
 		void RenderSpotLights(Scene* aScene, bool aUseRoomManager = true);
+		void RenderSpotLightsTextureProjection(Scene* aScene, bool aUseRoomManager = true);
 		void RenderAmbientPass(Scene* aScene);
 		void SetAmbientData(bool aClearTextures);
 
@@ -139,6 +140,9 @@ namespace Prism
 		void SetSpotLightData(const Camera& aCamera);
 		void RemoveSpotLightData();
 
+		void SetSpotLightTextureProjectionData(const Camera& aCamera);
+		void RemoveSpotLightTextureProjectionData();
+
 		CubeMapGenerator* myCubeMapGenerator;
 		SHTextures mySHTextures;
 		Texture* myDepthStencilTexture;
@@ -149,6 +153,7 @@ namespace Prism
 		AmbientPass myAmbientPass;
 		PointLightPass myPointLightPass;
 		SpotLightPass mySpotLightPass;
+		SpotLightPass mySpotLightTextureProjectionPass;
 		GBufferData myGBufferData;
 		D3D11_VIEWPORT* myViewPort;
 

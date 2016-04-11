@@ -71,6 +71,7 @@ ClientLevel::ClientLevel(GUI::Cursor* aCursor, eStateStatus& aStateStatus, int a
 	, myInstances(16)
 	, myPointLights(64)
 	, mySpotLights(64)
+	, mySpotLightsTextureProjection(64)
 	, myInitDone(false)
 	, myForceStrengthPistol(0.f)
 	, myForceStrengthShotgun(0.f)
@@ -163,6 +164,7 @@ ClientLevel::~ClientLevel()
 	myInstances.DeleteAll();
 	myPointLights.DeleteAll();
 	mySpotLights.DeleteAll();
+	mySpotLightsTextureProjection.DeleteAll();
 	myPlayers.DeleteAll();
 	SAFE_DELETE(myPlayer);
 	SAFE_DELETE(myScene);
@@ -604,6 +606,12 @@ void ClientLevel::AddLight(Prism::PointLight* aLight)
 void ClientLevel::AddLight(Prism::SpotLight* aLight)
 {
 	mySpotLights.Add(aLight);
+	myScene->AddLight(aLight);
+}
+
+void ClientLevel::AddLight(Prism::SpotLightTextureProjection* aLight)
+{
+	mySpotLightsTextureProjection.Add(aLight);
 	myScene->AddLight(aLight);
 }
 
