@@ -32,6 +32,7 @@ private:
 	Prism::Instance* myMuzzleflash[5];
 	int myCurrentMuzzleflash;
 	const CU::Matrix44<float>* myOrientation;
+	CU::Matrix44<float> myMuzzleflashOrientation;
 	float myMuzzleflashTimer;
 
 	float myMinSpreadRotation;

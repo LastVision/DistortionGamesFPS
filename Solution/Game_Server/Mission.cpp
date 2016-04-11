@@ -3,6 +3,7 @@
 #include "Mission.h"
 #include <NetMessageSetActive.h>
 #include <NetMessageDisplayMarker.h>
+#include <NetMessageText.h>
 #include <PostMaster.h>
 #include "ServerNetworkManager.h"
 #include <SetActiveMessage.h>
@@ -54,7 +55,9 @@ void Mission::SendMissionMessage(ActionEvent anEvent)
 		PostMaster::GetInstance()->SendMessage(ActivateSpawnpointMessage(anEvent.myGID));
 		break;
 	case eActionEventType::TEXT:
-		PostMaster::GetInstance()->SendMessage(SendTextToClientsMessage(anEvent.myText, anEvent.myShowTextTime));
+		ServerNetworkManager::GetInstance()->AddMessage(NetMessageText(anEvent.myText, anEvent.myShowTextTime
+			, { 1.f, 1.f, 1.f, 1.f }, anEvent.myTextRows));
+		//PostMaster::GetInstance()->SendMessage(SendTextToClientsMessage(anEvent.myText, anEvent.myShowTextTime));
 		break;
 	case eActionEventType::MARKER:
 		ServerNetworkManager::GetInstance()->AddMessage(NetMessageDisplayMarker(anEvent.myPosition, anEvent.myShow));

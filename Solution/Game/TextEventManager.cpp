@@ -115,9 +115,10 @@ void TextEventManager::Render()
 			//position.y -= 20.f;
 
 			myNotifications[i]->my3dText->SetOffset(pos3d);
-			pos3d.y -= 0.1f;
 			myNotifications[i]->my3dText->SetColor(myNotifications[i]->myColor);
 			myNotifications[i]->my3dText->Render(myCamera);
+
+			pos3d.y -= 0.15f * (myNotifications[i]->myTextRows + 1);
 		}
 	}
 
@@ -127,7 +128,7 @@ void TextEventManager::Render()
 	}
 }
 
-void TextEventManager::AddNotification(std::string aText, float aLifeTime, CU::Vector4<float> aColor)
+void TextEventManager::AddNotification(std::string aText, float aLifeTime, CU::Vector4<float> aColor, int aNumberOfRows)
 {
 	for (int i = 0; i < myNotifications.Size(); i++)
 	{
@@ -142,6 +143,7 @@ void TextEventManager::AddNotification(std::string aText, float aLifeTime, CU::V
 			myNotifications[i]->myCurrentLetterInterval = 0.f;
 			myNotifications[i]->myNextLetterInterval = (aLifeTime - myTextStartFadingTime) / aText.size();
 			myNotifications[i]->myNextLetterInterval = fmin(myNotifications[i]->myNextLetterInterval, 0.05f);
+			myNotifications[i]->myTextRows = aNumberOfRows;
 
 			std::string eventName("Play_Notification" + std::to_string(i));
 			Prism::Audio::AudioInterface::GetInstance()->PostEvent(eventName.c_str(), 0);
@@ -155,7 +157,7 @@ void TextEventManager::ReceiveNetworkMessage(const NetMessageText& aMessage, con
 {
 	if (aMessage.myIsMissionText == false)
 	{
-		AddNotification(aMessage.myText, aMessage.myTime);
+		AddNotification(aMessage.myText, aMessage.myTime, aMessage.myColor, aMessage.myTextRows);
 	}
 	else
 	{
@@ -166,5 +168,5 @@ void TextEventManager::ReceiveNetworkMessage(const NetMessageText& aMessage, con
 
 void TextEventManager::ReceiveMessage(const PrintTextMessage& aMessage)
 {
-	AddNotification(aMessage.myText, aMessage.myTime);
+	AddNotification(aMessage.myText, aMessage.myTime, aMessage.myColor, aMessage.myTextRows);
 }

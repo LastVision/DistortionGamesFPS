@@ -52,13 +52,13 @@ bool DefendMission::Update(float aDeltaTime)
 			{
 				progress = 100 - progress;
 			}
-			ServerNetworkManager::GetInstance()->AddMessage(NetMessageText(myProgressText + std::to_string(progress) + " %", 1.f, true, true));
+			ServerNetworkManager::GetInstance()->AddMessage(NetMessageText(myProgressText + std::to_string(progress) + " %", 1.f, { 1.f, 1.f, 1.f, 1.f }, 0, true, true));
 			mySendTime = 2.f;
 		}
 
 		if (myDefendTime <= 0.f)
 		{
-			ServerNetworkManager::GetInstance()->AddMessage(NetMessageText("", 1.f, true, false));
+			ServerNetworkManager::GetInstance()->AddMessage(NetMessageText("", 1.f, { 1.f, 1.f, 1.f, 1.f }, 0, true, false));
 		}
 
 		if (myMissionEvents.Size() > 0)
@@ -104,13 +104,15 @@ bool DefendMission::Update(float aDeltaTime)
 void DefendMission::AddValue(int aValue)
 {
 	std::string text = "A unit entered defend zone";
+	CU::Vector4<float> color = { 0.7f, 0.2f, 0.2f, 1.f };
 
 	if (aValue < 0)
 	{
 		text = "A unit left defend zone";
+		color = { 0.2f, 0.7f, 0.2f, 1.f };
 	}
 
-	ServerNetworkManager::GetInstance()->AddMessage(NetMessageText(text));
+	ServerNetworkManager::GetInstance()->AddMessage(NetMessageText(text, 4.f, color));
 
 	myEnemiesInside += aValue;
 	printf("%i inside defendtrigger \n", myEnemiesInside);
