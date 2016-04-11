@@ -303,11 +303,13 @@ void ClientLevel::Update(const float aDeltaTime, bool aLoadingScreen)
 	{
 		Prism::Audio::AudioInterface::GetInstance()->PostEvent("FadeOutFirstLayer", 0);
 		myHasStoppedFirstLayer = true;
+		myHasStartedFirstLayer = false;
 	}
 	if (enemiesInPlayerRange <= 4 && myHasStoppedSecondLayer == false)
 	{
 		Prism::Audio::AudioInterface::GetInstance()->PostEvent("FadeOutSecondLayer", 0);
 		myHasStoppedSecondLayer = true;
+		myHasStartedSecondLayer = false;
 	}
 
 
