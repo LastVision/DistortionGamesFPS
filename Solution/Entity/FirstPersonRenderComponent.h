@@ -81,8 +81,7 @@ private:
 
 	Prism::SpriteProxy* myCrosshair;
 	Prism::SpriteProxy* myDamageIndicator;
-	Prism::SpriteProxy* myPickupHealthIndicator;
-	Prism::SpriteProxy* myPickupUpgradeIndicator;
+	Prism::SpriteProxy* myPickupIndicator;
 	Prism::SpriteProxy* myLowLifeIndicator;
 	Prism::SpriteProxy* myMarker;
 	Prism::SpriteProxy* myCoOpSprite;

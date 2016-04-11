@@ -96,15 +96,22 @@ void TriggerComponent::ReceiveNote(const CollisionNote& aNote)
 
 			if (myData.myPickupText.size() > 0)
 			{
+				CU::Vector4<float> color = UPGRADE_COLOR;
+
+				if (myTriggerType == eTriggerType::HEALTH_PACK)
+				{
+					color = HEALTH_COLOR;
+				}
+
 				if (myData.myIsClientSide == false)
 				{
 					SharedNetworkManager::GetInstance()->AddMessage<NetMessageText>(NetMessageText(myData.myPickupText
-						, myData.myPickupTextTime, { 1.f, 1.f, 1.f, 1.f }, myPickupTextRows));
+						, myData.myPickupTextTime, color, myPickupTextRows));
 				}
 				else if (myData.myIsClientSide == true)
 				{
 					PostMaster::GetInstance()->SendMessage<PrintTextMessage>(PrintTextMessage(myData.myPickupText
-						, myData.myPickupTextTime, { 1.f, 1.f, 1.f, 1.f }, myPickupTextRows));
+						, myData.myPickupTextTime, color, myPickupTextRows));
 				}
 			}
 		}
