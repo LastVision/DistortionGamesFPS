@@ -233,6 +233,12 @@ void ComponentLoader::LoadInputComponent(XMLReader& aDocument, tinyxml2::XMLElem
 		{
 			aDocument.ForceReadAttribute(e, "value", aOutputData.mySprintDecrease);
 		}
+		else if (elementName == CU::ToLower("directionMultiplier"))
+		{
+			aDocument.ForceReadAttribute(e, "forward", aOutputData.myForwardMultiplier);
+			aDocument.ForceReadAttribute(e, "backward", aOutputData.myBackwardMultiplier);
+			aDocument.ForceReadAttribute(e, "sideways", aOutputData.mySidewaysMultiplier);
+		}
 	}
 
 	aOutputData.myExistsInEntity = true;

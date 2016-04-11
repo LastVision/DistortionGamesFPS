@@ -169,21 +169,36 @@ void InputComponent::UpdateMovement(float aDelta)
 	myVerticalSpeed = fmaxf(myVerticalSpeed, -0.5f);
 
 	CU::Vector3<float> movement;
+	float magnitude = 0.f;
+	int count = 0;
 	if (CU::InputWrapper::GetInstance()->KeyIsPressed(DIK_S))
 	{
 		movement.z -= 1.f;
+		magnitude += myData.myBackwardMultiplier;
+		++count;
 	}
 	if (CU::InputWrapper::GetInstance()->KeyIsPressed(DIK_W))
 	{
 		movement.z += 1.f;
+		magnitude += myData.myForwardMultiplier;
+		++count;
 	}
 	if (CU::InputWrapper::GetInstance()->KeyIsPressed(DIK_A))
 	{
 		movement.x -= 1.f;
+		magnitude += myData.mySidewaysMultiplier;
+		++count;
 	}
 	if (CU::InputWrapper::GetInstance()->KeyIsPressed(DIK_D))
 	{
 		movement.x += 1.f;
+		magnitude += myData.mySidewaysMultiplier;
+		++count;
+	}
+
+	if (count > 0)
+	{
+		magnitude /= count;
 	}
 
 	if (CU::Length(movement) < 0.02f)
@@ -200,11 +215,7 @@ void InputComponent::UpdateMovement(float aDelta)
 		SharedNetworkManager::GetInstance()->AddMessage<NetMessageEntityState>(NetMessageEntityState(myEntity.GetState(), myEntity.GetGID()));
 	}
 
-	movement = movement * myOrientation;
-
-	movement.y = 0;
-	CU::Normalize(movement);
-	movement *= myData.mySpeed;
+	bool isSprinting = false;
 
 #ifdef RELEASE_BUILD
 	bool shouldDecreaseEnergy = true;
@@ -217,7 +228,13 @@ void InputComponent::UpdateMovement(float aDelta)
 			{
 				myEnergyOverheat = true;
 			}
-			movement *= myData.mySprintMultiplier;
+
+			if (movement.z > 0.f)
+			{
+				movement.z *= myData.mySprintMultiplier;
+				isSprinting = true;
+			}
+
 			shouldDecreaseEnergy = false;
 		}
 	}
@@ -238,6 +255,17 @@ void InputComponent::UpdateMovement(float aDelta)
 		movement *= 10.f;
 	}
 #endif
+
+	movement = movement * myOrientation;
+
+	movement.y = 0;
+	CU::Normalize(movement);
+	movement *= myData.mySpeed * magnitude;
+
+	if (isSprinting == true)
+	{
+		movement *= myData.mySprintMultiplier;
+	}
 
 	movement.y = myVerticalSpeed;
 	Prism::PhysicsInterface::GetInstance()->Move(myEntity.GetComponent<PhysicsComponent>()->GetCapsuleControllerId(), movement, 0.05f, aDelta);
