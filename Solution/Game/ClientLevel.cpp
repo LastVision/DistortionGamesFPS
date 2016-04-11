@@ -353,7 +353,7 @@ void ClientLevel::Render()
 
 		myEmitterManager->RenderEmitters();
 
-		myPlayer->GetComponent<FirstPersonRenderComponent>()->Render(myDeferredRenderer->GetArmDepthStencilTexture());
+		myPlayer->GetComponent<FirstPersonRenderComponent>()->Render(myDeferredRenderer->GetArmDepthStencilTexture(), myLevelID == 0);
 
 		myTextManager->Render();
 
