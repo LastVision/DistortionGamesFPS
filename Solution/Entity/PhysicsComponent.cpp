@@ -186,7 +186,7 @@ void PhysicsComponent::AddForce(const CU::Vector3<float>& aDirection, float aMag
 
 void PhysicsComponent::SetVelocity(const CU::Vector3<float>& aVelocity)
 {
-	DL_ASSERT_EXP(myPhysicsType == ePhysics::DYNAMIC, "Cant add Force to STATIC objects");
+	DL_ASSERT_EXP(myPhysicsType == ePhysics::DYNAMIC, "Cant set velocity to STATIC objects");
 	DL_ASSERT_EXP(myIsAwake == true, "Add force on sleeping object");
 
 	Prism::PhysicsInterface::GetInstance()->SetVelocity(myDynamicBody, aVelocity);
@@ -194,7 +194,7 @@ void PhysicsComponent::SetVelocity(const CU::Vector3<float>& aVelocity)
 
 void PhysicsComponent::TeleportToPosition(const CU::Vector3<float>& aPosition)
 {
-	DL_ASSERT_EXP(myPhysicsType != ePhysics::STATIC, "Cant add Force to STATIC objects");
+	DL_ASSERT_EXP(myPhysicsType != ePhysics::STATIC, "Cant teleport to position to STATIC objects");
 
 	if (myDynamicBody != nullptr)
 	{
@@ -208,7 +208,7 @@ void PhysicsComponent::TeleportToPosition(const CU::Vector3<float>& aPosition)
 
 void PhysicsComponent::MoveToPosition(const CU::Vector3<float>& aPosition)
 {
-	DL_ASSERT_EXP(myPhysicsType != ePhysics::STATIC, "Cant add Force to STATIC objects");
+	DL_ASSERT_EXP(myPhysicsType != ePhysics::STATIC, "Cant move to position to STATIC objects");
 	DL_ASSERT_EXP(myIsAwake == true, "Add force on sleeping object");
 
 	Prism::PhysicsInterface::GetInstance()->MoveToPosition(myDynamicBody, aPosition);

@@ -25,7 +25,7 @@ private:
 	void operator=(GrenadeLauncher&) = delete;
 	void ShootAtDirection(const CU::Matrix44<float>& aOrientation);
 
-	CU::GrowingArray<Entity*> myBullets;
+	//CU::GrowingArray<Entity*> myBullets;
 	float myBulletSpeed;
 	Prism::Scene* myScene;
 

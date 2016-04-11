@@ -211,7 +211,7 @@ void ShootingComponent::ReloadWeaponIntention()
 {
 	if (myEntity.GetComponent<FirstPersonRenderComponent>()->IsReloading() == false)
 	{
-		if (myCurrentWeapon->GetAmmoTotal() > 0 || myCurrentWeapon->GetAmmoInClip() != myCurrentWeapon->GetClipSize())
+		if (myCurrentWeapon->GetAmmoTotal() > 0 && myCurrentWeapon->GetAmmoInClip() != myCurrentWeapon->GetClipSize())
 		{
 			switch (myCurrentWeapon->GetWeaponType())
 			{
@@ -272,13 +272,17 @@ void ShootingComponent::ReceiveNote(const UpgradeNote& aNote)
 	if (aNote.myData.myWeaponType == eWeaponType::PISTOL)
 	{
 		myPistol->Upgrade(aNote.myData);
+		myPistol->FillClip();
 	}
 	else if (aNote.myData.myWeaponType == eWeaponType::SHOTGUN)
 	{
 		myShotgun->Upgrade(aNote.myData);
+		myShotgun->FillClip();
 	}
 	else if (aNote.myData.myWeaponType == eWeaponType::GRENADE_LAUNCHER)
 	{
 		myGrenadeLauncher->Upgrade(aNote.myData);
+		myGrenadeLauncher->FillClip();
 	}
+
 }

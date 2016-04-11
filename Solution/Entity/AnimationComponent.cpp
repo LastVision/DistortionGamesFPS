@@ -129,18 +129,22 @@ void AnimationComponent::Update(float aDeltaTime)
 		//myWeapon->SetAnimation(Prism::AnimationSystem::GetInstance()->GetAnimation(data.myFile.c_str()));
 		myWeapon->Update(aDeltaTime);
 		EnemyAnimationBone currentAnimation = myEnemyAnimations[int(myEntity.GetState())];
-		myWeaponJoint = CU::InverseSimple(*currentAnimation.myWeaponBone.myBind) * (*currentAnimation.myWeaponBone.myJoint) * myEntity.GetOrientation();
-		
-		myMuzzleOrientation = myMuzzleBoneCalced * myWeaponJoint;
+		if (currentAnimation.IsValid())
+		{
+			myWeaponJoint = CU::InverseSimple(*currentAnimation.myWeaponBone.myBind) * (*currentAnimation.myWeaponBone.myJoint) * myEntity.GetOrientation();
 
-
+			myMuzzleOrientation = myMuzzleBoneCalced * myWeaponJoint;
+		}
 	}
 	else
 	{
 		myMuzzleOrientation = myEntity.GetOrientation();
-		CU::Vector3<float> offset(-0.04535f, 0.06111f, 0.1309f);
+		if (myMuzzleBone.IsValid())
+		{
+			CU::Vector3<float> offset(-0.04535f, 0.06111f, 0.1309f);
 
-		myMuzzleOrientation.SetPos((CU::InverseSimple(*myMuzzleBone.myBind) * (*myMuzzleBone.myJoint) *myEntity.GetOrientation()).GetPos() + offset * myEntity.GetOrientation());
+			myMuzzleOrientation.SetPos((CU::InverseSimple(*myMuzzleBone.myBind) * (*myMuzzleBone.myJoint) *myEntity.GetOrientation()).GetPos() + offset * myEntity.GetOrientation());
+		}
 	}
 
 

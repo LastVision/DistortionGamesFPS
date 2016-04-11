@@ -12,11 +12,11 @@ GrenadeComponent::GrenadeComponent(Entity& aEntity, const GrenadeComponentData& 
 	, Prism::Scene* aScene)
 	: Component(aEntity)
 	, myData(aComponentData)
-	, myTimeUntilExplode(2.f)
 	, myShouldBeUpdated(false)
 	, myShooterGID(0)
 	, myShouldDeleteExplosion(false)
 	, myShouldReallyDeleteExplosion(false)
+	, myTimeUntilExplode(0.f)
 {
 	myExplosion = EntityFactory::CreateEntity((myEntity.GetGID() + 1), eEntityType::EXPLOSION, aScene, true, CU::Vector3<float>());
 	myExplosion->GetComponent<PhysicsComponent>()->RemoveFromScene();
@@ -61,7 +61,7 @@ void GrenadeComponent::Update(float aDelta)
 void GrenadeComponent::Activate(unsigned int aShooterGID)
 {
 	myShooterGID = aShooterGID;
-	myTimeUntilExplode = 2.f;
+	myTimeUntilExplode = myData.myTimeToExplode;
 	myShouldBeUpdated = true;
 	myShouldReallyDeleteExplosion = false;
 	myShouldDeleteExplosion = false;
