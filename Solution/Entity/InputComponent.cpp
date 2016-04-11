@@ -44,7 +44,7 @@ InputComponent::InputComponent(Entity& anEntity, const InputComponentData& aData
 	myJumpAcceleration = 0;
 	myJumpOffset = 0;
 
-	mySendTime = 3;
+	mySendTime = 0.f;
 
 	//myCapsuleControllerId = Prism::PhysicsInterface::GetInstance()->CreatePlayerController(myOrientation.GetPos());
 }
@@ -108,7 +108,7 @@ void InputComponent::Update(float aDelta)
 	DEBUG_PRINT(playerPos);
 
 
-	mySendTime -= aDelta;
+	mySendTime -= aDelta;	
 	if (mySendTime < 0.f)
 	{
 		if (myEntity.GetGID() != 0 && (myOrientation != myPrevOrientation))
