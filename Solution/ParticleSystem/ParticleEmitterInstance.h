@@ -20,7 +20,7 @@ namespace Prism
 		void ReleaseData();
 		void Render();
 		void Update(float aDeltaTime, const CU::Matrix44f& aWorldMatrix);
-		void Activate();
+		void Activate(bool aShouldRender = true);
 		bool IsActive();
 
 		void SetPosition(const CU::Vector3f& aPosition);
@@ -43,7 +43,8 @@ namespace Prism
 		void SetShouldRender(bool aShouldRender);
 
 		void SetRotation(const CU::Vector3<float>& aRotation);
-
+		void SetHasRoom(bool aHasRoom);
+		bool GetHasRoom();
 		const CU::Vector3<float>& GetPosition() const;
 	private:
 
@@ -90,9 +91,7 @@ namespace Prism
 		bool myOverrideDirection;
 		bool myShouldRender;
 		bool myDrawDebugLines;
-
-
-
+		bool myHasRoom;
 
 		Entity* myEntity;
 

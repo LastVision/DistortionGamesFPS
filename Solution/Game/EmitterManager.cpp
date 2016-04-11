@@ -52,6 +52,7 @@ void EmitterManager::Initiate(Prism::Camera* aCamera)
 
 void EmitterManager::UpdateEmitters(float aDeltaTime, CU::Matrix44f aWorldMatrix)
 {
+
 	for (int i = 0; i < myEmitterList.Size(); ++i)
 	{
 		EmitterData* emitterData = myEmitterList[i];
@@ -70,17 +71,15 @@ void EmitterManager::UpdateEmitters(float aDeltaTime, CU::Matrix44f aWorldMatrix
 			for (int j = 0; j < emitterSize; ++j)
 			{
 				Prism::ParticleEmitterInstance* instance = emitterData->myEmitters[k][j];
-
-				if (instance->IsActive() == false)
-				{
-					continue;
-				}
-#ifdef _DEBUG
 				if (CU::InputWrapper::GetInstance()->KeyDown(DIK_L) == true)
 				{
 					instance->ToggleDebugLines();
 				}
-#endif
+				if (instance->IsActive() == false)
+				{
+					continue;
+				}
+
 				instance->Update(aDeltaTime, aWorldMatrix);
 			}
 		}
@@ -117,7 +116,8 @@ void EmitterManager::RenderEmitters()
 				{
 					CU::Vector3<float> pos = instance->GetPosition() - myCamera->GetOrientation().GetPos();
 					float length = CU::Length2(pos);
-					if (length < myCullDistance)
+
+					if (instance->GetHasRoom() || length < myCullDistance)
 					{
 						if (instance->GetShouldRender() == true)
 						{
@@ -176,10 +176,7 @@ void EmitterManager::ReceiveMessage(const EmitterMessage& aMessage)
 	{
 		Prism::ParticleEmitterInstance* instance = emitter->myEmitters[index][i];
 
-		if (aMessage.myRoom != nullptr)
-		{
-			aMessage.myRoom->AddEmitter(instance);
-		}
+		
 
 		instance->SetEntity(aMessage.myEntity);
 
@@ -188,8 +185,20 @@ void EmitterManager::ReceiveMessage(const EmitterMessage& aMessage)
 			aMessage.myEntity->AddEmitter(instance);
 		}
 
+
+		if (aMessage.myRoom != nullptr)
+		{
+			aMessage.myRoom->AddEmitter(instance);
+			instance->SetHasRoom(true);
+			instance->Activate(false);
+		}
+		else
+		{
+			instance->Activate();
+		}
+
+
 		instance->SetPosition(position);
-		instance->Activate();
 
 		if (aMessage.myEmitterLifeTime > 0.f)
 		{
