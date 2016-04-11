@@ -367,7 +367,10 @@ namespace Prism
 				particleData.mySpeed += particleData.mySpeedDelta * aDeltaTime;
 			}
 
-			gfxParticle.myPosition += (logicParticle.myDirection * particleData.mySpeed) * aDeltaTime;
+			gfxParticle.myPosition.x += (logicParticle.myDirection.x * particleData.mySpeed) * aDeltaTime;
+			gfxParticle.myPosition.y += (logicParticle.myDirection.y * particleData.mySpeed) * aDeltaTime;
+			gfxParticle.myPosition.z += (logicParticle.myDirection.z * particleData.mySpeed) * aDeltaTime;
+
 
 			if (gfxParticle.mySize >= 0.f)
 			{
@@ -378,7 +381,9 @@ namespace Prism
 
 			gfxParticle.myAlpha = CU::Math::CapValue(0.f, 1.f, gfxParticle.myAlpha);
 
-			gfxParticle.myColor += myDiffColor  * aDeltaTime;
+			gfxParticle.myColor.x += myDiffColor.x  * aDeltaTime;
+			gfxParticle.myColor.y += myDiffColor.y  * aDeltaTime;
+			gfxParticle.myColor.z += myDiffColor.z  * aDeltaTime;
 
 			gfxParticle.myRotation += gfxParticle.myRotation * (logicParticle.myRotationDelta * aDeltaTime);
 

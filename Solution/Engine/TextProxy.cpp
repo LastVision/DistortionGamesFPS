@@ -78,24 +78,30 @@ namespace Prism
 
 	void TextProxy::Render(const Camera* aCamera)
 	{
-		if (myText->GetText() != myString)
+		if (IsLoaded() == true)
 		{
-			Prism::ModelLoader::GetInstance()->Pause();
-			myText->SetText(myString);
-			Prism::ModelLoader::GetInstance()->UnPause();
+			if (myText->GetText() != myString)
+			{
+				Prism::ModelLoader::GetInstance()->Pause();
+				myText->SetText(myString);
+				Prism::ModelLoader::GetInstance()->UnPause();
+			}
+			myText->Render(aCamera, my3DOrientation, myColor);
 		}
-		myText->Render(aCamera, my3DOrientation, myColor);
 	}
 
 	void TextProxy::Render(const Camera* aCamera, float aScaleValue)
 	{
-		if (myText->GetText() != myString)
+		if (IsLoaded() == true)
 		{
-			Prism::ModelLoader::GetInstance()->Pause();
-			myText->SetText(myString);
-			Prism::ModelLoader::GetInstance()->UnPause();
+			if (myText->GetText() != myString)
+			{
+				Prism::ModelLoader::GetInstance()->Pause();
+				myText->SetText(myString);
+				Prism::ModelLoader::GetInstance()->UnPause();
+			}
+			myText->Render(aCamera, my3DOrientation, { aScaleValue, aScaleValue }, myColor);
 		}
-		myText->Render(aCamera, my3DOrientation, { aScaleValue, aScaleValue }, myColor);
 	}
 
 	void TextProxy::SetScale(const CU::Vector2<float>&)
