@@ -129,9 +129,17 @@ FirstPersonRenderComponent::FirstPersonRenderComponent(Entity& aEntity, Prism::S
 	//aScene->AddInstance(myCurrentWeaponModel, eObjectRoomType::ALWAYS_RENDER);
 	myScene->SetWeaponInstance(myCurrentWeaponModel);
 
-	for (int i = 0; i < static_cast<int>(ePlayerState::_COUNT); ++i)
+	for (int i = 0; i < 5; ++i)
 	{
 		Prism::ModelLoader::GetInstance()->GetHierarchyToBone(myWeaponAnimations[i].myData.myFile, "barrel_jnt1", myWeaponAnimations[i].myMuzzleBone);
+	}
+	for (int i = 5; i < 10; ++i)
+	{
+		Prism::ModelLoader::GetInstance()->GetHierarchyToBone(myWeaponAnimations[i].myData.myFile, "shotgun_barrel_jnt1", myWeaponAnimations[i].myMuzzleBone);
+	}
+	for (int i = 10; i < 15; ++i)
+	{
+		Prism::ModelLoader::GetInstance()->GetHierarchyToBone(myWeaponAnimations[i].myData.myFile, "luncher_barrel_jnt1", myWeaponAnimations[i].myMuzzleBone);
 	}
 }
 
