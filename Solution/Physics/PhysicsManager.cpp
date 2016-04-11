@@ -124,7 +124,10 @@ namespace Prism
 		{
 			DL_ASSERT("Failed to createScene");
 		}
-
+#ifdef _DEBUG
+		myScene->setVisualizationParameter(physx::PxVisualizationParameter::eSCALE, 1.f);
+		myScene->setVisualizationParameter(physx::PxVisualizationParameter::eCOLLISION_SHAPES, 1.f);
+#endif
 		myScene->setFlag(physx::PxSceneFlag::eENABLE_KINEMATIC_PAIRS, true);
 		myScene->setFlag(physx::PxSceneFlag::eENABLE_KINEMATIC_STATIC_PAIRS, true);
 		myScene->setSimulationEventCallback(this);
@@ -222,19 +225,19 @@ namespace Prism
 			totalTime += myTimerManager->GetMasterTimer().GetTime().GetFrameTime();
 			if (totalTime >= (1.0f / 60.0f))
 			{
-				Update();
+			Update();
 
-				Swap();
-				if (myLogicDone == true)
-				{
-					SetPhysicsDone();
-					//WaitForSwap();
-				}
+			Swap();
+			if (myLogicDone == true)
+			{
+				SetPhysicsDone();
+				//WaitForSwap();
 			}
+		}
 
 			std::this_thread::yield();
 			//::Sleep(16);
-		}
+	}
 	}
 #endif
 
@@ -321,7 +324,7 @@ namespace Prism
 				myControllerPositions[myCurrentIndex ^ 1][i].y = float(pos.y);
 				myControllerPositions[myCurrentIndex ^ 1][i].z = float(pos.z);
 			}
-		}
+		}	
 
 		for (int i = 0; i < myForceJobs[myCurrentIndex ^ 1].Size(); ++i)
 		{
@@ -440,7 +443,7 @@ namespace Prism
 		returnValue = myScene->raycast(origin, unitDirection, maxDistance, buffer);
 		CU::Vector3<float> hitPosition;
 		CU::Vector3<float> hitNormal;
-
+		
 		PhysicsComponent* ent = nullptr;//static_cast<PhysEntity*>(buffer.touches[myCurrentIndex].actor->userData);
 		if (returnValue == true)
 		{
@@ -454,7 +457,7 @@ namespace Prism
 					{
 						continue;
 					}
-
+					
 					physx::PxShapeFlags& flags = buffer.touches[i].shape->getFlags();
 					if (flags.isSet(physx::PxShapeFlag::eTRIGGER_SHAPE) == true)
 					{
@@ -466,7 +469,7 @@ namespace Prism
 					hitPosition.x = buffer.touches[i].position.x;
 					hitPosition.y = buffer.touches[i].position.y;
 					hitPosition.z = buffer.touches[i].position.z;
-
+					
 					hitNormal.x = buffer.touches[i].normal.x;
 					hitNormal.y = buffer.touches[i].normal.y;
 					hitNormal.z = buffer.touches[i].normal.z;
@@ -537,9 +540,11 @@ namespace Prism
 
 	void PhysicsManager::onPvdConnected(physx::debugger::comm::PvdConnection&)
 	{
+#ifdef _DEBUG
 		myPhysicsSDK->getVisualDebugger()->setVisualizeConstraints(true);
 		myPhysicsSDK->getVisualDebugger()->setVisualDebuggerFlag(physx::PxVisualDebuggerFlag::eTRANSMIT_CONTACTS, true);
 		myPhysicsSDK->getVisualDebugger()->setVisualDebuggerFlag(physx::PxVisualDebuggerFlag::eTRANSMIT_SCENEQUERIES, true);
+#endif
 	}
 
 	void PhysicsManager::onPvdDisconnected(physx::debugger::comm::PvdConnection&)

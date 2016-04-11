@@ -211,7 +211,7 @@ void ShootingComponent::ReloadWeaponIntention()
 {
 	if (myEntity.GetComponent<FirstPersonRenderComponent>()->IsReloading() == false)
 	{
-		if (myCurrentWeapon->GetAmmoTotal() > 0)
+		if (myCurrentWeapon->GetAmmoTotal() > 0 || myCurrentWeapon->GetAmmoInClip() != myCurrentWeapon->GetClipSize())
 		{
 			switch (myCurrentWeapon->GetWeaponType())
 			{
