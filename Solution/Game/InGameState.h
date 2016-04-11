@@ -62,6 +62,7 @@ private:
 	bool myFailedLevel;
 	bool myCanStartNextLevel;
 	bool myLoadingScreen;
+	bool myLoadingScreenCanStart;
 	bool myFailedLevelHash;
 
 	unsigned int myServerHashLevelValue;
@@ -74,4 +75,6 @@ private:
 	Prism::SpriteProxy* myLevelCompleteSprite;
 	Prism::SpriteProxy* myLevelFailedSprite;
 	Prism::SpriteProxy* myLoadingScreenSprite;
+	Prism::SpriteProxy* myRotatingThing;
+	Prism::SpriteProxy* myPressToStart;
 };
