@@ -1,6 +1,5 @@
 #include "stdafx.h"
 
-#include <InputWrapper.h>
 #include <AudioInterface.h>
 #include "DamageNote.h"
 #include "Entity.h"

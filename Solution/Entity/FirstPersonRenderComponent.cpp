@@ -48,14 +48,14 @@ FirstPersonRenderComponent::FirstPersonRenderComponent(Entity& aEntity, Prism::S
 	, myPistolHasUpdated(false)
 	, myShotgunHasUpdated(false)
 	, myGrenadeLauncherHasUpdated(false)
+	, myDisplayPickupTime(2.f)
 {
 	bool shouldUseSpecialFoV = true;
 	CU::Vector2<float> size(128.f, 128.f);
 	myCrosshair = Prism::ModelLoader::GetInstance()->LoadSprite("Data/Resource/Texture/UI/T_crosshair.dds", size, size * 0.5f);
 	CU::Vector2<float> damageSize(Prism::Engine::GetInstance()->GetWindowSize().x, Prism::Engine::GetInstance()->GetWindowSize().y);
 	myDamageIndicator = Prism::ModelLoader::GetInstance()->LoadSprite("Data/Resource/Texture/UI/T_damage_indicator.dds", damageSize, damageSize * 0.5f);
-	myPickupHealthIndicator = Prism::ModelLoader::GetInstance()->LoadSprite("Data/Resource/Texture/UI/T_pickup_health.dds", damageSize, damageSize * 0.5f);
-	myPickupUpgradeIndicator = Prism::ModelLoader::GetInstance()->LoadSprite("Data/Resource/Texture/UI/T_pickup_upgrade.dds", damageSize, damageSize * 0.5f);
+	myPickupIndicator = Prism::ModelLoader::GetInstance()->LoadSprite("Data/Resource/Texture/UI/T_pickup_indicator.dds", damageSize, damageSize * 0.5f);
 	myLowLifeIndicator = Prism::ModelLoader::GetInstance()->LoadSprite("Data/Resource/Texture/UI/T_low_life_indicator.dds", damageSize, damageSize * 0.5f);
 	myCoOpSprite = Prism::ModelLoader::GetInstance()->LoadSprite("Data/Resource/Texture/UI/T_coopmarker.dds", size, size * 0.5f);
 	myMarker = Prism::ModelLoader::GetInstance()->LoadSprite("Data/Resource/Texture/UI/T_marker.dds", size, size * 0.5f);
@@ -129,9 +129,17 @@ FirstPersonRenderComponent::FirstPersonRenderComponent(Entity& aEntity, Prism::S
 	//aScene->AddInstance(myCurrentWeaponModel, eObjectRoomType::ALWAYS_RENDER);
 	myScene->SetWeaponInstance(myCurrentWeaponModel);
 
-	for (int i = 0; i < static_cast<int>(ePlayerState::_COUNT); ++i)
+	for (int i = 0; i < 5; ++i)
 	{
 		Prism::ModelLoader::GetInstance()->GetHierarchyToBone(myWeaponAnimations[i].myData.myFile, "barrel_jnt1", myWeaponAnimations[i].myMuzzleBone);
+	}
+	for (int i = 5; i < 10; ++i)
+	{
+		Prism::ModelLoader::GetInstance()->GetHierarchyToBone(myWeaponAnimations[i].myData.myFile, "shotgun_barrel_jnt1", myWeaponAnimations[i].myMuzzleBone);
+	}
+	for (int i = 10; i < 15; ++i)
+	{
+		Prism::ModelLoader::GetInstance()->GetHierarchyToBone(myWeaponAnimations[i].myData.myFile, "luncher_barrel_jnt1", myWeaponAnimations[i].myMuzzleBone);
 	}
 }
 
@@ -144,8 +152,7 @@ FirstPersonRenderComponent::~FirstPersonRenderComponent()
 	SharedNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::PRESS_E_TEXT, this);
 	SAFE_DELETE(myCrosshair);
 	SAFE_DELETE(myDamageIndicator);
-	SAFE_DELETE(myPickupHealthIndicator);
-	SAFE_DELETE(myPickupUpgradeIndicator);
+	SAFE_DELETE(myPickupIndicator);
 	SAFE_DELETE(myLowLifeIndicator);
 	SAFE_DELETE(my3DGUIManager);
 	SAFE_DELETE(myModel);
@@ -359,11 +366,15 @@ void FirstPersonRenderComponent::Render(Prism::Texture* aArmDepthTexture, bool a
 	}
 	else if (myDisplayHealthIndicatorTimer > 0.f)
 	{
-		myPickupHealthIndicator->Render(windowSize * 0.5f);
+		CU::Vector4<float> color = HEALTH_COLOR;
+		color.w = fminf(fminf(1.f, myDisplayHealthIndicatorTimer), myDisplayPickupTime - myDisplayHealthIndicatorTimer);
+		myPickupIndicator->Render(windowSize * 0.5f, { 1.f, 1.f }, color);
 	}
 	else if (myDisplayUpgradeIndicatorTimer > 0.f)
 	{
-		myPickupUpgradeIndicator->Render(windowSize * 0.5f);
+		CU::Vector4<float> color = UPGRADE_COLOR;
+		color.w = fminf(fminf(1.f, myDisplayUpgradeIndicatorTimer), myDisplayPickupTime - myDisplayUpgradeIndicatorTimer);
+		myPickupIndicator->Render(windowSize * 0.5f, { 1.f, 1.f }, color);
 	}
 
 	float lifePercentage = float(myCurrentHealth) / float(myMaxHealth);
@@ -639,9 +650,9 @@ void FirstPersonRenderComponent::ReceiveNetworkMessage(const NetMessageHealth& a
 {
 	if (aMessage.myGID == myEntity.GetGID())
 	{
-		if (myCurrentHealth < aMessage.myCurrentHealth)
+		if (myCurrentHealth <= aMessage.myCurrentHealth)
 		{
-			myDisplayHealthIndicatorTimer = 0.7f;
+			myDisplayHealthIndicatorTimer = myDisplayPickupTime;
 		}
 
 		myMaxHealth = aMessage.myMaxHealth;
@@ -705,7 +716,7 @@ void FirstPersonRenderComponent::ReceiveNote(const UpgradeNote& aNote)
 	{
 		my3DGUIManager->Rebuild(aNote.myData.myWeaponType, aNote.myData.myClipSizeModifier);
 	}
-	myDisplayUpgradeIndicatorTimer = 0.7f;
+	myDisplayUpgradeIndicatorTimer = myDisplayPickupTime;
 }
 
 void FirstPersonRenderComponent::UpdateJoints()
