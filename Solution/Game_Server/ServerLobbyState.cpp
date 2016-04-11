@@ -27,6 +27,7 @@ ServerLobbyState::~ServerLobbyState()
 {
 	ServerNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::ON_DISCONNECT, this);
 	ServerNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::SET_LEVEL, this);
+	ServerNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::REQUEST_LEVEL, this);
 	ServerNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::REQUEST_START_LEVEL, this);
 	ServerNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::SERVER_REQUEST, this);
 	ServerNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::ON_CONNECT, this);
@@ -40,6 +41,7 @@ void ServerLobbyState::InitState(ServerStateStackProxy* aStateStackProxy)
 
 	ServerNetworkManager::GetInstance()->Subscribe(eNetMessageType::ON_DISCONNECT, this);
 	ServerNetworkManager::GetInstance()->Subscribe(eNetMessageType::SET_LEVEL, this);
+	ServerNetworkManager::GetInstance()->Subscribe(eNetMessageType::REQUEST_LEVEL, this);
 	ServerNetworkManager::GetInstance()->Subscribe(eNetMessageType::REQUEST_START_LEVEL, this);
 	ServerNetworkManager::GetInstance()->Subscribe(eNetMessageType::SERVER_REQUEST, this);
 	ServerNetworkManager::GetInstance()->Subscribe(eNetMessageType::ON_CONNECT, this);
@@ -68,6 +70,7 @@ void ServerLobbyState::ResumeState()
 	myIsActiveState = true;
 	ServerNetworkManager::GetInstance()->Subscribe(eNetMessageType::ON_DISCONNECT, this);
 	ServerNetworkManager::GetInstance()->Subscribe(eNetMessageType::SET_LEVEL, this);
+	ServerNetworkManager::GetInstance()->Subscribe(eNetMessageType::REQUEST_LEVEL, this);
 	ServerNetworkManager::GetInstance()->Subscribe(eNetMessageType::REQUEST_START_LEVEL, this);
 	ServerNetworkManager::GetInstance()->Subscribe(eNetMessageType::SERVER_REQUEST, this);
 	ServerNetworkManager::GetInstance()->Subscribe(eNetMessageType::ON_CONNECT, this);
@@ -80,6 +83,11 @@ void ServerLobbyState::ReceiveNetworkMessage(const NetMessageSetLevel& aMessage,
 	ServerNetworkManager::GetInstance()->AddMessage(NetMessageSetLevel(myCurrentLevelID));
 }
 
+void ServerLobbyState::ReceiveNetworkMessage(const NetMessageRequestLevel&, const sockaddr_in& aSenderAddress)
+{
+	ServerNetworkManager::GetInstance()->AddMessage(NetMessageSetLevel(myCurrentLevelID), aSenderAddress);
+}
+
 void ServerLobbyState::ReceiveNetworkMessage(const NetMessageRequestStartLevel&, const sockaddr_in&)
 {
 	ServerNetworkManager::GetInstance()->AllowNewConnections(false);
@@ -88,6 +96,7 @@ void ServerLobbyState::ReceiveNetworkMessage(const NetMessageRequestStartLevel&,
 
 	ServerNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::ON_DISCONNECT, this);
 	ServerNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::SET_LEVEL, this);
+	ServerNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::REQUEST_LEVEL, this);
 	ServerNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::REQUEST_START_LEVEL, this);
 	ServerNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::SERVER_REQUEST, this);
 	ServerNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::ON_CONNECT, this);

@@ -146,7 +146,7 @@ const eStateStatus InGameState::Update(const float& aDeltaTime)
 			myLevel->ToggleEscapeMenu();
 		}
 	}
-
+	
 	bool firstFrame = false;
 
 	if (myLoadingScreenCanStart == true)
@@ -187,31 +187,6 @@ const eStateStatus InGameState::Update(const float& aDeltaTime)
 	Prism::EffectContainer::GetInstance()->Update(aDeltaTime);
 
 
-
-	//if (CU::InputWrapper::GetInstance()->KeyDown(DIK_NUMPAD1))
-	//{
-	//	ClientNetworkManager::GetInstance()->AddMessage(NetMessageSetLevel(0));
-	//	//SET_RUNTIME(false);
-	//	//SAFE_DELETE(myLevel);
-	//	//myLevel = static_cast<ClientLevel*>(myLevelFactory->LoadLevel(0));
-	//}
-	//else if (CU::InputWrapper::GetInstance()->KeyDown(DIK_NUMPAD2))
-	//{
-	//	ClientNetworkManager::GetInstance()->AddMessage(NetMessageSetLevel(1));
-	//	//SET_RUNTIME(false);
-	//	//SAFE_DELETE(myLevel);
-	//	//myLevel = static_cast<ClientLevel*>(myLevelFactory->LoadLevel(1));
-	//}
-	//else if (CU::InputWrapper::GetInstance()->KeyDown(DIK_NUMPAD3))
-	//{
-	//	ClientNetworkManager::GetInstance()->AddMessage(NetMessageSetLevel(2));
-	//	//SET_RUNTIME(false);
-	//	//SAFE_DELETE(myLevel);
-	//	//myLevel = static_cast<ClientLevel*>(myLevelFactory->LoadLevel(2));
-	//}
-
-
-	
 
 	if (myLevelComplete == true)
 	{

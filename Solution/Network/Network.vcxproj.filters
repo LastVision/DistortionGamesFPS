@@ -163,5 +163,8 @@
     <ClInclude Include="NetMessageKillServer.h">
       <Filter>Messages</Filter>
     </ClInclude>
+    <ClInclude Include="NetMessageRequestLevel.h">
+      <Filter>Messages</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
