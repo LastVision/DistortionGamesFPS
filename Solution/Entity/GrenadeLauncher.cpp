@@ -54,7 +54,7 @@ bool GrenadeLauncher::Shoot(const CU::Matrix44<float>&)
 		//Skicka grenademessage(aOrientation.GetForward());
 		
 		SharedNetworkManager::GetInstance()->AddMessage<NetMessageShootGrenade>(NetMessageShootGrenade(int(myForceStrength)
-			, myOwnerEntity->GetComponent<InputComponent>()->GetEyeOrientation().GetForward()));
+			, myOwnerEntity->GetGID(), myOwnerEntity->GetComponent<InputComponent>()->GetEyeOrientation().GetForward()));
 
 		Prism::Audio::AudioInterface::GetInstance()->PostEvent("Play_GrenadeLauncher", 0);
 
@@ -68,8 +68,15 @@ bool GrenadeLauncher::Shoot(const CU::Matrix44<float>&)
 void GrenadeLauncher::Reload()
 {
 	int ammoLeft = myAmmoTotal;
-	myAmmoTotal -= min(ammoLeft, myClipSize - myAmmoInClip);
-	myAmmoInClip = min(myClipSize, myAmmoTotal);
+	int toPutInWeapon = myClipSize - myAmmoInClip;
+	int allowedToPutIn = min(toPutInWeapon, myAmmoTotal);
+
+	myAmmoInClip += allowedToPutIn;
+	myAmmoTotal -= allowedToPutIn;
+
+
+	//myAmmoTotal -= min(ammoLeft, myClipSize - myAmmoInClip);
+	//myAmmoInClip = min(myClipSize, myAmmoTotal);
 }
 
 void GrenadeLauncher::Update(float aDelta)

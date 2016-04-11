@@ -110,8 +110,14 @@ bool Shotgun::Shoot(const CU::Matrix44<float>& aOrientation)
 void Shotgun::Reload()
 {
 	int ammoLeft = myAmmoTotal;
-	myAmmoTotal -= min(ammoLeft, myClipSize - myAmmoInClip);
-	myAmmoInClip = min(myClipSize, myAmmoTotal);
+	int toPutInWeapon = myClipSize - myAmmoInClip;
+	int allowedToPutIn = min(toPutInWeapon, myAmmoTotal);
+
+	myAmmoInClip += allowedToPutIn;
+	myAmmoTotal -= allowedToPutIn;
+	//int ammoLeft = myAmmoTotal;
+	//myAmmoTotal -= min(ammoLeft, myClipSize - myAmmoInClip);
+	//myAmmoInClip = min(myClipSize, myAmmoTotal);
 }
 
 void Shotgun::Update(float aDelta)
