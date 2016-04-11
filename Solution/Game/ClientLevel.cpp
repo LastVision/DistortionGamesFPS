@@ -65,6 +65,7 @@
 #include <ParticleEmitterInstance.h>
 #include <Room.h>
 #include <LevelCompleteMessage.h>
+#include <SoundComponent.h>
 
 ClientLevel::ClientLevel(GUI::Cursor* aCursor, eStateStatus& aStateStatus, int aLevelID)
 	: myInstanceOrientations(16)
@@ -463,6 +464,10 @@ void ClientLevel::ReceiveNetworkMessage(const NetMessageEnemyShooting& aMessage,
 		if (units[i]->GetGID() == unsigned int(aMessage.myEnemyGID))
 		{
 			units[i]->GetComponent<AnimationComponent>()->PlayMuzzleFlash();
+			if (units[i]->GetComponent<SoundComponent>() != nullptr)
+			{
+				Prism::Audio::AudioInterface::GetInstance()->PostEvent("Play_EnemyShoot", units[i]->GetComponent<SoundComponent>()->GetAudioSFXID());
+			}
 		}
 	}
 }

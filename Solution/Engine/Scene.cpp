@@ -56,8 +56,6 @@ namespace Prism
 
 	void Scene::RenderArmAndWeapon()
 	{
-		//Engine::GetInstance()->SetDepthBufferState(eDepthStencil::Z_DISABLED);
-
 		if (myArmInstance != nullptr)
 		{
 			myArmInstance->Render(*myCamera);
@@ -67,8 +65,19 @@ namespace Prism
 		{
 			myWeaponInstance->Render(*myCamera);
 		}
+	}
 
-		//Engine::GetInstance()->SetDepthBufferState(eDepthStencil::Z_ENABLED);
+	void Scene::RenderArmAndWeaponOnlyDepth()
+	{
+		if (myArmInstance != nullptr)
+		{
+			myArmInstance->Render(*myCamera, true);
+		}
+
+		if (myWeaponInstance != nullptr)
+		{
+			myWeaponInstance->Render(*myCamera, true);
+		}
 	}
 
 	void Scene::RenderWithoutRoomManager()

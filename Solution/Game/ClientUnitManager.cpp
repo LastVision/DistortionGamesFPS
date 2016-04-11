@@ -1,12 +1,13 @@
 #include "stdafx.h"
 #include <AnimationComponent.h>
+#include <AudioInterface.h>
 #include "ClientUnitManager.h"
 #include <EntityFactory.h>
 #include <PhysicsComponent.h>
 #include <NetMessageActivateUnit.h>
 #include "ClientNetworkManager.h"
 #include "NetMessageEntityState.h"
-
+#include <SoundComponent.h>
 #include <PostMaster.h>
 #include <EmitterMessage.h>
 
@@ -79,6 +80,11 @@ void ClientUnitManager::ReceiveNetworkMessage(const NetMessageActivateUnit& aMes
 	if (toActivate != nullptr)
 	{
 		ActivateUnit(toActivate, aMessage.myPosition);
+		if (toActivate->GetComponent<SoundComponent>() != nullptr)
+		{
+			Prism::Audio::AudioInterface::GetInstance()->PostEvent("Play_EnemySpawn"
+				, toActivate->GetComponent<SoundComponent>()->GetAudioSFXID());
+		}
 	}
 }
 
