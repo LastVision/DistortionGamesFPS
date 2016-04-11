@@ -48,6 +48,7 @@ FirstPersonRenderComponent::FirstPersonRenderComponent(Entity& aEntity, Prism::S
 	, myPistolHasUpdated(false)
 	, myShotgunHasUpdated(false)
 	, myGrenadeLauncherHasUpdated(false)
+	, myDisplayPickupTime(2.f)
 {
 	bool shouldUseSpecialFoV = true;
 	CU::Vector2<float> size(128.f, 128.f);
@@ -357,11 +358,15 @@ void FirstPersonRenderComponent::Render(Prism::Texture* aArmDepthTexture, bool a
 	}
 	else if (myDisplayHealthIndicatorTimer > 0.f)
 	{
-		myPickupIndicator->Render(windowSize * 0.5f, { 1.f, 1.f }, HEALTH_COLOR);
+		CU::Vector4<float> color = HEALTH_COLOR;
+		color.w = fminf(fminf(1.f, myDisplayHealthIndicatorTimer), myDisplayPickupTime - myDisplayHealthIndicatorTimer);
+		myPickupIndicator->Render(windowSize * 0.5f, { 1.f, 1.f }, color);
 	}
 	else if (myDisplayUpgradeIndicatorTimer > 0.f)
 	{
-		myPickupIndicator->Render(windowSize * 0.5f, { 1.f, 1.f }, UPGRADE_COLOR);
+		CU::Vector4<float> color = UPGRADE_COLOR;
+		color.w = fminf(fminf(1.f, myDisplayUpgradeIndicatorTimer), myDisplayPickupTime - myDisplayUpgradeIndicatorTimer);
+		myPickupIndicator->Render(windowSize * 0.5f, { 1.f, 1.f }, color);
 	}
 
 	float lifePercentage = float(myCurrentHealth) / float(myMaxHealth);
@@ -639,7 +644,7 @@ void FirstPersonRenderComponent::ReceiveNetworkMessage(const NetMessageHealth& a
 	{
 		if (myCurrentHealth <= aMessage.myCurrentHealth)
 		{
-			myDisplayHealthIndicatorTimer = 0.7f;
+			myDisplayHealthIndicatorTimer = myDisplayPickupTime;
 		}
 
 		myMaxHealth = aMessage.myMaxHealth;
@@ -703,7 +708,7 @@ void FirstPersonRenderComponent::ReceiveNote(const UpgradeNote& aNote)
 	{
 		my3DGUIManager->Rebuild(aNote.myData.myWeaponType, aNote.myData.myClipSizeModifier);
 	}
-	myDisplayUpgradeIndicatorTimer = 0.7f;
+	myDisplayUpgradeIndicatorTimer = myDisplayPickupTime;
 }
 
 void FirstPersonRenderComponent::UpdateJoints()
