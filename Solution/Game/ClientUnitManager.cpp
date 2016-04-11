@@ -10,6 +10,7 @@
 #include <SoundComponent.h>
 #include <PostMaster.h>
 #include <EmitterMessage.h>
+#include <Intersection.h>
 
 ClientUnitManager::ClientUnitManager()
 {
@@ -101,6 +102,20 @@ void ClientUnitManager::ReceiveNetworkMessage(const NetMessageEntityState& aMess
 			myUnitsMap[aMessage.myGID]->GetComponent<AnimationComponent>()->StopMuzzleFlash();
 		}
 	}
+}
+
+int ClientUnitManager::GetUnitsInPlayerRange(const CU::Vector3<float>& aPlayerPos) const
+{
+	int toReturn = 0;
+
+	for (int i = 0; i < myActiveUnits.Size(); ++i)
+	{
+		if (CU::Length2(myActiveUnits[i]->GetOrientation().GetPos() - aPlayerPos) < 400.f)
+		{
+			++toReturn;
+		}
+	}
+	return toReturn;
 }
 
 void ClientUnitManager::Create()

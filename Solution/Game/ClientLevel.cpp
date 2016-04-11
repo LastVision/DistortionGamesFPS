@@ -87,6 +87,10 @@ ClientLevel::ClientLevel(GUI::Cursor* aCursor, eStateStatus& aStateStatus, int a
 	, myVoiceVolume(0)
 	, myStateStatus(aStateStatus)
 	, myLevelID(aLevelID)
+	, myHasStartedFirstLayer(false)
+	, myHasStartedSecondLayer(false)
+	, myHasStoppedFirstLayer(true)
+	, myHasStoppedSecondLayer(true)
 {
 	Prism::PhysicsInterface::Create(std::bind(&ClientLevel::CollisionCallback, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3), false);
 
@@ -281,6 +285,31 @@ void ClientLevel::Update(const float aDeltaTime, bool aLoadingScreen)
 	
 	myEmitterManager->UpdateEmitters(aDeltaTime, CU::Matrix44f());
 	myTextManager->Update(aDeltaTime);
+	
+	int enemiesInPlayerRange = ClientUnitManager::GetInstance()->GetUnitsInPlayerRange(myPlayer->GetOrientation().GetPos());
+	if (enemiesInPlayerRange > 0 && enemiesInPlayerRange <= 4 && myHasStartedFirstLayer == false)
+	{
+		Prism::Audio::AudioInterface::GetInstance()->PostEvent("FadeInFirstLayer", 0);
+		myHasStartedFirstLayer = true;
+		myHasStoppedFirstLayer = false;
+	}
+	if (enemiesInPlayerRange > 4 && myHasStartedSecondLayer == false)
+	{
+		Prism::Audio::AudioInterface::GetInstance()->PostEvent("FadeInSecondLayer", 0);
+		myHasStartedSecondLayer = true;
+		myHasStoppedSecondLayer = false;
+	}
+	if (enemiesInPlayerRange < 1 && myHasStoppedFirstLayer == false)
+	{
+		Prism::Audio::AudioInterface::GetInstance()->PostEvent("FadeOutFirstLayer", 0);
+		myHasStoppedFirstLayer = true;
+	}
+	if (enemiesInPlayerRange <= 4 && myHasStoppedSecondLayer == false)
+	{
+		Prism::Audio::AudioInterface::GetInstance()->PostEvent("FadeOutSecondLayer", 0);
+		myHasStoppedSecondLayer = true;
+	}
+
 
 	unsigned long long ms = ClientNetworkManager::GetInstance()->GetResponsTime();
 	float kbs = static_cast<float>(ClientNetworkManager::GetInstance()->GetDataSent());
@@ -657,7 +686,6 @@ void ClientLevel::HandleTrigger(Entity& aFirstEntity, Entity& aSecondEntity, boo
 				if (aSecondEntity.GetType() == eEntityType::PLAYER)
 				{
 					aSecondEntity.SendNote<UpgradeNote>(aFirstEntity.GetComponent<UpgradeComponent>()->GetData());
-					Prism::Audio::AudioInterface::GetInstance()->PostEvent("FadeInFirstLayer", 0);
 					PostMaster::GetInstance()->SendMessage(EmitterMessage(firstTrigger->GetEntity().GetEmitter(), true));
 				}
 			}
