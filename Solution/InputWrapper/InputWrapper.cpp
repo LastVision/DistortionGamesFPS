@@ -87,7 +87,7 @@ void CU::InputWrapper::Update()
 
 		myTimerManager->Update();
 		totalTime += myTimerManager->GetMasterTimer().GetTime().GetFrameTime();
-		while (totalTime >= 1.0f / 60.0f)
+		while (totalTime >= 1.0f / 30.0f)
 		{
 			totalTime = 0.0f;
 #endif

@@ -56,6 +56,7 @@ namespace GUI
 		Prism::Bar3D* myGrenadeLauncherIcon;
 
 		Prism::TextProxy* myAmmoTotalText;
+		CU::Matrix44<float> myRotationMatrix;
 
 		int myCurrentHealth;
 		int myMaxHealth;

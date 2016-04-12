@@ -57,10 +57,12 @@ namespace GUI
 			
 		myAmmoTotalText = Prism::ModelLoader::GetInstance()->LoadText(Prism::Engine::GetInstance()->GetFont(Prism::eFont::DIALOGUE), true);
 		myAmmoTotalText->Rotate3dText(-0.8f);
-		myAmmoTotalText->SetOffset({ -1.f, 1.f, 2.f });
+		myAmmoTotalText->SetOffset({ 0.1f, 0.f, 0.f });
 		
 
 		Prism::ModelLoader::GetInstance()->UnPause();
+
+		myRotationMatrix = CU::Matrix44<float>::CreateRotateAroundZ(-3.14f * 0.7f);
 	}
 
 
@@ -83,25 +85,24 @@ namespace GUI
 	{
 		myMaxHealth = aMaxHealth;
 		myCurrentHealth = aCurrentHealth;
-
+		float colorValue = 0.f;
 		if (aCurrentWeaponType == eWeaponType::PISTOL)
 		{
-			float colorValue = myPistolAmmoInClip / float(myPistolClipSize);
-			myAmmoTotalText->SetText("-");
-			myAmmoTotalText->SetColor({ 1.f - colorValue, colorValue, 0.f, 0.5f });
+			colorValue = myPistolAmmoInClip / float(myPistolClipSize);
+			myAmmoTotalText->SetText("");	
 		}
 		else if (aCurrentWeaponType == eWeaponType::SHOTGUN)
 		{
-			float colorValue = myShotgunAmmoInClip / float(myShotgunClipSize);
+			colorValue = myShotgunAmmoInClip / float(myShotgunClipSize);
 			myAmmoTotalText->SetText(std::to_string(myShotgunAmmoTotal));
-			myAmmoTotalText->SetColor({ 1.f - colorValue, colorValue, 0.5f, 0.5f });
 		}
 		else if (aCurrentWeaponType == eWeaponType::GRENADE_LAUNCHER)
 		{
-			float colorValue = myGrenadeLauncherAmmoInClip / float(myGrenadeLauncherClipSize);
+			colorValue = myGrenadeLauncherAmmoInClip / float(myGrenadeLauncherClipSize);
 			myAmmoTotalText->SetText(std::to_string(myGrenadeLauncherAmmoTotal));
-			myAmmoTotalText->SetColor({ 1.f - colorValue, colorValue, 1.f, 0.5f });
 		}
+
+		myAmmoTotalText->SetColor({ 1.f, colorValue, colorValue, 0.75f });
 
 		if (myShowGUITutorial < SHOWTUTORIALTIME)
 		{
@@ -165,11 +166,14 @@ namespace GUI
 
 
 		CU::Vector3<float> oldPos(myHealthOrientation.GetPos());
+		CU::Vector3<float> offset(myHealthOrientation.GetForward() * -0.25f);
+		offset += myHealthOrientation.GetUp() * 0.1f;
 		myHealthOrientation.SetPos(CU::Vector3<float>());
-		myHealthOrientation = myHealthOrientation * CU::Matrix44<float>::CreateRotateAroundZ(3.14f * 0.5f);
+		myHealthOrientation = myRotationMatrix * myHealthOrientation;
 
+		myHealthOrientation.SetPos(oldPos + offset);
 		myAmmoTotalText->SetOrientation(myHealthOrientation);
-		myAmmoTotalText->Render(myScene->GetCamera(), 500.f);
+		myAmmoTotalText->Render(myScene->GetCamera(), 800.f);
 		myHealthOrientation.SetPos(oldPos);
 	}
 

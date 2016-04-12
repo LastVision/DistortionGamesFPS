@@ -7,7 +7,12 @@ UpgradeComponent::UpgradeComponent(Entity& aEntity, const UpgradeComponentData& 
 	: Component(aEntity)
 	, myData(aData)
 {
-	PostMaster::GetInstance()->SendMessage(EmitterMessage("Upgrade", myEntity.GetOrientation().GetPos(), { 0.f, 1.f, 0.f }, &myEntity));
+
+
+	CU::Vector3<float> pos = myEntity.GetOrientation().GetPos();
+	pos.y += 0.25f;
+
+	PostMaster::GetInstance()->SendMessage(EmitterMessage("Upgrade", pos, &myEntity));
 }
 
 

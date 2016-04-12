@@ -99,6 +99,7 @@ private:
 	CU::Vector3<float> myMarkerPosition;
 
 	bool myRenderMarker;
+	bool myIsCoOp;
 
 	struct PlayerAnimationData
 	{
