@@ -224,16 +224,23 @@ void LobbyState::ReceiveMessage(const OnClickMessage& aMessage)
 
 void LobbyState::ReceiveMessage(const OnRadioButtonMessage& aMessage)
 {
-	DL_ASSERT_EXP(aMessage.myEvent == eOnRadioButtonEvent::LEVEL_SELECT, "Only level select in lobby state.");
+	DL_ASSERT_EXP(aMessage.myEvent == eOnRadioButtonEvent::LEVEL_SELECT
+		|| aMessage.myEvent == eOnRadioButtonEvent::DIFFICULTY_SELECT, "Only level select in lobby state.");
 
-	
-	int levelMusic = aMessage.myID;
-	levelMusic = min(levelMusic, 2);
-	std::string musicEvent("Play_ElevatorToLevel" + std::to_string(levelMusic));
-	Prism::Audio::AudioInterface::GetInstance()->PostEvent(musicEvent.c_str(), 0);
-	if (ClientNetworkManager::GetInstance()->GetGID() == 1)
+	if (aMessage.myEvent == eOnRadioButtonEvent::LEVEL_SELECT)
 	{
-		ClientNetworkManager::GetInstance()->AddMessage(NetMessageSetLevel(aMessage.myID));
+		int levelMusic = aMessage.myID;
+		levelMusic = min(levelMusic, 2);
+		std::string musicEvent("Play_ElevatorToLevel" + std::to_string(levelMusic));
+		Prism::Audio::AudioInterface::GetInstance()->PostEvent(musicEvent.c_str(), 0);
+		if (ClientNetworkManager::GetInstance()->GetGID() == 1)
+		{
+			ClientNetworkManager::GetInstance()->AddMessage(NetMessageSetLevel(aMessage.myID));
+		}
+	}
+	else if (aMessage.myEvent == eOnRadioButtonEvent::DIFFICULTY_SELECT)
+	{
+		int apa = 5;
 	}
 }
 
