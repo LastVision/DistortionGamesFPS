@@ -710,6 +710,15 @@ void FirstPersonRenderComponent::ReceiveNetworkMessage(const NetMessagePressETex
 	}
 }
 
+void FirstPersonRenderComponent::OnResize(CU::Vector2<float> aNewSize)
+{
+	CU::Vector2<float> hotspot = aNewSize / 2.f;
+
+	myDamageIndicator->SetSize(aNewSize, hotspot);
+	myPickupIndicator->SetSize(aNewSize, hotspot);
+	myLowLifeIndicator->SetSize(aNewSize, hotspot);
+}
+
 void FirstPersonRenderComponent::ReceiveNote(const UpgradeNote& aNote)
 {
 	if (aNote.myData.myClipSizeModifier > 0)
