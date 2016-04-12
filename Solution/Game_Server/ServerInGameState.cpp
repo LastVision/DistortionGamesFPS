@@ -129,7 +129,10 @@ void ServerInGameState::ReceiveNetworkMessage(const NetMessageRequestStartLevel&
 
 void ServerInGameState::ReceiveNetworkMessage(const NetMessageLevelLoaded& aMessage, const sockaddr_in&)
 {
-	myRespondedClients.Add(aMessage.mySenderID);
+	if (myRespondedClients.Find(aMessage.mySenderID) == myRespondedClients.FoundNone)
+	{
+		myRespondedClients.Add(aMessage.mySenderID);
+	}
 	
 }
 
