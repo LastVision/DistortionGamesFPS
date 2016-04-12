@@ -56,6 +56,11 @@ namespace GUI
 		Prism::Bar3D* myGrenadeLauncherIcon;
 
 		Prism::TextProxy* myAmmoTotalText;
+
+		int myCurrentHealth;
+		int myMaxHealth;
+
+		float myLowHealthTimer;
 	};
 
 }
