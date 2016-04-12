@@ -657,6 +657,11 @@ void FirstPersonRenderComponent::ReceiveNetworkMessage(const NetMessageHealth& a
 
 		myMaxHealth = aMessage.myMaxHealth;
 		myCurrentHealth = aMessage.myCurrentHealth;
+
+		if (myCurrentHealth == 0)
+		{
+			myDisplayHealthIndicatorTimer = 0.f;
+		}
 	}
 }
 
