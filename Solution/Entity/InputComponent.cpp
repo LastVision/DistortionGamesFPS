@@ -50,6 +50,7 @@ InputComponent::InputComponent(Entity& anEntity, const InputComponentData& aData
 		Prism::PhysicsInterface::GetInstance()->SetClientID(myEntity.GetComponent<PhysicsComponent>()->GetCapsuleControllerId());
 		Prism::PhysicsInterface::GetInstance()->SetPlayerOrientation(&myOrientation);
 		Prism::PhysicsInterface::GetInstance()->SetPlayerInputData(*myData);
+		Prism::PhysicsInterface::GetInstance()->SetPlayerGID(myEntity.GetGID());
 	}
 #endif
 

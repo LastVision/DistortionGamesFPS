@@ -22,7 +22,7 @@ void ServerStartState::InitState(ServerStateStackProxy* aStateStackProxy)
 	myStateStatus = eStateStatus::KEEP_STATE;
 	myIsActiveState = true;
 	ServerNetworkManager::GetInstance()->Subscribe(eNetMessageType::ON_CONNECT, this);
-	Utility::Printf("State: Start", eConsoleColor::AQUA_TEXT);
+	Utility::Printf("State: Start", eConsoleColor::AQUA_TEXT, true);
 }
 
 void ServerStartState::EndState()
@@ -38,7 +38,7 @@ const eStateStatus ServerStartState::Update(const float)
 
 void ServerStartState::ResumeState()
 {
-	Utility::Printf("State: Start", eConsoleColor::AQUA_TEXT);
+	Utility::Printf("State: Start", eConsoleColor::AQUA_TEXT, true);
 	ServerNetworkManager::GetInstance()->AllowNewConnections(true);
 	ServerNetworkManager::GetInstance()->Subscribe(eNetMessageType::ON_CONNECT, this);
 	myIsActiveState = true;

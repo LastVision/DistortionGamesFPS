@@ -29,6 +29,8 @@
 #include <TimerManager.h>
 #include "PhysicsComponentData.h"
 #include "../Entity/InputComponentData.h"
+#include "../Network/SharedNetworkManager.h"
+#include "../Network/NetMessageEntityState.h";
 #include "wavefront.h"
 #include "../InputWrapper/InputWrapper.h"
 #define MATERIAL_ID			0x01
@@ -288,7 +290,7 @@ namespace Prism
 #ifdef THREAD_INPUT
 		if (myIsClientSide == true)
 		{
-			
+
 
 			if (CU::InputWrapper::GetInstance()->KeyDown(DIK_SPACE))
 			{
@@ -330,10 +332,26 @@ namespace Prism
 				++count;
 			}
 
+
 			if (count > 0)
 			{
 				magnitude /= count;
 			}
+
+			if (CU::Length(movement) < 0.02f)
+			{
+				if (myState != eEntityState::IDLE)
+				{
+					myState = eEntityState::IDLE;
+					SharedNetworkManager::GetInstance()->AddMessage<NetMessageEntityState>(NetMessageEntityState(myState, myPlayerGID));
+				}
+			}
+			else if (myState != eEntityState::WALK)
+			{
+				myState = eEntityState::WALK;
+				SharedNetworkManager::GetInstance()->AddMessage<NetMessageEntityState>(NetMessageEntityState(myState, myPlayerGID));
+			}
+
 			bool isSprinting = false;
 			bool shouldDecreaseEnergy = true;
 			if (CU::InputWrapper::GetInstance()->KeyIsPressed(DIK_LSHIFT))
@@ -650,7 +668,7 @@ namespace Prism
 		myPhysicsSDK->getVisualDebugger()->setVisualDebuggerFlag(physx::PxVisualDebuggerFlag::eTRANSMIT_CONTACTS, true);
 		myPhysicsSDK->getVisualDebugger()->setVisualDebuggerFlag(physx::PxVisualDebuggerFlag::eTRANSMIT_SCENEQUERIES, true);
 #endif
-}
+	}
 
 	void PhysicsManager::onPvdDisconnected(physx::debugger::comm::PvdConnection&)
 	{
@@ -1076,6 +1094,11 @@ namespace Prism
 	void PhysicsManager::SetInputComponentData(const InputComponentData& aPlayerInputData)
 	{
 		myPlayerInputData = &aPlayerInputData;
+	}
+
+	void PhysicsManager::SetPlayerGID(int anID)
+	{
+		myPlayerGID = anID;
 	}
 
 }

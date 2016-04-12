@@ -33,7 +33,7 @@ FirstPersonRenderComponent::FirstPersonRenderComponent(Entity& aEntity, Prism::S
 	, myCurrentState(ePlayerState::PISTOL_IDLE)
 	, myIntentions(8)
 	, myFirstTimeActivateAnimation(false)
-	, myCoOpPositions(8)
+	, myCoOpCircles(8)
 	, myCoOpRespawns(8)
 	, myDisplayDamageIndicatorTimer(0)
 	, myDisplayDamageIndicatorTimerMax(0.7f)
@@ -50,6 +50,11 @@ FirstPersonRenderComponent::FirstPersonRenderComponent(Entity& aEntity, Prism::S
 	, myGrenadeLauncherHasUpdated(false)
 	, myDisplayPickupTime(2.f)
 {
+	CoOpCircle coopCircle;
+	coopCircle.myPosition = { 0.f, 0.f, 0.f };
+	coopCircle.myLifePercentage = 1.f;
+	myCoOpCircles.Add(coopCircle);
+
 	bool shouldUseSpecialFoV = true;
 	CU::Vector2<float> size(128.f, 128.f);
 	myCrosshair = Prism::ModelLoader::GetInstance()->LoadSprite("Data/Resource/Texture/UI/T_crosshair.dds", size, size * 0.5f);
@@ -165,7 +170,7 @@ FirstPersonRenderComponent::~FirstPersonRenderComponent()
 	SAFE_DELETE(myShotgunProxy);
 	SAFE_DELETE(myGrenadeLauncherProxy);
 	SAFE_DELETE(myMarker);
-	myCoOpPositions.RemoveAll();
+	myCoOpCircles.RemoveAll();
 	myCoOpRespawns.RemoveAll();
 
 
@@ -347,10 +352,9 @@ void FirstPersonRenderComponent::Update(float aDelta)
 
 void FirstPersonRenderComponent::UpdateCoOpPositions(const CU::GrowingArray<Entity*>& somePlayers)
 {
-	myCoOpPositions.RemoveAll();
-	for (int i = 0; i < somePlayers.Size(); ++i)
+	if (somePlayers.Size() > 0)
 	{
-		myCoOpPositions.Add(somePlayers[i]->GetOrientation().GetPos());
+		myCoOpCircles[0].myPosition = somePlayers[0]->GetOrientation().GetPos();
 	}
 }
 
@@ -417,10 +421,10 @@ void FirstPersonRenderComponent::Render(Prism::Texture* aArmDepthTexture, bool a
 		}
 	}
 
-	for (int i = 0; i < myCoOpPositions.Size(); ++i)
+	for (int i = 0; i < myCoOpCircles.Size(); ++i)
 	{
 		CU::Matrix44<float> renderPos;
-		CU::Vector3<float> tempPos(myCoOpPositions[i]);
+		CU::Vector3<float> tempPos(myCoOpCircles[i].myPosition);
 		tempPos.y += 2.f;
 		float toBuddy = CU::Dot(tempPos - myInputComponentEyeOrientation.GetPos(), myInputComponentEyeOrientation.GetForward());
 		if (toBuddy < 0.f)
@@ -444,39 +448,45 @@ void FirstPersonRenderComponent::Render(Prism::Texture* aArmDepthTexture, bool a
 		newRenderPos.y += windowSize.y;
 		newRenderPos.y = fmaxf(0.f, fminf(newRenderPos.y, windowSize.y));
 
-		myCoOpSprite->Render({ newRenderPos.x, newRenderPos.y });
-	}
+		float color = myCoOpCircles[i].myLifePercentage;
 
-	for (int i = 0; i < myCoOpRespawns.Size(); ++i)
-	{
-		CU::Matrix44<float> renderPos;
-		CU::Vector3<float> tempPos(myCoOpRespawns[i].myPosition);
-		//tempPos.y += 2.f;
-		float toBuddy = CU::Dot(tempPos - myInputComponentEyeOrientation.GetPos(), myInputComponentEyeOrientation.GetForward());
-		if (toBuddy < 0.f)
+		myCoOpSprite->Render({ newRenderPos.x, newRenderPos.y }, { 1.f, 1.f }, { 1.f - color, color, color, 1.f });
+		if (myCoOpRespawns.Size() > 0)
 		{
-			continue;
+			Prism::Engine::GetInstance()->PrintText(myCoOpRespawns[i].myCurrentValue, { newRenderPos.x, newRenderPos.y }, Prism::eTextType::RELEASE_TEXT);
 		}
-		renderPos.SetPos(tempPos);
-		renderPos = renderPos * CU::InverseSimple(myInputComponentEyeOrientation);
-		renderPos = renderPos * myEntity.GetComponent<InputComponent>()->GetCamera()->GetProjection();
-
-		CU::Vector3<float> newRenderPos = renderPos.GetPos();
-		newRenderPos /= renderPos.GetPos4().w;
-
-		newRenderPos += 1.f;
-		newRenderPos *= 0.5f;
-		newRenderPos.x *= windowSize.x;
-		newRenderPos.y *= windowSize.y;
-		newRenderPos.y -= windowSize.y;
-
-		newRenderPos.x = fmaxf(0.f, fminf(newRenderPos.x, windowSize.x));
-		newRenderPos.y += windowSize.y;
-		newRenderPos.y = fmaxf(0.f, fminf(newRenderPos.y, windowSize.y));
-
-		//myCoOpSprite->Render({ newRenderPos.x, newRenderPos.y });
-		Prism::Engine::GetInstance()->PrintText(myCoOpRespawns[i].myCurrentValue, { newRenderPos.x, newRenderPos.y }, Prism::eTextType::RELEASE_TEXT);
 	}
+
+	//for (int i = 0; i < myCoOpRespawns.Size(); ++i)
+	//{
+	//	CU::Matrix44<float> renderPos;
+	//	CU::Vector3<float> tempPos(myCoOpRespawns[i].myPosition);
+	//	//tempPos.y += 2.f;
+	//	float toBuddy = CU::Dot(tempPos - myInputComponentEyeOrientation.GetPos(), myInputComponentEyeOrientation.GetForward());
+	//	if (toBuddy < 0.f)
+	//	{
+	//		continue;
+	//	}
+	//	renderPos.SetPos(tempPos);
+	//	renderPos = renderPos * CU::InverseSimple(myInputComponentEyeOrientation);
+	//	renderPos = renderPos * myEntity.GetComponent<InputComponent>()->GetCamera()->GetProjection();
+	//
+	//	CU::Vector3<float> newRenderPos = renderPos.GetPos();
+	//	newRenderPos /= renderPos.GetPos4().w;
+	//
+	//	newRenderPos += 1.f;
+	//	newRenderPos *= 0.5f;
+	//	newRenderPos.x *= windowSize.x;
+	//	newRenderPos.y *= windowSize.y;
+	//	newRenderPos.y -= windowSize.y;
+	//
+	//	newRenderPos.x = fmaxf(0.f, fminf(newRenderPos.x, windowSize.x));
+	//	newRenderPos.y += windowSize.y;
+	//	newRenderPos.y = fmaxf(0.f, fminf(newRenderPos.y, windowSize.y));
+	//
+	//	//myCoOpSprite->Render({ newRenderPos.x, newRenderPos.y });
+	//	Prism::Engine::GetInstance()->PrintText(myCoOpRespawns[i].myCurrentValue, { newRenderPos.x, newRenderPos.y }, Prism::eTextType::RELEASE_TEXT);
+	//}
 
 	for (int i = 0; i < myPressETexts.Size(); ++i)
 	{
@@ -662,6 +672,10 @@ void FirstPersonRenderComponent::ReceiveNetworkMessage(const NetMessageHealth& a
 		{
 			myDisplayHealthIndicatorTimer = 0.f;
 		}
+	}
+	else
+	{
+		myCoOpCircles[0].myLifePercentage = float(aMessage.myCurrentHealth) / aMessage.myMaxHealth;
 	}
 }
 

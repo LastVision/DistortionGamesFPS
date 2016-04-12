@@ -163,8 +163,14 @@ namespace GUI
 		}
 		myHealthIcon->Render(*myScene->GetCamera(), myHealthOrientation, healthColor);
 
+
+		CU::Vector3<float> oldPos(myHealthOrientation.GetPos());
+		myHealthOrientation.SetPos(CU::Vector3<float>());
+		myHealthOrientation = myHealthOrientation * CU::Matrix44<float>::CreateRotateAroundZ(3.14f * 0.5f);
+
 		myAmmoTotalText->SetOrientation(myHealthOrientation);
 		myAmmoTotalText->Render(myScene->GetCamera(), 500.f);
+		myHealthOrientation.SetPos(oldPos);
 	}
 
 	void GUIManager3D::Rebuild(const eWeaponType aWeaponType, int aSize)
