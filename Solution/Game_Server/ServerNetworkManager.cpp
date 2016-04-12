@@ -169,6 +169,10 @@ void ServerNetworkManager::SendThread()
 	{
 		for (SendBufferMessage arr : mySendBuffer[myCurrentSendBuffer])
 		{
+			if (arr.myBuffer.size() == 0)
+			{
+				continue;
+			}
 			if (arr.myTargetID == UINT_MAX)
 			{
 				myNetwork->Send(arr.myBuffer, arr.myTargetAddress);
@@ -396,7 +400,7 @@ void ServerNetworkManager::AddImportantMessage(std::vector<char> aBuffer, unsign
 		msg.myImportantID = aImportantID;
 		msg.myMessageType = aBuffer[4];
 		msg.mySenders.Init(myClients.Size());
-		for (Connection c : myClients)
+		for (const Connection& c : myClients)
 		{
 			if (aBuffer[13] == 0 || aBuffer[13] == static_cast<int>(c.myID))
 			{
