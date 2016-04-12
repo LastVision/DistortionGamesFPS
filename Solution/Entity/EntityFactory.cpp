@@ -165,6 +165,10 @@ void EntityFactory::LoadEntity(const char* aEntityPath)
 		{
 			myComponentLoader->LoadRotationComponent(entityDocument, e, newData.myRotationData);
 		}
+		else if (elementName == CU::ToLower("VisualExplosionComponent"))
+		{
+			myComponentLoader->LoadVisualExplosionComponent(entityDocument, e, newData.myVisualExplosionData);
+		}
 		else
 		{
 			std::string errorMessage = "The component " + elementName +

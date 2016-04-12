@@ -126,6 +126,9 @@
     <ClCompile Include="RotationComponent.cpp">
       <Filter>Component</Filter>
     </ClCompile>
+    <ClCompile Include="VisualExplosionComponent.cpp">
+      <Filter>Component</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
@@ -282,6 +285,12 @@
       <Filter>Component</Filter>
     </ClInclude>
     <ClInclude Include="RotationComponentData.h">
+      <Filter>EntityFactory\EntityData\ComponentData</Filter>
+    </ClInclude>
+    <ClInclude Include="VisualExplosionComponent.h">
+      <Filter>Component</Filter>
+    </ClInclude>
+    <ClInclude Include="VisualExplosionComponentData.h">
       <Filter>EntityFactory\EntityData\ComponentData</Filter>
     </ClInclude>
   </ItemGroup>

@@ -85,6 +85,7 @@ private:
 	CU::GrowingArray<Prism::SpotLightTextureProjection*> mySpotLightsTextureProjection;
 
 	Entity* myPlayer;
+	Entity* myVisualExplosion;
 	EmitterManager* myEmitterManager;
 	bool myInitDone;
 

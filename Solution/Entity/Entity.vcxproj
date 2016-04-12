@@ -215,6 +215,8 @@
     <ClInclude Include="UpgradeComponent.h" />
     <ClInclude Include="UpgradeComponentData.h" />
     <ClInclude Include="UpgradeNote.h" />
+    <ClInclude Include="VisualExplosionComponent.h" />
+    <ClInclude Include="VisualExplosionComponentData.h" />
     <ClInclude Include="Weapon.h" />
   </ItemGroup>
   <ItemGroup>
@@ -258,6 +260,7 @@
     </ClCompile>
     <ClCompile Include="TriggerComponent.cpp" />
     <ClCompile Include="UpgradeComponent.cpp" />
+    <ClCompile Include="VisualExplosionComponent.cpp" />
     <ClCompile Include="Weapon.cpp" />
   </ItemGroup>
   <ItemGroup>

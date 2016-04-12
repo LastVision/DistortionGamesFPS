@@ -23,6 +23,7 @@
 #include "BulletComponent.h"
 #include "SoundComponent.h"
 #include "RotationComponent.h"
+#include "VisualExplosionComponent.h"
 
 Entity::Entity(unsigned int aGID, const EntityData& aEntityData, Prism::Scene* aScene, bool aClientSide, const CU::Vector3<float>& aStartPosition,
 	const CU::Vector3f& aRotation, const CU::Vector3f& aScale, const std::string& aSubType)
@@ -163,6 +164,10 @@ Entity::Entity(unsigned int aGID, const EntityData& aEntityData, Prism::Scene* a
 	if (aEntityData.myRotationData.myExistsInEntity == true && myIsClientSide == true)
 	{
 		myComponents[static_cast<int>(eComponentType::ROTATION)] = new RotationComponent(*this, aEntityData.myRotationData);
+	}
+	if (aEntityData.myVisualExplosionData.myExistsInEntity == true && myIsClientSide == true)
+	{
+		myComponents[static_cast<int>(eComponentType::VISUAL_EXPLOSION)] = new VisualExplosionComponent(*this, aEntityData.myVisualExplosionData, myOrientation);
 	}
 
 	Reset();

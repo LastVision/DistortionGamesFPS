@@ -11,6 +11,7 @@
 #include "TriggerComponentData.h"
 #include "UpgradeComponentData.h"
 #include "RotationComponentData.h"
+#include "VisualExplosionComponentData.h"
 #include "XMLReader.h"
 #include "GameEnum.h"
 
@@ -352,6 +353,11 @@ void ComponentLoader::LoadRotationComponent(XMLReader& aDocument, tinyxml2::XMLE
 {
 	aOutputData.myExistsInEntity = true;
 	aDocument.ForceReadAttribute(aDocument.ForceFindFirstChild(aSourceElement, "Speed"), "value", aOutputData.myRotationSpeed);
+}
+
+void ComponentLoader::LoadVisualExplosionComponent(XMLReader& aDocument, tinyxml2::XMLElement* aSourceElement, VisualExplosionComponentData& aOutputData)
+{
+	aOutputData.myExistsInEntity = true;
 }
 
 void ComponentLoader::LoadFirstPersonRenderComponent(XMLReader& aDocument, tinyxml2::XMLElement* aSourceElement, FirstPersonRenderComponentData& aOutputData)
