@@ -148,11 +148,14 @@ void ServerNetworkManager::ReceieveThread()
 		}
 		for (Buffer message : someBuffers)
 		{
-			NetMessage toDeserialize;
-			toDeserialize.DeSerializeFirst(message.myData);
-			if (toDeserialize.myGameID == myGameIdentifier)
+			if (message.myLength >= 4)
 			{
-				myReceieveBuffer[myCurrentBuffer ^ 1].Add(message);
+				NetMessage toDeserialize;
+				toDeserialize.DeSerializeFirst(message.myData);
+				if (toDeserialize.myGameID == myGameIdentifier)
+				{
+					myReceieveBuffer[myCurrentBuffer ^ 1].Add(message);
+				}
 			}
 		}
 		ReceieveIsDone();
