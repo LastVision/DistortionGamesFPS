@@ -5,7 +5,8 @@
 class NetMessageText : public NetImportantMessage
 {
 public:
-	NetMessageText(std::string aText, float aTime = 5.f, CU::Vector4<float> aColor = { 1.f, 1.f, 1.f, 1.f }, int aTextRows = 0, bool aIsMissionText = false, bool aShouldShow = true);
+	NetMessageText(std::string aText, float aTime = 5.f, CU::Vector4<float> aColor = { 1.f, 1.f, 1.f, 1.f }
+	, int aTextRows = 0, bool aIsMissionText = false, bool aShouldShow = true, const std::string& aSoundEventName = "");
 	NetMessageText();
 	~NetMessageText(){};
 
@@ -15,13 +16,15 @@ public:
 	bool myIsMissionText;
 	bool myShouldShow;
 	int myTextRows;
+	std::string mySoundEvent;
 
 private:
 	void DoSerialize(StreamType& aStream) override;
 	void DoDeSerialize(StreamType& aStream) override;
 };
 
-inline NetMessageText::NetMessageText(std::string aText, float aTime, CU::Vector4<float> aColor, int aTextRows, bool aIsMissionText, bool aShouldShow)
+inline NetMessageText::NetMessageText(std::string aText, float aTime, CU::Vector4<float> aColor
+	, int aTextRows, bool aIsMissionText, bool aShouldShow, const std::string& aSoundEventName)
 	: NetImportantMessage(eNetMessageType::TEXT)
 	, myText(aText)
 	, myTime(aTime)
@@ -29,6 +32,7 @@ inline NetMessageText::NetMessageText(std::string aText, float aTime, CU::Vector
 	, myTextRows(aTextRows)
 	, myIsMissionText(aIsMissionText)
 	, myShouldShow(aShouldShow)
+	, mySoundEvent(aSoundEventName)
 {
 }
 
@@ -47,6 +51,7 @@ inline void NetMessageText::DoSerialize(StreamType& aStream)
 	SERIALIZE(aStream, myTextRows);
 	SERIALIZE(aStream, myIsMissionText);
 	SERIALIZE(aStream, myShouldShow);
+	SERIALIZE(aStream, mySoundEvent);
 }
 
 inline void NetMessageText::DoDeSerialize(StreamType& aStream)
@@ -59,4 +64,5 @@ inline void NetMessageText::DoDeSerialize(StreamType& aStream)
 	DESERIALIZE(aStream, myTextRows);
 	DESERIALIZE(aStream, myIsMissionText);
 	DESERIALIZE(aStream, myShouldShow);
+	DESERIALIZE(aStream, mySoundEvent);
 }

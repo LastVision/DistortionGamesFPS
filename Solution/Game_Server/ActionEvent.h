@@ -14,4 +14,5 @@ struct ActionEvent
 	bool myShow;
 	CU::Vector3<float> myPosition;
 	int myTextRows = 0;
+	std::string mySoundEvent = "";
 };
