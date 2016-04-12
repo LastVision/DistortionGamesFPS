@@ -58,7 +58,7 @@ namespace Prism
 		void SetPhysicsDone();
 		void SetSwapDone();
 #endif
-		bool GetInitDone() const;
+		volatile bool GetInitDone() const;
 
 		void EndFrame();
 		void Add(const PhysicsCallbackStruct& aCallbackStruct);
@@ -362,7 +362,7 @@ namespace Prism
 	}
 #endif
 
-	inline bool PhysicsManager::GetInitDone() const
+	inline volatile bool PhysicsManager::GetInitDone() const
 	{
 		return myInitDone;
 	}
