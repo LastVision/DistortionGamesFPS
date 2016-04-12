@@ -145,6 +145,10 @@ void ClientNetworkManager::SendThread()
 	{
 		for (SendBufferMessage arr : mySendBuffer[myCurrentSendBuffer])
 		{
+			if (arr.myBuffer.size() == 0)
+			{
+				continue;
+			}
 			if (arr.myTargetID == UINT_MAX)
 			{
 				myNetwork->Send(arr.myBuffer, arr.myTargetAddress);
