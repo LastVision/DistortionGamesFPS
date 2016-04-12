@@ -200,6 +200,9 @@
     <ProjectReference Include="..\Memory\Memory.vcxproj">
       <Project>{25945336-03d1-42a6-8764-7ef11dbc42e6}</Project>
     </ProjectReference>
+    <ProjectReference Include="..\Timer\Timer.vcxproj">
+      <Project>{62c9b6f1-e90e-49c7-b0c6-3809fca2065d}</Project>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

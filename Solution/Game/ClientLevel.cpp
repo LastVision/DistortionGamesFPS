@@ -21,7 +21,6 @@
 #include <PhysicsComponent.h>
 #include <PhysicsInterface.h>
 #include <LevelLoadedMessage.h>
-
 #include <NetMessageConnectReply.h>
 #include <NetMessageDisconnect.h>
 #include <NetMessageEntityState.h>
@@ -46,7 +45,6 @@
 #include <GrenadeComponent.h>
 #include <GUIManager.h>
 
-#include <PhysicsInterface.h>
 #include <PostMaster.h>
 #include <ShootingComponent.h>
 #include <TriggerComponent.h>
@@ -214,6 +212,7 @@ void ClientLevel::Init(const std::string& aWeaponSettingsPath)
 
 	myForceStrengthPistol = myPlayer->GetComponent<ShootingComponent>()->GetWeaponForceStrength(eWeaponType::PISTOL);
 	myForceStrengthShotgun = myPlayer->GetComponent<ShootingComponent>()->GetWeaponForceStrength(eWeaponType::SHOTGUN);
+	Prism::PhysicsInterface::GetInstance()->SetClientSide(true);
 }
 
 void ClientLevel::SetMinMax(const CU::Vector3<float>& aMinPoint, const CU::Vector3<float>& aMaxPoint)
@@ -353,7 +352,6 @@ void ClientLevel::Render()
 				myScene->GetRoomManager()->GetPreviousPlayerRoom()->GetEmitter()->SetShouldRender(false);
 			}
 		}
-
 		myEmitterManager->RenderEmitters();
 
 		myPlayer->GetComponent<FirstPersonRenderComponent>()->Render(myDeferredRenderer->GetArmDepthStencilTexture(), myLevelID == 0);

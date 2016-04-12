@@ -104,19 +104,8 @@ Entity::Entity(unsigned int aGID, const EntityData& aEntityData, Prism::Scene* a
 		myComponents[static_cast<int>(eComponentType::SHOOTING)] = new ShootingComponent(*this, aScene);
 	}
 
-	if (aEntityData.myInputData.myExistsInEntity == true && myIsClientSide == true)
-	{
-		myComponents[static_cast<int>(eComponentType::INPUT)] = new InputComponent(*this, aEntityData.myInputData);
-	}
+	
 
-	if (aEntityData.myFirstPersonRenderData.myExistsInEntity == true && myIsClientSide == true)
-	{
-		myComponents[static_cast<int>(eComponentType::FIRST_PERSON_RENDER)] = new FirstPersonRenderComponent(*this, aScene);
-		if (aEntityData.myShootingData.myExistsInEntity == true)
-		{
-			GetComponent<ShootingComponent>()->Init(aScene);
-		}
-	}
 	if (aEntityData.myProjecileData.myExistsInEntity == true)
 	{
 		myComponents[static_cast<int>(eComponentType::BULLET)] = new BulletComponent(*this, myOrientation);
@@ -156,6 +145,18 @@ Entity::Entity(unsigned int aGID, const EntityData& aEntityData, Prism::Scene* a
 
 			myComponents[static_cast<int>(eComponentType::PHYSICS)] = new PhysicsComponent(*this, aEntityData.myPhysicsData
 				, "no path");
+		}
+	}
+	if (aEntityData.myInputData.myExistsInEntity == true && myIsClientSide == true)
+	{
+		myComponents[static_cast<int>(eComponentType::INPUT)] = new InputComponent(*this, aEntityData.myInputData);
+	}
+	if (aEntityData.myFirstPersonRenderData.myExistsInEntity == true && myIsClientSide == true)
+	{
+		myComponents[static_cast<int>(eComponentType::FIRST_PERSON_RENDER)] = new FirstPersonRenderComponent(*this, aScene);
+		if (aEntityData.myShootingData.myExistsInEntity == true)
+		{
+			GetComponent<ShootingComponent>()->Init(aScene);
 		}
 	}
 

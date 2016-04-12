@@ -112,6 +112,16 @@ namespace Prism
 		myManager->Move(aId, aDirection, aMinDisplacement, aDeltaTime);
 	}
 
+	void PhysicsInterface::MoveForward(bool move)
+	{
+		myManager->myMoveForward = move;
+	}
+
+	void PhysicsInterface::MoveBackward(bool move)
+	{
+		myManager->myMoveBackward = move;
+	}
+
 	void PhysicsInterface::UpdateOrientation(physx::PxRigidDynamic* aDynamicBody, physx::PxShape** aShape, float* aThread4x4)
 	{
 		myManager->UpdateOrientation(aDynamicBody, aShape, aThread4x4);
@@ -199,6 +209,31 @@ namespace Prism
 	void PhysicsInterface::Wake(int aCapsuleID)
 	{
 		myManager->Wake(aCapsuleID);
+	}
+
+	int PhysicsInterface::GetFPS()
+	{
+		return myManager->physicsFPS;
+	}
+
+	void PhysicsInterface::SetClientSide(bool aIsClientSide)
+	{
+		myManager->SetIsClientSide(aIsClientSide);
+	}
+
+	void PhysicsInterface::SetClientID(int anID)
+	{
+		myManager->SetPlayerCapsule(anID);
+	}
+
+	void PhysicsInterface::SetPlayerOrientation(CU::Matrix44<float>* anOrientation)
+	{
+		myManager->SetPlayerOrientation(anOrientation);
+	}
+
+	void PhysicsInterface::SetPlayerInputData(const InputComponentData& aData)
+	{
+		myManager->SetInputComponentData(aData);
 	}
 
 	PhysicsInterface::PhysicsInterface(std::function<void(PhysicsComponent*, PhysicsComponent*, bool)> anOnTriggerCallback, bool aIsServer)

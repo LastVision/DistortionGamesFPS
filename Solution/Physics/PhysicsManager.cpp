@@ -28,9 +28,9 @@
 #include <PxQueryReport.h>
 #include <TimerManager.h>
 #include "PhysicsComponentData.h"
-
+#include "../Entity/InputComponentData.h"
 #include "wavefront.h"
-
+#include "../InputWrapper/InputWrapper.h"
 #define MATERIAL_ID			0x01
 
 namespace Prism
@@ -51,6 +51,8 @@ namespace Prism
 		, myIsSwapping(false)
 		, myIsReading(false)
 		, myIsServer(aIsServer)
+		, myIsOverheated(false)
+		, mySprintEnergy(0.0f)
 	{
 		myRaycastJobs[0].Init(64);
 		myRaycastJobs[1].Init(64);
@@ -134,6 +136,8 @@ namespace Prism
 		myScene->setSimulationEventCallback(this);
 
 #ifdef _DEBUG
+		myScene->setVisualizationParameter(physx::PxVisualizationParameter::eSCALE, 1.f);
+		myScene->setVisualizationParameter(physx::PxVisualizationParameter::eCOLLISION_SHAPES, 1.f);
 		if (aIsServer == true && SERVER_CONNECT_TO_DEBUGGER == true
 			|| aIsServer == false && SERVER_CONNECT_TO_DEBUGGER == false)
 		{
@@ -216,18 +220,27 @@ namespace Prism
 
 	void PhysicsManager::ThreadUpdate()
 	{
+		float totalTime = 0;
 		while (myQuit == false)
 		{
-			myTimerManager->Update();
-			Update();
 
-			Swap();
-			if (myLogicDone == true)
+			myTimerManager->Update();
+			totalTime += myTimerManager->GetMasterTimer().GetTime().GetFrameTime();
+			if (totalTime >= (1.0f / 60.0f))
 			{
-				SetPhysicsDone();
-				//WaitForSwap();
+				totalTime = 0;
+				Update();
+
+				Swap();
+				if (myLogicDone == true)
+				{
+					SetPhysicsDone();
+					//WaitForSwap();
+				}
 			}
-			std::this_thread::sleep_for(std::chrono::milliseconds(16));
+
+			std::this_thread::yield();
+			//::Sleep(16);
 		}
 	}
 #endif
@@ -272,6 +285,109 @@ namespace Prism
 
 	void PhysicsManager::Update()
 	{
+#ifdef THREAD_INPUT
+		if (myIsClientSide == true)
+		{
+			
+
+			if (CU::InputWrapper::GetInstance()->KeyDown(DIK_SPACE))
+			{
+				if (GetAllowedToJump(myPlayerCapsule) == true)
+				{
+					myVerticalSpeed = 0.25f;
+				}
+			}
+
+			myVerticalSpeed -= myTimestep;
+			myVerticalSpeed = fmaxf(myVerticalSpeed, -0.5f);
+
+
+			CU::Vector3<float> movement;
+			float magnitude = 0.f;
+			int count = 0;
+			if (CU::InputWrapper::GetInstance()->KeyIsPressed(DIK_S))
+			{
+				movement.z -= 1.f;
+				magnitude += myPlayerInputData->myBackwardMultiplier;
+				++count;
+			}
+			if (CU::InputWrapper::GetInstance()->KeyIsPressed(DIK_W))
+			{
+				movement.z += 1.f;
+				magnitude += myPlayerInputData->myForwardMultiplier;
+				++count;
+			}
+			if (CU::InputWrapper::GetInstance()->KeyIsPressed(DIK_A))
+			{
+				movement.x -= 1.f;
+				magnitude += myPlayerInputData->mySidewaysMultiplier;
+				++count;
+			}
+			if (CU::InputWrapper::GetInstance()->KeyIsPressed(DIK_D))
+			{
+				movement.x += 1.f;
+				magnitude += myPlayerInputData->mySidewaysMultiplier;
+				++count;
+			}
+
+			if (count > 0)
+			{
+				magnitude /= count;
+			}
+			bool isSprinting = false;
+			bool shouldDecreaseEnergy = true;
+			if (CU::InputWrapper::GetInstance()->KeyIsPressed(DIK_LSHIFT))
+			{
+				if (mySprintEnergy < myPlayerInputData->myMaxSprintEnergy && myIsOverheated == false)
+				{
+					mySprintEnergy += myPlayerInputData->mySprintIncrease * myTimestep;
+					if (mySprintEnergy >= myPlayerInputData->myMaxSprintEnergy)
+					{
+						myIsOverheated = true;
+					}
+
+					if (movement.z > 0.f)
+					{
+						movement.z *= myPlayerInputData->mySprintMultiplier;
+						isSprinting = true;
+					}
+
+					shouldDecreaseEnergy = false;
+				}
+			}
+
+			if (shouldDecreaseEnergy == true && CU::InputWrapper::GetInstance()->KeyIsPressed(DIK_LSHIFT) == false)
+			{
+				mySprintEnergy -= myPlayerInputData->mySprintDecrease * myTimestep;
+				mySprintEnergy = fmaxf(mySprintEnergy, 0.f);
+			}
+
+			if (myIsOverheated == true && mySprintEnergy <= 0.f)
+			{
+				myIsOverheated = false;
+			}
+
+			/*if (CU::InputWrapper::GetInstance()->KeyIsPressed(DIK_LSHIFT))
+			{
+			movement *= myPlayerInputData->mySprintMultiplier;
+			}*/
+
+			movement = movement * (*myPlayerOrientation);
+			movement.y = 0.f;
+			CU::Normalize(movement);
+			movement *= myPlayerInputData->mySpeed * magnitude;
+
+			if (isSprinting == true)
+			{
+				movement *= myPlayerInputData->mySprintMultiplier;
+			}
+			movement.y = myVerticalSpeed;
+			Move(myPlayerCapsule, movement, 0.05f, 1.f / 60.f);
+
+		}
+#endif
+
+
 		if (!myScene)
 		{
 			DL_ASSERT("no scene in PhysicsManager");
@@ -311,8 +427,9 @@ namespace Prism
 				myControllerPositions[myCurrentIndex ^ 1][i].x = float(pos.x);
 				myControllerPositions[myCurrentIndex ^ 1][i].y = float(pos.y);
 				myControllerPositions[myCurrentIndex ^ 1][i].z = float(pos.z);
+
 			}
-		}	
+		}
 
 		for (int i = 0; i < myForceJobs[myCurrentIndex ^ 1].Size(); ++i)
 		{
@@ -391,8 +508,8 @@ namespace Prism
 	}
 
 	void PhysicsManager::RayCast(const CU::Vector3<float>& aOrigin, const CU::Vector3<float>& aNormalizedDirection
-		, float aMaxRayDistance, std::function<void(PhysicsComponent*, const CU::Vector3<float>&
-		, const CU::Vector3<float>&, const CU::Vector3<float>&)> aFunctionToCall, const PhysicsComponent* aComponent)
+		, float aMaxRayDistance, std::function < void(PhysicsComponent*, const CU::Vector3<float>&
+		, const CU::Vector3<float>&, const CU::Vector3<float>&) > aFunctionToCall, const PhysicsComponent* aComponent)
 	{
 		myRaycastJobs[myCurrentIndex].Add(RaycastJob(aOrigin, aNormalizedDirection, aMaxRayDistance, aFunctionToCall, aComponent));
 	}
@@ -431,7 +548,7 @@ namespace Prism
 		returnValue = myScene->raycast(origin, unitDirection, maxDistance, buffer);
 		CU::Vector3<float> hitPosition;
 		CU::Vector3<float> hitNormal;
-		
+
 		PhysicsComponent* ent = nullptr;//static_cast<PhysEntity*>(buffer.touches[myCurrentIndex].actor->userData);
 		if (returnValue == true)
 		{
@@ -445,7 +562,7 @@ namespace Prism
 					{
 						continue;
 					}
-					
+
 					physx::PxShapeFlags& flags = buffer.touches[i].shape->getFlags();
 					if (flags.isSet(physx::PxShapeFlag::eTRIGGER_SHAPE) == true)
 					{
@@ -457,7 +574,7 @@ namespace Prism
 					hitPosition.x = buffer.touches[i].position.x;
 					hitPosition.y = buffer.touches[i].position.y;
 					hitPosition.z = buffer.touches[i].position.z;
-					
+
 					hitNormal.x = buffer.touches[i].normal.x;
 					hitNormal.y = buffer.touches[i].normal.y;
 					hitNormal.z = buffer.touches[i].normal.z;
@@ -533,7 +650,7 @@ namespace Prism
 		myPhysicsSDK->getVisualDebugger()->setVisualDebuggerFlag(physx::PxVisualDebuggerFlag::eTRANSMIT_CONTACTS, true);
 		myPhysicsSDK->getVisualDebugger()->setVisualDebuggerFlag(physx::PxVisualDebuggerFlag::eTRANSMIT_SCENEQUERIES, true);
 #endif
-	}
+}
 
 	void PhysicsManager::onPvdDisconnected(physx::debugger::comm::PvdConnection&)
 	{
@@ -573,6 +690,12 @@ namespace Prism
 
 	void PhysicsManager::Move(const MoveJob& aMoveJob)
 	{
+		/*std::stringstream ss;
+		ss << "X : " << aMoveJob.myDirection.x << "\n"
+		<< "Y : " << aMoveJob.myDirection.y << "\n"
+		<< "Z : " << aMoveJob.myDirection.z << "\n";
+		OutputDebugStringA(ss.str().c_str());*/
+
 		physx::PxControllerFilters filter;
 		myControllerManager->getController(aMoveJob.myId)->move(
 			ConvertVector(aMoveJob.myDirection), aMoveJob.myMinDisplacement, aMoveJob.myDeltaTime, filter, nullptr);
@@ -654,7 +777,7 @@ namespace Prism
 
 	void PhysicsManager::GetPosition(int aId, CU::Vector3<float>& aPositionOut)
 	{
-		aPositionOut = myControllerPositions[myCurrentIndex ^1][aId];
+		aPositionOut = myControllerPositions[myCurrentIndex ^ 1][aId];
 	}
 
 	void PhysicsManager::Create(PhysicsComponent* aComponent, const PhysicsCallbackStruct& aPhysData
@@ -934,4 +1057,25 @@ namespace Prism
 
 		myIsReading = false;
 	}
+
+	void PhysicsManager::SetPlayerOrientation(CU::Matrix44<float>* aPlayerOrientation)
+	{
+		myPlayerOrientation = aPlayerOrientation;
+	}
+
+	void PhysicsManager::SetIsClientSide(bool aIsClientSide)
+	{
+		myIsClientSide = aIsClientSide;
+	}
+
+	void PhysicsManager::SetPlayerCapsule(int anID)
+	{
+		myPlayerCapsule = anID;
+	}
+
+	void PhysicsManager::SetInputComponentData(const InputComponentData& aPlayerInputData)
+	{
+		myPlayerInputData = &aPlayerInputData;
+	}
+
 }

@@ -24,14 +24,13 @@ InputComponent::InputComponent(Entity& anEntity, const InputComponentData& aData
 	: Component(anEntity)
 	, myPitch(CU::Vector3<float>(0, 1.f, 0), 0)
 	, myYaw(CU::Vector3<float>(1.f, 0, 0), 0)
-	, myData(aData)
 	, mySprintEnergy(0.f)
 	, myEnergyOverheat(false)
 	, myIsInOptionsMenu(false)
 {
 	XMLReader reader;
 	reader.OpenDocument("Data/Setting/SET_player.xml");
-
+	myData = &aData;
 	tinyxml2::XMLElement* element = reader.ForceFindFirstChild("root");
 
 	reader.ForceReadAttribute(reader.ForceFindFirstChild(element, "eyeHeight"), "value", myHeight);
@@ -45,9 +44,16 @@ InputComponent::InputComponent(Entity& anEntity, const InputComponentData& aData
 	myJumpOffset = 0;
 
 	mySendTime = 0.f;
+#ifdef THREAD_INPUT
+	if (myEntity.GetIsClient() == true)
+	{
+		Prism::PhysicsInterface::GetInstance()->SetClientID(myEntity.GetComponent<PhysicsComponent>()->GetCapsuleControllerId());
+		Prism::PhysicsInterface::GetInstance()->SetPlayerOrientation(&myOrientation);
+		Prism::PhysicsInterface::GetInstance()->SetPlayerInputData(*myData);
+	}
+#endif
 
 	myPreviousState = eEntityState::IDLE;
-	//myCapsuleControllerId = Prism::PhysicsInterface::GetInstance()->CreatePlayerController(myOrientation.GetPos());
 }
 
 InputComponent::~InputComponent()
@@ -135,8 +141,8 @@ Prism::Camera* InputComponent::GetCamera() const
 
 void InputComponent::UpdateMovement(float aDelta)
 {
-	myCursorPosition.x += static_cast<float>(CU::InputWrapper::GetInstance()->GetMouseDX()) * myData.myRotationSpeed;
-	myCursorPosition.y += static_cast<float>(CU::InputWrapper::GetInstance()->GetMouseDY()) * myData.myRotationSpeed;
+	myCursorPosition.x += static_cast<float>(CU::InputWrapper::GetInstance()->GetMouseDX()) * myData->myRotationSpeed;
+	myCursorPosition.y += static_cast<float>(CU::InputWrapper::GetInstance()->GetMouseDY()) * myData->myRotationSpeed;
 
 	myCursorPosition.y = fmaxf(fminf(3.1415f / 2.f, myCursorPosition.y), -3.1415f / 2.f);
 
@@ -178,6 +184,7 @@ void InputComponent::UpdateMovement(float aDelta)
 	CU::Vector3<float> movement;
 	float magnitude = 0.f;
 	int count = 0;
+#ifndef THREAD_INPUT
 	if (CU::InputWrapper::GetInstance()->KeyIsPressed(DIK_S))
 	{
 		movement.z -= 1.f;
@@ -202,7 +209,7 @@ void InputComponent::UpdateMovement(float aDelta)
 		magnitude += myData.mySidewaysMultiplier;
 		++count;
 	}
-
+#endif
 	if (count > 0)
 	{
 		magnitude /= count;
@@ -228,17 +235,17 @@ void InputComponent::UpdateMovement(float aDelta)
 	bool shouldDecreaseEnergy = true;
 	if (CU::InputWrapper::GetInstance()->KeyIsPressed(DIK_LSHIFT))
 	{
-		if (mySprintEnergy < myData.myMaxSprintEnergy && myEnergyOverheat == false)
+		if (mySprintEnergy < myData->myMaxSprintEnergy && myEnergyOverheat == false)
 		{
-			mySprintEnergy += myData.mySprintIncrease * aDelta;
-			if (mySprintEnergy >= myData.myMaxSprintEnergy)
+			mySprintEnergy += myData->mySprintIncrease * aDelta;
+			if (mySprintEnergy >= myData->myMaxSprintEnergy)
 			{
 				myEnergyOverheat = true;
 			}
 
 			if (movement.z > 0.f)
 			{
-				movement.z *= myData.mySprintMultiplier;
+				movement.z *= myData->mySprintMultiplier;
 				isSprinting = true;
 			}
 
@@ -248,7 +255,7 @@ void InputComponent::UpdateMovement(float aDelta)
 
 	if (shouldDecreaseEnergy == true)
 	{
-		mySprintEnergy -= myData.mySprintDecrease * aDelta;
+		mySprintEnergy -= myData->mySprintDecrease * aDelta;
 		mySprintEnergy = fmaxf(mySprintEnergy, 0.f);
 	}
 
@@ -262,12 +269,12 @@ void InputComponent::UpdateMovement(float aDelta)
 
 	movement.y = 0;
 	CU::Normalize(movement);
-	movement *= myData.mySpeed * magnitude;
+	movement *= myData->mySpeed * magnitude;
 
 #ifdef RELEASE_BUILD
 	if (isSprinting == true)
 	{
-		movement *= myData.mySprintMultiplier;
+		movement *= myData->mySprintMultiplier;
 	}
 #else
 	if (CU::InputWrapper::GetInstance()->KeyIsPressed(DIK_LSHIFT))
@@ -277,7 +284,10 @@ void InputComponent::UpdateMovement(float aDelta)
 #endif
 
 	movement.y = myVerticalSpeed;
+
+#ifndef THREAD_INPUT
 	Prism::PhysicsInterface::GetInstance()->Move(myEntity.GetComponent<PhysicsComponent>()->GetCapsuleControllerId(), movement, 0.05f, aDelta);
+#endif
 
 	CU::Vector3<float> pos;
 	Prism::PhysicsInterface::GetInstance()->GetPosition(myEntity.GetComponent<PhysicsComponent>()->GetCapsuleControllerId(), pos);

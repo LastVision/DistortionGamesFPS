@@ -18,6 +18,10 @@ SoundComponent::SoundComponent(Entity& aEntity)
 
 SoundComponent::~SoundComponent()
 {
+	if (!Prism::Audio::AudioInterface::GetInstance())
+	{
+		return;
+	}
 	Prism::Audio::AudioInterface::GetInstance()->UnRegisterObject(myAudioSFXID);
 	PostMaster::GetInstance()->UnSubscribe(eMessageType::LEVEL_LOADED, this);
 	PostMaster::GetInstance()->UnSubscribe(eMessageType::LEVEL_COMPLETE, this);

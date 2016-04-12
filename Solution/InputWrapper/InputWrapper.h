@@ -6,9 +6,15 @@
 #include <Vector.h>
 #include <GrowingArray.h>
 
+namespace std
+{
+	class thread;
+}
+
 
 namespace CU
 {
+	class TimerManager;
 	class InputWrapper
 	{
 	public:
@@ -34,7 +40,6 @@ namespace CU
 		bool KeyUp(unsigned int aKey) const;
 		bool KeyIsPressed(unsigned int aKey) const; //Returns true if specified key is down 
 
-		void Update();
 		void FeedMouseRawInput(int aDeltaX, int aDeltaY);
 		void PauseDeltaRecording();
 		void ResumeDeltaRecording();
@@ -42,6 +47,7 @@ namespace CU
 
 		void TweakValue(float& aValue, float aRate, float aDeltaTime
 			, unsigned int aIncreaseKey, unsigned int aDecreaseKey) const;
+		void Update();
 	private:
 		CU::GrowingArray<CU::Vector2<int>> myBufferedMousePosition;
 		CU::Vector2<int> myMouseDelta;
@@ -52,6 +58,8 @@ namespace CU
 
 		static InputWrapper* myInstance;
 
+		std::thread* myUpdateThread;
+		volatile bool myIsUpdating;
 
 		LPDIRECTINPUT8 myDirectInput;
 		LPDIRECTINPUTDEVICE8 myKeyboardDevice;
@@ -61,7 +69,7 @@ namespace CU
 		LPDIRECTINPUTDEVICE8 myMouseDevice;
 		DIMOUSESTATE myMouseState;
 		DIMOUSESTATE myPreviousMouseState;
-
+		TimerManager* myTimerManager;
 		CU::Vector2<float> myMousePos;
 
 		HWND myWindowHandler;

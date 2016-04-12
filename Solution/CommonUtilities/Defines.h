@@ -53,3 +53,4 @@
 
 
 #define GENERATE_COW
+#define THREAD_INPUT
