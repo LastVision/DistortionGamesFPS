@@ -335,13 +335,15 @@ namespace Prism
 		Engine::GetInstance()->GetContex()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	}
 
-	void DeferredRenderer::Render(Effect* aEffect)
+	void DeferredRenderer::Render(Effect* aEffect, const std::string& aTechnique)
 	{
 		D3DX11_TECHNIQUE_DESC techDesc;
-		aEffect->GetTechnique()->GetDesc(&techDesc);
+		ID3DX11EffectTechnique* technique = aEffect->GetTechnique(aTechnique);
+
+		technique->GetDesc(&techDesc);
 		for (UINT i = 0; i < techDesc.Passes; ++i)
 		{
-			aEffect->GetTechnique()->GetPassByIndex(i)->Apply(0, Engine::GetInstance()->GetContex());
+			technique->GetPassByIndex(i)->Apply(0, Engine::GetInstance()->GetContex());
 			Engine::GetInstance()->GetContex()->DrawIndexed(6, 0, 0);
 		}
 	}
@@ -469,8 +471,14 @@ namespace Prism
 		myAmbientPass.mySHGridSizeVariable->SetFloatVector(&myAmbientPass.mySHGridSize.x);
 		myAmbientPass.mySHGridOffsetVariable->SetFloatVector(&myAmbientPass.mySHGridOffset.x);
 		
-
-		Render(myAmbientPass.myEffect);
+		if (GC::EnableCheapAmbient == true)
+		{
+			Render(myAmbientPass.myEffect, "Render_Cheap");
+		}
+		else
+		{
+			Render(myAmbientPass.myEffect);
+		}
 
 		SetAmbientData(true);
 	}
