@@ -88,6 +88,7 @@ namespace Launcher
             myResolutionList.SelectedIndex = 3;
 
             myQualityList.Items.Add("Low");
+            myQualityList.Items.Add("Medium");
             myQualityList.Items.Add("High");
             myQualityList.SelectedIndex = myQualityList.Items.Count - 1;
 

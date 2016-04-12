@@ -436,6 +436,11 @@ bool ReadSetup(Prism::SetupInfo& aSetup, const std::string& aFilePath)
 		GC::EnableCheapAmbient = true;
 		GC::EnableVSync = false;
 	}
+	else if (graphicsSetting == 1)
+	{
+		GC::EnableCheapAmbient = false;
+		GC::EnableVSync = false;
+	}
 	else
 	{
 		GC::EnableCheapAmbient = false;
