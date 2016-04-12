@@ -235,8 +235,7 @@ void ClientLevel::Update(const float aDeltaTime, bool aLoadingScreen)
 		Prism::Audio::AudioInterface::GetInstance()->PostEvent("PlayAll", 0);
 
 		myInitDone = true;
-		ClientNetworkManager::GetInstance()->AddMessage(NetMessageLevelLoaded());
-
+		
 		SET_RUNTIME(false);
 		myDeferredRenderer->LoadSHData(myMinPoint, myMaxPoint, myName);
 		RESET_RUNTIME;
@@ -250,7 +249,6 @@ void ClientLevel::Update(const float aDeltaTime, bool aLoadingScreen)
 		//}
 
 		PostMaster::GetInstance()->SendMessage<LevelLoadedMessage>(LevelLoadedMessage(myLevelID));
-
 	}
 
 	SharedLevel::Update(aDeltaTime, aLoadingScreen);
@@ -484,9 +482,9 @@ void ClientLevel::ReceiveNetworkMessage(const NetMessageEntityState& aMessage, c
 	{
 		if (static_cast<eEntityState>(aMessage.myEntityState) == eEntityState::DIE)
 		{
-			myPlayer->SetState(static_cast<eEntityState>(aMessage.myEntityState));
+  			myPlayer->SetState(static_cast<eEntityState>(aMessage.myEntityState));
 		}
-		else if (myPlayer->GetState() == eEntityState::DIE)
+		else if (myPlayer->GetState() == eEntityState::DIE && static_cast<eEntityState>(aMessage.myEntityState) == eEntityState::IDLE)
 		{
 			myPlayer->SetState(static_cast<eEntityState>(aMessage.myEntityState));
 		}

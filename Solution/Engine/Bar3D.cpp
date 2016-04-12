@@ -39,14 +39,16 @@ namespace Prism
 	{
 	}
 
-	void Bar3D::Render(const Camera& aCamera, const CU::Matrix44<float>& aWorld)
+	void Bar3D::Render(const Camera& aCamera, const CU::Matrix44<float>& aWorld, const CU::Vector4<float>& aColor)
 	{
 		Prism::Engine::GetInstance()->SetRasterizeState(eRasterizer::NO_CULLING);
 		myEffect->SetWorldMatrix(aWorld);
 		myEffect->SetViewProjectionMatrix(aCamera.GetSpecialFoVViewProjection());
 		//myEffect->SetViewProjectionMatrix(aCamera.GetViewProjection());
 		myEffect->SetCameraPosition(aCamera.GetOrientation().GetPos());
+		myEffect->SetColor(aColor);
 		//BaseModel::Render();
+
 		Render();
 		Prism::Engine::GetInstance()->SetRasterizeState(eRasterizer::CULL_BACK);
 	}

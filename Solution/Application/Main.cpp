@@ -395,32 +395,23 @@ bool ReadSetup(Prism::SetupInfo& aSetup, const std::string& aFilePath)
 	file.open(aFilePath, std::ios::binary | std::ios::in);
 	if (file.is_open() == true)
 	{
-		char buffer[4];
-
-		file.read(buffer, 4);
-		width = *(reinterpret_cast<int*>(buffer));
-
-		file.read(buffer, 4);
-		height = *(reinterpret_cast<int*>(buffer));
-
-		file.read(buffer, 4);
-		msaa = *(reinterpret_cast<int*>(buffer));
-
-		file.read(buffer, 4);
-		windowed = *(reinterpret_cast<int*>(buffer));
-
-		//file.read(buffer, 4);
-		//graphicsSetting = *(reinterpret_cast<int*>(buffer));
+		file.read((char*)&width, sizeof(int));
+		file.read((char*)&height, sizeof(int));
+		file.read((char*)&msaa, sizeof(int));
+		file.read((char*)&windowed, sizeof(int));
+		file.read((char*)&graphicsSetting, sizeof(int));
 	}
 	else 
 	{
 		MessageBox(NULL, "Could not find the config file. Please use the launcher instead.", "Error: Could not find config", MB_ICONERROR);
 		return false;
 	}
+
 #ifndef RELEASE_BUILD
 	windowed = true;
 #endif
 
+	DL_PRINT(CU::Concatenate("GFX Setting: %d", graphicsSetting).c_str());
 	aSetup.myScreenWidth = width;
 	aSetup.myScreenHeight = height;
 	aSetup.myMSAACount = msaa;

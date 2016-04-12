@@ -29,6 +29,9 @@ namespace GUI
 		, myGrenadeLauncherClipSize(aGrenadeLauncherClipSize)
 		, myGrenadeLauncherAmmoInClip(aGrenadeLauncherAmmoInClip)
 		, myGrenadeLauncherAmmoTotal(aGrenadeLauncherAmmoTotal)
+		, myCurrentHealth(0)
+		, myMaxHealth(0)
+		, myLowHealthTimer(0.f)
 	{
 		Prism::ModelLoader::GetInstance()->Pause();
 		myEffect = Prism::EffectContainer::GetInstance()->GetEffect("Data/Resource/Shader/S_effect_3dgui.fx");
@@ -78,6 +81,9 @@ namespace GUI
 		, const CU::Matrix44<float>& aHealthJointOrientation
 		, int aCurrentHealth, int aMaxHealth, float aDeltaTime, eWeaponType aCurrentWeaponType)
 	{
+		myMaxHealth = aMaxHealth;
+		myCurrentHealth = aCurrentHealth;
+
 		if (aCurrentWeaponType == eWeaponType::PISTOL)
 		{
 			float colorValue = myPistolAmmoInClip / float(myPistolClipSize);
@@ -101,6 +107,13 @@ namespace GUI
 		{
 			myShowGUITutorial += aDeltaTime;
 		}
+
+		myLowHealthTimer -= aDeltaTime;
+		if (myLowHealthTimer <= 0.f)
+		{
+			myLowHealthTimer = (float(myCurrentHealth) / float(myMaxHealth) + 0.3f);
+		}
+
 		//myEffect->SetGradiantValue(cos(myTestValue));
 		//myEffect->SetGradiantDirection({ 0.f, 1.f });
 
@@ -121,9 +134,20 @@ namespace GUI
 		myLeftBar->Render(*myScene->GetCamera(), myWristOrientation);
 		myRightBar->Render(*myScene->GetCamera(), myWristOrientation);
 		myTopBar->Render(*myScene->GetCamera(), myWristOrientation);
-		myHealthBar->Render(*myScene->GetCamera(), myHealthOrientation);
-		
-		myHealthIcon->Render(*myScene->GetCamera(), myHealthOrientation);
+
+		CU::Vector4<float> healthColor = { 0.f, 0.f, 0.f, 1.f };
+		float life = float(myCurrentHealth) / float(myMaxHealth);
+		float alpha = 1.f;
+
+		if (life <= 0.4f)
+		{
+			healthColor.x = 1.f - life;
+			// add rest of colors here
+			alpha = fminf(fminf(1.f, myLowHealthTimer), 1.f - myLowHealthTimer);
+		}
+
+		myHealthBar->Render(*myScene->GetCamera(), myHealthOrientation, healthColor);
+
 		if (aIsFirstLevel == true)
 		{
 			if (myShowGUITutorial < SHOWTUTORIALTIME)
@@ -132,11 +156,14 @@ namespace GUI
 				myPistolIcon->Render(*myScene->GetCamera(), myWristOrientation);
 			}
 		}
-		//myShotgunIcon->Render(*myScene->GetCamera(), myWristOrientation);
-		//myGrenadeLauncherIcon->Render(*myScene->GetCamera(), myWristOrientation);
-		
-		myAmmoTotalText->SetOrientation(myHealthOrientation);
 
+		if (alpha < 1.f)
+		{
+			myEffect->SetGradiantValue(alpha);
+		}
+		myHealthIcon->Render(*myScene->GetCamera(), myHealthOrientation, healthColor);
+
+		myAmmoTotalText->SetOrientation(myHealthOrientation);
 		myAmmoTotalText->Render(myScene->GetCamera(), 500.f);
 	}
 

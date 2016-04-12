@@ -51,6 +51,8 @@ void ServerInGameState::InitState(ServerStateStackProxy* aStateStackProxy)
 	ServerNetworkManager::GetInstance()->StopSendMessages(false);
 
 	myIsActiveState = true;
+
+	Utility::Printf("State: InGame", eConsoleColor::AQUA_TEXT);
 }
 
 void ServerInGameState::EndState()
@@ -91,6 +93,7 @@ const eStateStatus ServerInGameState::Update(const float aDeltaTime)
 
 void ServerInGameState::ResumeState()
 {
+	Utility::Printf("State: InGame", eConsoleColor::AQUA_TEXT);
 	myIsActiveState = true;
 }
 
@@ -126,7 +129,11 @@ void ServerInGameState::ReceiveNetworkMessage(const NetMessageRequestStartLevel&
 
 void ServerInGameState::ReceiveNetworkMessage(const NetMessageLevelLoaded& aMessage, const sockaddr_in&)
 {
-	myRespondedClients.Add(aMessage.mySenderID);
+
+	if (myState == eInGameStates::LEVEL_LOAD && myRespondedClients.Find(aMessage.mySenderID) == myRespondedClients.FoundNone)
+	{
+		myRespondedClients.Add(aMessage.mySenderID);
+	}
 	
 }
 
