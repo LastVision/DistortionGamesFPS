@@ -33,6 +33,12 @@ namespace Launcher
             RAuto
         }
 
+        enum eQuailty
+        {
+            Low,
+            High
+        }
+
         enum eMSAA
         {
             x1,
@@ -81,6 +87,10 @@ namespace Launcher
             myResolutionList.Items.Add("Automatic");
             myResolutionList.SelectedIndex = 3;
 
+            myQualityList.Items.Add("Low");
+            myQualityList.Items.Add("High");
+            myQualityList.SelectedIndex = myQualityList.Items.Count - 1;
+
             //aaDropdown.Items.Add("MSAA x1");
             //aaDropdown.Items.Add("MSAA x2");
             //aaDropdown.Items.Add("MSAA x4");
@@ -126,6 +136,7 @@ namespace Launcher
                 WriteResolutionToFile(writer);
                 WriteMSAAToFile(writer);
                 WriterWindowedToFile(writer);
+                WriteQualityToFile(writer);
             }
 
             ProcessStartInfo processInfo = new ProcessStartInfo();
@@ -152,6 +163,12 @@ namespace Launcher
             {
                 MessageBox.Show("Could not find a Release executable :(");
             }
+        }
+
+        private void WriteQualityToFile(BinaryWriter writer)
+        {
+            Int32 quality = myQualityList.SelectedIndex;
+            writer.Write(quality);
         }
 
         void WriteResolutionToFile(BinaryWriter aWriter)
