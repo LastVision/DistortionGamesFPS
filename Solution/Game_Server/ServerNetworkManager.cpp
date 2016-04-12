@@ -23,7 +23,7 @@
 #include <TimerManager.h>
 
 #define BUFFERSIZE 512
-#define RECONNECT_ATTEMPTS 5
+#define RECONNECT_ATTEMPTS 10
 
 ServerNetworkManager::ServerNetworkManager()
 	: myAllowNewConnections(false)
