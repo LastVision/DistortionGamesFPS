@@ -61,6 +61,8 @@ public:
 	void OnResize(float aWidth, float aHeight);
 	void ToggleEscapeMenu();
 
+	bool GetInitDone() const;
+
 private:
 	void operator=(ClientLevel&) = delete;
 
@@ -126,4 +128,9 @@ private:
 inline Prism::Scene* ClientLevel::GetScene()
 {
 	return myScene;
+}
+
+inline bool ClientLevel::GetInitDone() const
+{
+	return myInitDone;
 }

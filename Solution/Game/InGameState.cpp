@@ -41,6 +41,7 @@ InGameState::InGameState(int aLevelID, unsigned int aServerHashLevelValue)
 	, myLoadingScreenCanStart(false)
 	, myCanStartNextLevel(false)
 	, myFailedLevelHash(false)
+	, myPhysicsDone(false)
 	, myServerHashLevelValue(aServerHashLevelValue)
 	, myHasStartedMusicBetweenLevels(false)
 	, myLastLevel(aLevelID)
@@ -122,6 +123,15 @@ const eStateStatus InGameState::Update(const float& aDeltaTime)
 		return eStateStatus::ePopMainState;
 	}
 
+	if (myLoadingScreenCanStart == false && myPhysicsDone == true)
+	{
+		if (Prism::ModelLoader::GetInstance()->IsLoading() == false)
+		{
+			ClientNetworkManager::GetInstance()->AddMessage(NetMessageLevelLoaded());
+			myLoadingScreenCanStart = true;
+		}
+	}
+
 	if (myShouldShowLoadingScreen == true)
 	{
 		myShouldShowLoadingScreen = false;
@@ -131,6 +141,7 @@ const eStateStatus InGameState::Update(const float& aDeltaTime)
 		myLevelComplete = false;
 		myFailedLevel = false;
 		myCanStartNextLevel = false;
+		myPhysicsDone = false;
 		return myStateStatus;
 	}
 
@@ -234,6 +245,7 @@ const eStateStatus InGameState::Update(const float& aDeltaTime)
 	{
 		DL_ASSERT_EXP(myLevel != nullptr, "Invalid level");
 		myLevel->Update(aDeltaTime, myLoadingScreen || firstFrame);
+		myPhysicsDone = myLevel->GetInitDone();
 	}
 
 	//LUA::ScriptSystem::GetInstance()->CallFunction("Update", { aDeltaTime });

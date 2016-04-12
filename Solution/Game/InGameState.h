@@ -63,6 +63,7 @@ private:
 	bool myCanStartNextLevel;
 	bool myLoadingScreen;
 	bool myLoadingScreenCanStart;
+	bool myPhysicsDone;
 	bool myFailedLevelHash;
 
 	unsigned int myServerHashLevelValue;
