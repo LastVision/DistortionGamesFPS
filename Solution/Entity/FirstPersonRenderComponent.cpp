@@ -445,7 +445,9 @@ void FirstPersonRenderComponent::Render(Prism::Texture* aArmDepthTexture, bool a
 		newRenderPos.y += windowSize.y;
 		newRenderPos.y = fmaxf(0.f, fminf(newRenderPos.y, windowSize.y));
 
-		myCoOpSprite->Render({ newRenderPos.x, newRenderPos.y }, { 1.f, 1.f }, { 1.f, 1.f, 1.f, 1.f } );
+		float color = myCoOpCircles[i].myLifePercentage;
+
+		myCoOpSprite->Render({ newRenderPos.x, newRenderPos.y }, { 1.f, 1.f }, { 1.f - color, color, color, 1.f });
 		if (myCoOpRespawns.Size() > 0)
 		{
 			Prism::Engine::GetInstance()->PrintText(myCoOpRespawns[i].myCurrentValue, { newRenderPos.x, newRenderPos.y }, Prism::eTextType::RELEASE_TEXT);
