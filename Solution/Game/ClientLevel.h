@@ -132,5 +132,9 @@ inline Prism::Scene* ClientLevel::GetScene()
 
 inline bool ClientLevel::GetInitDone() const
 {
-	return myInitDone;
+	if (this != nullptr)
+	{
+		return myInitDone;
+	}
+	return true;
 }
