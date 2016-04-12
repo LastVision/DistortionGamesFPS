@@ -232,6 +232,7 @@ void ClientLevel::Update(const float aDeltaTime, bool aLoadingScreen)
 	if (myInitDone == false && Prism::PhysicsInterface::GetInstance()->GetInitDone() == true)
 	{
 		Prism::Audio::AudioInterface::GetInstance()->PostEvent("Stop_AllElevators", 0);
+		Prism::Audio::AudioInterface::GetInstance()->PostEvent("Play_ElevatorPling", 0);
 		Prism::Audio::AudioInterface::GetInstance()->PostEvent("PlayAll", 0);
 
 		myInitDone = true;

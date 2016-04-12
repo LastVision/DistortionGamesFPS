@@ -49,6 +49,7 @@ void ServerLobbyState::InitState(ServerStateStackProxy* aStateStackProxy)
 	
 	ServerNetworkManager::GetInstance()->AllowNewConnections(true);
 	Utility::Printf("State: Lobby", eConsoleColor::AQUA_TEXT);
+	myAboutToChangeState = false;
 }
 
 void ServerLobbyState::EndState()
@@ -60,8 +61,12 @@ const eStateStatus ServerLobbyState::Update(const float aDeltaTime)
 	aDeltaTime;
 	if (ServerNetworkManager::GetInstance()->GetClients().Size() <= 0)
 	{
+		ServerNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::ON_CONNECT, this);
+		ServerNetworkManager::GetInstance()->AllowNewConnections(false);
+		myAboutToChangeState = true;
 		myStateStatus = eStateStatus::POP_MAIN_STATE;
 	}
+	Sleep(1000);
 	return myStateStatus;
 }
 
@@ -108,8 +113,13 @@ void ServerLobbyState::ReceiveNetworkMessage(const NetMessageRequestStartLevel&,
 
 void ServerLobbyState::ReceiveNetworkMessage(const NetMessageRequestConnect& aMessage, const sockaddr_in& aSenderAddress)
 {
-	//Broadcast join
-	ServerNetworkManager::GetInstance()->CreateConnection(aMessage.myName, aSenderAddress);
+	aMessage; 
+	aSenderAddress;
+	//if (myAboutToChangeState == false)
+	//{
+	//	//Broadcast join
+	//	ServerNetworkManager::GetInstance()->CreateConnection(aMessage.myName, aSenderAddress);
+	//}
 }
 
 void ServerLobbyState::ReceiveNetworkMessage(const NetMessageRequestServer&, const sockaddr_in& aSenderAddress)
