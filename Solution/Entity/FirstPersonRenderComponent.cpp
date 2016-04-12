@@ -352,7 +352,10 @@ void FirstPersonRenderComponent::Update(float aDelta)
 
 void FirstPersonRenderComponent::UpdateCoOpPositions(const CU::GrowingArray<Entity*>& somePlayers)
 {
-	myCoOpCircles[0].myPosition = somePlayers[0]->GetOrientation().GetPos();
+	if (somePlayers.Size() > 0)
+	{
+		myCoOpCircles[0].myPosition = somePlayers[0]->GetOrientation().GetPos();
+	}
 }
 
 void FirstPersonRenderComponent::Render(Prism::Texture* aArmDepthTexture, bool aIsFirstLevel)
