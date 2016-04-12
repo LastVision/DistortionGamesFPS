@@ -51,6 +51,8 @@ void ServerInGameState::InitState(ServerStateStackProxy* aStateStackProxy)
 	ServerNetworkManager::GetInstance()->StopSendMessages(false);
 
 	myIsActiveState = true;
+
+	Utility::Printf("State: InGame", eConsoleColor::AQUA_TEXT | eConsoleColor::DARK_GREEN_BACK);
 }
 
 void ServerInGameState::EndState()
@@ -91,6 +93,7 @@ const eStateStatus ServerInGameState::Update(const float aDeltaTime)
 
 void ServerInGameState::ResumeState()
 {
+	Utility::Printf("State: InGame", eConsoleColor::AQUA_TEXT | eConsoleColor::DARK_GREEN_BACK);
 	myIsActiveState = true;
 }
 
