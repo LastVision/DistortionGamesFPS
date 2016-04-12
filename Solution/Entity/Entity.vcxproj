@@ -198,6 +198,8 @@
     <ClInclude Include="GrenadeComponentData.h" />
     <ClInclude Include="BulletComponent.h" />
     <ClInclude Include="BulletComponentData.h" />
+    <ClInclude Include="RotationComponent.h" />
+    <ClInclude Include="RotationComponentData.h" />
     <ClInclude Include="SharedUnitManager.h" />
     <ClInclude Include="ShootingComponent.h" />
     <ClInclude Include="ShootingComponentData.h" />
@@ -238,6 +240,7 @@
     <ClCompile Include="PollingStation.cpp" />
     <ClCompile Include="GrenadeComponent.cpp" />
     <ClCompile Include="BulletComponent.cpp" />
+    <ClCompile Include="RotationComponent.cpp" />
     <ClCompile Include="SharedUnitManager.cpp" />
     <ClCompile Include="ShootingComponent.cpp" />
     <ClCompile Include="Shotgun.cpp" />

@@ -198,6 +198,7 @@ enum class eComponentType
 	BULLET,
 	SPAWNPOINT,
 	SOUND,
+	ROTATION,
 	_COUNT,
 };
 

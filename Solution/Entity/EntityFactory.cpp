@@ -161,6 +161,10 @@ void EntityFactory::LoadEntity(const char* aEntityPath)
 		{
 			myComponentLoader->LoadSoundComponent(entityDocument, e, newData.mySoundData);
 		}
+		else if (elementName == CU::ToLower("RotationComponent"))
+		{
+			myComponentLoader->LoadRotationComponent(entityDocument, e, newData.myRotationData);
+		}
 		else
 		{
 			std::string errorMessage = "The component " + elementName +
