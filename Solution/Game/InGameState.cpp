@@ -123,12 +123,12 @@ const eStateStatus InGameState::Update(const float& aDeltaTime)
 		return eStateStatus::ePopMainState;
 	}
 
-	if (myLoadingScreenCanStart == false && myPhysicsDone == true)
+	if (myLoadingScreen == true && myLoadingScreenCanStart == false && myPhysicsDone == true)
 	{
 		if (Prism::ModelLoader::GetInstance()->IsLoading() == false)
 		{
 			ClientNetworkManager::GetInstance()->AddMessage(NetMessageLevelLoaded());
-			myLoadingScreenCanStart = true;
+			//myLoadingScreenCanStart = true;
 		}
 	}
 

@@ -5,6 +5,7 @@ enum class eOnRadioButtonEvent
 {
 	NONE,
 	LEVEL_SELECT,
+	DIFFICULTY_SELECT,
 };
 
 struct OnRadioButtonMessage : public Message
