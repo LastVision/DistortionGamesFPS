@@ -409,8 +409,8 @@ bool ReadSetup(Prism::SetupInfo& aSetup, const std::string& aFilePath)
 		file.read(buffer, 4);
 		windowed = *(reinterpret_cast<int*>(buffer));
 
-		//file.read(buffer, 4);
-		//graphicsSetting = *(reinterpret_cast<int*>(buffer));
+		file.read(buffer, 4);
+		graphicsSetting = *(reinterpret_cast<int*>(buffer));
 	}
 	else 
 	{
@@ -434,6 +434,11 @@ bool ReadSetup(Prism::SetupInfo& aSetup, const std::string& aFilePath)
 	if (graphicsSetting == 0)
 	{
 		GC::EnableCheapAmbient = true;
+		GC::EnableVSync = false;
+	}
+	else if (graphicsSetting == 1)
+	{
+		GC::EnableCheapAmbient = false;
 		GC::EnableVSync = false;
 	}
 	else
