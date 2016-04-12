@@ -49,6 +49,7 @@ FirstPersonRenderComponent::FirstPersonRenderComponent(Entity& aEntity, Prism::S
 	, myShotgunHasUpdated(false)
 	, myGrenadeLauncherHasUpdated(false)
 	, myDisplayPickupTime(2.f)
+	, myIsCoOp(false)
 {
 	CoOpCircle coopCircle;
 	coopCircle.myPosition = { 0.f, 0.f, 0.f };
@@ -111,7 +112,7 @@ FirstPersonRenderComponent::FirstPersonRenderComponent(Entity& aEntity, Prism::S
 	AddWeaponAnimation(ePlayerState::PISTOL_RELOAD, "Data/Resource/Model/First_person/Pistol/SK_pistol_reload.fbx", false, true);
 	AddWeaponAnimation(ePlayerState::PISTOL_FIRE, "Data/Resource/Model/First_person/Pistol/SK_pistol_fire.fbx", false, true);
 	//myPistolModel->Update(1.f / 30.f);
-	
+
 	myShotgunProxy = Prism::ModelLoader::GetInstance()->LoadModelAnimated("Data/Resource/Model/First_person/Shotgun/SK_shotgun_idle.fbx", "Data/Resource/Shader/S_effect_pbl_animated.fx");
 	myShotgunModel = new Prism::Instance(*myShotgunProxy, myInputComponentEyeOrientation, shouldUseSpecialFoV);
 	AddWeaponAnimation(ePlayerState::SHOTGUN_IDLE, "Data/Resource/Model/First_person/Shotgun/SK_shotgun_idle.fbx", true, true);
@@ -260,7 +261,7 @@ void FirstPersonRenderComponent::Update(float aDelta)
 				myEntity.GetComponent<ShootingComponent>()->SetCurrentWeapon(eWeaponType::GRENADE_LAUNCHER);
 			}
 		}
-		
+
 
 		bool shouldGetNextIntention = false;
 		switch (myEntity.GetComponent<ShootingComponent>()->GetCurrentWeapon()->GetWeaponType())
@@ -355,6 +356,7 @@ void FirstPersonRenderComponent::UpdateCoOpPositions(const CU::GrowingArray<Enti
 	if (somePlayers.Size() > 0)
 	{
 		myCoOpCircles[0].myPosition = somePlayers[0]->GetOrientation().GetPos();
+		myIsCoOp = true;
 	}
 }
 
@@ -421,72 +423,44 @@ void FirstPersonRenderComponent::Render(Prism::Texture* aArmDepthTexture, bool a
 		}
 	}
 
-	for (int i = 0; i < myCoOpCircles.Size(); ++i)
+	if (myIsCoOp == true)
 	{
-		CU::Matrix44<float> renderPos;
-		CU::Vector3<float> tempPos(myCoOpCircles[i].myPosition);
-		tempPos.y += 2.f;
-		float toBuddy = CU::Dot(tempPos - myInputComponentEyeOrientation.GetPos(), myInputComponentEyeOrientation.GetForward());
-		if (toBuddy < 0.f)
+		for (int i = 0; i < myCoOpCircles.Size(); ++i)
 		{
-			continue;
-		}
-		renderPos.SetPos(tempPos);
-		renderPos = renderPos * CU::InverseSimple(myInputComponentEyeOrientation);
-		renderPos = renderPos * myEntity.GetComponent<InputComponent>()->GetCamera()->GetProjection();
+			CU::Matrix44<float> renderPos;
+			CU::Vector3<float> tempPos(myCoOpCircles[i].myPosition);
+			tempPos.y += 2.f;
+			float toBuddy = CU::Dot(tempPos - myInputComponentEyeOrientation.GetPos(), myInputComponentEyeOrientation.GetForward());
+			if (toBuddy < 0.f)
+			{
+				continue;
+			}
+			renderPos.SetPos(tempPos);
+			renderPos = renderPos * CU::InverseSimple(myInputComponentEyeOrientation);
+			renderPos = renderPos * myEntity.GetComponent<InputComponent>()->GetCamera()->GetProjection();
 
-		CU::Vector3<float> newRenderPos = renderPos.GetPos();
-		newRenderPos /= renderPos.GetPos4().w;
+			CU::Vector3<float> newRenderPos = renderPos.GetPos();
+			newRenderPos /= renderPos.GetPos4().w;
 
-		newRenderPos += 1.f;
-		newRenderPos *= 0.5f;
-		newRenderPos.x *= windowSize.x;
-		newRenderPos.y *= windowSize.y;
-		newRenderPos.y -= windowSize.y;
+			newRenderPos += 1.f;
+			newRenderPos *= 0.5f;
+			newRenderPos.x *= windowSize.x;
+			newRenderPos.y *= windowSize.y;
+			newRenderPos.y -= windowSize.y;
 
-		newRenderPos.x = fmaxf(0.f, fminf(newRenderPos.x, windowSize.x));
-		newRenderPos.y += windowSize.y;
-		newRenderPos.y = fmaxf(0.f, fminf(newRenderPos.y, windowSize.y));
+			newRenderPos.x = fmaxf(0.f, fminf(newRenderPos.x, windowSize.x));
+			newRenderPos.y += windowSize.y;
+			newRenderPos.y = fmaxf(0.f, fminf(newRenderPos.y, windowSize.y));
 
-		float color = myCoOpCircles[i].myLifePercentage;
+			float color = myCoOpCircles[i].myLifePercentage;
 
-		myCoOpSprite->Render({ newRenderPos.x, newRenderPos.y }, { 1.f, 1.f }, { 1.f - color, color, color, 1.f });
-		if (myCoOpRespawns.Size() > 0)
-		{
-			Prism::Engine::GetInstance()->PrintText(myCoOpRespawns[i].myCurrentValue, { newRenderPos.x, newRenderPos.y }, Prism::eTextType::RELEASE_TEXT);
+			myCoOpSprite->Render({ newRenderPos.x, newRenderPos.y }, { 1.f, 1.f }, { 1.f - color, color, color, 1.f });
+			if (myCoOpRespawns.Size() > 0)
+			{
+				Prism::Engine::GetInstance()->PrintText(myCoOpRespawns[i].myCurrentValue, { newRenderPos.x, newRenderPos.y }, Prism::eTextType::RELEASE_TEXT);
+			}
 		}
 	}
-
-	//for (int i = 0; i < myCoOpRespawns.Size(); ++i)
-	//{
-	//	CU::Matrix44<float> renderPos;
-	//	CU::Vector3<float> tempPos(myCoOpRespawns[i].myPosition);
-	//	//tempPos.y += 2.f;
-	//	float toBuddy = CU::Dot(tempPos - myInputComponentEyeOrientation.GetPos(), myInputComponentEyeOrientation.GetForward());
-	//	if (toBuddy < 0.f)
-	//	{
-	//		continue;
-	//	}
-	//	renderPos.SetPos(tempPos);
-	//	renderPos = renderPos * CU::InverseSimple(myInputComponentEyeOrientation);
-	//	renderPos = renderPos * myEntity.GetComponent<InputComponent>()->GetCamera()->GetProjection();
-	//
-	//	CU::Vector3<float> newRenderPos = renderPos.GetPos();
-	//	newRenderPos /= renderPos.GetPos4().w;
-	//
-	//	newRenderPos += 1.f;
-	//	newRenderPos *= 0.5f;
-	//	newRenderPos.x *= windowSize.x;
-	//	newRenderPos.y *= windowSize.y;
-	//	newRenderPos.y -= windowSize.y;
-	//
-	//	newRenderPos.x = fmaxf(0.f, fminf(newRenderPos.x, windowSize.x));
-	//	newRenderPos.y += windowSize.y;
-	//	newRenderPos.y = fmaxf(0.f, fminf(newRenderPos.y, windowSize.y));
-	//
-	//	//myCoOpSprite->Render({ newRenderPos.x, newRenderPos.y });
-	//	Prism::Engine::GetInstance()->PrintText(myCoOpRespawns[i].myCurrentValue, { newRenderPos.x, newRenderPos.y }, Prism::eTextType::RELEASE_TEXT);
-	//}
 
 	for (int i = 0; i < myPressETexts.Size(); ++i)
 	{
@@ -521,7 +495,7 @@ void FirstPersonRenderComponent::Render(Prism::Texture* aArmDepthTexture, bool a
 		newRenderPos.y = fmaxf(0.f, fminf(newRenderPos.y, windowSize.y));
 
 		//myCoOpSprite->Render({ newRenderPos.x, newRenderPos.y });
-		Prism::Engine::GetInstance()->PrintText("Press E", { newRenderPos.x, newRenderPos.y }, Prism::eTextType::RELEASE_TEXT, 2.f, CU::Vector4<float>(1.f, 1.f, 1.f, 1.f -  (lengthToText / 10.f)));
+		Prism::Engine::GetInstance()->PrintText("Press E", { newRenderPos.x, newRenderPos.y }, Prism::eTextType::RELEASE_TEXT, 2.f, CU::Vector4<float>(1.f, 1.f, 1.f, 1.f - (lengthToText / 10.f)));
 	}
 }
 
@@ -576,7 +550,7 @@ void FirstPersonRenderComponent::PlayAnimation(ePlayerState aAnimationState)
 		//myScene->RemoveInstance(myCurrentWeaponModel);
 		myCurrentWeaponModel = myPistolModel;
 		//myScene->AddInstance(myCurrentWeaponModel, eObjectRoomType::ALWAYS_RENDER);
-		
+
 		myScene->SetWeaponInstance(myCurrentWeaponModel);
 	}
 	else if (myCurrentState == ePlayerState::SHOTGUN_DRAW)
