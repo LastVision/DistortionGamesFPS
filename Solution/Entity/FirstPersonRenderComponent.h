@@ -59,6 +59,8 @@ public:
 
 	bool IsReloading() const;
 
+	void OnResize(CU::Vector2<float> aNewSize);
+
 private:
 	void UpdateJoints();
 	void PlayCorrectSound();
