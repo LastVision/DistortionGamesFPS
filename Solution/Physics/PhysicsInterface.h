@@ -87,6 +87,7 @@ namespace Prism
 		void SetClientID(int anID);
 		void SetPlayerOrientation(CU::Matrix44<float>* anOrientation);
 		void SetPlayerInputData(const InputComponentData& aData);
+		void SetPlayerGID(int anID);
 	private:
 		// Requires PhysX includes!!
 		PhysicsManager* GetManager() const;

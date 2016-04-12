@@ -236,6 +236,11 @@ namespace Prism
 		myManager->SetInputComponentData(aData);
 	}
 
+	void PhysicsInterface::SetPlayerGID(int anID)
+	{
+		myManager->SetPlayerGID(anID);
+	}
+
 	PhysicsInterface::PhysicsInterface(std::function<void(PhysicsComponent*, PhysicsComponent*, bool)> anOnTriggerCallback, bool aIsServer)
 	{
 		myManager = new PhysicsManager(anOnTriggerCallback, aIsServer);
