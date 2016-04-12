@@ -389,6 +389,7 @@ bool ReadSetup(Prism::SetupInfo& aSetup, const std::string& aFilePath)
 	int height = 600;
 	int msaa = 4;
 	int windowed = 1;
+	int graphicsSetting = 0;
 
 	std::ifstream file;
 	file.open(aFilePath, std::ios::binary | std::ios::in);
@@ -407,6 +408,9 @@ bool ReadSetup(Prism::SetupInfo& aSetup, const std::string& aFilePath)
 
 		file.read(buffer, 4);
 		windowed = *(reinterpret_cast<int*>(buffer));
+
+		//file.read(buffer, 4);
+		//graphicsSetting = *(reinterpret_cast<int*>(buffer));
 	}
 	else 
 	{
@@ -425,5 +429,19 @@ bool ReadSetup(Prism::SetupInfo& aSetup, const std::string& aFilePath)
 		aSetup.myWindowed = true;
 	else
 		aSetup.myWindowed = false;
+
+	//Low settings
+	if (graphicsSetting == 0)
+	{
+		GC::EnableCheapAmbient = true;
+		GC::EnableVSync = false;
+	}
+	else
+	{
+		GC::EnableCheapAmbient = false;
+		GC::EnableVSync = true;
+	}
+
+
 	return true;
 }
