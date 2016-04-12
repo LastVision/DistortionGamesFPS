@@ -56,7 +56,7 @@ void Mission::SendMissionMessage(ActionEvent anEvent)
 		break;
 	case eActionEventType::TEXT:
 		ServerNetworkManager::GetInstance()->AddMessage(NetMessageText(anEvent.myText, anEvent.myShowTextTime
-			, { 1.f, 1.f, 1.f, 1.f }, anEvent.myTextRows));
+			, { 1.f, 1.f, 1.f, 1.f }, anEvent.myTextRows, false, true, anEvent.mySoundEvent));
 		//PostMaster::GetInstance()->SendMessage(SendTextToClientsMessage(anEvent.myText, anEvent.myShowTextTime));
 		break;
 	case eActionEventType::MARKER:
