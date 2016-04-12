@@ -48,7 +48,7 @@ void ServerLobbyState::InitState(ServerStateStackProxy* aStateStackProxy)
 	myIsActiveState = true;
 	
 	ServerNetworkManager::GetInstance()->AllowNewConnections(true);
-	Utility::Printf("State: Lobby", eConsoleColor::AQUA_TEXT | eConsoleColor::DARK_GREEN_BACK);
+	Utility::Printf("State: Lobby", eConsoleColor::AQUA_TEXT);
 }
 
 void ServerLobbyState::EndState()
@@ -67,7 +67,7 @@ const eStateStatus ServerLobbyState::Update(const float aDeltaTime)
 
 void ServerLobbyState::ResumeState()
 {
-	Utility::Printf("State: Lobby", eConsoleColor::AQUA_TEXT | eConsoleColor::DARK_GREEN_BACK);
+	Utility::Printf("State: Lobby", eConsoleColor::AQUA_TEXT);
 	myIsActiveState = true;
 	ServerNetworkManager::GetInstance()->Subscribe(eNetMessageType::ON_DISCONNECT, this);
 	ServerNetworkManager::GetInstance()->Subscribe(eNetMessageType::SET_LEVEL, this);
