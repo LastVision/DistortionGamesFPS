@@ -178,8 +178,10 @@ void ServerLevel::CollisionCallback(PhysicsComponent* aFirst, PhysicsComponent* 
 
 void ServerLevel::ReceiveNetworkMessage(const NetMessageLevelLoaded& aMessage, const sockaddr_in&)
 {
-	myLoadedClients.Add(aMessage.mySenderID);
-
+	if (myLoadedClients.Find(aMessage.mySenderID) == myLoadedClients.FoundNone)
+	{
+		myLoadedClients.Add(aMessage.mySenderID);
+	}
 	if (ServerNetworkManager::GetInstance()->ListContainsAllClients(myLoadedClients) == true)
 	{
 		myAllClientsLoaded = true;
