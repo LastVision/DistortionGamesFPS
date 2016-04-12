@@ -47,5 +47,6 @@ private:
 	bool myStartGame;
 
 	float myRefreshPlayerListTimer;
+	float myWaitingForConnectTimer;
 };
 
