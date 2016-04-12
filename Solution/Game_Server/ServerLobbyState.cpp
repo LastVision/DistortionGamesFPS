@@ -15,7 +15,6 @@
 #include <NetMessageRequestStartLevel.h>
 #include <MurmurHash3.h>
 
-
 ServerLobbyState::ServerLobbyState(eGameType aGameType)
 	: myGameType(aGameType)
 {
@@ -49,6 +48,7 @@ void ServerLobbyState::InitState(ServerStateStackProxy* aStateStackProxy)
 	myIsActiveState = true;
 	
 	ServerNetworkManager::GetInstance()->AllowNewConnections(true);
+	Utility::Printf("State: Lobby", eConsoleColor::AQUA_TEXT);
 }
 
 void ServerLobbyState::EndState()
@@ -67,6 +67,7 @@ const eStateStatus ServerLobbyState::Update(const float aDeltaTime)
 
 void ServerLobbyState::ResumeState()
 {
+	Utility::Printf("State: Lobby", eConsoleColor::AQUA_TEXT);
 	myIsActiveState = true;
 	ServerNetworkManager::GetInstance()->Subscribe(eNetMessageType::ON_DISCONNECT, this);
 	ServerNetworkManager::GetInstance()->Subscribe(eNetMessageType::SET_LEVEL, this);
