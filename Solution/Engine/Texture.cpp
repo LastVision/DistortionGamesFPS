@@ -367,36 +367,6 @@ namespace Prism
 
 	void Texture::Create3DTexture(float* aData, int aWidth, int aHeight, int aDepth)
 	{
-		//Init with SubResource
-		/*D3D11_TEXTURE3D_DESC desc;
-		desc.Depth = aDepth;
-		desc.Width = aWidth;
-		desc.Height = aHeight;
-		desc.MipLevels = 1;
-		desc.Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
-		desc.Usage = D3D11_USAGE_DEFAULT;
-		desc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
-		desc.CPUAccessFlags = 0;
-		desc.MiscFlags = 0;
-
-		D3D11_SUBRESOURCE_DATA subData;
-		subData.pSysMem = &aData;
-		subData.SysMemPitch = sizeof(float) * 4 * aWidth;
-		subData.SysMemSlicePitch = subData.SysMemPitch * aHeight; 
-
-		HRESULT hr = Engine::GetInstance()->GetDevice()->CreateTexture3D(&desc, &subData, &myD3D11Texture3D);
-		if (FAILED(hr))
-			assert(0);
-
-		if (hr != S_OK)
-		{
-			DL_ASSERT("FAILED TO CREATE 3D TEXTURE");
-		}
-
-		hr = Engine::GetInstance()->GetDevice()->CreateShaderResourceView(myD3D11Texture3D, NULL, &myShaderView);
-		if (FAILED(hr))
-			assert(0);*/
-
 		D3D11_TEXTURE3D_DESC desc;
 		desc.Depth = aDepth;
 		desc.Width = aWidth;
@@ -417,39 +387,12 @@ namespace Prism
 
 		int vecSize = sizeof(CU::Vector4<float>);
 
-		//int dataSize =
-
 		int dataSize = vecSize * aWidth * aHeight * aDepth;
 		if (mappedResource.pData != nullptr)
 		{
 			float *data = (float*)mappedResource.pData;
 
 			memcpy(data, aData, dataSize);
-
-			/*for (int z = 0; z < aDepth; ++z)
-			{
-				int depthStart = z * mappedResource.DepthPitch;
-
-				int ownDepthStart = z * aWidth * aHeight;
-
-				for (int y = 0; y < aHeight; ++y)
-				{
-					int heightStart = y * mappedResource.RowPitch;
-
-					int ownHeightStart = y * aWidth;
-
-					for (int x = 0; x < aWidth; ++x)
-					{
-						int widthStart = x * 4 + depthStart + heightStart;
-						int index = ownDepthStart + ownHeightStart + x;
-
-						data[widthStart + 0] = aData[index + 0];
-						data[widthStart + 1] = aData[index + 1];
-						data[widthStart + 2] = aData[index + 2];
-						data[widthStart + 3] = aData[index + 3];
-					}
-				}
-			}*/
 		}
 		Engine::GetInstance()->GetContex()->Unmap(myD3D11Texture3D, 0);
 
