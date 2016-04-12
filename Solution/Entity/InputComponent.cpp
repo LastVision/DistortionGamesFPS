@@ -189,25 +189,25 @@ void InputComponent::UpdateMovement(float aDelta)
 	if (CU::InputWrapper::GetInstance()->KeyIsPressed(DIK_S))
 	{
 		movement.z -= 1.f;
-		magnitude += myData.myBackwardMultiplier;
+		magnitude += myData->myBackwardMultiplier;
 		++count;
 	}
 	if (CU::InputWrapper::GetInstance()->KeyIsPressed(DIK_W))
 	{
 		movement.z += 1.f;
-		magnitude += myData.myForwardMultiplier;
+		magnitude += myData->myForwardMultiplier;
 		++count;
 	}
 	if (CU::InputWrapper::GetInstance()->KeyIsPressed(DIK_A))
 	{
 		movement.x -= 1.f;
-		magnitude += myData.mySidewaysMultiplier;
+		magnitude += myData->mySidewaysMultiplier;
 		++count;
 	}
 	if (CU::InputWrapper::GetInstance()->KeyIsPressed(DIK_D))
 	{
 		movement.x += 1.f;
-		magnitude += myData.mySidewaysMultiplier;
+		magnitude += myData->mySidewaysMultiplier;
 		++count;
 	}
 #endif
