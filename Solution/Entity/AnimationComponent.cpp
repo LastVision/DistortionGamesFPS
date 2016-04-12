@@ -97,7 +97,7 @@ void AnimationComponent::AddAnimation(eEntityState aState, const std::string& aA
 
 void AnimationComponent::Update(float aDeltaTime)
 {
-	if (myPrevEntityState != eEntityState::DIE && myEntity.GetState() == eEntityState::DIE)
+	if (myIsEnemy == true && myPrevEntityState != eEntityState::DIE && myEntity.GetState() == eEntityState::DIE)
 	{
 		myWeapon->SetShouldRender(false);
 	}
