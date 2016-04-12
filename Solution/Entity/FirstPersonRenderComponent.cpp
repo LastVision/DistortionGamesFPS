@@ -511,7 +511,7 @@ void FirstPersonRenderComponent::Render(Prism::Texture* aArmDepthTexture, bool a
 		newRenderPos.y = fmaxf(0.f, fminf(newRenderPos.y, windowSize.y));
 
 		//myCoOpSprite->Render({ newRenderPos.x, newRenderPos.y });
-		Prism::Engine::GetInstance()->PrintText("Press E", { newRenderPos.x, newRenderPos.y }, Prism::eTextType::RELEASE_TEXT,1.f, CU::Vector4<float>(1.f, 1.f, 1.f, 1.f -  (lengthToText / 10.f)));
+		Prism::Engine::GetInstance()->PrintText("Press E", { newRenderPos.x, newRenderPos.y }, Prism::eTextType::RELEASE_TEXT, 2.f, CU::Vector4<float>(1.f, 1.f, 1.f, 1.f -  (lengthToText / 10.f)));
 	}
 }
 

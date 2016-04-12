@@ -75,6 +75,10 @@ AnimationComponent::~AnimationComponent()
 
 void AnimationComponent::Reset()
 {
+	if (myIsEnemy == true)
+	{
+		myWeapon->SetShouldRender(true);
+	}
 	myPrevEntityState = myEntity.GetState();
 	PlayAnimation(myEntity.GetState());
 }
@@ -93,10 +97,9 @@ void AnimationComponent::AddAnimation(eEntityState aState, const std::string& aA
 
 void AnimationComponent::Update(float aDeltaTime)
 {
-	if (myEntity.IsActive() == false && myEntity.GetState() == eEntityState::DIE)
+	if (myPrevEntityState != eEntityState::DIE && myEntity.GetState() == eEntityState::DIE)
 	{
-		int apa;
-		apa = 5;
+		myWeapon->SetShouldRender(false);
 	}
 
 	for (int i = 0; i < 5; ++i)

@@ -104,10 +104,9 @@ namespace Prism
 		}
 	}
 
-	void TextProxy::SetScale(const CU::Vector2<float>&)
+	void TextProxy::SetScale(const CU::Vector2<float>& aScale)
 	{
-		//Scaling is not supported!
-		myScale = CU::Vector2<float>(1.f, 1.f);
+		myScale = aScale;
 
 		float aspect = Engine::GetInstance()->GetWindowSize().x / Engine::GetInstance()->GetWindowSize().y;
 		if (aspect < 1.5f)
