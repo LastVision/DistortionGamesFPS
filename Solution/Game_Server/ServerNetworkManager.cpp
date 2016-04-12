@@ -271,7 +271,6 @@ void ServerNetworkManager::CreateConnection(const std::string& aName, const sock
 			break;
 		}
 	}
-	std::cout << myIDCount << std::endl;
 	AddMessage(NetMessageConnectReply(NetMessageConnectReply::eType::SUCCESS, myIDCount), aSender);
 	Sleep(200);
 	Connection newConnection;
@@ -292,7 +291,7 @@ void ServerNetworkManager::CreateConnection(const std::string& aName, const sock
 	}
 
 	std::string conn(aName + " connected to the server!");
-	Utility::Printf(conn, LIGHT_GREEN_TEXT);
+	Utility::Printf(conn, LIGHT_GREEN_TEXT, true);
 
 	AddMessage(NetMessageOnJoin(aName, myIDCount));
 
@@ -332,7 +331,7 @@ void ServerNetworkManager::DisconnectConnection(const Connection& aConnection)
 	myNetwork->Send(onDisconnect.myStream, aConnection.myAddress);
 
 	std::string msg(aConnection.myName + " disconnected from server!");
-	Utility::Printf(msg, LIGHT_BLUE_TEXT);
+	Utility::Printf(msg, LIGHT_BLUE_TEXT, true);
 
 	//auto reply on all important messages
 	for (ImportantMessage& impMsg : myImportantMessagesBuffer)

@@ -43,39 +43,54 @@ enum eConsoleColor
 
 namespace Utility
 {
-	inline void Printf(const char* aSomethingToPrint, WORD aColour)
+	inline void Printf(const char* aSomethingToPrint, WORD aColour, bool aRunInRelease = false)
 	{
 #ifdef _DEBUG
+		aRunInRelease;
 		SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), aColour);
 		printf("\n%s", aSomethingToPrint);
 		SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7); //Colour reset
 #else
-		aSomethingToPrint;
-		aColour;
+		if (aRunInRelease == true)
+		{
+			SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), aColour);
+			printf("\n%s", aSomethingToPrint);
+			SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7); //Colour reset
+		}
 #endif
 	}
 
-	inline void Printf(const std::string& aSomethingToPrint, WORD aColour)
+	inline void Printf(const std::string& aSomethingToPrint, WORD aColour, bool aRunInRelease = false)
 	{
 #ifdef _DEBUG
+		aRunInRelease;
 		SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), aColour);
 		printf("\n%s", aSomethingToPrint.c_str());
 		SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7); //Colour reset
 #else
-		aSomethingToPrint;
-		aColour;
+		if (aRunInRelease == true)
+		{
+			SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), aColour);
+			printf("\n%s", aSomethingToPrint.c_str());
+			SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7); //Colour reset
+		}
 #endif
 	}
 
-	inline void Printf(int aSomethingToPrint, WORD aColour)
+	inline void Printf(int aSomethingToPrint, WORD aColour, bool aRunInRelease = false)
 	{
 #ifdef _DEBUG
+		aRunInRelease;
 		SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), aColour);
 		printf("\n%i", aSomethingToPrint);
 		SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7); //Colour reset
 #else
-		aSomethingToPrint;
-		aColour;
+		if (aRunInRelease == true)
+		{
+			SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), aColour);
+			printf("\n%i", aSomethingToPrint);
+			SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7); //Colour reset
+		}
 #endif
 	}
 

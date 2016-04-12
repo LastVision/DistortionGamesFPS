@@ -116,5 +116,5 @@ void ServerNetwork::PrintStatus()
 {
 	std::string toPrint = "------ SERVER ONLINE ------\n------- SERVER INFO -------\n";
 	toPrint += "Server IP: " + std::string(myIP) + "\nServer Port: " + myPort + "\n---------------------------\n";
-	Utility::Printf(toPrint, eConsoleColor::LIGHT_BLUE_TEXT);
+	Utility::Printf(toPrint, eConsoleColor::LIGHT_BLUE_TEXT, true);
 }
