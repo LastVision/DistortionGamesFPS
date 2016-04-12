@@ -409,8 +409,8 @@ bool ReadSetup(Prism::SetupInfo& aSetup, const std::string& aFilePath)
 		file.read(buffer, 4);
 		windowed = *(reinterpret_cast<int*>(buffer));
 
-		//file.read(buffer, 4);
-		//graphicsSetting = *(reinterpret_cast<int*>(buffer));
+		file.read(buffer, 4);
+		graphicsSetting = *(reinterpret_cast<int*>(buffer));
 	}
 	else 
 	{
