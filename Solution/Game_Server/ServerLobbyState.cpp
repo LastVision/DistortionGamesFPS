@@ -61,12 +61,8 @@ const eStateStatus ServerLobbyState::Update(const float aDeltaTime)
 	aDeltaTime;
 	if (ServerNetworkManager::GetInstance()->GetClients().Size() <= 0)
 	{
-		ServerNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::ON_CONNECT, this);
-		ServerNetworkManager::GetInstance()->AllowNewConnections(false);
-		myAboutToChangeState = true;
 		myStateStatus = eStateStatus::POP_MAIN_STATE;
 	}
-	Sleep(1000);
 	return myStateStatus;
 }
 
@@ -118,7 +114,7 @@ void ServerLobbyState::ReceiveNetworkMessage(const NetMessageRequestConnect& aMe
 	//if (myAboutToChangeState == false)
 	//{
 	//	//Broadcast join
-	//	ServerNetworkManager::GetInstance()->CreateConnection(aMessage.myName, aSenderAddress);
+		ServerNetworkManager::GetInstance()->CreateConnection(aMessage.myName, aSenderAddress);
 	//}
 }
 
