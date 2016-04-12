@@ -14,12 +14,27 @@
 #include <NetMessageReplyServer.h>
 #include <NetMessageRequestStartLevel.h>
 #include <MurmurHash3.h>
+#include <XMLReader.h>
 
 ServerLobbyState::ServerLobbyState(eGameType aGameType)
 	: myGameType(aGameType)
+	, myLevelFactory(nullptr)
 {
 	myIsActiveState = false;
-	myLevelFactory = new ServerLevelFactory("Data/Level/LI_level.xml");
+
+	XMLReader reader;
+	reader.OpenDocument("Data/Setting/SET_difficulty.xml");
+	tinyxml2::XMLElement* root = reader.ForceFindFirstChild("root");
+
+	reader.ForceReadAttribute(reader.ForceFindFirstChild(root, "Damage"), "easy", GC::DamageMultiplier[0]);
+	reader.ForceReadAttribute(reader.ForceFindFirstChild(root, "Damage"), "normal", GC::DamageMultiplier[1]);
+	reader.ForceReadAttribute(reader.ForceFindFirstChild(root, "Damage"), "hard", GC::DamageMultiplier[2]);
+
+	reader.ForceReadAttribute(reader.ForceFindFirstChild(root, "Spawninterval"), "easy", GC::SpawnIntervalMultiplier[0]);
+	reader.ForceReadAttribute(reader.ForceFindFirstChild(root, "Spawninterval"), "normal", GC::SpawnIntervalMultiplier[1]);
+	reader.ForceReadAttribute(reader.ForceFindFirstChild(root, "Spawninterval"), "hard", GC::SpawnIntervalMultiplier[2]);
+
+	reader.CloseDocument();
 }
 
 ServerLobbyState::~ServerLobbyState()
@@ -81,7 +96,8 @@ void ServerLobbyState::ResumeState()
 
 void ServerLobbyState::ReceiveNetworkMessage(const NetMessageSetLevel& aMessage, const sockaddr_in&)
 {
-	myCurrentLevelID = aMessage.myLevelID;
+	myCurrentLevelID = aMessage.myLevelID % 10;
+	GC::Difficulty = (aMessage.myLevelID / 10) - 1;
 	ServerNetworkManager::GetInstance()->AddMessage(NetMessageSetLevel(myCurrentLevelID));
 }
 
@@ -93,6 +109,9 @@ void ServerLobbyState::ReceiveNetworkMessage(const NetMessageRequestLevel&, cons
 void ServerLobbyState::ReceiveNetworkMessage(const NetMessageRequestStartLevel&, const sockaddr_in&)
 {
 	ServerNetworkManager::GetInstance()->AllowNewConnections(false);
+
+	SET_RUNTIME(false);
+	myLevelFactory = new ServerLevelFactory("Data/Level/LI_level.xml");
 	unsigned int levelHashValue = Hash(CU::ReadFileToString(myLevelFactory->GetLevelPath(myCurrentLevelID)).c_str());
 	ServerNetworkManager::GetInstance()->AddMessage(NetMessageLoadLevel(myCurrentLevelID, levelHashValue));
 
@@ -103,7 +122,6 @@ void ServerLobbyState::ReceiveNetworkMessage(const NetMessageRequestStartLevel&,
 	ServerNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::SERVER_REQUEST, this);
 	ServerNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::ON_CONNECT, this);
 
-	SET_RUNTIME(false);
 	myStateStack->PushSubState(new ServerInGameState(myCurrentLevelID, levelHashValue));
 }
 

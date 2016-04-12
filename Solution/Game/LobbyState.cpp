@@ -27,6 +27,8 @@ LobbyState::LobbyState()
 	, myStartGame(false)
 	, myServerLevelHash(0)
 	, myRefreshPlayerListTimer(0)
+	, myRadioLevel(0)
+	, myRadioDifficulty(10)
 {
 }
 
@@ -236,14 +238,17 @@ void LobbyState::ReceiveMessage(const OnRadioButtonMessage& aMessage)
 		levelMusic = min(levelMusic, 2);
 		std::string musicEvent("Play_ElevatorToLevel" + std::to_string(levelMusic));
 		Prism::Audio::AudioInterface::GetInstance()->PostEvent(musicEvent.c_str(), 0);
-		if (ClientNetworkManager::GetInstance()->GetGID() == 1)
-		{
-			ClientNetworkManager::GetInstance()->AddMessage(NetMessageSetLevel(aMessage.myID));
-		}
+		
+		myRadioLevel = aMessage.myID;
 	}
 	else if (aMessage.myEvent == eOnRadioButtonEvent::DIFFICULTY_SELECT)
 	{
-		int apa = 5;
+		myRadioDifficulty = aMessage.myID;
+	}
+
+	if (ClientNetworkManager::GetInstance()->GetGID() == 1)
+	{
+		ClientNetworkManager::GetInstance()->AddMessage(NetMessageSetLevel(myRadioLevel + myRadioDifficulty));
 	}
 }
 

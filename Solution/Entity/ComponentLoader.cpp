@@ -334,6 +334,8 @@ void ComponentLoader::LoadBulletComponent(XMLReader& aDocument, tinyxml2::XMLEle
 	aOutputData.myExistsInEntity = true;
 
 	aDocument.ForceReadAttribute(aDocument.ForceFindFirstChild(aSourceElement, "Damage"), "value", aOutputData.myDamage);
+	aOutputData.myDamage = int(ceilf(GC::DamageMultiplier[GC::Difficulty] * aOutputData.myDamage));
+
 	aDocument.ForceReadAttribute(aDocument.ForceFindFirstChild(aSourceElement, "Speed"), "value", aOutputData.mySpeed);
 	aDocument.ForceReadAttribute(aDocument.ForceFindFirstChild(aSourceElement, "Lifetime"), "value", aOutputData.myLifetime);
 	aDocument.ForceReadAttribute(aDocument.ForceFindFirstChild(aSourceElement, "minspreadrotation"), "value", aOutputData.myMinRotation);

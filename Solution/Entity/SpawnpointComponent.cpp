@@ -154,10 +154,9 @@ void SpawnpointComponent::SpawnUnit(float aDelta)
 					SharedNetworkManager::GetInstance()->AddMessage(NetMessageActivateUnit(toActivate->GetGID(), spawnPosition));
 					
 					myActiveCount++;
-					mySpawnTimer = myData.mySpawnInterval;
+					mySpawnTimer = myData.mySpawnInterval * GC::SpawnIntervalMultiplier[GC::Difficulty];
 				}
 			}
 		}
-
 	}
 }
