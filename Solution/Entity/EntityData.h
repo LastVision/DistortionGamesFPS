@@ -15,6 +15,7 @@
 #include "UpgradeComponentData.h"
 #include "BulletComponentData.h"
 #include "SoundComponentData.h"
+#include "RotationComponentData.h"
 struct EntityData
 {
 	eEntityType myType;
@@ -33,6 +34,7 @@ struct EntityData
 	TriggerComponentData myTriggerData;
 	UpgradeComponentData myUpgradeData;
 	SoundComponentData mySoundData;
+	RotationComponentData myRotationData;
 
 	std::string mySubType;
 };

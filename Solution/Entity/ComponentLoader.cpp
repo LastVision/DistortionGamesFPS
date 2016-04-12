@@ -10,6 +10,7 @@
 #include "ShootingComponentData.h"
 #include "TriggerComponentData.h"
 #include "UpgradeComponentData.h"
+#include "RotationComponentData.h"
 #include "XMLReader.h"
 #include "GameEnum.h"
 
@@ -345,6 +346,12 @@ void ComponentLoader::LoadBulletComponent(XMLReader& aDocument, tinyxml2::XMLEle
 void ComponentLoader::LoadSoundComponent(XMLReader&, tinyxml2::XMLElement*, SoundComponentData& aOutputData)
 {
 	aOutputData.myExistsInEntity = true;
+}
+
+void ComponentLoader::LoadRotationComponent(XMLReader& aDocument, tinyxml2::XMLElement* aSourceElement, RotationComponentData& aOutputData)
+{
+	aOutputData.myExistsInEntity = true;
+	aDocument.ForceReadAttribute(aDocument.ForceFindFirstChild(aSourceElement, "Speed"), "value", aOutputData.myRotationSpeed);
 }
 
 void ComponentLoader::LoadFirstPersonRenderComponent(XMLReader& aDocument, tinyxml2::XMLElement* aSourceElement, FirstPersonRenderComponentData& aOutputData)

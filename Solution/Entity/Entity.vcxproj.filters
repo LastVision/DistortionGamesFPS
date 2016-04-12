@@ -123,6 +123,9 @@
     <ClCompile Include="SoundComponent.cpp">
       <Filter>Component</Filter>
     </ClCompile>
+    <ClCompile Include="RotationComponent.cpp">
+      <Filter>Component</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
@@ -274,6 +277,12 @@
     </ClInclude>
     <ClInclude Include="SoundComponent.h">
       <Filter>Component</Filter>
+    </ClInclude>
+    <ClInclude Include="RotationComponent.h">
+      <Filter>Component</Filter>
+    </ClInclude>
+    <ClInclude Include="RotationComponentData.h">
+      <Filter>EntityFactory\EntityData\ComponentData</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
