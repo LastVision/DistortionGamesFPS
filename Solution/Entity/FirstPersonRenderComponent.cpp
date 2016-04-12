@@ -451,7 +451,7 @@ void FirstPersonRenderComponent::Render(Prism::Texture* aArmDepthTexture, bool a
 	{
 		CU::Matrix44<float> renderPos;
 		CU::Vector3<float> tempPos(myCoOpRespawns[i].myPosition);
-		tempPos.y += 2.f;
+		//tempPos.y += 2.f;
 		float toBuddy = CU::Dot(tempPos - myInputComponentEyeOrientation.GetPos(), myInputComponentEyeOrientation.GetForward());
 		if (toBuddy < 0.f)
 		{
