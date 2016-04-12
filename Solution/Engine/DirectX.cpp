@@ -2,6 +2,7 @@
 #include "DirectX.h"
 #include <D3D11.h>
 #include "Texture.h"
+#include <GameConstants.h>
 
 #pragma comment(lib, "dxgi.lib")
 
@@ -239,7 +240,11 @@ namespace Prism
 	{
 		unsigned int numerator = 0;
 		unsigned int denominator = 1;
-		D3DGetRefreshRate(numerator, denominator);
+
+		if (GC::EnableVSync == true)
+		{
+			D3DGetRefreshRate(numerator, denominator);
+		}
 
 		DXGI_SWAP_CHAIN_DESC swapChainDesc;
 		ZeroMemory(&swapChainDesc, sizeof(DXGI_SWAP_CHAIN_DESC));

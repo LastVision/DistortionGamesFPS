@@ -124,7 +124,7 @@ namespace Prism
 		void InitFullscreenQuad();
 		void CreateVertices();
 		void ActivateBuffers();
-		void Render(Effect* aEffect);
+		void Render(Effect* aEffect, const std::string& aTechnique = "Render");
 		void RenderDeferred(Scene* aScene);
 		void RenderCubemapDeferred(Scene* aScene, ID3D11RenderTargetView* aTarget, ID3D11DepthStencilView* aDepth, bool aUseAmbientPass);
 		void RenderPointLights(Scene* aScene, bool aUseRoomManager = true);
