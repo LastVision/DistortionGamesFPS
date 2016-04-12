@@ -50,12 +50,14 @@ private:
 	CU::GrowingArray<Server> myServers;
 
 	Prism::TextProxy* mySearchingForServers;
+	Prism::TextProxy* myStartupLobby;
 
 	Server* myServer;
 	Server myLocalhost;
 
 	float myRefreshServerTimer;
 	float myWaitForResponseTimer;
+	float myRetryToStartTimer;
 
 	bool myTriedToConnect;
 };

@@ -30,7 +30,8 @@ public:
 	const std::string& GetName() const;
 
 	const sockaddr_in& GetLocalServerAddress() const;
-
+	void SetHasLeftLobby(const bool aBool);
+	const bool& GetHasLeftLobby() const;
 private:
 	ClientNetworkManager();
 	~ClientNetworkManager();
@@ -47,9 +48,21 @@ private:
 
 	CU::GrowingArray<OtherClients> myClients;
 	std::string myName;
+
+	bool myHasLeftLobby;
 };
 
 inline const std::string& ClientNetworkManager::GetName() const
 {
 	return myName;
+}
+
+inline void ClientNetworkManager::SetHasLeftLobby(const bool aBool)
+{
+	myHasLeftLobby = aBool;
+}
+
+inline const bool& ClientNetworkManager::GetHasLeftLobby() const
+{
+	return myHasLeftLobby;
 }

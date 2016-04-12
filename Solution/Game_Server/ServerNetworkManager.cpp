@@ -246,7 +246,6 @@ void ServerNetworkManager::CreateConnection(const std::string& aName, const sock
 	connectReply.PackMessage();
 	myNetwork->Send(connectReply.myStream, aSender);*/
 
-	Sleep(200);
 	for (Connection& connection : myClients)
 	{
 		if (connection.myAddress.sin_addr.S_un.S_addr == aSender.sin_addr.S_un.S_addr) //._.
@@ -463,12 +462,19 @@ void ServerNetworkManager::ReceiveNetworkMessage(const NetMessageRequestConnect&
 
 void ServerNetworkManager::ReceiveNetworkMessage(const NetMessageDisconnect& aMessage, const sockaddr_in&)
 {
-	for (Connection c : myClients)
+	if (aMessage.myClientID == 0)
 	{
-		if (c.myID == aMessage.myClientID)
+		DisconnectAll();
+	}
+	else
+	{
+		for (Connection c : myClients)
 		{
-			DisconnectConnection(c);
-			break;
+			if (c.myID == aMessage.myClientID)
+			{
+				DisconnectConnection(c);
+				break;
+			}
 		}
 	}
 }

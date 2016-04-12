@@ -113,7 +113,8 @@ const eStateStatus LobbyState::Update(const float& aDeltaTime)
 		myWaitingForConnectTimer -= aDeltaTime;
 		if (myWaitingForConnectTimer <= 0.f)
 		{
-			ClientNetworkManager::GetInstance()->AddMessage(NetMessageDisconnect(ClientNetworkManager::GetInstance()->GetGID()));
+			ClientNetworkManager::GetInstance()->SetHasLeftLobby(true);
+			ClientNetworkManager::GetInstance()->AddMessage(NetMessageDisconnect(0));
 			return eStateStatus::ePopMainState;
 		}
 		return myStateStatus;
@@ -122,6 +123,7 @@ const eStateStatus LobbyState::Update(const float& aDeltaTime)
 	{
 		if (CU::InputWrapper::GetInstance()->KeyDown(DIK_ESCAPE) == true)
 		{
+			ClientNetworkManager::GetInstance()->SetHasLeftLobby(true);
 			ClientNetworkManager::GetInstance()->AddMessage(NetMessageDisconnect(ClientNetworkManager::GetInstance()->GetGID()));
 			return eStateStatus::ePopMainState;
 		}
@@ -212,6 +214,7 @@ void LobbyState::ReceiveMessage(const OnClickMessage& aMessage)
 			break;
 		case eOnClickEvent::GAME_QUIT:
 			Prism::Audio::AudioInterface::GetInstance()->PostEvent("Stop_AllElevators", 0);
+			ClientNetworkManager::GetInstance()->SetHasLeftLobby(true);
 			ClientNetworkManager::GetInstance()->AddMessage(NetMessageDisconnect(ClientNetworkManager::GetInstance()->GetGID()));
 			myStateStatus = eStateStatus::ePopMainState;
 			break;

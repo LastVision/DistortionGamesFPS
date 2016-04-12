@@ -28,5 +28,6 @@ private:
 	const eGameType myGameType;
 	int myCurrentLevelID;
 	ServerLevelFactory* myLevelFactory;
+	bool myAboutToChangeState;
 };
 

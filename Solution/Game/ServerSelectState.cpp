@@ -7,6 +7,7 @@
 #include <InputWrapper.h>
 #include "LobbyState.h"
 #include <ModelLoader.h>
+#include <NetMessageDisconnect.h>
 #include <NetMessageReplyServer.h>
 #include <NetMessageRequestServer.h>
 #include <OnClickMessage.h>
@@ -27,6 +28,7 @@ ServerSelectState::ServerSelectState(eType aType)
 ServerSelectState::~ServerSelectState()
 {
 	SAFE_DELETE(mySearchingForServers);
+	SAFE_DELETE(myStartupLobby);
 	SAFE_DELETE(myGUIManager);
 	myCursor = nullptr;
 	PostMaster::GetInstance()->UnSubscribe(eMessageType::ON_CLICK, this);
@@ -53,6 +55,12 @@ void ServerSelectState::InitState(StateStackProxy* aStateStackProxy, GUI::Cursor
 	mySearchingForServers->SetPosition({ 800.f, 200.f });
 	mySearchingForServers->SetText("Searching for servers...");
 	mySearchingForServers->SetScale({ 1.f, 1.f });
+
+	myStartupLobby = Prism::ModelLoader::GetInstance()->LoadText(Prism::Engine::GetInstance()->GetFont(Prism::eFont::CONSOLE));
+	Prism::ModelLoader::GetInstance()->WaitUntilFinished();
+	myStartupLobby->SetPosition({ 800.f, 200.f });
+	myStartupLobby->SetText("Starting up lobby, please wait...");
+	myStartupLobby->SetScale({ 1.f, 1.f });
 	/*
 	std::ifstream stream;
 	stream.open("Data/Setting/ip.txt");
@@ -82,6 +90,7 @@ void ServerSelectState::InitState(StateStackProxy* aStateStackProxy, GUI::Cursor
 
 	// broadcast request server
 	ClientNetworkManager::GetInstance()->AddMessage(NetMessageRequestServer(), ClientNetworkManager::GetInstance()->GetBroadcastAddress());
+	myRetryToStartTimer = 5.f;
 }
 
 void ServerSelectState::EndState()
@@ -101,20 +110,44 @@ const eStateStatus ServerSelectState::Update(const float& aDeltaTime)
 	{
 	case eType::SINGLEPLAYER:
 		ClientNetworkManager::GetInstance()->ConnectToServer(eGameType::SINGLEPLAYER, myLocalhost.myIp.c_str());
-		SET_RUNTIME(false);
-		PostMaster::GetInstance()->UnSubscribe(eMessageType::ON_CLICK, this);
-		myStateStack->PushSubGameState(new LobbyState());
+		if (ClientNetworkManager::GetInstance()->GetGID() != 0 && ClientNetworkManager::GetInstance()->GetHasLeftLobby() == false)
+		{
+			SET_RUNTIME(false);
+			PostMaster::GetInstance()->UnSubscribe(eMessageType::ON_CLICK, this);
+			myStateStack->PushSubGameState(new LobbyState());
+		}
+		else
+		{
+			myRetryToStartTimer -= aDeltaTime;
+			if (myRetryToStartTimer <= 0.f)
+			{
+				ClientNetworkManager::GetInstance()->AddMessage(NetMessageDisconnect(ClientNetworkManager::GetInstance()->GetGID()));
+				return eStateStatus::ePopMainState;
+			}
+		}
 		break;
 	case eType::MULTIPLAYER_HOST:
 		ClientNetworkManager::GetInstance()->ConnectToServer(eGameType::MULTIPLAYER, myLocalhost.myIp.c_str());
-		SET_RUNTIME(false);
-		PostMaster::GetInstance()->UnSubscribe(eMessageType::ON_CLICK, this);
-		myStateStack->PushSubGameState(new LobbyState());
+		if (ClientNetworkManager::GetInstance()->GetGID() != 0 && ClientNetworkManager::GetInstance()->GetHasLeftLobby() == false)
+		{
+			SET_RUNTIME(false);
+			PostMaster::GetInstance()->UnSubscribe(eMessageType::ON_CLICK, this);
+			myStateStack->PushSubGameState(new LobbyState());
+		}
+		else
+		{
+			myRetryToStartTimer -= aDeltaTime;
+			if (myRetryToStartTimer <= 0.f)
+			{
+				ClientNetworkManager::GetInstance()->AddMessage(NetMessageDisconnect(ClientNetworkManager::GetInstance()->GetGID()));
+				return eStateStatus::ePopMainState;
+			}
+		}
 		break;
 	case eType::MULTIPLAYER_JOIN:
 		if (CU::InputWrapper::GetInstance()->KeyDown(DIK_ESCAPE) == true)
 		{
-			return eStateStatus::ePopSubState;
+			return eStateStatus::ePopMainState;
 		}
 
 		//if (CU::InputWrapper::GetInstance()->KeyDown(DIK_SPACE) == true)
@@ -140,7 +173,7 @@ const eStateStatus ServerSelectState::Update(const float& aDeltaTime)
 						, { 50.f, Prism::Engine::GetInstance()->GetWindowSize().y - 50.f }, Prism::eTextType::RELEASE_TEXT);
 				}
 			}
-			if (ClientNetworkManager::GetInstance()->GetGID() != 0)
+			if (ClientNetworkManager::GetInstance()->GetGID() != 0 && ClientNetworkManager::GetInstance()->GetHasLeftLobby() == false)
 			{
 				SET_RUNTIME(false);
 				PostMaster::GetInstance()->UnSubscribe(eMessageType::ON_CLICK, this);
@@ -173,10 +206,17 @@ const eStateStatus ServerSelectState::Update(const float& aDeltaTime)
 
 void ServerSelectState::Render()
 {
-	myGUIManager->Render();
-	if (myServers.Size() <= 0)
+		myGUIManager->Render();
+	if (myType == eType::MULTIPLAYER_JOIN)
 	{
-		mySearchingForServers->Render();
+		if (myServers.Size() <= 0)
+		{
+			mySearchingForServers->Render();
+		}
+	}
+	else
+	{
+		myStartupLobby->Render();
 	}
 }
 
@@ -208,22 +248,25 @@ void ServerSelectState::ReceiveMessage(const OnClickMessage& aMessage)
 
 void ServerSelectState::ReceiveNetworkMessage(const NetMessageReplyServer& aMessage, const sockaddr_in&)
 {
-	ServerSelectState::Server newServer;
-	newServer.myIp = aMessage.myIP;
-	newServer.myName = aMessage.myServerName;
-
-	for (ServerSelectState::Server server : myServers)
+	if (myType == eType::MULTIPLAYER_JOIN)
 	{
-		if (server == newServer)
+		ServerSelectState::Server newServer;
+		newServer.myIp = aMessage.myIP;
+		newServer.myName = aMessage.myServerName;
+
+		for (ServerSelectState::Server server : myServers)
 		{
-			return;
+			if (server == newServer)
+			{
+				return;
+			}
 		}
-	}
 
-	myServers.Add(newServer);
-	for (int i = 0; i < myServers.Size(); ++i)
-	{
-		std::string text(myServers[i].myName + ": " + myServers[i].myIp);
-		myGUIManager->SetButtonText(i, text);
+		myServers.Add(newServer);
+		for (int i = 0; i < myServers.Size(); ++i)
+		{
+			std::string text(myServers[i].myName + ": " + myServers[i].myIp);
+			myGUIManager->SetButtonText(i, text);
+		}
 	}
 }

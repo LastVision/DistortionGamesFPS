@@ -20,7 +20,8 @@
 
 #define BUFFERSIZE 512
 
-ClientNetworkManager::ClientNetworkManager()
+ClientNetworkManager::ClientNetworkManager() 
+	: myHasLeftLobby(false)
 {
 }
 
@@ -240,9 +241,11 @@ void ClientNetworkManager::ReceiveNetworkMessage(const NetMessageDisconnect& aMe
 	myGID = 0;
 	myIsOnline = false;
 	myClients.RemoveAll();
+	myHasLeftLobby = false;
 	//if (aMessage.myClientID == myGID)
 	//{
 	//	//MessageBox(NULL, "You have been disconnected!", "Connection Lost!", MB_ICONERROR | MB_OK);
+	//	
 	//}
 	//else
 	//{ 
