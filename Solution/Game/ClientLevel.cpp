@@ -353,7 +353,6 @@ void ClientLevel::Render()
 				myScene->GetRoomManager()->GetPreviousPlayerRoom()->GetEmitter()->SetShouldRender(false);
 			}
 		}
-		Prism::Engine::GetInstance()->PrintText(Prism::PhysicsInterface::GetInstance()->GetFPS(), { Prism::Engine::GetInstance()->GetWindowSize().x / 2, Prism::Engine::GetInstance()->GetWindowSize().y / 2 }, Prism::eTextType::RELEASE_TEXT);
 		myEmitterManager->RenderEmitters();
 
 		myPlayer->GetComponent<FirstPersonRenderComponent>()->Render(myDeferredRenderer->GetArmDepthStencilTexture(), myLevelID == 0);

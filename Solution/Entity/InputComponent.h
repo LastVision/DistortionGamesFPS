@@ -47,7 +47,7 @@ private:
 
 	CU::Vector2<float> myCursorPosition;
 	float myVerticalSpeed;
-	const InputComponentData& myData;
+	const InputComponentData* myData;
 	//int myCapsuleControllerId;
 
 	CU::Quaternion myPitch;

@@ -3,6 +3,8 @@
 #include <Vector.h>
 #include <Matrix44.h>
 
+struct InputComponentData;
+
 namespace physx
 {
 	class PxSimulationEventCallback;
@@ -84,10 +86,10 @@ namespace Prism
 		void SetClientSide(bool aIsClientSide = false);
 		void SetClientID(int anID);
 		void SetPlayerOrientation(CU::Matrix44<float>* anOrientation);
+		void SetPlayerInputData(const InputComponentData& aData);
 	private:
 		// Requires PhysX includes!!
 		PhysicsManager* GetManager() const;
-
 		PhysicsInterface(std::function<void(PhysicsComponent*, PhysicsComponent*, bool)> anOnTriggerCallback, bool aIsServer);
 		~PhysicsInterface();
 		PhysicsManager* myManager;

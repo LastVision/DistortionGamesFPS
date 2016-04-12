@@ -218,17 +218,22 @@ namespace Prism
 
 	void PhysicsInterface::SetClientSide(bool aIsClientSide)
 	{
-		myManager->myIsClientSide = aIsClientSide;
+		myManager->SetIsClientSide(aIsClientSide);
 	}
 
 	void PhysicsInterface::SetClientID(int anID)
 	{
-		myManager->myPlayerCapsule = anID;
+		myManager->SetPlayerCapsule(anID);
 	}
 
 	void PhysicsInterface::SetPlayerOrientation(CU::Matrix44<float>* anOrientation)
 	{
 		myManager->SetPlayerOrientation(anOrientation);
+	}
+
+	void PhysicsInterface::SetPlayerInputData(const InputComponentData& aData)
+	{
+		myManager->SetInputComponentData(aData);
 	}
 
 	PhysicsInterface::PhysicsInterface(std::function<void(PhysicsComponent*, PhysicsComponent*, bool)> anOnTriggerCallback, bool aIsServer)

@@ -13,10 +13,10 @@
 #include <Vector.h>
 #include <Matrix44.h>
 
-
 class Entity;
 class PhysicsComponent;
 struct PhysicsComponentData;
+struct InputComponentData;
 namespace CU
 {
 	class TimerManager;
@@ -108,11 +108,17 @@ namespace Prism
 		void Wake(physx::PxRigidDynamic* aDynamic);
 		void Wake(int aCapsuleID);
 
+		void SetPlayerOrientation(CU::Matrix44<float>* aPlayerOrientation);
+		void SetPlayerCapsule(int anID);
+		void SetIsClientSide(bool aIsClientSide);
+		void SetInputComponentData(const InputComponentData& aPlayerInputData);
+	private:
 		int myPlayerCapsule;
 		bool myIsClientSide;
-		void SetPlayerOrientation(CU::Matrix44<float>* aPlayerOrientation);
-	private:
-
+		bool myIsOverheated;
+		float mySprintEnergy;
+		float myVerticalSpeed;
+		const InputComponentData* myPlayerInputData;
 		CU::Matrix44<float>* myPlayerOrientation;
 		std::chrono::system_clock::time_point myStartOfTime;
 

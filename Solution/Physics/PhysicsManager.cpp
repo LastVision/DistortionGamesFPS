@@ -28,6 +28,7 @@
 #include <PxQueryReport.h>
 #include <TimerManager.h>
 #include "PhysicsComponentData.h"
+#include "../Entity/InputComponentData.h"
 #include "wavefront.h"
 #include "../InputWrapper/InputWrapper.h"
 #define MATERIAL_ID			0x01
@@ -50,6 +51,8 @@ namespace Prism
 		, myIsSwapping(false)
 		, myIsReading(false)
 		, myIsServer(aIsServer)
+		, myIsOverheated(false)
+		, mySprintEnergy(0.0f)
 	{
 		myRaycastJobs[0].Init(64);
 		myRaycastJobs[1].Init(64);
@@ -285,32 +288,100 @@ namespace Prism
 #ifdef THREAD_INPUT
 		if (myIsClientSide == true)
 		{
-			CU::Vector3<float> movement;
-			movement.y = -0.5f;
-			if (CU::InputWrapper::GetInstance()->KeyIsPressed(DIK_D))
+			
+
+			if (CU::InputWrapper::GetInstance()->KeyDown(DIK_SPACE))
 			{
-				movement.x += 1.f;
+				if (GetAllowedToJump(myPlayerCapsule) == true)
+				{
+					myVerticalSpeed = 0.25f;
+				}
 			}
-			if (CU::InputWrapper::GetInstance()->KeyIsPressed(DIK_A))
+
+			myVerticalSpeed -= myTimestep;
+			myVerticalSpeed = fmaxf(myVerticalSpeed, -0.5f);
+
+
+			CU::Vector3<float> movement;
+			float magnitude = 0.f;
+			int count = 0;
+			if (CU::InputWrapper::GetInstance()->KeyIsPressed(DIK_S))
 			{
-				movement.x -= 1.f;
+				movement.z -= 1.f;
+				magnitude += myPlayerInputData->myBackwardMultiplier;
+				++count;
 			}
 			if (CU::InputWrapper::GetInstance()->KeyIsPressed(DIK_W))
 			{
 				movement.z += 1.f;
+				magnitude += myPlayerInputData->myForwardMultiplier;
+				++count;
 			}
-			if (CU::InputWrapper::GetInstance()->KeyIsPressed(DIK_S))
+			if (CU::InputWrapper::GetInstance()->KeyIsPressed(DIK_A))
 			{
-				movement.z -= 1.f;
+				movement.x -= 1.f;
+				magnitude += myPlayerInputData->mySidewaysMultiplier;
+				++count;
+			}
+			if (CU::InputWrapper::GetInstance()->KeyIsPressed(DIK_D))
+			{
+				movement.x += 1.f;
+				magnitude += myPlayerInputData->mySidewaysMultiplier;
+				++count;
 			}
 
+			if (count > 0)
+			{
+				magnitude /= count;
+			}
+			bool isSprinting = false;
+			bool shouldDecreaseEnergy = true;
 			if (CU::InputWrapper::GetInstance()->KeyIsPressed(DIK_LSHIFT))
 			{
-				movement *= 2.f;
+				if (mySprintEnergy < myPlayerInputData->myMaxSprintEnergy && myIsOverheated == false)
+				{
+					mySprintEnergy += myPlayerInputData->mySprintIncrease * myTimestep;
+					if (mySprintEnergy >= myPlayerInputData->myMaxSprintEnergy)
+					{
+						myIsOverheated = true;
+					}
+
+					if (movement.z > 0.f)
+					{
+						movement.z *= myPlayerInputData->mySprintMultiplier;
+						isSprinting = true;
+					}
+
+					shouldDecreaseEnergy = false;
+				}
 			}
 
-			movement = movement * *myPlayerOrientation;
-			movement *= 0.099f;
+			if (shouldDecreaseEnergy == true && CU::InputWrapper::GetInstance()->KeyIsPressed(DIK_LSHIFT) == false)
+			{
+				mySprintEnergy -= myPlayerInputData->mySprintDecrease * myTimestep;
+				mySprintEnergy = fmaxf(mySprintEnergy, 0.f);
+			}
+
+			if (myIsOverheated == true && mySprintEnergy <= 0.f)
+			{
+				myIsOverheated = false;
+			}
+
+			/*if (CU::InputWrapper::GetInstance()->KeyIsPressed(DIK_LSHIFT))
+			{
+			movement *= myPlayerInputData->mySprintMultiplier;
+			}*/
+
+			movement = movement * (*myPlayerOrientation);
+			movement.y = 0.f;
+			CU::Normalize(movement);
+			movement *= myPlayerInputData->mySpeed * magnitude;
+
+			if (isSprinting == true)
+			{
+				movement *= myPlayerInputData->mySprintMultiplier;
+			}
+			movement.y = myVerticalSpeed;
 			Move(myPlayerCapsule, movement, 0.05f, 1.f / 60.f);
 
 		}
@@ -990,6 +1061,21 @@ namespace Prism
 	void PhysicsManager::SetPlayerOrientation(CU::Matrix44<float>* aPlayerOrientation)
 	{
 		myPlayerOrientation = aPlayerOrientation;
+	}
+
+	void PhysicsManager::SetIsClientSide(bool aIsClientSide)
+	{
+		myIsClientSide = aIsClientSide;
+	}
+
+	void PhysicsManager::SetPlayerCapsule(int anID)
+	{
+		myPlayerCapsule = anID;
+	}
+
+	void PhysicsManager::SetInputComponentData(const InputComponentData& aPlayerInputData)
+	{
+		myPlayerInputData = &aPlayerInputData;
 	}
 
 }
