@@ -486,9 +486,9 @@ void ClientLevel::ReceiveNetworkMessage(const NetMessageEntityState& aMessage, c
 	{
 		if (static_cast<eEntityState>(aMessage.myEntityState) == eEntityState::DIE)
 		{
-			myPlayer->SetState(static_cast<eEntityState>(aMessage.myEntityState));
+  			myPlayer->SetState(static_cast<eEntityState>(aMessage.myEntityState));
 		}
-		else if (myPlayer->GetState() == eEntityState::DIE)
+		else if (myPlayer->GetState() == eEntityState::DIE && static_cast<eEntityState>(aMessage.myEntityState) == eEntityState::IDLE)
 		{
 			myPlayer->SetState(static_cast<eEntityState>(aMessage.myEntityState));
 		}

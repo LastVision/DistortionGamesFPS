@@ -88,6 +88,7 @@ namespace Launcher
             myResolutionList.SelectedIndex = 3;
 
             myQualityList.Items.Add("Low");
+            myQualityList.Items.Add("Medium");
             myQualityList.Items.Add("High");
             myQualityList.SelectedIndex = myQualityList.Items.Count - 1;
 
@@ -111,9 +112,16 @@ namespace Launcher
             myServer.StartInfo.FileName = myServerPath;
             myServer.StartInfo.WorkingDirectory = "bin\\";
             myServer.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
-            if (IsProcessOpen(myServer.StartInfo.FileName) == false)
+            if (File.Exists("bin\\" + myServerPath) == true)
             {
-                myServer.Start();
+                if (IsProcessOpen(myServer.StartInfo.FileName) == false)
+                {
+                    myServer.Start();
+                }
+            }
+            else
+            {
+                MessageBox.Show("Could not find " + myServerPath + ".");
             }
         }
 
@@ -161,7 +169,7 @@ namespace Launcher
             }
             else
             {
-                MessageBox.Show("Could not find a Release executable :(");
+                MessageBox.Show("Could not find " + myExePath + ".");
             }
         }
 
