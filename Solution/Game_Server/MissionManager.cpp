@@ -224,6 +224,12 @@ ActionEvent MissionManager::CreateActionEvent(tinyxml2::XMLElement* anEventEleme
 	case eActionEventType::TEXT:
 		aReader->ForceReadAttribute(anEventElement, "timeForText", actionEvent.myShowTextTime);
 		aReader->ForceReadAttribute(anEventElement, "text", actionEvent.myText);
+		aReader->ReadAttribute(anEventElement, "soundevent", actionEvent.mySoundEvent);
+		if (actionEvent.mySoundEvent != "")
+		{
+			int apa = 5;
+			apa;
+		}
 		for each (char letter in actionEvent.myText)
 		{
 			if (letter == '\n')

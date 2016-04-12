@@ -564,10 +564,20 @@ void ClientLevel::ReceiveNetworkMessage(const NetMessageRayCastRequest& aMessage
 		case eNetRayCastType::CLIENT_SHOOT_PISTOL:
 			Prism::PhysicsInterface::GetInstance()->RayCast(aMessage.myPosition, aMessage.myDirection, 500.f
 				, myOtherClientRaycastHandlerPistol, otherPlayer->GetComponent<PhysicsComponent>());
+			if (otherPlayer->GetComponent<SoundComponent>() != nullptr)
+			{
+				Prism::Audio::AudioInterface::GetInstance()->PostEvent("Play_OtherPlayerPistol"
+					, otherPlayer->GetComponent<SoundComponent>()->GetAudioSFXID());
+			}
 			break;
 		case eNetRayCastType::CLIENT_SHOOT_SHOTGUN:
 			Prism::PhysicsInterface::GetInstance()->RayCast(aMessage.myPosition, aMessage.myDirection, 500.f
 				, myOtherClientRaycastHandlerShotgun, otherPlayer->GetComponent<PhysicsComponent>());
+			if (otherPlayer->GetComponent<SoundComponent>() != nullptr)
+			{
+				Prism::Audio::AudioInterface::GetInstance()->PostEvent("Play_OtherPlayerShotgun"
+					, otherPlayer->GetComponent<SoundComponent>()->GetAudioSFXID());
+			}
 			break;
 		}
 
