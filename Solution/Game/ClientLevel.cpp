@@ -236,8 +236,7 @@ void ClientLevel::Update(const float aDeltaTime, bool aLoadingScreen)
 		Prism::Audio::AudioInterface::GetInstance()->PostEvent("PlayAll", 0);
 
 		myInitDone = true;
-		ClientNetworkManager::GetInstance()->AddMessage(NetMessageLevelLoaded());
-
+		
 		SET_RUNTIME(false);
 		myDeferredRenderer->LoadSHData(myMinPoint, myMaxPoint, myName);
 		RESET_RUNTIME;
@@ -251,7 +250,6 @@ void ClientLevel::Update(const float aDeltaTime, bool aLoadingScreen)
 		//}
 
 		PostMaster::GetInstance()->SendMessage<LevelLoadedMessage>(LevelLoadedMessage(myLevelID));
-
 	}
 
 	SharedLevel::Update(aDeltaTime, aLoadingScreen);
