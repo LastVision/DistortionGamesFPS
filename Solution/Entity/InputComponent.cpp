@@ -103,6 +103,7 @@ void InputComponent::Update(float aDelta)
 		CU::Vector3<float> diePosition = myEyeOrientation.GetPos();
 		diePosition.y = 0.25f;
 		myEyeOrientation.SetPos(diePosition);
+		myOrientation = myEyeOrientation;
 	}
 	CU::Vector3<float> playerPos(myOrientation.GetPos());
 	DEBUG_PRINT(playerPos);

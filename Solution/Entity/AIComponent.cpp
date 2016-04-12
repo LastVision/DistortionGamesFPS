@@ -20,7 +20,7 @@ AIComponent::AIComponent(Entity& anEntity, const AIComponentData& aData, CU::Mat
 	, myBullets(16)
 	, myBulletIndex(0)
 	, myBehavior(new BlendedBehavior(myEntity, aData))
-	, myShootTimer(2.f)
+	, myShootTimer(0.f)
 	, myAttackAnimationTimeCurrent(0.f)
 	, myDefendTarget(nullptr)
 	, myTargetPlayer(nullptr)
@@ -44,7 +44,7 @@ AIComponent::~AIComponent()
 void AIComponent::Reset()
 {
 	myHasJustSpawned = true;
-	myShootTimer = 2.f;
+	myShootTimer = 0.f;
 	myAttackAnimationTimeCurrent = 0.f;
 	myDefendTarget = nullptr;
 	myTargetPlayer = nullptr;
@@ -103,7 +103,7 @@ void AIComponent::Update(float aDelta)
 			if (myShootTimer < 0.f)
 			{
 				Shoot(myTargetPlayer);
-				myShootTimer = 2.f;
+				myShootTimer = myData.myAttackAnimationTime;
 			}
 		}
 		else
