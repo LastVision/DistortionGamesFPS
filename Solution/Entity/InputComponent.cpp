@@ -46,6 +46,7 @@ InputComponent::InputComponent(Entity& anEntity, const InputComponentData& aData
 
 	mySendTime = 0.f;
 
+	myPreviousState = eEntityState::IDLE;
 	//myCapsuleControllerId = Prism::PhysicsInterface::GetInstance()->CreatePlayerController(myOrientation.GetPos());
 }
 
@@ -61,14 +62,9 @@ void InputComponent::Update(float aDelta)
 		return;
 	}
 
-	if (myEntity.GetState() == eEntityState::DIE && myPreviousState != eEntityState::DIE)
-	{
-		CU::Vector3<float> toSend = myOrientation.GetPos();
-		toSend.y -= 1.f;	
-		SharedNetworkManager::GetInstance()->AddMessage(NetMessagePosition(toSend, myCursorPosition.x, myEntity.GetGID()));
-	}
-
 	myPrevOrientation = myOrientation;
+	myPreviousState = myEntity.GetState();
+
 	Prism::Audio::AudioInterface::GetInstance()->SetListenerPosition(myEyeOrientation.GetPos().x, myEyeOrientation.GetPos().y, myEyeOrientation.GetPos().z
 		, myEyeOrientation.GetForward().x, myEyeOrientation.GetForward().y, myEyeOrientation.GetForward().z
 		, myEyeOrientation.GetUp().x, myEyeOrientation.GetUp().y, myEyeOrientation.GetUp().z);
@@ -105,13 +101,7 @@ void InputComponent::Update(float aDelta)
 			myEyeOrientation.SetPos(position);
 		}
 	}
-	else
-	{
-		CU::Vector3<float> diePosition = myEyeOrientation.GetPos();
-		diePosition.y -= 1.f;
-		myEyeOrientation.SetPos(diePosition);
 
-	}
 	CU::Vector3<float> playerPos(myOrientation.GetPos());
 	DEBUG_PRINT(playerPos);
 
@@ -124,6 +114,15 @@ void InputComponent::Update(float aDelta)
 			SharedNetworkManager::GetInstance()->AddMessage(NetMessagePosition(myOrientation.GetPos(), myCursorPosition.x, myEntity.GetGID()));
 			mySendTime = NETWORK_UPDATE_INTERVAL;
 		}
+	}
+
+	if (myEntity.GetState() == eEntityState::DIE && myPreviousState != eEntityState::DIE)
+	{
+		CU::Vector3<float> diePosition = myEyeOrientation.GetPos();
+		diePosition.y -= 1.f;
+		myEyeOrientation.SetPos(diePosition);
+
+		SharedNetworkManager::GetInstance()->AddMessage(NetMessagePosition(diePosition, myCursorPosition.x, myEntity.GetGID()));
 	}
 
 	myCamera->Update(aDelta);
