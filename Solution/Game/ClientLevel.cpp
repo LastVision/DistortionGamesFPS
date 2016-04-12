@@ -563,10 +563,20 @@ void ClientLevel::ReceiveNetworkMessage(const NetMessageRayCastRequest& aMessage
 		case eNetRayCastType::CLIENT_SHOOT_PISTOL:
 			Prism::PhysicsInterface::GetInstance()->RayCast(aMessage.myPosition, aMessage.myDirection, 500.f
 				, myOtherClientRaycastHandlerPistol, otherPlayer->GetComponent<PhysicsComponent>());
+			if (otherPlayer->GetComponent<SoundComponent>() != nullptr)
+			{
+				Prism::Audio::AudioInterface::GetInstance()->PostEvent("Play_OtherPlayerPistol"
+					, otherPlayer->GetComponent<SoundComponent>()->GetAudioSFXID());
+			}
 			break;
 		case eNetRayCastType::CLIENT_SHOOT_SHOTGUN:
 			Prism::PhysicsInterface::GetInstance()->RayCast(aMessage.myPosition, aMessage.myDirection, 500.f
 				, myOtherClientRaycastHandlerShotgun, otherPlayer->GetComponent<PhysicsComponent>());
+			if (otherPlayer->GetComponent<SoundComponent>() != nullptr)
+			{
+				Prism::Audio::AudioInterface::GetInstance()->PostEvent("Play_OtherPlayerShotgun"
+					, otherPlayer->GetComponent<SoundComponent>()->GetAudioSFXID());
+			}
 			break;
 		}
 
@@ -690,6 +700,7 @@ void ClientLevel::OnResize(float aWidth, float aHeight)
 	myFullscreenRenderer->OnResize(aWidth, aHeight);
 	myDeferredRenderer->OnResize(aWidth, aHeight);
 	myEscapeMenu->OnResize(int(aWidth), int(aHeight));
+	myPlayer->GetComponent<FirstPersonRenderComponent>()->OnResize({ aWidth, aHeight });
 }
 
 void ClientLevel::HandleTrigger(Entity& aFirstEntity, Entity& aSecondEntity, bool aHasEntered)

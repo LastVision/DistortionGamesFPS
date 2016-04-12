@@ -33,6 +33,12 @@ namespace Launcher
             RAuto
         }
 
+        enum eQuailty
+        {
+            Low,
+            High
+        }
+
         enum eMSAA
         {
             x1,
@@ -81,6 +87,11 @@ namespace Launcher
             myResolutionList.Items.Add("Automatic");
             myResolutionList.SelectedIndex = 3;
 
+            myQualityList.Items.Add("Low");
+            myQualityList.Items.Add("Medium");
+            myQualityList.Items.Add("High");
+            myQualityList.SelectedIndex = myQualityList.Items.Count - 1;
+
             //aaDropdown.Items.Add("MSAA x1");
             //aaDropdown.Items.Add("MSAA x2");
             //aaDropdown.Items.Add("MSAA x4");
@@ -101,9 +112,16 @@ namespace Launcher
             myServer.StartInfo.FileName = myServerPath;
             myServer.StartInfo.WorkingDirectory = "bin\\";
             myServer.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
-            if (IsProcessOpen(myServer.StartInfo.FileName) == false)
+            if (File.Exists("bin\\" + myServerPath) == true)
             {
-                myServer.Start();
+                if (IsProcessOpen(myServer.StartInfo.FileName) == false)
+                {
+                    myServer.Start();
+                }
+            }
+            else
+            {
+                MessageBox.Show("Could not find " + myServerPath + ".");
             }
         }
 
@@ -126,6 +144,7 @@ namespace Launcher
                 WriteResolutionToFile(writer);
                 WriteMSAAToFile(writer);
                 WriterWindowedToFile(writer);
+                WriteQualityToFile(writer);
             }
 
             ProcessStartInfo processInfo = new ProcessStartInfo();
@@ -150,8 +169,14 @@ namespace Launcher
             }
             else
             {
-                MessageBox.Show("Could not find a Release executable :(");
+                MessageBox.Show("Could not find " + myExePath + ".");
             }
+        }
+
+        private void WriteQualityToFile(BinaryWriter writer)
+        {
+            Int32 quality = myQualityList.SelectedIndex;
+            writer.Write(quality);
         }
 
         void WriteResolutionToFile(BinaryWriter aWriter)

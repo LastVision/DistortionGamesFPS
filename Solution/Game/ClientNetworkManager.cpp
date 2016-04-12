@@ -126,11 +126,14 @@ void ClientNetworkManager::ReceieveThread()
 		myNetwork->Receieve(someBuffers);
 		for (Buffer message : someBuffers)
 		{
-			NetMessage toDeserialize;
-			toDeserialize.DeSerializeFirst(message.myData);
-			if (toDeserialize.myGameID == myGameIdentifier)
+			if (message.myLength >= 4)
 			{
-				myReceieveBuffer[myCurrentBuffer ^ 1].Add(message);
+				NetMessage toDeserialize;
+				toDeserialize.DeSerializeFirst(message.myData);
+				if (toDeserialize.myGameID == myGameIdentifier)
+				{
+					myReceieveBuffer[myCurrentBuffer ^ 1].Add(message);
+				}
 			}
 		}
 		ReceieveIsDone();
@@ -145,6 +148,10 @@ void ClientNetworkManager::SendThread()
 	{
 		for (SendBufferMessage arr : mySendBuffer[myCurrentSendBuffer])
 		{
+			if (arr.myBuffer.size() == 0)
+			{
+				continue;
+			}
 			if (arr.myTargetID == UINT_MAX)
 			{
 				myNetwork->Send(arr.myBuffer, arr.myTargetAddress);

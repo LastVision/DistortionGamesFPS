@@ -53,6 +53,7 @@ InputComponent::InputComponent(Entity& anEntity, const InputComponentData& aData
 	}
 #endif
 
+	myPreviousState = eEntityState::IDLE;
 }
 
 InputComponent::~InputComponent()
@@ -68,6 +69,8 @@ void InputComponent::Update(float aDelta)
 	}
 
 	myPrevOrientation = myOrientation;
+	myPreviousState = myEntity.GetState();
+
 	Prism::Audio::AudioInterface::GetInstance()->SetListenerPosition(myEyeOrientation.GetPos().x, myEyeOrientation.GetPos().y, myEyeOrientation.GetPos().z
 		, myEyeOrientation.GetForward().x, myEyeOrientation.GetForward().y, myEyeOrientation.GetForward().z
 		, myEyeOrientation.GetUp().x, myEyeOrientation.GetUp().y, myEyeOrientation.GetUp().z);
@@ -104,17 +107,12 @@ void InputComponent::Update(float aDelta)
 			myEyeOrientation.SetPos(position);
 		}
 	}
-	else
-	{
-		CU::Vector3<float> diePosition = myEyeOrientation.GetPos();
-		diePosition.y = 0.25f;
-		myEyeOrientation.SetPos(diePosition);
-	}
+
 	CU::Vector3<float> playerPos(myOrientation.GetPos());
 	DEBUG_PRINT(playerPos);
 
 
-	mySendTime -= aDelta;
+	mySendTime -= aDelta;	
 	if (mySendTime < 0.f)
 	{
 		if (myEntity.GetGID() != 0 && (myOrientation != myPrevOrientation))
@@ -122,6 +120,15 @@ void InputComponent::Update(float aDelta)
 			SharedNetworkManager::GetInstance()->AddMessage(NetMessagePosition(myOrientation.GetPos(), myCursorPosition.x, myEntity.GetGID()));
 			mySendTime = NETWORK_UPDATE_INTERVAL;
 		}
+	}
+
+	if (myEntity.GetState() == eEntityState::DIE && myPreviousState != eEntityState::DIE)
+	{
+		CU::Vector3<float> diePosition = myEyeOrientation.GetPos();
+		diePosition.y -= 1.f;
+		myEyeOrientation.SetPos(diePosition);
+
+		SharedNetworkManager::GetInstance()->AddMessage(NetMessagePosition(diePosition, myCursorPosition.x, myEntity.GetGID()));
 	}
 
 	myCamera->Update(aDelta);

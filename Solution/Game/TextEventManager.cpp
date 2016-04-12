@@ -56,6 +56,13 @@ TextEventManager::~TextEventManager()
 	}
 	myNotifications.DeleteAll();
 	SAFE_DELETE(myMissionText);
+
+	for (int i = 0; i < myNotifications.Size(); ++i)
+	{
+		std::string eventName("Stop_Notification" + std::to_string(i));
+		Prism::Audio::AudioInterface::GetInstance()->PostEvent(eventName.c_str(), 0);
+		myHasStoppedSound[i] = true;
+	}
 }
 
 void TextEventManager::Update(float aDeltaTime)
@@ -163,6 +170,11 @@ void TextEventManager::ReceiveNetworkMessage(const NetMessageText& aMessage, con
 	{
 		myMissionText->SetText(aMessage.myText);
 		myShouldRender = aMessage.myShouldShow;
+	}
+
+	if (aMessage.mySoundEvent != "")
+	{
+		Prism::Audio::AudioInterface::GetInstance()->PostEvent(aMessage.mySoundEvent.c_str(), 0);
 	}
 }
 

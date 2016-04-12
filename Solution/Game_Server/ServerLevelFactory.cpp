@@ -201,13 +201,15 @@ void ServerLevelFactory::LoadTriggers(XMLReader& aReader, tinyxml2::XMLElement* 
 
 		if (newEntity->GetComponent<TriggerComponent>()->IsClientSide() == false)
 		{
+			//if (newEntity->GetComponent<TriggerComponent>()->GetTriggerType() == eTriggerType::HEALTH_PACK && IsCoop == true)
+			//{
+			//	SAFE_DELETE(newEntity);
+			//	continue;
+			//}
+
 			newEntity->Reset();
 			myCurrentLevel->AddEntity(newEntity);
-			//if (newEntity->GetComponent<NetworkComponent>() != nullptr)
-			//{
-			//	myIDCount++;
-			//	newEntity->GetComponent<NetworkComponent>()->SetNetworkID(myIDCount);
-			//}
+	
 			if (newEntity->GetComponent<TriggerComponent>()->GetIsActiveFromStart() == false)
 			{
 				newEntity->GetComponent<PhysicsComponent>()->RemoveFromScene();

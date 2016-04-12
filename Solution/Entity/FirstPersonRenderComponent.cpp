@@ -451,7 +451,7 @@ void FirstPersonRenderComponent::Render(Prism::Texture* aArmDepthTexture, bool a
 	{
 		CU::Matrix44<float> renderPos;
 		CU::Vector3<float> tempPos(myCoOpRespawns[i].myPosition);
-		tempPos.y += 2.f;
+		//tempPos.y += 2.f;
 		float toBuddy = CU::Dot(tempPos - myInputComponentEyeOrientation.GetPos(), myInputComponentEyeOrientation.GetForward());
 		if (toBuddy < 0.f)
 		{
@@ -657,6 +657,11 @@ void FirstPersonRenderComponent::ReceiveNetworkMessage(const NetMessageHealth& a
 
 		myMaxHealth = aMessage.myMaxHealth;
 		myCurrentHealth = aMessage.myCurrentHealth;
+
+		if (myCurrentHealth == 0)
+		{
+			myDisplayHealthIndicatorTimer = 0.f;
+		}
 	}
 }
 
@@ -708,6 +713,15 @@ void FirstPersonRenderComponent::ReceiveNetworkMessage(const NetMessagePressETex
 			}
 		}
 	}
+}
+
+void FirstPersonRenderComponent::OnResize(CU::Vector2<float> aNewSize)
+{
+	CU::Vector2<float> hotspot = aNewSize / 2.f;
+
+	myDamageIndicator->SetSize(aNewSize, hotspot);
+	myPickupIndicator->SetSize(aNewSize, hotspot);
+	myLowLifeIndicator->SetSize(aNewSize, hotspot);
 }
 
 void FirstPersonRenderComponent::ReceiveNote(const UpgradeNote& aNote)
