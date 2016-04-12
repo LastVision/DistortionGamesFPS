@@ -91,6 +91,7 @@ void LobbyState::InitState(StateStackProxy* aStateStackProxy, GUI::Cursor* aCurs
 	{
 		ClientNetworkManager::GetInstance()->AddMessage(NetMessageRequestLevel());
 	}
+	myWaitingForConnectTimer = 1.f;
 }
 
 void LobbyState::EndState()
@@ -107,6 +108,16 @@ void LobbyState::OnResize(int aX, int aY)
 
 const eStateStatus LobbyState::Update(const float& aDeltaTime)
 {
+	if (ClientNetworkManager::GetInstance()->GetGID() == 0)
+	{
+		myWaitingForConnectTimer -= aDeltaTime;
+		if (myWaitingForConnectTimer <= 0.f)
+		{
+			ClientNetworkManager::GetInstance()->AddMessage(NetMessageDisconnect(ClientNetworkManager::GetInstance()->GetGID()));
+			return eStateStatus::ePopMainState;
+		}
+		return myStateStatus;
+	}
 	if (ClientNetworkManager::GetInstance()->GetGID() == 1)
 	{
 		if (CU::InputWrapper::GetInstance()->KeyDown(DIK_ESCAPE) == true)
