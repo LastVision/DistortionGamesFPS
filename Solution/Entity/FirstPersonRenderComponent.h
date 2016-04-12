@@ -25,6 +25,12 @@ struct CoOpRespawn
 	int myGID;
 };
 
+struct CoOpCircle
+{
+	CU::Vector3<float> myPosition;
+	float myLifePercentage;
+};
+
 class FirstPersonRenderComponent : public Component, public NetworkSubscriber
 {
 public:
@@ -88,7 +94,7 @@ private:
 	Prism::SpriteProxy* myMarker;
 	Prism::SpriteProxy* myCoOpSprite;
 
-	CU::GrowingArray<CU::Vector3<float>> myCoOpPositions;
+	CU::GrowingArray<CoOpCircle> myCoOpCircles;
 	CU::GrowingArray<CoOpRespawn> myCoOpRespawns;
 	CU::Vector3<float> myMarkerPosition;
 
