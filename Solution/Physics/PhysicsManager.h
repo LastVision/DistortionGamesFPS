@@ -108,9 +108,12 @@ namespace Prism
 		void Wake(physx::PxRigidDynamic* aDynamic);
 		void Wake(int aCapsuleID);
 
+		int myPlayerCapsule;
+		bool myIsClientSide;
+		void SetPlayerOrientation(CU::Matrix44<float>* aPlayerOrientation);
 	private:
 
-
+		CU::Matrix44<float>* myPlayerOrientation;
 		std::chrono::system_clock::time_point myStartOfTime;
 
 

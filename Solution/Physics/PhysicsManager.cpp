@@ -28,9 +28,8 @@
 #include <PxQueryReport.h>
 #include <TimerManager.h>
 #include "PhysicsComponentData.h"
-
 #include "wavefront.h"
-
+#include "../InputWrapper/InputWrapper.h"
 #define MATERIAL_ID			0x01
 
 namespace Prism
@@ -283,7 +282,39 @@ namespace Prism
 
 	void PhysicsManager::Update()
 	{
+#ifdef THREAD_INPUT
+		if (myIsClientSide == true)
+		{
+			CU::Vector3<float> movement;
+			movement.y = -0.5f;
+			if (CU::InputWrapper::GetInstance()->KeyIsPressed(DIK_D))
+			{
+				movement.x += 1.f;
+			}
+			if (CU::InputWrapper::GetInstance()->KeyIsPressed(DIK_A))
+			{
+				movement.x -= 1.f;
+			}
+			if (CU::InputWrapper::GetInstance()->KeyIsPressed(DIK_W))
+			{
+				movement.z += 1.f;
+			}
+			if (CU::InputWrapper::GetInstance()->KeyIsPressed(DIK_S))
+			{
+				movement.z -= 1.f;
+			}
 
+			if (CU::InputWrapper::GetInstance()->KeyIsPressed(DIK_LSHIFT))
+			{
+				movement *= 2.f;
+			}
+
+			movement = movement * *myPlayerOrientation;
+			movement *= 0.099f;
+			Move(myPlayerCapsule, movement, 0.05f, 1.f / 60.f);
+
+		}
+#endif
 
 
 		if (!myScene)
@@ -325,9 +356,7 @@ namespace Prism
 				myControllerPositions[myCurrentIndex ^ 1][i].x = float(pos.x);
 				myControllerPositions[myCurrentIndex ^ 1][i].y = float(pos.y);
 				myControllerPositions[myCurrentIndex ^ 1][i].z = float(pos.z);
-				myMoveJobs[myCurrentIndex ^ 1][i].myDirection.x = 0;
-				myMoveJobs[myCurrentIndex ^ 1][i].myDirection.y = 0;
-				myMoveJobs[myCurrentIndex ^ 1][i].myDirection.z = 0;
+
 			}
 		}
 
@@ -550,7 +579,7 @@ namespace Prism
 		myPhysicsSDK->getVisualDebugger()->setVisualDebuggerFlag(physx::PxVisualDebuggerFlag::eTRANSMIT_CONTACTS, true);
 		myPhysicsSDK->getVisualDebugger()->setVisualDebuggerFlag(physx::PxVisualDebuggerFlag::eTRANSMIT_SCENEQUERIES, true);
 #endif
-	}
+}
 
 	void PhysicsManager::onPvdDisconnected(physx::debugger::comm::PvdConnection&)
 	{
@@ -957,4 +986,10 @@ namespace Prism
 
 		myIsReading = false;
 	}
+
+	void PhysicsManager::SetPlayerOrientation(CU::Matrix44<float>* aPlayerOrientation)
+	{
+		myPlayerOrientation = aPlayerOrientation;
+	}
+
 }

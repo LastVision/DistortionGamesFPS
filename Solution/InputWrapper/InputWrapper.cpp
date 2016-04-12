@@ -1,6 +1,7 @@
 #include "InputWrapper.h"
 #include <MemoryMacros.h>
 #include <Defines.h>
+#include "../Timer/TimerManager.h"
 
 CU::InputWrapper* CU::InputWrapper::myInstance = nullptr;
 
@@ -11,7 +12,7 @@ void CU::InputWrapper::Create(HWND aHwnd, HINSTANCE aHInstance, DWORD aKeyCoopFl
 	{
 		myInstance = new CU::InputWrapper();
 		myInstance->Init(aHwnd, aHInstance, aKeyCoopFlags, aMouseCoopFlags);
-	}	
+	}
 }
 
 CU::InputWrapper* CU::InputWrapper::GetInstance()
@@ -27,6 +28,7 @@ void CU::InputWrapper::Destroy()
 CU::InputWrapper::InputWrapper()
 	: myWindowIsActive(true)
 	, myBufferedMousePosition(128)
+	, myIsUpdating(true)
 {
 
 }
@@ -52,60 +54,91 @@ void CU::InputWrapper::Init(HWND aHwnd, HINSTANCE aHInstance, DWORD aKeyCoopFlag
 
 	myIsRecordingDeltas = true;
 
+#ifdef THREAD_INPUT
+	myTimerManager = new CU::TimerManager();
+	myUpdateThread = new std::thread([&]{Update(); });
+#else
 	Update();
+#endif
 }
 
 CU::InputWrapper::~InputWrapper()
 {
+#ifdef THREAD_INPUT
+	myIsUpdating = false;
+	myUpdateThread->join();
+	delete myUpdateThread;
+	myUpdateThread = nullptr;
+
+	delete myTimerManager;
+	myTimerManager = nullptr;
+#endif
+
 	myKeyboardDevice->Unacquire();
 	myMouseDevice->Unacquire();
 }
 
 void CU::InputWrapper::Update()
 {
-	myMouseDelta.x = 0;
-	myMouseDelta.y = 0;
-	for (int i = 0; i < myBufferedMousePosition.Size(); ++i)
+#ifdef THREAD_INPUT
+	float totalTime = 0.0f;
+	while (myIsUpdating == true)
 	{
-		myMouseDelta += myBufferedMousePosition[i];
-	}
-	myBufferedMousePosition.RemoveAll();
-	if (myWindowIsActive == true)
-	{
-		CapturePreviousState();
-		HRESULT hr = myKeyboardDevice->GetDeviceState(sizeof(myKeyState), reinterpret_cast<void**>(&myKeyState));
 
-		if (FAILED(hr))
+		myTimerManager->Update();
+		totalTime += myTimerManager->GetMasterTimer().GetTime().GetFrameTime();
+		while (totalTime >= 1.0f / 60.0f)
 		{
-			ZeroMemory(myKeyState, sizeof(myKeyState));
+			totalTime = 0.0f;
+#endif
+			myMouseDelta.x = 0;
+			myMouseDelta.y = 0;
+			for (int i = 0; i < myBufferedMousePosition.Size(); ++i)
+			{
+				myMouseDelta += myBufferedMousePosition[i];
+			}
+			myBufferedMousePosition.RemoveAll();
+			if (myWindowIsActive == true)
+			{
+				CapturePreviousState();
+				HRESULT hr = myKeyboardDevice->GetDeviceState(sizeof(myKeyState), reinterpret_cast<void**>(&myKeyState));
 
-			myKeyboardDevice->Acquire();
+				if (FAILED(hr))
+				{
+					ZeroMemory(myKeyState, sizeof(myKeyState));
+
+					myKeyboardDevice->Acquire();
+				}
+
+				hr = myMouseDevice->GetDeviceState(sizeof(DIMOUSESTATE), reinterpret_cast<void**>(&myMouseState));
+				if (FAILED(hr))
+				{
+					ZeroMemory(&myMouseState, sizeof(myMouseState));
+
+					myMouseDevice->Acquire();
+				}
+
+				tagPOINT cursorPoint;
+				GetCursorPos(&cursorPoint);
+				ScreenToClient(myWindowHandler, &cursorPoint);
+				myMousePos.x = static_cast<float>(cursorPoint.x);
+				myMousePos.y = static_cast<float>(cursorPoint.y);
+
+				if (myIsRecordingDeltas == false)
+				{
+					myMouseState.lX = 0;
+					myMouseState.lY = 0;
+				}
+
+				//myMousePos.x += myMouseState.lX;
+				//myMousePos.y += myMouseState.lY;
+				//myMousePos.z += myMouseState.lZ;
+				//}
+#ifdef THREAD_INPUT
+
+			}
 		}
-
-		hr = myMouseDevice->GetDeviceState(sizeof(DIMOUSESTATE), reinterpret_cast<void**>(&myMouseState));
-		if (FAILED(hr))
-		{
-			ZeroMemory(&myMouseState, sizeof(myMouseState));
-
-			myMouseDevice->Acquire();
-		}
-
-		tagPOINT cursorPoint;
-		GetCursorPos(&cursorPoint);
-		ScreenToClient(myWindowHandler, &cursorPoint);
-		myMousePos.x = static_cast<float>(cursorPoint.x);
-		myMousePos.y = static_cast<float>(cursorPoint.y);
-
-		if (myIsRecordingDeltas == false)
-		{
-			myMouseState.lX = 0;
-			myMouseState.lY = 0;
-		}
-
-		//myMousePos.x += myMouseState.lX;
-		//myMousePos.y += myMouseState.lY;
-		//myMousePos.z += myMouseState.lZ;
-		//}
+#endif
 	}
 }
 

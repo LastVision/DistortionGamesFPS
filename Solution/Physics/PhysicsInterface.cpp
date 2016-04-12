@@ -216,6 +216,21 @@ namespace Prism
 		return myManager->physicsFPS;
 	}
 
+	void PhysicsInterface::SetClientSide(bool aIsClientSide)
+	{
+		myManager->myIsClientSide = aIsClientSide;
+	}
+
+	void PhysicsInterface::SetClientID(int anID)
+	{
+		myManager->myPlayerCapsule = anID;
+	}
+
+	void PhysicsInterface::SetPlayerOrientation(CU::Matrix44<float>* anOrientation)
+	{
+		myManager->SetPlayerOrientation(anOrientation);
+	}
+
 	PhysicsInterface::PhysicsInterface(std::function<void(PhysicsComponent*, PhysicsComponent*, bool)> anOnTriggerCallback, bool aIsServer)
 	{
 		myManager = new PhysicsManager(anOnTriggerCallback, aIsServer);

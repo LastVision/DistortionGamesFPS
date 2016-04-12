@@ -81,6 +81,9 @@ namespace Prism
 		void Wake(physx::PxRigidDynamic* aDynamic);
 		void Wake(int aCapsuleID);
 		int GetFPS();
+		void SetClientSide(bool aIsClientSide = false);
+		void SetClientID(int anID);
+		void SetPlayerOrientation(CU::Matrix44<float>* anOrientation);
 	private:
 		// Requires PhysX includes!!
 		PhysicsManager* GetManager() const;

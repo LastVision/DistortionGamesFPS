@@ -212,6 +212,7 @@ void ClientLevel::Init(const std::string& aWeaponSettingsPath)
 
 	myForceStrengthPistol = myPlayer->GetComponent<ShootingComponent>()->GetWeaponForceStrength(eWeaponType::PISTOL);
 	myForceStrengthShotgun = myPlayer->GetComponent<ShootingComponent>()->GetWeaponForceStrength(eWeaponType::SHOTGUN);
+	Prism::PhysicsInterface::GetInstance()->SetClientSide(true);
 }
 
 void ClientLevel::SetMinMax(const CU::Vector3<float>& aMinPoint, const CU::Vector3<float>& aMaxPoint)

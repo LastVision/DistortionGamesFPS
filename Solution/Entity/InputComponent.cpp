@@ -45,8 +45,14 @@ InputComponent::InputComponent(Entity& anEntity, const InputComponentData& aData
 	myJumpOffset = 0;
 
 	mySendTime = 0.f;
+#ifdef THREAD_INPUT
+	if (myEntity.GetIsClient() == true)
+	{
+		Prism::PhysicsInterface::GetInstance()->SetClientID(myEntity.GetComponent<PhysicsComponent>()->GetCapsuleControllerId());
+		Prism::PhysicsInterface::GetInstance()->SetPlayerOrientation(&myOrientation);
+	}
+#endif
 
-	//myCapsuleControllerId = Prism::PhysicsInterface::GetInstance()->CreatePlayerController(myOrientation.GetPos());
 }
 
 InputComponent::~InputComponent()
@@ -108,7 +114,7 @@ void InputComponent::Update(float aDelta)
 	DEBUG_PRINT(playerPos);
 
 
-	mySendTime -= aDelta;	
+	mySendTime -= aDelta;
 	if (mySendTime < 0.f)
 	{
 		if (myEntity.GetGID() != 0 && (myOrientation != myPrevOrientation))
@@ -171,6 +177,7 @@ void InputComponent::UpdateMovement(float aDelta)
 	CU::Vector3<float> movement;
 	float magnitude = 0.f;
 	int count = 0;
+#ifndef THREAD_INPUT
 	if (CU::InputWrapper::GetInstance()->KeyIsPressed(DIK_S))
 	{
 		movement.z -= 1.f;
@@ -195,7 +202,7 @@ void InputComponent::UpdateMovement(float aDelta)
 		magnitude += myData.mySidewaysMultiplier;
 		++count;
 	}
-
+#endif
 	if (count > 0)
 	{
 		magnitude /= count;
@@ -270,7 +277,10 @@ void InputComponent::UpdateMovement(float aDelta)
 #endif
 
 	movement.y = myVerticalSpeed;
+
+#ifndef THREAD_INPUT
 	Prism::PhysicsInterface::GetInstance()->Move(myEntity.GetComponent<PhysicsComponent>()->GetCapsuleControllerId(), movement, 0.05f, aDelta);
+#endif
 
 	CU::Vector3<float> pos;
 	Prism::PhysicsInterface::GetInstance()->GetPosition(myEntity.GetComponent<PhysicsComponent>()->GetCapsuleControllerId(), pos);
