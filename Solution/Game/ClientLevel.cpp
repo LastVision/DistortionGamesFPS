@@ -741,6 +741,7 @@ void ClientLevel::HandleTrigger(Entity& aFirstEntity, Entity& aSecondEntity, boo
 				{
 					aSecondEntity.SendNote<UpgradeNote>(aFirstEntity.GetComponent<UpgradeComponent>()->GetData());
 					PostMaster::GetInstance()->SendMessage(EmitterMessage(firstTrigger->GetEntity().GetEmitter(), true));
+					Prism::Audio::AudioInterface::GetInstance()->PostEvent("Play_Positive", 0);
 				}
 			}
 
