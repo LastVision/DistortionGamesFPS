@@ -328,7 +328,7 @@ void ClientLevel::Update(const float aDeltaTime, bool aLoadingScreen)
 	}
 	Prism::PhysicsInterface::GetInstance()->EndFrame();
 
-	ClientNetworkManager::GetInstance()->Update(aDeltaTime);
+	
 
 
 }

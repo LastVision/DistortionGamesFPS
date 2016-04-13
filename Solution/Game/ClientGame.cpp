@@ -149,6 +149,7 @@ bool ClientGame::Update()
 	myCursor->Render();
 	
 	Prism::DebugDrawer::GetInstance()->RenderTextToScreen(); //Have to be last
+	ClientNetworkManager::GetInstance()->Update(deltaTime);
 	return true;
 }
 
