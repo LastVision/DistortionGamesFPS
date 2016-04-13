@@ -101,7 +101,7 @@ namespace GUI
 
 	void ButtonWidget::OnMouseEnter()
 	{
-		Prism::Audio::AudioInterface::GetInstance()->PostEvent("buttonHover", 0);
+		Prism::Audio::AudioInterface::GetInstance()->PostEvent("Play_ButtonHover", 0);
 		myImageCurrent = myImageHover;
 	}
 
@@ -243,7 +243,7 @@ namespace GUI
 	{
 		if (myClickEvent != nullptr)
 		{
-			Prism::Audio::AudioInterface::GetInstance()->PostEvent("buttonClick", 0);
+			Prism::Audio::AudioInterface::GetInstance()->PostEvent("Play_ButtonClick", 0);
 			PostMaster::GetInstance()->SendMessage(*myClickEvent);
 		}
 	}
