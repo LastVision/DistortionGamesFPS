@@ -267,7 +267,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		int deltaY = raw->data.mouse.lLastY;
 		if (CU::InputWrapper::GetInstance() != nullptr)
 		{
-			CU::InputWrapper::GetInstance()->FeedMouseRawInput(deltaX, deltaY);
+			//CU::InputWrapper::GetInstance()->FeedMouseRawInput(deltaX, deltaY);
 		}
 	}
 		break;

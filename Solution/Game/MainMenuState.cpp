@@ -87,10 +87,10 @@ const eStateStatus MainMenuState::Update(const float& aDeltaTime)
 	{
 //#ifdef RELEASE_BUILD
 		PostMaster::GetInstance()->UnSubscribe(eMessageType::ON_CLICK, this);
+		SET_RUNTIME(false); 
+		myStateStack->PushSubGameState(new SplashState("Data/Resource/Texture/Menu/Splash/T_logo_our.dds", false));
 		SET_RUNTIME(false);
-		myStateStack->PushSubGameState(new SplashState("Data/Resource/Texture/Menu/Splash/T_logo_our.dds", true));
-		SET_RUNTIME(false);
-		myStateStack->PushSubGameState(new SplashState("Data/Resource/Texture/Menu/Splash/T_logo_other.dds", false));
+		myStateStack->PushSubGameState(new SplashState("Data/Resource/Texture/Menu/Splash/T_logo_other.dds", true));
 //#endif
 		myHasRunOnce = true;
 	}

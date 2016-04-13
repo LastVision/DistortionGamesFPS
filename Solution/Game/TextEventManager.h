@@ -31,6 +31,8 @@ public:
 	void Render();
 
 	void AddNotification(std::string aText, float aLifeTime = 5.f, CU::Vector4<float> aColor = { 1.f, 1.f, 1.f, 1.f }, int aNumberOfRows = 0);
+	void AddRespawnText(std::string aText, bool aShouldShow, CU::Vector4<float> aColor = { 1.f, 1.f, 1.f, 1.f });
+
 	void ReceiveNetworkMessage(const NetMessageText& aMessage, const sockaddr_in& aSenderAddress) override;
 	void ReceiveMessage(const PrintTextMessage& aMessage) override;
 
@@ -43,8 +45,13 @@ private:
 
 	float myTextStartFadingTime;
 	Prism::TextProxy* myMissionText;
+	Prism::TextProxy* myRespawnText;
 	CU::Vector3<float> myMissionOffset;
+	CU::Vector3<float> myRespawnOffset;
 	bool myShouldRender;
+	bool myShouldRenderRespawn;
+	float myRespawnTimer;
+	CU::Vector4<float> myRespawnColor;
 
 	bool myHasStoppedSound[8];
 };

@@ -104,9 +104,8 @@ bool ClientGame::Destroy()
 
 bool ClientGame::Update()
 {
-#ifndef THREAD_INPUT
-	CU::InputWrapper::GetInstance()->Update();
-#endif
+	CU::InputWrapper::GetInstance()->LogicUpdate();
+
 	myTimerManager->Update();
 	Prism::Audio::AudioInterface::GetInstance()->Update();
 	
