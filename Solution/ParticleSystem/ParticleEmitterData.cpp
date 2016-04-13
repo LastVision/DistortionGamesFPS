@@ -82,6 +82,11 @@ namespace Prism
 		element = read.ForceFindFirstChild(emitter, "ParticleRotationDelta");
 		read.ReadAttribute(element, "value", myRotationDelta);
 
+		element = read.ForceFindFirstChild(emitter, "ParticleRotation");
+		read.ReadAttribute(element, "min", myParticleRotation.x);
+		read.ReadAttribute(element, "max", myParticleRotation.y);
+
+
 		element = read.ForceFindFirstChild(emitter, "EmissionVariation");
 		read.ReadAttribute(element, "yAxis", myVariation.x);
 		read.ReadAttribute(element, "zAxis", myVariation.y);

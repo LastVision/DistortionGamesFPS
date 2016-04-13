@@ -74,8 +74,7 @@ void ClientUnitManager::ReceiveNetworkMessage(const NetMessageActivateUnit& aMes
 	PostMaster::GetInstance()->SendMessage(EmitterMessage("SpawnEnemy", { aMessage.myPosition.x
 		, aMessage.myPosition.y + 1.5f
 		, aMessage.myPosition.z }
-		, CU::Vector3<float>(0.f, -1.f, 0.f)
-		, CU::Vector3<float>(0.f, 180.f, 0.f)));
+	, CU::Vector3<float>(0.f, -1.f, 0.f)));
 
 	Entity* toActivate = RequestUnit(aMessage.myGID);
 	if (toActivate != nullptr)
