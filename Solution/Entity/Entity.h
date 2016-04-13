@@ -70,6 +70,7 @@ public:
 
 	bool IsActive() const;
 	void SetActive(bool aIsActive);
+	void SetDelayedAddToScene();
 
 private:
 	void operator=(Entity&) = delete;
@@ -96,6 +97,9 @@ private:
 
 	float myTimeActiveBeforeKill;
 	float myTimeActiveBeforeKillTimer;
+
+	float myDelayAddToSceneTimer;
+	bool myDelayedAddToScene;
 };
 
 template <typename T>
@@ -203,4 +207,10 @@ inline bool Entity::IsActive() const
 inline void Entity::SetActive(bool aIsActive)
 {
 	myIsActive = aIsActive;
+}
+
+inline void Entity::SetDelayedAddToScene()
+{
+	myDelayAddToSceneTimer = 0.1f;
+	myDelayedAddToScene = true;
 }

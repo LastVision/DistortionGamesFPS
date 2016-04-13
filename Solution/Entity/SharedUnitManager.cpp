@@ -46,17 +46,20 @@ void SharedUnitManager::Update(float aDeltaTime)
 void SharedUnitManager::ActivateUnit(Entity* aUnit, const CU::Vector3<float>& aPosition)
 {
 	aUnit->Reset();
-	aUnit->SetActive(true);
 
+
+	aUnit->SetActive(true);
 	if (aUnit->GetIsClient() == false)
 	{
+
 		aUnit->GetComponent<PhysicsComponent>()->AddToScene();
 		aUnit->GetComponent<PhysicsComponent>()->Wake();
 		Prism::PhysicsInterface::GetInstance()->TeleportToPosition(aUnit->GetComponent<PhysicsComponent>()->GetCapsuleControllerId(), aPosition);
 	}
 	else
 	{
-		aUnit->AddToScene();
+		//aUnit->AddToScene();
+		aUnit->SetDelayedAddToScene();
 		aUnit->GetComponent<PhysicsComponent>()->AddToScene();
 	}
 	

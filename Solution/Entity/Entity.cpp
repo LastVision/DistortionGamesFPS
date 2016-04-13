@@ -37,6 +37,8 @@ Entity::Entity(unsigned int aGID, const EntityData& aEntityData, Prism::Scene* a
 	, myIsActive(true)
 	, myTimeActiveBeforeKill(10.f)
 	, myTimeActiveBeforeKillTimer(10.f)
+	, myDelayAddToSceneTimer(0.f)
+	, myDelayedAddToScene(false)
 {
 	for (int i = 0; i < static_cast<int>(eComponentType::_COUNT); ++i)
 	{
@@ -210,6 +212,9 @@ void Entity::Reset()
 			myComponents[i]->Reset();
 		}
 	}
+	
+	myDelayAddToSceneTimer = 0.f;
+	myDelayedAddToScene = false;
 }
 
 void Entity::Update(float aDeltaTime)
@@ -239,6 +244,16 @@ void Entity::Update(float aDeltaTime)
 			myTimeActiveBeforeKillTimer = myTimeActiveBeforeKill;
 			myIsActive = true;
 			Kill(false);
+		}
+	}
+
+	if (myDelayedAddToScene == true)
+	{
+		myDelayAddToSceneTimer -= aDeltaTime;
+		if (myDelayAddToSceneTimer <= 0.f)
+		{
+			myDelayedAddToScene = false;
+			AddToScene();
 		}
 	}
 }
