@@ -213,6 +213,10 @@ namespace GUI
 		{
 			myClickEvent = new OnClickMessage(eOnClickEvent::LOWER_VOICE);
 		}
+		else if (clickEvent == "refresh")
+		{
+			myClickEvent = new OnClickMessage(eOnClickEvent::REFRESH);
+		}
 		else
 		{
 			std::string message = "[ButtonWidget]: No onclick event named " + clickEvent;
