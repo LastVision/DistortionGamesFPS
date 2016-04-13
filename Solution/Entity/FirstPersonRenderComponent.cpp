@@ -387,7 +387,7 @@ void FirstPersonRenderComponent::Render(Prism::Texture* aArmDepthTexture, bool a
 
 	float lifePercentage = float(myCurrentHealth) / float(myMaxHealth);
 
-	if (lifePercentage < 0.3f)
+	if (lifePercentage < 0.4f)
 	{
 		myLowLifeIndicator->Render(windowSize * 0.5f, { 1.f, 1.f }, { 1.f, 1.f, 1.f, 1.f - lifePercentage });
 	}
