@@ -171,6 +171,7 @@ namespace GUI
 		}
 
 		myHealthBar->Render(*myScene->GetCamera(), myHealthOrientation, healthColor);
+		myHealthIcon->Render(*myScene->GetCamera(), myHealthOrientation, healthColor);
 
 		if (myIsFirstLevel == true)
 		{
@@ -197,7 +198,6 @@ namespace GUI
 		{
 			myEffect->SetGradiantValue(alpha);
 		}
-		myHealthIcon->Render(*myScene->GetCamera(), myHealthOrientation, healthColor);
 
 		CU::Vector3<float> oldPos(myHealthOrientation.GetPos());
 		CU::Vector3<float> offset(myHealthOrientation.GetForward() * -0.25f);
