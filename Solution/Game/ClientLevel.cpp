@@ -139,7 +139,7 @@ ClientLevel::ClientLevel(GUI::Cursor* aCursor, eStateStatus& aStateStatus, int a
 	//while (myVoiceText->IsLoaded() == false || mySFXText->IsLoaded() == false || myMusicText->IsLoaded() == false)
 	//{
 	//}
-
+	GC::PlayerAlive = true;
 
 }
 
