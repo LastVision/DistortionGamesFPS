@@ -2,7 +2,7 @@
 #include "PhysicsManager.h"
 #include <ThreadUtilities.h>
 #include "PhysicsHelperFunc.h"
-
+#include <GameConstants.h>
 #ifdef _DEBUG
 #pragma comment(lib, "PhysX\\vc12win32\\PhysX3DEBUG_x86.lib")
 #pragma comment(lib, "PhysX\\vc12win32\\PhysX3CommonDEBUG_x86.lib")
@@ -288,7 +288,7 @@ namespace Prism
 
 	void PhysicsManager::Update()
 	{
-		if (myIsClientSide == true)
+		if (myIsClientSide == true && GC::PlayerAlive == true)
 		{
 			CU::InputWrapper::GetInstance()->PhysicsUpdate();
 
