@@ -377,7 +377,7 @@ void ServerNetworkManager::UpdateImportantMessages(float aDeltaTime)
 
 					std::string resend = "Sending important message " + std::to_string(msg.myImportantID) + " of message type "
 						+ ConvertNetworkEnumToString(static_cast<eNetMessageType>(msg.myMessageType)) + " to client id " + std::to_string(client.myGID) + " - " + client.myName;
-					Utility::Printf(resend, AQUA_TEXT);
+					Utility::Printf(resend, AQUA_TEXT, true);
 					myNetwork->Send(msg.myData, client.myNetworkAddress);
 				}
 			}
@@ -386,7 +386,7 @@ void ServerNetworkManager::UpdateImportantMessages(float aDeltaTime)
 		{
 			std::string resend = "All client has replied to the message id " + std::to_string(msg.myImportantID)
 				+ " of message type " + ConvertNetworkEnumToString(static_cast<eNetMessageType>(msg.myMessageType));
-			Utility::Printf(resend, YELLOW_TEXT);
+			Utility::Printf(resend, YELLOW_TEXT, true);
 			myImportantMessagesBuffer.RemoveCyclic(msg);
 		}
 	}

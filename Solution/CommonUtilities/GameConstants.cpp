@@ -12,3 +12,5 @@ int GC::Difficulty = 10;
 
 float GC::DamageMultiplier[3];
 float GC::SpawnIntervalMultiplier[3];
+
+volatile bool GC::PlayerAlive = true;
