@@ -31,7 +31,21 @@ enum class eActionEventType
 	MARKER,
 };
 
-enum class eInGameStates
+enum class eInGameState
+{
+	LOADING_SCREEN,
+	LOADING_PHYSICS_INIT,
+	LOADING_GRAPHICS_INIT,
+	LOADING_CAN_START,
+	LEVEL,
+	LOAD_LEVEL,
+	LEVEL_FAIL,
+	LEVEL_FAIL_CAN_START,
+	LEVEL_COMPLETE,
+	LEVEL_COMPLETE_CAN_START,
+};
+
+enum class eServerInGameState
 {
 	LEVEL_UPDATE,
 	LEVEL_COMPLETE,

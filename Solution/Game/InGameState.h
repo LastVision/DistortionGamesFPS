@@ -55,15 +55,18 @@ private:
 	ClientLevelFactory* myLevelFactory;
 
 	int myLevelToLoad;
-	bool myShouldLoadLevel;
-	bool myShouldShowLoadingScreen;
 
-	bool myLevelComplete;
-	bool myFailedLevel;
-	bool myCanStartNextLevel;
-	bool myLoadingScreen;
-	bool myLoadingScreenCanStart;
-	bool myPhysicsDone;
+	eInGameState myState;
+
+	//bool myShouldLoadLevel;
+	//bool myShouldShowLoadingScreen;
+
+	//bool myLevelComplete;
+	//bool myFailedLevel;
+	//bool myCanStartNextLevel;
+	//bool myLoadingScreen;
+	//bool myLoadingScreenCanStart;
+	//bool myPhysicsDone;
 	bool myFailedLevelHash;
 
 	unsigned int myServerHashLevelValue;
