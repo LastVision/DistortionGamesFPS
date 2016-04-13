@@ -418,12 +418,15 @@ void InGameState::ResumeState()
 
 void InGameState::ReceiveMessage(const GameStateMessage& aMessage)
 {
-	switch (aMessage.myGameState)
+	if (myState != eInGameState::LEVEL)
 	{
-	case eGameState::LOAD_LEVEL:
-		myLevelToLoad = aMessage.myID;
-		myState = eInGameState::LOAD_LEVEL;
-		break;
+		switch (aMessage.myGameState)
+		{
+		case eGameState::LOAD_LEVEL:
+			myLevelToLoad = aMessage.myID;
+			myState = eInGameState::LOAD_LEVEL;
+			break;
+		}
 	}
 }
 
@@ -496,9 +499,12 @@ void InGameState::ReceiveNetworkMessage(const NetMessageLoadLevel& aMessage, con
 	//myHasStartedMusicBetweenLevels = true;
 	//Prism::Audio::AudioInterface::GetInstance()->PostEvent(musicEvent.c_str(), 0);
 
-	myLevelToLoad = aMessage.myLevelID;
-	//myShouldShowLoadingScreen = true;
-	myState = eInGameState::LOAD_LEVEL;
+	if (myState != eInGameState::LEVEL)
+	{
+		myLevelToLoad = aMessage.myLevelID;
+		//myShouldShowLoadingScreen = true;
+		myState = eInGameState::LOAD_LEVEL;
+	}
 }
 
 void InGameState::OnResize(int aWidth, int aHeight)
