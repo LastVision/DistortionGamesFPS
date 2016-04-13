@@ -68,6 +68,12 @@ void InputComponent::Update(float aDelta)
 		return;
 	}
 
+	if (myEntity.GetState() == eEntityState::DIE)
+	{
+		CU::Vector3<float> offset(0, 1.f, 0);
+		myEyeOrientation.SetPos(myOrientation.GetPos() + offset);
+	}
+
 	myPrevOrientation = myOrientation;
 	myPreviousState = myEntity.GetState();
 
@@ -89,6 +95,12 @@ void InputComponent::Update(float aDelta)
 				//SharedNetworkManager::GetInstance()->AddMessage(NetMessageRayCastRequest(myEntity.GetOrientation().GetPos(), myEntity.GetOrientation().GetForward()
 				//	, int(eNetRayCastType::CLIENT_PRESSED_E), 10.f, myEntity.GetGID()));
 				SharedNetworkManager::GetInstance()->AddMessage(NetMessagePressE(myEntity.GetGID()));
+			}
+
+			if (GC::PlayerShouldPlaySprintErrorSound == true)
+			{
+				Prism::Audio::AudioInterface::GetInstance()->PostEvent("Play_Error", 0);
+				GC::PlayerShouldPlaySprintErrorSound = false;
 			}
 
 			myEyeOrientation = myOrientation;
@@ -128,7 +140,6 @@ void InputComponent::Update(float aDelta)
 		diePosition.y -= 1.f;
 		myEyeOrientation.SetPos(diePosition);
 		myOrientation = myEyeOrientation;
-		myPrevOrientation = myEyeOrientation;
 
 		SharedNetworkManager::GetInstance()->AddMessage(NetMessagePosition(diePosition, myCursorPosition.x, myEntity.GetGID()));
 	}

@@ -240,6 +240,12 @@ void ServerNetworkManager::CreateConnection(const std::string& aName, const sock
 		return;
 	}
 
+	if (myClients.Size() > 1)
+	{
+		AddMessage(NetMessageConnectReply(NetMessageConnectReply::eType::FAIL), aSender);
+		return;
+	}
+
 	
 
 	/*NetMessageConnectReply connectReply(NetMessageConnectReply::eType::SUCCESS, myIDCount);
@@ -255,7 +261,7 @@ void ServerNetworkManager::CreateConnection(const std::string& aName, const sock
 		}
 	}
 	myIDCount = 1;
-	for (short i = 1; i <= 16; ++i)
+	for (short i = 1; i <= 2; ++i)
 	{
 		bool idExist = false;
 		for each (const Connection& connection in myClients)
@@ -461,6 +467,7 @@ void ServerNetworkManager::ReceiveNetworkMessage(const NetMessageRequestConnect&
 
 void ServerNetworkManager::ReceiveNetworkMessage(const NetMessageDisconnect& aMessage, const sockaddr_in&)
 {
+	Utility::Printf("Client requested to close server.", eConsoleColor::WHITE_TEXT);
 	if (aMessage.myClientID == 0)
 	{
 		DisconnectAll();

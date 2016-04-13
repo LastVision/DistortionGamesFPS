@@ -42,6 +42,8 @@ namespace Prism
 
 		CU::Vector3f myEmitterSize;
 		CU::Vector2<float> myVariation;
+		CU::Vector2<float> myParticleRotation;
+
 		float myEmissionAngle;
 		float myAngleVariation;
 		float myRotationDelta;
@@ -55,5 +57,6 @@ namespace Prism
 		bool myIsHollow;
 		bool myIsCircle;
 		bool myIsAnimated;
+		bool myIsSphere;
 	};
 }

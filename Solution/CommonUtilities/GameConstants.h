@@ -15,4 +15,6 @@ public:
 	static float SpawnIntervalMultiplier[3];
 
 	static volatile bool PlayerAlive;
+
+	static volatile bool PlayerShouldPlaySprintErrorSound;
 };

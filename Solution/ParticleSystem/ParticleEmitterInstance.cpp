@@ -122,7 +122,6 @@ namespace Prism
 
 		myLiveParticleCount = 0;
 
-		myEmissionTime = myParticleEmitterData->myEmissionRate;
 		myDiffColor = (myParticleEmitterData->myData.myEndColor - myParticleEmitterData->myData.myStartColor)
 			/ myParticleEmitterData->myData.myParticleLifeTime;
 
@@ -162,6 +161,17 @@ namespace Prism
 			myStates[EMITTERLIFE] = FALSE;
 		}
 
+		if (myParticleEmitterData->myIsSphere == true)
+		{
+			myStates[SPHERE] = TRUE;
+		}
+		else
+		{
+			myStates[SPHERE] = FALSE;
+		}
+
+
+
 		myEmitterLife = myParticleEmitterData->myEmitterLifeTime;
 		CreatePoints();
 	}
@@ -180,19 +190,19 @@ namespace Prism
 
 
 		CU::Vector3<float> toReturn;
-		int toRand = static_cast<int>(CU::Math::DegreeToRad(toRad) * 100.f);
-		int toRand2 = static_cast<int>(CU::Math::DegreeToRad(toRad2) * 100.f);
+		int toRand = static_cast<int>(CU::Math::DegreeToRad(toRad) * 10000.f);
+		int toRand2 = static_cast<int>(CU::Math::DegreeToRad(toRad2) * 10000.f);
 
 		float angle = 0.f;
 		float otherAngle = 0.f;
 
 		if (toRand > 0.f)
 		{
-			angle = static_cast<float>(rand() % toRand) / 100.f;
+			angle = static_cast<float>(rand() % toRand) / 10000.f;
 		}
 		if (toRand2 > 0.f)
 		{
-			otherAngle = static_cast<float>(rand() % toRand2) / 100.f;
+			otherAngle = static_cast<float>(rand() % toRand2) / 10000.f;
 		}
 
 		toReturn.x = radius * cosf(angle);
@@ -357,7 +367,7 @@ namespace Prism
 		for (int i = 0; i < myLogicalParticles.Size(); ++i)
 		{
 			LogicalParticle& logicParticle = myLogicalParticles[i];
-			
+
 			if (logicParticle.myIsAlive == false)
 			{
 				continue;
@@ -367,7 +377,7 @@ namespace Prism
 			ParticleData& particleData = myParticleEmitterData->myData;
 
 			gfxParticle.myLifeTime -= aDeltaTime;
-			
+
 			if (particleData.mySpeedDelta > 0.f)
 			{
 				particleData.mySpeed += particleData.mySpeedDelta * aDeltaTime;
@@ -444,6 +454,11 @@ namespace Prism
 				CU::Vector3<float> pos = CreateHollowSquare();
 				gfxParticle.myPosition = aWorldMatrix.GetPos() + pos;
 			}
+			else if (myStates[SPHERE] == TRUE)
+			{
+				CU::Vector3<float> pos = CreateSpherePositions();
+				gfxParticle.myPosition = aWorldMatrix.GetPos() + pos;
+			}
 			else
 			{
 				gfxParticle.myPosition =
@@ -463,7 +478,8 @@ namespace Prism
 
 			logicParticle.myIsAlive = true;
 
-			logicParticle.myRotation = CU::Math::RandomRange(-360.f, 360.f);
+
+			logicParticle.myRotation = CU::Math::RandomRange(myParticleEmitterData->myParticleRotation.x, myParticleEmitterData->myParticleRotation.y);
 
 			gfxParticle.myRotation = logicParticle.myRotation;
 
@@ -485,9 +501,9 @@ namespace Prism
 
 		CU::Vector3<float> toReturn;
 
-		int a = static_cast<int>((4 * M_PI_2)) * 1000;
+		int a = static_cast<int>((4 * M_PI_2)) * 10000;
 
-		float angle = static_cast<float>(rand() % a) / 1000.f;
+		float angle = static_cast<float>(rand() % a) / 10000.f;
 
 		toReturn.x = radius * cosf(angle);
 		toReturn.y = 0.f;
@@ -498,19 +514,19 @@ namespace Prism
 
 	CU::Vector3<float> ParticleEmitterInstance::CreateSpherePositions()
 	{
-		float radius = 10.f;
+		float radius = myParticleEmitterData->myEmitterSize.z;
+
+		if (myParticleEmitterData->myEmitterSize.x > myParticleEmitterData->myEmitterSize.z)
+		{
+			radius = myParticleEmitterData->myEmitterSize.x;
+		}
+
 		CU::Vector3<float> toReturn;
 
-		int a = static_cast<int>((4 * M_PI_2)) * 100;
+		toReturn = CU::Math::RandomVector(CU::Matrix44f().GetPos() - myParticleEmitterData->myEmitterSize
+			, CU::Matrix44f().GetPos() + myParticleEmitterData->myEmitterSize);
 
-		float angleZ = static_cast<float>(rand() % a) / 100.f;
-
-		//float angle = CU::Math::RandomRange(0.f, );
-
-		toReturn.x = radius * cosf(angleZ);
-		toReturn.y = radius * sinf(static_cast<float>(a)) * sinf(angleZ);
-		toReturn.z = radius * sinf(angleZ);
-
+		CU::Normalize(toReturn);
 		return toReturn;
 	}
 

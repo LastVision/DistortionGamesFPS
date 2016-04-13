@@ -209,7 +209,8 @@ void Shotgun::HandleRaycast(PhysicsComponent* aComponent, const CU::Vector3<floa
 			}
 			else
 			{
-				PostMaster::GetInstance()->SendMessage(EmitterMessage("OnEnvHit", aHitPosition, aHitNormal));
+				PostMaster::GetInstance()->SendMessage(EmitterMessage("OnEnvHit", aHitPosition));
+				PostMaster::GetInstance()->SendMessage(EmitterMessage("OnEnvHit_2", aHitPosition, aHitNormal));
 			}
 		}
 	}

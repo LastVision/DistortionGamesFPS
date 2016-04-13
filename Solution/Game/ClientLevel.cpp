@@ -406,7 +406,7 @@ void ClientLevel::ReceiveNetworkMessage(const NetMessageSetActive& aMessage, con
 		}
 		else
 		{
-			myTextManager->AddRespawnText("System shutdown/nYour ally can revive you", true, { 1.f, 0.f, 0.f, 1.f });
+			myTextManager->AddRespawnText("System shutdown\nYour ally can revive", true, { 1.f, 0.f, 0.f, 1.f });
 			myPlayer->GetComponent<PhysicsComponent>()->Sleep();
 			GC::PlayerAlive = false;
 		}
@@ -424,7 +424,7 @@ void ClientLevel::ReceiveNetworkMessage(const NetMessageSetActive& aMessage, con
 				}
 				else
 				{
-					myTextManager->AddRespawnText("Your ally is incapacitated/nYou can revive him/her", true, { 1.f, 0.f, 0.f, 1.f });
+					myTextManager->AddRespawnText("Your ally is down\nRevive him/her", true, { 1.f, 0.f, 0.f, 1.f });
 				}
 				break;
 			}
@@ -785,7 +785,8 @@ void ClientLevel::HandleOtherClientRayCastPistol(PhysicsComponent* aComponent, c
 		}
 		else
 		{
-			PostMaster::GetInstance()->SendMessage(EmitterMessage("OnEnvHit", aHitPosition, aHitNormal));
+			PostMaster::GetInstance()->SendMessage(EmitterMessage("OnEnvHit", aHitPosition));
+			PostMaster::GetInstance()->SendMessage(EmitterMessage("OnEnvHit_2", aHitPosition, aHitNormal));
 		}
 	}
 }
@@ -806,7 +807,8 @@ void ClientLevel::HandleOtherClientRayCastShotgun(PhysicsComponent* aComponent, 
 		}
 		else
 		{
-			PostMaster::GetInstance()->SendMessage(EmitterMessage("OnEnvHit", aHitPosition, aHitNormal));
+			PostMaster::GetInstance()->SendMessage(EmitterMessage("OnEnvHit", aHitPosition));
+			PostMaster::GetInstance()->SendMessage(EmitterMessage("OnEnvHit_2", aHitPosition, aHitNormal));
 		}
 	}
 }
