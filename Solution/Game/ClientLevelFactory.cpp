@@ -300,7 +300,7 @@ void ClientLevelFactory::LoadTriggers(XMLReader& aReader, tinyxml2::XMLElement* 
 
 		if (isCoOp == false && newEntity->GetComponent<TriggerComponent>()->GetTriggerType() == eTriggerType::HEALTH_PACK)
 		{
-			PostMaster::GetInstance()->SendMessage(EmitterMessage("Healthpack", newEntity->GetOrientation().GetPos(), { 0.f, 1.f, 0.f }, newEntity));
+			PostMaster::GetInstance()->SendMessage(EmitterMessage("Healthpack", newEntity->GetOrientation().GetPos(), newEntity));
 		}
 
 		if (newEntity->GetComponent<TriggerComponent>()->IsClientSide() == true)
