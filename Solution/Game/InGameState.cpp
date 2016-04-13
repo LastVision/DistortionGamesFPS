@@ -189,7 +189,7 @@ const eStateStatus InGameState::Update(const float& aDeltaTime)
 	case eInGameState::LEVEL_COMPLETE_CAN_START:
 		myLevelCompleteSprite->Render({ 0.f, 0.f });
 
-		if (CU::InputWrapper::GetInstance()->KeyDown(DIK_SPACE) == true)
+		if (CU::InputWrapper::GetInstance()->KeyDown(DIK_RETURN) == true)
 		{
 			ClientNetworkManager::GetInstance()->AddMessage(NetMessageRequestStartLevel());
 			myState = eInGameState::LEVEL_COMPLETE;
@@ -202,7 +202,7 @@ const eStateStatus InGameState::Update(const float& aDeltaTime)
 	case eInGameState::LEVEL_FAIL_CAN_START:
 		myLevelFailedSprite->Render({ 0.f, 0.f });
 
-		if (CU::InputWrapper::GetInstance()->KeyDown(DIK_SPACE) == true)
+		if (CU::InputWrapper::GetInstance()->KeyDown(DIK_RETURN) == true)
 		{
 			ClientNetworkManager::GetInstance()->AddMessage(NetMessageRequestStartLevel());
 			myState = eInGameState::LEVEL_FAIL;

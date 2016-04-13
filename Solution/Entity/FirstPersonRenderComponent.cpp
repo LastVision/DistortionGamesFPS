@@ -495,6 +495,7 @@ void FirstPersonRenderComponent::Render(Prism::Texture* aArmDepthTexture, bool a
 		newRenderPos.x = fmaxf(0.f, fminf(newRenderPos.x, windowSize.x));
 		newRenderPos.y += windowSize.y;
 		newRenderPos.y = fmaxf(0.f, fminf(newRenderPos.y, windowSize.y));
+		newRenderPos.x -= 70.f;
 
 		//myCoOpSprite->Render({ newRenderPos.x, newRenderPos.y });
 		Prism::Engine::GetInstance()->PrintText("Press E", { newRenderPos.x, newRenderPos.y }, Prism::eTextType::RELEASE_TEXT, 2.f, CU::Vector4<float>(1.f, 1.f, 1.f, 1.f - (lengthToText / 10.f)));
@@ -641,10 +642,22 @@ void FirstPersonRenderComponent::ReceiveNetworkMessage(const NetMessageHealth& a
 {
 	if (aMessage.myGID == myEntity.GetGID())
 	{
+		bool playSound = false;
 		if (myCurrentHealth < aMessage.myCurrentHealth)
 		{
 			myDisplayHealthIndicatorTimer = myDisplayPickupTime;
+			playSound = true;
 		}
+		if (myCurrentHealth == myMaxHealth)
+		{
+			myDisplayHealthIndicatorTimer = myDisplayPickupTime;
+			playSound = true;
+		}
+		if (playSound == true)
+		{
+			Prism::Audio::AudioInterface::GetInstance()->PostEvent("Play_HealthPack", 0);
+		}
+
 
 		myMaxHealth = aMessage.myMaxHealth;
 		myCurrentHealth = aMessage.myCurrentHealth;

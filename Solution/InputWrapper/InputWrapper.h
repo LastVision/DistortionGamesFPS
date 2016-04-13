@@ -36,7 +36,7 @@ namespace CU
 		bool KeyUp(unsigned int aKey, eType aType = eType::LOGIC) const;
 		bool KeyIsPressed(unsigned int aKey, eType aType = eType::LOGIC) const; //Returns true if specified key is down 
 
-
+		bool AnyKeyDown(eType aType = eType::LOGIC) const;
 
 		//void FeedMouseRawInput(int aDeltaX, int aDeltaY);
 		//void PauseDeltaRecording();

@@ -235,6 +235,20 @@ bool CU::InputWrapper::KeyUp(unsigned int aKey, eType aType) const
 	return ((myKeyState[aType][key] & 0x80) == 0 && (myPreviousKeyState[aType][key] & 0x80) != 0);
 }
 
+bool CU::InputWrapper::AnyKeyDown(eType aType) const
+{
+	bool isAnyKeyDown = false;
+	for (int i = 0; i <= 256; ++i)
+	{
+		if ((myKeyState[aType][i] & 0x80) != 0)
+		{
+			isAnyKeyDown = true;
+			break;
+		}
+	}
+	return isAnyKeyDown;
+}
+
 bool CU::InputWrapper::MouseIsPressed(int aButton, eType aType) const
 {
 	return (myMouseState[aType].rgbButtons[aButton] & 0x80) != 0;
