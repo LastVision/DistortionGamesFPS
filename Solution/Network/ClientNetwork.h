@@ -19,7 +19,9 @@ public:
 
 	const sockaddr_in& GetServerAddress() const;
 	const sockaddr_in& GetLocalServerAddress() const;
+
 private:
+	void Reset();
 
 	//CleintInterface * myInstance;
 
@@ -34,7 +36,7 @@ private:
 	uint16_t myIDFromServer;
 
 	std::string myName;
-	const char* myIP;
+	std::string myIP;
 	CU::GrowingArray<OtherClients> myClients;
 
 };

@@ -467,6 +467,7 @@ void ServerNetworkManager::ReceiveNetworkMessage(const NetMessageRequestConnect&
 
 void ServerNetworkManager::ReceiveNetworkMessage(const NetMessageDisconnect& aMessage, const sockaddr_in&)
 {
+	Utility::Printf("Client requested to close server.", eConsoleColor::WHITE_TEXT);
 	if (aMessage.myClientID == 0)
 	{
 		DisconnectAll();
