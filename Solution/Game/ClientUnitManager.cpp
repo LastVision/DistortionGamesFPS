@@ -92,13 +92,18 @@ void ClientUnitManager::ReceiveNetworkMessage(const NetMessageEntityState& aMess
 {
 	if (myUnitsMap.find(aMessage.myGID) != myUnitsMap.end())
 	{
-		myUnitsMap[aMessage.myGID]->SetState(static_cast<eEntityState>(aMessage.myEntityState));
+		Entity* unit = myUnitsMap[aMessage.myGID];
+		unit->SetState(static_cast<eEntityState>(aMessage.myEntityState));
 		if (aMessage.myEntityState == static_cast<unsigned char>(eEntityState::DIE))
 		{
+			if (unit->GetComponent<SoundComponent>() != nullptr)
+			{
+				Prism::Audio::AudioInterface::GetInstance()->PostEvent("Play_EnemyDie", unit->GetComponent<SoundComponent>()->GetAudioSFXID());
+			}
 			//myUnitsMap[aMessage.myGID]->Kill();
-			myUnitsMap[aMessage.myGID]->GetComponent<PhysicsComponent>()->RemoveFromScene();
-			myUnitsMap[aMessage.myGID]->SetActive(false);
-			myUnitsMap[aMessage.myGID]->GetComponent<AnimationComponent>()->StopMuzzleFlash();
+			unit->GetComponent<PhysicsComponent>()->RemoveFromScene();
+			unit->SetActive(false);
+			unit->GetComponent<AnimationComponent>()->StopMuzzleFlash();
 		}
 	}
 }
