@@ -93,6 +93,7 @@ private:
 	Prism::SpriteProxy* myLowLifeIndicator;
 	Prism::SpriteProxy* myMarker;
 	Prism::SpriteProxy* myCoOpSprite;
+	Prism::SpriteProxy* myIsDeadScreen;
 
 	CU::GrowingArray<CoOpCircle> myCoOpCircles;
 	CU::GrowingArray<CoOpRespawn> myCoOpRespawns;
