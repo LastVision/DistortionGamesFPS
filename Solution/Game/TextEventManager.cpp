@@ -37,8 +37,21 @@ TextEventManager::TextEventManager(const Prism::Camera* aCamera)
 	myMissionText->Rotate3dText(0.8f);
 	myMissionText->SetOffset(myMissionOffset);
 	myMissionText->SetText("");
+
+	myRespawnOffset = myStartOffset;
+	myRespawnOffset.x = 0.f;
+	myRespawnOffset.z += 0.5f;
+	myRespawnOffset.y -= 0.3f;
+	myRespawnText = Prism::ModelLoader::GetInstance()->LoadText(Prism::Engine::GetInstance()->GetFont(Prism::eFont::DIALOGUE), true, true);
+	myRespawnText->Rotate3dText(0.8f);
+	myRespawnText->SetOffset(myRespawnOffset);
+	myRespawnText->SetText("");
+
+
 	ClientNetworkManager::GetInstance()->Subscribe(eNetMessageType::TEXT, this);
 	PostMaster::GetInstance()->Subscribe(eMessageType::PRINT_TEXT, this);
+
+
 
 	for (int i = 0; i < 8; ++i)
 	{
@@ -67,6 +80,13 @@ TextEventManager::~TextEventManager()
 
 void TextEventManager::Update(float aDeltaTime)
 {
+	if (myShouldRenderRespawn == true)
+	{
+		myRespawnTimer += aDeltaTime;
+		myRespawnColor.w = abs(sin(myRespawnTimer));
+		myRespawnText->SetColor(myRespawnColor);
+	}
+
 	for (int i = 0; i < myNotifications.Size(); ++i)
 	{
 		if (myNotifications[i]->myIsActive == true)
@@ -133,6 +153,11 @@ void TextEventManager::Render()
 	{
 		myMissionText->Render(myCamera);
 	}
+
+	if (myShouldRenderRespawn == true)
+	{
+		myRespawnText->Render(myCamera);
+	}
 }
 
 void TextEventManager::AddNotification(std::string aText, float aLifeTime, CU::Vector4<float> aColor, int aNumberOfRows)
@@ -158,6 +183,14 @@ void TextEventManager::AddNotification(std::string aText, float aLifeTime, CU::V
 			return;
 		}
 	}
+}
+
+void TextEventManager::AddRespawnText(std::string aText, bool aShouldShow, CU::Vector4<float> aColor)
+{
+	myRespawnText->SetText(aText);
+	myRespawnText->SetColor(aColor);
+	myRespawnColor = aColor;
+	myShouldRenderRespawn = aShouldShow;
 }
 
 void TextEventManager::ReceiveNetworkMessage(const NetMessageText& aMessage, const sockaddr_in&)

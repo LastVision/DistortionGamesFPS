@@ -401,13 +401,32 @@ void ClientLevel::ReceiveNetworkMessage(const NetMessageSetActive& aMessage, con
 	{
 		if (aMessage.myShouldActivate == true)
 		{
+			myTextManager->AddRespawnText("", false);
 			myPlayer->GetComponent<PhysicsComponent>()->Wake();
 		}
 		else
 		{
+			myTextManager->AddRespawnText("You are dead", true, { 1.f, 0.f, 0.f, 1.f });
 			myPlayer->GetComponent<PhysicsComponent>()->Sleep();
 		}
 		return;
+	}
+	else 
+	{
+		for (int i = 0; i < myPlayers.Size(); ++i)
+		{
+			if (aMessage.myGID == myPlayers[i]->GetGID())
+			{
+				if (aMessage.myShouldActivate == true)
+				{
+					myTextManager->AddRespawnText("", false);
+				}
+				else
+				{
+					myTextManager->AddRespawnText("Your buddy is dead", true, { 1.f, 0.f, 0.f, 1.f });
+				}
+			}
+		}
 	}
 
 	if (myActiveEntitiesMap.find(aMessage.myGID) == myActiveEntitiesMap.end())
