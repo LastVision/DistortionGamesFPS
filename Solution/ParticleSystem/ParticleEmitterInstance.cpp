@@ -423,6 +423,11 @@ namespace Prism
 			}
 			myLiveParticleCount++;
 
+			if (myParticleIndex >= myLogicalParticles.Size())
+			{
+				return;
+			}
+
 			GraphicalParticle &gfxParticle = myGraphicalParticles[myParticleIndex];
 			LogicalParticle &logicParticle = myLogicalParticles[myParticleIndex];
 
