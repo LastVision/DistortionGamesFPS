@@ -68,6 +68,12 @@ void InputComponent::Update(float aDelta)
 		return;
 	}
 
+	if (myEntity.GetState() == eEntityState::DIE)
+	{
+		CU::Vector3<float> offset(0, 1.f, 0);
+		myEyeOrientation.SetPos(myOrientation.GetPos() + offset);
+	}
+
 	myPrevOrientation = myOrientation;
 	myPreviousState = myEntity.GetState();
 
@@ -128,7 +134,6 @@ void InputComponent::Update(float aDelta)
 		diePosition.y -= 1.f;
 		myEyeOrientation.SetPos(diePosition);
 		myOrientation = myEyeOrientation;
-		myPrevOrientation = myEyeOrientation;
 
 		SharedNetworkManager::GetInstance()->AddMessage(NetMessagePosition(diePosition, myCursorPosition.x, myEntity.GetGID()));
 	}
