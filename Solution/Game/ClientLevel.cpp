@@ -387,6 +387,11 @@ void ClientLevel::ReceiveNetworkMessage(const NetMessageOnDeath& aMessage, const
 	{
 		if (e->GetGID() == aMessage.myGID)
 		{
+			if (e->GetComponent<SoundComponent>() != nullptr)
+			{
+				Prism::Audio::AudioInterface::GetInstance()->PostEvent("Play_EnemyDie"
+					, e->GetComponent<SoundComponent>()->GetAudioSFXID());
+			}
 			e->Kill();
 		}
 	}
