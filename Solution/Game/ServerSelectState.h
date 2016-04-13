@@ -55,10 +55,10 @@ private:
 	Server* myServer;
 	Server myLocalhost;
 
-	float myRefreshServerTimer;
 	float myWaitForResponseTimer;
 	float myRetryToStartTimer;
 
 	bool myTriedToConnect;
+	bool myIsRefreshing;
 };
 
