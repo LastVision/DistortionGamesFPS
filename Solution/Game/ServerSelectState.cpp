@@ -222,6 +222,7 @@ void ServerSelectState::ReceiveMessage(const OnClickMessage& aMessage)
 			myServer = &myServers[aMessage.myID];
 			break;
 		case eOnClickEvent::GAME_QUIT:
+			myIsActiveState = false;
 			myStateStatus = eStateStatus::ePopMainState;
 			break;
 		case eOnClickEvent::REFRESH:
