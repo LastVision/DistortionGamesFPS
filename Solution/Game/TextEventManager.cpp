@@ -162,18 +162,16 @@ void TextEventManager::AddNotification(std::string aText, float aLifeTime, CU::V
 
 void TextEventManager::ReceiveNetworkMessage(const NetMessageText& aMessage, const sockaddr_in&)
 {
-	if (aMessage.myText.size() > 0)
+	if (aMessage.myText.size() > 0 && aMessage.myIsMissionText == false)
 	{
-		if (aMessage.myIsMissionText == false)
-		{
-			AddNotification(aMessage.myText, aMessage.myTime, aMessage.myColor, aMessage.myTextRows);
-		}
-		else
-		{
-			myMissionText->SetText(aMessage.myText);
-			myShouldRender = aMessage.myShouldShow;
-		}
+		AddNotification(aMessage.myText, aMessage.myTime, aMessage.myColor, aMessage.myTextRows);
 	}
+	else if (aMessage.myIsMissionText == true)
+	{
+		myMissionText->SetText(aMessage.myText);
+		myShouldRender = aMessage.myShouldShow;
+	}
+
 	if (aMessage.mySoundEvent != "")
 	{
 		Prism::Audio::AudioInterface::GetInstance()->PostEvent(aMessage.mySoundEvent.c_str(), 0);
