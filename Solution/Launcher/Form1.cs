@@ -90,7 +90,7 @@ namespace Launcher
 			myQualityList.Items.Add("Low");
 			myQualityList.Items.Add("Medium");
 			myQualityList.Items.Add("High");
-			myQualityList.SelectedIndex = myQualityList.Items.Count - 1;
+			myQualityList.SelectedIndex = 1;
 
 			//aaDropdown.Items.Add("MSAA x1");
 			//aaDropdown.Items.Add("MSAA x2");
