@@ -623,6 +623,7 @@ void ClientLevel::ReceiveMessage(const OnClickMessage& aMessage)
 	case eOnClickEvent::HELP:
 		break;
 	case eOnClickEvent::GAME_QUIT:
+		PostMaster::GetInstance()->SendMessage<LevelCompleteMessage>(LevelCompleteMessage(myLevelID));
 		ClientNetworkManager::GetInstance()->AddMessage(NetMessageDisconnect(ClientNetworkManager::GetInstance()->GetGID()));
 		myStateStatus = eStateStatus::ePopMainState;
 		break;
