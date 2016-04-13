@@ -104,6 +104,11 @@ bool Shotgun::Shoot(const CU::Matrix44<float>& aOrientation)
 		Prism::Audio::AudioInterface::GetInstance()->PostEvent("Play_Shotgun", 0);
 		return true;
 	}
+	else if (myShootTimer <= 0.f)
+	{
+		Prism::Audio::AudioInterface::GetInstance()->PostEvent("Play_NoAmmo", 0);
+		myShootTimer = myShootTime;
+	}
 	return false;
 }
 
