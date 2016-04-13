@@ -63,12 +63,6 @@ TextEventManager::~TextEventManager()
 {
 	ClientNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::TEXT, this);
 	PostMaster::GetInstance()->UnSubscribe(eMessageType::PRINT_TEXT, this);
-	for (int i = 0; i < myNotifications.Size(); ++i)
-	{
-		SAFE_DELETE(myNotifications[i]->my3dText);
-	}
-	myNotifications.DeleteAll();
-	SAFE_DELETE(myMissionText);
 
 	for (int i = 0; i < myNotifications.Size(); ++i)
 	{
@@ -76,6 +70,14 @@ TextEventManager::~TextEventManager()
 		Prism::Audio::AudioInterface::GetInstance()->PostEvent(eventName.c_str(), 0);
 		myHasStoppedSound[i] = true;
 	}
+	for (int i = 0; i < myNotifications.Size(); ++i)
+	{
+		SAFE_DELETE(myNotifications[i]->my3dText);
+	}
+	myNotifications.DeleteAll();
+	SAFE_DELETE(myMissionText);
+
+	
 }
 
 void TextEventManager::Update(float aDeltaTime)

@@ -32,6 +32,7 @@ public:
 	void ReceiveMessage(const OnClickMessage& aMessage) override;
 
 	void ReceiveNetworkMessage(const NetMessageReplyServer& aMessage, const sockaddr_in& aSenderAddress) override;
+	void ReceiveNetworkMessage(const NetMessageConnectReply& aMessage, const sockaddr_in& aSenderAddress) override;
 
 private:
 	void operator=(ServerSelectState&) = delete;

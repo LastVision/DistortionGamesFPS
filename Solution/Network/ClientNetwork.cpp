@@ -6,6 +6,17 @@
 
 ClientNetwork::ClientNetwork()
 {
+	Reset();
+}
+
+void ClientNetwork::Reset()
+{
+	myPingCount = 0;
+	ZeroMemory(&myServerAddress, sizeof(myServerAddress));
+	ZeroMemory(&myLocalServerAddress, sizeof(myLocalServerAddress));
+	
+	myName = "resetted";
+	myIP = "resetted";
 }
 
 
@@ -29,15 +40,6 @@ void ClientNetwork::StartNetwork(int aPortNum)
 	{
 		DL_ASSERT("Failed to set socket!");
 	}
-
-	ZeroMemory(&myServerAddress, sizeof(myServerAddress));
-	myServerAddress.sin_family = AF_INET;
-	myServerAddress.sin_port = htons(myPort);
-
-	ZeroMemory(&myLocalServerAddress, sizeof(myLocalServerAddress));
-	myLocalServerAddress.sin_family = AF_INET;
-	myLocalServerAddress.sin_port = htons(myPort);
-	myLocalServerAddress.sin_addr.S_un.S_addr = inet_addr("127.0.0.1");
 
 	DWORD nonBlocking = 1;
 	if (ioctlsocket(mySocket, FIONBIO, &nonBlocking) != 0)
@@ -78,8 +80,19 @@ void ClientNetwork::Receieve(std::vector<Buffer>& someBuffers)
 
 bool ClientNetwork::ConnectToServer(const char* anIP)
 {
+	Reset();
 	myIP = anIP;
-	myServerAddress.sin_addr.S_un.S_addr = inet_addr(myIP);
+
+	ZeroMemory(&myServerAddress, sizeof(myServerAddress));
+	myServerAddress.sin_family = AF_INET;
+	myServerAddress.sin_port = htons(myPort);
+	myServerAddress.sin_addr.S_un.S_addr = inet_addr(myIP.c_str());
+
+	ZeroMemory(&myLocalServerAddress, sizeof(myLocalServerAddress));
+	myLocalServerAddress.sin_family = AF_INET;
+	myLocalServerAddress.sin_port = htons(myPort);
+	myLocalServerAddress.sin_addr.S_un.S_addr = inet_addr("127.0.0.1");
+
 	
 	return true;
 }

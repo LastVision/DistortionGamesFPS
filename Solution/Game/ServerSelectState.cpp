@@ -1,5 +1,5 @@
 #include "stdafx.h"
-
+#include <NetMessageConnectReply.h>
 #include "ClientNetworkManager.h"
 #include <Cursor.h>
 #include <fstream>
@@ -161,23 +161,23 @@ const eStateStatus ServerSelectState::Update(const float& aDeltaTime)
 			{
 				ClientNetworkManager::GetInstance()->ConnectToServer(eGameType::MULTIPLAYER, myServer->myIp.c_str());
 				myTriedToConnect = true;
-				myWaitForResponseTimer = 1.f;
+				//myWaitForResponseTimer = 1.f;
 			}
-			else if (myTriedToConnect == true)
-			{
-				myWaitForResponseTimer -= aDeltaTime;
-				if (myWaitForResponseTimer <= 0.f)
-				{
-					//Show Failed to connect message
-					Prism::Engine::GetInstance()->PrintText("Failed to connect to the server, the server is either down or ingame. Try again!"
-						, { 50.f, Prism::Engine::GetInstance()->GetWindowSize().y - 50.f }, Prism::eTextType::RELEASE_TEXT);
-					myServers.RemoveAll();
-					myTriedToConnect = false;
-					myServer = nullptr;
-					myIsRefreshing = true;
-					ClientNetworkManager::GetInstance()->AddMessage(NetMessageRequestServer(), ClientNetworkManager::GetInstance()->GetBroadcastAddress());
-				}
-			}
+			//else if (myTriedToConnect == true)
+			//{
+			//	myWaitForResponseTimer -= aDeltaTime;
+			//	if (myWaitForResponseTimer <= 0.f)
+			//	{
+			//		//Show Failed to connect message
+			//		Prism::Engine::GetInstance()->PrintText("Failed to connect to the server, the server is either down or ingame. Try again!"
+			//			, { 50.f, Prism::Engine::GetInstance()->GetWindowSize().y - 50.f }, Prism::eTextType::RELEASE_TEXT);
+			//		myServers.RemoveAll();
+			//		myTriedToConnect = false;
+			//		myServer = nullptr;
+			//		myIsRefreshing = true;
+			//		ClientNetworkManager::GetInstance()->AddMessage(NetMessageRequestServer(), ClientNetworkManager::GetInstance()->GetBroadcastAddress());
+			//	}
+			//}
 			if (ClientNetworkManager::GetInstance()->GetGID() != 0)
 			{
 				SET_RUNTIME(false);
@@ -271,5 +271,21 @@ void ServerSelectState::ReceiveNetworkMessage(const NetMessageReplyServer& aMess
 			std::string text(myServers[i].myName + ": " + myServers[i].myIp);
 			myGUIManager->SetButtonText(i, text);
 		}
+	}
+}
+
+void ServerSelectState::ReceiveNetworkMessage(const NetMessageConnectReply& aMessage, const sockaddr_in&)
+{
+	if (aMessage.myType == NetMessageConnectReply::eType::FAIL)
+	{
+		for (int i = 0; i < myServers.Size(); ++i)
+		{
+			myGUIManager->SetButtonText(i, "");
+		}
+		myServers.RemoveAll();
+		myTriedToConnect = false;
+		myServer = nullptr;
+		myIsRefreshing = true;
+		ClientNetworkManager::GetInstance()->AddMessage(NetMessageRequestServer(), ClientNetworkManager::GetInstance()->GetBroadcastAddress());
 	}
 }
