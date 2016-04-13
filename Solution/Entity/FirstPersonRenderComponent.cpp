@@ -642,10 +642,22 @@ void FirstPersonRenderComponent::ReceiveNetworkMessage(const NetMessageHealth& a
 {
 	if (aMessage.myGID == myEntity.GetGID())
 	{
+		bool playSound = false;
 		if (myCurrentHealth < aMessage.myCurrentHealth)
 		{
 			myDisplayHealthIndicatorTimer = myDisplayPickupTime;
+			playSound = true;
 		}
+		if (myCurrentHealth == myMaxHealth)
+		{
+			myDisplayHealthIndicatorTimer = myDisplayPickupTime;
+			playSound = true;
+		}
+		if (playSound == true)
+		{
+			Prism::Audio::AudioInterface::GetInstance()->PostEvent("Play_HealthPack", 0);
+		}
+
 
 		myMaxHealth = aMessage.myMaxHealth;
 		myCurrentHealth = aMessage.myCurrentHealth;
