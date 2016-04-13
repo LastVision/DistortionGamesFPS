@@ -3,6 +3,12 @@
 class GC
 {
 public:
+	enum class eMultiplayerMode
+	{
+		HOST,
+		JOIN
+	};
+
 	static bool GenerateLightData;
 	static bool GenerateCubeMap;
 	static int SHNodeSize;
@@ -17,4 +23,6 @@ public:
 	static volatile bool PlayerAlive;
 
 	static volatile bool PlayerShouldPlaySprintErrorSound;
+
+	static eMultiplayerMode MultiplayerMode;
 };

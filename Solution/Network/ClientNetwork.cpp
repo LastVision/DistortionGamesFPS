@@ -34,6 +34,10 @@ void ClientNetwork::StartNetwork(int aPortNum)
 		DL_ASSERT("WSAStartup Failed [Client]");
 	}
 
+	ZeroMemory(&myLocalServerAddress, sizeof(myLocalServerAddress));
+	myLocalServerAddress.sin_family = AF_INET;
+	myLocalServerAddress.sin_port = htons(myPort);
+	myLocalServerAddress.sin_addr.S_un.S_addr = inet_addr("127.0.0.1");
 	//mySocket = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
 
 	if ((mySocket = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP)) == SOCKET_ERROR)

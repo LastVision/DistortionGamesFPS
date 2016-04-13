@@ -67,7 +67,17 @@ void MainMenuState::InitState(StateStackProxy* aStateStackProxy, GUI::Cursor* aC
 	myStateStatus = eStateStatus::eKeepState;
 	myStateStack = aStateStackProxy;
 	myCursor = aCursor;
-	myGUIManager = new GUI::GUIManager(myCursor, "Data/Resource/GUI/GUI_main_menu.xml", nullptr, -1);
+
+	if (GC::MultiplayerMode == GC::eMultiplayerMode::HOST)
+	{
+		myGUIManager = new GUI::GUIManager(myCursor, "Data/Resource/GUI/GUI_main_menu.xml", nullptr, -1);
+	}
+	else
+	{
+		myGUIManager = new GUI::GUIManager(myCursor, "Data/Resource/GUI/GUI_main_menu_join.xml", nullptr, -1);
+	}
+
+	
 	myGUIManager->SetPosition(myGUIPosition);
 	CU::Vector2<int> windowSize = Prism::Engine::GetInstance()->GetWindowSizeInt();
 	OnResize(windowSize.x, windowSize.y);
