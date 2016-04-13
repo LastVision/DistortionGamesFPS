@@ -275,15 +275,15 @@ namespace Prism
 		//std::swap(myMoveJobs[0], myMoveJobs[1]);
 		//std::swap(myForceJobs[0], myForceJobs[1]);
 		//std::swap(myVelocityJobs[0], myVelocityJobs[1]);
-		//std::swap(myPositionJobs[0], myPositionJobs[1]);
-		//std::swap(myOnTriggerResults[0], myOnTriggerResults[1]);
-		//std::swap(myActorsToAdd[0], myActorsToAdd[1]);
-		//std::swap(myActorsToRemove[0], myActorsToRemove[1]);
-		//std::swap(myActorsToSleep[0], myActorsToSleep[1]);
-		//std::swap(myActorsToWakeUp[0], myActorsToWakeUp[1]);
+//std::swap(myPositionJobs[0], myPositionJobs[1]);
+//std::swap(myOnTriggerResults[0], myOnTriggerResults[1]);
+//std::swap(myActorsToAdd[0], myActorsToAdd[1]);
+//std::swap(myActorsToRemove[0], myActorsToRemove[1]);
+//std::swap(myActorsToSleep[0], myActorsToSleep[1]);
+//std::swap(myActorsToWakeUp[0], myActorsToWakeUp[1]);
 
-		//myMoveJobs[myCurrentIndex].myId = -1;
-		myIsSwapping = false;
+//myMoveJobs[myCurrentIndex].myId = -1;
+myIsSwapping = false;
 	}
 
 	void PhysicsManager::Update()
@@ -371,6 +371,14 @@ namespace Prism
 					}
 
 					shouldDecreaseEnergy = false;
+				}
+			}
+
+			if (CU::InputWrapper::GetInstance()->KeyDown(DIK_LSHIFT, CU::InputWrapper::eType::PHYSICS) == true)
+			{
+				if (GC::PlayerShouldPlaySprintErrorSound != true && myIsOverheated == true)
+				{
+					GC::PlayerShouldPlaySprintErrorSound = true;
 				}
 			}
 

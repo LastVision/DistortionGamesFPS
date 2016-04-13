@@ -14,3 +14,5 @@ float GC::DamageMultiplier[3];
 float GC::SpawnIntervalMultiplier[3];
 
 volatile bool GC::PlayerAlive = true;
+
+volatile bool GC::PlayerShouldPlaySprintErrorSound = false;

@@ -97,6 +97,12 @@ void InputComponent::Update(float aDelta)
 				SharedNetworkManager::GetInstance()->AddMessage(NetMessagePressE(myEntity.GetGID()));
 			}
 
+			if (GC::PlayerShouldPlaySprintErrorSound == true)
+			{
+				Prism::Audio::AudioInterface::GetInstance()->PostEvent("Play_Error", 0);
+				GC::PlayerShouldPlaySprintErrorSound = false;
+			}
+
 			myEyeOrientation = myOrientation;
 
 			CU::Vector3<float> position(myOrientation.GetPos());
