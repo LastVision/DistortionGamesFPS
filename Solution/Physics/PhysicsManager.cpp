@@ -233,6 +233,7 @@ namespace Prism
 				totalTime = 0;
 				Update();
 
+
 				Swap();
 				if (myLogicDone == true)
 				{
@@ -287,12 +288,11 @@ namespace Prism
 
 	void PhysicsManager::Update()
 	{
-#ifdef THREAD_INPUT
 		if (myIsClientSide == true)
 		{
+			CU::InputWrapper::GetInstance()->PhysicsUpdate();
 
-
-			if (CU::InputWrapper::GetInstance()->KeyDown(DIK_SPACE))
+			if (CU::InputWrapper::GetInstance()->KeyDown(DIK_SPACE, CU::InputWrapper::eType::PHYSICS))
 			{
 				if (GetAllowedToJump(myPlayerCapsule) == true)
 				{
@@ -307,25 +307,25 @@ namespace Prism
 			CU::Vector3<float> movement;
 			float magnitude = 0.f;
 			int count = 0;
-			if (CU::InputWrapper::GetInstance()->KeyIsPressed(DIK_S))
+			if (CU::InputWrapper::GetInstance()->KeyIsPressed(DIK_S, CU::InputWrapper::eType::PHYSICS))
 			{
 				movement.z -= 1.f;
 				magnitude += myPlayerInputData->myBackwardMultiplier;
 				++count;
 			}
-			if (CU::InputWrapper::GetInstance()->KeyIsPressed(DIK_W))
+			if (CU::InputWrapper::GetInstance()->KeyIsPressed(DIK_W, CU::InputWrapper::eType::PHYSICS))
 			{
 				movement.z += 1.f;
 				magnitude += myPlayerInputData->myForwardMultiplier;
 				++count;
 			}
-			if (CU::InputWrapper::GetInstance()->KeyIsPressed(DIK_A))
+			if (CU::InputWrapper::GetInstance()->KeyIsPressed(DIK_A, CU::InputWrapper::eType::PHYSICS))
 			{
 				movement.x -= 1.f;
 				magnitude += myPlayerInputData->mySidewaysMultiplier;
 				++count;
 			}
-			if (CU::InputWrapper::GetInstance()->KeyIsPressed(DIK_D))
+			if (CU::InputWrapper::GetInstance()->KeyIsPressed(DIK_D, CU::InputWrapper::eType::PHYSICS))
 			{
 				movement.x += 1.f;
 				magnitude += myPlayerInputData->mySidewaysMultiplier;
@@ -354,7 +354,7 @@ namespace Prism
 
 			bool isSprinting = false;
 			bool shouldDecreaseEnergy = true;
-			if (CU::InputWrapper::GetInstance()->KeyIsPressed(DIK_LSHIFT))
+			if (CU::InputWrapper::GetInstance()->KeyIsPressed(DIK_LSHIFT, CU::InputWrapper::eType::PHYSICS))
 			{
 				if (mySprintEnergy < myPlayerInputData->myMaxSprintEnergy && myIsOverheated == false)
 				{
@@ -374,7 +374,7 @@ namespace Prism
 				}
 			}
 
-			if (shouldDecreaseEnergy == true && CU::InputWrapper::GetInstance()->KeyIsPressed(DIK_LSHIFT) == false)
+			if (shouldDecreaseEnergy == true && CU::InputWrapper::GetInstance()->KeyIsPressed(DIK_LSHIFT, CU::InputWrapper::eType::PHYSICS) == false)
 			{
 				mySprintEnergy -= myPlayerInputData->mySprintDecrease * myTimestep;
 				mySprintEnergy = fmaxf(mySprintEnergy, 0.f);
@@ -403,7 +403,6 @@ namespace Prism
 			Move(myPlayerCapsule, movement, 0.05f, 1.f / 60.f);
 
 		}
-#endif
 
 
 		if (!myScene)

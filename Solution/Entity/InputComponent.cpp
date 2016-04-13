@@ -44,7 +44,7 @@ InputComponent::InputComponent(Entity& anEntity, const InputComponentData& aData
 	myJumpOffset = 0;
 
 	mySendTime = 0.f;
-#ifdef THREAD_INPUT
+
 	if (myEntity.GetIsClient() == true)
 	{
 		Prism::PhysicsInterface::GetInstance()->SetClientID(myEntity.GetComponent<PhysicsComponent>()->GetCapsuleControllerId());
@@ -52,7 +52,6 @@ InputComponent::InputComponent(Entity& anEntity, const InputComponentData& aData
 		Prism::PhysicsInterface::GetInstance()->SetPlayerInputData(*myData);
 		Prism::PhysicsInterface::GetInstance()->SetPlayerGID(myEntity.GetGID());
 	}
-#endif
 
 	myPreviousState = eEntityState::IDLE;
 }
@@ -168,6 +167,7 @@ void InputComponent::UpdateMovement(float aDelta)
 	myOrientation.myMatrix[9] = axisZ.y;
 	myOrientation.myMatrix[10] = axisZ.z;
 
+/*
 	if (CU::InputWrapper::GetInstance()->KeyDown(DIK_SPACE))
 	{
 #ifdef RELEASE_BUILD
@@ -184,9 +184,9 @@ void InputComponent::UpdateMovement(float aDelta)
 
 	CU::Vector3<float> movement;
 	float magnitude = 0.f;
-	int count = 0;
-#ifndef THREAD_INPUT
-	if (CU::InputWrapper::GetInstance()->KeyIsPressed(DIK_S))
+	int count = 0;*/
+
+	/*if (CU::InputWrapper::GetInstance()->KeyIsPressed(DIK_S))
 	{
 		movement.z -= 1.f;
 		magnitude += myData->myBackwardMultiplier;
@@ -210,97 +210,95 @@ void InputComponent::UpdateMovement(float aDelta)
 		magnitude += myData->mySidewaysMultiplier;
 		++count;
 	}
-#endif
+
 	if (count > 0)
 	{
-		magnitude /= count;
+	magnitude /= count;
 	}
 
 	if (CU::Length(movement) < 0.02f)
 	{
-		if (myEntity.GetState() != eEntityState::IDLE)
-		{
-			myEntity.SetState(eEntityState::IDLE);
-			SharedNetworkManager::GetInstance()->AddMessage<NetMessageEntityState>(NetMessageEntityState(myEntity.GetState(), myEntity.GetGID()));
-		}
+	if (myEntity.GetState() != eEntityState::IDLE)
+	{
+	myEntity.SetState(eEntityState::IDLE);
+	SharedNetworkManager::GetInstance()->AddMessage<NetMessageEntityState>(NetMessageEntityState(myEntity.GetState(), myEntity.GetGID()));
+	}
 	}
 	else if (myEntity.GetState() != eEntityState::WALK)
 	{
-		myEntity.SetState(eEntityState::WALK);
-		SharedNetworkManager::GetInstance()->AddMessage<NetMessageEntityState>(NetMessageEntityState(myEntity.GetState(), myEntity.GetGID()));
-	}
-
-	bool isSprinting = false;
-
-#ifdef RELEASE_BUILD
-	bool shouldDecreaseEnergy = true;
-	if (CU::InputWrapper::GetInstance()->KeyIsPressed(DIK_LSHIFT))
-	{
-		if (mySprintEnergy < myData->myMaxSprintEnergy && myEnergyOverheat == false)
-		{
-			mySprintEnergy += myData->mySprintIncrease * aDelta;
-			if (mySprintEnergy >= myData->myMaxSprintEnergy)
-			{
-				myEnergyOverheat = true;
-			}
-
-			if (movement.z > 0.f)
-			{
-				movement.z *= myData->mySprintMultiplier;
-				isSprinting = true;
-			}
-
-			shouldDecreaseEnergy = false;
-		}
-	}
-
-	if (shouldDecreaseEnergy == true)
-	{
-		mySprintEnergy -= myData->mySprintDecrease * aDelta;
-		mySprintEnergy = fmaxf(mySprintEnergy, 0.f);
-	}
-
-	if (myEnergyOverheat == true && mySprintEnergy <= 0.f)
-	{
-		myEnergyOverheat = false;
-	}
-#endif
-
-	movement = movement * myOrientation;
-
-	if (aDelta > 0.f)
-	{
-		if (CU::Length2(movement / aDelta) > 0.25f* 0.25f)
-		{
-			movement.y = 0;
-			CU::Normalize(movement);
-			movement *= myData->mySpeed * magnitude;
-
-		}
-		else
-		{
-			movement = CU::Vector3<float>();
-		}
-	}
-
-	
-#ifdef RELEASE_BUILD
-	if (isSprinting == true)
-	{
-		movement *= myData->mySprintMultiplier;
-	}
-#else
-	if (CU::InputWrapper::GetInstance()->KeyIsPressed(DIK_LSHIFT))
-	{
-		movement *= 10.f;
-	}
-#endif
-
-	movement.y = myVerticalSpeed;
-
-#ifndef THREAD_INPUT
-	Prism::PhysicsInterface::GetInstance()->Move(myEntity.GetComponent<PhysicsComponent>()->GetCapsuleControllerId(), movement, 0.05f, aDelta);
-#endif
+	myEntity.SetState(eEntityState::WALK);
+	SharedNetworkManager::GetInstance()->AddMessage<NetMessageEntityState>(NetMessageEntityState(myEntity.GetState(), myEntity.GetGID()));
+	}*/
+//
+//	bool isSprinting = false;
+//
+//#ifdef RELEASE_BUILD
+//	bool shouldDecreaseEnergy = true;
+//	if (CU::InputWrapper::GetInstance()->KeyIsPressed(DIK_LSHIFT))
+//	{
+//		if (mySprintEnergy < myData->myMaxSprintEnergy && myEnergyOverheat == false)
+//		{
+//			mySprintEnergy += myData->mySprintIncrease * aDelta;
+//			if (mySprintEnergy >= myData->myMaxSprintEnergy)
+//			{
+//				myEnergyOverheat = true;
+//			}
+//
+//			if (movement.z > 0.f)
+//			{
+//				movement.z *= myData->mySprintMultiplier;
+//				isSprinting = true;
+//			}
+//
+//			shouldDecreaseEnergy = false;
+//		}
+//	}
+//
+//	if (shouldDecreaseEnergy == true)
+//	{
+//		mySprintEnergy -= myData->mySprintDecrease * aDelta;
+//		mySprintEnergy = fmaxf(mySprintEnergy, 0.f);
+//	}
+//
+//	if (myEnergyOverheat == true && mySprintEnergy <= 0.f)
+//	{
+//		myEnergyOverheat = false;
+//	}
+//#endif
+//
+//	movement = movement * myOrientation;
+//
+//	if (aDelta > 0.f)
+//	{
+//		if (CU::Length2(movement / aDelta) > 0.25f* 0.25f)
+//		{
+//			movement.y = 0;
+//			CU::Normalize(movement);
+//			movement *= myData->mySpeed * magnitude;
+//
+//		}
+//		else
+//		{
+//			movement = CU::Vector3<float>();
+//		}
+//	}
+//
+//	
+//#ifdef RELEASE_BUILD
+//	if (isSprinting == true)
+//	{
+//		movement *= myData->mySprintMultiplier;
+//	}
+//#else
+//	if (CU::InputWrapper::GetInstance()->KeyIsPressed(DIK_LSHIFT))
+//	{
+//		movement *= 10.f;
+//	}
+//#endif
+//
+//	movement.y = myVerticalSpeed;
+//
+//	//Prism::PhysicsInterface::GetInstance()->Move(myEntity.GetComponent<PhysicsComponent>()->GetCapsuleControllerId(), movement, 0.05f, aDelta);
 
 	CU::Vector3<float> pos;
 	Prism::PhysicsInterface::GetInstance()->GetPosition(myEntity.GetComponent<PhysicsComponent>()->GetCapsuleControllerId(), pos);
