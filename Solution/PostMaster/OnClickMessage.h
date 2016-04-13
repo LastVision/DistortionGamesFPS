@@ -19,6 +19,7 @@ enum class eOnClickEvent
 	LOWER_MUSIC,
 	INCREASE_VOICE,
 	LOWER_VOICE,
+	REFRESH,
 };
 
 struct OnClickMessage : public Message

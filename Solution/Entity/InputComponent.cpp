@@ -127,6 +127,7 @@ void InputComponent::Update(float aDelta)
 		CU::Vector3<float> diePosition = myEyeOrientation.GetPos();
 		diePosition.y -= 1.f;
 		myEyeOrientation.SetPos(diePosition);
+		myOrientation = myEyeOrientation;
 
 		SharedNetworkManager::GetInstance()->AddMessage(NetMessagePosition(diePosition, myCursorPosition.x, myEntity.GetGID()));
 	}

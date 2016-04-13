@@ -2,6 +2,7 @@
 #include <EntityFactory.h>
 #include "ClientLevel.h"
 #include "ClientLevelFactory.h"
+#include "ClientNetworkManager.h"
 #include "ClientUnitManager.h"
 #include <PhysicsComponent.h>
 #include <PhysicsInterface.h>
@@ -295,7 +296,9 @@ void ClientLevelFactory::LoadTriggers(XMLReader& aReader, tinyxml2::XMLElement* 
 		Entity* newEntity = EntityFactory::CreateEntity(gid, eEntityType::TRIGGER, triggerType, static_cast<ClientLevel*>(myCurrentLevel)->GetScene()
 			, true, triggerPosition, triggerRotation, triggerScale);
 
-		if (newEntity->GetComponent<TriggerComponent>()->GetTriggerType() == eTriggerType::HEALTH_PACK)
+		bool isCoOp = ClientNetworkManager::GetInstance()->GetClients().Size() >= 1;
+
+		if (isCoOp == false && newEntity->GetComponent<TriggerComponent>()->GetTriggerType() == eTriggerType::HEALTH_PACK)
 		{
 			PostMaster::GetInstance()->SendMessage(EmitterMessage("Healthpack", newEntity->GetOrientation().GetPos(), { 0.f, 1.f, 0.f }, newEntity));
 		}
@@ -317,6 +320,12 @@ void ClientLevelFactory::LoadTriggers(XMLReader& aReader, tinyxml2::XMLElement* 
 		}
 		else
 		{
+			if (newEntity->GetComponent<TriggerComponent>()->GetTriggerType() == eTriggerType::HEALTH_PACK && isCoOp == true)
+			{
+				SAFE_DELETE(newEntity);
+				continue;
+			}
+
 			if (newEntity->GetComponent<GraphicsComponent>() != nullptr)
 			{
 				newEntity->AddToScene();

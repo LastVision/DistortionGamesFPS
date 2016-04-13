@@ -65,6 +65,7 @@ FirstPersonRenderComponent::FirstPersonRenderComponent(Entity& aEntity, Prism::S
 	myLowLifeIndicator = Prism::ModelLoader::GetInstance()->LoadSprite("Data/Resource/Texture/UI/T_low_life_indicator.dds", damageSize, damageSize * 0.5f);
 	myCoOpSprite = Prism::ModelLoader::GetInstance()->LoadSprite("Data/Resource/Texture/UI/T_coopmarker.dds", size, size * 0.5f);
 	myMarker = Prism::ModelLoader::GetInstance()->LoadSprite("Data/Resource/Texture/UI/T_marker.dds", size, size * 0.5f);
+	myIsDeadScreen = Prism::ModelLoader::GetInstance()->LoadSprite("Data/Resource/Texture/UI/T_dead_indicator.dds", damageSize, damageSize * 0.5f);
 
 	Prism::ModelProxy* model = Prism::ModelLoader::GetInstance()->LoadModelAnimated("Data/Resource/Model/First_person/Pistol/SK_arm_pistol_idle.fbx", "Data/Resource/Shader/S_effect_pbl_animated.fx");
 	myModel = new Prism::Instance(*model, myInputComponentEyeOrientation, shouldUseSpecialFoV);
@@ -171,6 +172,7 @@ FirstPersonRenderComponent::~FirstPersonRenderComponent()
 	SAFE_DELETE(myShotgunProxy);
 	SAFE_DELETE(myGrenadeLauncherProxy);
 	SAFE_DELETE(myMarker);
+	SAFE_DELETE(myIsDeadScreen);
 	myCoOpCircles.RemoveAll();
 	myCoOpRespawns.RemoveAll();
 
@@ -208,13 +210,13 @@ void FirstPersonRenderComponent::Update(float aDelta)
 	{
 		myHasDied = true;
 		//myEntity.GetScene()->RemoveInstance(myModel);
-		myScene->SetArmInstance(nullptr);
+		//myScene->SetArmInstance(nullptr);
 	}
 	if (myEntity.GetState() != eEntityState::DIE && myHasDied == true)
 	{
 		myHasDied = false;
 		//myEntity.GetScene()->AddInstance(myModel, eObjectRoomType::DYNAMIC);
-		myScene->SetArmInstance(myModel);
+		//myScene->SetArmInstance(myModel);
 	}
 
 
@@ -497,6 +499,11 @@ void FirstPersonRenderComponent::Render(Prism::Texture* aArmDepthTexture, bool a
 		//myCoOpSprite->Render({ newRenderPos.x, newRenderPos.y });
 		Prism::Engine::GetInstance()->PrintText("Press E", { newRenderPos.x, newRenderPos.y }, Prism::eTextType::RELEASE_TEXT, 2.f, CU::Vector4<float>(1.f, 1.f, 1.f, 1.f - (lengthToText / 10.f)));
 	}
+
+	if (myEntity.GetState() == eEntityState::DIE)
+	{
+		myIsDeadScreen->Render(windowSize * 0.5f);
+	}
 }
 
 bool FirstPersonRenderComponent::IsCurrentAnimationDone() const
@@ -710,6 +717,7 @@ void FirstPersonRenderComponent::OnResize(CU::Vector2<float> aNewSize)
 	myDamageIndicator->SetSize(aNewSize, hotspot);
 	myPickupIndicator->SetSize(aNewSize, hotspot);
 	myLowLifeIndicator->SetSize(aNewSize, hotspot);
+	myIsDeadScreen->SetSize(aNewSize, hotspot);
 }
 
 void FirstPersonRenderComponent::ReceiveNote(const UpgradeNote& aNote)

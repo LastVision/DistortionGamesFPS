@@ -83,14 +83,14 @@ void ServerSelectState::InitState(StateStackProxy* aStateStackProxy, GUI::Cursor
 	myCursor->SetShouldRender(true);
 	myTriedToConnect = false;
 
-	myRefreshServerTimer = 0.f;
 	myWaitForResponseTimer = 0.f;
 	myLocalhost.myIp = "127.0.0.1";
 	myLocalhost.myName = "localhost";
 
 	// broadcast request server
+	myIsRefreshing = true;
 	ClientNetworkManager::GetInstance()->AddMessage(NetMessageRequestServer(), ClientNetworkManager::GetInstance()->GetBroadcastAddress());
-	myRetryToStartTimer = 5.f;
+	myRetryToStartTimer = 30.f;
 }
 
 void ServerSelectState::EndState()
@@ -110,7 +110,7 @@ const eStateStatus ServerSelectState::Update(const float& aDeltaTime)
 	{
 	case eType::SINGLEPLAYER:
 		ClientNetworkManager::GetInstance()->ConnectToServer(eGameType::SINGLEPLAYER, myLocalhost.myIp.c_str());
-		if (ClientNetworkManager::GetInstance()->GetGID() != 0 && ClientNetworkManager::GetInstance()->GetHasLeftLobby() == false)
+		if (ClientNetworkManager::GetInstance()->GetGID() != 0)
 		{
 			SET_RUNTIME(false);
 			PostMaster::GetInstance()->UnSubscribe(eMessageType::ON_CLICK, this);
@@ -128,7 +128,7 @@ const eStateStatus ServerSelectState::Update(const float& aDeltaTime)
 		break;
 	case eType::MULTIPLAYER_HOST:
 		ClientNetworkManager::GetInstance()->ConnectToServer(eGameType::MULTIPLAYER, myLocalhost.myIp.c_str());
-		if (ClientNetworkManager::GetInstance()->GetGID() != 0 && ClientNetworkManager::GetInstance()->GetHasLeftLobby() == false)
+		if (ClientNetworkManager::GetInstance()->GetGID() != 0)
 		{
 			SET_RUNTIME(false);
 			PostMaster::GetInstance()->UnSubscribe(eMessageType::ON_CLICK, this);
@@ -173,7 +173,7 @@ const eStateStatus ServerSelectState::Update(const float& aDeltaTime)
 						, { 50.f, Prism::Engine::GetInstance()->GetWindowSize().y - 50.f }, Prism::eTextType::RELEASE_TEXT);
 				}
 			}
-			if (ClientNetworkManager::GetInstance()->GetGID() != 0 && ClientNetworkManager::GetInstance()->GetHasLeftLobby() == false)
+			if (ClientNetworkManager::GetInstance()->GetGID() != 0)
 			{
 				SET_RUNTIME(false);
 				PostMaster::GetInstance()->UnSubscribe(eMessageType::ON_CLICK, this);
@@ -181,25 +181,10 @@ const eStateStatus ServerSelectState::Update(const float& aDeltaTime)
 			}
 			//return eStateStatus::ePopSubState;
 		}
-
-		myRefreshServerTimer -= aDeltaTime;
-		if (myRefreshServerTimer <= 0)
-		{
-			myRefreshServerTimer = 2.f;
-			for (int i = 0; i < myServers.Size(); ++i)
-			{
-				myGUIManager->SetButtonText(i, "");
-			}
-			myServers.RemoveAll();
-			myTriedToConnect = false;
-			myServer = nullptr;
-			ClientNetworkManager::GetInstance()->AddMessage(NetMessageRequestServer(), ClientNetworkManager::GetInstance()->GetBroadcastAddress());
-		}
 		myGUIManager->Update(aDeltaTime);
 
 		break;
 	}
-
 
 	return myStateStatus;
 }
@@ -209,7 +194,7 @@ void ServerSelectState::Render()
 		myGUIManager->Render();
 	if (myType == eType::MULTIPLAYER_JOIN)
 	{
-		if (myServers.Size() <= 0)
+		if (myServers.Size() <= 0 && myIsRefreshing == true)
 		{
 			mySearchingForServers->Render();
 		}
@@ -237,7 +222,19 @@ void ServerSelectState::ReceiveMessage(const OnClickMessage& aMessage)
 			myServer = &myServers[aMessage.myID];
 			break;
 		case eOnClickEvent::GAME_QUIT:
+			myIsActiveState = false;
 			myStateStatus = eStateStatus::ePopMainState;
+			break;
+		case eOnClickEvent::REFRESH:
+			for (int i = 0; i < myServers.Size(); ++i)
+			{
+				myGUIManager->SetButtonText(i, "");
+			}
+			myServers.RemoveAll();
+			myTriedToConnect = false;
+			myServer = nullptr;
+			myIsRefreshing = true;
+			ClientNetworkManager::GetInstance()->AddMessage(NetMessageRequestServer(), ClientNetworkManager::GetInstance()->GetBroadcastAddress());
 			break;
 		default:
 			DL_ASSERT("Unknown event.");
@@ -250,6 +247,7 @@ void ServerSelectState::ReceiveNetworkMessage(const NetMessageReplyServer& aMess
 {
 	if (myType == eType::MULTIPLAYER_JOIN)
 	{
+		myIsRefreshing = false;
 		ServerSelectState::Server newServer;
 		newServer.myIp = aMessage.myIP;
 		newServer.myName = aMessage.myServerName;

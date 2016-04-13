@@ -141,6 +141,7 @@ void MainMenuState::Render()
 
 void MainMenuState::ResumeState()
 {
+	myIsActiveState = true;
 	PostMaster::GetInstance()->Subscribe(eMessageType::ON_CLICK, this);
 	myCursor->SetShouldRender(true);
 	Prism::Audio::AudioInterface::GetInstance()->PostEvent("Play_MainMenu", 0);
