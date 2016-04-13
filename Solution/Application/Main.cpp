@@ -390,6 +390,7 @@ bool ReadSetup(Prism::SetupInfo& aSetup, const std::string& aFilePath)
 	int msaa = 4;
 	int windowed = 1;
 	int graphicsSetting = 0;
+	int multiplayerMode = 0;
 
 	std::ifstream file;
 	file.open(aFilePath, std::ios::binary | std::ios::in);
@@ -400,6 +401,7 @@ bool ReadSetup(Prism::SetupInfo& aSetup, const std::string& aFilePath)
 		file.read((char*)&msaa, sizeof(int));
 		file.read((char*)&windowed, sizeof(int));
 		file.read((char*)&graphicsSetting, sizeof(int));
+		file.read((char*)&multiplayerMode, sizeof(int));
 	}
 	else 
 	{
@@ -436,6 +438,11 @@ bool ReadSetup(Prism::SetupInfo& aSetup, const std::string& aFilePath)
 	{
 		GC::EnableCheapAmbient = false;
 		GC::EnableVSync = true;
+	}
+
+	if (multiplayerMode == 1)
+	{
+		GC::MultiplayerMode = GC::eMultiplayerMode::JOIN;
 	}
 
 

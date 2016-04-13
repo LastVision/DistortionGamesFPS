@@ -103,6 +103,17 @@ void InputComponent::Update(float aDelta)
 				GC::PlayerShouldPlaySprintErrorSound = false;
 			}
 
+			if (GC::PlayerShouldPlaySprintSound == true)
+			{
+				Prism::Audio::AudioInterface::GetInstance()->PostEvent("Play_Sprint", 0);
+				GC::PlayerShouldPlaySprintSound = false;
+			}
+			if (GC::PlayerShouldStopSprintSound == true)
+			{
+				Prism::Audio::AudioInterface::GetInstance()->PostEvent("Stop_Sprint", 0);
+				GC::PlayerShouldStopSprintSound = false;
+			}
+
 			myEyeOrientation = myOrientation;
 
 			CU::Vector3<float> position(myOrientation.GetPos());
