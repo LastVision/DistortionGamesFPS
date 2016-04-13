@@ -268,10 +268,22 @@ void InputComponent::UpdateMovement(float aDelta)
 
 	movement = movement * myOrientation;
 
-	movement.y = 0;
-	CU::Normalize(movement);
-	movement *= myData->mySpeed * magnitude;
+	if (aDelta > 0.f)
+	{
+		if (CU::Length2(movement / aDelta) > 0.25f* 0.25f)
+		{
+			movement.y = 0;
+			CU::Normalize(movement);
+			movement *= myData->mySpeed * magnitude;
 
+		}
+		else
+		{
+			movement = CU::Vector3<float>();
+		}
+	}
+
+	
 #ifdef RELEASE_BUILD
 	if (isSprinting == true)
 	{
