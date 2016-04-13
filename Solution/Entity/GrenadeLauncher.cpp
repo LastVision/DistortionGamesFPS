@@ -63,6 +63,11 @@ bool GrenadeLauncher::Shoot(const CU::Matrix44<float>&)
 		myShootTimer = myShootTime;
 		return true;
 	}
+	else if (myShootTimer <= 0.f)
+	{
+		Prism::Audio::AudioInterface::GetInstance()->PostEvent("Play_NoAmmo", 0);
+		myShootTimer = myShootTime;
+	}
 	return false;
 }
 void GrenadeLauncher::Reload()
