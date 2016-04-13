@@ -406,7 +406,7 @@ void ClientLevel::ReceiveNetworkMessage(const NetMessageSetActive& aMessage, con
 		}
 		else
 		{
-			myTextManager->AddRespawnText("You are dead", true, { 1.f, 0.f, 0.f, 1.f });
+			myTextManager->AddRespawnText("System shutdown\nYour ally can revive", true, { 1.f, 0.f, 0.f, 1.f });
 			myPlayer->GetComponent<PhysicsComponent>()->Sleep();
 			GC::PlayerAlive = false;
 		}
@@ -424,7 +424,7 @@ void ClientLevel::ReceiveNetworkMessage(const NetMessageSetActive& aMessage, con
 				}
 				else
 				{
-					myTextManager->AddRespawnText("Your buddy is dead", true, { 1.f, 0.f, 0.f, 1.f });
+					myTextManager->AddRespawnText("Your ally is down\nRevive him/her", true, { 1.f, 0.f, 0.f, 1.f });
 				}
 				break;
 			}
@@ -741,6 +741,7 @@ void ClientLevel::HandleTrigger(Entity& aFirstEntity, Entity& aSecondEntity, boo
 				{
 					aSecondEntity.SendNote<UpgradeNote>(aFirstEntity.GetComponent<UpgradeComponent>()->GetData());
 					PostMaster::GetInstance()->SendMessage(EmitterMessage(firstTrigger->GetEntity().GetEmitter(), true));
+					Prism::Audio::AudioInterface::GetInstance()->PostEvent("Play_Positive", 0);
 				}
 			}
 

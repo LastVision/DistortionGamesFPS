@@ -32,16 +32,17 @@
 InGameState::InGameState(int aLevelID, unsigned int aServerHashLevelValue)
 	: myGUIManager(nullptr)
 	, myLevelToLoad(aLevelID)
-	, myShouldLoadLevel(false)
-	, myShouldShowLoadingScreen(true)
+	, myState(eInGameState::LOAD_LEVEL)
+	//, myShouldLoadLevel(false)
+	//, myShouldShowLoadingScreen(true)
 	, myLevel(nullptr)
-	, myLevelComplete(false)
-	, myFailedLevel(false)
-	, myLoadingScreen(true)
-	, myLoadingScreenCanStart(false)
-	, myCanStartNextLevel(false)
+	//, myLevelComplete(false)
+	//, myFailedLevel(false)
+	//, myLoadingScreen(true)
+	//, myLoadingScreenCanStart(false)
+	//, myCanStartNextLevel(false)
 	, myFailedLevelHash(false)
-	, myPhysicsDone(false)
+	//, myPhysicsDone(false)
 	, myServerHashLevelValue(aServerHashLevelValue)
 	, myHasStartedMusicBetweenLevels(false)
 	, myLastLevel(aLevelID)
@@ -123,45 +124,30 @@ const eStateStatus InGameState::Update(const float& aDeltaTime)
 		return eStateStatus::ePopMainState;
 	}
 
-	if (myLoadingScreen == true && myLoadingScreenCanStart == false && myPhysicsDone == true)
+	myRotatingThing->Rotate(-aDeltaTime * 8.f);
+
+	switch (myState)
 	{
+	case eInGameState::LOADING_SCREEN:
+		myLevel->Update(aDeltaTime, true);
+		if (myLevel->GetInitDone() == true)
+		{
+			myState = eInGameState::LOADING_PHYSICS_INIT;
+		}
+		break;
+	case eInGameState::LOADING_PHYSICS_INIT:
+		myLevel->Update(aDeltaTime, true);
 		if (Prism::ModelLoader::GetInstance()->IsLoading() == false)
 		{
 			ClientNetworkManager::GetInstance()->AddMessage(NetMessageLevelLoaded());
-			//myLoadingScreenCanStart = true;
+			myState = eInGameState::LOADING_GRAPHICS_INIT;
 		}
-	}
-
-	if (myShouldShowLoadingScreen == true)
-	{
-		myShouldShowLoadingScreen = false;
-		myShouldLoadLevel = true;
-		myLoadingScreen = true;
-		myLoadingScreenCanStart = false;
-		myLevelComplete = false;
-		myFailedLevel = false;
-		myCanStartNextLevel = false;
-		myPhysicsDone = false;
-		return myStateStatus;
-	}
-
-	
-	if (myLoadingScreen == true)
-	{
-		myRotatingThing->Rotate(-aDeltaTime * 8.f);
-	}
-	else
-	{
-		if (CU::InputWrapper::GetInstance()->KeyDown(DIK_ESCAPE))
-		{
-			myLevel->ToggleEscapeMenu();
-		}
-	}
-	
-	bool firstFrame = false;
-
-	if (myLoadingScreenCanStart == true)
-	{
+		break;
+	case eInGameState::LOADING_GRAPHICS_INIT:
+		myLevel->Update(aDeltaTime, true);
+		break;
+	case eInGameState::LOADING_CAN_START:
+		myLevel->Update(aDeltaTime, true);
 		if (CU::InputWrapper::GetInstance()->KeyDown(DIK_RETURN) == true
 			|| CU::InputWrapper::GetInstance()->KeyDown(DIK_ESCAPE) == true
 			|| CU::InputWrapper::GetInstance()->KeyDown(DIK_SPACE) == true
@@ -177,76 +163,173 @@ const eStateStatus InGameState::Update(const float& aDeltaTime)
 			|| CU::InputWrapper::GetInstance()->KeyDown(DIK_2) == true
 			|| CU::InputWrapper::GetInstance()->KeyDown(DIK_3) == true)
 		{
-			myLoadingScreen = false;
-			myLoadingScreenCanStart = false;
-			firstFrame = true;
 			PostMaster::GetInstance()->SendMessage(FadeMessage(1.f));
+			myState = eInGameState::LEVEL;
 		}
-	}
-	
-	if (myShouldLoadLevel == true)
-	{
-		myShouldLoadLevel = false;
+		break;
+	case eInGameState::LEVEL:
+		if (CU::InputWrapper::GetInstance()->KeyDown(DIK_ESCAPE))
+		{
+			myLevel->ToggleEscapeMenu();
+		}
+		myLevel->Update(aDeltaTime, false);
+		break;
+	case eInGameState::LOAD_LEVEL:
 		SET_RUNTIME(false);
 		SAFE_DELETE(myLevel);
 		myLevel = static_cast<ClientLevel*>(myLevelFactory->LoadLevel(myLevelToLoad, myCursor, myStateStatus));
 
 		myLastLevel = myLevelToLoad;
 		myLevelToLoad = -1;
-	}
-
-	Prism::EffectContainer::GetInstance()->Update(aDeltaTime);
-
-
-
-	if (myLevelComplete == true)
-	{
+		myState = eInGameState::LOADING_SCREEN;
+		break;
+	case eInGameState::LEVEL_COMPLETE:
 		myLevelCompleteSprite->Render({ 0.f, 0.f });
-		if (myHasStartedMusicBetweenLevels == false)
-		{
-			//int levelMusic = myLastLevel + 1;
-			//std::string musicEvent("Play_ElevatorToLevel" + std::to_string(levelMusic));
-			//myHasStartedMusicBetweenLevels = true;
-			//Prism::Audio::AudioInterface::GetInstance()->PostEvent(musicEvent.c_str(), 0);
-		}
+		break;
+	case eInGameState::LEVEL_COMPLETE_CAN_START:
+		myLevelCompleteSprite->Render({ 0.f, 0.f });
 
-		if (myCanStartNextLevel == true)
+		if (CU::InputWrapper::GetInstance()->KeyDown(DIK_RETURN) == true)
 		{
-			DEBUG_PRINT("Press space to continue!");
-			myText->SetText("Press space to continue");
-			if (CU::InputWrapper::GetInstance()->KeyDown(DIK_SPACE) == true)
-			{
-				ClientNetworkManager::GetInstance()->AddMessage(NetMessageRequestStartLevel());
-			}
+			ClientNetworkManager::GetInstance()->AddMessage(NetMessageRequestStartLevel());
+			myState = eInGameState::LEVEL_COMPLETE;
 		}
-	}
-	else if (myFailedLevel == true)
-	{
+		break;
+
+	case eInGameState::LEVEL_FAIL:
 		myLevelFailedSprite->Render({ 0.f, 0.f });
-		if (myHasStartedMusicBetweenLevels == false)
-		{
-			//int levelMusic = myLastLevel + 1;
-			//std::string musicEvent("Play_ElevatorToLevel" + std::to_string(levelMusic));
-			//myHasStartedMusicBetweenLevels = true;
-			//Prism::Audio::AudioInterface::GetInstance()->PostEvent(musicEvent.c_str(), 0);
-		}
+		break;
+	case eInGameState::LEVEL_FAIL_CAN_START:
+		myLevelFailedSprite->Render({ 0.f, 0.f });
 
-		if (myCanStartNextLevel == true)
+		if (CU::InputWrapper::GetInstance()->KeyDown(DIK_RETURN) == true)
 		{
-			DEBUG_PRINT("Press space to continue!");
-			myText->SetText("Press space to continue");
-			if (CU::InputWrapper::GetInstance()->KeyDown(DIK_SPACE) == true)
-			{
-				ClientNetworkManager::GetInstance()->AddMessage(NetMessageRequestStartLevel());
-			}
+			ClientNetworkManager::GetInstance()->AddMessage(NetMessageRequestStartLevel());
+			myState = eInGameState::LEVEL_FAIL;
 		}
+		break;
+
+	default:
+		DL_ASSERT("Unknown state.");
 	}
-	else
-	{
-		DL_ASSERT_EXP(myLevel != nullptr, "Invalid level");
-		myLevel->Update(aDeltaTime, myLoadingScreen || firstFrame);
-		myPhysicsDone = myLevel->GetInitDone();
-	}
+
+	//if (myLoadingScreen == true && myLoadingScreenCanStart == false && myPhysicsDone == true)
+	//{
+
+	//}
+
+	//if (myShouldShowLoadingScreen == true)
+	//{
+	//	myShouldShowLoadingScreen = false;
+	//	myShouldLoadLevel = true;
+	//	myLoadingScreen = true;
+	//	myLoadingScreenCanStart = false;
+	//	myLevelComplete = false;
+	//	myFailedLevel = false;
+	//	myCanStartNextLevel = false;
+	//	myPhysicsDone = false;
+	//	return myStateStatus;
+	//}
+
+	//
+	//if (myLoadingScreen == true)
+	//{
+	//	myRotatingThing->Rotate(-aDeltaTime * 8.f);
+	//}
+	//else
+	//{
+	//	if (CU::InputWrapper::GetInstance()->KeyDown(DIK_ESCAPE))
+	//	{
+	//		myLevel->ToggleEscapeMenu();
+	//	}
+	//}
+
+	//if (myLoadingScreenCanStart == true)
+	//{
+	//	if (CU::InputWrapper::GetInstance()->KeyDown(DIK_RETURN) == true
+	//		|| CU::InputWrapper::GetInstance()->KeyDown(DIK_ESCAPE) == true
+	//		|| CU::InputWrapper::GetInstance()->KeyDown(DIK_SPACE) == true
+	//		|| CU::InputWrapper::GetInstance()->MouseDown(0) == true
+	//		|| CU::InputWrapper::GetInstance()->MouseDown(1) == true
+	//		|| CU::InputWrapper::GetInstance()->MouseDown(2) == true
+	//		|| CU::InputWrapper::GetInstance()->KeyDown(DIK_W) == true
+	//		|| CU::InputWrapper::GetInstance()->KeyDown(DIK_A) == true
+	//		|| CU::InputWrapper::GetInstance()->KeyDown(DIK_S) == true
+	//		|| CU::InputWrapper::GetInstance()->KeyDown(DIK_D) == true
+	//		|| CU::InputWrapper::GetInstance()->KeyDown(DIK_E) == true
+	//		|| CU::InputWrapper::GetInstance()->KeyDown(DIK_1) == true
+	//		|| CU::InputWrapper::GetInstance()->KeyDown(DIK_2) == true
+	//		|| CU::InputWrapper::GetInstance()->KeyDown(DIK_3) == true)
+	//	{
+	//		myLoadingScreen = false;
+	//		myLoadingScreenCanStart = false;
+	//		PostMaster::GetInstance()->SendMessage(FadeMessage(1.f));
+	//	}
+	//}
+	//
+	//if (myShouldLoadLevel == true)
+	//{
+	//	myShouldLoadLevel = false;
+	//	SET_RUNTIME(false);
+	//	SAFE_DELETE(myLevel);
+	//	myLevel = static_cast<ClientLevel*>(myLevelFactory->LoadLevel(myLevelToLoad, myCursor, myStateStatus));
+
+	//	myLastLevel = myLevelToLoad;
+	//	myLevelToLoad = -1;
+	//}
+
+	//Prism::EffectContainer::GetInstance()->Update(aDeltaTime);
+
+
+
+	//if (myLevelComplete == true)
+	//{
+	//	myLevelCompleteSprite->Render({ 0.f, 0.f });
+	//	if (myHasStartedMusicBetweenLevels == false)
+	//	{
+	//		//int levelMusic = myLastLevel + 1;
+	//		//std::string musicEvent("Play_ElevatorToLevel" + std::to_string(levelMusic));
+	//		//myHasStartedMusicBetweenLevels = true;
+	//		//Prism::Audio::AudioInterface::GetInstance()->PostEvent(musicEvent.c_str(), 0);
+	//	}
+
+	//	if (myCanStartNextLevel == true)
+	//	{
+	//		DEBUG_PRINT("Press space to continue!");
+	//		myText->SetText("Press space to continue");
+	//		if (CU::InputWrapper::GetInstance()->KeyDown(DIK_SPACE) == true)
+	//		{
+	//			ClientNetworkManager::GetInstance()->AddMessage(NetMessageRequestStartLevel());
+	//		}
+	//	}
+	//}
+	//else if (myFailedLevel == true)
+	//{
+	//	myLevelFailedSprite->Render({ 0.f, 0.f });
+	//	if (myHasStartedMusicBetweenLevels == false)
+	//	{
+	//		//int levelMusic = myLastLevel + 1;
+	//		//std::string musicEvent("Play_ElevatorToLevel" + std::to_string(levelMusic));
+	//		//myHasStartedMusicBetweenLevels = true;
+	//		//Prism::Audio::AudioInterface::GetInstance()->PostEvent(musicEvent.c_str(), 0);
+	//	}
+
+	//	if (myCanStartNextLevel == true)
+	//	{
+	//		DEBUG_PRINT("Press space to continue!");
+	//		myText->SetText("Press space to continue");
+	//		if (CU::InputWrapper::GetInstance()->KeyDown(DIK_SPACE) == true)
+	//		{
+	//			ClientNetworkManager::GetInstance()->AddMessage(NetMessageRequestStartLevel());
+	//		}
+	//	}
+	//}
+	//else
+	//{
+	//	DL_ASSERT_EXP(myLevel != nullptr, "Invalid level");
+	//	myLevel->Update(aDeltaTime, myLoadingScreen || firstFrame);
+	//	myPhysicsDone = myLevel->GetInitDone();
+	//}
 
 	//LUA::ScriptSystem::GetInstance()->CallFunction("Update", { aDeltaTime });
 	//LUA::ScriptSystem::GetInstance()->Update();
@@ -258,26 +341,70 @@ void InGameState::Render()
 {
 	VTUNE_EVENT_BEGIN(VTUNE::GAME_RENDER);
 
-	if (myLoadingScreen == true)
+	switch (myState)
 	{
+	case eInGameState::LOADING_SCREEN:
 		myLoadingScreenSprite->Render({ 0.f, 0.f });
-		if (myLoadingScreenCanStart == true)
-		{
-			myPressToStart->Render({ 200.f, 20.f });
-		}
-		else
-		{
-			myRotatingThing->Render({ 84.f, 84.f }, { 1.f, 1.f });
-		}
-	}
-	else if (myLevelComplete == false && myFailedLevel == false)
-	{
+		myRotatingThing->Render({ 84.f, 84.f }, { 1.f, 1.f });
+		break;
+	case eInGameState::LOADING_PHYSICS_INIT:
+		myLoadingScreenSprite->Render({ 0.f, 0.f });
+		myRotatingThing->Render({ 84.f, 84.f }, { 1.f, 1.f });
+		break;
+	case eInGameState::LOADING_GRAPHICS_INIT:
+		myLoadingScreenSprite->Render({ 0.f, 0.f });
+		myRotatingThing->Render({ 84.f, 84.f }, { 1.f, 1.f });
+		break;
+	case eInGameState::LOADING_CAN_START:
+		myLoadingScreenSprite->Render({ 0.f, 0.f });
+		myPressToStart->Render({ 200.f, 20.f });
+		break;
+	case eInGameState::LEVEL:
 		myLevel->Render();
+		break;
+	case eInGameState::LOAD_LEVEL:
+		myLoadingScreenSprite->Render({ 0.f, 0.f });
+		break;
+	case eInGameState::LEVEL_FAIL:
+		myLevelFailedSprite->Render({ 0.f, 0.f });
+		break;
+	case eInGameState::LEVEL_FAIL_CAN_START:
+		myLevelFailedSprite->Render({ 0.f, 0.f });
+		myPressToStart->Render({ 200.f, 20.f });
+		break;
+	case eInGameState::LEVEL_COMPLETE:
+		myLevelCompleteSprite->Render({ 0.f, 0.f });
+		break;
+	case eInGameState::LEVEL_COMPLETE_CAN_START:
+		myLevelCompleteSprite->Render({ 0.f, 0.f });
+		myPressToStart->Render({ 200.f, 20.f });
+		break;
+	default:
+		break;
 	}
-	else
-	{
-		myText->Render();
-	}
+
+
+
+	//if (myLoadingScreen == true)
+	//{
+	//	myLoadingScreenSprite->Render({ 0.f, 0.f });
+	//	if (myLoadingScreenCanStart == true)
+	//	{
+	//		myPressToStart->Render({ 200.f, 20.f });
+	//	}
+	//	else
+	//	{
+	//		myRotatingThing->Render({ 84.f, 84.f }, { 1.f, 1.f });
+	//	}
+	//}
+	//else if (myLevelComplete == false && myFailedLevel == false)
+	//{
+	//	myLevel->Render();
+	//}
+	//else
+	//{
+	//	myText->Render();
+	//}
 
 	VTUNE_EVENT_END();
 }
@@ -291,11 +418,15 @@ void InGameState::ResumeState()
 
 void InGameState::ReceiveMessage(const GameStateMessage& aMessage)
 {
-	switch (aMessage.myGameState)
+	if (myState != eInGameState::LEVEL)
 	{
-	case eGameState::LOAD_LEVEL:
-		myLevelToLoad = aMessage.myID;
-		break;
+		switch (aMessage.myGameState)
+		{
+		case eGameState::LOAD_LEVEL:
+			myLevelToLoad = aMessage.myID;
+			myState = eInGameState::LOAD_LEVEL;
+			break;
+		}
 	}
 }
 
@@ -307,12 +438,22 @@ void InGameState::ReceiveNetworkMessage(const NetMessageAllClientsComplete& aMes
 	switch (aMessage.myType)
 	{
 	case NetMessageAllClientsComplete::eType::LEVEL_COMPLETE:
- 		myCanStartNextLevel = true;
+		if (myState == eInGameState::LEVEL_FAIL)
+		{
+			myState = eInGameState::LEVEL_FAIL_CAN_START;
+		}
+		if (myState == eInGameState::LEVEL_COMPLETE)
+		{
+			myState = eInGameState::LEVEL_COMPLETE_CAN_START;
+		}
+		//DL_ASSERT_EXP(myLevelToLoad >= 0, "Wrong level");
+		//myState = eInGameState::LOAD_LEVEL;
 		break;
 	case NetMessageAllClientsComplete::eType::LEVEL_LOAD:
-		myLevelComplete = false;
-		myFailedLevel = false;
-		myLoadingScreenCanStart = true;
+		//myLevelComplete = false;
+		//myFailedLevel = false;
+		//myLoadingScreenCanStart = true;
+		myState = eInGameState::LOADING_CAN_START;
 		break;
 	}
 }
@@ -333,13 +474,15 @@ void InGameState::ReceiveNetworkMessage(const NetMessageLevelComplete& aMsg, con
 
 	if (aMsg.myAllPlayersDied == true)
 	{
-		myFailedLevel = true;
-		DL_ASSERT_EXP(myLevelComplete == false, "Level error");
+		//myFailedLevel = true;
+		myState = eInGameState::LEVEL_FAIL;
+		//DL_ASSERT_EXP(myLevelComplete == false, "Level error");
 	}
 	else
 	{
-		myLevelComplete = true;
-		DL_ASSERT_EXP(myFailedLevel == false, "Level error");
+		myState = eInGameState::LEVEL_COMPLETE;
+		//myLevelComplete = true;
+		//DL_ASSERT_EXP(myFailedLevel == false, "Level error");
 	}
 }
 
@@ -356,8 +499,12 @@ void InGameState::ReceiveNetworkMessage(const NetMessageLoadLevel& aMessage, con
 	//myHasStartedMusicBetweenLevels = true;
 	//Prism::Audio::AudioInterface::GetInstance()->PostEvent(musicEvent.c_str(), 0);
 
-	myLevelToLoad = aMessage.myLevelID;
-	myShouldShowLoadingScreen = true;
+	if (myState != eInGameState::LEVEL)
+	{
+		myLevelToLoad = aMessage.myLevelID;
+		//myShouldShowLoadingScreen = true;
+		myState = eInGameState::LOAD_LEVEL;
+	}
 }
 
 void InGameState::OnResize(int aWidth, int aHeight)

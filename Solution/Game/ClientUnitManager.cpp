@@ -109,7 +109,7 @@ int ClientUnitManager::GetUnitsInPlayerRange(const CU::Vector3<float>& aPlayerPo
 
 	for (int i = 0; i < myActiveUnits.Size(); ++i)
 	{
-		if (myActiveUnits[i]->GetState() != eEntityState::DIE && CU::Length2(myActiveUnits[i]->GetOrientation().GetPos() - aPlayerPos) < 400.f)
+		if (myActiveUnits[i]->GetState() != eEntityState::DIE && CU::Length2(myActiveUnits[i]->GetOrientation().GetPos() - aPlayerPos) < 512.f)
 		{
 			++toReturn;
 		}

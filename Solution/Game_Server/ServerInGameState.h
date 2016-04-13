@@ -30,7 +30,7 @@ private:
 	int myLevelID;
 	unsigned int myLevelHashValue;
 
-	eInGameStates myState;
+	eServerInGameState myState;
 
 	CU::GrowingArray<unsigned int> myRespondedClients;
 

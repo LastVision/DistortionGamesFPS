@@ -387,7 +387,7 @@ void FirstPersonRenderComponent::Render(Prism::Texture* aArmDepthTexture, bool a
 
 	float lifePercentage = float(myCurrentHealth) / float(myMaxHealth);
 
-	if (lifePercentage < 0.3f)
+	if (lifePercentage < 0.4f)
 	{
 		myLowLifeIndicator->Render(windowSize * 0.5f, { 1.f, 1.f }, { 1.f, 1.f, 1.f, 1.f - lifePercentage });
 	}
@@ -495,6 +495,7 @@ void FirstPersonRenderComponent::Render(Prism::Texture* aArmDepthTexture, bool a
 		newRenderPos.x = fmaxf(0.f, fminf(newRenderPos.x, windowSize.x));
 		newRenderPos.y += windowSize.y;
 		newRenderPos.y = fmaxf(0.f, fminf(newRenderPos.y, windowSize.y));
+		newRenderPos.x -= 70.f;
 
 		//myCoOpSprite->Render({ newRenderPos.x, newRenderPos.y });
 		Prism::Engine::GetInstance()->PrintText("Press E", { newRenderPos.x, newRenderPos.y }, Prism::eTextType::RELEASE_TEXT, 2.f, CU::Vector4<float>(1.f, 1.f, 1.f, 1.f - (lengthToText / 10.f)));
@@ -644,7 +645,9 @@ void FirstPersonRenderComponent::ReceiveNetworkMessage(const NetMessageHealth& a
 		if (myCurrentHealth < aMessage.myCurrentHealth)
 		{
 			myDisplayHealthIndicatorTimer = myDisplayPickupTime;
+			Prism::Audio::AudioInterface::GetInstance()->PostEvent("Play_HealthPickup", 0);
 		}
+
 
 		myMaxHealth = aMessage.myMaxHealth;
 		myCurrentHealth = aMessage.myCurrentHealth;
