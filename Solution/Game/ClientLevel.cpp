@@ -241,7 +241,7 @@ void ClientLevel::Update(const float aDeltaTime, bool aLoadingScreen)
 		Prism::Audio::AudioInterface::GetInstance()->PostEvent("PlayAll", 0);
 
 		myInitDone = true;
-		
+
 		SET_RUNTIME(false);
 		myDeferredRenderer->LoadSHData(myMinPoint, myMaxPoint, myName);
 		RESET_RUNTIME;
@@ -288,7 +288,7 @@ void ClientLevel::Update(const float aDeltaTime, bool aLoadingScreen)
 	myVisualExplosion->Update(aDeltaTime);
 	myEmitterManager->UpdateEmitters(aDeltaTime, CU::Matrix44f());
 	myTextManager->Update(aDeltaTime);
-	
+
 	int enemiesInPlayerRange = ClientUnitManager::GetInstance()->GetUnitsInPlayerRange(myPlayer->GetOrientation().GetPos());
 	if (enemiesInPlayerRange > 0 && enemiesInPlayerRange <= 4 && myHasStartedFirstLayer == false)
 	{
@@ -307,7 +307,7 @@ void ClientLevel::Update(const float aDeltaTime, bool aLoadingScreen)
 		Prism::Audio::AudioInterface::GetInstance()->PostEvent("FadeOutFirstLayer", 0);
 		myHasStoppedFirstLayer = true;
 		myHasStartedFirstLayer = false;
-		
+
 		Prism::Audio::AudioInterface::GetInstance()->PostEvent("FadeOutSecondLayer", 0);
 		myHasStoppedSecondLayer = true;
 		myHasStartedSecondLayer = false;
@@ -327,7 +327,7 @@ void ClientLevel::Update(const float aDeltaTime, bool aLoadingScreen)
 	}
 	Prism::PhysicsInterface::GetInstance()->EndFrame();
 
-	
+
 
 
 }
@@ -412,7 +412,7 @@ void ClientLevel::ReceiveNetworkMessage(const NetMessageSetActive& aMessage, con
 		}
 		return;
 	}
-	else 
+	else
 	{
 		for (int i = 0; i < myPlayers.Size(); ++i)
 		{
@@ -785,8 +785,10 @@ void ClientLevel::HandleOtherClientRayCastPistol(PhysicsComponent* aComponent, c
 		}
 		else
 		{
-			PostMaster::GetInstance()->SendMessage(EmitterMessage("OnEnvHit", aHitPosition));
-			PostMaster::GetInstance()->SendMessage(EmitterMessage("OnEnvHit_2", aHitPosition, aHitNormal));
+			CU::Vector3<float> toMove = aHitPosition;
+			toMove += (aHitNormal * 0.1f);
+			PostMaster::GetInstance()->SendMessage(EmitterMessage("OnEnvHit", toMove));
+			PostMaster::GetInstance()->SendMessage(EmitterMessage("OnEnvHit_2", toMove));
 		}
 	}
 }
@@ -807,8 +809,10 @@ void ClientLevel::HandleOtherClientRayCastShotgun(PhysicsComponent* aComponent, 
 		}
 		else
 		{
-			PostMaster::GetInstance()->SendMessage(EmitterMessage("OnEnvHit", aHitPosition));
-			PostMaster::GetInstance()->SendMessage(EmitterMessage("OnEnvHit_2", aHitPosition, aHitNormal));
+			CU::Vector3<float> toMove = aHitPosition;
+			toMove += (aHitNormal * 0.1f);
+			PostMaster::GetInstance()->SendMessage(EmitterMessage("OnEnvHit", toMove));
+			PostMaster::GetInstance()->SendMessage(EmitterMessage("OnEnvHit_2", toMove));
 		}
 	}
 }
