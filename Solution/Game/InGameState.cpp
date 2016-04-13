@@ -140,6 +140,7 @@ const eStateStatus InGameState::Update(const float& aDeltaTime)
 		if (Prism::ModelLoader::GetInstance()->IsLoading() == false)
 		{
 			ClientNetworkManager::GetInstance()->AddMessage(NetMessageLevelLoaded());
+			myState = eInGameState::LOADING_GRAPHICS_INIT;
 		}
 		break;
 	case eInGameState::LOADING_GRAPHICS_INIT:
