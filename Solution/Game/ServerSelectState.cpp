@@ -171,6 +171,11 @@ const eStateStatus ServerSelectState::Update(const float& aDeltaTime)
 					//Show Failed to connect message
 					Prism::Engine::GetInstance()->PrintText("Failed to connect to the server, the server is either down or ingame. Try again!"
 						, { 50.f, Prism::Engine::GetInstance()->GetWindowSize().y - 50.f }, Prism::eTextType::RELEASE_TEXT);
+					myServers.RemoveAll();
+					myTriedToConnect = false;
+					myServer = nullptr;
+					myIsRefreshing = true;
+					ClientNetworkManager::GetInstance()->AddMessage(NetMessageRequestServer(), ClientNetworkManager::GetInstance()->GetBroadcastAddress());
 				}
 			}
 			if (ClientNetworkManager::GetInstance()->GetGID() != 0)

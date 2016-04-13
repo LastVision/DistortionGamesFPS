@@ -148,7 +148,7 @@ void ServerNetworkManager::ReceieveThread()
 		}
 		for (Buffer message : someBuffers)
 		{
-			if (message.myLength >= 4)
+			if (message.myLength >= 17)
 			{
 				NetMessage toDeserialize;
 				toDeserialize.DeSerializeFirst(message.myData);
