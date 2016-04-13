@@ -64,6 +64,9 @@ namespace Prism
 		element = read.ForceFindFirstChild(emitter, "HollowEmitter");
 		read.ReadAttribute(element, "value", myIsHollow);
 
+		element = read.FindFirstChild(emitter, "SphereEmitter");
+		read.ReadAttribute(element, "value", myIsSphere);
+
 		element = read.ForceFindFirstChild(emitter, "EmitterSize");
 		read.ReadAttribute(element, "x", "y", "z", myEmitterSize);
 		myEmitterSize *= 0.5f;

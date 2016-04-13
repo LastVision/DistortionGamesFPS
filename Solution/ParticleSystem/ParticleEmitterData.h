@@ -57,5 +57,6 @@ namespace Prism
 		bool myIsHollow;
 		bool myIsCircle;
 		bool myIsAnimated;
+		bool myIsSphere;
 	};
 }

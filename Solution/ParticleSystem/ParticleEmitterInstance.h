@@ -100,6 +100,7 @@ namespace Prism
 			HOLLOW,
 			ACTIVE,
 			CIRCLE,
+			SPHERE,
 			EMITTERLIFE,
 			_COUNT
 		};

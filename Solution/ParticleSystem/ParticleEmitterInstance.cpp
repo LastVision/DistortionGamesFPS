@@ -161,6 +161,17 @@ namespace Prism
 			myStates[EMITTERLIFE] = FALSE;
 		}
 
+		if (myParticleEmitterData->myIsSphere == true)
+		{
+			myStates[SPHERE] = TRUE;
+		}
+		else
+		{
+			myStates[SPHERE] = FALSE;
+		}
+
+
+
 		myEmitterLife = myParticleEmitterData->myEmitterLifeTime;
 		CreatePoints();
 	}
@@ -443,13 +454,13 @@ namespace Prism
 				CU::Vector3<float> pos = CreateHollowSquare();
 				gfxParticle.myPosition = aWorldMatrix.GetPos() + pos;
 			}
+			else if (myStates[SPHERE] == TRUE)
+			{
+				CU::Vector3<float> pos = CreateSpherePositions();
+				gfxParticle.myPosition = aWorldMatrix.GetPos() + pos;
+			}
 			else
 			{
-			/*	CU::Vector3<float> pos = CreateSpherePositions();
-				gfxParticle.myPosition = aWorldMatrix.GetPos() + pos;*/
-
-
-
 				gfxParticle.myPosition =
 					CU::Math::RandomVector(aWorldMatrix.GetPos() - myParticleEmitterData->myEmitterSize
 					, aWorldMatrix.GetPos() + myParticleEmitterData->myEmitterSize);
