@@ -506,7 +506,7 @@ void ClientLevel::ReceiveNetworkMessage(const NetMessageEntityState& aMessage, c
 	{
 		if (static_cast<eEntityState>(aMessage.myEntityState) == eEntityState::DIE)
 		{
-  			myPlayer->SetState(static_cast<eEntityState>(aMessage.myEntityState));
+			myPlayer->SetState(static_cast<eEntityState>(aMessage.myEntityState));
 		}
 		else if (myPlayer->GetState() == eEntityState::DIE && static_cast<eEntityState>(aMessage.myEntityState) == eEntityState::IDLE)
 		{
@@ -778,7 +778,7 @@ void ClientLevel::HandleOtherClientRayCastPistol(PhysicsComponent* aComponent, c
 		CU::Vector3<float> toSend = CU::Reflect<float>(aDirection, aHitNormal);
 		if (aComponent->GetEntity().GetIsEnemy() == true)
 		{
-			PostMaster::GetInstance()->SendMessage(EmitterMessage("OnHit", aHitPosition, toSend));
+			PostMaster::GetInstance()->SendMessage(EmitterMessage("OnHit", aHitPosition));
 		}
 		else
 		{
@@ -799,7 +799,7 @@ void ClientLevel::HandleOtherClientRayCastShotgun(PhysicsComponent* aComponent, 
 
 		if (aComponent->GetEntity().GetIsEnemy() == true)
 		{
-			PostMaster::GetInstance()->SendMessage(EmitterMessage("OnHit", aHitPosition, toSend));
+			PostMaster::GetInstance()->SendMessage(EmitterMessage("OnHit", aHitPosition));
 		}
 		else
 		{
