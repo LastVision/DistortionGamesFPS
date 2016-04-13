@@ -228,6 +228,7 @@ void ServerLevel::ReceiveNetworkMessage(const NetMessageShootGrenade& aMessage, 
 
 void ServerLevel::ReceiveNetworkMessage(const NetMessagePressE& aMessage, const sockaddr_in&)
 {
+	bool errorSound = true;
 	for (int i = 0; i < myPlayersInPressableTriggers[aMessage.myGID].Size(); ++i)
 	{
 		if (myPlayersInPressableTriggers[aMessage.myGID][i]->GetComponent<PhysicsComponent>()->IsInScene() == true)
@@ -235,8 +236,22 @@ void ServerLevel::ReceiveNetworkMessage(const NetMessagePressE& aMessage, const 
 			Trigger(*myPlayersInPressableTriggers[aMessage.myGID][i], *myPlayers[aMessage.myGID - 1], true);
 			myPlayersInPressableTriggers[aMessage.myGID][i]->
 				SendNote<CollisionNote>(CollisionNote(myPlayers[aMessage.myGID - 1], true));
+			
+			errorSound = false;
 		}
 	}
+
+	if (errorSound == false)
+	{
+		SharedNetworkManager::GetInstance()->AddMessage<NetMessageText>(
+			NetMessageText("", 5.f, { 1.f, 1.f, 1.f, 1.f }, 0, false, true, "Play_Press_E"), aMessage.myGID);
+	}
+	else
+	{
+		SharedNetworkManager::GetInstance()->AddMessage<NetMessageText>(
+			NetMessageText("", 5.f, { 1.f, 1.f, 1.f, 1.f }, 0, false, true, "Play_Error"), aMessage.myGID);
+	}
+
 }
 
 void ServerLevel::ReceiveNetworkMessage(const NetMessageRayCastRequest& aMessage, const sockaddr_in&)
