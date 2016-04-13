@@ -425,6 +425,7 @@ void ClientLevel::ReceiveNetworkMessage(const NetMessageSetActive& aMessage, con
 				{
 					myTextManager->AddRespawnText("Your buddy is dead", true, { 1.f, 0.f, 0.f, 1.f });
 				}
+				break;
 			}
 		}
 	}
