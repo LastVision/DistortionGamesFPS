@@ -53,12 +53,12 @@ namespace GUI
 		myHealthIcon = new Prism::Bar3D({ 0.025f, 0.025f }, 1, myEffect, eBarPosition::HEALTH_ICON, "Data/Resource/Texture/UI/T_healthIcon.dds");
 		myHealthIcon->SetValue(1.f);
 
-		myGUITutorialHealthIcon = new Prism::Bar3D({ 1.f, 1.f }, 1, myEffect, eBarPosition::PISTOL_ICON, "Data/Resource/Texture/UI/T_tutorial_GUI_health.dds");
-		myGUITutorialHealthIcon->SetValue(1.f);
-		myShotgunIcon = new Prism::Bar3D({ 1.f, 1.f }, 1, myEffect, eBarPosition::PISTOL_ICON, "Data/Resource/Texture/UI/T_tutorial_GUI_ammo.dds");
-		myShotgunIcon->SetValue(1.f);
-		myGrenadeLauncherIcon = new Prism::Bar3D({ 1.f, 1.f }, 1, myEffect, eBarPosition::PISTOL_ICON, "Data/Resource/Texture/UI/T_tutorial_GUI_ammo_total.dds");
-		myGrenadeLauncherIcon->SetValue(1.f);
+		myGUITutorialHealth = new Prism::Bar3D({ 1.f, 1.f }, 1, myEffect, eBarPosition::PISTOL_ICON, "Data/Resource/Texture/UI/T_tutorial_GUI_health.dds");
+		myGUITutorialHealth->SetValue(1.f);
+		myGUITutorialAmmo = new Prism::Bar3D({ 1.f, 1.f }, 1, myEffect, eBarPosition::PISTOL_ICON, "Data/Resource/Texture/UI/T_tutorial_GUI_ammo.dds");
+		myGUITutorialAmmo->SetValue(1.f);
+		myGUITutorialAmmoTotal = new Prism::Bar3D({ 1.f, 1.f }, 1, myEffect, eBarPosition::PISTOL_ICON, "Data/Resource/Texture/UI/T_tutorial_GUI_ammo_total.dds");
+		myGUITutorialAmmoTotal->SetValue(1.f);
 
 		myAmmoTotalText = Prism::ModelLoader::GetInstance()->LoadText(Prism::Engine::GetInstance()->GetFont(Prism::eFont::DIALOGUE), true);
 		myAmmoTotalText->Rotate3dText(-0.8f);
@@ -78,9 +78,9 @@ namespace GUI
 		SAFE_DELETE(myRightBar);
 		SAFE_DELETE(myHealthBar);
 		SAFE_DELETE(myHealthIcon);
-		SAFE_DELETE(myGUITutorialHealthIcon);
-		SAFE_DELETE(myShotgunIcon);
-		SAFE_DELETE(myGrenadeLauncherIcon);
+		SAFE_DELETE(myGUITutorialHealth);
+		SAFE_DELETE(myGUITutorialAmmo);
+		SAFE_DELETE(myGUITutorialAmmoTotal);
 		SAFE_DELETE(myAmmoTotalText);
 	}
 
@@ -176,20 +176,20 @@ namespace GUI
 		{
 			if (myShowFirstTutorial < SHOWTUTORIALTIME)
 			{
-				myGUITutorialHealthIcon->GetEffect()->SetGradiantValue(fminf(fminf(1.f, myShowFirstTutorial), SHOWTUTORIALTIME - myShowFirstTutorial));
-				myGUITutorialHealthIcon->Render(*myScene->GetCamera(), myWristOrientation);
+				myGUITutorialHealth->GetEffect()->SetGradiantValue(fminf(fminf(1.f, myShowFirstTutorial), SHOWTUTORIALTIME - myShowFirstTutorial));
+				myGUITutorialHealth->Render(*myScene->GetCamera(), myWristOrientation);
 			}
 			else if (myShowSecondTutorial < SHOWTUTORIALTIME)
 			{
 				myRenderAmmo = true;
-				myShotgunIcon->GetEffect()->SetGradiantValue(fminf(fminf(1.f, myShowSecondTutorial), SHOWTUTORIALTIME - myShowSecondTutorial));
-				myShotgunIcon->Render(*myScene->GetCamera(), myWristOrientation);
+				myGUITutorialAmmo->GetEffect()->SetGradiantValue(fminf(fminf(1.f, myShowSecondTutorial), SHOWTUTORIALTIME - myShowSecondTutorial));
+				myGUITutorialAmmo->Render(*myScene->GetCamera(), myWristOrientation);
 			}
 			else if (myShowThirdTutorial < SHOWTUTORIALTIME)
 			{
 				myRenderAmmoTotal = true;
-				myGrenadeLauncherIcon->GetEffect()->SetGradiantValue(fminf(fminf(1.f, myShowThirdTutorial), SHOWTUTORIALTIME - myShowThirdTutorial));
-				myGrenadeLauncherIcon->Render(*myScene->GetCamera(), myWristOrientation);
+				myGUITutorialAmmoTotal->GetEffect()->SetGradiantValue(fminf(fminf(1.f, myShowThirdTutorial), SHOWTUTORIALTIME - myShowThirdTutorial));
+				myGUITutorialAmmoTotal->Render(*myScene->GetCamera(), myWristOrientation);
 			}
 		}
 

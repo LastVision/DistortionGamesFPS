@@ -56,9 +56,9 @@ namespace GUI
 		const int& myGrenadeLauncherAmmoTotal;
 
 		Prism::Bar3D* myHealthIcon;
-		Prism::Bar3D* myGUITutorialHealthIcon;
-		Prism::Bar3D* myShotgunIcon;
-		Prism::Bar3D* myGrenadeLauncherIcon;
+		Prism::Bar3D* myGUITutorialHealth;
+		Prism::Bar3D* myGUITutorialAmmo;
+		Prism::Bar3D* myGUITutorialAmmoTotal;
 
 		Prism::TextProxy* myAmmoTotalText;
 		CU::Matrix44<float> myRotationMatrix;
