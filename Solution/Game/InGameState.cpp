@@ -162,7 +162,7 @@ const eStateStatus InGameState::Update(const float& aDeltaTime)
 
 	if (myLoadingScreenCanStart == true)
 	{
-		/*if (CU::InputWrapper::GetInstance()->KeyDown(DIK_RETURN) == true
+		if (CU::InputWrapper::GetInstance()->KeyDown(DIK_RETURN) == true
 			|| CU::InputWrapper::GetInstance()->KeyDown(DIK_ESCAPE) == true
 			|| CU::InputWrapper::GetInstance()->KeyDown(DIK_SPACE) == true
 			|| CU::InputWrapper::GetInstance()->MouseDown(0) == true
@@ -175,11 +175,7 @@ const eStateStatus InGameState::Update(const float& aDeltaTime)
 			|| CU::InputWrapper::GetInstance()->KeyDown(DIK_E) == true
 			|| CU::InputWrapper::GetInstance()->KeyDown(DIK_1) == true
 			|| CU::InputWrapper::GetInstance()->KeyDown(DIK_2) == true
-			|| CU::InputWrapper::GetInstance()->KeyDown(DIK_3) == true)*/
-		if (CU::InputWrapper::GetInstance()->AnyKeyDown() == true
-			|| CU::InputWrapper::GetInstance()->MouseDown(0) == true
-			|| CU::InputWrapper::GetInstance()->MouseDown(1) == true
-			|| CU::InputWrapper::GetInstance()->MouseDown(2) == true)
+			|| CU::InputWrapper::GetInstance()->KeyDown(DIK_3) == true)
 		{
 			myLoadingScreen = false;
 			myLoadingScreenCanStart = false;
