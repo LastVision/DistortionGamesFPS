@@ -88,7 +88,7 @@ void LobbyState::InitState(StateStackProxy* aStateStackProxy, GUI::Cursor* aCurs
 	myCursor->SetShouldRender(true);
 	myLevelToStart = -1;
 
-	Prism::Audio::AudioInterface::GetInstance()->PostEvent("Stop_MainMenu", 0);
+	//Prism::Audio::AudioInterface::GetInstance()->PostEvent("Stop_MainMenu", 0);
 	if (ClientNetworkManager::GetInstance()->GetGID() > 1)
 	{
 		ClientNetworkManager::GetInstance()->AddMessage(NetMessageRequestLevel());
@@ -215,7 +215,7 @@ void LobbyState::ReceiveMessage(const OnClickMessage& aMessage)
 			ClientNetworkManager::GetInstance()->AddMessage(NetMessageRequestStartLevel());
 			break;
 		case eOnClickEvent::GAME_QUIT:
-			Prism::Audio::AudioInterface::GetInstance()->PostEvent("Stop_AllElevators", 0);
+			//Prism::Audio::AudioInterface::GetInstance()->PostEvent("Stop_AllElevators", 0);
 			ClientNetworkManager::GetInstance()->SetHasLeftLobby(true);
 			ClientNetworkManager::GetInstance()->AddMessage(NetMessageDisconnect(ClientNetworkManager::GetInstance()->GetGID()));
 			myStateStatus = eStateStatus::ePopMainState;
@@ -234,10 +234,10 @@ void LobbyState::ReceiveMessage(const OnRadioButtonMessage& aMessage)
 
 	if (aMessage.myEvent == eOnRadioButtonEvent::LEVEL_SELECT)
 	{
-		int levelMusic = aMessage.myID;
-		levelMusic = min(levelMusic, 2);
-		std::string musicEvent("Play_ElevatorToLevel" + std::to_string(levelMusic));
-		Prism::Audio::AudioInterface::GetInstance()->PostEvent(musicEvent.c_str(), 0);
+		//int levelMusic = aMessage.myID;
+		//levelMusic = min(levelMusic, 2);
+		//std::string musicEvent("Play_ElevatorToLevel" + std::to_string(levelMusic));
+		//Prism::Audio::AudioInterface::GetInstance()->PostEvent(musicEvent.c_str(), 0);
 		
 		myRadioLevel = aMessage.myID;
 	}
@@ -262,12 +262,12 @@ void LobbyState::ReceiveNetworkMessage(const NetMessageDisconnect& aMessage, con
 
 void LobbyState::ReceiveNetworkMessage(const NetMessageSetLevel& aMessage, const sockaddr_in&)
 {
-	Prism::Audio::AudioInterface::GetInstance()->PostEvent("Stop_AllElevators", 0);
+	//Prism::Audio::AudioInterface::GetInstance()->PostEvent("Stop_AllElevators", 0);
 
-	int levelMusic = aMessage.myLevelID;
-	levelMusic = min(levelMusic, 2);
-	std::string musicEvent("Play_ElevatorToLevel" + std::to_string(levelMusic));
-	Prism::Audio::AudioInterface::GetInstance()->PostEvent(musicEvent.c_str(), 0);
+	//int levelMusic = aMessage.myLevelID;
+	//levelMusic = min(levelMusic, 2);
+	//std::string musicEvent("Play_ElevatorToLevel" + std::to_string(levelMusic));
+	//Prism::Audio::AudioInterface::GetInstance()->PostEvent(musicEvent.c_str(), 0);
 
 	myLevelToStart = aMessage.myLevelID;
 	myText->SetText(CU::Concatenate("Current level: %i", min(myLevelToStart+1, 3)));

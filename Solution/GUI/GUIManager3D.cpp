@@ -11,7 +11,7 @@
 #include <TextureContainer.h>
 #include <TextProxy.h>
 
-#define SHOWTUTORIALTIME 20.f
+#define SHOWTUTORIALTIME 7.f
 
 namespace GUI
 {
@@ -20,7 +20,9 @@ namespace GUI
 		, const int& aShotgunClipSize, const int& aShotgunAmmoInClip, const int& aShotgunAmmoTotal
 		, const int& aGrenadeLauncherClipSize, const int& aGrenadeLauncherAmmoInClip, const int& aGrenadeLauncherAmmoTotal)
 		: myScene(aScene)
-		, myShowGUITutorial(0.f)
+		, myShowFirstTutorial(0.f)
+		, myShowSecondTutorial(0.f)
+		, myShowThirdTutorial(0.f)
 		, myPistolClipSize(aPistolClipSize)
 		, myPistolAmmoInClip(aPistolAmmoInClip)
 		, myShotgunClipSize(aShotgunClipSize)
@@ -32,6 +34,9 @@ namespace GUI
 		, myCurrentHealth(0)
 		, myMaxHealth(0)
 		, myLowHealthTimer(0.f)
+		, myIsFirstLevel(false)
+		, myRenderAmmo(false)
+		, myRenderAmmoTotal(false)
 	{
 		Prism::ModelLoader::GetInstance()->Pause();
 		myEffect = Prism::EffectContainer::GetInstance()->GetEffect("Data/Resource/Shader/S_effect_3dgui.fx");
@@ -47,18 +52,18 @@ namespace GUI
 
 		myHealthIcon = new Prism::Bar3D({ 0.025f, 0.025f }, 1, myEffect, eBarPosition::HEALTH_ICON, "Data/Resource/Texture/UI/T_healthIcon.dds");
 		myHealthIcon->SetValue(1.f);
-		
-		myPistolIcon = new Prism::Bar3D({ 1.f, 1.f }, 1, myEffect, eBarPosition::PISTOL_ICON, "Data/Resource/Texture/UI/T_pistolIcon.dds");
-		myPistolIcon->SetValue(1.f);
-		myShotgunIcon = new Prism::Bar3D({ 0.025f, 0.025f }, 1, myEffect, eBarPosition::SHOTGUN_ICON, "Data/Resource/Texture/UI/T_shotgunIcon.dds");
-		myShotgunIcon->SetValue(1.f);
-		myGrenadeLauncherIcon = new Prism::Bar3D({ 0.025f, 0.025f }, 1, myEffect, eBarPosition::GRENADE_LAUNCHER_ICON, "Data/Resource/Texture/UI/T_grenadeLauncherIcon.dds");
-		myGrenadeLauncherIcon->SetValue(1.f);
-			
+
+		myGUITutorialHealth = new Prism::Bar3D({ 1.f, 1.f }, 1, myEffect, eBarPosition::PISTOL_ICON, "Data/Resource/Texture/UI/T_tutorial_GUI_health.dds");
+		myGUITutorialHealth->SetValue(1.f);
+		myGUITutorialAmmo = new Prism::Bar3D({ 1.f, 1.f }, 1, myEffect, eBarPosition::PISTOL_ICON, "Data/Resource/Texture/UI/T_tutorial_GUI_ammo.dds");
+		myGUITutorialAmmo->SetValue(1.f);
+		myGUITutorialAmmoTotal = new Prism::Bar3D({ 1.f, 1.f }, 1, myEffect, eBarPosition::PISTOL_ICON, "Data/Resource/Texture/UI/T_tutorial_GUI_ammo_total.dds");
+		myGUITutorialAmmoTotal->SetValue(1.f);
+
 		myAmmoTotalText = Prism::ModelLoader::GetInstance()->LoadText(Prism::Engine::GetInstance()->GetFont(Prism::eFont::DIALOGUE), true);
 		myAmmoTotalText->Rotate3dText(-0.8f);
 		myAmmoTotalText->SetOffset({ 0.1f, 0.f, 0.f });
-		
+
 
 		Prism::ModelLoader::GetInstance()->UnPause();
 
@@ -73,9 +78,9 @@ namespace GUI
 		SAFE_DELETE(myRightBar);
 		SAFE_DELETE(myHealthBar);
 		SAFE_DELETE(myHealthIcon);
-		SAFE_DELETE(myPistolIcon);
-		SAFE_DELETE(myShotgunIcon);
-		SAFE_DELETE(myGrenadeLauncherIcon);
+		SAFE_DELETE(myGUITutorialHealth);
+		SAFE_DELETE(myGUITutorialAmmo);
+		SAFE_DELETE(myGUITutorialAmmoTotal);
 		SAFE_DELETE(myAmmoTotalText);
 	}
 
@@ -89,7 +94,7 @@ namespace GUI
 		if (aCurrentWeaponType == eWeaponType::PISTOL)
 		{
 			colorValue = myPistolAmmoInClip / float(myPistolClipSize);
-			myAmmoTotalText->SetText("");	
+			myAmmoTotalText->SetText("");
 		}
 		else if (aCurrentWeaponType == eWeaponType::SHOTGUN)
 		{
@@ -104,9 +109,21 @@ namespace GUI
 
 		myAmmoTotalText->SetColor({ 1.f, colorValue, colorValue, 0.75f });
 
-		if (myShowGUITutorial < SHOWTUTORIALTIME)
+
+		if (myIsFirstLevel == true)
 		{
-			myShowGUITutorial += aDeltaTime;
+			if (myShowFirstTutorial < SHOWTUTORIALTIME)
+			{
+				myShowFirstTutorial += aDeltaTime;
+			}
+			else if (myShowSecondTutorial < SHOWTUTORIALTIME)
+			{
+				myShowSecondTutorial += aDeltaTime;
+			}
+			else if (myShowThirdTutorial < SHOWTUTORIALTIME)
+			{
+				myShowThirdTutorial += aDeltaTime;
+			}
 		}
 
 		myLowHealthTimer -= aDeltaTime;
@@ -131,10 +148,16 @@ namespace GUI
 
 	void GUIManager3D::Render(bool aIsFirstLevel)
 	{
+		myIsFirstLevel = aIsFirstLevel;
+
 		myEffect->SetGradiantValue(1.f);
-		myLeftBar->Render(*myScene->GetCamera(), myWristOrientation);
-		myRightBar->Render(*myScene->GetCamera(), myWristOrientation);
-		myTopBar->Render(*myScene->GetCamera(), myWristOrientation);
+
+		if (myIsFirstLevel == false || (myIsFirstLevel == true && myRenderAmmo))
+		{
+			myLeftBar->Render(*myScene->GetCamera(), myWristOrientation);
+			myRightBar->Render(*myScene->GetCamera(), myWristOrientation);
+			myTopBar->Render(*myScene->GetCamera(), myWristOrientation);
+		}
 
 		CU::Vector4<float> healthColor = { 0.f, 0.f, 0.f, 1.f };
 		float life = float(myCurrentHealth) / float(myMaxHealth);
@@ -149,12 +172,24 @@ namespace GUI
 
 		myHealthBar->Render(*myScene->GetCamera(), myHealthOrientation, healthColor);
 
-		if (aIsFirstLevel == true)
+		if (myIsFirstLevel == true)
 		{
-			if (myShowGUITutorial < SHOWTUTORIALTIME)
+			if (myShowFirstTutorial < SHOWTUTORIALTIME)
 			{
-				myPistolIcon->GetEffect()->SetGradiantValue(fminf(fminf(1.f, myShowGUITutorial), SHOWTUTORIALTIME - myShowGUITutorial));
-				myPistolIcon->Render(*myScene->GetCamera(), myWristOrientation);
+				myGUITutorialHealth->GetEffect()->SetGradiantValue(fminf(fminf(1.f, myShowFirstTutorial), SHOWTUTORIALTIME - myShowFirstTutorial));
+				myGUITutorialHealth->Render(*myScene->GetCamera(), myWristOrientation);
+			}
+			else if (myShowSecondTutorial < SHOWTUTORIALTIME)
+			{
+				myRenderAmmo = true;
+				myGUITutorialAmmo->GetEffect()->SetGradiantValue(fminf(fminf(1.f, myShowSecondTutorial), SHOWTUTORIALTIME - myShowSecondTutorial));
+				myGUITutorialAmmo->Render(*myScene->GetCamera(), myWristOrientation);
+			}
+			else if (myShowThirdTutorial < SHOWTUTORIALTIME)
+			{
+				myRenderAmmoTotal = true;
+				myGUITutorialAmmoTotal->GetEffect()->SetGradiantValue(fminf(fminf(1.f, myShowThirdTutorial), SHOWTUTORIALTIME - myShowThirdTutorial));
+				myGUITutorialAmmoTotal->Render(*myScene->GetCamera(), myWristOrientation);
 			}
 		}
 
@@ -164,7 +199,6 @@ namespace GUI
 		}
 		myHealthIcon->Render(*myScene->GetCamera(), myHealthOrientation, healthColor);
 
-
 		CU::Vector3<float> oldPos(myHealthOrientation.GetPos());
 		CU::Vector3<float> offset(myHealthOrientation.GetForward() * -0.25f);
 		offset += myHealthOrientation.GetUp() * 0.1f;
@@ -173,7 +207,11 @@ namespace GUI
 
 		myHealthOrientation.SetPos(oldPos + offset);
 		myAmmoTotalText->SetOrientation(myHealthOrientation);
-		myAmmoTotalText->Render(myScene->GetCamera(), 800.f);
+
+		if (myIsFirstLevel == false || (myIsFirstLevel == true && myRenderAmmoTotal))
+		{
+			myAmmoTotalText->Render(myScene->GetCamera(), 800.f);
+		}
 		myHealthOrientation.SetPos(oldPos);
 	}
 

@@ -235,8 +235,9 @@ void ClientLevel::Update(const float aDeltaTime, bool aLoadingScreen)
 {
 	if (myInitDone == false && Prism::PhysicsInterface::GetInstance()->GetInitDone() == true)
 	{
-		Prism::Audio::AudioInterface::GetInstance()->PostEvent("Stop_AllElevators", 0);
-		Prism::Audio::AudioInterface::GetInstance()->PostEvent("Play_ElevatorPling", 0);
+		Prism::Audio::AudioInterface::GetInstance()->PostEvent("Stop_MainMenu", 0);
+		//Prism::Audio::AudioInterface::GetInstance()->PostEvent("Stop_AllElevators", 0);
+		//Prism::Audio::AudioInterface::GetInstance()->PostEvent("Play_ElevatorPling", 0);
 		Prism::Audio::AudioInterface::GetInstance()->PostEvent("PlayAll", 0);
 
 		myInitDone = true;
@@ -306,9 +307,7 @@ void ClientLevel::Update(const float aDeltaTime, bool aLoadingScreen)
 		Prism::Audio::AudioInterface::GetInstance()->PostEvent("FadeOutFirstLayer", 0);
 		myHasStoppedFirstLayer = true;
 		myHasStartedFirstLayer = false;
-	}
-	if (enemiesInPlayerRange <= 4 && myHasStoppedSecondLayer == false)
-	{
+		
 		Prism::Audio::AudioInterface::GetInstance()->PostEvent("FadeOutSecondLayer", 0);
 		myHasStoppedSecondLayer = true;
 		myHasStartedSecondLayer = false;
@@ -403,11 +402,13 @@ void ClientLevel::ReceiveNetworkMessage(const NetMessageSetActive& aMessage, con
 		{
 			myTextManager->AddRespawnText("", false);
 			myPlayer->GetComponent<PhysicsComponent>()->Wake();
+			GC::PlayerAlive = true;
 		}
 		else
 		{
 			myTextManager->AddRespawnText("You are dead", true, { 1.f, 0.f, 0.f, 1.f });
 			myPlayer->GetComponent<PhysicsComponent>()->Sleep();
+			GC::PlayerAlive = false;
 		}
 		return;
 	}

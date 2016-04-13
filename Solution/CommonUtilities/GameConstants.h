@@ -13,4 +13,6 @@ public:
 	static int Difficulty;
 	static float DamageMultiplier[3];
 	static float SpawnIntervalMultiplier[3];
+
+	static volatile bool PlayerAlive;
 };
