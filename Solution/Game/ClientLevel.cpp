@@ -402,11 +402,13 @@ void ClientLevel::ReceiveNetworkMessage(const NetMessageSetActive& aMessage, con
 		{
 			myTextManager->AddRespawnText("", false);
 			myPlayer->GetComponent<PhysicsComponent>()->Wake();
+			GC::PlayerAlive = true;
 		}
 		else
 		{
 			myTextManager->AddRespawnText("You are dead", true, { 1.f, 0.f, 0.f, 1.f });
 			myPlayer->GetComponent<PhysicsComponent>()->Sleep();
+			GC::PlayerAlive = false;
 		}
 		return;
 	}
