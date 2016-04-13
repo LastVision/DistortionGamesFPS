@@ -118,6 +118,6 @@ void SharedLevel::HandleExplosion(Entity& aFirstEntity, Entity& aSecondEntity)
 	}
 	else if (physicsComponent->GetPhysicsType() == ePhysics::CAPSULE)
 	{
-		aSecondEntity.SendNote<DamageNote>(DamageNote(10));
+		aSecondEntity.SendNote<DamageNote>(DamageNote(1000));
 	}
 }

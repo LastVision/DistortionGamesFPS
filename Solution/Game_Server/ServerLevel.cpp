@@ -213,10 +213,10 @@ void ServerLevel::ReceiveNetworkMessage(const NetMessageShootGrenade& aMessage, 
 
 	bullet->Reset();
 	CU::Vector3<float> pos = playerOrientation.GetPos();
-	pos.y += 1.5f;
-	pos += aMessage.myForwardVector * 2.f;
+	pos.y += 0.3f;
+	pos += aMessage.myForwardVector * 1.5f;
 	pos += playerOrientation.GetRight() * 0.5f;
-	pos -= playerOrientation.GetUp() * 0.2f;
+	//pos -= playerOrientation.GetUp() * 0.1f;
 	bullet->GetComponent<PhysicsComponent>()->TeleportToPosition(pos);
 	bullet->GetComponent<GrenadeComponent>()->Activate(aMessage.myPlayerGID);
 	bullet->GetComponent<PhysicsComponent>()->AddForce(aMessage.myForwardVector, float(aMessage.myForceStrength));
