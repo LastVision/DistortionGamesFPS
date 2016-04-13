@@ -204,10 +204,10 @@ const eStateStatus InGameState::Update(const float& aDeltaTime)
 		myLevelCompleteSprite->Render({ 0.f, 0.f });
 		if (myHasStartedMusicBetweenLevels == false)
 		{
-			int levelMusic = myLastLevel + 1;
-			std::string musicEvent("Play_ElevatorToLevel" + std::to_string(levelMusic));
-			myHasStartedMusicBetweenLevels = true;
-			Prism::Audio::AudioInterface::GetInstance()->PostEvent(musicEvent.c_str(), 0);
+			//int levelMusic = myLastLevel + 1;
+			//std::string musicEvent("Play_ElevatorToLevel" + std::to_string(levelMusic));
+			//myHasStartedMusicBetweenLevels = true;
+			//Prism::Audio::AudioInterface::GetInstance()->PostEvent(musicEvent.c_str(), 0);
 		}
 
 		if (myCanStartNextLevel == true)
@@ -225,10 +225,10 @@ const eStateStatus InGameState::Update(const float& aDeltaTime)
 		myLevelFailedSprite->Render({ 0.f, 0.f });
 		if (myHasStartedMusicBetweenLevels == false)
 		{
-			int levelMusic = myLastLevel + 1;
-			std::string musicEvent("Play_ElevatorToLevel" + std::to_string(levelMusic));
-			myHasStartedMusicBetweenLevels = true;
-			Prism::Audio::AudioInterface::GetInstance()->PostEvent(musicEvent.c_str(), 0);
+			//int levelMusic = myLastLevel + 1;
+			//std::string musicEvent("Play_ElevatorToLevel" + std::to_string(levelMusic));
+			//myHasStartedMusicBetweenLevels = true;
+			//Prism::Audio::AudioInterface::GetInstance()->PostEvent(musicEvent.c_str(), 0);
 		}
 
 		if (myCanStartNextLevel == true)
