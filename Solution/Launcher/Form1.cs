@@ -109,20 +109,7 @@ namespace Launcher
 				}
 			}
 
-			myServer.StartInfo.FileName = myServerPath;
-			myServer.StartInfo.WorkingDirectory = "bin\\";
-			myServer.StartInfo.WindowStyle = ProcessWindowStyle.Minimized;
-			if (File.Exists("bin\\" + myServerPath) == true)
-			{
-				if (IsProcessOpen(myServer.StartInfo.FileName) == false)
-				{
-					myServer.Start();
-				}
-			}
-			else
-			{
-				MessageBox.Show("Could not find " + myServerPath + ".");
-			}
+			
 		}
 
 		public bool IsProcessOpen(string name)
@@ -145,7 +132,23 @@ namespace Launcher
 				WriteMSAAToFile(writer);
 				WriterWindowedToFile(writer);
 				WriteQualityToFile(writer);
+                WriteJoinServer(writer, 0);
 			}
+
+            myServer.StartInfo.FileName = myServerPath;
+            myServer.StartInfo.WorkingDirectory = "bin\\";
+            myServer.StartInfo.WindowStyle = ProcessWindowStyle.Minimized;
+            if (File.Exists("bin\\" + myServerPath) == true)
+            {
+                if (IsProcessOpen(myServer.StartInfo.FileName) == false)
+                {
+                    myServer.Start();
+                }
+            }
+            else
+            {
+                MessageBox.Show("Could not find " + myServerPath + ".");
+            }
 
 			ProcessStartInfo processInfo = new ProcessStartInfo();
 			processInfo.WorkingDirectory = "bin\\";
@@ -172,6 +175,11 @@ namespace Launcher
 				MessageBox.Show("Could not find " + myExePath + ".");
 			}
 		}
+
+        private void WriteJoinServer(BinaryWriter writer, Int32 aFlag)
+        {
+            writer.Write(aFlag);
+        }
 
 		private void WriteQualityToFile(BinaryWriter writer)
 		{
@@ -298,5 +306,42 @@ namespace Launcher
 			//    resolutionDropdown.Enabled = false;
 			//}
 		}
+
+        private void JoinMultiplayer_Click(object sender, EventArgs e)
+        {
+            using (BinaryWriter writer = new BinaryWriter(File.Open(myConfigPath, FileMode.Create)))
+            {
+                WriteResolutionToFile(writer);
+                WriteMSAAToFile(writer);
+                WriterWindowedToFile(writer);
+                WriteQualityToFile(writer);
+                WriteJoinServer(writer, 1);
+            }
+
+            ProcessStartInfo processInfo = new ProcessStartInfo();
+            processInfo.WorkingDirectory = "bin\\";
+            processInfo.FileName = myExePath;
+
+            if (File.Exists("bin\\" + myExePath) == true)
+            {
+                if (IsProcessOpen("Application_Release") == true)
+                {
+                    MessageBox.Show("A instance of the game " + myGameName + " is already running.");
+                }
+                else
+                {
+                    myGame.StartInfo.FileName = myExePath;
+                    myGame.StartInfo.WorkingDirectory = "bin\\";
+                    myGame.Start();
+                    myGame.WaitForInputIdle();
+
+                    Application.Exit();
+                }
+            }
+            else
+            {
+                MessageBox.Show("Could not find " + myExePath + ".");
+            }
+        }
 	}
 }
