@@ -128,6 +128,7 @@ void InputComponent::Update(float aDelta)
 		diePosition.y -= 1.f;
 		myEyeOrientation.SetPos(diePosition);
 		myOrientation = myEyeOrientation;
+		myPrevOrientation = myEyeOrientation;
 
 		SharedNetworkManager::GetInstance()->AddMessage(NetMessagePosition(diePosition, myCursorPosition.x, myEntity.GetGID()));
 	}
