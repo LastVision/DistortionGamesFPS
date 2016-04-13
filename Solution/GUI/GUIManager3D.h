@@ -30,7 +30,12 @@ namespace GUI
 	private:
 		void operator=(GUIManager3D&) = delete;
 
-		float myShowGUITutorial;
+		float myShowFirstTutorial;
+		float myShowSecondTutorial;
+		float myShowThirdTutorial;
+
+		bool myIsFirstLevel;
+
 		CU::Matrix44<float> myWristOrientation;
 		//GUIBone myGUIBone;
 		CU::Matrix44<float> myHealthOrientation;
@@ -51,7 +56,7 @@ namespace GUI
 		const int& myGrenadeLauncherAmmoTotal;
 
 		Prism::Bar3D* myHealthIcon;
-		Prism::Bar3D* myPistolIcon;
+		Prism::Bar3D* myGUITutorialHealthIcon;
 		Prism::Bar3D* myShotgunIcon;
 		Prism::Bar3D* myGrenadeLauncherIcon;
 
@@ -62,6 +67,9 @@ namespace GUI
 		int myMaxHealth;
 
 		float myLowHealthTimer;
+
+		bool myRenderAmmo;
+		bool myRenderAmmoTotal;
 	};
 
 }
