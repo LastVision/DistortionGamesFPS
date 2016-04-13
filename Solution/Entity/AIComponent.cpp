@@ -92,14 +92,17 @@ void AIComponent::Update(float aDelta)
 		
 		if (myTargetPlayer != nullptr)
 		{
+			myPreviousTargetPosition = myTargetPlayer->GetOrientation().GetPos();
+
 			if (myEntity.GetState() == eEntityState::ATTACK && myAttackAnimationTimeCurrent > 0.f)
 			{
-				Move(aDelta, nullptr);
+				SetOrientation(myTargetPlayer->GetOrientation().GetPos() - myOrientation.GetPos(), aDelta);
 			}
 			else
 			{
 				Move(aDelta, myTargetPlayer);
 			}
+
 			if (myShootTimer < 0.f)
 			{
 				Shoot(myTargetPlayer);
@@ -110,11 +113,21 @@ void AIComponent::Update(float aDelta)
 		{
 			if (myEntity.GetState() == eEntityState::ATTACK && myAttackAnimationTimeCurrent > 0.f)
 			{
-				Move(aDelta, nullptr);
+				if (myDefendTarget != nullptr)
+				{
+					SetOrientation(myDefendTarget->GetOrientation().GetPos() - myOrientation.GetPos(), aDelta);
+				}
 			}
 			else
 			{
-				Move(aDelta, myDefendTarget);
+				if (myDefendTarget == nullptr && myPreviousTargetPosition != CU::Vector3<float>())
+				{
+					SetOrientation(myPreviousTargetPosition - myOrientation.GetPos(), aDelta);
+				}
+				else
+				{
+					Move(aDelta, myDefendTarget);
+				}
 			}
 		}
 		
@@ -218,7 +231,7 @@ void AIComponent::SetOrientation(const CU::Vector3<float>& aLookInDirection, flo
 		SharedNetworkManager::GetInstance()->AddMessage(NetMessagePosition(pos, angle, myEntity.GetGID()));
 		SharedNetworkManager::GetInstance()->AddMessage(NetMessagePosition(pos, angle, myEntity.GetGID()));
 	}
-	else if (hasMoved == true || hasRotated == true)
+	else// if (hasMoved == true || hasRotated == true)
 	{
 		SharedNetworkManager::GetInstance()->AddMessage(NetMessagePosition(pos, angle, myEntity.GetGID()));
 	}

@@ -50,6 +50,8 @@ private:
 	Entity* myDefendTarget;
 	Entity* myTargetPlayer;
 
+	CU::Vector3<float> myPreviousTargetPosition;
+
 	bool myHasJustSpawned;
 };
 

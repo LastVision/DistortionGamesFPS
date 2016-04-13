@@ -1,6 +1,7 @@
 #include "stdafx.h"
 
 #include "AIComponent.h"
+#include "HealthComponent.h"
 #include <NetMessageLevelComplete.h>
 #include "PollingStation.h"
 #include <SharedNetworkManager.h>
@@ -86,8 +87,10 @@ Entity* PollingStation::FindClosestPlayer(const CU::Vector3<float>& aPosition, f
 
 	for each (Entity* player in myPlayers)
 	{
+		bool alive = player->GetComponent<HealthComponent>()->GetCurrentHealth() > 0;
+
 		float distance2 = CU::Length2(player->GetOrientation().GetPos() - aPosition);
-		if (distance2 < aMaxRange * aMaxRange && distance2 < currentMinDistance2)
+		if (alive && distance2 < aMaxRange * aMaxRange && distance2 < currentMinDistance2)
 		{
 			currentMinDistance2 = distance2;
 			toReturn = player;
