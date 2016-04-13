@@ -351,10 +351,10 @@ void InGameState::ReceiveNetworkMessage(const NetMessageLoadLevel& aMessage, con
 		return;
 	}
 	//DL_ASSERT_EXP(myLevel == nullptr, "Level has to be nullptr here");
-	int levelMusic = myLastLevel + 1;
-	std::string musicEvent("Stop_ElevatorToLevel" + std::to_string(levelMusic));
-	myHasStartedMusicBetweenLevels = true;
-	Prism::Audio::AudioInterface::GetInstance()->PostEvent(musicEvent.c_str(), 0);
+	//int levelMusic = myLastLevel + 1;
+	//std::string musicEvent("Stop_ElevatorToLevel" + std::to_string(levelMusic));
+	//myHasStartedMusicBetweenLevels = true;
+	//Prism::Audio::AudioInterface::GetInstance()->PostEvent(musicEvent.c_str(), 0);
 
 	myLevelToLoad = aMessage.myLevelID;
 	myShouldShowLoadingScreen = true;
