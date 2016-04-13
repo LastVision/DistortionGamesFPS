@@ -16,3 +16,6 @@ float GC::SpawnIntervalMultiplier[3];
 volatile bool GC::PlayerAlive = true;
 
 volatile bool GC::PlayerShouldPlaySprintErrorSound = false;
+
+volatile bool GC::PlayerShouldPlaySprintSound = false;
+volatile bool GC::PlayerShouldStopSprintSound = false;

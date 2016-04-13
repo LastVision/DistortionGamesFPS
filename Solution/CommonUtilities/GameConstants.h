@@ -17,4 +17,8 @@ public:
 	static volatile bool PlayerAlive;
 
 	static volatile bool PlayerShouldPlaySprintErrorSound;
+
+	static volatile bool PlayerShouldPlaySprintSound;
+	static volatile bool PlayerShouldStopSprintSound;
+
 };
