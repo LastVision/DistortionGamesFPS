@@ -286,7 +286,9 @@ void ClientNetworkManager::ReceiveNetworkMessage(const NetMessageConnectReply& a
 	else
 	{
 		myIsOnline = false;
-		DL_ASSERT("Failed to connect");
+		//DL_ASSERT("Failed to connect");
+		DL_MESSAGE_BOX("Failed to connect", "Failed", MB_ICONERROR);
+		bool removeLater = true;
 	}
 }
 
