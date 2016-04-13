@@ -193,7 +193,7 @@ namespace Prism
 
 
 		ID3D11DeviceContext* context = Engine::GetInstance()->GetContex();
-		float clearcolor[4] = { 0.f, 0.f, 0.f, 1 };
+		float clearcolor[4] = { 0.3f, 0.3f, 0.3f, 1 };
 
 		context->RSSetViewports(1, cubemapTexture->GetViewPort());
 		aScene->SetCamera(*myCamera);

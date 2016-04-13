@@ -48,5 +48,8 @@ private:
 
 	float myRefreshPlayerListTimer;
 	float myWaitingForConnectTimer;
+
+	int myRadioLevel;
+	int myRadioDifficulty;
 };
 

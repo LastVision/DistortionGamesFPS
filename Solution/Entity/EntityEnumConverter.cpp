@@ -42,6 +42,10 @@ namespace EntityEnumConverter
 		{
 			return eEntityType::SPAWNPOINT;
 		}
+		else if (aType == "visualexplosion")
+		{
+			return eEntityType::VISUAL_EXPLOSION;
+		}
 
 		DL_ASSERT("The " + aType + " entity type is not supported, please tell Daniel about it.");
 		return eEntityType::_COUNT;

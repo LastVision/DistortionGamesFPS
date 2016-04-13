@@ -64,6 +64,7 @@
 #include <Room.h>
 #include <LevelCompleteMessage.h>
 #include <SoundComponent.h>
+#include <VisualExplosionComponent.h>
 
 ClientLevel::ClientLevel(GUI::Cursor* aCursor, eStateStatus& aStateStatus, int aLevelID)
 	: myInstanceOrientations(16)
@@ -80,6 +81,7 @@ ClientLevel::ClientLevel(GUI::Cursor* aCursor, eStateStatus& aStateStatus, int a
 	, mySFXText(nullptr)
 	, myMusicText(nullptr)
 	, myVoiceText(nullptr)
+	, myVisualExplosion(nullptr)
 	, mySfxVolume(0)
 	, myMusicVolume(0)
 	, myVoiceVolume(0)
@@ -190,6 +192,8 @@ ClientLevel::~ClientLevel()
 void ClientLevel::Init(const std::string& aWeaponSettingsPath)
 {
 	CreatePlayers();
+	myVisualExplosion = EntityFactory::CreateEntity(32145679, eEntityType::VISUAL_EXPLOSION, myScene, true, CU::Vector3<float>());
+	myVisualExplosion->AddToScene();
 
 	Prism::ModelLoader::GetInstance()->Pause();
 	myDeferredRenderer = new Prism::DeferredRenderer();
@@ -280,7 +284,7 @@ void ClientLevel::Update(const float aDeltaTime, bool aLoadingScreen)
 		}
 	}
 
-	
+	myVisualExplosion->Update(aDeltaTime);
 	myEmitterManager->UpdateEmitters(aDeltaTime, CU::Matrix44f());
 	myTextManager->Update(aDeltaTime);
 	
@@ -539,6 +543,7 @@ void ClientLevel::ReceiveNetworkMessage(const NetMessageExplosion& aMessage, con
 	ClientProjectileManager::GetInstance()->RequestExplosion(aMessage.myPosition, aMessage.myGID);
 	ClientProjectileManager::GetInstance()->KillGrenade(aMessage.myGID - 1);
 	PostMaster::GetInstance()->SendMessage(EmitterMessage("Explosion", aMessage.myPosition, true));
+	myVisualExplosion->GetComponent<VisualExplosionComponent>()->SetPosition(aMessage.myPosition);
 }
 
 void ClientLevel::ReceiveNetworkMessage(const NetMessageRayCastRequest& aMessage, const sockaddr_in&)

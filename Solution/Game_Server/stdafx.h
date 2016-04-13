@@ -1,6 +1,7 @@
 #pragma once
 
 #include <Defines.h>
+#include <GameConstants.h>
 #include <GrowingArray.h>
 #include <StaticArray.h>
 #include <MemoryMacros.h>

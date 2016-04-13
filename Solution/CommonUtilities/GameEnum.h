@@ -67,6 +67,7 @@ enum eEntityType
 	EXPLOSION = 32,
 	BULLET = 64,
 	SPAWNPOINT = 128,
+	VISUAL_EXPLOSION = 256,
 	_COUNT,
 };
 
@@ -198,6 +199,8 @@ enum class eComponentType
 	BULLET,
 	SPAWNPOINT,
 	SOUND,
+	ROTATION,
+	VISUAL_EXPLOSION,
 	_COUNT,
 };
 

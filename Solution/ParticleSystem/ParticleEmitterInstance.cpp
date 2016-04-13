@@ -203,6 +203,12 @@ namespace Prism
 		{
 			toReturn.x = CU::Math::RandomRange(-toReturn.x, toReturn.x);
 		}
+
+		if (aZVariation >= 90.f && aZVariation <= 270.f)
+		{
+			toReturn.z = CU::Math::RandomRange(-toReturn.z, toReturn.z);
+		}
+
 		toReturn.y = CU::Math::RandomRange(-toReturn.y, toReturn.y);
 
 		return toReturn;
@@ -372,9 +378,9 @@ namespace Prism
 			gfxParticle.myPosition.z += (logicParticle.myDirection.z * particleData.mySpeed) * aDeltaTime;
 
 
-			if (gfxParticle.mySize >= 0.f)
+			if (gfxParticle.mySize > 0.000000f)
 			{
-				gfxParticle.mySize += particleData.mySizeDelta * aDeltaTime;
+				gfxParticle.mySize += (particleData.mySizeDelta / myParticleEmitterData->myData.myParticleLifeTime) * aDeltaTime;
 			}
 
 			gfxParticle.myAlpha += particleData.myAlphaDelta * aDeltaTime;
@@ -450,10 +456,10 @@ namespace Prism
 
 			gfxParticle.myAlpha = myParticleEmitterData->myData.myStartAlpha;
 
-			myParticleScaling = CU::Math::RandomRange(myParticleEmitterData->myData.myMinStartSize
+			gfxParticle.mySize = CU::Math::RandomRange(myParticleEmitterData->myData.myMinStartSize
 				, myParticleEmitterData->myData.myMaxStartSize);
 
-			gfxParticle.mySize = myParticleScaling;
+			//gfxParticle.mySize = myParticleScaling;
 
 			logicParticle.myIsAlive = true;
 
@@ -479,9 +485,9 @@ namespace Prism
 
 		CU::Vector3<float> toReturn;
 
-		int a = static_cast<int>((4 * M_PI_2)) * 100;
+		int a = static_cast<int>((4 * M_PI_2)) * 1000;
 
-		float angle = static_cast<float>(rand() % a) / 100.f;
+		float angle = static_cast<float>(rand() % a) / 1000.f;
 
 		toReturn.x = radius * cosf(angle);
 		toReturn.y = 0.f;

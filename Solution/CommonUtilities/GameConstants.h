@@ -9,4 +9,8 @@ public:
 
 	static bool EnableCheapAmbient;
 	static bool EnableVSync;
+
+	static int Difficulty;
+	static float DamageMultiplier[3];
+	static float SpawnIntervalMultiplier[3];
 };

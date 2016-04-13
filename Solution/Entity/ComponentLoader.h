@@ -15,6 +15,8 @@ struct TriggerComponentData;
 struct UpgradeComponentData;
 struct BulletComponentData;
 struct SoundComponentData;
+struct RotationComponentData;
+struct VisualExplosionComponentData;
 class XMLReader;
 
 namespace tinyxml2
@@ -40,6 +42,8 @@ public:
 	void LoadUpgradeComponent(XMLReader& aDocument, tinyxml2::XMLElement* aSourceElement, UpgradeComponentData& aOutputData);
 	void LoadBulletComponent(XMLReader& aDocument, tinyxml2::XMLElement* aSourceElement, BulletComponentData& aOutputData);
 	void LoadSoundComponent(XMLReader& aDocument, tinyxml2::XMLElement* aSourceElement, SoundComponentData& aOutputData);
+	void LoadRotationComponent(XMLReader& aDocument, tinyxml2::XMLElement* aSourceElement, RotationComponentData& aOutputData);
+	void LoadVisualExplosionComponent(XMLReader& aDocument, tinyxml2::XMLElement* aSourceElement, VisualExplosionComponentData& aOutputData);
 private:
 
 	eObjectRoomType LoadRoomType(XMLReader& aDocument, tinyxml2::XMLElement* aSourceElement);
