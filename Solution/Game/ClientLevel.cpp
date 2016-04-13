@@ -785,7 +785,8 @@ void ClientLevel::HandleOtherClientRayCastPistol(PhysicsComponent* aComponent, c
 		}
 		else
 		{
-			PostMaster::GetInstance()->SendMessage(EmitterMessage("OnEnvHit", aHitPosition, aHitNormal));
+			PostMaster::GetInstance()->SendMessage(EmitterMessage("OnEnvHit", aHitPosition));
+			PostMaster::GetInstance()->SendMessage(EmitterMessage("OnEnvHit_2", aHitPosition, aHitNormal));
 		}
 	}
 }
@@ -806,7 +807,8 @@ void ClientLevel::HandleOtherClientRayCastShotgun(PhysicsComponent* aComponent, 
 		}
 		else
 		{
-			PostMaster::GetInstance()->SendMessage(EmitterMessage("OnEnvHit", aHitPosition, aHitNormal));
+			PostMaster::GetInstance()->SendMessage(EmitterMessage("OnEnvHit", aHitPosition));
+			PostMaster::GetInstance()->SendMessage(EmitterMessage("OnEnvHit_2", aHitPosition, aHitNormal));
 		}
 	}
 }
