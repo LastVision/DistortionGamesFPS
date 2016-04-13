@@ -198,16 +198,16 @@ void MissionManager::LoadMissions(const std::string& aMissionXMLPath)
 			myMissions[missionId]->AddEndEvent(CreateActionEvent(eventElement, &reader));
 		}
 
-		if (myMissions[missionId]->GetMissionType() == eMissionType::KILL_X)
-		{
-			ActionEvent powerDownSound;
-			powerDownSound.myType = eActionEventType::TEXT;
-			powerDownSound.myText = "";
-			powerDownSound.mySoundEvent = "Play_PowerDown";
-			powerDownSound.myTimeBeforeStarting = 0.f;
-			myMissions[missionId]->AddEndEvent(powerDownSound);
-			
-		}
+		//if (myMissions[missionId]->GetMissionType() == eMissionType::KILL_X)
+		//{
+		//	ActionEvent powerDownSound;
+		//	powerDownSound.myType = eActionEventType::TEXT;
+		//	powerDownSound.myText = "";
+		//	powerDownSound.mySoundEvent = "Play_PowerDown";
+		//	powerDownSound.myTimeBeforeStarting = 0.f;
+		//	myMissions[missionId]->AddEndEvent(powerDownSound);
+		//	
+		//}
 	}
 
 	reader.CloseDocument();

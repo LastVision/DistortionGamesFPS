@@ -30,7 +30,7 @@
 #include "PhysicsComponentData.h"
 #include "../Entity/InputComponentData.h"
 #include "../Network/SharedNetworkManager.h"
-#include "../Network/NetMessageEntityState.h";
+#include "../Network/NetMessageEntityState.h"
 #include "wavefront.h"
 #include "../InputWrapper/InputWrapper.h"
 #define MATERIAL_ID			0x01

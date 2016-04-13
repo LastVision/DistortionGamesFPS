@@ -201,11 +201,13 @@ void ServerLevelFactory::LoadTriggers(XMLReader& aReader, tinyxml2::XMLElement* 
 
 		if (newEntity->GetComponent<TriggerComponent>()->IsClientSide() == false)
 		{
-			//if (newEntity->GetComponent<TriggerComponent>()->GetTriggerType() == eTriggerType::HEALTH_PACK && IsCoop == true)
-			//{
-			//	SAFE_DELETE(newEntity);
-			//	continue;
-			//}
+			bool isCoOp = ServerNetworkManager::GetInstance()->GetClients().Size() > 1;
+
+			if (newEntity->GetComponent<TriggerComponent>()->GetTriggerType() == eTriggerType::HEALTH_PACK && isCoOp == true)
+			{
+				SAFE_DELETE(newEntity);
+				continue;
+			}
 
 			newEntity->Reset();
 			myCurrentLevel->AddEntity(newEntity);
