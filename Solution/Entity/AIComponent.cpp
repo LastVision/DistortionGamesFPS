@@ -159,6 +159,10 @@ void AIComponent::Move(float aDelta, Entity* aClosestPlayer)
 		{
 			myBehavior->SetTarget(aClosestPlayer->GetOrientation().GetPos());
 		}
+		else
+		{
+			myBehavior->SetTarget(myEntity.GetOrientation().GetPos());
+		}
 
 		CU::Vector3<float> movement(myBehavior->Update(aDelta));
 
@@ -227,7 +231,7 @@ void AIComponent::Shoot(Entity* aClosestPlayer)
 	myEntity.SetState(eEntityState::ATTACK);
 	SharedNetworkManager::GetInstance()->AddMessage<NetMessageEntityState>(NetMessageEntityState(myEntity.GetState(), myEntity.GetGID()));
 	Entity* requestedBullet = SharedProjectileManager::GetInstance()->RequestBullet(myBulletData);
-	myAttackAnimationTimeCurrent = myData.myAttackAnimationTime;
+	myAttackAnimationTimeCurrent = 0.5f;
 	requestedBullet->GetComponent<BulletComponent>()->Activate(myEntity.GetOrientation());
 	SharedNetworkManager::GetInstance()->AddMessage<NetMessageEnemyShooting>(NetMessageEnemyShooting(requestedBullet->GetGID(), myEntity.GetGID()));
 }
