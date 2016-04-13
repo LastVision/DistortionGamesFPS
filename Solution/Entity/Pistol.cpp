@@ -182,7 +182,8 @@ void Pistol::HandleRaycast(PhysicsComponent* aComponent, const CU::Vector3<float
 			}
 			else
 			{
-				PostMaster::GetInstance()->SendMessage(EmitterMessage("OnEnvHit", aHitPosition, aHitNormal));
+				PostMaster::GetInstance()->SendMessage(EmitterMessage("OnEnvHit", aHitPosition));
+				PostMaster::GetInstance()->SendMessage(EmitterMessage("OnEnvHit_2", aHitPosition, aHitNormal));
 			}
 
 			//aComponent->GetEntity().SendNote<DamageNote>(DamageNote(myDamage));
