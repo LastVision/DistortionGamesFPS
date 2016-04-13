@@ -18,7 +18,7 @@
 
 ServerInGameState::ServerInGameState(int aLevelID, unsigned int aLevelHashValue)
 	: myLevelID(aLevelID)
-	, myState(eInGameStates::LEVEL_LOAD)
+	, myState(eServerInGameState::LEVEL_LOAD)
 	, myRespondedClients(16)
 	, myLevelHashValue(aLevelHashValue)
 	, myGameComplete(false)
@@ -64,22 +64,22 @@ const eStateStatus ServerInGameState::Update(const float aDeltaTime)
 {
 	switch (myState)
 	{
-	case eInGameStates::LEVEL_UPDATE:
+	case eServerInGameState::LEVEL_UPDATE:
 		ServerNetworkManager::GetInstance()->StopPing(false);
 		LevelUpdate(aDeltaTime);
 		break;
-	case eInGameStates::LEVEL_COMPLETE:
+	case eServerInGameState::LEVEL_COMPLETE:
 		// only waiting for messages from clients
 		break;
-	case eInGameStates::LEVEL_COMPLETE_ALL_CLIENTS_RESPONDED:
+	case eServerInGameState::LEVEL_COMPLETE_ALL_CLIENTS_RESPONDED:
 		// only waiting for messages from clients
 		break;
-	case eInGameStates::LEVEL_LOAD:
+	case eServerInGameState::LEVEL_LOAD:
 		if (Prism::PhysicsInterface::GetInstance()->GetInitDone() 
 			&& ServerNetworkManager::GetInstance()->ListContainsAllClients(myRespondedClients) == true)
 		{
 			myRespondedClients.RemoveAll();
-			myState = eInGameStates::LEVEL_UPDATE;
+			myState = eServerInGameState::LEVEL_UPDATE;
 			ServerNetworkManager::GetInstance()->AddMessage(NetMessageAllClientsComplete(NetMessageAllClientsComplete::eType::LEVEL_LOAD));
 		}
 		// only waiting for messages from clients
@@ -103,7 +103,7 @@ void ServerInGameState::ReceiveNetworkMessage(const NetMessageLevelComplete& aMe
 	if (ServerNetworkManager::GetInstance()->ListContainsAllClients(myRespondedClients) == true)
 	{
 		myRespondedClients.RemoveAll();
-		myState = eInGameStates::LEVEL_COMPLETE_ALL_CLIENTS_RESPONDED;
+		myState = eServerInGameState::LEVEL_COMPLETE_ALL_CLIENTS_RESPONDED;
 		SET_RUNTIME(false);
 		SAFE_DELETE(myLevel);
 		ServerNetworkManager::GetInstance()->AddMessage(NetMessageAllClientsComplete(NetMessageAllClientsComplete::eType::LEVEL_COMPLETE));
@@ -117,11 +117,11 @@ void ServerInGameState::ReceiveNetworkMessage(const NetMessageLevelComplete& aMe
 
 void ServerInGameState::ReceiveNetworkMessage(const NetMessageRequestStartLevel&, const sockaddr_in&)
 {
-	//DL_ASSERT_EXP(myState == eInGameStates::LEVEL_COMPLETE_ALL_CLIENTS_RESPONDED, "Wrong state for Request Start Level message.");
+	//DL_ASSERT_EXP(myState == eServerInGameState::LEVEL_COMPLETE_ALL_CLIENTS_RESPONDED, "Wrong state for Request Start Level message.");
 	//Can't assert and support space pressed twice at the same time.
-	if (myState == eInGameStates::LEVEL_COMPLETE_ALL_CLIENTS_RESPONDED)
+	if (myState == eServerInGameState::LEVEL_COMPLETE_ALL_CLIENTS_RESPONDED)
 	{
-		myState = eInGameStates::LEVEL_LOAD;
+		myState = eServerInGameState::LEVEL_LOAD;
 		
 		ServerNetworkManager::GetInstance()->AddMessage(NetMessageLoadLevel(myLevelID, myLevelHashValue));
 	}
@@ -130,7 +130,7 @@ void ServerInGameState::ReceiveNetworkMessage(const NetMessageRequestStartLevel&
 void ServerInGameState::ReceiveNetworkMessage(const NetMessageLevelLoaded& aMessage, const sockaddr_in&)
 {
 
-	if (myState == eInGameStates::LEVEL_LOAD && myRespondedClients.Find(aMessage.mySenderID) == myRespondedClients.FoundNone)
+	if (myState == eServerInGameState::LEVEL_LOAD && myRespondedClients.Find(aMessage.mySenderID) == myRespondedClients.FoundNone)
 	{
 		myRespondedClients.Add(aMessage.mySenderID);
 	}
@@ -156,7 +156,7 @@ void ServerInGameState::LevelUpdate(float aDeltaTime)
 			myGameComplete = true;
 			myStateStatus = eStateStatus::POP_MAIN_STATE;
 		}
-		myState = eInGameStates::LEVEL_COMPLETE;
+		myState = eServerInGameState::LEVEL_COMPLETE;
 		myLevelID = nextLevel;
 		myRespondedClients.RemoveAll();
 		ServerNetworkManager::GetInstance()->AddMessage(NetMessageLevelComplete(false));
