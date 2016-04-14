@@ -67,7 +67,7 @@ FirstPersonRenderComponent::FirstPersonRenderComponent(Entity& aEntity, Prism::S
 	myMarker = Prism::ModelLoader::GetInstance()->LoadSprite("Data/Resource/Texture/UI/T_marker.dds", size, size * 0.5f);
 	myIsDeadScreen = Prism::ModelLoader::GetInstance()->LoadSprite("Data/Resource/Texture/UI/T_dead_indicator.dds", damageSize, damageSize * 0.5f);
 
-	Prism::ModelProxy* model = Prism::ModelLoader::GetInstance()->LoadModelAnimated("Data/Resource/Model/First_person/Pistol/SK_arm_pistol_idle.fbx", "Data/Resource/Shader/S_effect_pbl_animated.fx");
+	Prism::ModelProxy* model = Prism::ModelLoader::GetInstance()->LoadModelAnimated("Data/Resource/Model/First_person/Pistol/SK_arm_pistol_static.fbx", "Data/Resource/Shader/S_effect_pbl_animated.fx");
 	myModel = new Prism::Instance(*model, myInputComponentEyeOrientation, shouldUseSpecialFoV);
 	//aScene->AddInstance(myModel, eObjectRoomType::ALWAYS_RENDER);
 	myScene->SetArmInstance(myModel);
@@ -175,8 +175,7 @@ FirstPersonRenderComponent::~FirstPersonRenderComponent()
 	SAFE_DELETE(myIsDeadScreen);
 	myCoOpCircles.RemoveAll();
 	myCoOpRespawns.RemoveAll();
-
-
+	
 }
 
 void FirstPersonRenderComponent::Init()
