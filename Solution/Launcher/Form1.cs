@@ -317,6 +317,20 @@ namespace Launcher
                 WriteQualityToFile(writer);
                 WriteJoinServer(writer, 1);
             }
+            myServer.StartInfo.FileName = myServerPath;
+            myServer.StartInfo.WorkingDirectory = "bin\\";
+            myServer.StartInfo.WindowStyle = ProcessWindowStyle.Minimized;
+            if (File.Exists("bin\\" + myServerPath) == true)
+            {
+                if (IsProcessOpen(myServer.StartInfo.FileName) == false)
+                {
+                    myServer.Start();
+                }
+            }
+            else
+            {
+                MessageBox.Show("Could not find " + myServerPath + ".");
+            }
 
             ProcessStartInfo processInfo = new ProcessStartInfo();
             processInfo.WorkingDirectory = "bin\\";

@@ -14,6 +14,8 @@
 #include <PostMaster.h>
 #include <PhysicsInterface.h>
 #include "PhysicsComponent.h"
+#include <PostMaster.h>
+#include <PrintTextMessage.h>
 #include <Scene.h>
 #include "Shotgun.h"
 #include <SharedNetworkManager.h>
@@ -108,6 +110,14 @@ bool Shotgun::Shoot(const CU::Matrix44<float>& aOrientation)
 	{
 		Prism::Audio::AudioInterface::GetInstance()->PostEvent("Play_NoAmmo", 0);
 		myShootTimer = myShootTime;
+		if (myAmmoTotal == 0)
+		{
+			PostMaster::GetInstance()->SendMessage(PrintTextMessage("No ammo", 1.f, { 0.7f, 0.2f, 0.2f, 1.f }));
+		}
+		else
+		{
+			PostMaster::GetInstance()->SendMessage(PrintTextMessage("Clip empty", 1.f, { 0.7f, 0.2f, 0.2f, 1.f }));
+		}
 	}
 	return false;
 }

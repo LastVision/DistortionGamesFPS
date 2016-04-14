@@ -195,8 +195,8 @@ namespace GUI
 			else if (myShowThirdTutorial < SHOWTUTORIALTIME)
 			{
 				myRenderAmmoTotal = true;
-				myGUITutorialAmmoTotal->GetEffect()->SetGradiantValue(fminf(fminf(1.f, myShowThirdTutorial), SHOWTUTORIALTIME - myShowThirdTutorial));
-				myGUITutorialAmmoTotal->Render(*myScene->GetCamera(), myWristOrientation, { 1.f, 1.f, 1.f, 1.f });
+				//myGUITutorialAmmoTotal->GetEffect()->SetGradiantValue(fminf(fminf(1.f, myShowThirdTutorial), SHOWTUTORIALTIME - myShowThirdTutorial));
+				//myGUITutorialAmmoTotal->Render(*myScene->GetCamera(), myWristOrientation, { 1.f, 1.f, 1.f, 1.f });
 			}
 		}
 
