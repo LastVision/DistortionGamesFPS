@@ -35,6 +35,10 @@
 #include "../InputWrapper/InputWrapper.h"
 #define MATERIAL_ID			0x01
 
+#ifndef RELEASE_BUILD
+#define GENERATE_COW
+#endif
+
 namespace Prism
 {
 	PhysicsManager::PhysicsManager(std::function<void(PhysicsComponent*, PhysicsComponent*, bool)> anOnTriggerCallback, bool aIsServer)
