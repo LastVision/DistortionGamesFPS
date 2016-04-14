@@ -19,6 +19,7 @@ CompleteGameState::CompleteGameState()
 	, myWaitTimer(4.f)
 {
 	ClientNetworkManager::GetInstance()->AddMessage(NetMessageDisconnect(ClientNetworkManager::GetInstance()->GetGID()));
+
 }
 
 
@@ -42,11 +43,16 @@ void CompleteGameState::InitState(StateStackProxy* aStateStackProxy, GUI::Cursor
 	OnResize(windowSize.x, windowSize.y);
 
 	PostMaster::GetInstance()->SendMessage(FadeMessage(1.f / 3.f));
+
+	Prism::Audio::AudioInterface::GetInstance()->PostEvent("PlayAll", 0);
+	Prism::Audio::AudioInterface::GetInstance()->PostEvent("FadeInFirstLayer", 0);
+	Prism::Audio::AudioInterface::GetInstance()->PostEvent("FadeInSecondLayer", 0);
 }
 
 void CompleteGameState::EndState()
 {
 	myIsActiveState = false;
+	Prism::Audio::AudioInterface::GetInstance()->PostEvent("StopBackground", 0);
 }
 
 void CompleteGameState::OnResize(int aWidth, int aHeight)
@@ -67,6 +73,8 @@ const eStateStatus CompleteGameState::Update(const float& aDeltaTime)
 		|| CU::InputWrapper::GetInstance()->MouseDown(1) == true
 		|| CU::InputWrapper::GetInstance()->MouseDown(2) == true))
 	{
+		Prism::Audio::AudioInterface::GetInstance()->PostEvent("StopFirstLayer", 0);
+		Prism::Audio::AudioInterface::GetInstance()->PostEvent("StopSecondLayer", 0);
 		SET_RUNTIME(false);
 		myStateStack->PushSubGameState(new CreditMenuState());
 	}

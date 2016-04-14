@@ -455,6 +455,7 @@ void InGameState::ReceiveNetworkMessage(const NetMessageAllClientsComplete& aMes
 
 void InGameState::ReceiveNetworkMessage(const NetMessageLevelComplete& aMsg, const sockaddr_in&)
 {
+	SAFE_DELETE(myLevel);
 	if (myLastLevel == 3 && aMsg.myAllPlayersDied == false)
 	{
 		myStateStack->PushSubGameState(new CompleteGameState());
@@ -464,7 +465,6 @@ void InGameState::ReceiveNetworkMessage(const NetMessageLevelComplete& aMsg, con
 		ClientNetworkManager::GetInstance()->AddMessage(NetMessageLevelComplete(aMsg.myAllPlayersDied));
 	}
 	ClientNetworkManager::GetInstance()->AllowSendWithoutSubscriber(true);
-	SAFE_DELETE(myLevel);
 	myHasStartedMusicBetweenLevels = false;
 
 	if (aMsg.myAllPlayersDied == true)
