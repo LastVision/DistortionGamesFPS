@@ -431,7 +431,16 @@ void FirstPersonRenderComponent::Render(Prism::Texture* aArmDepthTexture, bool a
 		{
 			CU::Matrix44<float> renderPos;
 			CU::Vector3<float> tempPos(myCoOpCircles[i].myPosition);
-			tempPos.y += 2.f;
+
+			if (myCoOpCircles[i].myLifePercentage > 0.f)
+			{
+				tempPos.y += 2.2f;
+			}
+			else
+			{
+				tempPos.y += 0.5f;
+			}
+
 			float toBuddy = CU::Dot(tempPos - myInputComponentEyeOrientation.GetPos(), myInputComponentEyeOrientation.GetForward());
 			if (toBuddy < 0.f)
 			{
@@ -455,15 +464,12 @@ void FirstPersonRenderComponent::Render(Prism::Texture* aArmDepthTexture, bool a
 			newRenderPos.y = fmaxf(0.f, fminf(newRenderPos.y, windowSize.y));
 
 			float color = myCoOpCircles[i].myLifePercentage;
+			
+			myCoOpSprite->Render({ newRenderPos.x, newRenderPos.y }, { 1.f, 1.f }, { 1.f - color, color, color, 1.f });
 
 			if (myCoOpRespawns.Size() > 0)
 			{
-				myCoOpSprite->Render({ newRenderPos.x, newRenderPos.y - 0.5f }, { 1.f, 1.f }, { 1.f - color, color, color, 1.f });
-				Prism::Engine::GetInstance()->PrintText(myCoOpRespawns[i].myCurrentValue, { newRenderPos.x, newRenderPos.y - 0.5f }, Prism::eTextType::RELEASE_TEXT);
-			}
-			else
-			{
-				myCoOpSprite->Render({ newRenderPos.x, newRenderPos.y }, { 1.f, 1.f }, { 1.f - color, color, color, 1.f });
+				Prism::Engine::GetInstance()->PrintText(myCoOpRespawns[i].myCurrentValue, { newRenderPos.x, newRenderPos.y }, Prism::eTextType::RELEASE_TEXT);
 			}
 		}
 	}

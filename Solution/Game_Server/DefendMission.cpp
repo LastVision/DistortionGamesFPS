@@ -103,12 +103,12 @@ bool DefendMission::Update(float aDeltaTime)
 
 void DefendMission::AddValue(int aValue)
 {
-	std::string text = "A unit entered defend zone";
+	std::string text = "Unit entered";
 	CU::Vector4<float> color = { 0.7f, 0.2f, 0.2f, 1.f };
 
 	if (aValue < 0)
 	{
-		text = "A unit left defend zone";
+		text = "Unit left";
 		color = { 0.2f, 0.7f, 0.2f, 1.f };
 	}
 
