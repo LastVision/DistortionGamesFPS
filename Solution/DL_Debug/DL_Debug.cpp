@@ -53,6 +53,7 @@ DL_Debug::Debug::~Debug()
 
 bool DL_Debug::Debug::Create(std::string aFile)
 {
+#ifndef RELEASE_BUILD
 	assert(ourInstance == nullptr && "Debugobject already created");
 	ourInstance = new Debug();
 
@@ -88,10 +89,15 @@ bool DL_Debug::Debug::Create(std::string aFile)
 		return(false);
 	}
 	return(true);
+#else
+	aFile;
+	return true;
+#endif
 }
 
 bool DL_Debug::Debug::Destroy()
 {
+#ifndef RELEASE_BUILD
 	//if (ourInstance->myDebugFile.close() == false)
 	//{
 	//	return(false);
@@ -102,6 +108,9 @@ bool DL_Debug::Debug::Destroy()
 	delete ourInstance;
 	ourInstance = nullptr;
 	return(true);
+#else
+	return true;
+#endif
 }
 
 DL_Debug::Debug* DL_Debug::Debug::GetInstance()
