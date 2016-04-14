@@ -8,7 +8,7 @@
 #define DL_ASSERT_VA(...)
 
 #define DL_PRINT(string)
-#define DL_PRINT_VA( ... ) DL_Debug::Debug::GetInstance()->PrintMessageVA(__VA_ARGS__)
+#define DL_PRINT_VA( ... )
 
 #define DL_DEBUG( ... )
 

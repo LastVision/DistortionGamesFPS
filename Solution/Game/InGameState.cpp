@@ -154,14 +154,7 @@ const eStateStatus InGameState::Update(const float& aDeltaTime)
 			|| CU::InputWrapper::GetInstance()->MouseDown(0) == true
 			|| CU::InputWrapper::GetInstance()->MouseDown(1) == true
 			|| CU::InputWrapper::GetInstance()->MouseDown(2) == true
-			|| CU::InputWrapper::GetInstance()->KeyDown(DIK_W) == true
-			|| CU::InputWrapper::GetInstance()->KeyDown(DIK_A) == true
-			|| CU::InputWrapper::GetInstance()->KeyDown(DIK_S) == true
-			|| CU::InputWrapper::GetInstance()->KeyDown(DIK_D) == true
-			|| CU::InputWrapper::GetInstance()->KeyDown(DIK_E) == true
-			|| CU::InputWrapper::GetInstance()->KeyDown(DIK_1) == true
-			|| CU::InputWrapper::GetInstance()->KeyDown(DIK_2) == true
-			|| CU::InputWrapper::GetInstance()->KeyDown(DIK_3) == true)
+			|| CU::InputWrapper::GetInstance()->AnyKeyDown() == true)
 		{
 			PostMaster::GetInstance()->SendMessage(FadeMessage(1.f));
 			myState = eInGameState::LEVEL;
@@ -189,7 +182,8 @@ const eStateStatus InGameState::Update(const float& aDeltaTime)
 	case eInGameState::LEVEL_COMPLETE_CAN_START:
 		myLevelCompleteSprite->Render({ 0.f, 0.f });
 
-		if (CU::InputWrapper::GetInstance()->KeyDown(DIK_RETURN) == true)
+		if (CU::InputWrapper::GetInstance()->KeyDown(DIK_RETURN) == true
+			|| CU::InputWrapper::GetInstance()->AnyKeyDown() == true)
 		{
 			ClientNetworkManager::GetInstance()->AddMessage(NetMessageRequestStartLevel());
 			myState = eInGameState::LEVEL_COMPLETE;
@@ -202,7 +196,8 @@ const eStateStatus InGameState::Update(const float& aDeltaTime)
 	case eInGameState::LEVEL_FAIL_CAN_START:
 		myLevelFailedSprite->Render({ 0.f, 0.f });
 
-		if (CU::InputWrapper::GetInstance()->KeyDown(DIK_RETURN) == true)
+		if (CU::InputWrapper::GetInstance()->KeyDown(DIK_RETURN) == true
+			|| CU::InputWrapper::GetInstance()->AnyKeyDown() == true)
 		{
 			ClientNetworkManager::GetInstance()->AddMessage(NetMessageRequestStartLevel());
 			myState = eInGameState::LEVEL_FAIL;

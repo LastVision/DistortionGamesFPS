@@ -27,7 +27,7 @@ private:
 	std::function<void(PhysicsComponent*, const CU::Vector3<float>&, const CU::Vector3<float>&, const CU::Vector3<float>&)> myRaycastHandler;
 
 	void Move(float aDelta, Entity* aClosestPlayer);
-	void SetOrientation(const CU::Vector3<float>& aLookInDirection, float aDelta);
+	void SetOrientation(const CU::Vector3<float>& aLookInDirection, float aDelta, bool aOnlyRotation = false);
 
 	void Shoot(Entity* aClosestPlayer);
 
