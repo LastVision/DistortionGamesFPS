@@ -19,6 +19,7 @@
 #include <PostMaster.h>
 #include <SharedNetworkManager.h>
 #include <TextProxy.h>
+#include <FadeMessage.h>
 
 LobbyState::LobbyState()
 	: myGUIManager(nullptr)
@@ -94,6 +95,8 @@ void LobbyState::InitState(StateStackProxy* aStateStackProxy, GUI::Cursor* aCurs
 		ClientNetworkManager::GetInstance()->AddMessage(NetMessageRequestLevel());
 	}
 	myWaitingForConnectTimer = 1.f;
+
+	PostMaster::GetInstance()->SendMessage(FadeMessage(1.f / 3.f));
 }
 
 void LobbyState::EndState()
@@ -196,6 +199,7 @@ void LobbyState::Render()
 	}
 
 	DEBUG_PRINT(myLevelToStart+1);
+	
 }
 
 void LobbyState::ResumeState()
@@ -203,6 +207,7 @@ void LobbyState::ResumeState()
 	myStartGame = false;
 	myIsActiveState = true;
 	myLevelToStart = -1;
+	PostMaster::GetInstance()->SendMessage(FadeMessage(1.f / 3.f));
 }
 
 void LobbyState::ReceiveMessage(const OnClickMessage& aMessage)
