@@ -192,7 +192,7 @@ void Shotgun::HandleRaycast(PhysicsComponent* aComponent, const CU::Vector3<floa
 	{
 		if (aComponent->GetEntity().GetComponent<SoundComponent>() != nullptr)
 		{
-			if (aComponent->GetEntity().GetType() == eEntityType::UNIT)
+			if (aComponent->GetEntity().GetType() == eEntityType::UNIT && aComponent->GetEntity().GetSubType() != "player")
 			{
 				Prism::Audio::AudioInterface::GetInstance()->PostEvent("Play_EnemyTakeDamage", aComponent->GetEntity().GetComponent<SoundComponent>()->GetAudioSFXID());
 			}
