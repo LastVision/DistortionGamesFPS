@@ -35,9 +35,9 @@
 #include "../InputWrapper/InputWrapper.h"
 #define MATERIAL_ID			0x01
 
-#ifndef RELEASE_BUILD
+//#ifndef RELEASE_BUILD
 #define GENERATE_COW
-#endif
+//#endif
 
 namespace Prism
 {
