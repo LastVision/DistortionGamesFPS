@@ -43,8 +43,8 @@ namespace CU
 		//void ResumeDeltaRecording();
 		void ToggleWindowActive();
 
-		//void LogicTweakValue(float& aValue, float aRate, float aDeltaTime
-		//	, unsigned int aIncreaseKey, unsigned int aDecreaseKey) const;
+		void LogicTweakValue(float& aValue, float aRate, float aDeltaTime
+			, unsigned int aIncreaseKey, unsigned int aDecreaseKey, eType aType = eType::LOGIC) const;
 
 		void LogicUpdate();
 		void PhysicsUpdate();
