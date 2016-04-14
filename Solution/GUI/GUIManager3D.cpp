@@ -223,10 +223,10 @@ namespace GUI
 			myTopBar->Rebuild(myPistolClipSize);
 			break;
 		case eWeaponType::SHOTGUN:
-			myRightBar->Rebuild(myShotgunClipSize);
+			myLeftBar->Rebuild(myShotgunClipSize);
 			break;
 		case eWeaponType::GRENADE_LAUNCHER:
-			myLeftBar->Rebuild(myGrenadeLauncherClipSize);
+			myRightBar->Rebuild(myGrenadeLauncherClipSize);
 			break;
 		default:
 			break;

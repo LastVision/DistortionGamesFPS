@@ -96,7 +96,7 @@ void AIComponent::Update(float aDelta)
 
 			if (myEntity.GetState() == eEntityState::ATTACK && myAttackAnimationTimeCurrent > 0.f)
 			{
-				SetOrientation(myTargetPlayer->GetOrientation().GetPos() - myOrientation.GetPos(), aDelta);
+				SetOrientation(myTargetPlayer->GetOrientation().GetPos() - myOrientation.GetPos(), aDelta, true);
 			}
 			else
 			{
@@ -199,13 +199,20 @@ void AIComponent::Move(float aDelta, Entity* aClosestPlayer)
 	}
 }
 
-void AIComponent::SetOrientation(const CU::Vector3<float>& aLookInDirection, float aDelta)
+void AIComponent::SetOrientation(const CU::Vector3<float>& aLookInDirection, float aDelta, bool aOnlyRotation)
 {
 	CU::Vector3<float> pos;
 	Prism::PhysicsInterface::GetInstance()->GetPosition(myEntity.GetComponent<PhysicsComponent>()->GetCapsuleControllerId(), pos);
 	bool hasMoved = CU::Math::DistanceBetweenLessThanOrEqualToEpsilon(pos, myOrientation.GetPos(), 0.1f * aDelta) == false;
 
-	myOrientation.SetPos(pos);
+	if (aOnlyRotation == false)
+	{
+		myOrientation.SetPos(pos);
+	}
+	else
+	{
+		pos = myOrientation.GetPos();
+	}
 
 	static CU::Vector3<float> y(0, 1.f, 0);
 	CU::Vector3<float> right(CU::GetNormalized(CU::Cross(y, aLookInDirection)));
@@ -244,7 +251,7 @@ void AIComponent::Shoot(Entity* aClosestPlayer)
 	myEntity.SetState(eEntityState::ATTACK);
 	SharedNetworkManager::GetInstance()->AddMessage<NetMessageEntityState>(NetMessageEntityState(myEntity.GetState(), myEntity.GetGID()));
 	Entity* requestedBullet = SharedProjectileManager::GetInstance()->RequestBullet(myBulletData);
-	myAttackAnimationTimeCurrent = 0.5f;
+	myAttackAnimationTimeCurrent = 0.4f;
 	requestedBullet->GetComponent<BulletComponent>()->Activate(myEntity.GetOrientation());
 	SharedNetworkManager::GetInstance()->AddMessage<NetMessageEnemyShooting>(NetMessageEnemyShooting(requestedBullet->GetGID(), myEntity.GetGID()));
 }
