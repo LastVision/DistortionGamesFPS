@@ -161,7 +161,7 @@ void ServerNetworkManager::ReceieveThread()
 		ReceieveIsDone();
 		WaitForMain();
 		someBuffers.clear();
-		Sleep(1);
+		std::this_thread::yield();
 
 	}
 }
@@ -202,9 +202,9 @@ void ServerNetworkManager::SendThread()
 				}
 			}
 		}
-		mySendBuffer[myCurrentSendBuffer].RemoveAll();
-		myCurrentSendBuffer ^= 1;
-		Sleep(1);
+		SendIsDone();
+		WaitForSendMain();
+		std::this_thread::yield();
 	}
 }
 

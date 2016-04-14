@@ -49,10 +49,14 @@ public:
 	void SwapBuffer();
 
 	void ReceieveIsDone();
+	void SendIsDone();
 	void MainIsDone();
+	void SendMainIsDone();
 
 	void WaitForMain();
+	void WaitForSendMain();
 	void WaitForReceieve();
+	void WaitForSend();
 
 	void Subscribe(const eNetMessageType aMessageType, NetworkSubscriber* aSubscriber);
 	void UnSubscribe(const eNetMessageType aMessageType, NetworkSubscriber* aSubscriber);
@@ -165,7 +169,9 @@ protected:
 	volatile bool myHasSent;
 	volatile bool myIsRunning;
 	volatile bool myReceieveIsDone;
+	volatile bool mySendIsDone;
 	volatile bool myMainIsDone;
+	volatile bool mySendMainIsDone;
 	
 	volatile unsigned long long myCurrentTimeStamp;
 

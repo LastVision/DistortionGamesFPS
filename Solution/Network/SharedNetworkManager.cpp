@@ -72,6 +72,7 @@ void SharedNetworkManager::Initiate()
 	myImportantID = 0;
 	myPingTime = 0.f;
 	myReceieveIsDone = true;
+	mySendIsDone = true;
 	myMainIsDone = true;
 	for (int i = 0; i < static_cast<int>(eNetMessageType::_COUNT); ++i)
 	{
@@ -193,7 +194,9 @@ void SharedNetworkManager::Update(float aDelta)
 void SharedNetworkManager::SwapBuffer()
 {
 	myReceieveBuffer[myCurrentBuffer].RemoveAll();
+	mySendBuffer[myCurrentSendBuffer].RemoveAll();
 	myCurrentBuffer ^= 1;
+	myCurrentSendBuffer ^= 1;
 }
 
 void SharedNetworkManager::ReceieveIsDone()
@@ -201,9 +204,19 @@ void SharedNetworkManager::ReceieveIsDone()
 	myReceieveIsDone = true;
 }
 
+void SharedNetworkManager::SendIsDone()
+{
+	mySendIsDone = true;
+}
+
 void SharedNetworkManager::MainIsDone()
 {
 	myMainIsDone = true;
+}
+
+void SharedNetworkManager::SendMainIsDone()
+{
+	mySendMainIsDone = true;
 }
 
 void SharedNetworkManager::WaitForMain()
@@ -215,6 +228,15 @@ void SharedNetworkManager::WaitForMain()
 	myMainIsDone = false;
 }
 
+void SharedNetworkManager::WaitForSendMain()
+{
+	while (mySendMainIsDone == false)
+	{
+		std::this_thread::yield();
+	}
+	mySendMainIsDone = false;
+}
+
 void SharedNetworkManager::WaitForReceieve()
 {
 	while (myReceieveIsDone == false)
@@ -222,6 +244,15 @@ void SharedNetworkManager::WaitForReceieve()
 		std::this_thread::yield();
 	}
 	myReceieveIsDone = false;
+}
+
+void SharedNetworkManager::WaitForSend()
+{
+	while (mySendIsDone == false)
+	{
+		std::this_thread::yield();
+	}
+	mySendIsDone = false;
 }
 
 void SharedNetworkManager::Subscribe(const eNetMessageType aMessageType, NetworkSubscriber* aSubscriber)

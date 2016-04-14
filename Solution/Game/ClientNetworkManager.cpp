@@ -163,8 +163,8 @@ void ClientNetworkManager::SendThread()
 			}
 		}
 
-		mySendBuffer[myCurrentSendBuffer].RemoveAll();
-		myCurrentSendBuffer ^= 1;
+		SendIsDone();
+		WaitForSendMain();
 		std::this_thread::yield();
 	}
 }
