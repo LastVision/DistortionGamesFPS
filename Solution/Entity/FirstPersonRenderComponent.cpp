@@ -434,7 +434,11 @@ void FirstPersonRenderComponent::Render(Prism::Texture* aArmDepthTexture, bool a
 
 			if (myCoOpCircles[i].myLifePercentage > 0.f)
 			{
-				tempPos.y += 2.f;
+				tempPos.y += 2.2f;
+			}
+			else
+			{
+				tempPos.y += 0.5f;
 			}
 
 			float toBuddy = CU::Dot(tempPos - myInputComponentEyeOrientation.GetPos(), myInputComponentEyeOrientation.GetForward());
