@@ -185,7 +185,6 @@ namespace Prism
 		myControllerManager->setOverlapRecoveryModule(true);
 	}
 
-
 	PhysicsManager::~PhysicsManager()
 	{
 #ifdef THREAD_PHYSICS
@@ -1038,11 +1037,15 @@ myIsSwapping = false;
 
 		if (myIsServer == true)
 		{
-			cowPath = CU::GetGeneratedDataFolderFilePath(aFBXPath, "cos");
+			//cowPath = CU::GetGeneratedDataFolderFilePath(aFBXPath, "cos");
+
+			cowPath = CU::GetMyDocumentsDataPath(aFBXPath, "cos");
 		}
 		else
 		{
-			cowPath = CU::GetGeneratedDataFolderFilePath(aFBXPath, "cow");
+			//cowPath = CU::GetGeneratedDataFolderFilePath(aFBXPath, "cow");
+
+			cowPath = CU::GetMyDocumentsDataPath(aFBXPath, "cow");
 		}
 
 		physx::PxTriangleMesh* mesh = nullptr;
