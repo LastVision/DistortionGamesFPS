@@ -458,8 +458,8 @@ void FirstPersonRenderComponent::Render(Prism::Texture* aArmDepthTexture, bool a
 
 			if (myCoOpRespawns.Size() > 0)
 			{
-				myCoOpSprite->Render({ newRenderPos.x, newRenderPos.y - 0.5f }, { 1.f, 1.f }, { 1.f - color, color, color, 1.f });
-				Prism::Engine::GetInstance()->PrintText(myCoOpRespawns[i].myCurrentValue, { newRenderPos.x, newRenderPos.y - 0.5f }, Prism::eTextType::RELEASE_TEXT);
+				myCoOpSprite->Render({ newRenderPos.x, newRenderPos.y - 1.f }, { 1.f, 1.f }, { 1.f - color, color, color, 1.f });
+				Prism::Engine::GetInstance()->PrintText(myCoOpRespawns[i].myCurrentValue, { newRenderPos.x, newRenderPos.y - 1.f }, Prism::eTextType::RELEASE_TEXT);
 			}
 			else
 			{
