@@ -145,6 +145,7 @@ ClientLevel::ClientLevel(GUI::Cursor* aCursor, eStateStatus& aStateStatus, int a
 
 ClientLevel::~ClientLevel()
 {
+	PostMaster::GetInstance()->SendMessage<LevelCompleteMessage>(LevelCompleteMessage(myLevelID));
 	for (int i = 0; i < myWorldTexts.Size(); ++i)
 	{
 		SAFE_DELETE(myWorldTexts[i].myProxy);
@@ -186,7 +187,6 @@ ClientLevel::~ClientLevel()
 	Prism::Audio::AudioInterface::GetInstance()->PostEvent("StopFirstLayer", 0);
 	Prism::Audio::AudioInterface::GetInstance()->PostEvent("StopSecondLayer", 0);
 
-	PostMaster::GetInstance()->SendMessage<LevelCompleteMessage>(LevelCompleteMessage(myLevelID));
 }
 
 void ClientLevel::Init(const std::string& aWeaponSettingsPath)

@@ -44,8 +44,19 @@ void SoundComponent::ReceiveMessage(const LevelLoadedMessage& aMessage)
 	{
 		Prism::Audio::AudioInterface::GetInstance()->PostEvent("Play_Door", myAudioSFXID);
 	}
-	if (myEntity.GetSubType() == "sm_printer_a_big" || myEntity.GetSubType() == "sm_server_a"
-		|| myEntity.GetSubType() == "sm_computeunit" || myEntity.GetSubType() == "sm_megaserver")
+	if (myEntity.GetSubType() == "sm_printer_a_big")
+	{
+		Prism::Audio::AudioInterface::GetInstance()->PostEvent("Play_ServerSound", myAudioSFXID);
+	}
+	if (myEntity.GetSubType() == "sm_server_a")
+	{
+		Prism::Audio::AudioInterface::GetInstance()->PostEvent("Play_ServerSound", myAudioSFXID);
+	}
+	if (myEntity.GetSubType() == "sm_computeunit" )
+	{
+		Prism::Audio::AudioInterface::GetInstance()->PostEvent("Play_ServerSound", myAudioSFXID);
+	}
+	if (myEntity.GetSubType() == "sm_megaserver")
 	{
 		Prism::Audio::AudioInterface::GetInstance()->PostEvent("Play_ServerSound", myAudioSFXID);
 	}
@@ -61,8 +72,19 @@ void SoundComponent::ReceiveMessage(const LevelCompleteMessage& aMessage)
 	{
 		Prism::Audio::AudioInterface::GetInstance()->PostEvent("Stop_Door", myAudioSFXID);
 	}
-	if (myEntity.GetSubType() == "sm_printer_a_big" || myEntity.GetSubType() == "sm_server_a"
-		|| myEntity.GetSubType() == "sm_computeunit" || myEntity.GetSubType() == "sm_megaserver")
+	if (myEntity.GetSubType() == "sm_printer_a_big")
+	{
+		Prism::Audio::AudioInterface::GetInstance()->PostEvent("Stop_ServerSound", myAudioSFXID);
+	}
+	if (myEntity.GetSubType() == "sm_server_a")
+	{
+		Prism::Audio::AudioInterface::GetInstance()->PostEvent("Stop_ServerSound", myAudioSFXID);
+	}
+	if (myEntity.GetSubType() == "sm_computeunit")
+	{
+		Prism::Audio::AudioInterface::GetInstance()->PostEvent("Stop_ServerSound", myAudioSFXID);
+	}
+	if (myEntity.GetSubType() == "sm_megaserver")
 	{
 		Prism::Audio::AudioInterface::GetInstance()->PostEvent("Stop_ServerSound", myAudioSFXID);
 	}
