@@ -52,8 +52,10 @@ InGameState::InGameState(int aLevelID, unsigned int aServerHashLevelValue)
 	myHashLevelValue = Hash(CU::ReadFileToString(myLevelFactory->GetLevelPath(aLevelID)).c_str());
 	
 	
+	/*myLevelCompleteSprite = Prism::ModelLoader::GetInstance()->LoadSprite(
+		"Data/Resource/Texture/Menu/BetweenLevels/T_background_elevator.dds", { 1920.f, 1080.f });*/
 	myLevelCompleteSprite = Prism::ModelLoader::GetInstance()->LoadSprite(
-		"Data/Resource/Texture/Menu/BetweenLevels/T_background_elevator.dds", { 1920.f, 1080.f });
+		"Data/Resource/Texture/Menu/T_background_story01.dds", { 1920.f, 1080.f });
 	myLevelFailedSprite = Prism::ModelLoader::GetInstance()->LoadSprite(
 		"Data/Resource/Texture/Menu/T_background_gameover.dds", { 1920.f, 1080.f });
 	myLoadingScreenSprite = Prism::ModelLoader::GetInstance()->LoadSprite(
