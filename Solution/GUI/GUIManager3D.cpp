@@ -129,7 +129,7 @@ namespace GUI
 		myLowHealthTimer -= aDeltaTime;
 		if (myLowHealthTimer <= 0.f)
 		{
-			myLowHealthTimer = (float(myCurrentHealth) / float(myMaxHealth) + 0.3f);
+			myLowHealthTimer = 1.f;
 		}
 
 		//myEffect->SetGradiantValue(cos(myTestValue));
@@ -150,27 +150,33 @@ namespace GUI
 	{
 		myIsFirstLevel = aIsFirstLevel;
 
-		myEffect->SetGradiantValue(1.f);
+		//myEffect->SetGradiantValue(1.f);
 
 		if (myIsFirstLevel == false || (myIsFirstLevel == true && myRenderAmmo))
 		{
-			myLeftBar->Render(*myScene->GetCamera(), myWristOrientation);
-			myRightBar->Render(*myScene->GetCamera(), myWristOrientation);
-			myTopBar->Render(*myScene->GetCamera(), myWristOrientation);
+			myLeftBar->Render(*myScene->GetCamera(), myWristOrientation, { 1.f, 1.f, 1.f, 1.f });
+			myRightBar->Render(*myScene->GetCamera(), myWristOrientation, { 1.f, 1.f, 1.f, 1.f });
+			myTopBar->Render(*myScene->GetCamera(), myWristOrientation, { 1.f, 1.f, 1.f, 1.f });
 		}
 
 		CU::Vector4<float> healthColor = { 0.f, 0.f, 0.f, 1.f };
 		float life = float(myCurrentHealth) / float(myMaxHealth);
 		float alpha = 1.f;
+		healthColor.x = 1.f - life;
+		healthColor.y = life;
+
+		myHealthBar->Render(*myScene->GetCamera(), myHealthOrientation, healthColor);
 
 		if (life <= 0.4f)
 		{
-			healthColor.x = 1.f - life;
-			// add rest of colors here
 			alpha = fminf(fminf(1.f, myLowHealthTimer), 1.f - myLowHealthTimer);
 		}
 
-		myHealthBar->Render(*myScene->GetCamera(), myHealthOrientation, healthColor);
+		if (alpha < 1.f)
+		{
+			myEffect->SetGradiantValue(alpha);
+		}
+
 		myHealthIcon->Render(*myScene->GetCamera(), myHealthOrientation, healthColor);
 
 		if (myIsFirstLevel == true)
@@ -178,26 +184,23 @@ namespace GUI
 			if (myShowFirstTutorial < SHOWTUTORIALTIME)
 			{
 				myGUITutorialHealth->GetEffect()->SetGradiantValue(fminf(fminf(1.f, myShowFirstTutorial), SHOWTUTORIALTIME - myShowFirstTutorial));
-				myGUITutorialHealth->Render(*myScene->GetCamera(), myWristOrientation);
+				myGUITutorialHealth->Render(*myScene->GetCamera(), myWristOrientation, { 1.f, 1.f, 1.f, 1.f });
 			}
 			else if (myShowSecondTutorial < SHOWTUTORIALTIME)
 			{
 				myRenderAmmo = true;
 				myGUITutorialAmmo->GetEffect()->SetGradiantValue(fminf(fminf(1.f, myShowSecondTutorial), SHOWTUTORIALTIME - myShowSecondTutorial));
-				myGUITutorialAmmo->Render(*myScene->GetCamera(), myWristOrientation);
+				myGUITutorialAmmo->Render(*myScene->GetCamera(), myWristOrientation, { 1.f, 1.f, 1.f, 1.f });
 			}
 			else if (myShowThirdTutorial < SHOWTUTORIALTIME)
 			{
 				myRenderAmmoTotal = true;
 				myGUITutorialAmmoTotal->GetEffect()->SetGradiantValue(fminf(fminf(1.f, myShowThirdTutorial), SHOWTUTORIALTIME - myShowThirdTutorial));
-				myGUITutorialAmmoTotal->Render(*myScene->GetCamera(), myWristOrientation);
+				myGUITutorialAmmoTotal->Render(*myScene->GetCamera(), myWristOrientation, { 1.f, 1.f, 1.f, 1.f });
 			}
 		}
 
-		if (alpha < 1.f)
-		{
-			myEffect->SetGradiantValue(alpha);
-		}
+		myEffect->SetGradiantValue(1.f);
 
 		CU::Vector3<float> oldPos(myHealthOrientation.GetPos());
 		CU::Vector3<float> offset(myHealthOrientation.GetForward() * -0.25f);
