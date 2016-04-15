@@ -21,3 +21,5 @@ GC::eMultiplayerMode GC::MultiplayerMode = GC::eMultiplayerMode::HOST;
 
 volatile bool GC::PlayerShouldPlaySprintSound = false;
 volatile bool GC::PlayerShouldStopSprintSound = false;
+
+bool GC::ShouldRenderGUI = true;
