@@ -56,12 +56,12 @@ bool ServerGame::Update()
 	{
 		return false;
 	}
-	ServerNetworkManager::GetInstance()->Update(myDeltaTime);
+	//ServerNetworkManager::GetInstance()->Update(myDeltaTime);
 
 	myTimerManager->CapFrameRate(60.f);
 
-	ServerNetworkManager::GetInstance()->MainIsDone();
-	ServerNetworkManager::GetInstance()->WaitForReceieve();
+	//ServerNetworkManager::GetInstance()->MainIsDone();
+	//ServerNetworkManager::GetInstance()->WaitForReceieve();
 	return true;
 }
 

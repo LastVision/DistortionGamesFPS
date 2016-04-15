@@ -43,7 +43,11 @@ ServerNetworkManager::~ServerNetworkManager()
 
 	myMainIsDone = true;
 	myReceieveIsDone = true;
+	mySendMainIsDone = true;
+	mySendIsDone = true;
+
 	myIsRunning = false;
+
 	if (myReceieveThread != nullptr)
 	{
 		myReceieveThread->join();

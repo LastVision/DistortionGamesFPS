@@ -3,6 +3,7 @@
 #include "ServerState.h"
 #include "ServerStateStack.h"
 #include "ServerStateStackProxy.h"
+#include "ServerNetworkManager.h"
 
 ServerStateStack::ServerStateStack()
 {
@@ -56,6 +57,12 @@ bool ServerStateStack::UpdateCurrentState(const float aDeltaTime)
 	case eStateStatus::KEEP_STATE:
 		break;
 	}
+
+	ServerNetworkManager::GetInstance()->WaitForReceieve();
+	ServerNetworkManager::GetInstance()->WaitForSend();
+	ServerNetworkManager::GetInstance()->Update(aDeltaTime);
+	ServerNetworkManager::GetInstance()->MainIsDone();
+	ServerNetworkManager::GetInstance()->SendMainIsDone();
 
 	return myStates.Size() > 0;
 }

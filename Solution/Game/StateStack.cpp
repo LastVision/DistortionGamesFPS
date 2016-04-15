@@ -102,11 +102,11 @@ bool StateStack::UpdateCurrentState(const float& aDeltaTime)
 		break;
 	}
 
+	ClientNetworkManager::GetInstance()->WaitForReceieve();
+	ClientNetworkManager::GetInstance()->WaitForSend();
 	ClientNetworkManager::GetInstance()->Update(aDeltaTime);
 	ClientNetworkManager::GetInstance()->MainIsDone();
 	ClientNetworkManager::GetInstance()->SendMainIsDone();
-	ClientNetworkManager::GetInstance()->WaitForReceieve();
-	ClientNetworkManager::GetInstance()->WaitForSend();
 
 	return myGameStates.Size() > 0;
 }

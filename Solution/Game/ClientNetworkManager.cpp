@@ -36,6 +36,9 @@ ClientNetworkManager::~ClientNetworkManager()
 
 	myMainIsDone = true;
 	myReceieveIsDone = true;
+	mySendMainIsDone = true;
+	mySendIsDone = true;
+
 	myIsRunning = false;
 	if (myReceieveThread != nullptr)
 	{
@@ -165,7 +168,7 @@ void ClientNetworkManager::SendThread()
 
 		SendIsDone();
 		WaitForSendMain();
-		std::this_thread::yield();
+		//std::this_thread::yield();
 	}
 }
 
