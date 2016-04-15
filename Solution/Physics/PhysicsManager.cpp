@@ -76,6 +76,8 @@ namespace Prism
 		myActorsToAdd[1].Init(256);
 		myActorsToRemove[0].Init(16384);
 		myActorsToRemove[1].Init(16384);
+		myCapsulesToAdd[0].Init(256);
+		myCapsulesToAdd[1].Init(256);
 		myActorsToSleep[0].Init(256);
 		myActorsToSleep[1].Init(256);
 		myActorsToWakeUp[0].Init(256);
@@ -451,6 +453,13 @@ myIsSwapping = false;
 			}
 		}
 		myActorsToAdd[myCurrentIndex ^ 1].RemoveAll();
+
+
+		for (int i = 0; i < myCapsulesToAdd[myCurrentIndex ^ 1].Size(); ++i)
+		{
+			myScene->addActor(*myControllerManager->getController(myCapsulesToAdd[myCurrentIndex ^ 1][i])->getActor());
+		}
+		myCapsulesToAdd[myCurrentIndex ^ 1].RemoveAll();
 
 		myInitDone = true;
 
@@ -963,7 +972,8 @@ myIsSwapping = false;
 
 	void PhysicsManager::Add(int aCapsuleID)
 	{
-		myScene->addActor(*myControllerManager->getController(aCapsuleID)->getActor());
+		myCapsulesToAdd[myCurrentIndex].Add(aCapsuleID);
+		//myScene->addActor(*myControllerManager->getController(aCapsuleID)->getActor());
 	}
 
 	void PhysicsManager::Remove(physx::PxRigidDynamic* aDynamic, const PhysicsComponentData& aData)
