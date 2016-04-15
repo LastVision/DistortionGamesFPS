@@ -17,6 +17,7 @@ public:
 		SINGLEPLAYER,
 		MULTIPLAYER_HOST,
 		MULTIPLAYER_JOIN,
+		MULTIPLAYER_JOIN_WAITING,
 	};
 	ServerSelectState(eType aType);
 	~ServerSelectState();
@@ -46,7 +47,7 @@ private:
 	};
 	GUI::GUIManager* myGUIManager;
 
-	const eType myType;
+	eType myType;
 
 	CU::GrowingArray<Server> myServers;
 

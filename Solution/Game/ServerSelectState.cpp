@@ -90,7 +90,7 @@ void ServerSelectState::InitState(StateStackProxy* aStateStackProxy, GUI::Cursor
 	// broadcast request server
 	myIsRefreshing = true;
 	ClientNetworkManager::GetInstance()->AddMessage(NetMessageRequestServer(), ClientNetworkManager::GetInstance()->GetBroadcastAddress());
-	myRetryToStartTimer = 30.f;
+	myRetryToStartTimer = 1.f;
 }
 
 void ServerSelectState::EndState()
@@ -109,7 +109,12 @@ const eStateStatus ServerSelectState::Update(const float& aDeltaTime)
 	switch (myType)
 	{
 	case eType::SINGLEPLAYER:
-		ClientNetworkManager::GetInstance()->ConnectToServer(eGameType::SINGLEPLAYER, myLocalhost.myIp.c_str());
+		if (myTriedToConnect == false)
+		{
+			myTriedToConnect = true;
+			ClientNetworkManager::GetInstance()->ConnectToServer(eGameType::SINGLEPLAYER, myLocalhost.myIp.c_str());
+		}
+
 		if (ClientNetworkManager::GetInstance()->GetGID() != 0)
 		{
 			SET_RUNTIME(false);
@@ -127,7 +132,12 @@ const eStateStatus ServerSelectState::Update(const float& aDeltaTime)
 		}
 		break;
 	case eType::MULTIPLAYER_HOST:
-		ClientNetworkManager::GetInstance()->ConnectToServer(eGameType::MULTIPLAYER, myLocalhost.myIp.c_str());
+		if (myTriedToConnect == false)
+		{
+			myTriedToConnect = true;
+			ClientNetworkManager::GetInstance()->ConnectToServer(eGameType::MULTIPLAYER, myLocalhost.myIp.c_str());
+		}
+
 		if (ClientNetworkManager::GetInstance()->GetGID() != 0)
 		{
 			SET_RUNTIME(false);
@@ -161,7 +171,8 @@ const eStateStatus ServerSelectState::Update(const float& aDeltaTime)
 			{
 				ClientNetworkManager::GetInstance()->ConnectToServer(eGameType::MULTIPLAYER, myServer->myIp.c_str());
 				myTriedToConnect = true;
-				//myWaitForResponseTimer = 1.f;
+				myType = eType::MULTIPLAYER_JOIN_WAITING;
+				myWaitForResponseTimer = 1.f;
 			}
 			//else if (myTriedToConnect == true)
 			//{
@@ -178,16 +189,25 @@ const eStateStatus ServerSelectState::Update(const float& aDeltaTime)
 			//		ClientNetworkManager::GetInstance()->AddMessage(NetMessageRequestServer(), ClientNetworkManager::GetInstance()->GetBroadcastAddress());
 			//	}
 			//}
-			if (ClientNetworkManager::GetInstance()->GetGID() != 0)
-			{
-				SET_RUNTIME(false);
-				PostMaster::GetInstance()->UnSubscribe(eMessageType::ON_CLICK, this);
-				myStateStack->PushSubGameState(new LobbyState());
-			}
+			
 			//return eStateStatus::ePopSubState;
 		}
 		myGUIManager->Update(aDeltaTime);
 
+		break;
+	case eType::MULTIPLAYER_JOIN_WAITING:
+		myWaitForResponseTimer -= aDeltaTime;
+		if (myTriedToConnect == false || myWaitForResponseTimer <= 0.f)
+		{
+			return eStateStatus::ePopMainState;
+		}
+
+		if (ClientNetworkManager::GetInstance()->GetGID() != 0)
+		{
+			SET_RUNTIME(false);
+			PostMaster::GetInstance()->UnSubscribe(eMessageType::ON_CLICK, this);
+			myStateStack->PushSubGameState(new LobbyState());
+		}
 		break;
 	}
 
@@ -196,7 +216,7 @@ const eStateStatus ServerSelectState::Update(const float& aDeltaTime)
 
 void ServerSelectState::Render()
 {
-		myGUIManager->Render();
+	myGUIManager->Render();
 	if (myType == eType::MULTIPLAYER_JOIN)
 	{
 		if (myServers.Size() <= 0 && myIsRefreshing == true)
