@@ -302,7 +302,7 @@ void ClientNetworkManager::ReceiveNetworkMessage(const NetMessageRequestConnect&
 
 void ClientNetworkManager::ReceiveNetworkMessage(const NetMessageOnJoin& aMessage, const sockaddr_in&)
 {
-	if (aMessage.myOtherClientID != myGID)
+	if (aMessage.myOtherClientID != myGID && myClients.Size() < 1)
 	{
 		myClients.Add(OtherClients(aMessage.myName, aMessage.myOtherClientID));
 	}
