@@ -225,10 +225,6 @@ void ClientLevel::Init(const std::string& aWeaponSettingsPath)
 	OnResize(windowSize.x, windowSize.y);
 	Prism::ModelLoader::GetInstance()->UnPause();
 
-	for (int i = 0; i < 50; ++i)
-	{
-		Prism::Audio::AudioInterface::GetInstance()->PostEvent("LowerMusic", 0);
-	}
 }
 
 void ClientLevel::SetMinMax(const CU::Vector3<float>& aMinPoint, const CU::Vector3<float>& aMaxPoint)
@@ -285,11 +281,6 @@ void ClientLevel::Update(const float aDeltaTime, bool aLoadingScreen)
 	if (CU::InputWrapper::GetInstance()->KeyDown(DIK_L))
 	{
 		myDeferredRenderer->GenerateSHData(myScene, myMinPoint, myMaxPoint, myName);
-	}
-
-	if (CU::InputWrapper::GetInstance()->KeyDown(DIK_G))
-	{
-		GC::ShouldRenderGUI = !GC::ShouldRenderGUI;
 	}
 
 	if (myWorldTexts.Size() > 0)
