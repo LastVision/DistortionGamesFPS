@@ -534,7 +534,7 @@ void SharedNetworkManager::UpdateImportantReceivedMessages(float aDelta)
 	{
 		myImportantReceivedMessages[i].myTimer += aDelta;
 
-		if (myImportantReceivedMessages[i].myTimer > 5.f)
+		if (myImportantReceivedMessages[i].myTimer > 60.f)
 		{
 			myImportantReceivedMessages.RemoveCyclicAtIndex(i);
 		}
