@@ -27,6 +27,7 @@ namespace Launcher
 
 		enum eResolutions
 		{
+			R1280x720,
 			R1280x1024,
 			R1600x900,
 			R1920x1080,
@@ -81,11 +82,12 @@ namespace Launcher
 		private void Form1_Load(object sender, EventArgs e)
 		{
 
+			myResolutionList.Items.Add("1280 x 720");
 			myResolutionList.Items.Add("1280 x 1024");
 			myResolutionList.Items.Add("1600 x 900");
 			myResolutionList.Items.Add("1920 x 1080");
 			myResolutionList.Items.Add("Automatic");
-			myResolutionList.SelectedIndex = 3;
+			myResolutionList.SelectedIndex = 4;
 
 			myQualityList.Items.Add("Low");
 			myQualityList.Items.Add("Medium");
@@ -195,6 +197,10 @@ namespace Launcher
 			Screen scr = Screen.PrimaryScreen;
 			switch (myResolutionList.SelectedIndex)
 			{
+				case (int)eResolutions.R1280x720:
+					width = 1280;
+					height = 720;
+					break;
 				case (int)eResolutions.R1280x1024:
 					width = 1280;
 					height = 1024;
