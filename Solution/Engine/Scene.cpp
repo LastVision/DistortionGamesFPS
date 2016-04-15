@@ -56,27 +56,33 @@ namespace Prism
 
 	void Scene::RenderArmAndWeapon()
 	{
-		if (myArmInstance != nullptr)
+		if (GC::ShouldRenderGUI == true)
 		{
-			myArmInstance->Render(*myCamera);
-		}
+			if (myArmInstance != nullptr)
+			{
+				myArmInstance->Render(*myCamera);
+			}
 
-		if (myWeaponInstance != nullptr)
-		{
-			myWeaponInstance->Render(*myCamera);
+			if (myWeaponInstance != nullptr)
+			{
+				myWeaponInstance->Render(*myCamera);
+			}
 		}
 	}
 
 	void Scene::RenderArmAndWeaponOnlyDepth()
 	{
-		if (myArmInstance != nullptr)
+		if (GC::ShouldRenderGUI == true)
 		{
-			myArmInstance->Render(*myCamera, true);
-		}
+			if (myArmInstance != nullptr)
+			{
+				myArmInstance->Render(*myCamera, true);
+			}
 
-		if (myWeaponInstance != nullptr)
-		{
-			myWeaponInstance->Render(*myCamera, true);
+			if (myWeaponInstance != nullptr)
+			{
+				myWeaponInstance->Render(*myCamera, true);
+			}
 		}
 	}
 
@@ -93,14 +99,17 @@ namespace Prism
 
 		myInstancingHelper->Render();
 
-		if (myArmInstance != nullptr)
+		if (GC::ShouldRenderGUI == true)
 		{
-			myArmInstance->Render(*myCamera);
-		}
+			if (myArmInstance != nullptr)
+			{
+				myArmInstance->Render(*myCamera);
+			}
 
-		if (myWeaponInstance != nullptr)
-		{
-			myWeaponInstance->Render(*myCamera);
+			if (myWeaponInstance != nullptr)
+			{
+				myWeaponInstance->Render(*myCamera);
+			}
 		}
 	}
 

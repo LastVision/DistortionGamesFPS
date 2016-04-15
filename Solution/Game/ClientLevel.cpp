@@ -281,6 +281,12 @@ void ClientLevel::Update(const float aDeltaTime, bool aLoadingScreen)
 	{
 		myDeferredRenderer->GenerateSHData(myScene, myMinPoint, myMaxPoint, myName);
 	}
+
+	if (CU::InputWrapper::GetInstance()->KeyDown(DIK_G))
+	{
+		GC::ShouldRenderGUI = !GC::ShouldRenderGUI;
+	}
+
 	if (myWorldTexts.Size() > 0)
 	{
 		//if (Prism::ModelLoader::GetInstance()->IsLoading() == false && myWorldTexts[0].myProxy->IsLoaded() == true)
@@ -362,11 +368,15 @@ void ClientLevel::Render()
 				myScene->GetRoomManager()->GetPreviousPlayerRoom()->GetEmitter()->SetShouldRender(false);
 			}
 		}
+
 		myEmitterManager->RenderEmitters();
 
-		myPlayer->GetComponent<FirstPersonRenderComponent>()->Render(myDeferredRenderer->GetArmDepthStencilTexture(), myLevelID == 0);
+		if (GC::ShouldRenderGUI == true)
+		{
+			myPlayer->GetComponent<FirstPersonRenderComponent>()->Render(myDeferredRenderer->GetArmDepthStencilTexture(), myLevelID == 0);
 
-		myTextManager->Render();
+			myTextManager->Render();
+		}
 
 		for (int i = 0; i < myWorldTexts.Size(); ++i)
 		{
