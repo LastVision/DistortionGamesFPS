@@ -224,6 +224,11 @@ void ClientLevel::Init(const std::string& aWeaponSettingsPath)
 	CU::Vector2<int> windowSize = Prism::Engine::GetInstance()->GetWindowSizeInt();
 	OnResize(windowSize.x, windowSize.y);
 	Prism::ModelLoader::GetInstance()->UnPause();
+
+	for (int i = 0; i < 50; ++i)
+	{
+		Prism::Audio::AudioInterface::GetInstance()->PostEvent("LowerMusic", 0);
+	}
 }
 
 void ClientLevel::SetMinMax(const CU::Vector3<float>& aMinPoint, const CU::Vector3<float>& aMaxPoint)
