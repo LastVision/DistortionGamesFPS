@@ -65,6 +65,7 @@
 #include <LevelCompleteMessage.h>
 #include <SoundComponent.h>
 #include <VisualExplosionComponent.h>
+#include <WidgetContainer.h>
 
 ClientLevel::ClientLevel(GUI::Cursor* aCursor, eStateStatus& aStateStatus, int aLevelID)
 	: myInstanceOrientations(16)
@@ -140,11 +141,13 @@ ClientLevel::ClientLevel(GUI::Cursor* aCursor, eStateStatus& aStateStatus, int a
 	//{
 	//}
 	GC::PlayerAlive = true;
+	
 
 }
 
 ClientLevel::~ClientLevel()
 {
+	PostMaster::GetInstance()->SendMessage<LevelCompleteMessage>(LevelCompleteMessage(myLevelID));
 	for (int i = 0; i < myWorldTexts.Size(); ++i)
 	{
 		SAFE_DELETE(myWorldTexts[i].myProxy);
@@ -186,7 +189,6 @@ ClientLevel::~ClientLevel()
 	Prism::Audio::AudioInterface::GetInstance()->PostEvent("StopFirstLayer", 0);
 	Prism::Audio::AudioInterface::GetInstance()->PostEvent("StopSecondLayer", 0);
 
-	PostMaster::GetInstance()->SendMessage<LevelCompleteMessage>(LevelCompleteMessage(myLevelID));
 }
 
 void ClientLevel::Init(const std::string& aWeaponSettingsPath)
@@ -217,6 +219,12 @@ void ClientLevel::Init(const std::string& aWeaponSettingsPath)
 	myForceStrengthPistol = myPlayer->GetComponent<ShootingComponent>()->GetWeaponForceStrength(eWeaponType::PISTOL);
 	myForceStrengthShotgun = myPlayer->GetComponent<ShootingComponent>()->GetWeaponForceStrength(eWeaponType::SHOTGUN);
 	Prism::PhysicsInterface::GetInstance()->SetClientSide(true);
+
+	Prism::ModelLoader::GetInstance()->Pause();
+	CU::Vector2<int> windowSize = Prism::Engine::GetInstance()->GetWindowSizeInt();
+	OnResize(windowSize.x, windowSize.y);
+	Prism::ModelLoader::GetInstance()->UnPause();
+
 }
 
 void ClientLevel::SetMinMax(const CU::Vector3<float>& aMinPoint, const CU::Vector3<float>& aMaxPoint)
@@ -274,6 +282,7 @@ void ClientLevel::Update(const float aDeltaTime, bool aLoadingScreen)
 	{
 		myDeferredRenderer->GenerateSHData(myScene, myMinPoint, myMaxPoint, myName);
 	}
+
 	if (myWorldTexts.Size() > 0)
 	{
 		//if (Prism::ModelLoader::GetInstance()->IsLoading() == false && myWorldTexts[0].myProxy->IsLoaded() == true)
@@ -355,19 +364,25 @@ void ClientLevel::Render()
 				myScene->GetRoomManager()->GetPreviousPlayerRoom()->GetEmitter()->SetShouldRender(false);
 			}
 		}
+
 		myEmitterManager->RenderEmitters();
 
-		myPlayer->GetComponent<FirstPersonRenderComponent>()->Render(myDeferredRenderer->GetArmDepthStencilTexture(), myLevelID == 0);
-
-		myTextManager->Render();
-
-		for (int i = 0; i < myWorldTexts.Size(); ++i)
+		if (GC::ShouldRenderGUI == true)
 		{
-			if (CU::Length(myWorldTexts[i].myProxy->Get3DPosition() - myPlayer->GetOrientation().GetPos()) <= 10.f)
+			myPlayer->GetComponent<FirstPersonRenderComponent>()->Render(myDeferredRenderer->GetArmDepthStencilTexture(), myLevelID == 0);
+
+			myTextManager->Render();
+
+			for (int i = 0; i < myWorldTexts.Size(); ++i)
 			{
-				myWorldTexts[i].myProxy->Render(myScene->GetCamera());
+				if (CU::Length(myWorldTexts[i].myProxy->Get3DPosition() - myPlayer->GetOrientation().GetPos()) <= 10.f)
+				{
+					myWorldTexts[i].myProxy->Render(myScene->GetCamera());
+				}
 			}
 		}
+
+
 
 		if (myEscapeMenuActive == true)
 		{
@@ -726,6 +741,31 @@ void ClientLevel::OnResize(float aWidth, float aHeight)
 	myDeferredRenderer->OnResize(aWidth, aHeight);
 	myEscapeMenu->OnResize(int(aWidth), int(aHeight));
 	myPlayer->GetComponent<FirstPersonRenderComponent>()->OnResize({ aWidth, aHeight });
+
+	CU::Vector2<float> floatScreenPos(float(aWidth), float(aHeight));
+	GUI::WidgetContainer* widgetCont = reinterpret_cast<GUI::WidgetContainer*>(myEscapeMenu->GetWidgetContainer()->At(0));
+	CU::Vector2<float> firstRow = widgetCont->At(3)->GetPosition();
+	CU::Vector2<float> secondRow = widgetCont->At(1)->GetPosition();
+	CU::Vector2<float> thirdRow = widgetCont->At(5)->GetPosition();
+	float moveAmount = 320.f;
+	float ratio = static_cast<float>(aWidth) / static_cast<float>(aHeight);
+
+	float epsilon = 0.1f;
+	if (ratio + epsilon >= 16.f / 9.f)
+	{
+		moveAmount = 320.f;
+	}
+	else if (ratio + epsilon >= 16.f / 10.f)
+	{
+		moveAmount = 320.f;
+	}
+	else
+	{
+		moveAmount = 220.f;
+	}
+	myMusicText->SetPosition({ firstRow.x - moveAmount, firstRow.y - (widgetCont->At(1)->GetSize().y * 0.25f) });
+	mySFXText->SetPosition({ secondRow.x - moveAmount, secondRow.y - (widgetCont->At(3)->GetSize().y * 0.25f) });
+	myVoiceText->SetPosition({ thirdRow.x - moveAmount, thirdRow.y - (widgetCont->At(5)->GetSize().y * 0.2f) });
 }
 
 void ClientLevel::HandleTrigger(Entity& aFirstEntity, Entity& aSecondEntity, bool aHasEntered)

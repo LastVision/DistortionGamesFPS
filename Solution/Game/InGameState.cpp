@@ -52,8 +52,10 @@ InGameState::InGameState(int aLevelID, unsigned int aServerHashLevelValue)
 	myHashLevelValue = Hash(CU::ReadFileToString(myLevelFactory->GetLevelPath(aLevelID)).c_str());
 	
 	
+	/*myLevelCompleteSprite = Prism::ModelLoader::GetInstance()->LoadSprite(
+		"Data/Resource/Texture/Menu/BetweenLevels/T_background_elevator.dds", { 1920.f, 1080.f });*/
 	myLevelCompleteSprite = Prism::ModelLoader::GetInstance()->LoadSprite(
-		"Data/Resource/Texture/Menu/BetweenLevels/T_background_elevator.dds", { 1920.f, 1080.f });
+		"Data/Resource/Texture/Menu/T_background_story01.dds", { 1920.f, 1080.f });
 	myLevelFailedSprite = Prism::ModelLoader::GetInstance()->LoadSprite(
 		"Data/Resource/Texture/Menu/T_background_gameover.dds", { 1920.f, 1080.f });
 	myLoadingScreenSprite = Prism::ModelLoader::GetInstance()->LoadSprite(
@@ -455,6 +457,7 @@ void InGameState::ReceiveNetworkMessage(const NetMessageAllClientsComplete& aMes
 
 void InGameState::ReceiveNetworkMessage(const NetMessageLevelComplete& aMsg, const sockaddr_in&)
 {
+	SAFE_DELETE(myLevel);
 	if (myLastLevel == 3 && aMsg.myAllPlayersDied == false)
 	{
 		myStateStack->PushSubGameState(new CompleteGameState());
@@ -464,7 +467,6 @@ void InGameState::ReceiveNetworkMessage(const NetMessageLevelComplete& aMsg, con
 		ClientNetworkManager::GetInstance()->AddMessage(NetMessageLevelComplete(aMsg.myAllPlayersDied));
 	}
 	ClientNetworkManager::GetInstance()->AllowSendWithoutSubscriber(true);
-	SAFE_DELETE(myLevel);
 	myHasStartedMusicBetweenLevels = false;
 
 	if (aMsg.myAllPlayersDied == true)

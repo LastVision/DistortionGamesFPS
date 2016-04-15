@@ -12,8 +12,7 @@
 namespace CU
 {
 	const std::string group("/Distortion Games/");
-	//const std::string game("/Patrick of the Caribbean/");
-	const std::string game("");
+	const std::string game("Machina/");
 
 	static bool canSave;
 
@@ -38,6 +37,18 @@ namespace CU
 			std::string folder(aPath.begin(), aPath.begin() + slashIndex);
 			CreateDirectory(folder.c_str(), NULL);
 			slashIndex = aPath.find_first_of("/", slashIndex + 1);
+		}
+	}
+
+	inline void BuildFoldersInPathWithDoubleSlash(const std::string& aPath)
+	{
+		unsigned int slashIndex = aPath.find_first_of("\\");
+
+		while (slashIndex != std::string::npos)
+		{
+			std::string folder(aPath.begin(), aPath.begin() + slashIndex);
+			CreateDirectory(folder.c_str(), NULL);
+			slashIndex = aPath.find_first_of("\\", slashIndex + 1);
 		}
 	}
 
@@ -155,7 +166,14 @@ namespace CU
 		return false;
 	}
 
-
+	inline std::string ReplaceAllInString(std::string str, const std::string& from, const std::string& to) {
+		size_t start_pos = 0;
+		while ((start_pos = str.find(from, start_pos)) != std::string::npos) {
+			str.replace(start_pos, from.length(), to);
+			start_pos += to.length(); // Handles case where 'to' is a substring of 'from'
+		}
+		return str;
+	}
 
 	//If OptionalExtension is blank, the outputstring will have the same extension as the input string
 	//OptionalExtension needs to be entered without a period, "xml", NOT ".xml"
@@ -174,6 +192,27 @@ namespace CU
 		generatedDataFilePath += pathWithoutData;
 
 		return generatedDataFilePath;
+	}
+
+	//If OptionalExtension is blank, the outputstring will have the same extension as the input string
+	//OptionalExtension needs to be entered without a period, "xml", NOT ".xml"
+	inline std::string GetMyDocumentsDataPath(const std::string& aFilePath, const std::string& anOptionalNewExtension = "")
+	{
+		std::string pathWithoutData(aFilePath.begin() + 5, aFilePath.end());
+
+		if (anOptionalNewExtension != "")
+		{
+			int extensionIndex = pathWithoutData.find_last_of(".");
+			pathWithoutData = std::string(pathWithoutData.begin(), pathWithoutData.begin() + extensionIndex + 1);
+			pathWithoutData += anOptionalNewExtension;
+		}
+		std::string documentsPath = GetMyDocumentFolderPath();
+		documentsPath += pathWithoutData;
+
+		documentsPath = ReplaceAllInString(documentsPath, "/", "\\");
+		BuildFoldersInPathWithDoubleSlash(documentsPath);
+
+		return documentsPath;
 	}
 
 	//If OptionalExtension is blank, the outputstring will have the same extension as the input string

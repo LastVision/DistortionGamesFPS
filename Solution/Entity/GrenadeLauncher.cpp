@@ -9,6 +9,8 @@
 #include "GrenadeComponent.h"
 #include "InputComponent.h"
 #include <NetMessageShootGrenade.h>
+#include <PostMaster.h>
+#include <PrintTextMessage.h>
 #include <SharedNetworkManager.h>
 
 GrenadeLauncher::GrenadeLauncher(Prism::Scene* aScene, unsigned int aEntityGID, Entity* aOwnerEntity)
@@ -67,6 +69,14 @@ bool GrenadeLauncher::Shoot(const CU::Matrix44<float>&)
 	{
 		Prism::Audio::AudioInterface::GetInstance()->PostEvent("Play_NoAmmo", 0);
 		myShootTimer = myShootTime;
+		if (myAmmoTotal == 0)
+		{
+			PostMaster::GetInstance()->SendMessage(PrintTextMessage("No ammo", 1.f, { 0.7f, 0.2f, 0.2f, 1.f }));
+		}
+		else
+		{
+			PostMaster::GetInstance()->SendMessage(PrintTextMessage("Clip empty", 1.f, { 0.7f, 0.2f, 0.2f, 1.f }));
+		}
 	}
 	return false;
 }

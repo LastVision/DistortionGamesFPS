@@ -29,4 +29,5 @@ public:
 	static volatile bool PlayerShouldPlaySprintSound;
 	static volatile bool PlayerShouldStopSprintSound;
 
+	static bool ShouldRenderGUI;
 };

@@ -35,9 +35,9 @@
 #include "../InputWrapper/InputWrapper.h"
 #define MATERIAL_ID			0x01
 
-#ifndef RELEASE_BUILD
+//#ifndef RELEASE_BUILD
 #define GENERATE_COW
-#endif
+//#endif
 
 namespace Prism
 {
@@ -184,7 +184,6 @@ namespace Prism
 
 		myControllerManager->setOverlapRecoveryModule(true);
 	}
-
 
 	PhysicsManager::~PhysicsManager()
 	{
@@ -1038,11 +1037,15 @@ myIsSwapping = false;
 
 		if (myIsServer == true)
 		{
-			cowPath = CU::GetGeneratedDataFolderFilePath(aFBXPath, "cos");
+			//cowPath = CU::GetGeneratedDataFolderFilePath(aFBXPath, "cos");
+
+			cowPath = CU::GetMyDocumentsDataPath(aFBXPath, "cos");
 		}
 		else
 		{
-			cowPath = CU::GetGeneratedDataFolderFilePath(aFBXPath, "cow");
+			//cowPath = CU::GetGeneratedDataFolderFilePath(aFBXPath, "cow");
+
+			cowPath = CU::GetMyDocumentsDataPath(aFBXPath, "cow");
 		}
 
 		physx::PxTriangleMesh* mesh = nullptr;

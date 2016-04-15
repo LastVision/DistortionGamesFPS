@@ -67,7 +67,7 @@ FirstPersonRenderComponent::FirstPersonRenderComponent(Entity& aEntity, Prism::S
 	myMarker = Prism::ModelLoader::GetInstance()->LoadSprite("Data/Resource/Texture/UI/T_marker.dds", size, size * 0.5f);
 	myIsDeadScreen = Prism::ModelLoader::GetInstance()->LoadSprite("Data/Resource/Texture/UI/T_dead_indicator.dds", damageSize, damageSize * 0.5f);
 
-	Prism::ModelProxy* model = Prism::ModelLoader::GetInstance()->LoadModelAnimated("Data/Resource/Model/First_person/Pistol/SK_arm_pistol_idle.fbx", "Data/Resource/Shader/S_effect_pbl_animated.fx");
+	Prism::ModelProxy* model = Prism::ModelLoader::GetInstance()->LoadModelAnimated("Data/Resource/Model/First_person/Pistol/SK_arm_pistol_static.fbx", "Data/Resource/Shader/S_effect_pbl_animated.fx");
 	myModel = new Prism::Instance(*model, myInputComponentEyeOrientation, shouldUseSpecialFoV);
 	//aScene->AddInstance(myModel, eObjectRoomType::ALWAYS_RENDER);
 	myScene->SetArmInstance(myModel);
@@ -175,8 +175,7 @@ FirstPersonRenderComponent::~FirstPersonRenderComponent()
 	SAFE_DELETE(myIsDeadScreen);
 	myCoOpCircles.RemoveAll();
 	myCoOpRespawns.RemoveAll();
-
-
+	
 }
 
 void FirstPersonRenderComponent::Init()
@@ -431,7 +430,16 @@ void FirstPersonRenderComponent::Render(Prism::Texture* aArmDepthTexture, bool a
 		{
 			CU::Matrix44<float> renderPos;
 			CU::Vector3<float> tempPos(myCoOpCircles[i].myPosition);
-			tempPos.y += 2.f;
+
+			if (myCoOpCircles[i].myLifePercentage > 0.f)
+			{
+				tempPos.y += 2.2f;
+			}
+			else
+			{
+				tempPos.y += 0.5f;
+			}
+
 			float toBuddy = CU::Dot(tempPos - myInputComponentEyeOrientation.GetPos(), myInputComponentEyeOrientation.GetForward());
 			if (toBuddy < 0.f)
 			{
@@ -455,8 +463,9 @@ void FirstPersonRenderComponent::Render(Prism::Texture* aArmDepthTexture, bool a
 			newRenderPos.y = fmaxf(0.f, fminf(newRenderPos.y, windowSize.y));
 
 			float color = myCoOpCircles[i].myLifePercentage;
-
+			
 			myCoOpSprite->Render({ newRenderPos.x, newRenderPos.y }, { 1.f, 1.f }, { 1.f - color, color, color, 1.f });
+
 			if (myCoOpRespawns.Size() > 0)
 			{
 				Prism::Engine::GetInstance()->PrintText(myCoOpRespawns[i].myCurrentValue, { newRenderPos.x, newRenderPos.y }, Prism::eTextType::RELEASE_TEXT);

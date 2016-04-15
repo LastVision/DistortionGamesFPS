@@ -88,7 +88,7 @@ void MainMenuState::InitState(StateStackProxy* aStateStackProxy, GUI::Cursor* aC
 
 void MainMenuState::EndState()
 {
-	
+	PostMaster::GetInstance()->SendMessage(FadeMessage(1.f / 3.f));
 }
 
 const eStateStatus MainMenuState::Update(const float& aDeltaTime)
