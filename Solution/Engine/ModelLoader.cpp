@@ -601,7 +601,7 @@ namespace Prism
 
 	void ModelLoader::LoadRadiuses()
 	{
-		std::fstream file;
+		std::ifstream file;
 		file.open("GeneratedData/modellist.bin", std::ios::in | std::ios::binary);
 
 		std::string model;

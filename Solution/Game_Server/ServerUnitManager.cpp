@@ -19,7 +19,7 @@ void ServerUnitManager::CreateUnits(Prism::Scene* aScene)
 {
 	SET_RUNTIME(false);
 	CU::GrowingArray<std::string> types(8);
-	std::fstream read;
+	std::ifstream read;
 	read.open("Data/Setting/SET_unitTypes.dtxt");
 
 	for (int i = 0; i < types.GetCapacity(); ++i)

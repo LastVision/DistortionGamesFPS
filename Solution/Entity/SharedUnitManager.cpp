@@ -70,6 +70,12 @@ Entity* SharedUnitManager::RequestUnit(const std::string& aUnitType)
 {
 	if (myActiveUnits.Size() < myActiveUnits.GetCapacity())
 	{
+		if (myUnits.Size() == 0)
+		{
+			MessageBox(GetActiveWindow(), "Failed to load enemies", "ERROR", MB_ICONERROR);
+			return nullptr;
+		}
+
 		if (myUnitIndex >= myUnits.Size())
 		{
 			myUnitIndex = 0;

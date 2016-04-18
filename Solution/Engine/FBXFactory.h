@@ -60,12 +60,12 @@ namespace Prism
 		void FillDataForRadiusCalc(ModelData* aModelData, CU::GrowingArray<CU::Vector3<float>>& someVerticesOut
 			, const CU::Matrix44<float>& aOrientation);
 
-		void SaveHeaderToFile(FbxModelData* aModelData, std::fstream& aStream);
-		void SaveModelToFile(FbxModelData* aModelData, std::fstream& aStream);
-		void SaveModelDataToFile(ModelData* aData, std::fstream& aStream);
-		void SaveLodGroupToFile(Prism::LodGroup* aGroup, std::fstream& aStream);
-		void SaveAnimationToFile(FbxModelData* aModeldata, std::fstream& aStream);
-		void SaveBoneHierarchyToFile(Bone& aBone, AnimationData* aAnimationData, std::fstream& aStream);
+		void SaveHeaderToFile(FbxModelData* aModelData, std::ofstream& aStream);
+		void SaveModelToFile(FbxModelData* aModelData, std::ofstream& aStream);
+		void SaveModelDataToFile(ModelData* aData, std::ofstream& aStream);
+		void SaveLodGroupToFile(Prism::LodGroup* aGroup, std::ofstream& aStream);
+		void SaveAnimationToFile(FbxModelData* aModeldata, std::ofstream& aStream);
+		void SaveBoneHierarchyToFile(Bone& aBone, AnimationData* aAnimationData, std::ofstream& aStream);
 		void RemoveExtraVertices(ModelData* aData);
 
 		FBXLoader *myLoader;

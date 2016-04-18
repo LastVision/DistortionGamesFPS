@@ -62,7 +62,7 @@ namespace Prism
 
 		//CU::TimerManager::GetInstance()->StartTimer("LoadDGFX");
 
-		std::fstream file;
+		std::ifstream file;
 		file.open(dgfxFile.c_str(), std::ios::in | std::ios::binary);
 		DL_ASSERT_EXP(file.fail() == false, CU::Concatenate("Failed to open %s, did you forget to run the tool?", dgfxFile.c_str()));
 		if (file.fail() == true)
@@ -103,7 +103,7 @@ namespace Prism
 
 		//CU::TimerManager::GetInstance()->StartTimer("LoadDGFXAnimated");
 
-		std::fstream file;
+		std::ifstream file;
 		file.open(dgfxFile.c_str(), std::ios::in | std::ios::binary);
 		DL_ASSERT_EXP(file.fail() == false, CU::Concatenate("Failed to open %s, did you forget to run the tool?", dgfxFile.c_str()));
 		if (file.fail() == true)
@@ -145,7 +145,7 @@ namespace Prism
 		//CU::TimerManager::GetInstance()->StartTimer("LoadAnimationDGFX");
 
 
-		std::fstream stream;
+		std::ifstream stream;
 		stream.open(dgfxFile.c_str(), std::ios::in | std::ios::binary);
 		DL_ASSERT_EXP(stream.fail() == false, CU::Concatenate("Failed to open %s, did you forget to run the tool?", dgfxFile.c_str()));
 		if (stream.fail() == true)
@@ -197,7 +197,7 @@ namespace Prism
 		anim->GetHiearchyToBone(aBoneName, aBoneOut);
 	}
 
-	Model* DGFXLoader::CreateModelHeader(std::fstream& aStream)
+	Model* DGFXLoader::CreateModelHeader(std::ifstream& aStream)
 	{
 		Model* tempModel = new Model();
 		int fileVersion = -1;
@@ -213,7 +213,7 @@ namespace Prism
 		return tempModel;
 	}
 
-	Model* DGFXLoader::CreateModel(std::fstream& aStream, Model* aModel)
+	Model* DGFXLoader::CreateModel(std::ifstream& aStream, Model* aModel)
 	{
 		Model* tempModel = aModel;
 		if (tempModel == nullptr)
@@ -265,7 +265,7 @@ namespace Prism
 	}
 
 
-	ModelAnimated* DGFXLoader::CreateModelAnimatedHeader(std::fstream& aStream)
+	ModelAnimated* DGFXLoader::CreateModelAnimatedHeader(std::ifstream& aStream)
 	{
 		ModelAnimated* tempModel = new ModelAnimated();
 		int fileVersion = -1;
@@ -281,7 +281,7 @@ namespace Prism
 		return tempModel;
 	}
 
-	ModelAnimated* DGFXLoader::CreateModelAnimated(const std::string& aFBXPath, std::fstream& aStream, ModelAnimated* aModelAnimated)
+	ModelAnimated* DGFXLoader::CreateModelAnimated(const std::string& aFBXPath, std::ifstream& aStream, ModelAnimated* aModelAnimated)
 	{
 		ModelAnimated* tempModel = aModelAnimated;
 		
@@ -336,7 +336,7 @@ namespace Prism
 
 	void DGFXLoader::LoadData(VertexIndexWrapper* aIndexWrapper, VertexDataWrapper* aVertexData
 		, CU::GrowingArray<D3D11_INPUT_ELEMENT_DESC*>& someInputElements, Surface& aSurface
-		, std::fstream& aStream)
+		, std::ifstream& aStream)
 	{
 		int indexCount = 0;
 		aStream.read((char*)&indexCount, sizeof(int)); //Index count
@@ -491,7 +491,7 @@ namespace Prism
 		}
 	}
 
-	void DGFXLoader::LoadLodGroup(Model* aOutData, std::fstream& aStream)
+	void DGFXLoader::LoadLodGroup(Model* aOutData, std::ifstream& aStream)
 	{
 		Prism::LodGroup* lodGroup = new Prism::LodGroup();
 
@@ -511,7 +511,7 @@ namespace Prism
 		aOutData->SetLodGroup(lodGroup);
 	}
 
-	Animation* DGFXLoader::LoadAnimation(const std::string& aFBXPath, ModelAnimated* aOutData, std::fstream& aStream)
+	Animation* DGFXLoader::LoadAnimation(const std::string& aFBXPath, ModelAnimated* aOutData, std::ifstream& aStream)
 	{
 		CU::Matrix44<float> bindMatrix;
 		aStream.read((char*)&bindMatrix.myMatrix[0], sizeof(float) * 16);
@@ -578,7 +578,7 @@ namespace Prism
 		return newAnimation;
 	}
 
-	void DGFXLoader::LoadBoneHierarchy(HierarchyBone& aOutBone, std::fstream& aStream)
+	void DGFXLoader::LoadBoneHierarchy(HierarchyBone& aOutBone, std::ifstream& aStream)
 	{
 		aStream.read((char*)&aOutBone.myBoneID, sizeof(int));
 

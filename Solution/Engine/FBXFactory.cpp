@@ -590,7 +590,7 @@ namespace Prism
 		FbxModelData* fbxModelData = myLoader->loadModel(aInputPath, someOutErrors);
 
 		CU::BuildFoldersInPath(aOutputPath);
-		std::fstream file;
+		std::ofstream file;
 		file.open(aOutputPath, std::ios::out | std::ios::binary);
 
 		SaveHeaderToFile(fbxModelData, file);
@@ -638,7 +638,7 @@ namespace Prism
 		delete vertexRawData;
 	}
 
-	void FBXFactory::SaveHeaderToFile(FbxModelData* aModelData, std::fstream& aStream)
+	void FBXFactory::SaveHeaderToFile(FbxModelData* aModelData, std::ofstream& aStream)
 	{
 		int version = DGFX_VERSION;
 		aStream.write((char*)&version, sizeof(int)); //DGFX-Version
@@ -646,7 +646,7 @@ namespace Prism
 		aStream.write((char*)&aModelData->myRadius, sizeof(float));
 	}
 
-	void FBXFactory::SaveModelToFile(FbxModelData* aModelData, std::fstream& aStream)
+	void FBXFactory::SaveModelToFile(FbxModelData* aModelData, std::ofstream& aStream)
 	{
 		int isNullObject = 1;
 		if (aModelData->myData)
@@ -697,7 +697,7 @@ namespace Prism
 		}
 	}
 
-	void FBXFactory::SaveModelDataToFile(ModelData* aData, std::fstream& aStream)
+	void FBXFactory::SaveModelDataToFile(ModelData* aData, std::ofstream& aStream)
 	{
 #ifdef DGFX_REMOVE_EXTRA_VERTICES
 		RemoveExtraVertices(aData);
@@ -740,7 +740,7 @@ namespace Prism
 		}
 	}
 
-	void FBXFactory::SaveLodGroupToFile(LodGroup* aGroup, std::fstream& aStream)
+	void FBXFactory::SaveLodGroupToFile(LodGroup* aGroup, std::ofstream& aStream)
 	{
 		const int lodCount = aGroup->myLods.Size();
 		Prism::Lod* lods = new Prism::Lod[lodCount];
@@ -762,7 +762,7 @@ namespace Prism
 		delete[] lods;
 	}
 
-	void FBXFactory::SaveAnimationToFile(FbxModelData* aModelData, std::fstream& aStream)
+	void FBXFactory::SaveAnimationToFile(FbxModelData* aModelData, std::ofstream& aStream)
 	{
 		auto loadedAnimation = aModelData->myAnimation;
 
@@ -810,7 +810,7 @@ namespace Prism
 		aStream.write((char*)&animationLenght, sizeof(float));
 	}
 
-	void FBXFactory::SaveBoneHierarchyToFile(Bone& aBone, AnimationData* aAnimationData, std::fstream& aStream)
+	void FBXFactory::SaveBoneHierarchyToFile(Bone& aBone, AnimationData* aAnimationData, std::ofstream& aStream)
 	{
 		aStream.write((char*)&aBone.myId, sizeof(int)); //BoneID
 
