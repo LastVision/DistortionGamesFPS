@@ -93,6 +93,8 @@ private:
 	Prism::Instance* myMuzzleflash[5];
 	int myCurrentMuzzleflash;
 	float myMuzzleflashTimer;
+
+	eEntityState myStateBeforeAttack;
 };
 
 inline Prism::Instance* AnimationComponent::GetInstance()

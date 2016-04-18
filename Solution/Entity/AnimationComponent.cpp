@@ -24,6 +24,7 @@ AnimationComponent::AnimationComponent(Entity& aEntity, const AnimationComponent
 	, myHasSetCalcedMuzzle(false)
 	, myMuzzleflashTimer(0.f)
 	, myCurrentMuzzleflash(0)
+	, myStateBeforeAttack(eEntityState::IDLE)
 {
 #ifndef BOX_MODE
 	Prism::ModelProxy* model = Prism::ModelLoader::GetInstance()->LoadModelAnimated(myComponentData.myModelPath
@@ -171,7 +172,7 @@ void AnimationComponent::Update(float aDeltaTime)
 
 	if (myEntity.GetState() == eEntityState::ATTACK && IsCurrentAnimationDone() == true)
 	{
-		myEntity.SetState(eEntityState::IDLE);
+		myEntity.SetState(myStateBeforeAttack);
 	}
 }
 
@@ -187,6 +188,11 @@ void AnimationComponent::RestartCurrentAnimation()
 
 void AnimationComponent::PlayAnimation(eEntityState aAnimationState)
 {
+	if (aAnimationState == eEntityState::ATTACK)
+	{
+		myStateBeforeAttack = myPrevEntityState;
+	}
+
 	AnimationData& data = myAnimations[int(aAnimationState)];
 	myInstance->SetAnimation(Prism::AnimationSystem::GetInstance()->GetAnimation(data.myFile.c_str()));
 
