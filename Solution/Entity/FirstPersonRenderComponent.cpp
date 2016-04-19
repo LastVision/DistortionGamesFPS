@@ -54,6 +54,7 @@ FirstPersonRenderComponent::FirstPersonRenderComponent(Entity& aEntity, Prism::S
 	, myIsCoOp(false)
 	, myDisplayHitmarkerTimer(0.f)
 	, myHitmarkerHasRotated(false)
+	, myIsInOptionsMenu(false)
 {
 	CoOpCircle coopCircle;
 	coopCircle.myPosition = { 0.f, 0.f, 0.f };
@@ -497,42 +498,44 @@ void FirstPersonRenderComponent::Render(Prism::Texture* aArmDepthTexture, bool a
 			}
 		}
 	}
-
-	for (int i = 0; i < myPressETexts.Size(); ++i)
+	if (myIsInOptionsMenu == false)
 	{
-		CU::Matrix44<float> renderPos;
-		CU::Vector3<float> tempPos(myPressETexts[i].myPosition);
-		float lengthToText = CU::Length(tempPos - myInputComponentEyeOrientation.GetPos());
-		if (lengthToText > 10.f)
+		for (int i = 0; i < myPressETexts.Size(); ++i)
 		{
-			continue;
+			CU::Matrix44<float> renderPos;
+			CU::Vector3<float> tempPos(myPressETexts[i].myPosition);
+			float lengthToText = CU::Length(tempPos - myInputComponentEyeOrientation.GetPos());
+			if (lengthToText > 10.f)
+			{
+				continue;
+			}
+
+			float toBuddy = CU::Dot(tempPos - myInputComponentEyeOrientation.GetPos(), myInputComponentEyeOrientation.GetForward());
+			if (toBuddy < 0.f)
+			{
+				continue;
+			}
+			renderPos.SetPos(tempPos);
+			renderPos = renderPos * CU::InverseSimple(myInputComponentEyeOrientation);
+			renderPos = renderPos * myEntity.GetComponent<InputComponent>()->GetCamera()->GetProjection();
+
+			CU::Vector3<float> newRenderPos = renderPos.GetPos();
+			newRenderPos /= renderPos.GetPos4().w;
+
+			newRenderPos += 1.f;
+			newRenderPos *= 0.5f;
+			newRenderPos.x *= windowSize.x;
+			newRenderPos.y *= windowSize.y;
+			newRenderPos.y -= windowSize.y;
+
+			newRenderPos.x = fmaxf(0.f, fminf(newRenderPos.x, windowSize.x));
+			newRenderPos.y += windowSize.y;
+			newRenderPos.y = fmaxf(0.f, fminf(newRenderPos.y, windowSize.y));
+			newRenderPos.x -= 70.f;
+
+			//myCoOpSprite->Render({ newRenderPos.x, newRenderPos.y });
+			Prism::Engine::GetInstance()->PrintText("Press E", { newRenderPos.x, newRenderPos.y }, Prism::eTextType::RELEASE_TEXT, 2.f, CU::Vector4<float>(1.f, 1.f, 1.f, 1.f - (lengthToText / 10.f)));
 		}
-
-		float toBuddy = CU::Dot(tempPos - myInputComponentEyeOrientation.GetPos(), myInputComponentEyeOrientation.GetForward());
-		if (toBuddy < 0.f)
-		{
-			continue;
-		}
-		renderPos.SetPos(tempPos);
-		renderPos = renderPos * CU::InverseSimple(myInputComponentEyeOrientation);
-		renderPos = renderPos * myEntity.GetComponent<InputComponent>()->GetCamera()->GetProjection();
-
-		CU::Vector3<float> newRenderPos = renderPos.GetPos();
-		newRenderPos /= renderPos.GetPos4().w;
-
-		newRenderPos += 1.f;
-		newRenderPos *= 0.5f;
-		newRenderPos.x *= windowSize.x;
-		newRenderPos.y *= windowSize.y;
-		newRenderPos.y -= windowSize.y;
-
-		newRenderPos.x = fmaxf(0.f, fminf(newRenderPos.x, windowSize.x));
-		newRenderPos.y += windowSize.y;
-		newRenderPos.y = fmaxf(0.f, fminf(newRenderPos.y, windowSize.y));
-		newRenderPos.x -= 70.f;
-
-		//myCoOpSprite->Render({ newRenderPos.x, newRenderPos.y });
-		Prism::Engine::GetInstance()->PrintText("Press E", { newRenderPos.x, newRenderPos.y }, Prism::eTextType::RELEASE_TEXT, 2.f, CU::Vector4<float>(1.f, 1.f, 1.f, 1.f - (lengthToText / 10.f)));
 	}
 
 	if (myEntity.GetState() == eEntityState::DIE)

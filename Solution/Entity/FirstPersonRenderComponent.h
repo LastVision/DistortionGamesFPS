@@ -66,7 +66,10 @@ public:
 
 	void ReceiveNote(const UpgradeNote& aNote) override;
 
+
 	bool IsReloading() const;
+
+	void SetIsInOptionsMenu(bool aIsInOptionsMenu);
 
 	void OnResize(CU::Vector2<float> aNewSize);
 
@@ -163,6 +166,8 @@ private:
 	};
 
 	CU::GrowingArray<PressEText> myPressETexts;
+
+	bool myIsInOptionsMenu;
 };
 
 
@@ -186,5 +191,10 @@ inline bool FirstPersonRenderComponent::IsReloading() const
 	//	return true;
 	//}
 	//return false;
+}
+
+inline void FirstPersonRenderComponent::SetIsInOptionsMenu(bool aIsInOptionsMenu)
+{
+	myIsInOptionsMenu = aIsInOptionsMenu;
 }
 
