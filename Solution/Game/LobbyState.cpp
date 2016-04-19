@@ -18,6 +18,7 @@
 #include <OnRadioButtonMessage.h>
 #include <PostMaster.h>
 #include <SharedNetworkManager.h>
+#include <SpriteProxy.h>
 #include <TextProxy.h>
 #include <FadeMessage.h>
 
@@ -79,7 +80,7 @@ void LobbyState::InitState(StateStackProxy* aStateStackProxy, GUI::Cursor* aCurs
 	myPlayerListText->SetText("Player Online:\n");
 	myPlayerListText->SetScale({ 1.f, 1.f });
 
-	myWaitingForHostText->SetPosition({ 800.f, 200.f });
+	myWaitingForHostText->SetPosition({ 800.f - 50.f, 200.f });
 	myWaitingForHostText->SetText("Waiting for host...");
 	myWaitingForHostText->SetScale({ 1.f, 1.f });
 
@@ -95,6 +96,9 @@ void LobbyState::InitState(StateStackProxy* aStateStackProxy, GUI::Cursor* aCurs
 		ClientNetworkManager::GetInstance()->AddMessage(NetMessageRequestLevel());
 	}
 	myWaitingForConnectTimer = 1.f;
+
+	myRotatingThingy = Prism::ModelLoader::GetInstance()->LoadSprite(
+		"Data/Resource/Texture/Menu/T_rotating_thing.dds", { 128.f, 128.f }, { 64.f, 64.f });
 
 	PostMaster::GetInstance()->SendMessage(FadeMessage(1.f / 3.f));
 }
@@ -177,6 +181,7 @@ const eStateStatus LobbyState::Update(const float& aDeltaTime)
 	}
 	else
 	{
+		myRotatingThingy->Rotate(-aDeltaTime * 8.f);
 		myGUIManager->Update(aDeltaTime);
 	}
 
@@ -196,6 +201,7 @@ void LobbyState::Render()
 		myPlayerListText->Render();
 		myWaitingForHostText->Render();
 		myText->Render();
+		myRotatingThingy->Render({ 800.f + myText->GetWidth() + 35.f, 200.f + 7.f });
 	}
 
 	DEBUG_PRINT(myLevelToStart+1);
