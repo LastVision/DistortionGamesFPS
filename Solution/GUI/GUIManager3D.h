@@ -7,6 +7,7 @@ namespace Prism
 	class Instance;
 	class Scene;
 	class Effect;
+	class TextProxy;
 }
 
 namespace GUI
@@ -16,18 +17,25 @@ namespace GUI
 	public:
 		GUIManager3D(const Prism::Instance* aModel, Prism::Scene* aScene
 			, const int& aPistolClipSize, const int& aPistolAmmoInClip
-			, const int& aShotgunClipSize, const int& aShotgunAmmoInClip
-			, const int& aGrenadeLauncherClipSize, const int& aGrenadeLauncherAmmoInClip);
+			, const int& aShotgunClipSize, const int& aShotgunAmmoInClip, const int& aShotgunAmmoTotal
+			, const int& aGrenadeLauncherClipSize, const int& aGrenadeLauncherAmmoInClip, const int& aGrenadeLauncherAmmoTotal);
 		~GUIManager3D();
 
 		void Update(const CU::Matrix44<float>& aUIJointOrientation, const CU::Matrix44<float>& aHealthJointOrientation
-			, int aCurrentHealth, int aMaxHealth, float aDeltaTime);
-		void Render();
+			, int aCurrentHealth, int aMaxHealth, float aDeltaTime, eWeaponType aCurrentWeaponType);
+		void Render(bool aIsFirstLevel);
+
+		void Rebuild(const eWeaponType aWeaponType, int aSize);
 
 	private:
 		void operator=(GUIManager3D&) = delete;
 
-		float myTestValue;
+		float myShowFirstTutorial;
+		float myShowSecondTutorial;
+		float myShowThirdTutorial;
+
+		bool myIsFirstLevel;
+
 		CU::Matrix44<float> myWristOrientation;
 		//GUIBone myGUIBone;
 		CU::Matrix44<float> myHealthOrientation;
@@ -42,10 +50,26 @@ namespace GUI
 		const int& myPistolAmmoInClip;
 		const int& myShotgunClipSize;
 		const int& myShotgunAmmoInClip;
+		const int& myShotgunAmmoTotal;
 		const int& myGrenadeLauncherClipSize;
 		const int& myGrenadeLauncherAmmoInClip;
+		const int& myGrenadeLauncherAmmoTotal;
 
-		Prism::Bar3D* myTopAmmoLeft;
+		Prism::Bar3D* myHealthIcon;
+		Prism::Bar3D* myGUITutorialHealth;
+		Prism::Bar3D* myGUITutorialAmmo;
+		Prism::Bar3D* myGUITutorialAmmoTotal;
+
+		Prism::TextProxy* myAmmoTotalText;
+		CU::Matrix44<float> myRotationMatrix;
+
+		int myCurrentHealth;
+		int myMaxHealth;
+
+		float myLowHealthTimer;
+
+		bool myRenderAmmo;
+		bool myRenderAmmoTotal;
 	};
 
 }

@@ -10,9 +10,14 @@
 #include "NetworkComponentData.h"
 #include "GrenadeComponentData.h"
 #include "ShootingComponentData.h"
+#include "SpawnpointComponentData.h"
 #include "TriggerComponentData.h"
 #include "UpgradeComponentData.h"
 #include "BulletComponentData.h"
+#include "SoundComponentData.h"
+#include "RotationComponentData.h"
+#include "VisualExplosionComponentData.h"
+
 struct EntityData
 {
 	eEntityType myType;
@@ -27,8 +32,12 @@ struct EntityData
 	BulletComponentData myProjecileData;
 	PhysicsComponentData myPhysicsData;
 	ShootingComponentData myShootingData;
+	SpawnpointComponentData mySpawnpointData;
 	TriggerComponentData myTriggerData;
 	UpgradeComponentData myUpgradeData;
+	SoundComponentData mySoundData;
+	RotationComponentData myRotationData;
+	VisualExplosionComponentData myVisualExplosionData;
 
 	std::string mySubType;
 };

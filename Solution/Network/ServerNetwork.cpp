@@ -37,7 +37,9 @@ void ServerNetwork::StartServer(unsigned int aPortNum)
 	}
 	else
 	{
+#ifdef _DEBUG
 		std::cout << "WSAStartup succeeded!\n";
+#endif
 	}
 
 	result = getaddrinfo(nullptr, myPort.c_str(), &hints, &addrResult);
@@ -69,16 +71,17 @@ void ServerNetwork::StartServer(unsigned int aPortNum)
 	DWORD nonBlocking = 1;
 	if (ioctlsocket(myListenSocket, FIONBIO, &nonBlocking) != 0)
 	{
-		Utility::PrintEndl("Failed to set non-blocking socket!", (WHITE_BACK | DARK_RED_TEXT));
+		Utility::Printf("Failed to set non-blocking socket!", (WHITE_BACK | DARK_RED_TEXT));
 	}
 	else
 	{
-		Utility::PrintEndl("Successfully set up non-blocking socket!", LIGHT_GREEN_TEXT);
+		Utility::Printf("Successfully set up non-blocking socket!", LIGHT_GREEN_TEXT);
 	}
 
 
-	Utility::PrintEndl("Server successfully started!", LIGHT_GREEN_TEXT);
-
+	Utility::Printf("Server successfully started!", LIGHT_GREEN_TEXT);
+	hostent* localHosy = gethostbyname("");
+	myIP = inet_ntoa(*(struct in_addr*)*localHosy->h_addr_list);
 }
 
 void ServerNetwork::Send(const std::vector<char>& anArray, const sockaddr_in& anAddress)
@@ -88,30 +91,8 @@ void ServerNetwork::Send(const std::vector<char>& anArray, const sockaddr_in& an
 	{
 		int errorCode = WSAGetLastError();
 		std::string toPrint = "sendto() failed with error code : " + errorCode;
-		Utility::PrintEndl(toPrint, (WHITE_BACK | DARK_RED_TEXT));
+		Utility::Printf(toPrint, (WHITE_BACK | DARK_RED_TEXT));
 	}
-}
-
-void ServerNetwork::Send(NetMessageOnJoin join)
-{
-	/*join.Init();
-	join.mySenderID = myIDCount;
-
-	for (int i = 0; i < myClients.Size(); ++i)
-	{
-	if (myClients[i].myID != myIDCount)
-	{
-	join.myTargetID = myClients[i].myID;
-	join.PackMessage();
-	if (sendto(myListenSocket, &join.myStream[0], join.myStream.size(), 0, (struct sockaddr *)&myClients[i].myAdress
-	, sizeof(sockaddr_in)) == SOCKET_ERROR)
-	{
-	int errorCode = WSAGetLastError();
-	std::string toPrint = "sendto() failed with error code : " + errorCode;
-	Utility::PrintEndl(toPrint, Utility::eCOLOR::WHITE_BACK_RED);
-	}
-	}
-	}*/
 }
 
 void ServerNetwork::Receieve(std::vector<Buffer>& someBuffers)
@@ -133,10 +114,7 @@ void ServerNetwork::Receieve(std::vector<Buffer>& someBuffers)
 
 void ServerNetwork::PrintStatus()
 {
-	hostent* localHosy = gethostbyname("");
-	char* localIP = inet_ntoa(*(struct in_addr*)*localHosy->h_addr_list);
-
 	std::string toPrint = "------ SERVER ONLINE ------\n------- SERVER INFO -------\n";
-	toPrint += "Server IP: " + std::string(localIP) + "\nServer Port: " + myPort + "\n---------------------------\n";
-	Utility::PrintEndl(toPrint, eConsoleColor::LIGHT_BLUE_TEXT);
+	toPrint += "Server IP: " + std::string(myIP) + "\nServer Port: " + myPort + "\n---------------------------\n";
+	Utility::Printf(toPrint, eConsoleColor::LIGHT_BLUE_TEXT, true);
 }

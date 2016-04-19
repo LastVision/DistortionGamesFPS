@@ -10,14 +10,15 @@ namespace tinyxml2
 	class XMLElement;
 }
 
+
 class ClientLevelFactory : public SharedLevelFactory
 {
 public:
 	ClientLevelFactory(const std::string& aLevelListPath);
 	~ClientLevelFactory();
 
-	ClientLevel* LoadLevel(int aID);
-	ClientLevel* LoadCurrentLevel();
+	ClientLevel* LoadLevel(int aID, GUI::Cursor* aCursor, eStateStatus& aStateStatus);
+	ClientLevel* LoadCurrentLevel(GUI::Cursor* aCursor, eStateStatus& aStateStatus);
 
 private:
 	void ReadLevel(const std::string& aLevelPath) override;
@@ -28,6 +29,11 @@ private:
 	void LoadUnits(XMLReader& aReader, tinyxml2::XMLElement* aElement) override;
 	void LoadTriggers(XMLReader& aReader, tinyxml2::XMLElement* aElement) override;
 	void LoadLights(XMLReader& aReader, tinyxml2::XMLElement* aElement);
+	void LoadParticles(XMLReader& aReader, tinyxml2::XMLElement* aElement);
+	void LoadText(XMLReader& aReader, tinyxml2::XMLElement* aElement);
+	void LoadPlayerStartPosition(XMLReader& aReader, tinyxml2::XMLElement* aElement) override;
 
 	ClientLevel* myCurrentLevel;
+
+	std::string myWeaponSettingsPath;
 };

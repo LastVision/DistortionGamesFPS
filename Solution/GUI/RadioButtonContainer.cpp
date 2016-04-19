@@ -25,6 +25,10 @@ namespace GUI
 		{
 			radioButtonType = eOnRadioButtonEvent::LEVEL_SELECT;
 		}
+		else if (radioButtonTypeStr == "difficultySelect")
+		{
+			radioButtonType = eOnRadioButtonEvent::DIFFICULTY_SELECT;
+		}
 
 		DL_ASSERT_EXP(radioButtonType != eOnRadioButtonEvent::NONE, CU::Concatenate("Unknown radio button type: %s", radioButtonTypeStr.c_str()));
 
@@ -57,6 +61,7 @@ namespace GUI
 	RadioButtonContainer::~RadioButtonContainer()
 	{
 		myButtons.DeleteAll();
+		SAFE_DELETE(myBackground);
 	}
 
 	void RadioButtonContainer::Render(const CU::Vector2<float>& aParentPosition)

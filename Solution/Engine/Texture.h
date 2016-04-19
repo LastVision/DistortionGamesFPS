@@ -2,10 +2,12 @@
 
 #include <string>
 
+struct D3D11_VIEWPORT;
 struct ID3D11DepthStencilView;
 struct ID3D11RenderTargetView;
 struct ID3D11ShaderResourceView;
 struct ID3D11Texture2D;
+struct ID3D11Texture3D;
 
 namespace Prism
 {
@@ -32,13 +34,22 @@ namespace Prism
 		ID3D11DepthStencilView* GetDepthStencilView() const;
 		ID3D11Texture2D* GetDepthTexture() const;
 
+		ID3D11RenderTargetView* GetCubemapRenderTarget(int aIndex);
+		D3D11_VIEWPORT* GetViewPort();
+
+		void CreateDepthStencilView(float aWidth, float aHeight, int aArraySize = 1);
+		void CreateCubemap(float aWidth, float aHeight);
+		void Create3DTexture(float* aData, int aWidth, int aHeight, int aDepth);
+
 		void ClearDepth();
 
 		void Release();
 		void Resize(float aWidth, float aHeight);
 
+		void SaveToFile(const std::string& aFilePath);
+		void Save3DToFile(const std::string& aFilePath);
+
 	private:
-		void CreateDepthStencilView(float aWidth, float aHeight);
 
 		std::string myFileName;
 		ID3D11ShaderResourceView* myShaderView;
@@ -52,5 +63,9 @@ namespace Prism
 		ID3D11Texture2D* myDepthTexture;
 		bool myIsDepthTexture;
 
+		ID3D11Texture3D* myD3D11Texture3D;
+
+		ID3D11RenderTargetView* myCubemapRenderTargets[6];
+		D3D11_VIEWPORT* myViewPort;
 	};
 }

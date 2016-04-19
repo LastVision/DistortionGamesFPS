@@ -9,6 +9,7 @@ namespace Prism
 	{
 	public:
 		Camera(CU::Matrix44f& aPlayerMatrix);
+		Camera(CU::Matrix44f& aPlayerMatrix, float aWidth, float aHeight);
 		~Camera();
 
 		void ReadXML(const std::string& aFileName);
@@ -19,6 +20,7 @@ namespace Prism
 		const CU::Matrix44<float>& GetOrientation() const;
 		const CU::Matrix44<float>& GetProjection() const;
 		const CU::Matrix44<float>& GetViewProjection() const;
+		const CU::Matrix44<float>& GetSpecialFoVViewProjection() const;
 
 		void Update(float aDeltaTime);
 
@@ -39,6 +41,8 @@ namespace Prism
 
 		CU::Vector3<float> RayCast(const CU::Vector2<float>& aMousePosition) const;
 
+		CU::Vector2<float> ConvertTo2D(const CU::Vector3<float>& aPostion);
+
 	private:
 		void operator= (const Camera&) = delete;
 
@@ -46,6 +50,10 @@ namespace Prism
 		CU::Matrix44<float> myProjectionMatrix;
 		CU::Matrix44<float> myProjectionMatrixNonInverted; //used to go from projection to view space
 		CU::Matrix44<float> myViewProjectionMatrix;
+
+		CU::Matrix44<float> mySpecialFoVOrientation;
+		CU::Matrix44<float> mySpecialFoVProjectionMatrix;
+		CU::Matrix44<float> mySpecialFoVViewProjectionMatrix;
 		float myNear;
 		float myFar;
 		float myFOV;

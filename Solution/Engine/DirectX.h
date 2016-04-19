@@ -46,17 +46,12 @@ namespace Prism
 		ID3D11Texture2D* GetBackbufferTexture();
 		ID3D11Texture2D* GetDepthbufferTexture();
 
+		void SetDepthStencil(ID3D11DepthStencilView* aStencil);
+		void RestoreDepthStencil();
+
 		void RestoreViewPort();
 		void SetBackBufferAsTarget();
 
-		/*void EnableZBuffer();
-		void DisableZBuffer();
-
-		void EnableWireframe();
-		void DisableWireframe();
-
-		void EnableCulling();
-		void DisableCulling();*/
 
 		void SetDepthBufferState(eDepthStencil aState);
 		eDepthStencil GetDepthBufferState() const;
@@ -72,14 +67,9 @@ namespace Prism
 		bool D3DSwapChainSetup();
 		bool D3DBackbufferSetup(int aWidth, int aHeight);
 		bool D3DViewPortSetup(int aWidth, int aHeight);
-		/*bool D3DEnabledStencilStateSetup();
-		bool D3DDisabledStencilStateSetup();
-		bool D3DWireframeRasterizerStateSetup();
-		bool D3DSolidRasterizerStateSetup();
-		bool D3DNoCullingRasterizerStateSetup();*/
-
 		bool D3DSetupRasterizerStates();
 		bool D3DSetupDepthStencilStates();
+		void D3DGetRefreshRate(unsigned int& aNumerator, unsigned int& aDenominator);
 
 		ID3D11Device* myDevice;
 		ID3D11DeviceContext* myContext;
@@ -89,15 +79,10 @@ namespace Prism
 
 		ID3D11RenderTargetView* myBackbufferRenderTarget;
 		ID3D11DepthStencilView* myBackbufferDepthStencil;
+		ID3D11DepthStencilView* myOriginalBackbufferDepthStencil;
 		ID3D11ShaderResourceView* myBackbufferShaderResource;
 		ID3D11Texture2D* myDepthbufferTexture;
 		ID3D11Texture2D* myBackbufferTexture;
-
-		/*ID3D11DepthStencilState* myEnabledDepthStencilState;
-		ID3D11DepthStencilState* myDisabledDepthStencilState;
-		ID3D11RasterizerState* mySolidRasterizer;
-		ID3D11RasterizerState* myWireframeRasterizer;
-		ID3D11RasterizerState* myNoCullingRasterizer;*/
 
 		ID3D11RasterizerState* myRasterizerStates[static_cast<int>(eRasterizer::_COUNT)];
 		ID3D11DepthStencilState* myDepthStencilStates[static_cast<int>(eDepthStencil::_COUNT)];
@@ -109,6 +94,7 @@ namespace Prism
 
 		HWND* myHWND;
 		SetupInfo mySetupInfo;
+		CU::Vector2<int> myWindowSize;
 	};
 }
 

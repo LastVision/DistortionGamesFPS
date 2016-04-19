@@ -6,67 +6,76 @@
 #include <Vector.h>
 #include <GrowingArray.h>
 
-
 namespace CU
 {
 	class InputWrapper
 	{
 	public:
-		UCHAR myKeyState[256];
-
+		enum eType
+		{
+			LOGIC = 0,
+			PHYSICS = 1
+		};
 
 		static void Create(HWND aHwnd, HINSTANCE aHInstance, DWORD aKeyCoopFlags, DWORD aMouseCoopFlags);
 		static void Destroy();
 		static InputWrapper* GetInstance();
 
 
-		float GetMouseDX() const;
-		float GetMouseDY() const;
-		float GetMouseDZ() const; //scrollwheel
+		float GetMouseDX(eType aType = eType::LOGIC) const;
+		float GetMouseDY(eType aType = eType::LOGIC) const;
+		float GetMouseDZ(eType aType = eType::LOGIC) const; //scrollwheel
 
-		const CU::Vector2<float>& GetMousePosition() const;
+		const CU::Vector2<float>& GetMousePosition(eType aType = eType::LOGIC) const;
 
-		bool MouseDown(int aButton) const; //specifik musknapp nere this frame
-		bool MouseUp(int aButton) const;
-		bool MouseIsPressed(int aButton) const; //musknapp nere 
+		bool MouseDown(int aButton, eType aType = eType::LOGIC) const; //specifik musknapp nere this frame
+		bool MouseUp(int aButton, eType aType = eType::LOGIC) const;
+		bool MouseIsPressed(int aButton, eType aType = eType::LOGIC) const; //musknapp nere 
 
-		bool KeyDown(unsigned int aKey) const; //Returns true if specified key is down THIS FRAME
-		bool KeyUp(unsigned int aKey) const;
-		bool KeyIsPressed(unsigned int aKey) const; //Returns true if specified key is down 
+		bool KeyDown(unsigned int aKey, eType aType = eType::LOGIC) const; //Returns true if specified key is down THIS FRAME
+		bool KeyUp(unsigned int aKey, eType aType = eType::LOGIC) const;
+		bool KeyIsPressed(unsigned int aKey, eType aType = eType::LOGIC) const; //Returns true if specified key is down 
 
-		void Update();
-		void FeedMouseRawInput(int aDeltaX, int aDeltaY);
-		void PauseDeltaRecording();
-		void ResumeDeltaRecording();
+		bool AnyKeyDown(eType aType = eType::LOGIC) const;
+
+		//void FeedMouseRawInput(int aDeltaX, int aDeltaY);
+		//void PauseDeltaRecording();
+		//void ResumeDeltaRecording();
 		void ToggleWindowActive();
 
-		void TweakValue(float& aValue, float aRate, float aDeltaTime
-			, unsigned int aIncreaseKey, unsigned int aDecreaseKey) const;
+		void LogicTweakValue(float& aValue, float aRate, float aDeltaTime
+			, unsigned int aIncreaseKey, unsigned int aDecreaseKey, eType aType = eType::LOGIC) const;
+
+		void LogicUpdate();
+		void PhysicsUpdate();
+
 	private:
-		CU::GrowingArray<CU::Vector2<int>> myBufferedMousePosition;
-		CU::Vector2<int> myMouseDelta;
+		CU::GrowingArray<CU::Vector2<int>> myBufferedMousePosition[2];
+		CU::Vector2<int> myMouseDelta[2];
+
 		InputWrapper();
 		~InputWrapper();
 		void Init(HWND aHwnd, HINSTANCE aHInstance, DWORD aKeyCoopFlags, DWORD aMouseCoopFlags);
-		void CapturePreviousState();
+		void LogicCapturePreviousState();
+		void PhysicsCapturePreviousState();
 
 		static InputWrapper* myInstance;
 
 
 		LPDIRECTINPUT8 myDirectInput;
 		LPDIRECTINPUTDEVICE8 myKeyboardDevice;
-//		UCHAR myKeyState[256];
-		UCHAR myPreviousKeyState[256];
+		UCHAR myKeyState[2][256];
+		UCHAR myPreviousKeyState[2][256];
 
 		LPDIRECTINPUTDEVICE8 myMouseDevice;
-		DIMOUSESTATE myMouseState;
-		DIMOUSESTATE myPreviousMouseState;
+		DIMOUSESTATE myMouseState[2];
+		DIMOUSESTATE myPreviousMouseState[2];
 
-		CU::Vector2<float> myMousePos;
+		CU::Vector2<float> myMousePos[2];
 
 		HWND myWindowHandler;
 
 		bool myIsRecordingDeltas;
-		bool myWindowIsActive;
+		volatile bool myWindowIsActive;
 	};
 }

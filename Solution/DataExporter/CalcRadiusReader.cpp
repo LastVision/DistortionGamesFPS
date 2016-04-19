@@ -4,11 +4,12 @@
 #include <fstream>
 #include <iostream>
 #include <CommonHelper.h>
-
+#include <MemoryMacros.h>
 
 CalcRadiusReader::CalcRadiusReader()
 {
 	myErrors.Init(16);
+	myVertices.Init(524288);
 }
 
 CalcRadiusReader::~CalcRadiusReader()
@@ -34,10 +35,10 @@ void CalcRadiusReader::ReadFile(const std::string& aFilePath)
 		|| aFilePath.compare(aFilePath.size() - 4, 4, ".FBX") == 0)
 	{
 		std::cout << "Reading FBX: " + aFilePath << std::endl;
-
-		CU::GrowingArray<CU::Vector3<float>> vertices(524288);
-		myFactory.LoadModelForRadiusCalc(aFilePath.c_str(), vertices);
-		float distance = CalcMaxDistance(vertices);
+		myVertices.RemoveAll();
+		
+		myFactory.LoadModelForRadiusCalc(aFilePath.c_str(), myVertices);
+		float distance = CalcMaxDistance(myVertices);
 
 		if (distance > 1000)
 		{

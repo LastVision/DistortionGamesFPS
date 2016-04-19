@@ -3,7 +3,8 @@
 class DefendMission : public Mission
 {
 public:
-	DefendMission(const std::string& aMissionType, float aSecondsToDefend, bool aShouldLoopMissionEvents);
+	DefendMission(const std::string& aMissionType, int aMissionID, float aSecondsToDefend, bool aShouldLoopMissionEvents
+		, const std::string& aProgressText, bool aProgressShouldCountDown);
 	~DefendMission();
 
 	bool Update(float aDeltaTime) override;
@@ -11,7 +12,13 @@ public:
 
 private:
 	float myDefendTime;
+	float myMaxDefendTime;
+	float mySendTime;
 	bool myShouldCountDown;
 	int myEnemiesInside;
+	int myLastSecondToWarn;
+
+	std::string myProgressText;
+	bool myProgressShouldCountDown;
 };
 

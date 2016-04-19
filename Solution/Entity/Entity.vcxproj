@@ -96,7 +96,7 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <PrecompiledHeader>Use</PrecompiledHeader>
-      <AdditionalIncludeDirectories>$(SolutionDir)Network;$(SolutionDir)Memory;$(SolutionDir)CommonUtilities;$(SolutionDir)DL_Debug;$(SolutionDir)Engine;$(SolutionDir)Audio;$(SolutionDir)PostMaster;$(SolutionDir)InputWrapper;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)Game_Shared;$(SolutionDir)Network;$(SolutionDir)Memory;$(SolutionDir)CommonUtilities;$(SolutionDir)DL_Debug;$(SolutionDir)Engine;$(SolutionDir)Audio;$(SolutionDir)PostMaster;$(SolutionDir)InputWrapper;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <MinimalRebuild>false</MinimalRebuild>
       <AdditionalOptions>-D_SCL_SECURE_NO_WARNINGS %(AdditionalOptions)</AdditionalOptions>
@@ -113,7 +113,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
       <PrecompiledHeader>Use</PrecompiledHeader>
-      <AdditionalIncludeDirectories>$(SolutionDir)Network;$(SolutionDir)Memory;$(SolutionDir)CommonUtilities;$(SolutionDir)DL_Debug;$(SolutionDir)Engine;$(SolutionDir)Audio;$(SolutionDir)PostMaster;$(SolutionDir)InputWrapper;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)Game_Shared;$(SolutionDir)Network;$(SolutionDir)Memory;$(SolutionDir)CommonUtilities;$(SolutionDir)DL_Debug;$(SolutionDir)Engine;$(SolutionDir)Audio;$(SolutionDir)PostMaster;$(SolutionDir)InputWrapper;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <PreprocessorDefinitions>RELEASE_BUILD;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalOptions>-D_SCL_SECURE_NO_WARNINGS %(AdditionalOptions)</AdditionalOptions>
@@ -132,7 +132,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
       <PrecompiledHeader>Use</PrecompiledHeader>
-      <AdditionalIncludeDirectories>$(SolutionDir)Network;$(SolutionDir)Memory;$(SolutionDir)CommonUtilities;$(SolutionDir)DL_Debug;$(SolutionDir)Engine;$(SolutionDir)Audio;$(SolutionDir)PostMaster;$(SolutionDir)InputWrapper;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)Game_Shared;$(SolutionDir)Network;$(SolutionDir)Memory;$(SolutionDir)CommonUtilities;$(SolutionDir)DL_Debug;$(SolutionDir)Engine;$(SolutionDir)Audio;$(SolutionDir)PostMaster;$(SolutionDir)InputWrapper;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <PreprocessorDefinitions>%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalOptions>-D_SCL_SECURE_NO_WARNINGS %(AdditionalOptions)</AdditionalOptions>
@@ -151,7 +151,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
       <PrecompiledHeader>Use</PrecompiledHeader>
-      <AdditionalIncludeDirectories>$(SolutionDir)Network;$(SolutionDir)Memory;$(SolutionDir)CommonUtilities;$(SolutionDir)DL_Debug;$(SolutionDir)Engine;$(SolutionDir)Audio;$(SolutionDir)PostMaster;$(SolutionDir)InputWrapper;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)Game_Shared;$(SolutionDir)Network;$(SolutionDir)Memory;$(SolutionDir)CommonUtilities;$(SolutionDir)DL_Debug;$(SolutionDir)Engine;$(SolutionDir)Audio;$(SolutionDir)PostMaster;$(SolutionDir)InputWrapper;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <AdditionalOptions>-D_SCL_SECURE_NO_WARNINGS %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
@@ -198,16 +198,25 @@
     <ClInclude Include="GrenadeComponentData.h" />
     <ClInclude Include="BulletComponent.h" />
     <ClInclude Include="BulletComponentData.h" />
+    <ClInclude Include="RotationComponent.h" />
+    <ClInclude Include="RotationComponentData.h" />
+    <ClInclude Include="SharedUnitManager.h" />
     <ClInclude Include="ShootingComponent.h" />
     <ClInclude Include="ShootingComponentData.h" />
     <ClInclude Include="ShootNote.h" />
     <ClInclude Include="Shotgun.h" />
+    <ClInclude Include="SoundComponent.h" />
+    <ClInclude Include="SoundComponentData.h" />
+    <ClInclude Include="SpawnpointComponent.h" />
+    <ClInclude Include="SpawnpointComponentData.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="TriggerComponent.h" />
     <ClInclude Include="TriggerComponentData.h" />
     <ClInclude Include="UpgradeComponent.h" />
     <ClInclude Include="UpgradeComponentData.h" />
     <ClInclude Include="UpgradeNote.h" />
+    <ClInclude Include="VisualExplosionComponent.h" />
+    <ClInclude Include="VisualExplosionComponentData.h" />
     <ClInclude Include="Weapon.h" />
   </ItemGroup>
   <ItemGroup>
@@ -233,8 +242,12 @@
     <ClCompile Include="PollingStation.cpp" />
     <ClCompile Include="GrenadeComponent.cpp" />
     <ClCompile Include="BulletComponent.cpp" />
+    <ClCompile Include="RotationComponent.cpp" />
+    <ClCompile Include="SharedUnitManager.cpp" />
     <ClCompile Include="ShootingComponent.cpp" />
     <ClCompile Include="Shotgun.cpp" />
+    <ClCompile Include="SoundComponent.cpp" />
+    <ClCompile Include="SpawnpointComponent.cpp" />
     <ClCompile Include="stdafx.cpp">
       <MultiProcessorCompilation Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</MultiProcessorCompilation>
       <MultiProcessorCompilation Condition="'$(Configuration)|$(Platform)'=='DataExporter|Win32'">false</MultiProcessorCompilation>
@@ -247,6 +260,7 @@
     </ClCompile>
     <ClCompile Include="TriggerComponent.cpp" />
     <ClCompile Include="UpgradeComponent.cpp" />
+    <ClCompile Include="VisualExplosionComponent.cpp" />
     <ClCompile Include="Weapon.cpp" />
   </ItemGroup>
   <ItemGroup>

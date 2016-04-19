@@ -1,5 +1,11 @@
 #pragma once
 
+enum class eGameType : unsigned char
+{
+	SINGLEPLAYER,
+	MULTIPLAYER,
+};
+
 enum class eWeaponType
 {
 	PISTOL,
@@ -12,21 +18,49 @@ enum class eMissionType
 	NONE,
 	KILL_X,
 	DEFEND,
+	EVENT,
 };
+
 
 enum class eActionEventType
 {
 	LOCK,
 	UNLOCK,
+	TEXT,
+	SPAWN,
+	MARKER,
 };
 
-enum class eInGameStates
+enum class eInGameState
+{
+	LOADING_SCREEN,
+	LOADING_PHYSICS_INIT,
+	LOADING_GRAPHICS_INIT,
+	LOADING_CAN_START,
+	LEVEL,
+	LOAD_LEVEL,
+	LEVEL_FAIL,
+	LEVEL_FAIL_CAN_START,
+	LEVEL_COMPLETE,
+	LEVEL_COMPLETE_CAN_START,
+};
+
+enum class eServerInGameState
 {
 	LEVEL_UPDATE,
 	LEVEL_COMPLETE,
 	LEVEL_COMPLETE_ALL_CLIENTS_RESPONDED,
 	LEVEL_LOAD,
 	LEVEL_WAIT_FOR_OTHER,
+};
+
+enum class eObjectRoomType
+{
+	NONE,
+	NOT_USED_ON_SERVER,
+	ALWAYS_RENDER,
+	DYNAMIC,
+	STATIC,
 };
 
 enum eOwnerType
@@ -46,6 +80,8 @@ enum eEntityType
 	PLAYER = 16,
 	EXPLOSION = 32,
 	BULLET = 64,
+	SPAWNPOINT = 128,
+	VISUAL_EXPLOSION = 256,
 	_COUNT,
 };
 
@@ -58,6 +94,9 @@ enum class eTriggerType : int
 	UNLOCK,
 	LOCK,
 	MISSION,
+	RESPAWN,
+	ENEMY_SPAWN,
+	MARKER,
 	_COUNT,
 };
 
@@ -126,7 +165,6 @@ enum class eEntityState : unsigned char
 	WALK,
 	ATTACK,
 	DIE,
-	THROW,
 	_COUNT,
 };
 
@@ -150,6 +188,13 @@ enum class ePlayerState : int
 	_COUNT,
 };
 
+enum class eNetRayCastType : int
+{
+	CLIENT_SHOOT_PISTOL,
+	CLIENT_SHOOT_SHOTGUN,
+	_COUNT,
+};
+
 enum class eComponentType
 {
 	NOT_USED = -1,
@@ -166,6 +211,10 @@ enum class eComponentType
 	UPGRADE,
 	AI,
 	BULLET,
+	SPAWNPOINT,
+	SOUND,
+	ROTATION,
+	VISUAL_EXPLOSION,
 	_COUNT,
 };
 

@@ -42,6 +42,7 @@
 #include "TerrainReader.h"
 #include "IReader.h"
 #include <TimerManager.h>
+#include <MemoryMacros.h>
 
 #pragma comment(lib, "Shlwapi.lib")
 
@@ -124,7 +125,9 @@ int main(int argC,      // Number of strings in array argv
 	
 
 	//CU::TimerManager::Destroy();
+	Prism::MemoryTracker::Destroy();
 	DL_Debug::Debug::Destroy();
+
 
 	return EXIT_SUCCESS;
 }

@@ -1,6 +1,11 @@
 #include "stdafx.h"
+
+#include "AIComponent.h"
+#include "HealthComponent.h"
+#include <NetMessageLevelComplete.h>
 #include "PollingStation.h"
-#include <iostream>
+#include <SharedNetworkManager.h>
+
 PollingStation* PollingStation::myInstance = nullptr;
 PollingStation* PollingStation::GetInstance()
 {
@@ -82,8 +87,10 @@ Entity* PollingStation::FindClosestPlayer(const CU::Vector3<float>& aPosition, f
 
 	for each (Entity* player in myPlayers)
 	{
+		bool alive = player->GetComponent<HealthComponent>()->GetCurrentHealth() > 0;
+
 		float distance2 = CU::Length2(player->GetOrientation().GetPos() - aPosition);
-		if (distance2 < aMaxRange * aMaxRange && distance2 < currentMinDistance2)
+		if (alive && distance2 < aMaxRange * aMaxRange && distance2 < currentMinDistance2)
 		{
 			currentMinDistance2 = distance2;
 			toReturn = player;
@@ -93,3 +100,66 @@ Entity* PollingStation::FindClosestPlayer(const CU::Vector3<float>& aPosition, f
 	return toReturn;
 }
 
+void PollingStation::HasDied(Entity* anEntity)
+{
+	if (anEntity->GetSubType() == "playerserver")
+	{
+		bool allPlayersDead = true;
+		for each(Entity* player in myPlayers)
+		{
+			if (player->GetState() != eEntityState::DIE)
+			{
+				allPlayersDead = false;
+				break;
+			}
+		}
+
+		if (allPlayersDead == true)
+		{
+			SharedNetworkManager::GetInstance()->AddMessage(NetMessageLevelComplete(true));
+		}
+	}
+	else
+	{
+		//DL_ASSERT("No handle for enemy death yet.");
+		//handle dead enemies here
+	}
+}
+
+void PollingStation::SetEnemyTargetPosition(Entity* aEntityToTarget)
+{
+	/*for each (Entity* enemy in myEnemies)
+	{
+		enemy->GetComponent<AIComponent>()->SetDefendTarget(aEntityToTarget);
+	}*/
+	myCurrentDefendTarget = aEntityToTarget;
+}
+
+void PollingStation::ResetEnemyTargetPosition()
+{
+	/*for each (Entity* enemy in myEnemies)
+	{
+		enemy->GetComponent<AIComponent>()->ResetDefendTarget();
+	}*/
+	myCurrentDefendTarget = nullptr;
+}
+
+Entity* PollingStation::GetCurrentDefendTarget(const CU::Vector3<float>& aEnemyPosition) const
+{
+	Entity* toReturn = nullptr;
+
+	float currentMinDistance2 = FLT_MAX;
+	float defendAggroRange = 30.f;
+
+	if (myCurrentDefendTarget != nullptr)
+	{
+		float distance2 = CU::Length2(myCurrentDefendTarget->GetOrientation().GetPos() - aEnemyPosition);
+		if (distance2 < defendAggroRange * defendAggroRange && distance2 < currentMinDistance2)
+		{
+			currentMinDistance2 = distance2;
+			toReturn = myCurrentDefendTarget;
+		}
+	}
+
+	return toReturn;
+}

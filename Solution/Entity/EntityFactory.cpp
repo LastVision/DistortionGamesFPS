@@ -54,11 +54,10 @@ Entity* EntityFactory::CreateEntity(unsigned int aGID, eEntityType aType, Prism:
 	return nullptr;
 }
 
-Entity* EntityFactory::CreateEntity(unsigned int aGID, eEntityType aType, std::string aSubType, Prism::Scene* aScene, bool aClientSide, const CU::Vector3f& aPosition,
+Entity* EntityFactory::CreateEntity(unsigned int aGID, eEntityType, std::string aSubType, Prism::Scene* aScene, bool aClientSide, const CU::Vector3f& aPosition,
 	const CU::Vector3f& aRotation, const CU::Vector3f& aScale)
 {
-	if (aType == eEntityType::PROP || aType == eEntityType::UNIT || aType == eEntityType::TRIGGER || aType == eEntityType::PLAYER)
-	{
+
 		if (myInstance->myLoadedSubEntityData.find(aSubType) != myInstance->myLoadedSubEntityData.end())
 		{
 			Entity* newEntity = new Entity(aGID, myInstance->myLoadedSubEntityData.find(aSubType)->second, aScene, aClientSide, aPosition, aRotation
@@ -68,7 +67,6 @@ Entity* EntityFactory::CreateEntity(unsigned int aGID, eEntityType aType, std::s
 				
 			return newEntity;
 		}
-	}
 	std::string errorMessage = "SubType " + aSubType + " not found.";
 	DL_ASSERT(errorMessage);
 	return nullptr;
@@ -85,13 +83,12 @@ void EntityFactory::LoadEntity(const char* aEntityPath)
 	EntityData newData;
 	std::string entityType;
 	std::string entitySubType;
+	newData.mySubType = "";
 	entityDocument.ForceReadAttribute(entityElement, "type", entityType);
 	newData.myType = EntityEnumConverter::ConvertStringToEntityType(CU::ToLower(entityType));
-	if (newData.myType == eEntityType::PROP || newData.myType == eEntityType::UNIT || newData.myType == eEntityType::TRIGGER || newData.myType == eEntityType::PLAYER)
-	{
-		entityDocument.ForceReadAttribute(entityElement, "subType", entitySubType);
+
+	entityDocument.ReadAttribute(entityElement, "subType", entitySubType);
 		newData.mySubType = CU::ToLower(entitySubType);
-	}
 
 
 	for (tinyxml2::XMLElement* e = entityDocument.FindFirstChild(entityElement); e != nullptr;
@@ -140,6 +137,10 @@ void EntityFactory::LoadEntity(const char* aEntityPath)
 		{
 			myComponentLoader->LoadShootingComponent(entityDocument, e, newData.myShootingData);
 		}
+		else if (elementName == CU::ToLower("SpawnpointComponent"))
+		{
+			myComponentLoader->LoadSpawnpointComponent(entityDocument, e, newData.mySpawnpointData);
+		}
 		else if (elementName == CU::ToLower("UpgradeComponent"))
 		{
 			myComponentLoader->LoadUpgradeComponent(entityDocument, e, newData.myUpgradeData);
@@ -156,6 +157,18 @@ void EntityFactory::LoadEntity(const char* aEntityPath)
 		{
 			myComponentLoader->LoadBulletComponent(entityDocument, e, newData.myProjecileData);
 		}
+		else if (elementName == CU::ToLower("SoundComponent"))
+		{
+			myComponentLoader->LoadSoundComponent(entityDocument, e, newData.mySoundData);
+		}
+		else if (elementName == CU::ToLower("RotationComponent"))
+		{
+			myComponentLoader->LoadRotationComponent(entityDocument, e, newData.myRotationData);
+		}
+		else if (elementName == CU::ToLower("VisualExplosionComponent"))
+		{
+			myComponentLoader->LoadVisualExplosionComponent(entityDocument, e, newData.myVisualExplosionData);
+		}
 		else
 		{
 			std::string errorMessage = "The component " + elementName +
@@ -163,7 +176,7 @@ void EntityFactory::LoadEntity(const char* aEntityPath)
 			DL_ASSERT(errorMessage.c_str());
 		}
 	}
-	if (newData.myType == eEntityType::PROP || newData.myType == eEntityType::UNIT || newData.myType == eEntityType::TRIGGER || newData.myType == eEntityType::PLAYER)
+	if (newData.mySubType != "")
 	{
 		myLoadedSubEntityData[newData.mySubType] = newData;
 	}

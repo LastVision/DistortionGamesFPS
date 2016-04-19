@@ -81,7 +81,9 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="ActionEvent.h" />
     <ClInclude Include="DefendMission.h" />
+    <ClInclude Include="EventMission.h" />
     <ClInclude Include="KillXMission.h" />
     <ClInclude Include="Mission.h" />
     <ClInclude Include="MissionManager.h" />
@@ -92,14 +94,17 @@
     <ClInclude Include="ServerLobbyState.h" />
     <ClInclude Include="ServerNetworkManager.h" />
     <ClInclude Include="ServerProjectileManager.h" />
+    <ClInclude Include="ServerStartState.h" />
     <ClInclude Include="ServerState.h" />
     <ClInclude Include="ServerStateStack.h" />
     <ClInclude Include="ServerStateStackProxy.h" />
+    <ClInclude Include="ServerUnitManager.h" />
     <ClInclude Include="StateEnums.h" />
     <ClInclude Include="stdafx.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="DefendMission.cpp" />
+    <ClCompile Include="EventMission.cpp" />
     <ClCompile Include="KillXMission.cpp" />
     <ClCompile Include="Mission.cpp" />
     <ClCompile Include="MissionManager.cpp" />
@@ -110,8 +115,10 @@
     <ClCompile Include="ServerLobbyState.cpp" />
     <ClCompile Include="ServerNetworkManager.cpp" />
     <ClCompile Include="ServerProjectileManager.cpp" />
+    <ClCompile Include="ServerStartState.cpp" />
     <ClCompile Include="ServerStateStack.cpp" />
     <ClCompile Include="ServerStateStackProxy.cpp" />
+    <ClCompile Include="ServerUnitManager.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>

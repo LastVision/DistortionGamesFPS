@@ -1,8 +1,10 @@
 #include "stdafx.h"
 #include "KillXMission.h"
+#include <SendTextToClientsMessage.h>
+#include <PostMaster.h>
 
-KillXMission::KillXMission(const std::string& aMissionType, int aEnemiesToKill, bool aShouldLoopMissionEvents)
-	: Mission(aMissionType, aShouldLoopMissionEvents)
+KillXMission::KillXMission(const std::string& aMissionType, int aMissionID, int aEnemiesToKill, bool aShouldLoopMissionEvents)
+	: Mission(aMissionType, aMissionID, aShouldLoopMissionEvents)
 	, myAmountToKill(aEnemiesToKill)
 {
 }
@@ -18,26 +20,30 @@ bool KillXMission::Update(float aDeltaTime)
 		myStartEvents[0].myTimeBeforeStarting -= aDeltaTime;
 		if (myStartEvents[0].myTimeBeforeStarting <= 0.f)
 		{
-			SendMissionMessage(myStartEvents[0].myType, myStartEvents[0].myGID);
+			SendMissionMessage(myStartEvents[0]);
 			myStartEvents.RemoveNonCyclicAtIndex(0);
 		}
 		return false;
 
 	}
-	else if (myEnemiesKilled <= myAmountToKill)
+	else if (myEnemiesKilled < myAmountToKill)
 	{
 		if (myMissionEvents.Size() > 0)
 		{
 			myMissionEvents[myCurrentMissionEvent].myTimeBeforeStarting -= aDeltaTime;
 			if (myMissionEvents[myCurrentMissionEvent].myTimeBeforeStarting <= 0.f)
 			{
-				SendMissionMessage(myMissionEvents[myCurrentMissionEvent].myType, myMissionEvents[myCurrentMissionEvent].myGID);
+				SendMissionMessage(myMissionEvents[myCurrentMissionEvent]);
 				++myCurrentMissionEvent;
 				if (myCurrentMissionEvent == myMissionEvents.Size())
 				{
 					if (myShouldLoopMissionEvents == true)
 					{
 						myCurrentMissionEvent = 0;
+						for (int i = 0; i < myMissionEvents.Size(); ++i)
+						{
+							myMissionEvents[i].myTimeBeforeStarting = myMissionEvents[i].myResetTime;
+						}
 					}
 					else
 					{
@@ -54,11 +60,12 @@ bool KillXMission::Update(float aDeltaTime)
 		myEndEvents[0].myTimeBeforeStarting -= aDeltaTime;
 		if (myEndEvents[0].myTimeBeforeStarting <= 0.f)
 		{
-			SendMissionMessage(myEndEvents[0].myType, myEndEvents[0].myGID);
+			SendMissionMessage(myEndEvents[0]);
 			myEndEvents.RemoveNonCyclicAtIndex(0);
 		}
 		return false;
 	}
+	//PostMaster::GetInstance()->SendMessage<SendTextToClientsMessage>(SendTextToClientsMessage("Mission complete"));
 
 	return true;
 }
@@ -66,4 +73,9 @@ bool KillXMission::Update(float aDeltaTime)
 void KillXMission::AddValue(int aValue)
 {
 	myEnemiesKilled += aValue;
+	if (myEnemiesKilled <= myAmountToKill)
+	{
+		PostMaster::GetInstance()->SendMessage<SendTextToClientsMessage>(SendTextToClientsMessage("Enemies left: " + std::to_string(myAmountToKill - myEnemiesKilled)));
+	}
+	printf("Enemy killed! %i / %i \n", myEnemiesKilled, myAmountToKill);
 }

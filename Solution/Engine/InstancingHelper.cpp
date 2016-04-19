@@ -31,7 +31,7 @@ namespace Prism
 		aModel->myHeights.Add(aHeight);
 	}
 
-	void InstancingHelper::Render(CU::StaticArray<DirectionalLightData, NUMBER_OF_DIRECTIONAL_LIGHTS>& someLights)
+	void InstancingHelper::Render()
 	{
 		DL_ASSERT_EXP(myCamera != nullptr, "Tried to render without a camera");
 
@@ -51,7 +51,6 @@ namespace Prism
 				currEffect->SetViewProjectionMatrix(myCamera->GetViewProjection());
 				currEffect->SetScaleVector({ 1.f, 1.f, 1.f });
 				currEffect->SetCameraPosition(myCamera->GetOrientation().GetPos());
-				currEffect->UpdateDirectionalLights(someLights);
 			}
 
 			RenderModel(model, currEffect);

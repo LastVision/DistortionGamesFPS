@@ -30,21 +30,21 @@ ConsoleHistoryManager::~ConsoleHistoryManager()
 
 void ConsoleHistoryManager::Save()
 {
-	std::fstream output;
+	/*std::fstream output;
 	output.open(myHistoryFile, std::ios::out);
 	for (int i = 1; i < myHistory.Size(); ++i)
 	{
 		output << int(myHistory[i]->myType) << " " << myHistory[i]->myMessage << std::endl;
 	}
 	output.flush();
-	output.close();
+	output.close();*/
 }
 
 void ConsoleHistoryManager::Load()
 {
 	//AddHistory(" ", eHistoryType::HISTORY);
 
-	std::fstream output;
+	std::ifstream output;
 	output.open(myHistoryFile, std::ios::in);
 
 	std::string line;

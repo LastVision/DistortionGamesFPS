@@ -1,6 +1,7 @@
 #include <CommonHelper.h>
 #include "DGFXReader.h"
 #include <iostream>
+#include <MemoryMacros.h>
 
 struct ModelData
 {
@@ -23,7 +24,7 @@ DGFXReader::~DGFXReader()
 	for (int i = 0; i < myConvertedFiles.Size(); ++i)
 	{
 		std::string dgfxPath = CU::GetGeneratedDataFolderFilePath(myConvertedFiles[i], "dgfx");
-		std::fstream binFile;
+		std::ifstream binFile;
 		binFile.open(dgfxPath.c_str(), std::ios::in | std::ios::binary);
 
 		int fileVersion = -1;
@@ -43,17 +44,9 @@ DGFXReader::~DGFXReader()
 		binFile.close();
 
 		
-		if (isAnimated == 1)
-		{
-			file << "1 ";
-		}
-		else
-		{
-			file << "0 ";
-		}
 
 		file << myConvertedFiles[i];
-
+		file << " " << radius;
 		file << std::endl;
 
 	}

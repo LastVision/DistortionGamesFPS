@@ -19,8 +19,24 @@ namespace Prism
 	{
 		myFrustum = new Frustum(aPlayerMatrix, myNear, myFar);
 		ReadXML("Data/Setting/SET_camera.xml");
+		OnResize(Engine::GetInstance()->GetWindowSizeInt().x, Engine::GetInstance()->GetWindowSizeInt().y);
 	}
 
+	Camera::Camera(CU::Matrix44f& aPlayerMatrix, float aWidth, float aHeight)
+		: myOrientation(aPlayerMatrix)
+		, myNear(0.1f)
+		, myFar(128.f)
+		, myShakeCamera(false)
+		, myCurrentShake(0.f)
+		, myMaxShake(0.f)
+		, myRotateRate(0.f)
+		, myMaxShakeTime(0.f)
+		, myCurrentShakeTime(0.f)
+	{
+		myFrustum = new Frustum(aPlayerMatrix, myNear, myFar);
+		ReadXML("Data/Setting/SET_camera.xml");
+		OnResize(int(aWidth), int(aHeight));
+	}
 
 	Camera::~Camera()
 	{
@@ -36,15 +52,19 @@ namespace Prism
 		reader.ForceReadAttribute(levelElement, "nearplane", myNear);
 		reader.ForceReadAttribute(levelElement, "farplane", myFar);
 		myFOV *= 3.14159f / 180.f;
-		OnResize(Engine::GetInstance()->GetWindowSizeInt().x, Engine::GetInstance()->GetWindowSizeInt().y);
+		
 		reader.CloseDocument();
 	}
 
 	void Camera::OnResize(const int aWidth, const int aHeight)
 	{
 		myProjectionMatrix = CU::Matrix44<float>::CreateProjectionMatrixLH(myNear, myFar, static_cast<float>(aHeight) / static_cast<float>(aWidth), myFOV);
+		mySpecialFoVProjectionMatrix = CU::Matrix44<float>::CreateProjectionMatrixLH(myNear, myFar, static_cast<float>(aHeight) / static_cast<float>(aWidth), 1.04719755f);
 		myProjectionMatrixNonInverted = CU::InverseSimple(myProjectionMatrix);
-		myFrustum->OnResize(myNear, myFar);
+		if (myFrustum != nullptr)
+		{
+			myFrustum->OnResize(myNear, myFar);
+		}
 	}
 
 	void Camera::InitShadowCamera(float aWidth, float aHeight)
@@ -72,6 +92,11 @@ namespace Prism
 		return myViewProjectionMatrix;
 	}
 
+	const CU::Matrix44<float>& Camera::GetSpecialFoVViewProjection() const
+	{
+		return mySpecialFoVViewProjectionMatrix;
+	}
+
 	void Camera::Update(float aDeltaTime)
 	{
 		if (myShakeCamera == true)
@@ -93,6 +118,12 @@ namespace Prism
 		}
 
 		myViewProjectionMatrix = CU::InverseSimple(myOrientation) * myProjectionMatrix;
+		mySpecialFoVOrientation = myOrientation;
+		CU::Vector3<float> specialPos(mySpecialFoVOrientation.GetPos());
+		specialPos -= mySpecialFoVOrientation.GetForward() * 0.375f;
+		specialPos -= mySpecialFoVOrientation.GetUp() * 0.08f;
+		mySpecialFoVOrientation.SetPos(specialPos);
+		mySpecialFoVViewProjectionMatrix = CU::InverseSimple(mySpecialFoVOrientation) * mySpecialFoVProjectionMatrix;
 		myFrustum->Update();
 	}
 	void Camera::SetOrientation(const CU::Matrix44<float>& aOrientation)
@@ -189,5 +220,24 @@ namespace Prism
 		intersection = myOrientation.GetPos() + CU::Vector3<float>(ray.x, ray.y, ray.z) * t;
 
 		return intersection;
+	}
+
+	CU::Vector2<float> Camera::ConvertTo2D(const CU::Vector3<float>& aPostion)
+	{
+		CU::Matrix44<float> renderPos;
+		renderPos.SetPos(aPostion);
+		renderPos = renderPos * CU::InverseSimple(myOrientation);
+		renderPos = renderPos * GetProjection();
+
+		CU::Vector3<float> newRenderPos = renderPos.GetPos();
+		CU::Vector2<float> windowSize = Prism::Engine::GetInstance()->GetWindowSize();
+
+		newRenderPos /= renderPos.GetPos4().w;
+		newRenderPos += 1.f;
+		newRenderPos *= 0.5f;
+		newRenderPos.x *= windowSize.x;
+		newRenderPos.y *= windowSize.y;
+		newRenderPos.y += 50.f;
+		return { newRenderPos.x, newRenderPos.y };
 	}
 }

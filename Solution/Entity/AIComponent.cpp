@@ -11,29 +11,44 @@
 #include "EntityFactory.h"
 #include <iostream>
 #include <NetMessageEnemyShooting.h>
+#include <SharedProjectileManager.h>
 
-AIComponent::AIComponent(Entity& anEntity, const AIComponentData& aData, CU::Matrix44<float>& anOrientation)
+AIComponent::AIComponent(Entity& anEntity, const AIComponentData& aData, CU::Matrix44<float>& anOrientation, const BulletComponentData& aBulletData)
 	: Component(anEntity)
 	, myData(aData)
 	, myOrientation(anOrientation)
 	, myBullets(16)
 	, myBulletIndex(0)
 	, myBehavior(new BlendedBehavior(myEntity, aData))
-	, myShootTimer(2.f)
+	, myShootTimer(0.f)
 	, myAttackAnimationTimeCurrent(0.f)
+	, myDefendTarget(nullptr)
+	, myTargetPlayer(nullptr)
+	, myHasRaycasted(false)
+	, myHasJustSpawned(true)
+	, myBulletData(aBulletData)
 {
-	for (int i = 0; i < myBullets.GetCapacity(); ++i)
+	myRaycastHandler = [=](PhysicsComponent* aComponent, const CU::Vector3<float>& aDirection, const CU::Vector3<float>& aHitPosition, const CU::Vector3<float>& aHitNormal)
 	{
-		Entity* bullet = EntityFactory::CreateEntity((50000 + i), eEntityType::BULLET, nullptr, false, CU::Vector3<float>(0, -10.f, 0));
-		bullet->Kill();
-		myBullets.Add(bullet);
-	}
+		this->HandleRaycast(aComponent, aDirection, aHitPosition, aHitNormal);
+	};
+	myEntity.SetIsEnemy(true);
 }
 
 AIComponent::~AIComponent()
 {
 	myBullets.RemoveAll();
 	SAFE_DELETE(myBehavior);
+}
+
+void AIComponent::Reset()
+{
+	myHasJustSpawned = true;
+	myShootTimer = 0.f;
+	myAttackAnimationTimeCurrent = 0.f;
+	myDefendTarget = nullptr;
+	myTargetPlayer = nullptr;
+	myHasRaycasted = false;
 }
 
 void AIComponent::Update(float aDelta)
@@ -46,17 +61,76 @@ void AIComponent::Update(float aDelta)
 		}
 	}
 
-	if (myEntity.GetState() != eEntityState::DIE)
+	if (myEntity.GetState() != eEntityState::DIE && myEntity.GetComponent<PhysicsComponent>()->IsInScene() == true)
 	{
-		Entity* closestPlayer = PollingStation::GetInstance()->FindClosestPlayer(myEntity.GetOrientation().GetPos(), myData.myVisionRange);
-
-		Move(aDelta, closestPlayer);
-		myShootTimer -= aDelta;
-		if (closestPlayer != nullptr && myShootTimer < 0.f)
+		if (myTargetPlayer == nullptr)
 		{
-			Shoot(closestPlayer);
-			myShootTimer = 2.f;
+			myDefendTarget = PollingStation::GetInstance()->GetCurrentDefendTarget(myEntity.GetOrientation().GetPos());
 		}
+
+
+		if (myHasRaycasted == false)
+		{
+			Entity* closestPlayer = PollingStation::GetInstance()->FindClosestPlayer(myEntity.GetOrientation().GetPos(), myData.myVisionRange);
+
+			if (closestPlayer == nullptr)
+			{
+				myTargetPlayer = nullptr;
+			}
+
+			if (closestPlayer != nullptr)
+			{
+				CU::Vector3<float> toPlayer(CU::GetNormalized(closestPlayer->GetOrientation().GetPos() - myOrientation.GetPos()));
+
+				Prism::PhysicsInterface::GetInstance()->RayCast(myOrientation.GetPos() + CU::Vector3<float>(0.f, 1.5f, 0.f)
+					, toPlayer, myData.myVisionRange, myRaycastHandler, myEntity.GetComponent<PhysicsComponent>());
+				myHasRaycasted = true;
+			}
+		}
+
+		myShootTimer -= aDelta;
+		
+		if (myTargetPlayer != nullptr)
+		{
+			myPreviousTargetPosition = myTargetPlayer->GetOrientation().GetPos();
+
+			if (myEntity.GetState() == eEntityState::ATTACK && myAttackAnimationTimeCurrent > 0.f)
+			{
+				SetOrientation(myTargetPlayer->GetOrientation().GetPos() - myOrientation.GetPos(), aDelta, true);
+			}
+			else
+			{
+				Move(aDelta, myTargetPlayer);
+			}
+
+			if (myShootTimer < 0.f)
+			{
+				Shoot(myTargetPlayer);
+				myShootTimer = myData.myAttackAnimationTime;
+			}
+		}
+		else
+		{
+			if (myEntity.GetState() == eEntityState::ATTACK && myAttackAnimationTimeCurrent > 0.f)
+			{
+				if (myDefendTarget != nullptr)
+				{
+					SetOrientation(myDefendTarget->GetOrientation().GetPos() - myOrientation.GetPos(), aDelta);
+				}
+			}
+			else
+			{
+				if (myDefendTarget == nullptr && myPreviousTargetPosition != CU::Vector3<float>())
+				{
+					SetOrientation(myPreviousTargetPosition - myOrientation.GetPos(), aDelta);
+				}
+				else
+				{
+					Move(aDelta, myDefendTarget);
+				}
+			}
+		}
+		
 
 		if (myEntity.GetState() == eEntityState::ATTACK)
 		{
@@ -72,6 +146,23 @@ void AIComponent::Update(float aDelta)
 	}
 }
 
+void AIComponent::HandleRaycast(PhysicsComponent* aComponent, const CU::Vector3<float>& aDirection, const CU::Vector3<float>& aHitPosition, const CU::Vector3<float>& aHitNormal)
+{
+	aDirection;
+	aHitPosition;
+	aHitNormal;
+
+	myHasRaycasted = false;
+
+	myTargetPlayer = nullptr;
+	if (aComponent != nullptr)
+	{
+		if (aComponent->GetEntity().GetSubType() == "playerserver")
+		{
+			myTargetPlayer = &aComponent->GetEntity();
+		}
+	}
+}
 
 void AIComponent::Move(float aDelta, Entity* aClosestPlayer)
 {
@@ -80,6 +171,10 @@ void AIComponent::Move(float aDelta, Entity* aClosestPlayer)
 		if (aClosestPlayer != nullptr)
 		{
 			myBehavior->SetTarget(aClosestPlayer->GetOrientation().GetPos());
+		}
+		else
+		{
+			myBehavior->SetTarget(myEntity.GetOrientation().GetPos());
 		}
 
 		CU::Vector3<float> movement(myBehavior->Update(aDelta));
@@ -97,22 +192,33 @@ void AIComponent::Move(float aDelta, Entity* aClosestPlayer)
 			myEntity.SetState(eEntityState::WALK);
 			SharedNetworkManager::GetInstance()->AddMessage<NetMessageEntityState>(NetMessageEntityState(myEntity.GetState(), myEntity.GetGID()));
 		}
-
+		movement.y = -0.5f;
 		Prism::PhysicsInterface::GetInstance()->Move(myEntity.GetComponent<PhysicsComponent>()->GetCapsuleControllerId(), movement, 0.05f, aDelta);
 
-		SetOrientation(CU::GetNormalized(movement));
+		SetOrientation(CU::GetNormalized(movement), aDelta);
 	}
 }
 
-void AIComponent::SetOrientation(const CU::Vector3<float>& aLookInDirection)
+void AIComponent::SetOrientation(const CU::Vector3<float>& aLookInDirection, float aDelta, bool aOnlyRotation)
 {
 	CU::Vector3<float> pos;
 	Prism::PhysicsInterface::GetInstance()->GetPosition(myEntity.GetComponent<PhysicsComponent>()->GetCapsuleControllerId(), pos);
-	myOrientation.SetPos(pos);
+	bool hasMoved = CU::Math::DistanceBetweenLessThanOrEqualToEpsilon(pos, myOrientation.GetPos(), 0.1f * aDelta) == false;
+
+	if (aOnlyRotation == false)
+	{
+		myOrientation.SetPos(pos);
+	}
+	else
+	{
+		pos = myOrientation.GetPos();
+	}
 
 	static CU::Vector3<float> y(0, 1.f, 0);
 	CU::Vector3<float> right(CU::GetNormalized(CU::Cross(y, aLookInDirection)));
 	CU::Vector3<float> forward(CU::GetNormalized(CU::Cross(right, y)));
+
+	bool hasRotated = forward != myOrientation.GetForward();
 
 	myOrientation.SetForward(forward);
 	myOrientation.SetRight(right);
@@ -126,21 +232,26 @@ void AIComponent::SetOrientation(const CU::Vector3<float>& aLookInDirection)
 		angle = -angle;
 	}
 
-	SharedNetworkManager::GetInstance()->AddMessage(NetMessagePosition(pos, angle, myEntity.GetGID()));
+	if (myHasJustSpawned == true)
+	{
+		myHasJustSpawned = false;
+		SharedNetworkManager::GetInstance()->AddMessage(NetMessagePosition(pos, angle, myEntity.GetGID()));
+		SharedNetworkManager::GetInstance()->AddMessage(NetMessagePosition(pos, angle, myEntity.GetGID()));
+	}
+	else// if (hasMoved == true || hasRotated == true)
+	{
+		SharedNetworkManager::GetInstance()->AddMessage(NetMessagePosition(pos, angle, myEntity.GetGID()));
+	}
 }
 
 void AIComponent::Shoot(Entity* aClosestPlayer)
 {
-	if (myBulletIndex > myBullets.Size() - 1)
-	{
-		myBulletIndex = 0;
-	}
+	aClosestPlayer;
 
 	myEntity.SetState(eEntityState::ATTACK);
 	SharedNetworkManager::GetInstance()->AddMessage<NetMessageEntityState>(NetMessageEntityState(myEntity.GetState(), myEntity.GetGID()));
-	SharedNetworkManager::GetInstance()->AddMessage<NetMessageEnemyShooting>(NetMessageEnemyShooting(myBullets[myBulletIndex]->GetGID()));
-	myAttackAnimationTimeCurrent = myData.myAttackAnimationTime;
-
-	myBullets[myBulletIndex]->GetComponent<BulletComponent>()->Activate(myEntity.GetOrientation());
-	myBulletIndex++;
+	Entity* requestedBullet = SharedProjectileManager::GetInstance()->RequestBullet(myBulletData);
+	myAttackAnimationTimeCurrent = 0.4f;
+	requestedBullet->GetComponent<BulletComponent>()->Activate(myEntity.GetOrientation());
+	SharedNetworkManager::GetInstance()->AddMessage<NetMessageEnemyShooting>(NetMessageEnemyShooting(requestedBullet->GetGID(), myEntity.GetGID()));
 }

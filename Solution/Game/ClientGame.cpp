@@ -15,6 +15,7 @@
 #include <FileWatcher.h>
 #include "ClientGame.h"
 #include <InputWrapper.h>
+#include "MainMenuState.h"
 #include <ModelLoader.h>
 #include <StreakDataContainer.h>
 #include <ParticleDataContainer.h>
@@ -23,7 +24,6 @@
 #include <ResizeMessage.h>
 #include "ScriptInterface.h"
 #include <ScriptSystem.h>
-#include "ServerSelectState.h"
 #include <SystemMonitor.h>
 #include <TimerManager.h>
 #include <VTuneApi.h>
@@ -90,7 +90,7 @@ bool ClientGame::Init(HWND& aHwnd)
 
 
 	//Console::GetInstance(); // needed to create console here
-	myStateStack.PushMainGameState(new ServerSelectState());
+	myStateStack.PushMainGameState(new MainMenuState());
 
 	//PostMaster::GetInstance()->SendMessage(GameStateMessage(eGameState::LOAD_GAME, 1));
 	GAME_LOG("Init Successful");
@@ -104,7 +104,8 @@ bool ClientGame::Destroy()
 
 bool ClientGame::Update()
 {
-	CU::InputWrapper::GetInstance()->Update();
+	CU::InputWrapper::GetInstance()->LogicUpdate();
+
 	myTimerManager->Update();
 	Prism::Audio::AudioInterface::GetInstance()->Update();
 	
@@ -143,11 +144,12 @@ bool ClientGame::Update()
 
 	myStateStack.RenderCurrentState();
 
-	myTimerManager->CapFrameRate(60.f);
+	//myTimerManager->CapFrameRate(60.f);
 	myCursor->Update();
 	myCursor->Render();
 	
 	Prism::DebugDrawer::GetInstance()->RenderTextToScreen(); //Have to be last
+	ClientNetworkManager::GetInstance()->Update(deltaTime);
 	return true;
 }
 

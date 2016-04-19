@@ -62,11 +62,13 @@ namespace Prism
 		myManager->EndFrame();
 	}
 
-	void PhysicsInterface::RayCast(const CU::Vector3<float>& aOrigin, const CU::Vector3<float>& aNormalizedDirection, float aMaxRayDistance, std::function<void(PhysicsComponent*, const CU::Vector3<float>&, const CU::Vector3<float>&)> aFunctionToCall)
+	void PhysicsInterface::RayCast(const CU::Vector3<float>& aOrigin, const CU::Vector3<float>& aNormalizedDirection, float aMaxRayDistance
+		, std::function<void(PhysicsComponent*, const CU::Vector3<float>&, const CU::Vector3<float>&, const CU::Vector3<float>&)> aFunctionToCall
+		, const PhysicsComponent* aComponent)
 	{
 		if (myManager != nullptr)
 		{
-			myManager->RayCast(aOrigin, aNormalizedDirection, aMaxRayDistance, aFunctionToCall);
+			myManager->RayCast(aOrigin, aNormalizedDirection, aMaxRayDistance, aFunctionToCall, aComponent);
 		}
 	}
 
@@ -90,19 +92,34 @@ namespace Prism
 		myManager->TeleportToPosition(aStaticBody, aPosition);
 	}
 
+	void PhysicsInterface::TeleportToPosition(int aID, const CU::Vector3<float>& aPosition)
+	{
+		myManager->TeleportToPosition(aID, aPosition);
+	}
+
 	void PhysicsInterface::MoveToPosition(physx::PxRigidDynamic* aDynamicBody, const CU::Vector3<float>& aPosition)
 	{
 		myManager->MoveToPosition(aDynamicBody, aPosition);
 	}
 
-	int PhysicsInterface::CreatePlayerController(const CU::Vector3<float>& aStartPosition, PhysicsComponent* aComponent)
+	int PhysicsInterface::CreatePlayerController(const CU::Vector3<float>& aStartPosition, PhysicsComponent* aComponent, bool aShouldAddToScene)
 	{
-		return myManager->CreatePlayerController(aStartPosition, aComponent);
+		return myManager->CreatePlayerController(aStartPosition, aComponent, aShouldAddToScene);
 	}
 
 	void PhysicsInterface::Move(int aId, const CU::Vector3<float>& aDirection, float aMinDisplacement, float aDeltaTime)
 	{
 		myManager->Move(aId, aDirection, aMinDisplacement, aDeltaTime);
+	}
+
+	void PhysicsInterface::MoveForward(bool move)
+	{
+		myManager->myMoveForward = move;
+	}
+
+	void PhysicsInterface::MoveBackward(bool move)
+	{
+		myManager->myMoveBackward = move;
 	}
 
 	void PhysicsInterface::UpdateOrientation(physx::PxRigidDynamic* aDynamicBody, physx::PxShape** aShape, float* aThread4x4)
@@ -132,15 +149,16 @@ namespace Prism
 
 	void PhysicsInterface::SubscribeToTriggers(physx::PxSimulationEventCallback* aSubscriber)
 	{
+		aSubscriber;
 		//myManager->SubscribeToTriggers(aSubscriber);
 	}
 
 	void PhysicsInterface::Create(PhysicsComponent* aComponent, const PhysicsCallbackStruct& aPhysData
 		, float* aOrientation, const std::string& aFBXPath
 		, physx::PxRigidDynamic** aDynamicBodyOut, physx::PxRigidStatic** aStaticBodyOut
-		, physx::PxShape*** someShapesOut, bool aShouldAddToScene)
+		, physx::PxShape*** someShapesOut, bool aShouldAddToScene, bool aShouldBeSphere)
 	{
-		myManager->Create(aComponent, aPhysData, aOrientation, aFBXPath, aDynamicBodyOut, aStaticBodyOut, someShapesOut, aShouldAddToScene);
+		myManager->Create(aComponent, aPhysData, aOrientation, aFBXPath, aDynamicBodyOut, aStaticBodyOut, someShapesOut, aShouldAddToScene, aShouldBeSphere);
 	}
 
 	void PhysicsInterface::Add(physx::PxRigidDynamic* aDynamic)
@@ -151,6 +169,11 @@ namespace Prism
 	void PhysicsInterface::Add(physx::PxRigidStatic* aStatic)
 	{
 		myManager->Add(aStatic);
+	}
+
+	void PhysicsInterface::Add(int aCapsuleID)
+	{
+		myManager->Add(aCapsuleID);
 	}
 
 	void PhysicsInterface::Remove(physx::PxRigidDynamic* aDynamic, const PhysicsComponentData& aData)
@@ -186,6 +209,36 @@ namespace Prism
 	void PhysicsInterface::Wake(int aCapsuleID)
 	{
 		myManager->Wake(aCapsuleID);
+	}
+
+	int PhysicsInterface::GetFPS()
+	{
+		return myManager->physicsFPS;
+	}
+
+	void PhysicsInterface::SetClientSide(bool aIsClientSide)
+	{
+		myManager->SetIsClientSide(aIsClientSide);
+	}
+
+	void PhysicsInterface::SetClientID(int anID)
+	{
+		myManager->SetPlayerCapsule(anID);
+	}
+
+	void PhysicsInterface::SetPlayerOrientation(CU::Matrix44<float>* anOrientation)
+	{
+		myManager->SetPlayerOrientation(anOrientation);
+	}
+
+	void PhysicsInterface::SetPlayerInputData(const InputComponentData& aData)
+	{
+		myManager->SetInputComponentData(aData);
+	}
+
+	void PhysicsInterface::SetPlayerGID(int anID)
+	{
+		myManager->SetPlayerGID(anID);
 	}
 
 	PhysicsInterface::PhysicsInterface(std::function<void(PhysicsComponent*, PhysicsComponent*, bool)> anOnTriggerCallback, bool aIsServer)

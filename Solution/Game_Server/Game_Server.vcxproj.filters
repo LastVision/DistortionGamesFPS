@@ -19,6 +19,9 @@
     <Filter Include="Mission">
       <UniqueIdentifier>{3abe5c38-98cc-4543-ba61-6d332ce13db2}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Managers">
+      <UniqueIdentifier>{88fdadf5-0434-480e-8dc0-f57beca660ee}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
@@ -64,7 +67,21 @@
     <ClInclude Include="DefendMission.h">
       <Filter>Mission</Filter>
     </ClInclude>
-    <ClInclude Include="ServerProjectileManager.h" />
+    <ClInclude Include="ActionEvent.h">
+      <Filter>Mission</Filter>
+    </ClInclude>
+    <ClInclude Include="EventMission.h">
+      <Filter>Mission</Filter>
+    </ClInclude>
+    <ClInclude Include="ServerStartState.h">
+      <Filter>StateStack</Filter>
+    </ClInclude>
+    <ClInclude Include="ServerProjectileManager.h">
+      <Filter>Managers</Filter>
+    </ClInclude>
+    <ClInclude Include="ServerUnitManager.h">
+      <Filter>Managers</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -104,6 +121,17 @@
     <ClCompile Include="DefendMission.cpp">
       <Filter>Mission</Filter>
     </ClCompile>
-    <ClCompile Include="ServerProjectileManager.cpp" />
+    <ClCompile Include="EventMission.cpp">
+      <Filter>Mission</Filter>
+    </ClCompile>
+    <ClCompile Include="ServerStartState.cpp">
+      <Filter>StateStack</Filter>
+    </ClCompile>
+    <ClCompile Include="ServerProjectileManager.cpp">
+      <Filter>Managers</Filter>
+    </ClCompile>
+    <ClCompile Include="ServerUnitManager.cpp">
+      <Filter>Managers</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

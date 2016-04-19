@@ -83,7 +83,6 @@ namespace LUA
 
 		lua_State* myLuaState;
 		CU::FileWatcher myFileWatcher;
-		std::fstream myOutputFile;
 		static ScriptSystem* myInstance;
 	};
 

@@ -116,6 +116,19 @@
     <ClCompile Include="BulletComponent.cpp">
       <Filter>Component</Filter>
     </ClCompile>
+    <ClCompile Include="SpawnpointComponent.cpp">
+      <Filter>Component</Filter>
+    </ClCompile>
+    <ClCompile Include="SharedUnitManager.cpp" />
+    <ClCompile Include="SoundComponent.cpp">
+      <Filter>Component</Filter>
+    </ClCompile>
+    <ClCompile Include="RotationComponent.cpp">
+      <Filter>Component</Filter>
+    </ClCompile>
+    <ClCompile Include="VisualExplosionComponent.cpp">
+      <Filter>Component</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
@@ -253,6 +266,31 @@
       <Filter>Component</Filter>
     </ClInclude>
     <ClInclude Include="BulletComponentData.h">
+      <Filter>EntityFactory\EntityData\ComponentData</Filter>
+    </ClInclude>
+    <ClInclude Include="SpawnpointComponent.h">
+      <Filter>Component</Filter>
+    </ClInclude>
+    <ClInclude Include="SpawnpointComponentData.h">
+      <Filter>EntityFactory\EntityData\ComponentData</Filter>
+    </ClInclude>
+    <ClInclude Include="SharedUnitManager.h" />
+    <ClInclude Include="SoundComponentData.h">
+      <Filter>EntityFactory\EntityData\ComponentData</Filter>
+    </ClInclude>
+    <ClInclude Include="SoundComponent.h">
+      <Filter>Component</Filter>
+    </ClInclude>
+    <ClInclude Include="RotationComponent.h">
+      <Filter>Component</Filter>
+    </ClInclude>
+    <ClInclude Include="RotationComponentData.h">
+      <Filter>EntityFactory\EntityData\ComponentData</Filter>
+    </ClInclude>
+    <ClInclude Include="VisualExplosionComponent.h">
+      <Filter>Component</Filter>
+    </ClInclude>
+    <ClInclude Include="VisualExplosionComponentData.h">
       <Filter>EntityFactory\EntityData\ComponentData</Filter>
     </ClInclude>
   </ItemGroup>

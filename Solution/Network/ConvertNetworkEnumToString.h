@@ -11,6 +11,8 @@ static std::string ConvertNetworkEnumToString(eNetMessageType aType)
 		return "NONE";
 	case eNetMessageType::IMPORTANT_REPLY:
 		return "IMPORTANT REPLY";
+	case eNetMessageType::KILL_SERVER:
+		return "KILL SERVER";
 	case eNetMessageType::CONNECT_REPLY:
 		return "CONNECT REPLY";
 	case eNetMessageType::ON_CONNECT:
@@ -19,6 +21,8 @@ static std::string ConvertNetworkEnumToString(eNetMessageType aType)
 		return "ON JOIN";
 	case eNetMessageType::ON_DISCONNECT:
 		return "ON DISCONNECT";
+	case eNetMessageType::SET_LEVEL:
+		return "SET LEVEL";
 	case eNetMessageType::REQUEST_LEVEL:
 		return "REQUEST LEVEL";
 	case eNetMessageType::REQUEST_START_LEVEL:
@@ -51,6 +55,32 @@ static std::string ConvertNetworkEnumToString(eNetMessageType aType)
 		return "HEALTH MESSAGE TO PLAYER";
 	case eNetMessageType::HEALTH_PACK:
 		return "HEALTHPACK MESSAGE TO SERVER PLAYER TOOK";
+	case eNetMessageType::SHOOT_GRENADE:
+		return "CLIENT SHOOT GRENADE TO SERVER";
+	case eNetMessageType::EXPLOSION:
+		return "EXPLOSION TO CLIENT";
+	case eNetMessageType::ACTIVATE_SPAWNPOINT:
+		return "ACTIVATE_SPAWNPOINT ON SERVER";
+	case eNetMessageType::ACTIVATE_UNIT:
+		return "ACTIVATE_UNIT ON CLIENT";
+	case eNetMessageType::TEXT:
+		return "TEXT TO CLIENT";
+	case eNetMessageType::DISPLAY_MARKER:
+		return "DISPLAY MARKER ON CLIENT";
+	case eNetMessageType::DISPLAY_RESPAWN:
+		return "DISPLAY RESPAWN ON CLIENT";
+	case eNetMessageType::SERVER_REPLY:
+		return "SERVER REPLY";
+	case eNetMessageType::SERVER_REQUEST:
+		return "SERVER REQUEST";
+	case eNetMessageType::START_LOBBY:
+		return "START LOBBY";
+	case eNetMessageType::RAY_CAST_REQUEST:
+		return "CLIENT WANTS TO RAY CAST";
+	case eNetMessageType::PRESS_E:
+		return "CLIENT WANTS TO PRESS E";
+	case eNetMessageType::PRESS_E_TEXT:
+		return "SERVER SEND PRESS E TEXT";
 	case eNetMessageType::_COUNT:
 		DL_ASSERT("_COUNT not used as regular enum value");
 	default:

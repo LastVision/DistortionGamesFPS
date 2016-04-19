@@ -16,6 +16,7 @@
 class Entity;
 class PhysicsComponent;
 struct PhysicsComponentData;
+struct InputComponentData;
 namespace CU
 {
 	class TimerManager;
@@ -39,8 +40,12 @@ namespace Prism
 	class PhysicsManager : public physx::debugger::comm::PvdConnectionHandler, public physx::PxSimulationEventCallback
 	{
 	public:
+		int physicsFPS;
 		PhysicsManager(std::function<void(PhysicsComponent*, PhysicsComponent*, bool)> anOnTriggerCallback, bool aIsServer);
 		~PhysicsManager();
+
+		bool myMoveForward;
+		bool myMoveBackward;
 
 #ifdef THREAD_PHYSICS
 		void InitThread();
@@ -53,7 +58,7 @@ namespace Prism
 		void SetPhysicsDone();
 		void SetSwapDone();
 #endif
-		bool GetInitDone() const;
+		volatile bool GetInitDone() const;
 
 		void EndFrame();
 		void Add(const PhysicsCallbackStruct& aCallbackStruct);
@@ -61,11 +66,13 @@ namespace Prism
 
 		void Update();
 
-		void RayCast(const CU::Vector3<float>& aOrigin, const CU::Vector3<float>& aNormalizedDirection, float aMaxRayDistance, std::function<void(PhysicsComponent*, const CU::Vector3<float>&, const CU::Vector3<float>&)> aFunctionToCall);
+		void RayCast(const CU::Vector3<float>& aOrigin, const CU::Vector3<float>& aNormalizedDirection, float aMaxRayDistance
+			, std::function<void(PhysicsComponent*, const CU::Vector3<float>&, const CU::Vector3<float>&, const CU::Vector3<float>&)> aFunctionToCall, const PhysicsComponent* aComponent);
 		void AddForce(physx::PxRigidDynamic* aDynamicBody, const CU::Vector3<float>& aDirection, float aMagnitude);
 		void SetVelocity(physx::PxRigidDynamic* aDynamicBody, const CU::Vector3<float>& aVelocity);
 		void TeleportToPosition(physx::PxRigidDynamic* aDynamicBody, const CU::Vector3<float>& aPosition);
 		void TeleportToPosition(physx::PxRigidStatic * aStaticBody, const CU::Vector3<float>& aPosition);
+		void TeleportToPosition(int aID, const CU::Vector3<float>& aPosition);
 		void MoveToPosition(physx::PxRigidDynamic* aDynamicBody, const CU::Vector3<float>& aPosition);
 
 		void onConstraintBreak(physx::PxConstraintInfo*, physx::PxU32) override {};
@@ -78,7 +85,7 @@ namespace Prism
 		physx::PxScene* GetScene(){ return myScene; }
 		physx::PxCooking* GetCooker(){ return myCooker; }
 
-		int CreatePlayerController(const CU::Vector3<float>& aStartPosition, PhysicsComponent* aComponent);
+		int CreatePlayerController(const CU::Vector3<float>& aStartPosition, PhysicsComponent* aComponent, bool aShouldAddToScene);
 		void Move(int aId, const CU::Vector3<float>& aDirection, float aMinDisplacement, float aDeltaTime);
 		void UpdateOrientation(physx::PxRigidDynamic* aDynamicBody, physx::PxShape** aShape, float* aThread4x4);
 		void UpdateOrientation(physx::PxRigidStatic* aStaticBody, physx::PxShape** aShape, float* aThread4x4);
@@ -89,9 +96,10 @@ namespace Prism
 		void Create(PhysicsComponent* aComponent, const PhysicsCallbackStruct& aCallbackStruct
 			, float* aOrientation, const std::string& aFBXPath
 			, physx::PxRigidDynamic** aDynamicBodyOut, physx::PxRigidStatic** aStaticBodyOut
-			, physx::PxShape*** someShapesOut, bool aShouldAddToScene);
+			, physx::PxShape*** someShapesOut, bool aShouldAddToScene, bool aShouldBeSphere);
 		void Add(physx::PxRigidDynamic* aDynamic);
 		void Add(physx::PxRigidStatic* aStatic);
+		void Add(int aCapsuleID);
 		void Remove(physx::PxRigidDynamic* aDynamic, const PhysicsComponentData& aData);
 		void Remove(physx::PxRigidStatic* aStatic, const PhysicsComponentData& aData);
 		void Remove(int aCapsuleID);
@@ -100,7 +108,25 @@ namespace Prism
 		void Wake(physx::PxRigidDynamic* aDynamic);
 		void Wake(int aCapsuleID);
 
+		void SetPlayerOrientation(CU::Matrix44<float>* aPlayerOrientation);
+		void SetPlayerCapsule(int anID);
+		void SetIsClientSide(bool aIsClientSide);
+		void SetInputComponentData(const InputComponentData& aPlayerInputData);
+		void SetPlayerGID(int anID);
 	private:
+		int myPlayerCapsule;
+		bool myIsClientSide;
+		bool myIsOverheated;
+		float mySprintEnergy;
+		float myVerticalSpeed;
+		int myPlayerGID;
+		eEntityState myState;
+		const InputComponentData* myPlayerInputData;
+		CU::Matrix44<float>* myPlayerOrientation;
+		std::chrono::system_clock::time_point myStartOfTime;
+
+
+
 #ifdef THREAD_PHYSICS
 		CU::TimerManager* myTimerManager;
 		void ThreadUpdate();
@@ -110,22 +136,28 @@ namespace Prism
 		volatile bool myPhysicsDone;
 		volatile bool mySwapDone;
 #endif
+		volatile bool myIsSwapping;
+		volatile bool myIsReading;
 		volatile bool myInitDone;
 		volatile int myCurrentIndex;
 
 		struct RaycastJob
 		{
 			RaycastJob() {}
-			RaycastJob(const CU::Vector3<float>& aOrigin, const CU::Vector3<float>& aNormalizedDirection, float aMaxRayDistance, std::function<void(PhysicsComponent*, const CU::Vector3<float>&, const CU::Vector3<float>&)> aFunctionToCall)
+			RaycastJob(const CU::Vector3<float>& aOrigin, const CU::Vector3<float>& aNormalizedDirection
+				, float aMaxRayDistance, std::function<void(PhysicsComponent*
+				, const CU::Vector3<float>&, const CU::Vector3<float>&, const CU::Vector3<float>&)> aFunctionToCall, const PhysicsComponent* aRaycasterComponent)
 				: myOrigin(aOrigin)
 				, myNormalizedDirection(aNormalizedDirection)
 				, myMaxRayDistance(aMaxRayDistance)
 				, myFunctionToCall(aFunctionToCall)
+				, myRaycasterComponent(aRaycasterComponent)
 			{}
 			CU::Vector3<float> myOrigin;
 			CU::Vector3<float> myNormalizedDirection;
 			float myMaxRayDistance;
-			std::function<void(PhysicsComponent*, const CU::Vector3<float>&, const CU::Vector3<float>&)> myFunctionToCall;
+			std::function<void(PhysicsComponent*, const CU::Vector3<float>&, const CU::Vector3<float>&, const CU::Vector3<float>&)> myFunctionToCall;
+			const PhysicsComponent* myRaycasterComponent;
 		};
 		void RayCast(const RaycastJob& aRaycastJob);
 		CU::GrowingArray<RaycastJob> myRaycastJobs[2];
@@ -133,16 +165,20 @@ namespace Prism
 		struct RaycastResult
 		{
 			RaycastResult() {}
-			RaycastResult(PhysicsComponent* aPhysicsComponent, const CU::Vector3<float>& aDirection, const CU::Vector3<float>& aHitPosition, std::function<void(PhysicsComponent*, const CU::Vector3<float>&, const CU::Vector3<float>&)> aFunctionToCall)
+			RaycastResult(PhysicsComponent* aPhysicsComponent, const CU::Vector3<float>& aDirection, const CU::Vector3<float>& aHitPosition
+				, const CU::Vector3<float>& aHitNormal
+				, std::function<void(PhysicsComponent*, const CU::Vector3<float>&, const CU::Vector3<float>&, const CU::Vector3<float>&)> aFunctionToCall)
 				: myPhysicsComponent(aPhysicsComponent)
 				, myDirection(aDirection)
 				, myHitPosition(aHitPosition)
+				, myHitNormal(aHitNormal)
 				, myFunctionToCall(aFunctionToCall)
 			{}
 			PhysicsComponent* myPhysicsComponent;
 			CU::Vector3<float> myDirection;
 			CU::Vector3<float> myHitPosition;
-			std::function<void(PhysicsComponent*, const CU::Vector3<float>&, const CU::Vector3<float>&)> myFunctionToCall;
+			CU::Vector3<float> myHitNormal;
+			std::function<void(PhysicsComponent*, const CU::Vector3<float>&, const CU::Vector3<float>&, const CU::Vector3<float>&)> myFunctionToCall;
 		};
 		CU::GrowingArray<RaycastResult> myRaycastResults[2];
 
@@ -233,14 +269,26 @@ namespace Prism
 			PositionJob()
 				: myRigidBody(nullptr)
 				, myType(PositionJobType::NONE)
+				, myID(-1)
 			{}
 
 			PositionJob(physx::PxRigidActor* aRigidBody, const CU::Vector3<float>& aPosition, PositionJobType aType)
 				: myRigidBody(aRigidBody)
 				, myPosition(aPosition)
 				, myType(aType)
+				, myID(-1)
+			{
+				myPosition.y += 1.0f;
+			}
+
+			PositionJob(int aID, const CU::Vector3<float>& aPosition, PositionJobType aType)
+				: myRigidBody(nullptr)
+				, myPosition(aPosition)
+				, myType(aType)
+				, myID(aID)
 			{}
 
+			int myID;
 			physx::PxRigidActor* myRigidBody;
 			CU::Vector3<float> myPosition;
 			PositionJobType myType;
@@ -275,6 +323,10 @@ namespace Prism
 
 		CU::GrowingArray<physx::PxActor*> myActorsToAdd[2];
 		CU::GrowingArray<physx::PxActor*> myActorsToRemove[2];
+
+		CU::GrowingArray<int> myCapsulesToAdd[2];
+
+		bool myIsServer;
 	};
 
 #ifdef THREAD_PHYSICS
@@ -312,7 +364,7 @@ namespace Prism
 	}
 #endif
 
-	inline bool PhysicsManager::GetInitDone() const
+	inline volatile bool PhysicsManager::GetInitDone() const
 	{
 		return myInitDone;
 	}

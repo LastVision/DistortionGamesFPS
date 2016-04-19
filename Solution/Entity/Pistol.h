@@ -13,24 +13,26 @@ namespace Prism
 class Pistol : public Weapon
 {
 public:
-	Pistol();
+	Pistol(Entity* aOwnerEntity);
 	~Pistol();
-	void Init(Prism::Scene* aScene, const CU::Matrix44<float>& aOrientation);
 
+	void Init(Prism::Scene* aScene, const CU::Matrix44<float>& aOrientation); // init for muzle flashes
+	void Init(std::string aWeaponSettingsPath, std::string aXMLTagName) override; // init for reading xml settings
 
 	bool Shoot(const CU::Matrix44<float>& aOrientation) override;
 	void Reload() override;
 	void Update(float aDelta) override;
 
-	void HandleRaycast(PhysicsComponent* aComponent, const CU::Vector3<float>& aDirection, const CU::Vector3<float>& aHitPosition);
+	void HandleRaycast(PhysicsComponent* aComponent, const CU::Vector3<float>& aDirection, const CU::Vector3<float>& aHitPosition, const CU::Vector3<float>& aHitNormal);
 
 	void Upgrade(const UpgradeComponentData& aData) override;
 
 private:
-	std::function<void(PhysicsComponent*, const CU::Vector3<float>&, const CU::Vector3<float>&)> myRaycastHandler;
+	std::function<void(PhysicsComponent*, const CU::Vector3<float>&, const CU::Vector3<float>&, const CU::Vector3<float>&)> myRaycastHandler;
 	Prism::Instance* myMuzzleflash[5];
 	int myCurrentMuzzleflash;
 	const CU::Matrix44<float>* myOrientation;
+	CU::Matrix44<float> myMuzzleflashOrientation;
 	float myMuzzleflashTimer;
 
 	float myMinSpreadRotation;

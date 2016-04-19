@@ -16,6 +16,12 @@ public:
 
 	const CU::GrowingArray<Entity*>& GetPlayers() const;
 
+	void HasDied(Entity* anEntity);
+
+	void SetEnemyTargetPosition(Entity* aEntity);
+	void ResetEnemyTargetPosition();
+	Entity* GetCurrentDefendTarget(const CU::Vector3<float>& aEnemyPosition) const;
+
 private:
 	PollingStation();
 	~PollingStation();
@@ -24,6 +30,8 @@ private:
 
 	CU::GrowingArray<Entity*> myPlayers;
 	CU::GrowingArray<Entity*> myEnemies;
+
+	Entity* myCurrentDefendTarget;
 };
 
 

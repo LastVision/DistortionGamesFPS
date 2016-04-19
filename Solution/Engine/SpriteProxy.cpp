@@ -7,6 +7,7 @@ namespace Prism
 		: mySprite(nullptr)
 		, myTopLeftUV(0.f, 0.f)
 		, myRightBottomUV(1.f, 1.f)
+		, myRotateValue(0.f)
 	{
 	}
 
@@ -16,7 +17,7 @@ namespace Prism
 		{
 			mySprite->SetSize(mySize, myHotspot);
 			mySprite->SetUVZeroToOne(myTopLeftUV, myRightBottomUV);
-			mySprite->Render(aPosition, aScale, aColor);
+			mySprite->Render(aPosition, aScale, aColor, myRotateValue);
 		}
 	}
 
@@ -53,10 +54,11 @@ namespace Prism
 
 	void SpriteProxy::Rotate(float aRadians)
 	{
-		if (mySprite != nullptr)
-		{
-			mySprite->Rotate(aRadians);
-		}
+		myRotateValue += aRadians;
+		//if (mySprite != nullptr)
+		//{
+		//	mySprite->Rotate(aRadians);
+		//}
 	}
 
 	void SpriteProxy::CopyFromD3DTexture(ID3D11Texture2D* aTexture)

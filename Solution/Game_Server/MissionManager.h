@@ -1,7 +1,17 @@
 #pragma once
 #include <GameEnum.h>
 #include <unordered_map>
+#include "ActionEvent.h"
+#include <Subscriber.h>
+
 class Mission;
+class XMLReader;
+
+namespace tinyxml2
+{
+	class XMLElement;
+}
+
 class MissionManager : public Subscriber
 {
 public:
@@ -19,6 +29,9 @@ public:
 private:
 	eActionEventType GetType(const std::string& aType);
 	void LoadMissions(const std::string& aMissionXMLPath);
-	Mission* myCurrentMission;
+	ActionEvent CreateActionEvent(tinyxml2::XMLElement* anEventElement, XMLReader* aReader);
+
+	CU::GrowingArray<Mission*> myActiveMissionsQueue;
+
 	std::unordered_map<int, Mission*> myMissions;
 };

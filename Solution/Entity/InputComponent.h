@@ -9,6 +9,7 @@ namespace Prism
 }
 
 struct InputComponentData;
+class PhysicsComponent;
 
 class InputComponent : public Component
 {
@@ -24,6 +25,8 @@ public:
 	eComponentType GetType() override;
 
 	const CU::Matrix44<float>& GetEyeOrientation() const;
+
+	void SetIsInOptionsMenu(bool aIsInOptionsMenu);
 
 private:
 	void UpdateMovement(float aDelta);
@@ -44,7 +47,7 @@ private:
 
 	CU::Vector2<float> myCursorPosition;
 	float myVerticalSpeed;
-	const InputComponentData& myData;
+	const InputComponentData* myData;
 	//int myCapsuleControllerId;
 
 	CU::Quaternion myPitch;
@@ -54,6 +57,8 @@ private:
 	bool myEnergyOverheat;
 
 	eEntityState myPreviousState;
+
+	bool myIsInOptionsMenu;
 };
 
 inline eComponentType InputComponent::GetTypeStatic()
@@ -69,4 +74,9 @@ inline eComponentType InputComponent::GetType()
 inline const CU::Matrix44<float>& InputComponent::GetEyeOrientation() const
 {
 	return myEyeOrientation;
+}
+
+inline void InputComponent::SetIsInOptionsMenu(bool aIsInOptionsMenu)
+{
+	myIsInOptionsMenu = aIsInOptionsMenu;
 }

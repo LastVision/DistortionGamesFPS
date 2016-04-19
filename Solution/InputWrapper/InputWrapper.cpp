@@ -1,6 +1,7 @@
 #include "InputWrapper.h"
 #include <MemoryMacros.h>
 #include <Defines.h>
+#include "../Timer/TimerManager.h"
 
 CU::InputWrapper* CU::InputWrapper::myInstance = nullptr;
 
@@ -11,7 +12,7 @@ void CU::InputWrapper::Create(HWND aHwnd, HINSTANCE aHInstance, DWORD aKeyCoopFl
 	{
 		myInstance = new CU::InputWrapper();
 		myInstance->Init(aHwnd, aHInstance, aKeyCoopFlags, aMouseCoopFlags);
-	}	
+	}
 }
 
 CU::InputWrapper* CU::InputWrapper::GetInstance()
@@ -26,9 +27,9 @@ void CU::InputWrapper::Destroy()
 
 CU::InputWrapper::InputWrapper()
 	: myWindowIsActive(true)
-	, myBufferedMousePosition(128)
 {
-
+	myBufferedMousePosition[0].Init(128);
+	myBufferedMousePosition[1].Init(128);
 }
 
 void CU::InputWrapper::Init(HWND aHwnd, HINSTANCE aHInstance, DWORD aKeyCoopFlags, DWORD aMouseCoopFlags)
@@ -52,7 +53,8 @@ void CU::InputWrapper::Init(HWND aHwnd, HINSTANCE aHInstance, DWORD aKeyCoopFlag
 
 	myIsRecordingDeltas = true;
 
-	Update();
+	PhysicsUpdate();
+	LogicUpdate();
 }
 
 CU::InputWrapper::~InputWrapper()
@@ -61,31 +63,31 @@ CU::InputWrapper::~InputWrapper()
 	myMouseDevice->Unacquire();
 }
 
-void CU::InputWrapper::Update()
+void CU::InputWrapper::LogicUpdate()
 {
-	myMouseDelta.x = 0;
-	myMouseDelta.y = 0;
-	for (int i = 0; i < myBufferedMousePosition.Size(); ++i)
+	myMouseDelta[eType::LOGIC].x = 0;
+	myMouseDelta[eType::LOGIC].y = 0;
+	for (int i = 0; i < myBufferedMousePosition[eType::LOGIC].Size(); ++i)
 	{
-		myMouseDelta += myBufferedMousePosition[i];
+		myMouseDelta[eType::LOGIC] += myBufferedMousePosition[eType::LOGIC][i];
 	}
-	myBufferedMousePosition.RemoveAll();
+	myBufferedMousePosition[eType::LOGIC].RemoveAll();
 	if (myWindowIsActive == true)
 	{
-		CapturePreviousState();
-		HRESULT hr = myKeyboardDevice->GetDeviceState(sizeof(myKeyState), reinterpret_cast<void**>(&myKeyState));
+		LogicCapturePreviousState();
+		HRESULT hr = myKeyboardDevice->GetDeviceState(sizeof(myKeyState[eType::LOGIC]), reinterpret_cast<void**>(&myKeyState[eType::LOGIC]));
 
 		if (FAILED(hr))
 		{
-			ZeroMemory(myKeyState, sizeof(myKeyState));
+			ZeroMemory(myKeyState[eType::LOGIC], sizeof(myKeyState[eType::LOGIC]));
 
 			myKeyboardDevice->Acquire();
 		}
 
-		hr = myMouseDevice->GetDeviceState(sizeof(DIMOUSESTATE), reinterpret_cast<void**>(&myMouseState));
+		hr = myMouseDevice->GetDeviceState(sizeof(DIMOUSESTATE), reinterpret_cast<void**>(&myMouseState[eType::LOGIC]));
 		if (FAILED(hr))
 		{
-			ZeroMemory(&myMouseState, sizeof(myMouseState));
+			ZeroMemory(&myMouseState[eType::LOGIC], sizeof(myMouseState[eType::LOGIC]));
 
 			myMouseDevice->Acquire();
 		}
@@ -93,13 +95,13 @@ void CU::InputWrapper::Update()
 		tagPOINT cursorPoint;
 		GetCursorPos(&cursorPoint);
 		ScreenToClient(myWindowHandler, &cursorPoint);
-		myMousePos.x = static_cast<float>(cursorPoint.x);
-		myMousePos.y = static_cast<float>(cursorPoint.y);
+		myMousePos[eType::LOGIC].x = static_cast<float>(cursorPoint.x);
+		myMousePos[eType::LOGIC].y = static_cast<float>(cursorPoint.y);
 
 		if (myIsRecordingDeltas == false)
 		{
-			myMouseState.lX = 0;
-			myMouseState.lY = 0;
+			myMouseState[eType::LOGIC].lX = 0;
+			myMouseState[eType::LOGIC].lY = 0;
 		}
 
 		//myMousePos.x += myMouseState.lX;
@@ -109,10 +111,33 @@ void CU::InputWrapper::Update()
 	}
 }
 
-void CU::InputWrapper::FeedMouseRawInput(int aDeltaX, int aDeltaY)
+void CU::InputWrapper::PhysicsUpdate()
 {
-	myBufferedMousePosition.Add(CU::Vector2<int>(int(aDeltaX), int(aDeltaY)));
+	myMouseDelta[eType::PHYSICS].x = 0;
+	myMouseDelta[eType::PHYSICS].y = 0;
+	for (int i = 0; i < myBufferedMousePosition[eType::PHYSICS].Size(); ++i)
+	{
+		myMouseDelta[eType::PHYSICS] += myBufferedMousePosition[eType::PHYSICS][i];
+	}
+	myBufferedMousePosition[eType::PHYSICS].RemoveAll();
+	if (myWindowIsActive == true)
+	{
+		PhysicsCapturePreviousState();
+		HRESULT hr = myKeyboardDevice->GetDeviceState(sizeof(myKeyState[eType::PHYSICS]), reinterpret_cast<void**>(&myKeyState[eType::PHYSICS]));
+
+		if (FAILED(hr))
+		{
+			ZeroMemory(myKeyState[eType::PHYSICS], sizeof(myKeyState[eType::PHYSICS]));
+
+			myKeyboardDevice->Acquire();
+		}
+	}
 }
+
+//void CU::InputWrapper::FeedMouseRawInput(int aDeltaX, int aDeltaY)
+//{
+//	myBufferedMousePosition.Add(CU::Vector2<int>(int(aDeltaX), int(aDeltaY)));
+//}
 
 void CU::InputWrapper::ToggleWindowActive()
 {
@@ -122,16 +147,16 @@ void CU::InputWrapper::ToggleWindowActive()
 	}
 }
 
-void CU::InputWrapper::TweakValue(float& aValue, float aRate, float aDeltaTime
-	, unsigned int aIncreaseKey, unsigned int aDecreaseKey) const
+void CU::InputWrapper::LogicTweakValue(float& aValue, float aRate, float aDeltaTime
+	, unsigned int aIncreaseKey, unsigned int aDecreaseKey, eType aType) const
 {
 	if (myInstance != nullptr)
 	{
-		if (KeyIsPressed(aIncreaseKey))
+		if (KeyIsPressed(aIncreaseKey, aType))
 		{
 			aValue += aRate * aDeltaTime;
 		}
-		else if (KeyIsPressed(aDecreaseKey))
+		else if (KeyIsPressed(aDecreaseKey, aType))
 		{
 			aValue -= aRate * aDeltaTime;
 		}
@@ -139,80 +164,100 @@ void CU::InputWrapper::TweakValue(float& aValue, float aRate, float aDeltaTime
 }
 
 
-void CU::InputWrapper::PauseDeltaRecording()
+//void CU::InputWrapper::PauseDeltaRecording()
+//{
+//	myIsRecordingDeltas = false;
+//}
+//
+//
+//void CU::InputWrapper::ResumeDeltaRecording()
+//{
+//	myIsRecordingDeltas = true;
+//}
+
+const CU::Vector2<float>& CU::InputWrapper::GetMousePosition(eType aType) const
 {
-	myIsRecordingDeltas = false;
+	return myMousePos[aType];
 }
 
-
-void CU::InputWrapper::ResumeDeltaRecording()
+void CU::InputWrapper::LogicCapturePreviousState()
 {
-	myIsRecordingDeltas = true;
+	memcpy_s(myPreviousKeyState[eType::LOGIC], sizeof(myPreviousKeyState[eType::LOGIC]), myKeyState[eType::LOGIC], sizeof(myKeyState[eType::LOGIC]));
+	memcpy_s(&myPreviousMouseState[eType::LOGIC], sizeof(myPreviousMouseState[eType::LOGIC]), &myMouseState[eType::LOGIC], sizeof(myMouseState[eType::LOGIC]));
 }
 
-const CU::Vector2<float>& CU::InputWrapper::GetMousePosition() const
+void CU::InputWrapper::PhysicsCapturePreviousState()
 {
-	return myMousePos;
+	memcpy_s(myPreviousKeyState[eType::PHYSICS], sizeof(myPreviousKeyState[eType::PHYSICS]), myKeyState[eType::PHYSICS], sizeof(myKeyState[eType::PHYSICS]));
+	//memcpy_s(&myPreviousMouseState[eType::PHYSICS], sizeof(myPreviousMouseState[eType::PHYSICS]), &myMouseState[eType::PHYSICS], sizeof(myMouseState[eType::PHYSICS]));
 }
 
-void CU::InputWrapper::CapturePreviousState()
-{
-	memcpy_s(myPreviousKeyState, sizeof(myPreviousKeyState), myKeyState, sizeof(myKeyState));
-	memcpy_s(&myPreviousMouseState, sizeof(myPreviousMouseState), &myMouseState, sizeof(myMouseState));
-}
-
-bool CU::InputWrapper::KeyIsPressed(unsigned int aKey) const
-{
-	UCHAR key = static_cast<UCHAR>(aKey);
-	return (myKeyState[key] & 0x80) != 0;
-}
-
-bool CU::InputWrapper::KeyDown(unsigned int aKey) const
-{
-	UCHAR key = static_cast<UCHAR>(aKey);
-	return ((myKeyState[key] & 0x80) != 0 && (myPreviousKeyState[key] & 0x80) == 0);
-}
-
-bool CU::InputWrapper::KeyUp(unsigned int aKey) const
+bool CU::InputWrapper::KeyIsPressed(unsigned int aKey, eType aType) const
 {
 	UCHAR key = static_cast<UCHAR>(aKey);
-	return ((myKeyState[key] & 0x80) == 0 && (myPreviousKeyState[key] & 0x80) != 0);
+	return (myKeyState[aType][key] & 0x80) != 0;
 }
 
-bool CU::InputWrapper::MouseIsPressed(int aButton) const
+bool CU::InputWrapper::KeyDown(unsigned int aKey, eType aType) const
 {
-	return (myMouseState.rgbButtons[aButton] & 0x80) != 0;
+	UCHAR key = static_cast<UCHAR>(aKey);
+	return ((myKeyState[aType][key] & 0x80) != 0 && (myPreviousKeyState[aType][key] & 0x80) == 0);
 }
 
-bool CU::InputWrapper::MouseDown(int aButton) const
+bool CU::InputWrapper::KeyUp(unsigned int aKey, eType aType) const
 {
-	return ((myMouseState.rgbButtons[aButton] & 0x80) != 0 && (myPreviousMouseState.rgbButtons[aButton] & 0x80) == 0);
+	UCHAR key = static_cast<UCHAR>(aKey);
+	return ((myKeyState[aType][key] & 0x80) == 0 && (myPreviousKeyState[aType][key] & 0x80) != 0);
 }
 
-bool CU::InputWrapper::MouseUp(int aButton) const
+bool CU::InputWrapper::AnyKeyDown(eType aType) const
 {
-	return ((myMouseState.rgbButtons[aButton] & 0x80) == 0 && (myPreviousMouseState.rgbButtons[aButton] & 0x80) != 0);
+	bool isAnyKeyDown = false;
+	for (int i = 0; i <= 256; ++i)
+	{
+		if ((myKeyState[aType][i] & 0x80) != 0)
+		{
+			isAnyKeyDown = true;
+			break;
+		}
+	}
+	return isAnyKeyDown;
 }
 
-float CU::InputWrapper::GetMouseDX() const
+bool CU::InputWrapper::MouseIsPressed(int aButton, eType aType) const
+{
+	return (myMouseState[aType].rgbButtons[aButton] & 0x80) != 0;
+}
+
+bool CU::InputWrapper::MouseDown(int aButton, eType aType) const
+{
+	return ((myMouseState[aType].rgbButtons[aButton] & 0x80) != 0 && (myPreviousMouseState[aType].rgbButtons[aButton] & 0x80) == 0);
+}
+
+bool CU::InputWrapper::MouseUp(int aButton, eType aType) const
+{
+	return ((myMouseState[aType].rgbButtons[aButton] & 0x80) == 0 && (myPreviousMouseState[aType].rgbButtons[aButton] & 0x80) != 0);
+}
+
+float CU::InputWrapper::GetMouseDX(eType aType) const
 {
 #ifdef USE_RAW_INPUT
 	return myMouseDelta.x;
 #else
-	return static_cast<float>(myMouseState.lX);
+	return static_cast<float>(myMouseState[aType].lX);
 #endif
 }
 
-float CU::InputWrapper::GetMouseDY() const
+float CU::InputWrapper::GetMouseDY(eType aType) const
 {
 #ifdef USE_RAW_INPUT
 	return myMouseDelta.y;
 #else
-	return static_cast<float>(myMouseState.lY);
+	return static_cast<float>(myMouseState[aType].lY);
 #endif
 }
 
-float CU::InputWrapper::GetMouseDZ() const
+float CU::InputWrapper::GetMouseDZ(eType aType) const
 {
-	return static_cast<float>(myMouseState.lZ);
+	return static_cast<float>(myMouseState[aType].lZ);
 }

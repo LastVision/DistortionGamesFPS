@@ -167,18 +167,19 @@ namespace Prism
 
 		}
 
-		void WwiseManager::SetListenerPosition(float aX, float aY, float aZ)
+		void WwiseManager::SetListenerPosition(float aX, float aY, float aZ, float aForwardX, float aForwardY, float aForwardZ
+			, float aUpX, float aUpY, float aUpZ)
 		{
 			AkListenerPosition soundPos;
 			soundPos.Position.X = aX;
 			soundPos.Position.Y = aY;
 			soundPos.Position.Z = aZ;
-			soundPos.OrientationFront.X = 0;
-			soundPos.OrientationFront.Y = 0;
-			soundPos.OrientationFront.Z = 0;
-			soundPos.OrientationTop.X = 0;
-			soundPos.OrientationTop.Y = 0;
-			soundPos.OrientationTop.Z = 0;
+			soundPos.OrientationFront.X = aForwardX;
+			soundPos.OrientationFront.Y = aForwardY;
+			soundPos.OrientationFront.Z = aForwardZ;
+			soundPos.OrientationTop.X = aUpX;
+			soundPos.OrientationTop.Y = aUpY;
+			soundPos.OrientationTop.Z = aUpZ;
 			AKRESULT result = AK::SoundEngine::SetListenerPosition(soundPos);
 		}
 

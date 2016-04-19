@@ -14,6 +14,7 @@ public:
 	~ShootingComponent();
 
 	void Init(Prism::Scene* aScene);
+	void ReadXMLSettings(const std::string& aXMLPath);
 
 	void Update(float aDelta) override;
 	void Render();
@@ -21,17 +22,26 @@ public:
 
 	Weapon* GetWeapon(eWeaponType aWeaponType);
 	Weapon* GetCurrentWeapon();
+	void SetCurrentWeapon(eWeaponType aWeaponType);
 
 	void ReceiveNote(const UpgradeNote&) override;
 
 	static eComponentType GetTypeStatic();
 	eComponentType GetType() override;
 
+	float GetWeaponForceStrength(eWeaponType aWeaponType) const;
+	void ReloadWeapon();
+
+
+	void SetIsInOptionsMenu(bool aIsInOptionsMenu);
 private:
+	void ReloadWeaponIntention();
 	Weapon* myCurrentWeapon;
 	Pistol* myPistol;
 	Shotgun* myShotgun;
 	GrenadeLauncher* myGrenadeLauncher;
+
+	bool myIsInOptionsMenu;
 };
 
 inline Weapon* ShootingComponent::GetCurrentWeapon()
@@ -48,4 +58,10 @@ inline eComponentType ShootingComponent::GetType()
 {
 	return GetTypeStatic();
 }
+
+inline void ShootingComponent::SetIsInOptionsMenu(bool aIsInOptionsMenu)
+{
+	myIsInOptionsMenu = aIsInOptionsMenu;
+}
+
 

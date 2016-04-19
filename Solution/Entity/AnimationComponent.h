@@ -1,5 +1,6 @@
 #pragma once
 #include "Component.h"
+#include "BoneName.h"
 
 namespace Prism
 {
@@ -9,6 +10,7 @@ namespace Prism
 	class Camera;
 	class Texture;
 	class Terrain;
+	class Scene;
 };
 
 struct AnimationComponentData;
@@ -16,7 +18,7 @@ struct AnimationComponentData;
 class AnimationComponent : public Component
 {
 public:
-	AnimationComponent(Entity& aEntity, const AnimationComponentData& aComponentData);
+	AnimationComponent(Entity& aEntity, const AnimationComponentData& aComponentData, Prism::Scene* aScene);
 	~AnimationComponent();
 
 	void Reset() override;
@@ -36,7 +38,14 @@ public:
 
 	Prism::Animation* GetCurrent() const;
 
+	void AddWeaponToScene(Prism::Scene* aScene);
+	void RemoveWeaponFromScene(Prism::Scene* aScene);
+
+	void PlayMuzzleFlash();
+	void StopMuzzleFlash();
+
 private:
+	void LoadMuzzleFlashes(Prism::Scene* aScene);
 	void PlayAnimation(eEntityState aAnimationState);
 	struct AnimationData
 	{
@@ -52,12 +61,40 @@ private:
 		float myElapsedTime;
 	};
 
+
+
 	Prism::Instance* myInstance;
 	float myCullingRadius;
 	CU::StaticArray<AnimationData, int(eEntityState::_COUNT)> myAnimations;
 	eEntityState myPrevEntityState;
 
-	const AnimationComponentData myComponentData;
+	const AnimationComponentData& myComponentData;
+
+
+	Prism::Instance* myWeapon;
+	bool myIsEnemy;
+	CU::Matrix44<float> myWeaponJoint;
+	struct EnemyAnimationBone
+	{
+		GUIBone myWeaponBone;
+
+		bool IsValid()
+		{
+			return myWeaponBone.IsValid();
+		}
+	};
+	CU::StaticArray<EnemyAnimationBone, int(eEntityState::_COUNT)> myEnemyAnimations;
+
+	GUIBone myMuzzleBone;
+	CU::Matrix44<float> myMuzzleBoneCalced;
+	CU::Matrix44<float> myMuzzleOrientation;
+	bool myHasSetCalcedMuzzle;
+
+	Prism::Instance* myMuzzleflash[5];
+	int myCurrentMuzzleflash;
+	float myMuzzleflashTimer;
+
+	eEntityState myStateBeforeAttack;
 };
 
 inline Prism::Instance* AnimationComponent::GetInstance()

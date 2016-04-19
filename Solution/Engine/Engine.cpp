@@ -6,6 +6,7 @@
 #include "Engine.h"
 #include "FBXFactory.h"
 #include "Font.h"
+#include "FontProxy.h"
 #include "Model.h"
 #include "ModelLoader.h"
 #include "ModelProxy.h"
@@ -46,6 +47,9 @@ namespace Prism
 		SAFE_DELETE(myFadeData.mySprite);
 		SAFE_DELETE(myModelFactory);
 
+		SAFE_DELETE(myDialogueFont);
+		SAFE_DELETE(myConsoleFont);
+
 		SAFE_DELETE(myText);
 		SAFE_DELETE(myDebugText);
 
@@ -67,18 +71,18 @@ namespace Prism
 	{
 		myInstance = new Engine();
 		myInstance->mySetupInfo = &aSetupInfo;
-
+		
 		bool result = myInstance->Init(aHwnd, aWndProc);
-
+#ifndef RELEASE_BUILD
 		if (aSetupInfo.myWindowed == false)
 		{
 			myInstance->myDirectX->SetFullscreen(true);
 		}
+#else
+		myInstance->myDirectX->SetFullscreen(true);
+#endif
 
 
-		ModelLoader::GetInstance()->Pause();
-		DebugDrawer::GetInstance();
-		ModelLoader::GetInstance()->UnPause();
 
 		myInstance->Render();
 
@@ -118,6 +122,7 @@ namespace Prism
 
 	void Engine::Render()
 	{
+		RestoreDepthStencil();
 		DEBUG_PRINT(GET_RUNTIME);
 		DEBUG_PRINT(GetWindowSize());
 
@@ -161,7 +166,7 @@ namespace Prism
 			myFadeData.mySprite->Render({ 0.f, 0.f }, { 1.f, 1.f }, { 1.f, 1.f, 1.f, 1.f * myFadeData.myCurrentTime / myFadeData.myTotalTime });
 		}
 
-		myDirectX->Present(0, 0);
+		myDirectX->Present(1, 0);
 
 		if (myFadeData.myIsFading == false)
 		{
@@ -268,6 +273,16 @@ namespace Prism
 		return myDirectX->GetDepthbufferTexture();
 	}
 
+	void Engine::SetDepthStencil(ID3D11DepthStencilView* aStencil)
+	{
+		myDirectX->SetDepthStencil(aStencil);
+	}
+
+	void Engine::RestoreDepthStencil()
+	{
+		myDirectX->RestoreDepthStencil();
+	}
+
 	FontProxy* Engine::GetFont(eFont aFont)
 	{
 		switch (aFont)
@@ -314,6 +329,7 @@ namespace Prism
 		myModelLoaderThread = new std::thread(&ModelLoader::Run, ModelLoader::GetInstance());
 		myModelLoaderThreadID = myModelLoaderThread->get_id();
 
+		DebugDrawer::GetInstance();
 		myFadeData.mySprite = new Sprite(myDirectX->GetBackbufferTexture(), { float(myWindowSize.x), float(myWindowSize.y) }, { 0.f, 0.f });
 
 		ShowWindow(aHwnd, 10);

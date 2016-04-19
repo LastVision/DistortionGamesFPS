@@ -12,6 +12,7 @@
 SharedLevelFactory::SharedLevelFactory(const std::string& aLevelListPath)
 	: myLevelPaths(8)
 	, myCurrentID(0)
+	, myIsLoadingLevel(false)
 {
 	EntityFactory::GetInstance()->LoadEntities("Data/Resource/Entity/LI_Entity.xml");
 	if (aLevelListPath != "")
@@ -84,6 +85,8 @@ void SharedLevelFactory::ReadLevel(const std::string& aLevelPath)
 	reader.CloseDocument();
 }
 
+void SharedLevelFactory::LoadSpawnpoint(XMLReader&, tinyxml2::XMLElement*){}
+
 void SharedLevelFactory::ReadGID(XMLReader& aReader, tinyxml2::XMLElement* aElement, unsigned int& aOutGID)
 {
 	tinyxml2::XMLElement* element = aReader.ForceFindFirstChild(aElement, "gid");
@@ -101,4 +104,12 @@ void SharedLevelFactory::ReadOrientation(XMLReader& aReader, tinyxml2::XMLElemen
 
 	propElement = aReader.ForceFindFirstChild(aElement, "scale");
 	aReader.ForceReadAttribute(propElement, "X", "Y", "Z", aOutScale);
+
+	myMinPoint.x = min(myMinPoint.x, aOutPosition.x);
+	myMinPoint.y = min(myMinPoint.y, aOutPosition.y);
+	myMinPoint.z = min(myMinPoint.z, aOutPosition.z);
+
+	myMaxPoint.x = max(myMaxPoint.x, aOutPosition.x);
+	myMaxPoint.y = max(myMaxPoint.y, aOutPosition.y);
+	myMaxPoint.z = max(myMaxPoint.z, aOutPosition.z);
 }

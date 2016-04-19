@@ -8,6 +8,7 @@
 #include <TimerManager.h>
 #include <CommonHelper.h>
 #include <InputWrapper.h>
+#include <GameConstants.h>
 //#include <vld.h>
 
 bool engineIsRunning = true;
@@ -95,12 +96,16 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPTSTR, int aNumberCommands)
 			{
 				DL_Debug::Debug::GetInstance()->ActivateFilterLog(DL_Debug::eFilterLog::ENTITY);
 			}
+			else if (command == "-generateLightData")
+			{
+				GC::GenerateLightData = true;
+			}
 		}
 
 		LocalFree(realCommands);
 	}
 
-	if (ReadSetup(globalSetup, CU::GetMyDocumentFolderPath() + "Machina\\Data\\Setting\\SET_config.bin") == false)
+	if (ReadSetup(globalSetup, CU::GetMyDocumentFolderPath() + "Data\\Setting\\SET_config.bin") == false)
 	{
 		return 1;
 	}
@@ -211,7 +216,6 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPTSTR, int aNumberCommands)
 		}
 		else
 		{
-
 			if (globalGame->Update() == false)
 			{
 				break;
@@ -263,7 +267,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		int deltaY = raw->data.mouse.lLastY;
 		if (CU::InputWrapper::GetInstance() != nullptr)
 		{
-			CU::InputWrapper::GetInstance()->FeedMouseRawInput(deltaX, deltaY);
+			//CU::InputWrapper::GetInstance()->FeedMouseRawInput(deltaX, deltaY);
 		}
 	}
 		break;
@@ -288,13 +292,14 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			{
 				if (globalIsActive == false)
 				{
+#ifndef RELEASE_BUILD
 					bool currFullscreen = Prism::Engine::GetInstance()->IsFullscreen();
 					if (currFullscreen != globalPreviousFullscreenState)
 					{
 						Prism::Engine::GetInstance()->SetFullscreen(globalPreviousFullscreenState);
 
 					}
-#ifdef RELEASE_BUILD
+#else
 					Prism::Engine::GetInstance()->SetFullscreen(true);
 #endif
 
@@ -318,9 +323,11 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			{
 				globalGame->Pause();
 			}
+			CU::InputWrapper::GetInstance()->ToggleWindowActive();
 		}
 		else if (LOWORD(wParam) == SIZE_MAXIMIZED)
 		{
+			CU::InputWrapper::GetInstance()->ToggleWindowActive();
 			OnResize();
 		}
 		else if (LOWORD(wParam) == SIZE_RESTORED)
@@ -367,6 +374,10 @@ void OnResize()
 				globalGame->UnPause();
 			}
 			globalGame->OnResize(globalClientWidth, globalClientHeight);
+#ifdef RELEASE_BUILD
+			Prism::Engine::GetInstance()->SetFullscreen(true);
+			globalPreviousFullscreenState = true;
+#endif
 		}
 		Prism::ModelLoader::GetInstance()->UnPause();
 	}
@@ -378,34 +389,31 @@ bool ReadSetup(Prism::SetupInfo& aSetup, const std::string& aFilePath)
 	int height = 600;
 	int msaa = 4;
 	int windowed = 1;
+	int graphicsSetting = 0;
+	int multiplayerMode = 0;
 
 	std::ifstream file;
 	file.open(aFilePath, std::ios::binary | std::ios::in);
 	if (file.is_open() == true)
 	{
-		char buffer[4];
-
-		file.read(buffer, 4);
-		width = *(reinterpret_cast<int*>(buffer));
-
-		file.read(buffer, 4);
-		height = *(reinterpret_cast<int*>(buffer));
-
-		file.read(buffer, 4);
-		msaa = *(reinterpret_cast<int*>(buffer));
-
-		file.read(buffer, 4);
-		windowed = *(reinterpret_cast<int*>(buffer));
+		file.read((char*)&width, sizeof(int));
+		file.read((char*)&height, sizeof(int));
+		file.read((char*)&msaa, sizeof(int));
+		file.read((char*)&windowed, sizeof(int));
+		file.read((char*)&graphicsSetting, sizeof(int));
+		file.read((char*)&multiplayerMode, sizeof(int));
 	}
 	else 
 	{
 		MessageBox(NULL, "Could not find the config file. Please use the launcher instead.", "Error: Could not find config", MB_ICONERROR);
 		return false;
 	}
+
 #ifndef RELEASE_BUILD
 	windowed = true;
 #endif
 
+	DL_PRINT(CU::Concatenate("GFX Setting: %d", graphicsSetting).c_str());
 	aSetup.myScreenWidth = width;
 	aSetup.myScreenHeight = height;
 	aSetup.myMSAACount = msaa;
@@ -414,5 +422,29 @@ bool ReadSetup(Prism::SetupInfo& aSetup, const std::string& aFilePath)
 		aSetup.myWindowed = true;
 	else
 		aSetup.myWindowed = false;
+
+	//Low settings
+	if (graphicsSetting == 0)
+	{
+		GC::EnableCheapAmbient = true;
+		GC::EnableVSync = false;
+	}
+	else if (graphicsSetting == 1)
+	{
+		GC::EnableCheapAmbient = false;
+		GC::EnableVSync = false;
+	}
+	else
+	{
+		GC::EnableCheapAmbient = false;
+		GC::EnableVSync = true;
+	}
+
+	if (multiplayerMode == 1)
+	{
+		GC::MultiplayerMode = GC::eMultiplayerMode::JOIN;
+	}
+
+
 	return true;
 }

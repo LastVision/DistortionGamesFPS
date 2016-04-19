@@ -10,6 +10,8 @@
 #include "ShootingComponentData.h"
 #include "TriggerComponentData.h"
 #include "UpgradeComponentData.h"
+#include "RotationComponentData.h"
+#include "VisualExplosionComponentData.h"
 #include "XMLReader.h"
 #include "GameEnum.h"
 
@@ -26,6 +28,8 @@ void ComponentLoader::LoadAIComponent(XMLReader& aDocument, tinyxml2::XMLElement
 void ComponentLoader::LoadAnimationComponent(XMLReader& aDocument, tinyxml2::XMLElement* aSourceElement, AnimationComponentData& aOutputData)
 {
 	aOutputData.myExistsInEntity = true;
+
+	aOutputData.myRoomType = LoadRoomType(aDocument, aSourceElement);
 
 	for (tinyxml2::XMLElement* e = aDocument.FindFirstChild(aSourceElement); e != nullptr; e = aDocument.FindNextElement(e))
 	{
@@ -54,7 +58,8 @@ void ComponentLoader::LoadAnimationComponent(XMLReader& aDocument, tinyxml2::XML
 void ComponentLoader::LoadGraphicsComponent(XMLReader& aDocument, tinyxml2::XMLElement* aSourceElement, GraphicsComponentData& aOutputData)
 {
 	aOutputData.myExistsInEntity = true;
-	aOutputData.myAlwaysRender = false;
+
+	aOutputData.myRoomType = LoadRoomType(aDocument, aSourceElement);
 
 	for (tinyxml2::XMLElement* e = aDocument.FindFirstChild(aSourceElement); e != nullptr; e = aDocument.FindNextElement(e))
 	{
@@ -66,8 +71,14 @@ void ComponentLoader::LoadGraphicsComponent(XMLReader& aDocument, tinyxml2::XMLE
 		}
 		else if (elementName == CU::ToLower("AlwaysRender"))
 		{
-			aOutputData.myAlwaysRender = true;
+			DL_ASSERT("Legacy XML");
 		}
+#ifdef RELEASE_BUILD
+		else if (elementName == CU::ToLower("Debug"))
+		{
+			aOutputData.myExistsInEntity = false;
+		}
+#endif
 	}
 }
 
@@ -152,16 +163,22 @@ void ComponentLoader::LoadPhysicsComponent(XMLReader& aDocument, tinyxml2::XMLEl
 
 void ComponentLoader::LoadGrenadeComponent(XMLReader& aDocument, tinyxml2::XMLElement* aSourceElement, GrenadeComponentData& aOutputData)
 {
-	aDocument;
-	aSourceElement;
-	aOutputData.myExistsInEntity = true;
+ 	aOutputData.myExistsInEntity = true;
+
+	
+	//aDocument.ForceReadAttribute(aSourceElement, "value", aOutputData.myTimeToExplode);
+	aDocument.ForceReadAttribute(aDocument.ForceFindFirstChild(aSourceElement, "timeToExplode"), "value", aOutputData.myTimeToExplode);
+	
 }
 
 void ComponentLoader::LoadTriggerComponent(XMLReader& aDocument, tinyxml2::XMLElement* aSourceElement, TriggerComponentData& aOutputData)
 {
 	aOutputData.myExistsInEntity = true;
-	aOutputData.myIsOneTime = false;
+	aOutputData.myIsOneTime = false; 
+	aOutputData.myIsPressable = false;
 	aOutputData.myTriggerType = -1;
+	aOutputData.myPickupText = "";
+	aOutputData.myPickupTextTime = 0.f;
 
 	for (tinyxml2::XMLElement* e = aDocument.FindFirstChild(aSourceElement); e != nullptr; e = aDocument.FindNextElement(e))
 	{
@@ -175,9 +192,20 @@ void ComponentLoader::LoadTriggerComponent(XMLReader& aDocument, tinyxml2::XMLEl
 			aDocument.ReadAttribute(e, "oneTimeTrigger", aOutputData.myIsOneTime);
 			aDocument.ForceReadAttribute(e, "isClientSide", aOutputData.myIsClientSide);
 			aDocument.ReadAttribute(e, "activeFromStart", aOutputData.myIsActiveFromStart);
+			aDocument.ReadAttribute(e, "isPressable", aOutputData.myIsPressable);
+			aDocument.ReadAttribute(e, "pickupText", aOutputData.myPickupText);
+			aDocument.ReadAttribute(e, "pickupTextTime", aOutputData.myPickupTextTime);
 
 			aOutputData.myTriggerType = ConvertToTriggerEnum(name);
+
 		}
+		else if (elementName == CU::ToLower("Marker"))
+		{
+				aDocument.ReadAttribute(e, "positionx", aOutputData.myPosition.x);
+				aDocument.ReadAttribute(e, "positiony", aOutputData.myPosition.y);
+				aDocument.ReadAttribute(e, "positionz", aOutputData.myPosition.z);
+				aDocument.ForceReadAttribute(e, "show", aOutputData.myShowMarker);
+		}		
 	}
 }
 
@@ -210,6 +238,12 @@ void ComponentLoader::LoadInputComponent(XMLReader& aDocument, tinyxml2::XMLElem
 		{
 			aDocument.ForceReadAttribute(e, "value", aOutputData.mySprintDecrease);
 		}
+		else if (elementName == CU::ToLower("directionMultiplier"))
+		{
+			aDocument.ForceReadAttribute(e, "forward", aOutputData.myForwardMultiplier);
+			aDocument.ForceReadAttribute(e, "backward", aOutputData.myBackwardMultiplier);
+			aDocument.ForceReadAttribute(e, "sideways", aOutputData.mySidewaysMultiplier);
+		}
 	}
 
 	aOutputData.myExistsInEntity = true;
@@ -221,6 +255,40 @@ void ComponentLoader::LoadShootingComponent(XMLReader& aDocument, tinyxml2::XMLE
 	aSourceElement;
 
 	aOutputData.myExistsInEntity = true;
+}
+
+void ComponentLoader::LoadSpawnpointComponent(XMLReader& aDocument, tinyxml2::XMLElement* aSourceElement, SpawnpointComponentData& aOutputData)
+{
+	aOutputData.myExistsInEntity = true;
+	aOutputData.myUnitTypes.Init(8);
+	aDocument;
+	aSourceElement;
+	for (tinyxml2::XMLElement* e = aDocument.FindFirstChild(aSourceElement); e != nullptr; e = aDocument.FindNextElement(e))
+	{
+		std::string elementName = CU::ToLower(e->Name());
+		if (elementName == CU::ToLower("SpawnUnitType"))
+		{
+			std::string toAdd;
+			aDocument.ForceReadAttribute(e, "type", toAdd);
+			aOutputData.myUnitTypes.Add(toAdd);
+		}
+		else if (elementName == CU::ToLower("SpawnpointLifetime"))
+		{
+			aDocument.ForceReadAttribute(e, "value", aOutputData.mySpawnpointLifetime);
+		}
+		else if (elementName == CU::ToLower("SpawnInterval"))
+		{
+			aDocument.ForceReadAttribute(e, "value", aOutputData.mySpawnInterval);
+		}
+		else if (elementName == CU::ToLower("SpawnPerInterval"))
+		{
+			aDocument.ForceReadAttribute(e, "value", aOutputData.mySpawnPerInterval);
+		}
+		else if (elementName == CU::ToLower("SpawnCount"))
+		{
+			aDocument.ForceReadAttribute(e, "value", aOutputData.myUnitCount);
+		}
+	}
 }
 
 void ComponentLoader::LoadUpgradeComponent(XMLReader& aDocument, tinyxml2::XMLElement* aSourceElement, UpgradeComponentData& aOutputData)
@@ -268,8 +336,28 @@ void ComponentLoader::LoadBulletComponent(XMLReader& aDocument, tinyxml2::XMLEle
 	aOutputData.myExistsInEntity = true;
 
 	aDocument.ForceReadAttribute(aDocument.ForceFindFirstChild(aSourceElement, "Damage"), "value", aOutputData.myDamage);
+	aOutputData.myDamage = int(ceilf(GC::DamageMultiplier[GC::Difficulty] * aOutputData.myDamage));
+
 	aDocument.ForceReadAttribute(aDocument.ForceFindFirstChild(aSourceElement, "Speed"), "value", aOutputData.mySpeed);
 	aDocument.ForceReadAttribute(aDocument.ForceFindFirstChild(aSourceElement, "Lifetime"), "value", aOutputData.myLifetime);
+	aDocument.ForceReadAttribute(aDocument.ForceFindFirstChild(aSourceElement, "minspreadrotation"), "value", aOutputData.myMinRotation);
+	aDocument.ForceReadAttribute(aDocument.ForceFindFirstChild(aSourceElement, "maxspreadrotation"), "value", aOutputData.myMaxRotation);
+}
+
+void ComponentLoader::LoadSoundComponent(XMLReader&, tinyxml2::XMLElement*, SoundComponentData& aOutputData)
+{
+	aOutputData.myExistsInEntity = true;
+}
+
+void ComponentLoader::LoadRotationComponent(XMLReader& aDocument, tinyxml2::XMLElement* aSourceElement, RotationComponentData& aOutputData)
+{
+	aOutputData.myExistsInEntity = true;
+	aDocument.ForceReadAttribute(aDocument.ForceFindFirstChild(aSourceElement, "Speed"), "value", aOutputData.myRotationSpeed);
+}
+
+void ComponentLoader::LoadVisualExplosionComponent(XMLReader& aDocument, tinyxml2::XMLElement* aSourceElement, VisualExplosionComponentData& aOutputData)
+{
+	aOutputData.myExistsInEntity = true;
 }
 
 void ComponentLoader::LoadFirstPersonRenderComponent(XMLReader& aDocument, tinyxml2::XMLElement* aSourceElement, FirstPersonRenderComponentData& aOutputData)
@@ -278,6 +366,30 @@ void ComponentLoader::LoadFirstPersonRenderComponent(XMLReader& aDocument, tinyx
 	aSourceElement;
 
 	aOutputData.myExistsInEntity = true;
+}
+
+eObjectRoomType ComponentLoader::LoadRoomType(XMLReader& aDocument, tinyxml2::XMLElement* aSourceElement)
+{
+	std::string typeStr;
+	aDocument.ForceReadAttribute(aDocument.ForceFindFirstChild(aSourceElement, "RoomType"), "value", typeStr);
+
+	if (typeStr == "dynamic")
+	{
+		return eObjectRoomType::DYNAMIC;
+	}
+	else if (typeStr == "static")
+	{
+		return eObjectRoomType::STATIC;
+	}
+	else if (typeStr == "alwaysRender")
+	{
+		return eObjectRoomType::ALWAYS_RENDER;
+	}
+	else
+	{
+		DL_ASSERT(CU::Concatenate("Unknown room type: %s", typeStr.c_str()));
+		return eObjectRoomType::STATIC;
+	}
 }
 
 int ComponentLoader::ConvertToTriggerEnum(std::string aName)
@@ -306,7 +418,20 @@ int ComponentLoader::ConvertToTriggerEnum(std::string aName)
 	{
 		return static_cast<int>(eTriggerType::MISSION);
 	}
+	else if (aName == "respawn")
+	{
+		return static_cast<int>(eTriggerType::RESPAWN);
+	}
+	else if (aName == "spawntrigger")
+	{
+		return static_cast<int>(eTriggerType::ENEMY_SPAWN);
+	}
+	else if (aName == "marker")
+	{
+		return static_cast<int>(eTriggerType::MARKER);
+	}
 
 	DL_ASSERT("[ComponentLoader] No trigger type in trigger component named " + aName);
 	return static_cast<int>(eTriggerType::_COUNT);
 }
+

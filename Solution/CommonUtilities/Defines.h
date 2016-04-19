@@ -17,12 +17,13 @@
 #endif
 
 //DO NOT CHANGE
-#define DGFX_VERSION 15
+#define DGFX_VERSION 16
 #define TERRAIN_VERSION 1
+#define NETWORK_VERSION 9
 
 //#define ENABLE_DEBUG_TEXT
 #ifndef DLL_EXPORT
-//#define THREADED_LOADING
+#define THREADED_LOADING
 //#define SCENE_USE_OCTREE
 #endif
 
@@ -43,3 +44,9 @@
 //#define USE_RAW_INPUT
 
 #define SERVER_CONNECT_TO_DEBUGGER true
+
+#define USE_ATMOSPHERE_PARTICLES
+
+#define HEALTH_COLOR { 0.4f, 0.8f, 0.4f, 1.f }
+
+#define UPGRADE_COLOR { 0.7f, 0.7f, 0.2f, 1.f }

@@ -6,12 +6,13 @@
 #include "Vector.h"
 #include <ShlObj.h>
 #include <sstream>
+#include <fstream>
+#include <streambuf>
 
 namespace CU
 {
 	const std::string group("/Distortion Games/");
-	//const std::string game("/Patrick of the Caribbean/");
-	const std::string game("");
+	const std::string game("Machina/");
 
 	static bool canSave;
 
@@ -36,6 +37,18 @@ namespace CU
 			std::string folder(aPath.begin(), aPath.begin() + slashIndex);
 			CreateDirectory(folder.c_str(), NULL);
 			slashIndex = aPath.find_first_of("/", slashIndex + 1);
+		}
+	}
+
+	inline void BuildFoldersInPathWithDoubleSlash(const std::string& aPath)
+	{
+		unsigned int slashIndex = aPath.find_first_of("\\");
+
+		while (slashIndex != std::string::npos)
+		{
+			std::string folder(aPath.begin(), aPath.begin() + slashIndex);
+			CreateDirectory(folder.c_str(), NULL);
+			slashIndex = aPath.find_first_of("\\", slashIndex + 1);
 		}
 	}
 
@@ -128,21 +141,38 @@ namespace CU
 		return toReturn;
 	}
 
-	inline std::string GetSubString(const std::string& aStringToReadFrom, const std::string& aWordToFind, bool aReadAfterChar
+	inline std::string GetSubString(const std::string& aStringToReadFrom, const std::string& aToFind, bool aReadCharactersBeforeToFind
 		, int someCharsToSkip = 0)
 	{
-		if (aStringToReadFrom.rfind(aWordToFind) != std::string::npos)
+		if (aStringToReadFrom.find(aToFind) != std::string::npos)
 		{
-			if (aReadAfterChar == false)
+			if (aReadCharactersBeforeToFind == true)
 			{
-				return aStringToReadFrom.substr(0, aStringToReadFrom.rfind(aWordToFind));
+				return aStringToReadFrom.substr(0, aStringToReadFrom.find(aToFind));
 			}
-			else if (aReadAfterChar == true)
-			{
-				return aStringToReadFrom.substr(aStringToReadFrom.rfind(aWordToFind) + (someCharsToSkip - 1));
-			}
+
+			return aStringToReadFrom.substr(aStringToReadFrom.find(aToFind) + someCharsToSkip);
+
 		}
+
 		return aStringToReadFrom;
+	}
+
+	inline bool CheckSubString(const std::string& aString, const std::string& aToFind)
+	{
+		if (aString.find(aToFind) != aString.npos)
+			return true;
+
+		return false;
+	}
+
+	inline std::string ReplaceAllInString(std::string str, const std::string& from, const std::string& to) {
+		size_t start_pos = 0;
+		while ((start_pos = str.find(from, start_pos)) != std::string::npos) {
+			str.replace(start_pos, from.length(), to);
+			start_pos += to.length(); // Handles case where 'to' is a substring of 'from'
+		}
+		return str;
 	}
 
 	//If OptionalExtension is blank, the outputstring will have the same extension as the input string
@@ -166,6 +196,27 @@ namespace CU
 
 	//If OptionalExtension is blank, the outputstring will have the same extension as the input string
 	//OptionalExtension needs to be entered without a period, "xml", NOT ".xml"
+	inline std::string GetMyDocumentsDataPath(const std::string& aFilePath, const std::string& anOptionalNewExtension = "")
+	{
+		std::string pathWithoutData(aFilePath.begin() + 5, aFilePath.end());
+
+		if (anOptionalNewExtension != "")
+		{
+			int extensionIndex = pathWithoutData.find_last_of(".");
+			pathWithoutData = std::string(pathWithoutData.begin(), pathWithoutData.begin() + extensionIndex + 1);
+			pathWithoutData += anOptionalNewExtension;
+		}
+		std::string documentsPath = GetMyDocumentFolderPath();
+		documentsPath += pathWithoutData;
+
+		documentsPath = ReplaceAllInString(documentsPath, "/", "\\");
+		BuildFoldersInPathWithDoubleSlash(documentsPath);
+
+		return documentsPath;
+	}
+
+	//If OptionalExtension is blank, the outputstring will have the same extension as the input string
+	//OptionalExtension needs to be entered without a period, "xml", NOT ".xml"
 	inline std::string GetRealDataFolderFilePath(const std::string& aFilePath, const std::string& anOptionalNewExtension = "")
 	{
 		std::string pathWithoutData(aFilePath.begin() + 14, aFilePath.end());
@@ -182,7 +233,7 @@ namespace CU
 
 		return realDataFilePath;
 	}
-	
+
 	inline std::string Concatenate(const char* aFormattedString, ...)
 	{
 		char buffer[1024];
@@ -231,7 +282,7 @@ namespace CU
 		unsigned int end = aString.length();
 		if (end > begin)
 		{
-			while (aString[end-1] == ' ')
+			while (aString[end - 1] == ' ')
 			{
 				--end;
 			}
@@ -248,7 +299,7 @@ namespace CU
 		//to radians:
 		Vector3<float> rotation(aRotationInDegrees);
 		rotation *= 0.0174532925f;
-		
+
 		aMatrixToRotate = Matrix44<float>::CreateRotateAroundZ(rotation.z) * aMatrixToRotate;
 		aMatrixToRotate = Matrix44<float>::CreateRotateAroundY(rotation.y) * aMatrixToRotate;
 		aMatrixToRotate = Matrix44<float>::CreateRotateAroundX(rotation.x) * aMatrixToRotate;
@@ -261,5 +312,19 @@ namespace CU
 		return aValue == 2 || aValue == 4 || aValue == 8 || aValue == 16 || aValue == 32 || aValue == 64 || aValue == 128
 			|| aValue == 256 || aValue == 512 || aValue == 1024 || aValue == 2048 || aValue == 4096 || aValue == 8192
 			|| aValue == 1024 * 6;
+	}
+
+	inline const std::string ReadFileToString(const std::string& aFilePath)
+	{
+		std::string toReturn;
+		std::ifstream file(aFilePath);
+
+		file.seekg(0, std::ios::end);
+		toReturn.reserve(static_cast<unsigned int>(file.tellg()));
+		file.seekg(0, std::ios::beg);
+
+		toReturn.assign(std::istreambuf_iterator<char>(file), std::istreambuf_iterator<char>());
+		file.close();
+		return toReturn;
 	}
 }

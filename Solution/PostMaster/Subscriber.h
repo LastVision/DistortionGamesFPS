@@ -9,8 +9,16 @@ struct OnClickMessage;
 struct OnRadioButtonMessage;
 struct ResizeMessage;
 struct StartGameMessage;
+struct SendTextToClientsMessage;
 struct SetActiveMessage;
+struct PrintTextMessage;
+struct RespawnMessage;
+struct RespawnTriggerMessage;
+struct ActivateSpawnpointMessage;
 struct Message;
+struct LevelLoadedMessage;
+struct LevelCompleteMessage;
+struct HitmarkerMessage;
 
 class Subscriber
 {
@@ -28,6 +36,14 @@ public:
 	virtual void ReceiveMessage(const OnRadioButtonMessage& aMessage);
 	virtual void ReceiveMessage(const ResizeMessage& aMessage);
 	virtual void ReceiveMessage(const StartGameMessage& aMessage);
+	virtual void ReceiveMessage(const SendTextToClientsMessage& aMessage);
 	virtual void ReceiveMessage(const SetActiveMessage& aMessage);
+	virtual void ReceiveMessage(const PrintTextMessage& aMessage);
+	virtual void ReceiveMessage(const RespawnMessage& aMessage);
+	virtual void ReceiveMessage(const RespawnTriggerMessage& aMessage);
+	virtual void ReceiveMessage(const ActivateSpawnpointMessage& aMessage);
+	virtual void ReceiveMessage(const LevelLoadedMessage& aMessage);
+	virtual void ReceiveMessage(const LevelCompleteMessage& aMessage);
+	virtual void ReceiveMessage(const HitmarkerMessage& aMessage);
 };
 

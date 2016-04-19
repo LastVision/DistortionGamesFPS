@@ -203,41 +203,56 @@
   <ItemGroup>
     <ClInclude Include="ClientNetworkManager.h" />
     <ClInclude Include="ClientProjectileManager.h" />
+    <ClInclude Include="ClientUnitManager.h" />
+    <ClInclude Include="CompleteGameState.h" />
     <ClInclude Include="ConsoleBackspace.h" />
     <ClInclude Include="ConsoleHelp.h" />
     <ClInclude Include="ConsoleHistoryManager.h" />
     <ClInclude Include="ConsoleState.h" />
     <ClInclude Include="Console.h" />
+    <ClInclude Include="CreditMenuState.h" />
     <ClInclude Include="EmitterManager.h" />
     <ClInclude Include="ClientGame.h" />
     <ClInclude Include="GameState.h" />
+    <ClInclude Include="HelpState.h" />
     <ClInclude Include="InGameState.h" />
     <ClInclude Include="ClientLevel.h" />
     <ClInclude Include="ClientLevelFactory.h" />
     <ClInclude Include="LobbyState.h" />
+    <ClInclude Include="MainMenuState.h" />
+    <ClInclude Include="OptionsState.h" />
     <ClInclude Include="ServerSelectState.h" />
     <ClInclude Include="ScriptInterface.h" />
+    <ClInclude Include="SplashState.h" />
     <ClInclude Include="StateEnums.h" />
     <ClInclude Include="StateStack.h" />
     <ClInclude Include="StateStackProxy.h" />
     <ClInclude Include="stdafx.h" />
+    <ClInclude Include="TextEventManager.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ClientNetworkManager.cpp" />
     <ClCompile Include="ClientProjectileManager.cpp" />
+    <ClCompile Include="ClientUnitManager.cpp" />
+    <ClCompile Include="CompleteGameState.cpp" />
     <ClCompile Include="ConsoleBackspace.cpp" />
     <ClCompile Include="ConsoleHelp.cpp" />
     <ClCompile Include="ConsoleHistoryManager.cpp" />
     <ClCompile Include="ConsoleState.cpp" />
     <ClCompile Include="Console.cpp" />
+    <ClCompile Include="CreditMenuState.cpp" />
     <ClCompile Include="EmitterManager.cpp" />
     <ClCompile Include="ClientGame.cpp" />
+    <ClCompile Include="HelpState.cpp" />
     <ClCompile Include="InGameState.cpp" />
     <ClCompile Include="ClientLevel.cpp" />
     <ClCompile Include="ClientLevelFactory.cpp" />
     <ClCompile Include="LobbyState.cpp" />
+    <ClCompile Include="MainMenuState.cpp" />
+    <ClCompile Include="OptionsState.cpp" />
     <ClCompile Include="ServerSelectState.cpp" />
     <ClCompile Include="ScriptInterface.cpp" />
+    <ClCompile Include="SplashState.cpp" />
     <ClCompile Include="StateStack.cpp" />
     <ClCompile Include="StateStackProxy.cpp" />
     <ClCompile Include="stdafx.cpp">
@@ -252,6 +267,7 @@
       <MultiProcessorCompilation Condition="'$(Configuration)|$(Platform)'=='DataExporter|Win32'">false</MultiProcessorCompilation>
       <MultiProcessorCompilation Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</MultiProcessorCompilation>
     </ClCompile>
+    <ClCompile Include="TextEventManager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Audio\Audio.vcxproj">

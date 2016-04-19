@@ -3,10 +3,12 @@
 #include "PhysicsComponent.h"
 #include "PhysicsComponentData.h"
 #include <PhysicsInterface.h>
+#include "TriggerComponent.h"
+#include <CommonHelper.h>
 
 
 PhysicsComponent::PhysicsComponent(Entity& aEntity, const PhysicsComponentData& aPhysicsComponentData
-	, const std::string& aFBXPath)
+		, const std::string& aFBXPath)
 	: Component(aEntity)
 	, myData(aPhysicsComponentData)
 	, myIsAwake(true)
@@ -23,21 +25,41 @@ PhysicsComponent::PhysicsComponent(Entity& aEntity, const PhysicsComponentData& 
 
 	myPhysicsType = aPhysicsComponentData.myPhysicsType;
 
+	if (myEntity.GetGID() == 502)
+	{
+		int apa = 5;
+		apa;
+	}
+
 	bool shouldAddToPhysicsScene = true;
-	if (myEntity.GetType() == eEntityType::EXPLOSION)
+	if (myEntity.GetType() == eEntityType::EXPLOSION || myEntity.GetSubType() == "respawn"
+		|| myEntity.GetType() == eEntityType::BULLET || myEntity.GetSubType() == CU::ToLower("gunDroidServer")
+		|| myEntity.GetSubType() == "gundroid")
 	{
 		shouldAddToPhysicsScene = false;
 	}
 
+	if (myEntity.GetIsClient() == false && myEntity.GetComponent<TriggerComponent>() != nullptr)
+	{
+		if (myEntity.GetComponent<TriggerComponent>()->IsClientSide() == true)
+		{
+			shouldAddToPhysicsScene = false;
+		}
+	}
+
 	if (myPhysicsType != ePhysics::CAPSULE)
 	{
-		myCallbackStruct = Prism::PhysicsCallbackStruct(myData, std::bind(&PhysicsComponent::SwapOrientations, this), std::bind(&PhysicsComponent::UpdateOrientation, this));
-		Prism::PhysicsInterface::GetInstance()->Create(this, myCallbackStruct, my4x4Float, aFBXPath, &myDynamicBody, &myStaticBody, &myShapes, shouldAddToPhysicsScene);
+		myCallbackStruct = Prism::PhysicsCallbackStruct(myData, std::bind(&PhysicsComponent::SwapOrientations, this)
+			, std::bind(&PhysicsComponent::UpdateOrientation, this));
+		Prism::PhysicsInterface::GetInstance()->Create(this, myCallbackStruct, my4x4Float, aFBXPath, &myDynamicBody
+			, &myStaticBody, &myShapes, shouldAddToPhysicsScene, myEntity.GetType() == eEntityType::GRENADE);
 	}
 	else if (myPhysicsType == ePhysics::CAPSULE)
 	{
-		myCapsuleControllerId = Prism::PhysicsInterface::GetInstance()->CreatePlayerController(myEntity.GetOrientation().GetPos(), this);
+		myCapsuleControllerId = Prism::PhysicsInterface::GetInstance()->CreatePlayerController(myEntity.GetOrientation().GetPos(), this, shouldAddToPhysicsScene);
 	}
+
+	myIsInScene = shouldAddToPhysicsScene;
 }
 
 
@@ -49,14 +71,9 @@ PhysicsComponent::~PhysicsComponent()
 
 void PhysicsComponent::Update(float)
 {
-	if (myPhysicsType == ePhysics::KINEMATIC && myIsAwake == true)
+	if (myPhysicsType == ePhysics::KINEMATIC && myIsAwake == true && myEntity.IsActive() == true)
 	{
-		Prism::PhysicsInterface::GetInstance()->MoveToPosition(myDynamicBody, myEntity.GetOrientation().GetPos() + CU::Vector3<float>(0, 1.f, 0));
-	}
-	if (myIsAwake == false)
-	{
-		int apa;
-		apa = 5;
+		Prism::PhysicsInterface::GetInstance()->MoveToPosition(myDynamicBody, myEntity.GetOrientation().GetPos() );
 	}
 }
 
@@ -65,10 +82,6 @@ void PhysicsComponent::Reset()
 	if (myDynamicBody != nullptr && myPhysicsType != ePhysics::KINEMATIC)
 	{
 		Prism::PhysicsInterface::GetInstance()->SetVelocity(myDynamicBody, CU::Vector3<float>(0, 0, 0));
-	}
-	else if (myPhysicsType == ePhysics::KINEMATIC || myPhysicsType == ePhysics::PHANTOM)
-	{
-		AddToScene();
 	}
 }
 
@@ -127,7 +140,13 @@ float* PhysicsComponent::GetOrientation()
 void PhysicsComponent::UpdateOrientation()
 {
 	DL_ASSERT_EXP(myPhysicsType == ePhysics::DYNAMIC, "Cant update Orientation on STATIC PhysEntities");
-	
+
+	if (myEntity.GetGID() == 60000)
+	{
+		int apa = 5;
+		apa;
+	}
+
 	if (myIsAwake == true)
 	{
 		Prism::PhysicsInterface::GetInstance()->UpdateOrientation(myDynamicBody, myShapes, myThread4x4Float);
@@ -141,7 +160,7 @@ void PhysicsComponent::UpdateOrientation()
 void PhysicsComponent::UpdateOrientationStatic()
 {
 	DL_ASSERT_EXP(myPhysicsType == ePhysics::PHANTOM, "Cant update Orientation Static on other types of PhysEntities");
-	
+
 	if (myIsAwake == true)
 	{
 		Prism::PhysicsInterface::GetInstance()->UpdateOrientation(myStaticBody, myShapes, myThread4x4Float);
@@ -162,7 +181,7 @@ void PhysicsComponent::AddForce(const CU::Vector3<float>& aDirection, float aMag
 
 void PhysicsComponent::SetVelocity(const CU::Vector3<float>& aVelocity)
 {
-	DL_ASSERT_EXP(myPhysicsType == ePhysics::DYNAMIC, "Cant add Force to STATIC objects");
+	DL_ASSERT_EXP(myPhysicsType == ePhysics::DYNAMIC, "Cant set velocity to STATIC objects");
 	DL_ASSERT_EXP(myIsAwake == true, "Add force on sleeping object");
 
 	Prism::PhysicsInterface::GetInstance()->SetVelocity(myDynamicBody, aVelocity);
@@ -170,8 +189,7 @@ void PhysicsComponent::SetVelocity(const CU::Vector3<float>& aVelocity)
 
 void PhysicsComponent::TeleportToPosition(const CU::Vector3<float>& aPosition)
 {
-	DL_ASSERT_EXP(myPhysicsType != ePhysics::STATIC, "Cant add Force to STATIC objects");
-	DL_ASSERT_EXP(myIsAwake == true, "Add force on sleeping object");
+	DL_ASSERT_EXP(myPhysicsType != ePhysics::STATIC, "Cant teleport to position to STATIC objects");
 
 	if (myDynamicBody != nullptr)
 	{
@@ -185,7 +203,7 @@ void PhysicsComponent::TeleportToPosition(const CU::Vector3<float>& aPosition)
 
 void PhysicsComponent::MoveToPosition(const CU::Vector3<float>& aPosition)
 {
-	DL_ASSERT_EXP(myPhysicsType != ePhysics::STATIC, "Cant add Force to STATIC objects");
+	DL_ASSERT_EXP(myPhysicsType != ePhysics::STATIC, "Cant move to position to STATIC objects");
 	DL_ASSERT_EXP(myIsAwake == true, "Add force on sleeping object");
 
 	Prism::PhysicsInterface::GetInstance()->MoveToPosition(myDynamicBody, aPosition);
@@ -202,10 +220,15 @@ void PhysicsComponent::AddToScene()
 	{
 		Prism::PhysicsInterface::GetInstance()->Add(myDynamicBody);
 	}
+	else if (myPhysicsType == ePhysics::CAPSULE)
+	{
+		Prism::PhysicsInterface::GetInstance()->Add(myCapsuleControllerId);
+	}
 	else
 	{
 		Prism::PhysicsInterface::GetInstance()->Add(myStaticBody);
 	}
+	myIsInScene = true;
 }
 
 void PhysicsComponent::RemoveFromScene()
@@ -214,11 +237,14 @@ void PhysicsComponent::RemoveFromScene()
 	{
 		Prism::PhysicsInterface::GetInstance()->Remove(myDynamicBody, myData);
 	}
+	else if (myPhysicsType == ePhysics::CAPSULE)
+	{
+		Prism::PhysicsInterface::GetInstance()->Remove(myCapsuleControllerId);
+	}
 	else
 	{
-		//DL_ASSERT("Can't remove static objects");
 		Prism::PhysicsInterface::GetInstance()->Remove(myStaticBody, myData);
 	}
-
+	myIsInScene = false;
 }
 

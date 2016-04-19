@@ -3,6 +3,7 @@
 #include "BoneName.h"
 #include <GrowingArray.h>
 #include <atomic>
+#include <unordered_map>
 
 struct ID3D11Texture2D;
 
@@ -50,7 +51,7 @@ namespace Prism
 			, const CU::Vector2<float>& aHotSpot = { 0.f, 0.f });
 
 		FontProxy* LoadFont(const std::string& aFilePath, const CU::Vector2<int>& aTextureSize);
-		TextProxy* LoadText(FontProxy* aFontProxy);
+		TextProxy* LoadText(FontProxy* aFontProxy, bool aIs3d = false, bool aShouldFollowCamera = false);
 
 		void GetHierarchyToBone(const std::string& aAnimationPath, const std::string& aBoneName, GUIBone& aBoneOut);
 
@@ -87,6 +88,9 @@ namespace Prism
 			CU::Vector4<float> myColor;
 			ID3D11Texture2D* myD3D11Texture = nullptr;
 			FontProxy* myFontProxyToUse;
+
+			bool myIs3dText;
+			bool myShouldFollowCamera;
 		};
 
 		ModelLoader();
@@ -99,6 +103,7 @@ namespace Prism
 		void WaitUntilCopyIsAllowed();
 		void WaitUntilAddIsAllowed();
 		void CopyLoadJobs();
+		void LoadRadiuses();
 
 		void CreateModel(LoadData& someData);
 		void CreateModelAnimated(LoadData& someData);
@@ -108,6 +113,7 @@ namespace Prism
 		void CreateFont(LoadData& someData);
 		void CreateText(LoadData& someData);
 		void GetHierarchyToBone(LoadData& someData);
+		void SetRadius(ModelProxy* aProxy, const std::string& aModelPath);
 
 		CU::GrowingArray<LoadData> myBuffers[2];
 		CU::GrowingArray<LoadData> myLoadArray;
@@ -125,8 +131,8 @@ namespace Prism
 		std::unordered_map<std::string, ModelProxy*> myModelProxies;
 		std::unordered_map<std::string, Sprite*> mySprites;
 		std::unordered_map<std::string, FontProxy*> myFontProxies;
-		CU::GrowingArray<TextProxy*> myTextProxies;
 		std::unordered_map<std::string, int> myInstancedCount;
+		std::unordered_map<std::string, float> myRadiuses;
 
 		static ModelLoader* myInstance;
 	};

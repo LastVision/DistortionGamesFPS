@@ -63,6 +63,7 @@ namespace Prism
 #endif
 
 		LoadInstancedCount();
+		LoadRadiuses();
 	}
 
 	ModelLoader::~ModelLoader()
@@ -88,8 +89,6 @@ namespace Prism
 			SAFE_DELETE(it->second);
 		}
 		myFontProxies.clear();
-
-		//myTextProxies.DeleteAll();
 	}
 
 	void ModelLoader::LoadInstancedCount()
@@ -117,12 +116,12 @@ namespace Prism
 
 		/*DL_ASSERT_EXP(myInstancedCount.find(name) != myInstancedCount.end()
 			, CU::Concatenate("GetInstancedCount on %s failed", aModelPath.c_str()));*/
-		//if (myInstancedCount.find(name) == myInstancedCount.end())
+		if (myInstancedCount.find(name) == myInstancedCount.end())
 		{
-			return 1024;
+			return 2048;
 		}
 
-		return myInstancedCount[name];
+		return int(myInstancedCount[name] * 1.5f);
 	}
 
 	void ModelLoader::Run()
@@ -140,6 +139,8 @@ namespace Prism
 
 			WaitUntilCopyIsAllowed();
 			myCanAddToLoadArray = false;
+
+			DEBUG_PRINT("MODELLOADER IS WORKING");
 
 			CopyLoadJobs();
 
@@ -302,6 +303,9 @@ namespace Prism
 #endif
 		
 		myModelProxies[aModelPath] = proxy;
+		
+		SetRadius(proxy, aModelPath);
+
 		return proxy;
 	}
 
@@ -338,6 +342,8 @@ namespace Prism
 
 		proxy->SetModelAnimated(model);
 #endif
+
+		SetRadius(proxy, aModelPath);
 
 		myModelProxies[aModelPath] = proxy;
 		return proxy;
@@ -486,7 +492,7 @@ namespace Prism
 		return proxy;
 	}
 
-	TextProxy* ModelLoader::LoadText(FontProxy* aFontProxy)
+	TextProxy* ModelLoader::LoadText(FontProxy* aFontProxy, bool aIs3d, bool aShouldFollowCamera)
 	{
 		TextProxy* proxy = new TextProxy();
 
@@ -498,11 +504,13 @@ namespace Prism
 		newData.myTextProxy = proxy;
 		newData.myFontProxyToUse = aFontProxy;
 		newData.myLoadType = eLoadType::TEXT;
+		newData.myIs3dText = aIs3d;
+		newData.myShouldFollowCamera = aShouldFollowCamera;
 
 		myBuffers[myInactiveBuffer].Add(newData);
 		myCanCopyArray = true;
 #else
-		proxy->SetText(new Text(*aFontProxy));
+		proxy->SetText(new Text(*aFontProxy, aIs3d, aShouldFollowCamera));
 #endif	
 
 		return proxy;
@@ -526,6 +534,21 @@ namespace Prism
 		myModelFactory->GetHierarchyToBone(aAnimationPath, aBoneName, aBoneOut);
 		aBoneOut.myIsValid = true;
 #endif	
+	}
+
+	void ModelLoader::SetRadius(ModelProxy* aProxy, const std::string& aModelPath)
+	{
+		float radius = 0;
+		if (myRadiuses.find(aModelPath) == myRadiuses.end())
+		{
+			radius = 25.f;
+		}
+		else
+		{
+			radius = myRadiuses[aModelPath];
+		}
+
+		aProxy->SetRadius(radius);
 	}
 
 	bool ModelLoader::CheckIfWorking()
@@ -573,6 +596,21 @@ namespace Prism
 		for (int i = 0; i < myBuffers[myActiveBuffer].Size(); ++i)
 		{
 			myLoadArray.Add(myBuffers[myActiveBuffer][i]);
+		}
+	}
+
+	void ModelLoader::LoadRadiuses()
+	{
+		std::ifstream file;
+		file.open("GeneratedData/modellist.bin", std::ios::in | std::ios::binary);
+
+		std::string model;
+		float radius = 0;
+		while (file >> model)
+		{
+			file >> radius;
+
+			myRadiuses[model] = radius;
 		}
 	}
 
@@ -641,11 +679,12 @@ namespace Prism
 	{
 		CU::Vector2<int> size(int(someData.mySize.x), int(someData.mySize.y));
 		someData.myFontProxy->SetFont(new Font(someData.myResourcePath, size));
+		myFontProxies[someData.myFontProxy->GetFilePath()] = someData.myFontProxy;
 	}
 
 	void ModelLoader::CreateText(LoadData& someData)
 	{
-		someData.myTextProxy->SetText(new Text(*someData.myFontProxyToUse));
+		someData.myTextProxy->SetText(new Text(*someData.myFontProxyToUse, someData.myIs3dText, someData.myShouldFollowCamera));
 	}
 
 	void ModelLoader::GetHierarchyToBone(LoadData& someData)

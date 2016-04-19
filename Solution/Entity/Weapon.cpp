@@ -1,14 +1,23 @@
 #include "stdafx.h"
-
-#include "Weapon.h"
 #include "UpgradeComponentData.h"
+#include "Weapon.h"
 
-Weapon::Weapon(eWeaponType aWeaponType, std::string aXMLTagName)
+Weapon::Weapon(eWeaponType aWeaponType, Entity* aOwnerEntity)
 	: myWeaponType(aWeaponType)
 	, myForceStrength(0.f)
+	, myOwnerEntity(aOwnerEntity)
+{
+}
+
+Weapon::~Weapon()
+{
+}
+
+void Weapon::Init(std::string aWeaponSettingsPath, std::string aXMLTagName)
 {
 	XMLReader reader;
-	reader.OpenDocument("Data/Setting/SET_weapons.xml");
+	//reader.OpenDocument("Data/Setting/SET_weapons.xml");
+	reader.OpenDocument(aWeaponSettingsPath);
 	tinyxml2::XMLElement* root = reader.ForceFindFirstChild("root");
 
 	tinyxml2::XMLElement* grenadeLauncherElement = reader.ForceFindFirstChild(root, aXMLTagName);
@@ -21,10 +30,6 @@ Weapon::Weapon(eWeaponType aWeaponType, std::string aXMLTagName)
 
 	myAmmoInClip = myClipSize;
 	myShootTimer = myShootTime;
-}
-
-Weapon::~Weapon()
-{
 }
 
 void Weapon::Upgrade(const UpgradeComponentData& aData)

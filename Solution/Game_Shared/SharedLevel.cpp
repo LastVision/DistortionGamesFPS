@@ -46,8 +46,18 @@ void SharedLevel::AddEnemy(Entity* anEntity)
 	myActiveUnitsMap[anEntity->GetGID()] = anEntity;
 }
 
-void SharedLevel::Update(const float aDeltaTime)
+void SharedLevel::AddPlayerStartPosition(unsigned int aGID, const CU::Vector3<float>& aPosition)
 {
+	myPlayerStartPositions[aGID] = aPosition;
+}
+
+void SharedLevel::Update(const float aDeltaTime, bool)
+{
+	//if (aLoadingScreen == true)
+	//{
+	//	return;
+	//}
+
 	for (Entity* entity : myPlayers)
 	{
 		if (entity->IsAlive() == true)
@@ -55,13 +65,13 @@ void SharedLevel::Update(const float aDeltaTime)
 			entity->Update(aDeltaTime);
 		}
 	}
-	for (Entity* entity : myActiveEnemies)
+	/*for (Entity* entity : myActiveEnemies)
 	{
-		if (entity->IsAlive() == true)
-		{
-			entity->Update(aDeltaTime);
-		}
+	if (entity->IsAlive() == true)
+	{
+	entity->Update(aDeltaTime);
 	}
+	}*/
 	for (Entity* entity : myActiveEntities)
 	{
 		if (entity->IsAlive() == true)
@@ -108,6 +118,6 @@ void SharedLevel::HandleExplosion(Entity& aFirstEntity, Entity& aSecondEntity)
 	}
 	else if (physicsComponent->GetPhysicsType() == ePhysics::CAPSULE)
 	{
-		aSecondEntity.SendNote<DamageNote>(DamageNote(10));
+		aSecondEntity.SendNote<DamageNote>(DamageNote(1000));
 	}
 }

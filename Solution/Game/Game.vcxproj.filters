@@ -48,7 +48,33 @@
     <ClCompile Include="LobbyState.cpp">
       <Filter>StateStack</Filter>
     </ClCompile>
-    <ClCompile Include="ClientProjectileManager.cpp" />
+    <ClCompile Include="TextEventManager.cpp">
+      <Filter>Managers</Filter>
+    </ClCompile>
+    <ClCompile Include="CreditMenuState.cpp">
+      <Filter>StateStack</Filter>
+    </ClCompile>
+    <ClCompile Include="MainMenuState.cpp">
+      <Filter>StateStack</Filter>
+    </ClCompile>
+    <ClCompile Include="SplashState.cpp">
+      <Filter>StateStack</Filter>
+    </ClCompile>
+    <ClCompile Include="HelpState.cpp">
+      <Filter>StateStack</Filter>
+    </ClCompile>
+    <ClCompile Include="OptionsState.cpp">
+      <Filter>StateStack</Filter>
+    </ClCompile>
+    <ClCompile Include="CompleteGameState.cpp">
+      <Filter>StateStack</Filter>
+    </ClCompile>
+    <ClCompile Include="ClientProjectileManager.cpp">
+      <Filter>Managers</Filter>
+    </ClCompile>
+    <ClCompile Include="ClientUnitManager.cpp">
+      <Filter>Managers</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
@@ -104,7 +130,33 @@
     <ClInclude Include="LobbyState.h">
       <Filter>StateStack</Filter>
     </ClInclude>
-    <ClInclude Include="ClientProjectileManager.h" />
+    <ClInclude Include="TextEventManager.h">
+      <Filter>Managers</Filter>
+    </ClInclude>
+    <ClInclude Include="CreditMenuState.h">
+      <Filter>StateStack</Filter>
+    </ClInclude>
+    <ClInclude Include="MainMenuState.h">
+      <Filter>StateStack</Filter>
+    </ClInclude>
+    <ClInclude Include="SplashState.h">
+      <Filter>StateStack</Filter>
+    </ClInclude>
+    <ClInclude Include="HelpState.h">
+      <Filter>StateStack</Filter>
+    </ClInclude>
+    <ClInclude Include="OptionsState.h">
+      <Filter>StateStack</Filter>
+    </ClInclude>
+    <ClInclude Include="CompleteGameState.h">
+      <Filter>StateStack</Filter>
+    </ClInclude>
+    <ClInclude Include="ClientProjectileManager.h">
+      <Filter>Managers</Filter>
+    </ClInclude>
+    <ClInclude Include="ClientUnitManager.h">
+      <Filter>Managers</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="PreCompile">

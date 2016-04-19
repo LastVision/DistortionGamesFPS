@@ -17,9 +17,13 @@
 #include <PostMaster.h>
 #include <SharedNetworkManager.h>
 #include "ShootingComponent.h"
+#include "SpawnpointComponent.h"
 #include "TriggerComponent.h"
 #include "UpgradeComponent.h"
 #include "BulletComponent.h"
+#include "SoundComponent.h"
+#include "RotationComponent.h"
+#include "VisualExplosionComponent.h"
 
 Entity::Entity(unsigned int aGID, const EntityData& aEntityData, Prism::Scene* aScene, bool aClientSide, const CU::Vector3<float>& aStartPosition,
 	const CU::Vector3f& aRotation, const CU::Vector3f& aScale, const std::string& aSubType)
@@ -29,6 +33,12 @@ Entity::Entity(unsigned int aGID, const EntityData& aEntityData, Prism::Scene* a
 	, myEmitterConnection(nullptr)
 	, myIsClientSide(aClientSide)
 	, mySubType(aSubType)
+	, myIsEnemy(false)
+	, myIsActive(true)
+	, myTimeActiveBeforeKill(10.f)
+	, myTimeActiveBeforeKillTimer(10.f)
+	, myDelayAddToSceneTimer(0.f)
+	, myDelayedAddToScene(false)
 {
 	for (int i = 0; i < static_cast<int>(eComponentType::_COUNT); ++i)
 	{
@@ -40,45 +50,37 @@ Entity::Entity(unsigned int aGID, const EntityData& aEntityData, Prism::Scene* a
 	SetRotation(aRotation);
 
 
+	//has to be here fro press E-text
+	if (aEntityData.myTriggerData.myExistsInEntity == true)
+	{
+		myComponents[static_cast<int>(eComponentType::TRIGGER)] = new TriggerComponent(*this, aEntityData.myTriggerData);
+	}
+
+
+	myRoomType = eObjectRoomType::NOT_USED_ON_SERVER;
 	if (myScene != nullptr)
 	{
+		myRoomType = eObjectRoomType::NONE;
 		if (aEntityData.myAnimationData.myExistsInEntity == true)
 		{
-			myComponents[static_cast<int>(eComponentType::ANIMATION)] = new AnimationComponent(*this, aEntityData.myAnimationData);
+			myComponents[static_cast<int>(eComponentType::ANIMATION)] = new AnimationComponent(*this, aEntityData.myAnimationData, aScene);
 			//GetComponent<AnimationComponent>()->SetRotation(aRotation);
 			GetComponent<AnimationComponent>()->SetScale(aScale);
+			myRoomType = aEntityData.myAnimationData.myRoomType;
 		}
 		else if (aEntityData.myGraphicsData.myExistsInEntity == true)
 		{
 			myComponents[static_cast<int>(eComponentType::GRAPHICS)] = new GraphicsComponent(*this, aEntityData.myGraphicsData);
 			//GetComponent<GraphicsComponent>()->SetRotation(aRotation);
 			GetComponent<GraphicsComponent>()->SetScale(aScale);
+			myRoomType = aEntityData.myGraphicsData.myRoomType;
 		}
 	}
 
-	if (aEntityData.myPhysicsData.myExistsInEntity == true)
-	{
-		if (aEntityData.myAnimationData.myExistsInEntity == true)
-		{
-			myComponents[static_cast<int>(eComponentType::PHYSICS)] = new PhysicsComponent(*this, aEntityData.myPhysicsData
-				, aEntityData.myAnimationData.myModelPath);
-		}
-		else if (aEntityData.myGraphicsData.myExistsInEntity == true)
-		{
-			myComponents[static_cast<int>(eComponentType::PHYSICS)] = new PhysicsComponent(*this, aEntityData.myPhysicsData
-				, aEntityData.myGraphicsData.myModelPath);
-		}
-		else
-		{
-			DL_ASSERT_EXP(myIsClientSide == false, "Can't create PhysicsComponent on client without graphics.");
-			myComponents[static_cast<int>(eComponentType::PHYSICS)] = new PhysicsComponent(*this, aEntityData.myPhysicsData
-				, "no path");
-		}
-	}
 
 	if (aEntityData.myAIComponentData.myExistsInEntity == true)
 	{
-		myComponents[static_cast<int>(eComponentType::AI)] = new AIComponent(*this, aEntityData.myAIComponentData, myOrientation);
+		myComponents[static_cast<int>(eComponentType::AI)] = new AIComponent(*this, aEntityData.myAIComponentData, myOrientation, aEntityData.myProjecileData);
 	}
 
 	if (aEntityData.myGrenadeData.myExistsInEntity == true)
@@ -96,11 +98,6 @@ Entity::Entity(unsigned int aGID, const EntityData& aEntityData, Prism::Scene* a
 		myComponents[static_cast<int>(eComponentType::HEALTH)] = new HealthComponent(*this, aEntityData.myHealthData);
 	}
 
-	if (aEntityData.myTriggerData.myExistsInEntity == true)
-	{
-		myComponents[static_cast<int>(eComponentType::TRIGGER)] = new TriggerComponent(*this, aEntityData.myTriggerData);
-	}
-
 	if (aEntityData.myUpgradeData.myExistsInEntity == true)
 	{
 		myComponents[static_cast<int>(eComponentType::UPGRADE)] = new UpgradeComponent(*this, aEntityData.myUpgradeData);
@@ -111,11 +108,53 @@ Entity::Entity(unsigned int aGID, const EntityData& aEntityData, Prism::Scene* a
 		myComponents[static_cast<int>(eComponentType::SHOOTING)] = new ShootingComponent(*this, aScene);
 	}
 
+	
+
+	if (aEntityData.myProjecileData.myExistsInEntity == true)
+	{
+		myComponents[static_cast<int>(eComponentType::BULLET)] = new BulletComponent(*this, myOrientation);
+	}
+	if (aEntityData.mySpawnpointData.myExistsInEntity == true)
+	{
+		myComponents[static_cast<int>(eComponentType::SPAWNPOINT)] = new SpawnpointComponent(*this, aEntityData.mySpawnpointData);
+		myOrientation.SetPos(myOrientation.GetPos() + CU::Vector3<float>(0.f, 1.1f, 0.f));
+	}
+
+	if (aEntityData.mySoundData.myExistsInEntity == true && myIsClientSide == true)
+	{
+		myComponents[static_cast<int>(eComponentType::SOUND)] = new SoundComponent(*this);
+	}
+
+	if (aEntityData.myPhysicsData.myExistsInEntity == true)
+	{
+		if (aEntityData.myAnimationData.myExistsInEntity == true)
+		{
+			myComponents[static_cast<int>(eComponentType::PHYSICS)] = new PhysicsComponent(*this, aEntityData.myPhysicsData
+				, aEntityData.myAnimationData.myModelPath);
+		}
+		else if (aEntityData.myGraphicsData.myExistsInEntity == true)
+		{
+			myComponents[static_cast<int>(eComponentType::PHYSICS)] = new PhysicsComponent(*this, aEntityData.myPhysicsData
+				, aEntityData.myGraphicsData.myModelPath);
+		}
+		else
+		{
+			if (myIsClientSide == true && aEntityData.myTriggerData.myExistsInEntity == true && aEntityData.myTriggerData.myIsClientSide == false)
+			{
+			}
+			else
+			{
+				DL_ASSERT_EXP(myIsClientSide == false, "Can't create PhysicsComponent on client without graphics.");
+			}
+
+			myComponents[static_cast<int>(eComponentType::PHYSICS)] = new PhysicsComponent(*this, aEntityData.myPhysicsData
+				, "no path");
+		}
+	}
 	if (aEntityData.myInputData.myExistsInEntity == true && myIsClientSide == true)
 	{
 		myComponents[static_cast<int>(eComponentType::INPUT)] = new InputComponent(*this, aEntityData.myInputData);
 	}
-
 	if (aEntityData.myFirstPersonRenderData.myExistsInEntity == true && myIsClientSide == true)
 	{
 		myComponents[static_cast<int>(eComponentType::FIRST_PERSON_RENDER)] = new FirstPersonRenderComponent(*this, aScene);
@@ -124,9 +163,13 @@ Entity::Entity(unsigned int aGID, const EntityData& aEntityData, Prism::Scene* a
 			GetComponent<ShootingComponent>()->Init(aScene);
 		}
 	}
-	if (aEntityData.myProjecileData.myExistsInEntity == true)
+	if (aEntityData.myRotationData.myExistsInEntity == true && myIsClientSide == true)
 	{
-		myComponents[static_cast<int>(eComponentType::BULLET)] = new BulletComponent(*this, aEntityData.myProjecileData, myOrientation);
+		myComponents[static_cast<int>(eComponentType::ROTATION)] = new RotationComponent(*this, aEntityData.myRotationData);
+	}
+	if (aEntityData.myVisualExplosionData.myExistsInEntity == true && myIsClientSide == true)
+	{
+		myComponents[static_cast<int>(eComponentType::VISUAL_EXPLOSION)] = new VisualExplosionComponent(*this, aEntityData.myVisualExplosionData, myOrientation);
 	}
 
 	Reset();
@@ -143,6 +186,7 @@ Entity::~Entity()
 	//}
 	if (GetComponent<PhysicsComponent>() != nullptr)
 	{
+		SET_RUNTIME(false);
 		GetComponent<PhysicsComponent>()->RemoveFromScene();
 	}
 	for (int i = 0; i < static_cast<int>(eComponentType::_COUNT); ++i)
@@ -155,7 +199,7 @@ Entity::~Entity()
 void Entity::Reset()
 {
 	myAlive = true;
-
+	myState = eEntityState::IDLE;
 	if (myIsClientSide == false && mySubType == "playerserver")
 	{
 		PollingStation::GetInstance()->AddEntity(this);
@@ -168,6 +212,9 @@ void Entity::Reset()
 			myComponents[i]->Reset();
 		}
 	}
+	
+	myDelayAddToSceneTimer = 0.f;
+	myDelayedAddToScene = false;
 }
 
 void Entity::Update(float aDeltaTime)
@@ -185,6 +232,28 @@ void Entity::Update(float aDeltaTime)
 		if (myComponents[static_cast<int>(eComponentType::NETWORK)] == nullptr)
 		{
 			memcpy(&myOrientation.myMatrix[0], GetComponent<PhysicsComponent>()->GetOrientation(), sizeof(float) * 16);
+		}
+	}
+
+	if (myIsClientSide == false && myIsActive == false)
+	{
+		myTimeActiveBeforeKillTimer -= aDeltaTime;
+
+		if (myTimeActiveBeforeKillTimer <= 0.f)
+		{
+			myTimeActiveBeforeKillTimer = myTimeActiveBeforeKill;
+			myIsActive = true;
+			Kill(false);
+		}
+	}
+
+	if (myDelayedAddToScene == true)
+	{
+		myDelayAddToSceneTimer -= aDeltaTime;
+		if (myDelayAddToSceneTimer <= 0.f)
+		{
+			myDelayedAddToScene = false;
+			AddToScene();
 		}
 	}
 }
@@ -207,13 +276,19 @@ void Entity::AddToScene()
 	DL_ASSERT_EXP(myIsInScene == false, "Tried to add Entity to scene twice");
 	DL_ASSERT_EXP(myIsClientSide == true, "You can't add Entity to scene on server side.");
 
+	if (myIsInScene == true || myIsClientSide == false)
+	{
+		return;
+	}
+
 	if (GetComponent<GraphicsComponent>() != nullptr && GetComponent<GraphicsComponent>()->GetInstance() != nullptr)
 	{
-		myScene->AddInstance(GetComponent<GraphicsComponent>()->GetInstance(), GetComponent<GraphicsComponent>()->GetShouldAlwaysRender());
+		myScene->AddInstance(GetComponent<GraphicsComponent>()->GetInstance(), myRoomType);
 	}
 	else if (GetComponent<AnimationComponent>() != nullptr && GetComponent<AnimationComponent>()->GetInstance() != nullptr)
 	{
-		myScene->AddInstance(GetComponent<AnimationComponent>()->GetInstance(), false);
+		myScene->AddInstance(GetComponent<AnimationComponent>()->GetInstance(), myRoomType);
+		GetComponent<AnimationComponent>()->AddWeaponToScene(myScene);
 	}
 
 	myIsInScene = true;
@@ -224,6 +299,11 @@ void Entity::RemoveFromScene()
 	DL_ASSERT_EXP(myIsInScene == true, "Tried to remove Entity not in scene");
 	DL_ASSERT_EXP(myIsClientSide == true, "You can't remove Entity to scene on server side.");
 
+	if (myIsInScene == false || myIsClientSide == false)
+	{
+		return;
+	}
+
 	if (GetComponent<GraphicsComponent>() != nullptr)
 	{
 		myScene->RemoveInstance(GetComponent<GraphicsComponent>()->GetInstance());
@@ -231,6 +311,7 @@ void Entity::RemoveFromScene()
 	else if (GetComponent<AnimationComponent>() != nullptr)
 	{
 		myScene->RemoveInstance(GetComponent<AnimationComponent>()->GetInstance());
+		GetComponent<AnimationComponent>()->RemoveWeaponFromScene(myScene);
 	}
 
 	myIsInScene = false;
@@ -248,6 +329,8 @@ void Entity::AddEmitter(Prism::ParticleEmitterInstance* anEmitterConnection)
 
 Prism::ParticleEmitterInstance* Entity::GetEmitter()
 {
+	if (myEmitterConnection == nullptr)
+		return nullptr;
 	return myEmitterConnection;
 }
 
@@ -281,7 +364,7 @@ bool Entity::GetIsClient()
 	return myIsClientSide;
 }
 
-void Entity::ReceiveNetworkMessage(const NetMessageOnDeath& aMessage, const sockaddr_in& aSenderAddress)
+void Entity::ReceiveNetworkMessage(const NetMessageOnDeath& aMessage, const sockaddr_in&)
 {
 	if (aMessage.myGID == myGID)
 	{

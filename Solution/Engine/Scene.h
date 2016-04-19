@@ -16,9 +16,7 @@ namespace Prism
 	class SpotLightShadow;
 	class InstancingHelper;
 	class Texture;
-#ifdef SCENE_USE_OCTREE
-	class Octree;
-#endif
+	class SpotLightTextureProjection;
 
 	class Scene
 	{
@@ -27,15 +25,17 @@ namespace Prism
 		~Scene();
 
 		void Render();
+		void RenderArmAndWeapon();
+		void RenderArmAndWeaponOnlyDepth();
+		void RenderWithoutRoomManager();
 		void UpdateLights();
 
-		void OnResize(int aWidth, int aHeigth);
-
 		void AddRoom(Room* aRoom);
-		void AddInstance(Instance* aInstance, bool aAlwaysRender);
+		void AddInstance(Instance* aInstance, eObjectRoomType aRoomType);
 		void AddLight(DirectionalLight* aLight);
 		void AddLight(PointLight* aLight);
 		void AddLight(SpotLight* aLight);
+		void AddLight(SpotLightTextureProjection* aLight);
 
 		void RemoveInstance(Instance* aInstance);
 
@@ -43,23 +43,27 @@ namespace Prism
 		const Camera* GetCamera() const;
 		RoomManager* GetRoomManager() const;
 
-		const CU::GrowingArray<PointLight*>& GetPointLights() const;
+		const CU::GrowingArray<PointLight*>& GetPointLights(bool aUseRoomManager) const;
+		const CU::GrowingArray<SpotLight*>& GetSpotLights(bool aUseRoomManager) const;
+		const CU::GrowingArray<SpotLightTextureProjection*>& GetSpotLightsTextureProjection(bool aUseRoomManager) const;
+
+		void SetArmInstance(Instance* aInstance);
+		void SetWeaponInstance(Instance* aInstance);
 
 	private:
 		void operator=(Scene&) = delete;
 
 		CU::GrowingArray<DirectionalLight*> myDirectionalLights;
 		CU::GrowingArray<PointLight*> myPointLights;
+		CU::GrowingArray<PointLight*> myAmbientPointLights;
 		CU::GrowingArray<SpotLight*> mySpotLights;
+		CU::GrowingArray<SpotLightTextureProjection*> mySpotLightsTextureProjection;
 		InstancingHelper* myInstancingHelper;
 
 		const Camera* myCamera;
 		RoomManager* myRoomManager;
-
-		CU::StaticArray<DirectionalLightData, NUMBER_OF_DIRECTIONAL_LIGHTS> myDirectionalLightData;
-		CU::StaticArray<PointLightData, NUMBER_OF_POINT_LIGHTS> myPointLightData;
-		CU::StaticArray<SpotLightData, NUMBER_OF_SPOT_LIGHTS> mySpotLightData;
-		float myRenderRadius;
+		Instance* myArmInstance;
+		Instance* myWeaponInstance;
 	};
 
 
@@ -69,10 +73,6 @@ namespace Prism
 		return myCamera;
 	}
 
-	inline const CU::GrowingArray<PointLight*>& Scene::GetPointLights() const
-	{
-		return myPointLights;
-	}
 
 	inline RoomManager* Scene::GetRoomManager() const
 	{

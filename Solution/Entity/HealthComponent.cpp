@@ -10,8 +10,10 @@
 #include <NetMessageEntityState.h>
 #include <NetMessageSetActive.h>
 #include "PhysicsComponent.h"
+#include "PollingStation.h"
 #include <PostMaster.h>
 #include <SharedNetworkManager.h>
+#include <RespawnTriggerMessage.h>
 #include "TriggerComponent.h"
 
 HealthComponent::HealthComponent(Entity& anEntity, const HealthComponentData& someData)
@@ -22,7 +24,7 @@ HealthComponent::HealthComponent(Entity& anEntity, const HealthComponentData& so
 	SharedNetworkManager::GetInstance()->Subscribe(eNetMessageType::ON_HIT, this);
 	if (myEntity.GetSubType() == "playerserver")
 	{
-		SharedNetworkManager::GetInstance()->AddMessage<NetMessageHealth>(NetMessageHealth(someData.myMaxHealth, myCurrentHealth), myEntity.GetGID());
+		SharedNetworkManager::GetInstance()->AddMessage<NetMessageHealth>(NetMessageHealth(someData.myMaxHealth, myCurrentHealth, myEntity.GetGID()), myEntity.GetGID());
 	}
 }
 
@@ -55,7 +57,7 @@ void HealthComponent::TakeDamage(int aDamage)
 	myCurrentHealth -= aDamage;
 	if (myEntity.GetSubType() == "playerserver")
 	{
-		SharedNetworkManager::GetInstance()->AddMessage<NetMessageHealth>(NetMessageHealth(myData.myMaxHealth, myCurrentHealth), myEntity.GetGID());
+		SharedNetworkManager::GetInstance()->AddMessage<NetMessageHealth>(NetMessageHealth(myData.myMaxHealth, myCurrentHealth, myEntity.GetGID()));
 	}
 	if (myEntity.GetIsClient() == false)
 	{
@@ -65,21 +67,33 @@ void HealthComponent::TakeDamage(int aDamage)
 	if (myCurrentHealth <= 0)
 	{
 		myCurrentHealth = 0;
-		//myEntity.Kill();
 
 		if (myEntity.GetIsClient() == false)
-		{
+		{	
+			if (myEntity.GetSubType() == "playerserver")
+			{
+				PostMaster::GetInstance()->SendMessage<RespawnTriggerMessage>(RespawnTriggerMessage(myEntity.GetGID()));
+			}
+			else
+			{
+				PostMaster::GetInstance()->SendMessage(EnemyKilledMessage(&myEntity));
+			}
 			myEntity.SetState(eEntityState::DIE);
-			SharedNetworkManager::GetInstance()->AddMessage<NetMessageEntityState>(NetMessageEntityState(myEntity.GetState(), myEntity.GetGID()));
-			SharedNetworkManager::GetInstance()->AddMessage<NetMessageSetActive>(NetMessageSetActive(false, false, myEntity.GetGID()));
+			SharedNetworkManager::GetInstance()->AddMessage(NetMessageEntityState(myEntity.GetState(), myEntity.GetGID()));
+			SharedNetworkManager::GetInstance()->AddMessage(NetMessageSetActive(false, false, myEntity.GetGID()));
 			myEntity.GetComponent<PhysicsComponent>()->Sleep();
+			if (myEntity.GetSubType() != "playerserver")
+			{
+				myEntity.SetActive(false);
+			}
+			PollingStation::GetInstance()->HasDied(&myEntity);
 		}
 	}
 }
 
-void HealthComponent::ReceiveNetworkMessage(const NetMessageOnHit& aMessage, const sockaddr_in& aSenderAddress)
+void HealthComponent::ReceiveNetworkMessage(const NetMessageOnHit& aMessage, const sockaddr_in&)
 {
-	if (myEntity.GetIsClient() == false && myEntity.GetGID() == aMessage.myGID)
+	if (myEntity.GetIsClient() == false && myEntity.GetGID() == aMessage.myGID && myEntity.GetState() != eEntityState::DIE)
 	{
 		TakeDamage(aMessage.myDamage);
 	}
@@ -94,7 +108,7 @@ void HealthComponent::Heal(int anAmount)
 	}
 	if (myEntity.GetSubType() == "playerserver")
 	{
-		SharedNetworkManager::GetInstance()->AddMessage<NetMessageHealth>(NetMessageHealth(myData.myMaxHealth, myCurrentHealth), myEntity.GetGID());
+		SharedNetworkManager::GetInstance()->AddMessage<NetMessageHealth>(NetMessageHealth(myData.myMaxHealth, myCurrentHealth, myEntity.GetGID()));
 	}
 }
 

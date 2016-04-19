@@ -65,6 +65,12 @@ public:
 	const std::string& GetSubType() const;
 
 	void ReceiveNetworkMessage(const NetMessageOnDeath& aMessage, const sockaddr_in& aSenderAddress) override;
+	bool GetIsEnemy();
+	void SetIsEnemy(bool aIsEnemy);
+
+	bool IsActive() const;
+	void SetActive(bool aIsActive);
+	void SetDelayedAddToScene();
 
 private:
 	void operator=(Entity&) = delete;
@@ -75,16 +81,25 @@ private:
 	Prism::ParticleEmitterInstance* myEmitterConnection;
 
 	bool myAlive;
+	bool myIsActive;
 	bool myIsClientSide;
 	bool myIsInScene;
 	std::string mySubType;
 	eEntityState myState;
+	eObjectRoomType myRoomType;
 
 	Prism::Scene* myScene;
 
 	CU::Matrix44<float> myOrientation;
 
 	unsigned int myGID;
+	bool myIsEnemy;
+
+	float myTimeActiveBeforeKill;
+	float myTimeActiveBeforeKillTimer;
+
+	float myDelayAddToSceneTimer;
+	bool myDelayedAddToScene;
 };
 
 template <typename T>
@@ -172,4 +187,30 @@ inline bool Entity::IsInScene() const
 inline const std::string& Entity::GetSubType() const
 {
 	return mySubType;
+}
+
+inline bool Entity::GetIsEnemy()
+{
+	return myIsEnemy;
+}
+
+inline void Entity::SetIsEnemy(bool aIsEnemy)
+{
+	myIsEnemy = aIsEnemy;
+}
+
+inline bool Entity::IsActive() const
+{
+	return myIsActive;
+}
+
+inline void Entity::SetActive(bool aIsActive)
+{
+	myIsActive = aIsActive;
+}
+
+inline void Entity::SetDelayedAddToScene()
+{
+	myDelayAddToSceneTimer = 0.1f;
+	myDelayedAddToScene = true;
 }

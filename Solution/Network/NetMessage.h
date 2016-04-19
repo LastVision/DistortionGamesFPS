@@ -16,18 +16,18 @@ public:
 	virtual const unsigned int GetImportantID() const;
 	virtual void SetImportantID(unsigned int){}
 
+	void DeSerializeFirst(char* aMessage);
+
+
 	StreamType myStream;
 	uint32_t myTimeStamp;
 	uint32_t mySenderID;
 	uint32_t myTargetID;
+	uint32_t myGameID;
 	uint8_t myID;
 protected:
-
 	virtual void DoSerialize(StreamType& aStream);
 	virtual void DoDeSerialize(StreamType& aStream);
-
-
-
-
+	virtual void DoDeSerializeFirst(StreamType& aStream);
 };
 

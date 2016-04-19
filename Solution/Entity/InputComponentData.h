@@ -9,4 +9,8 @@ struct InputComponentData
 	float myMaxSprintEnergy;
 	float mySprintIncrease;
 	float mySprintDecrease;
+
+	float myForwardMultiplier;
+	float myBackwardMultiplier;
+	float mySidewaysMultiplier;
 };

@@ -4,13 +4,17 @@
 #include <EntityFactory.h>
 #include <MathHelper.h>
 #include <NetworkComponent.h>
+#include <NetMessagePressEText.h>
 #include <PhysicsComponent.h>
 #include <PhysicsInterface.h>
 #include <PollingStation.h>
 #include "ServerLevel.h"
 #include "ServerLevelFactory.h"
+#include "ServerUnitManager.h"
+#include "ServerNetworkManager.h"
 #include <TriggerComponent.h>
 #include <XMLReader.h>
+#include <SpawnpointComponent.h>
 
 ServerLevelFactory::ServerLevelFactory(const std::string& aLevelListPath)
 	: SharedLevelFactory(aLevelListPath)
@@ -24,6 +28,7 @@ ServerLevelFactory::~ServerLevelFactory()
 
 ServerLevel* ServerLevelFactory::LoadLevel(int aID)
 {
+	myIsLoadingLevel = true;
 	if (myLevelPaths.find(aID) == myLevelPaths.end())
 	{
 		DL_ASSERT(CU::Concatenate("[LevelFactory] Trying to load a non-existing level! Check so the ID: %s is a valid id in LI_level.xml"
@@ -37,12 +42,14 @@ ServerLevel* ServerLevelFactory::LoadLevel(int aID)
 
 ServerLevel* ServerLevelFactory::LoadCurrentLevel()
 {
+	myIsLoadingLevel = true;
 	myCurrentLevel = new ServerLevel();
 	ReadLevel(myLevelPaths[myCurrentID]);
 	myCurrentLevel->Init(myMissionXMLPath);
 #ifdef THREAD_PHYSICS
 	Prism::PhysicsInterface::GetInstance()->InitThread();
 #endif
+	myIsLoadingLevel = false;
 	return myCurrentLevel;
 }
 
@@ -59,8 +66,10 @@ void ServerLevelFactory::ReadLevel(const std::string& aLevelPath)
 	LoadRooms(reader, levelElement);
 	LoadProps(reader, levelElement);
 	LoadDoors(reader, levelElement);
-	LoadUnits(reader, levelElement);
+	//LoadUnits(reader, levelElement);
+	LoadSpawnpoint(reader, levelElement);
 	LoadTriggers(reader, levelElement);
+	LoadPlayerStartPosition(reader, levelElement);
 
 	reader.CloseDocument();
 }
@@ -192,21 +201,88 @@ void ServerLevelFactory::LoadTriggers(XMLReader& aReader, tinyxml2::XMLElement* 
 
 		if (newEntity->GetComponent<TriggerComponent>()->IsClientSide() == false)
 		{
+			bool isCoOp = ServerNetworkManager::GetInstance()->GetClients().Size() > 1;
+
+			if (newEntity->GetComponent<TriggerComponent>()->GetTriggerType() == eTriggerType::HEALTH_PACK && isCoOp == true)
+			{
+				SAFE_DELETE(newEntity);
+				continue;
+			}
+
 			newEntity->Reset();
 			myCurrentLevel->AddEntity(newEntity);
-			//if (newEntity->GetComponent<NetworkComponent>() != nullptr)
-			//{
-			//	myIDCount++;
-			//	newEntity->GetComponent<NetworkComponent>()->SetNetworkID(myIDCount);
-			//}
+	
 			if (newEntity->GetComponent<TriggerComponent>()->GetIsActiveFromStart() == false)
 			{
 				newEntity->GetComponent<PhysicsComponent>()->RemoveFromScene();
+			}
+			else if (newEntity->GetComponent<TriggerComponent>()->IsPressable() == true)
+			{
+				myCurrentLevel->AddPressETrigger(newEntity);
 			}
 		}
 		else
 		{
 			SAFE_DELETE(newEntity);
 		}
+	}
+}
+
+void ServerLevelFactory::LoadSpawnpoint(XMLReader& aReader, tinyxml2::XMLElement* anElement)
+{
+	ServerUnitManager::GetInstance()->CreateUnits(nullptr);
+
+	for (tinyxml2::XMLElement* entityElement = aReader.FindFirstChild(anElement, "spawnpoint"); entityElement != nullptr;
+		entityElement = aReader.FindNextElement(entityElement, "spawnpoint"))
+	{
+		std::string spawnpointType;
+		aReader.ForceReadAttribute(entityElement, "type", spawnpointType);
+		spawnpointType = CU::ToLower(spawnpointType);
+
+		CU::Vector3f serverPosition;
+
+		unsigned int gid(UINT32_MAX);
+
+		ReadGID(aReader, entityElement, gid);
+
+
+		tinyxml2::XMLElement* propElement = aReader.ForceFindFirstChild(entityElement, "position");
+		aReader.ForceReadAttribute(propElement, "x", "y", "z", serverPosition);
+
+		Entity* newEntity = EntityFactory::CreateEntity(gid, eEntityType::SPAWNPOINT, spawnpointType, nullptr, false
+			, serverPosition);
+		newEntity->Reset();
+
+
+
+		for (tinyxml2::XMLElement* e = aReader.FindFirstChild(entityElement, "boundtotrigger"); e != nullptr;
+			e = aReader.FindNextElement(e, "boundtotrigger"))
+		{
+			int triggerGID;
+			aReader.ForceReadAttribute(e, "value", triggerGID);
+			if (triggerGID != -1)
+			{
+				newEntity->GetComponent<SpawnpointComponent>()->BindToTrigger(triggerGID);
+			}
+		}
+
+		//Read bound to trigger
+
+		myCurrentLevel->AddEntity(newEntity);
+	}
+}
+
+void ServerLevelFactory::LoadPlayerStartPosition(XMLReader& aReader, tinyxml2::XMLElement* aElement)
+{
+	for (tinyxml2::XMLElement* entityElement = aReader.ForceFindFirstChild(aElement, "startPosition"); entityElement != nullptr;
+		entityElement = aReader.FindNextElement(entityElement, "startPosition"))
+	{
+		CU::Vector3<float> position;
+		unsigned int gid = 0;
+
+		aReader.ForceReadAttribute(aReader.ForceFindFirstChild(entityElement, "gid"), "value", gid);
+		aReader.ForceReadAttribute(aReader.ForceFindFirstChild(entityElement, "position"), "X", "Y", "Z", position);
+
+		myCurrentLevel->AddPlayerStartPosition(gid, position);
 	}
 }

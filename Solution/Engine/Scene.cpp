@@ -1,7 +1,9 @@
 #include "stdafx.h"
 
+
 #include "Camera.h"
 #include <Defines.h>
+#include <d3dx11effect.h>
 #include "DirectionalLight.h"
 #include "EngineEnums.h"
 #include "Frustum.h"
@@ -11,20 +13,21 @@
 #include "Scene.h"
 #include "SpotLight.h"
 #include "InstancingHelper.h"
+#include "Texture.h"
+#include "Engine.h"
 
 namespace Prism
 {
 	Scene::Scene()
 		: myCamera(nullptr)
-		, myRenderRadius(-10.f)
+		, myArmInstance(nullptr)
+		, myWeaponInstance(nullptr)
 	{
 		myDirectionalLights.Init(4);
-		myPointLights.Init(4);
+		myPointLights.Init(128);
+		myAmbientPointLights.Init(128);
 		mySpotLights.Init(4);
-
-		memset(&myDirectionalLightData[0], 0, sizeof(DirectionalLightData) * NUMBER_OF_DIRECTIONAL_LIGHTS);
-		memset(&myPointLightData[0], 0, sizeof(PointLightData) * NUMBER_OF_POINT_LIGHTS);
-		memset(&mySpotLightData[0], 0, sizeof(SpotLightData) * NUMBER_OF_SPOT_LIGHTS);
+		mySpotLightsTextureProjection.Init(4);
 
 		myInstancingHelper = new InstancingHelper();
 		myInstancingHelper->SetCamera(myCamera);
@@ -48,23 +51,65 @@ namespace Prism
 			instances[i]->Render(*myCamera, *myInstancingHelper);
 		}
 
-		myInstancingHelper->Render(myDirectionalLightData);
+		myInstancingHelper->Render();
 	}
 
-	void Scene::OnResize(int aWidth, int aHeigth)
+	void Scene::RenderArmAndWeapon()
 	{
-		float ratio = static_cast<float>(aWidth) / static_cast<float>(aHeigth);
-
-		myRenderRadius = -10.f;
-
-		float epsilon = 0.1f;
-		if (ratio + epsilon >= 16.f / 9.f)
+		if (GC::ShouldRenderGUI == true)
 		{
-			myRenderRadius = -17.f;
+			if (myArmInstance != nullptr)
+			{
+				myArmInstance->Render(*myCamera);
+			}
+
+			if (myWeaponInstance != nullptr)
+			{
+				myWeaponInstance->Render(*myCamera);
+			}
 		}
-		else if (ratio + epsilon >= 16.f / 10.f)
+	}
+
+	void Scene::RenderArmAndWeaponOnlyDepth()
+	{
+		if (GC::ShouldRenderGUI == true)
 		{
-			myRenderRadius = -15.f;
+			if (myArmInstance != nullptr)
+			{
+				myArmInstance->Render(*myCamera, true);
+			}
+
+			if (myWeaponInstance != nullptr)
+			{
+				myWeaponInstance->Render(*myCamera, true);
+			}
+		}
+	}
+
+	void Scene::RenderWithoutRoomManager()
+	{
+		UpdateLights();
+
+		const CU::GrowingArray<Instance*>& instances = myRoomManager->GetAllInstances();
+
+		for (int i = 0; i < instances.Size(); ++i)
+		{
+			instances[i]->Render(*myCamera, *myInstancingHelper);
+		}
+
+		myInstancingHelper->Render();
+
+		if (GC::ShouldRenderGUI == true)
+		{
+			if (myArmInstance != nullptr)
+			{
+				myArmInstance->Render(*myCamera);
+			}
+
+			if (myWeaponInstance != nullptr)
+			{
+				myWeaponInstance->Render(*myCamera);
+			}
 		}
 	}
 
@@ -73,9 +118,10 @@ namespace Prism
 		myRoomManager->Add(aRoom);
 	}
 
-	void Scene::AddInstance(Instance* aInstance, bool aAlwaysRender)
+	void Scene::AddInstance(Instance* aInstance, eObjectRoomType aRoomType)
 	{
-		myRoomManager->Add(aInstance, aAlwaysRender);
+		DL_ASSERT_EXP(myRoomManager != nullptr, "No Room manager");
+		myRoomManager->Add(aInstance, aRoomType);
 	}
 
 	void Scene::AddLight(DirectionalLight* aLight)
@@ -85,12 +131,26 @@ namespace Prism
 
 	void Scene::AddLight(PointLight* aLight)
 	{
-		myPointLights.Add(aLight);
+		if (aLight->GetAmbientOnly() == false)
+		{
+			myPointLights.Add(aLight);
+			myRoomManager->Add(aLight);
+		}
+		else
+		{
+			myAmbientPointLights.Add(aLight);
+		}
 	}
 
 	void Scene::AddLight(SpotLight* aLight)
 	{
-		mySpotLights.Add(aLight);
+		//mySpotLights.Add(aLight);
+		myRoomManager->Add(aLight);
+	}
+
+	void Scene::AddLight(SpotLightTextureProjection* aLight)
+	{
+		myRoomManager->Add(aLight);
 	}
 
 	void Scene::SetCamera(const Camera& aCamera)
@@ -101,33 +161,20 @@ namespace Prism
 
 	void Scene::UpdateLights()
 	{
-		for (int i = 0; i < myDirectionalLights.Size(); ++i)
-		{
-			myDirectionalLights[i]->Update();
-
-			myDirectionalLightData[i].myDirection = myDirectionalLights[i]->GetCurrentDir();
-			myDirectionalLightData[i].myColor = myDirectionalLights[i]->GetColor();
-		}
-
-		for (int i = 0; i < myPointLights.Size(); ++i)
-		{
-			myPointLights[i]->Update();
-
-			/*myPointLightData[i].myColor = myPointLights[i]->GetColor();
-			myPointLightData[i].myPosition = myPointLights[i]->GetPosition();
-			myPointLightData[i].myRange = myPointLights[i]->GetRange();*/
-		}
-
-		for (int i = 0; i < mySpotLights.Size(); ++i)
-		{
-			mySpotLights[i]->Update();
-
-			mySpotLightData[i].myPosition = mySpotLights[i]->GetPosition();
-			mySpotLightData[i].myDirection = mySpotLights[i]->GetDir();
-			mySpotLightData[i].myColor = mySpotLights[i]->GetColor();
-			mySpotLightData[i].myRange = mySpotLights[i]->GetRange();
-			mySpotLightData[i].myCone = mySpotLights[i]->GetCone();
-		}
+		//for (int i = 0; i < myDirectionalLights.Size(); ++i)
+		//{
+		//	myDirectionalLights[i]->Update();
+		//}
+		//
+		//for (int i = 0; i < myAmbientPointLights.Size(); ++i)
+		//{
+		//	myAmbientPointLights[i]->Update();
+		//}
+		//
+		//for (int i = 0; i < mySpotLights.Size(); ++i)
+		//{
+		//	mySpotLights[i]->Update();
+		//}
 	}
 
 	void Scene::RemoveInstance(Instance* aInstance)
@@ -136,5 +183,47 @@ namespace Prism
 		{
 			myRoomManager->Remove(aInstance);
 		}
+	}
+
+	const CU::GrowingArray<PointLight*>& Scene::GetPointLights(bool aUseRoomManager) const
+	{
+		//return myPointLights;
+		//return myActivePointLights;
+		if (aUseRoomManager == true)
+		{
+			return myRoomManager->GetActivePointLights();
+		}
+
+		return myAmbientPointLights;
+	}
+
+	const CU::GrowingArray<SpotLight*>& Scene::GetSpotLights(bool aUseRoomManager) const
+	{
+		if (aUseRoomManager == true)
+		{
+			return myRoomManager->GetActiveSpotLights();
+		}
+
+		return mySpotLights;
+	}
+
+	const CU::GrowingArray<SpotLightTextureProjection*>& Scene::GetSpotLightsTextureProjection(bool aUseRoomManager) const
+	{
+		if (aUseRoomManager == true)
+		{
+			return myRoomManager->GetActiveSpotLightsTextureProjection();
+		}
+
+		return mySpotLightsTextureProjection;
+	}
+
+	void Scene::SetArmInstance(Instance* aInstance)
+	{
+		myArmInstance = aInstance;
+	}
+
+	void Scene::SetWeaponInstance(Instance* aInstance)
+	{
+		myWeaponInstance = aInstance;
 	}
 }

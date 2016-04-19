@@ -58,5 +58,29 @@
     <ClInclude Include="DefendTouchMessage.h">
       <Filter>Message</Filter>
     </ClInclude>
+    <ClInclude Include="RespawnTriggerMessage.h">
+      <Filter>Message</Filter>
+    </ClInclude>
+    <ClInclude Include="RespawnMessage.h">
+      <Filter>Message</Filter>
+    </ClInclude>
+    <ClInclude Include="SendTextToClientsMessage.h">
+      <Filter>Message</Filter>
+    </ClInclude>
+    <ClInclude Include="ActivateSpawnpointMessage.h">
+      <Filter>Message</Filter>
+    </ClInclude>
+    <ClInclude Include="PrintTextMessage.h">
+      <Filter>Message</Filter>
+    </ClInclude>
+    <ClInclude Include="LevelLoadedMessage.h">
+      <Filter>Message</Filter>
+    </ClInclude>
+    <ClInclude Include="LevelCompleteMessage.h">
+      <Filter>Message</Filter>
+    </ClInclude>
+    <ClInclude Include="HitmarkerMessage.h">
+      <Filter>Message</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

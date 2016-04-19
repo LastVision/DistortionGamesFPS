@@ -75,7 +75,7 @@ namespace GUI
 
 			if (myIsTextButton == true)
 			{
-				Prism::Engine::GetInstance()->PrintText(myButtonText, { aParentPosition.x + myPosition.x - mySize.x * 0.5f + 10.f, aParentPosition.y + myPosition.y - 10.f }, Prism::eTextType::RELEASE_TEXT);
+				Prism::Engine::GetInstance()->PrintText(myButtonText, { aParentPosition.x + myPosition.x - mySize.x * 0.5f + 40.f, aParentPosition.y + myPosition.y - 10.f }, Prism::eTextType::RELEASE_TEXT);
 			}
 
 			if (myImageCurrent == myImageHover && myHoverText != "")
@@ -101,7 +101,7 @@ namespace GUI
 
 	void ButtonWidget::OnMouseEnter()
 	{
-		Prism::Audio::AudioInterface::GetInstance()->PostEvent("buttonHover", 0);
+		Prism::Audio::AudioInterface::GetInstance()->PostEvent("Play_ButtonHover", 0);
 		myImageCurrent = myImageHover;
 	}
 
@@ -157,6 +157,66 @@ namespace GUI
 		{
 			myClickEvent = new OnClickMessage(eOnClickEvent::START_GAME);
 		}
+		else if (clickEvent == "start_singleplayer")
+		{
+			myClickEvent = new OnClickMessage(eOnClickEvent::START_SINGLEPLAYER);
+		}
+		else if (clickEvent == "host_multiplayer")
+		{
+			myClickEvent = new OnClickMessage(eOnClickEvent::MULTIPLAYER_HOST);
+		}
+		else if (clickEvent == "join_multiplayer")
+		{
+			myClickEvent = new OnClickMessage(eOnClickEvent::MULTIPLAYER_JOIN);
+		}
+		else if (clickEvent == "credits")
+		{
+			myClickEvent = new OnClickMessage(eOnClickEvent::CREDITS);
+		}
+		else if (clickEvent == "help")
+		{
+			myClickEvent = new OnClickMessage(eOnClickEvent::HELP);
+		}
+		else if (clickEvent == "quit")
+		{
+			myClickEvent = new OnClickMessage(eOnClickEvent::GAME_QUIT);
+		}
+		else if (clickEvent == "options_menu")
+		{
+			myClickEvent = new OnClickMessage(eOnClickEvent::OPTIONS);
+		}
+		else if (clickEvent == "resume_game")
+		{
+			myClickEvent = new OnClickMessage(eOnClickEvent::RESUME_GAME);
+		}
+		else if (clickEvent == "IncreaseVolume")
+		{
+			myClickEvent = new OnClickMessage(eOnClickEvent::INCREASE_VOLUME);
+		}
+		else if (clickEvent == "LowerVolume")
+		{
+			myClickEvent = new OnClickMessage(eOnClickEvent::LOWER_VOLUME);
+		}
+		else if (clickEvent == "IncreaseMusic")
+		{
+			myClickEvent = new OnClickMessage(eOnClickEvent::INCREASE_MUSIC);
+		}
+		else if (clickEvent == "LowerMusic")
+		{
+			myClickEvent = new OnClickMessage(eOnClickEvent::LOWER_MUSIC);
+		}
+		else if (clickEvent == "IncreaseVoice")
+		{
+			myClickEvent = new OnClickMessage(eOnClickEvent::INCREASE_VOICE);
+		}
+		else if (clickEvent == "LowerVoice")
+		{
+			myClickEvent = new OnClickMessage(eOnClickEvent::LOWER_VOICE);
+		}
+		else if (clickEvent == "refresh")
+		{
+			myClickEvent = new OnClickMessage(eOnClickEvent::REFRESH);
+		}
 		else
 		{
 			std::string message = "[ButtonWidget]: No onclick event named " + clickEvent;
@@ -172,6 +232,10 @@ namespace GUI
 			myButtonText = aText;
 			aSuccessOut = true;
 			myIsVisible = true;
+			if (aText == "")
+			{
+				myIsVisible = false;
+			}
 		}
 	}
 
@@ -179,7 +243,7 @@ namespace GUI
 	{
 		if (myClickEvent != nullptr)
 		{
-			Prism::Audio::AudioInterface::GetInstance()->PostEvent("buttonClick", 0);
+			Prism::Audio::AudioInterface::GetInstance()->PostEvent("Play_ButtonClick", 0);
 			PostMaster::GetInstance()->SendMessage(*myClickEvent);
 		}
 	}

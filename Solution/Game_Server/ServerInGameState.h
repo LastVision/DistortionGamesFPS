@@ -9,7 +9,7 @@ class ServerLevelFactory;
 class ServerInGameState : public ServerState, public NetworkSubscriber
 {
 public:
-	ServerInGameState(int aLevelID);
+	ServerInGameState(int aLevelID, unsigned int aLevelHashValue);
 	~ServerInGameState();
 
 	void InitState(ServerStateStackProxy* aStateStackProxy) override;
@@ -21,16 +21,19 @@ public:
 	void ReceiveNetworkMessage(const NetMessageLevelComplete& aMessage, const sockaddr_in& aSenderAddress) override;
 	void ReceiveNetworkMessage(const NetMessageRequestStartLevel& aMessage, const sockaddr_in& aSenderAddress) override;
 	void ReceiveNetworkMessage(const NetMessageLevelLoaded& aMessage, const sockaddr_in& aSenderAddress) override;
-
+	void ReceiveNetworkMessage(const NetMessageDisconnect& aMessage, const sockaddr_in& aSenderAddress) override;
 
 private:
 	void LevelUpdate(float aDeltaTime);
 	ServerLevel* myLevel;
 	ServerLevelFactory* myLevelFactory;
 	int myLevelID;
+	unsigned int myLevelHashValue;
 
-	eInGameStates myState;
+	eServerInGameState myState;
 
 	CU::GrowingArray<unsigned int> myRespondedClients;
+
+	bool myGameComplete;
 };
 

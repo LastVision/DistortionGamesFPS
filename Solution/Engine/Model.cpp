@@ -401,7 +401,12 @@ namespace Prism
 		}
 		else
 		{
-			DL_ASSERT_EXP(someWorldMatrices.Size() <= myMaxInstances, "Tried to instance to many instances");
+			DL_ASSERT_EXP(someWorldMatrices.Size() <= myMaxInstances, "Tried to instance too many instances");
+
+			if (someWorldMatrices.Size() > myMaxInstances)
+			{
+				return false;
+			}
 
 			D3D11_MAPPED_SUBRESOURCE mappedResource;
 			ID3D11DeviceContext* context = Engine::GetInstance()->GetContex();

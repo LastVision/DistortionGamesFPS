@@ -1,5 +1,6 @@
 #pragma once
 
+#include <NetworkSubscriber.h>
 #include <Subscriber.h>
 #include "GameState.h"
 
@@ -8,10 +9,17 @@ namespace GUI
 	class GUIManager;
 }
 
-class ServerSelectState : public GameState, public Subscriber
+class ServerSelectState : public GameState, public Subscriber, public NetworkSubscriber
 {
 public:
-	ServerSelectState();
+	enum class eType
+	{
+		SINGLEPLAYER,
+		MULTIPLAYER_HOST,
+		MULTIPLAYER_JOIN,
+		MULTIPLAYER_JOIN_WAITING,
+	};
+	ServerSelectState(eType aType);
 	~ServerSelectState();
 
 	void InitState(StateStackProxy* aStateStackProxy, GUI::Cursor* aCursor) override;
@@ -24,16 +32,34 @@ public:
 	void ResumeState() override;
 	void ReceiveMessage(const OnClickMessage& aMessage) override;
 
+	void ReceiveNetworkMessage(const NetMessageReplyServer& aMessage, const sockaddr_in& aSenderAddress) override;
+	void ReceiveNetworkMessage(const NetMessageConnectReply& aMessage, const sockaddr_in& aSenderAddress) override;
+
 private:
+	void operator=(ServerSelectState&) = delete;
+
 	struct Server
 	{
 		std::string myIp;
 		std::string myName;
+
+		bool operator==(const Server& aServer){ return (aServer.myIp == myIp && aServer.myName == myName); }
 	};
 	GUI::GUIManager* myGUIManager;
 
+	eType myType;
+
 	CU::GrowingArray<Server> myServers;
 
+	Prism::TextProxy* myStartupLobby;
+
 	Server* myServer;
+	Server myLocalhost;
+
+	float myWaitForResponseTimer;
+	float myRetryToStartTimer;
+
+	bool myTriedToConnect;
+	bool myIsRefreshing;
 };
 

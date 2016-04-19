@@ -236,6 +236,7 @@
     <ClInclude Include="Matrix33decl.h" />
     <ClInclude Include="Matrix44.h" />
     <ClInclude Include="Matrix44decl.h" />
+    <ClInclude Include="MurmurHash3.h" />
     <ClInclude Include="Plane.h" />
     <ClInclude Include="PlaneVolume.h" />
     <ClInclude Include="Quaternion.h" />
@@ -261,6 +262,8 @@
     <ClCompile Include="Camera2D.cpp" />
     <ClCompile Include="FileWatcher.cpp" />
     <ClCompile Include="FuzzySet.cpp" />
+    <ClCompile Include="GameConstants.cpp" />
+    <ClCompile Include="MurmurHash3.cpp" />
     <ClCompile Include="MathHelper.cpp" />
     <ClCompile Include="Quaternion.cpp" />
     <ClCompile Include="stdafx.cpp">

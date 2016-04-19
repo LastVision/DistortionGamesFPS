@@ -33,8 +33,11 @@
             this.panel2 = new System.Windows.Forms.Panel();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.panel3 = new System.Windows.Forms.Panel();
+            this.label2 = new System.Windows.Forms.Label();
+            this.myQualityList = new System.Windows.Forms.ComboBox();
             this.label1 = new System.Windows.Forms.Label();
             this.myResolutionList = new System.Windows.Forms.ComboBox();
+            this.JoinMultiplayer = new System.Windows.Forms.Button();
             this.panel2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.panel3.SuspendLayout();
@@ -42,11 +45,11 @@
             // 
             // button1
             // 
-            this.button1.Location = new System.Drawing.Point(349, 3);
+            this.button1.Location = new System.Drawing.Point(428, 3);
             this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(232, 62);
+            this.button1.Size = new System.Drawing.Size(153, 62);
             this.button1.TabIndex = 0;
-            this.button1.Text = "Launch Game";
+            this.button1.Text = "Play";
             this.button1.UseVisualStyleBackColor = true;
             this.button1.Click += new System.EventHandler(this.button1_Click);
             // 
@@ -74,6 +77,9 @@
             // 
             // panel3
             // 
+            this.panel3.Controls.Add(this.JoinMultiplayer);
+            this.panel3.Controls.Add(this.label2);
+            this.panel3.Controls.Add(this.myQualityList);
             this.panel3.Controls.Add(this.label1);
             this.panel3.Controls.Add(this.myResolutionList);
             this.panel3.Controls.Add(this.button1);
@@ -82,6 +88,23 @@
             this.panel3.Name = "panel3";
             this.panel3.Size = new System.Drawing.Size(584, 71);
             this.panel3.TabIndex = 8;
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(139, 9);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(39, 13);
+            this.label2.TabIndex = 4;
+            this.label2.Text = "Quality";
+            // 
+            // myQualityList
+            // 
+            this.myQualityList.FormattingEnabled = true;
+            this.myQualityList.Location = new System.Drawing.Point(139, 25);
+            this.myQualityList.Name = "myQualityList";
+            this.myQualityList.Size = new System.Drawing.Size(121, 21);
+            this.myQualityList.TabIndex = 3;
             // 
             // label1
             // 
@@ -99,6 +122,16 @@
             this.myResolutionList.Name = "myResolutionList";
             this.myResolutionList.Size = new System.Drawing.Size(121, 21);
             this.myResolutionList.TabIndex = 1;
+            // 
+            // JoinMultiplayer
+            // 
+            this.JoinMultiplayer.Location = new System.Drawing.Point(269, 3);
+            this.JoinMultiplayer.Name = "JoinMultiplayer";
+            this.JoinMultiplayer.Size = new System.Drawing.Size(153, 62);
+            this.JoinMultiplayer.TabIndex = 5;
+            this.JoinMultiplayer.Text = "Join Multiplayer";
+            this.JoinMultiplayer.UseVisualStyleBackColor = true;
+            this.JoinMultiplayer.Click += new System.EventHandler(this.JoinMultiplayer_Click);
             // 
             // Form1
             // 
@@ -129,6 +162,9 @@
         private System.Windows.Forms.Panel panel3;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.ComboBox myResolutionList;
+        private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.ComboBox myQualityList;
+        private System.Windows.Forms.Button JoinMultiplayer;
     }
 }
 

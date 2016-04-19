@@ -10,6 +10,9 @@ namespace Prism
 		: myAABB(aPosition, aScale)
 		, myPortals(8)
 		, myInstances(128)
+		, myPointLights(128)
+		, mySpotLights(128)
+		, mySpotLightTextureProjection(128)
 		, myName(aName)
 		, myType(aType)
 	{
@@ -17,13 +20,17 @@ namespace Prism
 
 	Room::~Room()
 	{
+		myEmitter = nullptr;
 		myPortals.RemoveAll();
 		myInstances.RemoveAll();
+		myPointLights.RemoveAll();
+		mySpotLights.RemoveAll();
+		mySpotLightTextureProjection.RemoveAll();
 	}
 
-	bool Room::Inside(const CU::Vector3<float>& aPosition) const
+	bool Room::Inside(const CU::Vector3<float>& aPosition, float aRadius) const
 	{
-		return CU::Intersection::PointInsideAABB(myAABB, aPosition);
+		return CU::Intersection::SphereInsideAABB(myAABB, aPosition, aRadius);
 	}
 
 	bool Room::Collide(const Room& aRoom) const
@@ -40,4 +47,30 @@ namespace Prism
 	{
 		myInstances.Add(anInstance);
 	}
+
+	void Room::Add(PointLight* aPointLight)
+	{
+		myPointLights.Add(aPointLight);
+	}
+
+	void Room::Add(SpotLight* aSpotLight)
+	{
+		mySpotLights.Add(aSpotLight);
+	}
+
+	void Room::Add(SpotLightTextureProjection* aSpotLightTextureProjection)
+	{
+		mySpotLightTextureProjection.Add(aSpotLightTextureProjection);
+	}
+
+	void Room::AddEmitter(Prism::ParticleEmitterInstance* anEmitter)
+	{
+		myEmitter = anEmitter;
+	}
+
+	Prism::ParticleEmitterInstance* Room::GetEmitter()
+	{
+		return myEmitter;
+	}
+
 }

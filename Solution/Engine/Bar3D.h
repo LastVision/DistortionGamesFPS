@@ -9,7 +9,10 @@ enum class eBarPosition
 	TOP,
 	RIGHT,
 	HEALTH,
-	TOP_AMMOLEFT
+	HEALTH_ICON,
+	PISTOL_ICON,
+	SHOTGUN_ICON,
+	GRENADE_LAUNCHER_ICON,
 };
 
 namespace Prism
@@ -19,13 +22,15 @@ namespace Prism
 	{
 	public:
 		Bar3D(const CU::Vector2<float>& aQuadSize
-			, int aNumberOfQuads, Effect* aEffect, eBarPosition aBarPosition);
+			, int aNumberOfQuads, Effect* aEffect, eBarPosition aBarPosition, const std::string& aTexturePath);
 		~Bar3D();
 
-		void Render(const Camera& aCamera, const CU::Matrix44<float>& aWorld);
+		void Render(const Camera& aCamera, const CU::Matrix44<float>& aWorld, const CU::Vector4<float>& aColor = { 0.f, 0.f, 0.f, 0.f });
 		void Render() override;
 
 		void SetValue(float aValue);
+
+		void Rebuild(int aNumberOfQuads);
 
 	private:
 		void CreateVertices(int aNumberOfQuads);

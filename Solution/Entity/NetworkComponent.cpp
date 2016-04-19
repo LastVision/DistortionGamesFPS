@@ -7,6 +7,7 @@
 #include <NetMessageOnDeath.h>
 #include <NetMessageOnHit.h>
 #include <NetMessagePosition.h>
+#include <NetMessageEnemyShooting.h>
 
 #include "DamageNote.h"
 
@@ -26,6 +27,8 @@ NetworkComponent::NetworkComponent(Entity& anEntity, CU::Matrix44<float>& anOrie
 	mySendTime = NETWORK_UPDATE_INTERVAL;
 	SharedNetworkManager::GetInstance()->Subscribe(eNetMessageType::POSITION, this);
 	SharedNetworkManager::GetInstance()->Subscribe(eNetMessageType::ON_HIT, this);
+	myPrevPosition = anOrientation.GetPos();
+	myServerPosition = anOrientation.GetPos();
 }
 
 
@@ -33,6 +36,7 @@ NetworkComponent::~NetworkComponent()
 {
 	SharedNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::POSITION, this);
 	SharedNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::ON_HIT, this);
+
 }
 
 void NetworkComponent::Reset()
@@ -42,6 +46,11 @@ void NetworkComponent::Reset()
 
 void NetworkComponent::Update(float aDelta)
 {
+	if (myEntity.IsActive() == false)
+	{
+		return;
+	}
+
 	myAlpha += aDelta * NETWORK_UPDATE_INTERVAL;
 	CU::Vector3<float> newPos = CU::Math::Lerp(myPrevPosition, myServerPosition, myAlpha);
 	myCurrentRotationY = CU::Math::Lerp(myPrevRotationY, myServerRotationY, myAlpha);
@@ -68,12 +77,13 @@ void NetworkComponent::Update(float aDelta)
 	myOrientation.myMatrix[9] = axisZ.y;
 	myOrientation.myMatrix[10] = axisZ.z;
 	//myOrientation.CreateRotateAroundY(10*aDelta);
+
 	myOrientation.SetPos(newPos);
 }
 
-void NetworkComponent::ReceiveNetworkMessage(const NetMessagePosition& aMessage, const sockaddr_in& aSenderAddress)
+void NetworkComponent::ReceiveNetworkMessage(const NetMessagePosition& aMessage, const sockaddr_in&)
 {
-	if (aMessage.myGID == myEntity.GetGID())
+	if (aMessage.myGID == myEntity.GetGID() && myEntity.IsActive() == true)
 	{
 		myPrevPosition = myServerPosition;
 		myServerPosition = aMessage.myPosition;
@@ -83,7 +93,7 @@ void NetworkComponent::ReceiveNetworkMessage(const NetMessagePosition& aMessage,
 	}
 }
 
-void NetworkComponent::ReceiveNetworkMessage(const NetMessageOnHit& aMessage, const sockaddr_in& aSenderAddress)
+void NetworkComponent::ReceiveNetworkMessage(const NetMessageOnHit& aMessage, const sockaddr_in&)
 {
 	if (myEntity.GetIsClient() == false && myEntity.GetGID() == aMessage.myGID)
 	{

@@ -87,5 +87,24 @@ namespace CU
 				, RandomRange<float>(aMin.z, aMax.z)
 				, RandomRange<float>(aMin.w, aMax.w));
 		}
+
+		unsigned int ClosestPowerOfTwo(unsigned int aValue)
+		{
+			unsigned int n = aValue;
+			n--;
+			n |= n >> 1;   
+			n |= n >> 2;
+			n |= n >> 4;
+			n |= n >> 8;
+			n |= n >> 16;
+			n++;
+			return n;
+		}
+
+		bool DistanceBetweenLessThanOrEqualToEpsilon(const CU::Vector3<float>& aVector1, const CU::Vector3<float>& aVector2, float anEpsilon)
+		{
+			float distance2 = CU::Length2(aVector2 - aVector1);
+			return distance2 <= anEpsilon * anEpsilon;
+		}
 	}
 }

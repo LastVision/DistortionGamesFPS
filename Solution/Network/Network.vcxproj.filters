@@ -79,16 +79,12 @@
     <ClInclude Include="NetMessageOnDeath.h">
       <Filter>Messages</Filter>
     </ClInclude>
-    <ClInclude Include="NetMessageRequestLevel.h">
-      <Filter>Messages</Filter>
-    </ClInclude>
     <ClInclude Include="NetMessageLevelLoaded.h">
       <Filter>Messages</Filter>
     </ClInclude>
     <ClInclude Include="NetMessageRequestConnect.h">
       <Filter>Messages</Filter>
     </ClInclude>
-    <ClInclude Include="NetMessageRequestLevel.h" />
     <ClInclude Include="NetworkSubscriber.h" />
     <ClInclude Include="SharedNetworkManager.h" />
     <ClInclude Include="NetMessageConnectReply.h">
@@ -120,6 +116,54 @@
       <Filter>Messages</Filter>
     </ClInclude>
     <ClInclude Include="NetMessageHealthPack.h">
+      <Filter>Messages</Filter>
+    </ClInclude>
+    <ClInclude Include="NetMessageShootGrenade.h">
+      <Filter>Messages</Filter>
+    </ClInclude>
+    <ClInclude Include="NetMessageActivateSpawnpoint.h">
+      <Filter>Messages</Filter>
+    </ClInclude>
+    <ClInclude Include="NetMessageActivateUnit.h">
+      <Filter>Messages</Filter>
+    </ClInclude>
+    <ClInclude Include="NetMessageSetLevel.h">
+      <Filter>Messages</Filter>
+    </ClInclude>
+    <ClInclude Include="NetMessageText.h">
+      <Filter>Messages</Filter>
+    </ClInclude>
+    <ClInclude Include="NetMessageDisplayMarker.h">
+      <Filter>Messages</Filter>
+    </ClInclude>
+    <ClInclude Include="NetMessageRequestServer.h">
+      <Filter>Messages</Filter>
+    </ClInclude>
+    <ClInclude Include="NetMessageReplyServer.h">
+      <Filter>Messages</Filter>
+    </ClInclude>
+    <ClInclude Include="NetMessageExplosion.h">
+      <Filter>Messages</Filter>
+    </ClInclude>
+    <ClInclude Include="NetMessageDisplayRespawn.h">
+      <Filter>Messages</Filter>
+    </ClInclude>
+    <ClInclude Include="NetMessageRayCastRequest.h">
+      <Filter>Messages</Filter>
+    </ClInclude>
+    <ClInclude Include="NetMessagePressE.h">
+      <Filter>Messages</Filter>
+    </ClInclude>
+    <ClInclude Include="NetMessagePressEText.h">
+      <Filter>Messages</Filter>
+    </ClInclude>
+    <ClInclude Include="NetMessageStartLobby.h">
+      <Filter>Messages</Filter>
+    </ClInclude>
+    <ClInclude Include="NetMessageKillServer.h">
+      <Filter>Messages</Filter>
+    </ClInclude>
+    <ClInclude Include="NetMessageRequestLevel.h">
       <Filter>Messages</Filter>
     </ClInclude>
   </ItemGroup>

@@ -11,8 +11,10 @@ namespace Prism
 class GrenadeLauncher : public Weapon
 {
 public:
-	GrenadeLauncher(Prism::Scene* aScene, unsigned int aEntityGID);
+	GrenadeLauncher(Prism::Scene* aScene, unsigned int aEntityGID, Entity* aOwnerEntity);
 	~GrenadeLauncher();
+
+	void Init(std::string aWeaponSettingsPath, std::string aXMLTagName) override;
 
 	bool Shoot(const CU::Matrix44<float>& aOrientation) override;
 	void Reload() override;
@@ -23,7 +25,7 @@ private:
 	void operator=(GrenadeLauncher&) = delete;
 	void ShootAtDirection(const CU::Matrix44<float>& aOrientation);
 
-	CU::GrowingArray<Entity*> myBullets;
+	//CU::GrowingArray<Entity*> myBullets;
 	float myBulletSpeed;
 	Prism::Scene* myScene;
 

@@ -25,9 +25,11 @@ namespace Prism
 		void ProcessShadow(SpotLightShadow* aShadowSpotLight, Scene* aScene);
 
 		void BeginScene();
-		void EndScene(int aEffect, Texture* aFogOfWarTexture);
+		void EndScene(int aEffect);
 
 		void FinalRender();
+
+		void Render(Texture* aSource, Texture* aEmissiveTexture, Texture* aDepthStencilTexture, int aEffect);
 
 		void OnResize(float aWidth, float aHeight);
 

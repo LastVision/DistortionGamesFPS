@@ -18,6 +18,8 @@ namespace CU
 namespace Prism
 {
 	class Sprite;
+	class TextProxy;
+	class SpriteProxy;
 }
 
 namespace GUI
@@ -29,7 +31,7 @@ namespace GUI
 class InGameState : public GameState, public Subscriber, public NetworkSubscriber
 {
 public:
-	InGameState(int aLevelID);
+	InGameState(int aLevelID, unsigned int aServerHashLevelValue);
 	~InGameState();
 
 	void InitState(StateStackProxy* aStateStackProxy, GUI::Cursor* aCursor) override;
@@ -53,8 +55,31 @@ private:
 	ClientLevelFactory* myLevelFactory;
 
 	int myLevelToLoad;
-	bool myShouldLoadLevel;
 
-	bool myLevelComplete;
-	bool myCanStartNextLevel;
+	eInGameState myState;
+
+	//bool myShouldLoadLevel;
+	//bool myShouldShowLoadingScreen;
+
+	//bool myLevelComplete;
+	//bool myFailedLevel;
+	//bool myCanStartNextLevel;
+	//bool myLoadingScreen;
+	//bool myLoadingScreenCanStart;
+	//bool myPhysicsDone;
+	bool myFailedLevelHash;
+
+	float myCanStartTimer;
+	unsigned int myServerHashLevelValue;
+	unsigned int myHashLevelValue;
+
+	Prism::TextProxy* myText;
+
+	bool myHasStartedMusicBetweenLevels;
+	int myLastLevel;
+	Prism::SpriteProxy* myLevelCompleteSprite;
+	Prism::SpriteProxy* myLevelFailedSprite;
+	Prism::SpriteProxy* myLoadingScreenSprite;
+	Prism::SpriteProxy* myRotatingThing;
+	Prism::SpriteProxy* myPressToStart;
 };

@@ -43,22 +43,56 @@ enum eConsoleColor
 
 namespace Utility
 {
-	
-	template<typename T>
-	void PrintEndl(const T& aSomethingToPrint, WORD aColour)
+	inline void Printf(const char* aSomethingToPrint, WORD aColour, bool aRunInRelease = false)
 	{
+#ifdef _DEBUG
+		aRunInRelease;
 		SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), aColour);
-		std::cout << aSomethingToPrint << "\n";
+		printf("\n%s", aSomethingToPrint);
 		SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7); //Colour reset
-	}
-	template<typename T>
-	void Print(const T& aSomethingToPrint, WORD aColour)
-	{
-		SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), aColour);
-		std::cout << aSomethingToPrint;
-		SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7); //Colour reset
+#else
+		if (aRunInRelease == true)
+		{
+			SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), aColour);
+			printf("\n%s", aSomethingToPrint);
+			SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7); //Colour reset
+		}
+#endif
 	}
 
+	inline void Printf(const std::string& aSomethingToPrint, WORD aColour, bool aRunInRelease = false)
+	{
+#ifdef _DEBUG
+		aRunInRelease;
+		SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), aColour);
+		printf("\n%s", aSomethingToPrint.c_str());
+		SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7); //Colour reset
+#else
+		if (aRunInRelease == true)
+		{
+			SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), aColour);
+			printf("\n%s", aSomethingToPrint.c_str());
+			SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7); //Colour reset
+		}
+#endif
+	}
+
+	inline void Printf(int aSomethingToPrint, WORD aColour, bool aRunInRelease = false)
+	{
+#ifdef _DEBUG
+		aRunInRelease;
+		SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), aColour);
+		printf("\n%i", aSomethingToPrint);
+		SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7); //Colour reset
+#else
+		if (aRunInRelease == true)
+		{
+			SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), aColour);
+			printf("\n%i", aSomethingToPrint);
+			SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7); //Colour reset
+		}
+#endif
+	}
 
 	inline HWND GetConsoleHwnd(void)
 	{

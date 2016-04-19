@@ -50,6 +50,10 @@ namespace CU
 		Vector2<float> RandomVector(const Vector2<float>& aMin, const Vector2<float>& aMax);
 		Vector3<float> RandomVector(const Vector3<float>& aMin, const Vector3<float>& aMax);
 		Vector4<float> RandomVector(const Vector4<float>& aMin, const Vector4<float>& aMax);
+		
+		unsigned int ClosestPowerOfTwo(unsigned int aValue);
+
+		bool DistanceBetweenLessThanOrEqualToEpsilon(const CU::Vector3<float>& aVector1, const CU::Vector3<float>& aVector2, float anEpsilon);
 	}
 }
 

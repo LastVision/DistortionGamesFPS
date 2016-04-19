@@ -113,7 +113,7 @@ namespace GUI
 
 	void RadioButtonWidget::OnMouseEnter()
 	{
-		Prism::Audio::AudioInterface::GetInstance()->PostEvent("buttonHover", 0);
+		Prism::Audio::AudioInterface::GetInstance()->PostEvent("Play_ButtonHover", 0);
 		myImageCurrent = myImageHover;
 	}
 
@@ -159,6 +159,10 @@ namespace GUI
 			myButtonText = aText;
 			aSuccessOut = true;
 			myIsVisible = true;
+			if (aText == "")
+			{
+				myIsVisible = false;
+			}
 		}
 	}
 
@@ -170,6 +174,7 @@ namespace GUI
 	void RadioButtonWidget::Activate()
 	{
 		myActive = true;
+		Prism::Audio::AudioInterface::GetInstance()->PostEvent("Play_ButtonClick", 0);
 		PostMaster::GetInstance()->SendMessage(OnRadioButtonMessage(myType, myId));
 	}
 
