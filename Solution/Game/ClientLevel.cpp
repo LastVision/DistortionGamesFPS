@@ -11,7 +11,7 @@
 #include "NetworkMessageTypes.h"
 
 #include "DebugDrawer.h"
-
+#include <FirstPersonRenderComponent.h>
 #include <CollisionNote.h>
 #include "EntityFactory.h"
 #include "Entity.h"
@@ -372,12 +372,14 @@ void ClientLevel::Render()
 			myPlayer->GetComponent<FirstPersonRenderComponent>()->Render(myDeferredRenderer->GetArmDepthStencilTexture(), myLevelID == 0);
 
 			myTextManager->Render();
-
-			for (int i = 0; i < myWorldTexts.Size(); ++i)
+			if (myEscapeMenuActive == false)
 			{
-				if (CU::Length(myWorldTexts[i].myProxy->Get3DPosition() - myPlayer->GetOrientation().GetPos()) <= 10.f)
+				for (int i = 0; i < myWorldTexts.Size(); ++i)
 				{
-					myWorldTexts[i].myProxy->Render(myScene->GetCamera());
+					if (CU::Length(myWorldTexts[i].myProxy->Get3DPosition() - myPlayer->GetOrientation().GetPos()) <= 10.f)
+					{
+						myWorldTexts[i].myProxy->Render(myScene->GetCamera());
+					}
 				}
 			}
 		}
@@ -733,6 +735,7 @@ void ClientLevel::ToggleEscapeMenu()
 
 	myPlayer->GetComponent<InputComponent>()->SetIsInOptionsMenu(myEscapeMenuActive);
 	myPlayer->GetComponent<ShootingComponent>()->SetIsInOptionsMenu(myEscapeMenuActive);
+	myPlayer->GetComponent<FirstPersonRenderComponent>()->SetIsInOptionsMenu(myEscapeMenuActive);
 }
 
 void ClientLevel::OnResize(float aWidth, float aHeight)
