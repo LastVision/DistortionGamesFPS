@@ -41,6 +41,7 @@ private:
 	Prism::TextProxy* myText;
 	Prism::TextProxy* myPlayerListText;
 	Prism::TextProxy* myWaitingForHostText;
+	Prism::SpriteProxy* myRotatingThingy;
 
 	int myLevelToStart;
 	unsigned int myServerLevelHash;
