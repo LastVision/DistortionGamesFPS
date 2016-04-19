@@ -41,6 +41,8 @@ using namespace DirectX;
     #define VALIDATE(x, msg) if (!(x)) { MessageBoxA(NULL, (msg), "OculusRoomTiny", MB_ICONERROR | MB_OK); exit(-1); }
 #endif
 
+#include <DL_Debug.h>
+
 // clean up member COM pointers
 template<typename T> void Release(T *&obj)
 {
@@ -117,6 +119,9 @@ struct DirectX11
 	DepthBuffer            * MainDepthBuffer;
 	ID3D11Texture2D        * BackBuffer;
 	ID3D11RenderTargetView * BackBufferRT;
+	ID3D11Debug			   * myDebugInterface;
+	ID3D11InfoQueue		   * myInfoQueue;
+
     // Fixed size buffer for shader constants, before copied into buffer
     static const int         UNIFORM_DATA_SIZE = 2000;
 	unsigned char            UniformData[UNIFORM_DATA_SIZE];
@@ -230,7 +235,14 @@ struct DirectX11
         }
 
         auto DriverType = Adapter ? D3D_DRIVER_TYPE_UNKNOWN : D3D_DRIVER_TYPE_HARDWARE;
-		hr = D3D11CreateDevice(Adapter, DriverType, 0, 0, 0, 0, D3D11_SDK_VERSION, &Device, 0, &Context);
+
+		int debugFlag = 0;
+#ifdef _DEBUG
+		debugFlag = D3D11_CREATE_DEVICE_DEBUG;
+#endif
+
+		hr = D3D11CreateDevice(Adapter, DriverType, 0, debugFlag, 0, 0, D3D11_SDK_VERSION, &Device, 0, &Context);
+
         Release(Adapter);
         VALIDATE((hr == ERROR_SUCCESS), "D3D11CreateDevice failed");
 
@@ -247,6 +259,7 @@ struct DirectX11
 		scDesc.SampleDesc.Count = 1;
 		scDesc.Windowed = windowed;
 		scDesc.SwapEffect = DXGI_SWAP_EFFECT_SEQUENTIAL;
+
 		hr = DXGIFactory->CreateSwapChain(Device, &scDesc, &SwapChain);
         Release(DXGIFactory);
         VALIDATE((hr == ERROR_SUCCESS), "CreateSwapChain failed");
@@ -270,6 +283,43 @@ struct DirectX11
 		DXGIDevice1->SetMaximumFrameLatency(1);
 		Release(DXGIDevice1);
         VALIDATE((hr == ERROR_SUCCESS), "QueryInterface failed");
+
+
+#ifdef _DEBUG
+		myDebugInterface = nullptr;
+		HRESULT result = Device->QueryInterface(__uuidof(ID3D11Debug), (void**)&myDebugInterface);
+		if (FAILED(result))
+		{
+			DL_ASSERT("[DirectX]: Failed to Query DebugInterface");
+			return false;
+		}
+
+		myInfoQueue = nullptr;
+		if (FAILED(myDebugInterface->QueryInterface(__uuidof(ID3D11InfoQueue), (void**)&myInfoQueue)))
+		{
+			DL_ASSERT("[DirectX]: Failed to Query InfoQueue");
+			return false;
+		}
+
+		myInfoQueue->SetBreakOnSeverity(D3D11_MESSAGE_SEVERITY_CORRUPTION, true);
+		myInfoQueue->SetBreakOnSeverity(D3D11_MESSAGE_SEVERITY_ERROR, true);
+
+		D3D11_MESSAGE_ID hide[] =
+		{
+			D3D11_MESSAGE_ID_DEVICE_PSSETSHADERRESOURCES_HAZARD,
+			D3D11_MESSAGE_ID_DEVICE_OMSETRENDERTARGETS_HAZARD
+			// Add more message IDs here as needed
+		};
+
+		D3D11_INFO_QUEUE_FILTER filter;
+		memset(&filter, 0, sizeof(filter));
+		filter.DenyList.NumIDs = _countof(hide);
+		filter.DenyList.pIDList = hide;
+		myInfoQueue->AddStorageFilterEntries(&filter);
+		myInfoQueue->Release();
+#endif
+
+
 
         return true;
 	}

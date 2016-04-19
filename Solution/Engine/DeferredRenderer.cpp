@@ -140,9 +140,11 @@ namespace Prism
 		SAFE_DELETE(myGBufferData.myDepthTexture);
 	}
 
-	void DeferredRenderer::Render(Scene* aScene)
+	void DeferredRenderer::Render(Scene* aScene, ID3D11RenderTargetView* aRenderTarget, ID3D11DepthStencilView* aDepthStencil)
 	{
-		Engine::GetInstance()->RestoreViewPort();
+		myOcculusRenderTarget = aRenderTarget;
+		myOcculusDepthStencil = aDepthStencil;
+		//Engine::GetInstance()->RestoreViewPort();
 
 		ClearGBuffer();
 		Engine::GetInstance()->GetContex()->ClearDepthStencilView(myDepthStencilTexture->GetDepthStencilView()
@@ -162,6 +164,8 @@ namespace Prism
 		ActivateBuffers();
 
 		RenderDeferred(aScene);
+
+		//Engine::GetInstance()->GetContex()->CopyResource(myTexture, aTexture);
 	}
 
 	void DeferredRenderer::RenderCubeMap(Scene* aScene, ID3D11RenderTargetView* aRenderTarget, ID3D11DepthStencilView* aDepth,
@@ -350,13 +354,16 @@ namespace Prism
 
 	void DeferredRenderer::RenderDeferred(Scene* aScene)
 	{
-		Engine::GetInstance()->RestoreViewPort();
+		//Engine::GetInstance()->RestoreViewPort();
 
 		RenderAmbientPass(aScene);
 
 		//ID3D11RenderTargetView* renderTarget = Engine::GetInstance()->GetBackbuffer();
-		ID3D11RenderTargetView* renderTarget = myFinishedTexture->GetRenderTargetView();
-		Engine::GetInstance()->GetContex()->OMSetRenderTargets(1, &renderTarget, myDepthStencilTexture->GetDepthStencilView());
+		//ID3D11RenderTargetView* renderTarget = myFinishedTexture->GetRenderTargetView();
+		//Engine::GetInstance()->GetContex()->OMSetRenderTargets(1, &renderTarget, myDepthStencilTexture->GetDepthStencilView());
+
+		ID3D11RenderTargetView* renderTarget = myOcculusRenderTarget;
+		Engine::GetInstance()->GetContex()->OMSetRenderTargets(1, &renderTarget, myOcculusDepthStencil);
 
 #ifdef USE_LIGHT
 		aScene->UpdateLights();
@@ -457,11 +464,14 @@ namespace Prism
 		ID3D11DeviceContext* context = Engine::GetInstance()->GetContex();
 
 		//ID3D11RenderTargetView* backbuffer = Engine::GetInstance()->GetBackbuffer();
-		ID3D11RenderTargetView* backbuffer = myFinishedTexture->GetRenderTargetView();
+		//ID3D11RenderTargetView* backbuffer = myFinishedTexture->GetRenderTargetView();
+		ID3D11RenderTargetView* backbuffer = myOcculusRenderTarget;
 		context->ClearRenderTargetView(backbuffer, myClearColor);
 		context->ClearDepthStencilView(Engine::GetInstance()->GetDepthView(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
+		/*context->OMSetRenderTargets(1, &backbuffer
+			, Engine::GetInstance()->GetDepthView());*/
 		context->OMSetRenderTargets(1, &backbuffer
-			, Engine::GetInstance()->GetDepthView());
+			, myOcculusDepthStencil);
 
 		SetAmbientData(false);
 		myAmbientPass.myEffect->SetCameraPosition(aScene->GetCamera()->GetOrientation().GetPos());
@@ -491,16 +501,16 @@ namespace Prism
 			myAmbientPass.myNormal->SetResource(myGBufferData.myNormalTexture->GetShaderView());
 			myAmbientPass.myEmissive->SetResource(myGBufferData.myEmissiveTexture->GetShaderView());
 			myAmbientPass.myDepth->SetResource(myGBufferData.myDepthTexture->GetShaderView());
-			myAmbientPass.myCubemap->SetResource(myCubemap->GetShaderView());
+			//myAmbientPass.myCubemap->SetResource(myCubemap->GetShaderView());
 			myAmbientPass.mySSAORandomTextureVariable->SetResource(myAmbientPass.mySSAORandomTexture->GetShaderView());
 
-			myAmbientPass.mycAr->SetResource(mySHTextures.cAr->GetShaderView());
-			myAmbientPass.mycAg->SetResource(mySHTextures.cAg->GetShaderView());
-			myAmbientPass.mycAb->SetResource(mySHTextures.cAb->GetShaderView());
-			myAmbientPass.mycBr->SetResource(mySHTextures.cBr->GetShaderView());
-			myAmbientPass.mycBg->SetResource(mySHTextures.cBg->GetShaderView());
-			myAmbientPass.mycBb->SetResource(mySHTextures.cBb->GetShaderView());
-			myAmbientPass.mycC->SetResource(mySHTextures.cC->GetShaderView());
+			//myAmbientPass.mycAr->SetResource(mySHTextures.cAr->GetShaderView());
+			//myAmbientPass.mycAg->SetResource(mySHTextures.cAg->GetShaderView());
+			//myAmbientPass.mycAb->SetResource(mySHTextures.cAb->GetShaderView());
+			//myAmbientPass.mycBr->SetResource(mySHTextures.cBr->GetShaderView());
+			//myAmbientPass.mycBg->SetResource(mySHTextures.cBg->GetShaderView());
+			//myAmbientPass.mycBb->SetResource(mySHTextures.cBb->GetShaderView());
+			//myAmbientPass.mycC->SetResource(mySHTextures.cC->GetShaderView());
 		}
 		else
 		{
@@ -608,7 +618,7 @@ namespace Prism
 		myPointLightPass.myNormal->SetResource(myGBufferData.myNormalTexture->GetShaderView());
 		//myPointLightPass.myEmissive->SetResource(myGBufferData.myEmissiveTexture->GetShaderView());
 		myPointLightPass.myDepth->SetResource(myGBufferData.myDepthTexture->GetShaderView());
-		myPointLightPass.myCubemap->SetResource(myCubemap->GetShaderView());
+		//myPointLightPass.myCubemap->SetResource(myCubemap->GetShaderView());
 		myPointLightPass.myInvertedProjection->SetMatrix(&CU::InverseReal(aCamera.GetProjection()).myMatrix[0]);
 		myPointLightPass.myNotInvertedView->SetMatrix(&aCamera.GetOrientation().myMatrix[0]);
 	}
@@ -627,7 +637,7 @@ namespace Prism
 		mySpotLightPass.myNormal->SetResource(myGBufferData.myNormalTexture->GetShaderView());
 		//mySpotLightPass.myEmissive->SetResource(myGBufferData.myEmissiveTexture->GetShaderView());
 		mySpotLightPass.myDepth->SetResource(myGBufferData.myDepthTexture->GetShaderView());
-		mySpotLightPass.myCubemap->SetResource(myCubemap->GetShaderView());
+		//mySpotLightPass.myCubemap->SetResource(myCubemap->GetShaderView());
 		mySpotLightPass.myInvertedProjection->SetMatrix(&CU::InverseReal(aCamera.GetProjection()).myMatrix[0]);
 		mySpotLightPass.myNotInvertedView->SetMatrix(&aCamera.GetOrientation().myMatrix[0]);
 	}
@@ -646,7 +656,7 @@ namespace Prism
 		mySpotLightTextureProjectionPass.myNormal->SetResource(myGBufferData.myNormalTexture->GetShaderView());
 		//mySpotLightTextureProjectionPass.myEmissive->SetResource(myGBufferData.myEmissiveTexture->GetShaderView());
 		mySpotLightTextureProjectionPass.myDepth->SetResource(myGBufferData.myDepthTexture->GetShaderView());
-		mySpotLightTextureProjectionPass.myCubemap->SetResource(myCubemap->GetShaderView());
+		//mySpotLightTextureProjectionPass.myCubemap->SetResource(myCubemap->GetShaderView());
 		mySpotLightTextureProjectionPass.myInvertedProjection->SetMatrix(&CU::InverseReal(aCamera.GetProjection()).myMatrix[0]);
 		mySpotLightTextureProjectionPass.myNotInvertedView->SetMatrix(&aCamera.GetOrientation().myMatrix[0]);
 	}

@@ -19,8 +19,17 @@ namespace Prism
 		D3DSetup();
 	}
 
-	DirectX::DirectX()
+	DirectX::DirectX(HWND& aHwnd, SetupInfo& aSetupInfo, ID3D11Device* aDevice, ID3D11DeviceContext* aContext)
+		: myHWND(&aHwnd)
+		, mySetupInfo(aSetupInfo)
+		, myDebugInterface(nullptr)
+		, myInfoQueue(nullptr)
 	{
+		myWindowSize.x = mySetupInfo.myScreenWidth;
+		myWindowSize.y = mySetupInfo.myScreenHeight;
+		myDevice = aDevice;
+		myContext = aContext;
+		D3DSetup();
 	}
 
 	DirectX::~DirectX()
@@ -202,11 +211,11 @@ namespace Prism
 
 	bool DirectX::D3DSetup()
 	{
-		if (D3DSwapChainSetup() == false)
-		{
-			DIRECTX_LOG("Failed to Setup DirectX SwapChain");
-			return false;
-		}
+		//if (D3DSwapChainSetup() == false)
+		//{
+		//	DIRECTX_LOG("Failed to Setup DirectX SwapChain");
+		//	return false;
+		//}
 
 		if (D3DBackbufferSetup(mySetupInfo.myScreenWidth, mySetupInfo.myScreenHeight) == false)
 		{
@@ -327,14 +336,14 @@ namespace Prism
 
 	bool DirectX::D3DBackbufferSetup(int aWidth, int aHeight)
 	{
-		//BackbuffeTexture
-		mySwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (LPVOID*)&myBackbufferTexture);
+		////BackbuffeTexture
+		//mySwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (LPVOID*)&myBackbufferTexture);
 
-		//BackbufferRenderTarget
-		myDevice->CreateRenderTargetView(myBackbufferTexture, NULL, &myBackbufferRenderTarget);
-		myDevice->CreateShaderResourceView(myBackbufferTexture, NULL, &myBackbufferShaderResource);
+		////BackbufferRenderTarget
+		//myDevice->CreateRenderTargetView(myBackbufferTexture, NULL, &myBackbufferRenderTarget);
+		//myDevice->CreateShaderResourceView(myBackbufferTexture, NULL, &myBackbufferShaderResource);
 
-		myContext->OMSetRenderTargets(1, &myBackbufferRenderTarget, NULL);
+		//myContext->OMSetRenderTargets(1, &myBackbufferRenderTarget, NULL);
 
 
 		//BackbufferDepthstencil

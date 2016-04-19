@@ -49,7 +49,7 @@ namespace Prism
 	{
 	public:
 		static bool Create(HWND& aHwnd, WNDPROC aWndProc, SetupInfo& aSetupInfo);
-		static bool CreateOcculus();
+		static bool CreateOcculus(float aWidth, float aHeight, ID3D11Device* aDevice, ID3D11DeviceContext* aContext);
 		static void Destroy();
 		static Engine* GetInstance();
 		void Update(float aDeltaTime);
@@ -76,6 +76,7 @@ namespace Prism
 		Model* DLLLoadModel(const std::string& aModelPath, Effect* aEffect);
 
 		const CU::Vector2<float>& GetWindowSize() const;
+		void SetWindowSize(const CU::Vector2<float>& aSize);
 		const CU::Vector2<int>& GetWindowSizeInt() const;
 		const CU::Matrix44<float>& GetOrthogonalMatrix() const;
 
@@ -119,7 +120,7 @@ namespace Prism
 		Engine();
 		~Engine();
 		bool Init(HWND& aHwnd, WNDPROC aWndProc);
-		bool InitOcculus();
+		bool InitOcculus(SetupInfo& aInfo, ID3D11Device* aDevice, ID3D11DeviceContext* aContext);
 		bool WindowSetup(HWND& aHwnd, WNDPROC aWindowProc);
 		
 		bool myWireframeIsOn;
@@ -158,6 +159,12 @@ namespace Prism
 inline const CU::Vector2<float>& Prism::Engine::GetWindowSize() const
 {
 	return myWindowSize;
+}
+
+inline void Prism::Engine::SetWindowSize(const CU::Vector2<float>& aSize)
+{
+	myWindowSize = aSize;
+	myWindowSizeInt = CU::Vector2<int>(int(aSize.x), int(aSize.y));
 }
 
 inline const CU::Vector2<int>& Prism::Engine::GetWindowSizeInt() const

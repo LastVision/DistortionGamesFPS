@@ -113,7 +113,7 @@ namespace Prism
 			}
 			else
 			{
-				if (aCamera.GetFrustum().Inside(myOrientation.GetPos(), myProxy.myModel->GetRadius()) == true)
+				//if (aCamera.GetFrustum().Inside(myOrientation.GetPos(), myProxy.myModel->GetRadius()) == true)
 				{
 					AddModelToInstancingHelper(myProxy.myModel, aInstancingHelper);
 				}

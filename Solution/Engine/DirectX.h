@@ -24,7 +24,7 @@ namespace Prism
 	{
 	public:
 		DirectX(HWND& aHwnd, SetupInfo& aSetupInfo);
-		DirectX();
+		DirectX(HWND& aHwnd, SetupInfo& aSetupInfo, ID3D11Device* aDevice, ID3D11DeviceContext* aContext);
 		~DirectX();
 
 		void Present(const unsigned int aSyncInterval, const unsigned int aFlags);

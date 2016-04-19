@@ -172,6 +172,7 @@ namespace Prism
 
 	const CU::GrowingArray<Instance*>& RoomManager::GetActiveInstances(const Camera& aCamera)
 	{
+		return myAlwaysRenderInstances;
 #ifndef RELEASE_BUILD
 		if (CU::InputWrapper::GetInstance()->KeyDown(DIK_P) == true)
 		{
@@ -329,7 +330,8 @@ namespace Prism
 			}
 		}
 
-		DL_ASSERT("Unable to find room Id");
+		bool ShouldAssertHere = true;
+		//DL_ASSERT("Unable to find room Id");
 		return 0;
 	}
 

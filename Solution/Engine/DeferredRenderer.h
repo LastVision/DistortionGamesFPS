@@ -95,7 +95,7 @@ namespace Prism
 		DeferredRenderer();
 		~DeferredRenderer();
 
-		void Render(Scene* aScene);
+		void Render(Scene* aScene, ID3D11RenderTargetView* aRenderTarget, ID3D11DepthStencilView* aDepthStencil);
 		void RenderCubeMap(Scene* aScene, ID3D11RenderTargetView* aRenderTarget, ID3D11DepthStencilView* aDepth,
 			D3D11_VIEWPORT* aViewPort, bool aUseAmbientPass);
 		void OnResize(float aWidth, float aHeight);
@@ -152,7 +152,11 @@ namespace Prism
 		Texture* myDepthStencilTexture;
 		Texture* myArmDepthStencilTexture;
 		Texture* myCubemap;
+
 		Texture* myFinishedTexture;
+		ID3D11RenderTargetView* myOcculusRenderTarget;
+		ID3D11DepthStencilView* myOcculusDepthStencil;
+
 		RenderToScreenData myRenderToScreenData;
 		AmbientPass myAmbientPass;
 		PointLightPass myPointLightPass;

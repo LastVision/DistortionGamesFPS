@@ -345,7 +345,7 @@ void ClientLevel::Render()
 {
 	if (myInitDone == true)
 	{
-		myDeferredRenderer->Render(myScene);
+		//myDeferredRenderer->Render(myScene);
 
 		myFullscreenRenderer->Render(myDeferredRenderer->GetFinishedTexture(), myDeferredRenderer->GetEmissiveTexture(), myDeferredRenderer->GetDepthStencilTexture(), Prism::ePostProcessing::BLOOM);
 

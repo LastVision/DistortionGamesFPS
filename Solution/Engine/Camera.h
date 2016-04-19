@@ -26,6 +26,8 @@ namespace Prism
 
 		const Frustum& GetFrustum() const;
 
+		void SetViewProjection(const CU::Matrix44<float>& aViewProjection);
+		void SetProjection(const CU::Matrix44<float>& aProjection);
 		void SetOrientation(const CU::Matrix44<float>& aOrientation);
 		void SetPosition(const CU::Vector3<float>& aPosition);
 

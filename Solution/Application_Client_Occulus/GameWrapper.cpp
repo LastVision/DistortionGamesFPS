@@ -1,12 +1,23 @@
 #include "GameWrapper.h"
+#include "GameEnum.h"
 
 #include <Engine.h>
 #include <DL_Debug.h>
 
-GameWrapper::GameWrapper()
+
+#include <ModelLoader.h>
+#include <ModelProxy.h>
+
+#include <Scene.h>
+#include <DeferredRenderer.h>
+#include <Instance.h>
+#include <InputWrapper.h>
+#include <Camera.h>
+
+GameWrapper::GameWrapper(float aHeight, float aWidth, ID3D11Device* aDevice, ID3D11DeviceContext* aContext)
 {
 	DL_Debug::Debug::Create();
-	Prism::Engine::CreateOcculus();
+	Prism::Engine::CreateOcculus(aHeight, aWidth, aDevice, aContext);
 }
 
 
@@ -26,8 +37,21 @@ void GameWrapper::SetDevice(ID3D11Device* aDevice)
 	Prism::Engine::GetInstance()->SetDevice(aDevice);
 }
 
+void GameWrapper::SetWindowSize(const CU::Vector2<float>& aWindowSize)
+{
+	Prism::Engine::GetInstance()->SetWindowSize(aWindowSize);
+}
+
 void GameWrapper::Init()
 {
+	CU::InputWrapper::Create(GetActiveWindow(), GetModuleHandle(NULL), DISCL_NONEXCLUSIVE
+		| DISCL_FOREGROUND, DISCL_NONEXCLUSIVE | DISCL_FOREGROUND);
+
+	myScene = new Prism::Scene();
+	myRenderer = new Prism::DeferredRenderer();
+	myCamera = new Prism::Camera(myPlayerMatrix);
+	myScene->SetCamera(*myCamera);
+
 	myModels.Init(8);
 	Prism::Model* model = new Prism::Model();
 	model->InitCube(1.f, 1.f, 1.f, CU::Vector4<float>(1.f, 1.f, 1.f, 1.f));
@@ -45,18 +69,46 @@ void GameWrapper::Init()
 	myOrientations.Add(CU::Matrix44<float>());
 	myOrientations.Add(CU::Matrix44<float>());
 	myOrientations.Add(CU::Matrix44<float>());
+	myOrientations.Add(CU::Matrix44<float>());
 
 	myOrientations[0].SetPos(CU::Vector3<float>(1.5f, 0, 0));
 	myOrientations[1].SetPos(CU::Vector3<float>(0, 1.5f, 0));
 	myOrientations[2].SetPos(CU::Vector3<float>(0, 0, 1.5f));
+	myOrientations[3].SetPos(CU::Vector3<float>(0, 0, -1.5f));
+
+	Prism::ModelProxy* test = Prism::ModelLoader::GetInstance()->LoadModel("Data/Resource/Model/Pickups/Healthpack/SM_health_pack.fbx", "Data/Resource/Shader/S_effect_pbl_deferred.fx");
+
+	Prism::ModelProxy* test2 = Prism::ModelLoader::GetInstance()->LoadModelAnimated("Data/Resource/Model/Enemy/SK_cyborg_3_idle.fbx", "Data/Resource/Shader/S_effect_pbl_animated.fx");
+	myAnimation = new Prism::Instance(*test2, myOrientations[3]);
+
+	while (test->IsLoaded() == false);
+
+	myScene->AddInstance(new Prism::Instance(*test, myOrientations[0]), eObjectRoomType::ALWAYS_RENDER);
+	myScene->AddInstance(new Prism::Instance(*test, myOrientations[1]), eObjectRoomType::ALWAYS_RENDER);
+	myScene->AddInstance(new Prism::Instance(*test, myOrientations[2]), eObjectRoomType::ALWAYS_RENDER);
+	myScene->AddInstance(myAnimation, eObjectRoomType::ALWAYS_RENDER);
 }
 
-void GameWrapper::Render(const DirectX::XMMATRIX& aViewProjection)
+void GameWrapper::Update(float aDelta, const CU::Matrix44<float>& aView, const CU::Matrix44<float>& aProjection, const CU::Matrix44<float>& aViewProjection)
+{
+	myCamera->SetOrientation(aView);
+	myCamera->SetProjection(aProjection);
+	myCamera->SetViewProjection(aViewProjection);
+	myCamera->Update(aDelta);
+
+	myOrientations[0] *= CU::Matrix44<float>::CreateRotateAroundX(aDelta);
+
+	myAnimation->Update(aDelta);
+}
+
+void GameWrapper::Render(const DirectX::XMMATRIX& aViewProjection, ID3D11RenderTargetView* aRenderTarget, ID3D11DepthStencilView* aDepthStencil)
 {
 	for (int i = 0; i < myModels.Size(); ++i)
 	{
-		myModels[i]->RenderOcculus(myOrientations[i], ConvertMatrix(aViewProjection));
+	//	myModels[i]->RenderOcculus(myOrientations[i], ConvertMatrix(aViewProjection));
 	}
+
+	myRenderer->Render(myScene, aRenderTarget, aDepthStencil);
 }
 
 CU::Matrix44<float> GameWrapper::ConvertMatrix(const DirectX::XMMATRIX& aMatrix)

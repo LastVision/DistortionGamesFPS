@@ -89,10 +89,14 @@ namespace Prism
 		return result;
 	}
 
-	bool Engine::CreateOcculus()
+	bool Engine::CreateOcculus(float aWidth, float aHeight, ID3D11Device* aDevice, ID3D11DeviceContext* aContext)
 	{
+		SetupInfo info;
+		info.myWindowed = true;
+		info.myScreenWidth = aWidth;
+		info.myScreenHeight = aHeight;
 		myInstance = new Engine();
-		myInstance->InitOcculus();
+		myInstance->InitOcculus(info, aDevice, aContext);
 		return true;
 	}
 
@@ -367,9 +371,13 @@ namespace Prism
 		return true;
 	}
 
-	bool Engine::InitOcculus()
+	bool Engine::InitOcculus(SetupInfo& aInfo, ID3D11Device* aDevice, ID3D11DeviceContext* aContext)
 	{
-		myDirectX = new DirectX();
+		HWND hwnd = GetActiveWindow();
+		myDirectX = new DirectX(hwnd, aInfo, aDevice, aContext);
+
+		myModelLoaderThread = new std::thread(&ModelLoader::Run, ModelLoader::GetInstance());
+		myModelLoaderThreadID = myModelLoaderThread->get_id();
 		return true;
 	}
 

@@ -104,7 +104,6 @@ struct OculusTexture
 // return true to retry later (e.g. after display lost)
 static bool MainLoop(bool retryCreate)
 {
-	GameWrapper gameWrapper;
     // Initialize these to nullptr here to handle device lost failures cleanly
 	ovrTexture     * mirrorTexture = nullptr;
 	OculusTexture  * pEyeRenderTexture[2] = { nullptr, nullptr };
@@ -121,13 +120,18 @@ static bool MainLoop(bool retryCreate)
 
     ovrHmdDesc hmdDesc = ovr_GetHmdDesc(HMD);
 
+	
 	// Setup Device and Graphics
 	// Note: the mirror window can be any size, for this sample we use 1/2 the HMD resolution
-    if (!DIRECTX.InitDevice(hmdDesc.Resolution.w / 2, hmdDesc.Resolution.h / 2, reinterpret_cast<LUID*>(&luid)))
-        goto Done;
+	if (!DIRECTX.InitDevice(hmdDesc.Resolution.w / 2, hmdDesc.Resolution.h / 2, reinterpret_cast<LUID*>(&luid)))
+		DL_ASSERT("Failed to init Occulus DirectX");
+        //goto Done;
 
+	//GameWrapper gameWrapper(float(hmdDesc.Resolution.w), float(hmdDesc.Resolution.h), DIRECTX.Device, DIRECTX.Context);
+	GameWrapper gameWrapper(float(1122), float(1553), DIRECTX.Device, DIRECTX.Context);
 	gameWrapper.SetContext(DIRECTX.Context);
 	gameWrapper.SetDevice(DIRECTX.Device);
+	gameWrapper.SetWindowSize({ float(1122), float(1553) });
 	gameWrapper.Init();
 
 	// Make the eye render buffers (caution if actual size < requested due to HW limits). 
@@ -217,6 +221,8 @@ static bool MainLoop(bool retryCreate)
 			    // Increment to use next texture, just before writing
 			    pEyeRenderTexture[eye]->AdvanceToNextTexture();
 
+				//pEyeRenderTexture[eye]->TextureSet[0]->Textures
+
 			    // Clear and set up rendertarget
 			    int texIndex = pEyeRenderTexture[eye]->TextureSet->CurrentIndex;
 			    DIRECTX.SetAndClearRenderTarget(pEyeRenderTexture[eye]->TexRtv[texIndex], pEyeDepthBuffer[eye], 0.f, 1.f, 0.f, 1.f);
@@ -240,10 +246,12 @@ static bool MainLoop(bool retryCreate)
 			    XMMATRIX prod = XMMatrixMultiply(view, proj);
 				//roomScene->Render(&prod, 1, 1, 1, 1, true);
 
-				CU::Matrix44<float> matrix1 = gameWrapper.ConvertMatrix(view);
-				CU::Matrix44<float> matrix2 = gameWrapper.ConvertMatrix(proj);
+				CU::Matrix44<float> cuView = gameWrapper.ConvertMatrix(view);
+				CU::Matrix44<float> cuProj = gameWrapper.ConvertMatrix(proj);
+				CU::Matrix44<float> cuViewProj = gameWrapper.ConvertMatrix(prod);
 
-				gameWrapper.Render(prod);
+				gameWrapper.Update(float(frameTime / 1000000.0), cuView, cuProj, cuViewProj);
+				gameWrapper.Render(prod, pEyeRenderTexture[eye]->TexRtv[texIndex], pEyeDepthBuffer[eye]->TexDsv);
 		    }
         }
 
