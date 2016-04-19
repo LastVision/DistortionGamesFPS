@@ -27,7 +27,6 @@ ServerSelectState::ServerSelectState(eType aType)
 
 ServerSelectState::~ServerSelectState()
 {
-	SAFE_DELETE(mySearchingForServers);
 	SAFE_DELETE(myStartupLobby);
 	SAFE_DELETE(myGUIManager);
 	myCursor = nullptr;
@@ -50,11 +49,7 @@ void ServerSelectState::InitState(StateStackProxy* aStateStackProxy, GUI::Cursor
 	const CU::Vector2<int>& windowSize = Prism::Engine::GetInstance()->GetWindowSizeInt();
 	OnResize(windowSize.x, windowSize.y);
 
-	mySearchingForServers = Prism::ModelLoader::GetInstance()->LoadText(Prism::Engine::GetInstance()->GetFont(Prism::eFont::CONSOLE));
 	Prism::ModelLoader::GetInstance()->WaitUntilFinished();
-	mySearchingForServers->SetPosition({ 800.f, 200.f });
-	mySearchingForServers->SetText("Searching for servers...");
-	mySearchingForServers->SetScale({ 1.f, 1.f });
 
 	myStartupLobby = Prism::ModelLoader::GetInstance()->LoadText(Prism::Engine::GetInstance()->GetFont(Prism::eFont::CONSOLE));
 	Prism::ModelLoader::GetInstance()->WaitUntilFinished();
@@ -119,7 +114,7 @@ const eStateStatus ServerSelectState::Update(const float& aDeltaTime)
 		{
 			SET_RUNTIME(false);
 			PostMaster::GetInstance()->UnSubscribe(eMessageType::ON_CLICK, this);
-			myStateStack->PushSubGameState(new LobbyState());
+			myStateStack->PushSubGameState(new LobbyState(true));
 		}
 		else
 		{
@@ -142,7 +137,7 @@ const eStateStatus ServerSelectState::Update(const float& aDeltaTime)
 		{
 			SET_RUNTIME(false);
 			PostMaster::GetInstance()->UnSubscribe(eMessageType::ON_CLICK, this);
-			myStateStack->PushSubGameState(new LobbyState());
+			myStateStack->PushSubGameState(new LobbyState(false));
 		}
 		else
 		{
@@ -206,7 +201,7 @@ const eStateStatus ServerSelectState::Update(const float& aDeltaTime)
 		{
 			SET_RUNTIME(false);
 			PostMaster::GetInstance()->UnSubscribe(eMessageType::ON_CLICK, this);
-			myStateStack->PushSubGameState(new LobbyState());
+			myStateStack->PushSubGameState(new LobbyState(true));
 		}
 		break;
 	}
@@ -219,10 +214,6 @@ void ServerSelectState::Render()
 	myGUIManager->Render();
 	if (myType == eType::MULTIPLAYER_JOIN)
 	{
-		if (myServers.Size() <= 0 && myIsRefreshing == true)
-		{
-			mySearchingForServers->Render();
-		}
 	}
 	else
 	{

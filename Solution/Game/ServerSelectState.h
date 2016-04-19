@@ -51,7 +51,6 @@ private:
 
 	CU::GrowingArray<Server> myServers;
 
-	Prism::TextProxy* mySearchingForServers;
 	Prism::TextProxy* myStartupLobby;
 
 	Server* myServer;
