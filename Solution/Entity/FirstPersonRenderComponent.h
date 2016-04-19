@@ -3,6 +3,7 @@
 #include <BoneName.h>
 #include "Component.h"
 #include <StaticArray.h>
+#include <Subscriber.h>
 
 namespace GUI
 {
@@ -31,7 +32,7 @@ struct CoOpCircle
 	float myLifePercentage;
 };
 
-class FirstPersonRenderComponent : public Component, public NetworkSubscriber
+class FirstPersonRenderComponent : public Component, public NetworkSubscriber, public Subscriber
 {
 public:
 	FirstPersonRenderComponent(Entity& aEntity, Prism::Scene* aScene);
@@ -60,6 +61,8 @@ public:
 	void ReceiveNetworkMessage(const NetMessageDisplayMarker& aMessage, const sockaddr_in& aSenderAddress) override;
 	void ReceiveNetworkMessage(const NetMessageDisplayRespawn& aMessage, const sockaddr_in& aSenderAddress) override;
 	void ReceiveNetworkMessage(const NetMessagePressEText& aMessage, const sockaddr_in& aSenderAddress) override;
+
+	void ReceiveMessage(const HitmarkerMessage& aMessage) override;
 
 	void ReceiveNote(const UpgradeNote& aNote) override;
 
@@ -142,6 +145,10 @@ private:
 	float myDisplayUpgradeIndicatorTimer;
 	float myDisplayPickupTime;
 	CU::GrowingArray<ePlayerState> myIntentions;
+
+	Prism::SpriteProxy* myHitmarker;
+	float myDisplayHitmarkerTimer;
+	bool myHitmarkerHasRotated;
 
 	int myMaxHealth;
 	int myCurrentHealth;

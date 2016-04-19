@@ -18,6 +18,7 @@ struct ActivateSpawnpointMessage;
 struct Message;
 struct LevelLoadedMessage;
 struct LevelCompleteMessage;
+struct HitmarkerMessage;
 
 class Subscriber
 {
@@ -43,6 +44,6 @@ public:
 	virtual void ReceiveMessage(const ActivateSpawnpointMessage& aMessage);
 	virtual void ReceiveMessage(const LevelLoadedMessage& aMessage);
 	virtual void ReceiveMessage(const LevelCompleteMessage& aMessage);
-
+	virtual void ReceiveMessage(const HitmarkerMessage& aMessage);
 };
 

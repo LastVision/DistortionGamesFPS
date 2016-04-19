@@ -11,6 +11,7 @@
 #include <ModelProxy.h>
 #include <NetMessageOnHit.h>
 #include <NetMessageRayCastRequest.h>
+#include <HitmarkerMessage.h>
 #include <PostMaster.h>
 #include <PhysicsInterface.h>
 #include "PhysicsComponent.h"
@@ -211,6 +212,7 @@ void Shotgun::HandleRaycast(PhysicsComponent* aComponent, const CU::Vector3<floa
 		if (aComponent->GetEntity().GetSubType() != "player")
 #endif
 		{
+			
 			if (aComponent->GetPhysicsType() == ePhysics::DYNAMIC)
 			{
 				aComponent->AddForce(aDirection, myForceStrength);
@@ -220,6 +222,7 @@ void Shotgun::HandleRaycast(PhysicsComponent* aComponent, const CU::Vector3<floa
 
 			if (aComponent->GetEntity().GetIsEnemy() == true)
 			{
+				PostMaster::GetInstance()->SendMessage<HitmarkerMessage>(HitmarkerMessage());
 				PostMaster::GetInstance()->SendMessage(EmitterMessage("OnHit", aHitPosition));
 			}
 			else

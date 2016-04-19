@@ -17,6 +17,7 @@ enum class eMessageType
 	PRINT_TEXT,
 	LEVEL_LOADED,
 	LEVEL_COMPLETE,
+	HITMARKER,
 	
 	COUNT,
 };

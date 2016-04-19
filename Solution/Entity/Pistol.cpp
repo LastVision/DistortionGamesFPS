@@ -6,6 +6,7 @@
 #include <EmitterMessage.h>
 #include <ModelLoader.h>
 #include <NetMessageRayCastRequest.h>
+#include <HitmarkerMessage.h>
 #include <Instance.h>
 #include "PhysicsComponent.h"
 #include <PostMaster.h>
@@ -194,6 +195,7 @@ void Pistol::HandleRaycast(PhysicsComponent* aComponent, const CU::Vector3<float
 
 			if (aComponent->GetEntity().GetIsEnemy() == true)
 			{
+				PostMaster::GetInstance()->SendMessage<HitmarkerMessage>(HitmarkerMessage());
 				PostMaster::GetInstance()->SendMessage(EmitterMessage("OnHit", aHitPosition));
 			}
 			else
