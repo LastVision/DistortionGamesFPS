@@ -135,15 +135,21 @@ const eStateStatus InGameState::Update(const float& aDeltaTime)
 		myLevel->Update(aDeltaTime, true);
 		if (myLevel->GetInitDone() == true)
 		{
-			myState = eInGameState::LOADING_PHYSICS_INIT;
+			if (myState != eInGameState::LOADING_CAN_START)
+			{
+				myState = eInGameState::LOADING_PHYSICS_INIT;
+			}
 		}
 		break;
 	case eInGameState::LOADING_PHYSICS_INIT:
 		myLevel->Update(aDeltaTime, true);
 		if (Prism::ModelLoader::GetInstance()->IsLoading() == false)
 		{
-			ClientNetworkManager::GetInstance()->AddMessage(NetMessageLevelLoaded());
-			myState = eInGameState::LOADING_GRAPHICS_INIT;
+			if (myState != eInGameState::LOADING_CAN_START)
+			{
+				ClientNetworkManager::GetInstance()->AddMessage(NetMessageLevelLoaded());
+				myState = eInGameState::LOADING_GRAPHICS_INIT;
+			}
 		}
 		break;
 	case eInGameState::LOADING_GRAPHICS_INIT:
@@ -171,13 +177,16 @@ const eStateStatus InGameState::Update(const float& aDeltaTime)
 		myLevel->Update(aDeltaTime, false);
 		break;
 	case eInGameState::LOAD_LEVEL:
-		SET_RUNTIME(false);
-		SAFE_DELETE(myLevel);
-		myLevel = static_cast<ClientLevel*>(myLevelFactory->LoadLevel(myLevelToLoad, myCursor, myStateStatus));
+		if (myState != eInGameState::LOADING_CAN_START)
+		{
+			SET_RUNTIME(false);
+			SAFE_DELETE(myLevel);
+			myLevel = static_cast<ClientLevel*>(myLevelFactory->LoadLevel(myLevelToLoad, myCursor, myStateStatus));
 
-		myLastLevel = myLevelToLoad;
-		myLevelToLoad = -1;
-		myState = eInGameState::LOADING_SCREEN;
+			myLastLevel = myLevelToLoad;
+			myLevelToLoad = -1;
+			myState = eInGameState::LOADING_SCREEN;
+		}
 		break;
 	case eInGameState::LEVEL_COMPLETE:
 		myLevelCompleteSprite->Render({ 0.f, 0.f });

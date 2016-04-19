@@ -99,19 +99,23 @@ void ServerInGameState::ResumeState()
 
 void ServerInGameState::ReceiveNetworkMessage(const NetMessageLevelComplete& aMessage, const sockaddr_in&)
 {
-	myRespondedClients.Add(aMessage.mySenderID);
-	if (ServerNetworkManager::GetInstance()->ListContainsAllClients(myRespondedClients) == true)
+	if (myRespondedClients.Find(aMessage.mySenderID) == myRespondedClients.FoundNone)
 	{
-		myRespondedClients.RemoveAll();
-		myState = eServerInGameState::LEVEL_COMPLETE_ALL_CLIENTS_RESPONDED;
-		SET_RUNTIME(false);
-		SAFE_DELETE(myLevel);
-		ServerNetworkManager::GetInstance()->AddMessage(NetMessageAllClientsComplete(NetMessageAllClientsComplete::eType::LEVEL_COMPLETE));
-		ServerNetworkManager::GetInstance()->StopSendMessages(true);
-		ServerNetworkManager::GetInstance()->StopPing(true);
-		myLevelHashValue = Hash(CU::ReadFileToString(myLevelFactory->GetLevelPath(myLevelID)).c_str());
-		myLevel = static_cast<ServerLevel*>(myLevelFactory->LoadLevel(myLevelID));
-		ServerNetworkManager::GetInstance()->StopSendMessages(false);
+		myRespondedClients.Add(aMessage.mySenderID);
+
+		if (ServerNetworkManager::GetInstance()->ListContainsAllClients(myRespondedClients) == true)
+		{
+			myRespondedClients.RemoveAll();
+			myState = eServerInGameState::LEVEL_COMPLETE_ALL_CLIENTS_RESPONDED;
+			SET_RUNTIME(false);
+			SAFE_DELETE(myLevel);
+			ServerNetworkManager::GetInstance()->AddMessage(NetMessageAllClientsComplete(NetMessageAllClientsComplete::eType::LEVEL_COMPLETE));
+			ServerNetworkManager::GetInstance()->StopSendMessages(true);
+			ServerNetworkManager::GetInstance()->StopPing(true);
+			myLevelHashValue = Hash(CU::ReadFileToString(myLevelFactory->GetLevelPath(myLevelID)).c_str());
+			myLevel = static_cast<ServerLevel*>(myLevelFactory->LoadLevel(myLevelID));
+			ServerNetworkManager::GetInstance()->StopSendMessages(false);
+		}
 	}
 }
 
