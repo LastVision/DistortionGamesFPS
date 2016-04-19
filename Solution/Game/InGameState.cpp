@@ -46,7 +46,7 @@ InGameState::InGameState(int aLevelID, unsigned int aServerHashLevelValue)
 	, myServerHashLevelValue(aServerHashLevelValue)
 	, myHasStartedMusicBetweenLevels(false)
 	, myLastLevel(aLevelID)
-	, myCanStartTimer(3.f)
+	, myCanStartTimer(6.f)
 {
 	myIsActiveState = false;
 	myLevelFactory = new ClientLevelFactory("Data/Level/LI_level.xml");
@@ -452,7 +452,7 @@ void InGameState::ReceiveNetworkMessage(const NetMessageAllClientsComplete& aMes
 		{
 			myState = eInGameState::LEVEL_COMPLETE_CAN_START;
 		}
-		myCanStartTimer = 3.f;
+		myCanStartTimer = 6.f;
 		//DL_ASSERT_EXP(myLevelToLoad >= 0, "Wrong level");
 		//myState = eInGameState::LOAD_LEVEL;
 		break;
