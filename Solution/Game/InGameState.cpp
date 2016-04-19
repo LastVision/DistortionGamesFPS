@@ -46,6 +46,7 @@ InGameState::InGameState(int aLevelID, unsigned int aServerHashLevelValue)
 	, myServerHashLevelValue(aServerHashLevelValue)
 	, myHasStartedMusicBetweenLevels(false)
 	, myLastLevel(aLevelID)
+	, myCanStartTimer(3.f)
 {
 	myIsActiveState = false;
 	myLevelFactory = new ClientLevelFactory("Data/Level/LI_level.xml");
@@ -184,8 +185,9 @@ const eStateStatus InGameState::Update(const float& aDeltaTime)
 	case eInGameState::LEVEL_COMPLETE_CAN_START:
 		myLevelCompleteSprite->Render({ 0.f, 0.f });
 
-		if (CU::InputWrapper::GetInstance()->KeyDown(DIK_RETURN) == true
-			|| CU::InputWrapper::GetInstance()->AnyKeyDown() == true)
+		myCanStartTimer -= aDeltaTime;
+		if (myCanStartTimer <= 0.f && (CU::InputWrapper::GetInstance()->KeyDown(DIK_RETURN) == true
+			|| CU::InputWrapper::GetInstance()->AnyKeyDown() == true))
 		{
 			ClientNetworkManager::GetInstance()->AddMessage(NetMessageRequestStartLevel());
 			myState = eInGameState::LEVEL_COMPLETE;
@@ -198,8 +200,9 @@ const eStateStatus InGameState::Update(const float& aDeltaTime)
 	case eInGameState::LEVEL_FAIL_CAN_START:
 		myLevelFailedSprite->Render({ 0.f, 0.f });
 
-		if (CU::InputWrapper::GetInstance()->KeyDown(DIK_RETURN) == true
-			|| CU::InputWrapper::GetInstance()->AnyKeyDown() == true)
+		myCanStartTimer -= aDeltaTime;
+		if (myCanStartTimer <= 0.f && (CU::InputWrapper::GetInstance()->KeyDown(DIK_RETURN) == true
+			|| CU::InputWrapper::GetInstance()->AnyKeyDown() == true))
 		{
 			ClientNetworkManager::GetInstance()->AddMessage(NetMessageRequestStartLevel());
 			myState = eInGameState::LEVEL_FAIL;
@@ -367,14 +370,20 @@ void InGameState::Render()
 		break;
 	case eInGameState::LEVEL_FAIL_CAN_START:
 		myLevelFailedSprite->Render({ 0.f, 0.f });
-		myPressToStart->Render({ 200.f, 20.f });
+		if (myCanStartTimer <= 0.f)
+		{
+			myPressToStart->Render({ 200.f, 20.f });
+		}
 		break;
 	case eInGameState::LEVEL_COMPLETE:
 		myLevelCompleteSprite->Render({ 0.f, 0.f });
 		break;
 	case eInGameState::LEVEL_COMPLETE_CAN_START:
 		myLevelCompleteSprite->Render({ 0.f, 0.f });
-		myPressToStart->Render({ 200.f, 20.f });
+		if (myCanStartTimer <= 0.f)
+		{
+			myPressToStart->Render({ 200.f, 20.f });
+		}
 		break;
 	default:
 		break;
@@ -443,6 +452,7 @@ void InGameState::ReceiveNetworkMessage(const NetMessageAllClientsComplete& aMes
 		{
 			myState = eInGameState::LEVEL_COMPLETE_CAN_START;
 		}
+		myCanStartTimer = 3.f;
 		//DL_ASSERT_EXP(myLevelToLoad >= 0, "Wrong level");
 		//myState = eInGameState::LOAD_LEVEL;
 		break;

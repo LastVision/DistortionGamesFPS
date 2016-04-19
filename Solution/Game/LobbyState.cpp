@@ -205,7 +205,6 @@ void LobbyState::Render()
 	}
 
 	DEBUG_PRINT(myLevelToStart+1);
-	
 }
 
 void LobbyState::ResumeState()

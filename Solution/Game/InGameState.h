@@ -69,6 +69,7 @@ private:
 	//bool myPhysicsDone;
 	bool myFailedLevelHash;
 
+	float myCanStartTimer;
 	unsigned int myServerHashLevelValue;
 	unsigned int myHashLevelValue;
 
