@@ -96,6 +96,7 @@ namespace Prism
 			|| aFilePath == "Data/Resource/Shader/S_effect_no_texture.fx"
 			|| aFilePath == "Data/Resource/Shader/S_effect_line3d.fx"
 			|| aFilePath == "Data/Resource/Shader/S_effect_cube3d.fx"
+			|| aFilePath == "Data/Resource/Shader/S_effect_cube3d_occulus.fx"
 			|| aFilePath == "Data/Resource/Shader/S_effect_particle.fx"
 			|| aFilePath == "Data/Resource/Shader/S_effect_combine.fx"
 			|| aFilePath == "Data/Resource/Shader/S_effect_down_sample.fx"

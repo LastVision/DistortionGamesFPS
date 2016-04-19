@@ -138,7 +138,7 @@ namespace Prism
 	void Model::InitCube(const float aWidth, const float aHeight, const float aDepth, CU::Vector4f aColour)
 	{
 		DL_ASSERT_EXP(myInited == false, "Tried to Init a model twice");
-		myEffect = EffectContainer::GetInstance()->GetEffect("Data/Resource/Shader/S_effect_cube3d.fx");
+		myEffect = EffectContainer::GetInstance()->GetEffect("Data/Resource/Shader/S_effect_cube3d_occulus.fx");
 
 
 		if (myEffect == nullptr)
