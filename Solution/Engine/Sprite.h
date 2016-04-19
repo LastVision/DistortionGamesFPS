@@ -14,7 +14,7 @@ namespace Prism
 		friend class ModelLoader;
 	public:
 		void Render(const CU::Vector2<float>& aPosition, const CU::Vector2<float>& aScale = { 1.f, 1.f }
-		, const CU::Vector4<float>& aColor = { 1.f, 1.f, 1.f, 1.f });
+		, const CU::Vector4<float>& aColor = { 1.f, 1.f, 1.f, 1.f }, float aRotateValue = 0.f);
 
 		void SetSize(const CU::Vector2<float>& aTextureSize, const CU::Vector2<float>& aHotSpot);
 		const CU::Vector2<float>& GetSize() const;

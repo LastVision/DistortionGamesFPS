@@ -97,7 +97,7 @@ Prism::Sprite::Sprite(ID3D11Texture2D* aTexture, const CU::Vector2<float>& aSpri
 }
 
 void Prism::Sprite::Render(const CU::Vector2<float>& aPosition, const CU::Vector2<float>& aScale
-	, const CU::Vector4<float>& aColor)
+	, const CU::Vector4<float>& aColor, float aRotateValue)
 {
 	Engine::GetInstance()->SetDepthBufferState(eDepthStencil::Z_DISABLED);
 
@@ -113,7 +113,7 @@ void Prism::Sprite::Render(const CU::Vector2<float>& aPosition, const CU::Vector
 	myEffect->SetProjectionMatrix(Engine::GetInstance()->GetOrthogonalMatrix());
 	myEffect->SetPosAndScale(aPosition, aScale);
 	myEffect->SetColor(aColor);
-	myEffect->SetSpriteOrientation(myOrientation);
+	myEffect->SetSpriteOrientation(CU::Matrix44<float>::CreateRotateAroundZ(aRotateValue));
 
 	BaseModel::Render();
 

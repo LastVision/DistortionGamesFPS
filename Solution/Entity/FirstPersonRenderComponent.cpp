@@ -9,6 +9,7 @@
 #include "FirstPersonRenderComponent.h"
 #include <GUIManager3D.h>
 #include "HealthComponent.h"
+#include <HitmarkerMessage.h>
 #include <Instance.h>
 #include "InputComponent.h"
 #include <ModelProxy.h>
@@ -17,6 +18,7 @@
 #include <NetMessageDisplayRespawn.h>
 #include <NetMessageHealth.h>
 #include <NetMessagePressEText.h>
+#include <PostMaster.h>
 #include <Scene.h>
 #include "ShootingComponent.h"
 #include <SpriteProxy.h>
@@ -50,6 +52,8 @@ FirstPersonRenderComponent::FirstPersonRenderComponent(Entity& aEntity, Prism::S
 	, myGrenadeLauncherHasUpdated(false)
 	, myDisplayPickupTime(2.f)
 	, myIsCoOp(false)
+	, myDisplayHitmarkerTimer(0.f)
+	, myHitmarkerHasRotated(false)
 {
 	CoOpCircle coopCircle;
 	coopCircle.myPosition = { 0.f, 0.f, 0.f };
@@ -66,6 +70,10 @@ FirstPersonRenderComponent::FirstPersonRenderComponent(Entity& aEntity, Prism::S
 	myCoOpSprite = Prism::ModelLoader::GetInstance()->LoadSprite("Data/Resource/Texture/UI/T_coopmarker.dds", size, size * 0.5f);
 	myMarker = Prism::ModelLoader::GetInstance()->LoadSprite("Data/Resource/Texture/UI/T_marker.dds", size, size * 0.5f);
 	myIsDeadScreen = Prism::ModelLoader::GetInstance()->LoadSprite("Data/Resource/Texture/UI/T_dead_indicator.dds", damageSize, damageSize * 0.5f);
+
+	myHitmarker = Prism::ModelLoader::GetInstance()->LoadSprite("Data/Resource/Texture/UI/T_crosshair.dds", size * 0.85f, size * 0.5f * 0.85f);
+
+
 
 	Prism::ModelProxy* model = Prism::ModelLoader::GetInstance()->LoadModelAnimated("Data/Resource/Model/First_person/Pistol/SK_arm_pistol_static.fbx", "Data/Resource/Shader/S_effect_pbl_animated.fx");
 	myModel = new Prism::Instance(*model, myInputComponentEyeOrientation, shouldUseSpecialFoV);
@@ -148,6 +156,8 @@ FirstPersonRenderComponent::FirstPersonRenderComponent(Entity& aEntity, Prism::S
 	{
 		Prism::ModelLoader::GetInstance()->GetHierarchyToBone(myWeaponAnimations[i].myData.myFile, "luncher_barrel_jnt1", myWeaponAnimations[i].myMuzzleBone);
 	}
+
+	PostMaster::GetInstance()->Subscribe(eMessageType::HITMARKER, this);
 }
 
 FirstPersonRenderComponent::~FirstPersonRenderComponent()
@@ -173,9 +183,10 @@ FirstPersonRenderComponent::~FirstPersonRenderComponent()
 	SAFE_DELETE(myGrenadeLauncherProxy);
 	SAFE_DELETE(myMarker);
 	SAFE_DELETE(myIsDeadScreen);
+	SAFE_DELETE(myHitmarker);
 	myCoOpCircles.RemoveAll();
 	myCoOpRespawns.RemoveAll();
-	
+	PostMaster::GetInstance()->UnSubscribe(eMessageType::HITMARKER, this);
 }
 
 void FirstPersonRenderComponent::Init()
@@ -185,6 +196,8 @@ void FirstPersonRenderComponent::Init()
 		, shooting->GetWeapon(eWeaponType::PISTOL)->GetClipSize(), shooting->GetWeapon(eWeaponType::PISTOL)->GetAmmoInClip()
 		, shooting->GetWeapon(eWeaponType::SHOTGUN)->GetClipSize(), shooting->GetWeapon(eWeaponType::SHOTGUN)->GetAmmoInClip(), shooting->GetWeapon(eWeaponType::SHOTGUN)->GetAmmoTotal()
 		, shooting->GetWeapon(eWeaponType::GRENADE_LAUNCHER)->GetClipSize(), shooting->GetWeapon(eWeaponType::GRENADE_LAUNCHER)->GetAmmoInClip(), shooting->GetWeapon(eWeaponType::GRENADE_LAUNCHER)->GetAmmoTotal());
+
+
 }
 
 void FirstPersonRenderComponent::Update(float aDelta)
@@ -203,6 +216,11 @@ void FirstPersonRenderComponent::Update(float aDelta)
 	{
 		myGrenadeLauncherHasUpdated = true;
 		myGrenadeLauncherModel->Update(0.f);
+	}
+	if (myHitmarker->IsLoaded() == true && myHitmarkerHasRotated == false)
+	{
+		myHitmarker->Rotate(3.141642f * 0.25f);
+		myHitmarkerHasRotated = true;
 	}
 
 	if (myEntity.GetState() == eEntityState::DIE && myHasDied == false)
@@ -349,7 +367,7 @@ void FirstPersonRenderComponent::Update(float aDelta)
 	my3DGUIManager->Update(myUIJoint, myHealthJoint, myCurrentHealth
 		, myMaxHealth, aDelta, myEntity.GetComponent<ShootingComponent>()->GetCurrentWeapon()->GetWeaponType());
 
-
+	myDisplayHitmarkerTimer -= aDelta;
 }
 
 void FirstPersonRenderComponent::UpdateCoOpPositions(const CU::GrowingArray<Entity*>& somePlayers)
@@ -365,6 +383,11 @@ void FirstPersonRenderComponent::Render(Prism::Texture* aArmDepthTexture, bool a
 {
 	const CU::Vector2<float>& windowSize = Prism::Engine::GetInstance()->GetWindowSize();
 	myCrosshair->Render(windowSize * 0.5f);
+
+	if (myDisplayHitmarkerTimer > 0.f)
+	{
+		myHitmarker->Render(windowSize * 0.5f, { 1.f, 1.f }, { 1.f, 1.f, 1.f, myDisplayHitmarkerTimer / 0.5f });
+	}
 
 	if (myDisplayDamageIndicatorTimer > 0.f)
 	{
@@ -383,6 +406,8 @@ void FirstPersonRenderComponent::Render(Prism::Texture* aArmDepthTexture, bool a
 		color.w = fminf(fminf(1.f, myDisplayUpgradeIndicatorTimer), myDisplayPickupTime - myDisplayUpgradeIndicatorTimer);
 		myPickupIndicator->Render(windowSize * 0.5f, { 1.f, 1.f }, color);
 	}
+
+
 
 	float lifePercentage = float(myCurrentHealth) / float(myMaxHealth);
 
@@ -514,6 +539,8 @@ void FirstPersonRenderComponent::Render(Prism::Texture* aArmDepthTexture, bool a
 	{
 		myIsDeadScreen->Render(windowSize * 0.5f);
 	}
+
+
 }
 
 bool FirstPersonRenderComponent::IsCurrentAnimationDone() const
@@ -720,6 +747,11 @@ void FirstPersonRenderComponent::ReceiveNetworkMessage(const NetMessagePressETex
 			}
 		}
 	}
+}
+
+void FirstPersonRenderComponent::ReceiveMessage(const HitmarkerMessage& aMessage)
+{
+	myDisplayHitmarkerTimer = 0.5f;
 }
 
 void FirstPersonRenderComponent::OnResize(CU::Vector2<float> aNewSize)

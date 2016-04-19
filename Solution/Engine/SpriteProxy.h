@@ -27,6 +27,8 @@ namespace Prism
 
 		const CU::Vector2<float>& GetHotspot() const;
 
+		bool IsLoaded() const;
+
 	private:
 
 		Sprite* mySprite;
@@ -35,5 +37,12 @@ namespace Prism
 
 		CU::Vector2<float> myTopLeftUV;
 		CU::Vector2<float> myRightBottomUV;
+
+		float myRotateValue;
 	};
+
+	inline bool SpriteProxy::IsLoaded() const
+	{
+		return mySprite != nullptr;
+	}
 }
