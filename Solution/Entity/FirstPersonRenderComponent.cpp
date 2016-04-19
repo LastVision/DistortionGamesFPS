@@ -386,7 +386,7 @@ void FirstPersonRenderComponent::Render(Prism::Texture* aArmDepthTexture, bool a
 
 	if (myDisplayHitmarkerTimer > 0.f)
 	{
-		myHitmarker->Render(windowSize * 0.5f);
+		myHitmarker->Render(windowSize * 0.5f, { 1.f, 1.f }, { 1.f, 1.f, 1.f, myDisplayHitmarkerTimer / 0.5f });
 	}
 
 	if (myDisplayDamageIndicatorTimer > 0.f)
@@ -751,7 +751,7 @@ void FirstPersonRenderComponent::ReceiveNetworkMessage(const NetMessagePressETex
 
 void FirstPersonRenderComponent::ReceiveMessage(const HitmarkerMessage& aMessage)
 {
-	myDisplayHitmarkerTimer = 0.1f;
+	myDisplayHitmarkerTimer = 0.5f;
 }
 
 void FirstPersonRenderComponent::OnResize(CU::Vector2<float> aNewSize)
