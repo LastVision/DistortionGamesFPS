@@ -22,7 +22,9 @@
 #include <TextProxy.h>
 #include <FadeMessage.h>
 
-LobbyState::LobbyState()
+#include <WidgetContainer.h>
+
+LobbyState::LobbyState(bool aShowStartButton)
 	: myGUIManager(nullptr)
 	, myGUIManagerHost(nullptr)
 	, myLevelToStart(-1)
@@ -31,6 +33,7 @@ LobbyState::LobbyState()
 	, myRefreshPlayerListTimer(0)
 	, myRadioLevel(0)
 	, myRadioDifficulty(10)
+	, myShowStartButton(aShowStartButton)
 {
 }
 
@@ -66,9 +69,15 @@ void LobbyState::InitState(StateStackProxy* aStateStackProxy, GUI::Cursor* aCurs
 	myGUIManager = new GUI::GUIManager(myCursor, "Data/Resource/GUI/GUI_Lobby.xml", nullptr, -1);
 	myGUIManagerHost = new GUI::GUIManager(myCursor, "Data/Resource/GUI/GUI_Lobby_host.xml", nullptr, -1);
 
+	if (myShowStartButton == false)
+	{
+		static_cast<GUI::WidgetContainer*>(myGUIManagerHost->GetWidgetContainer()->At(0))->At(3)->SetVisibility(false);
+	}
+
 	myText = Prism::ModelLoader::GetInstance()->LoadText(Prism::Engine::GetInstance()->GetFont(Prism::eFont::CONSOLE));
 	myPlayerListText = Prism::ModelLoader::GetInstance()->LoadText(Prism::Engine::GetInstance()->GetFont(Prism::eFont::CONSOLE));
 	myWaitingForHostText = Prism::ModelLoader::GetInstance()->LoadText(Prism::Engine::GetInstance()->GetFont(Prism::eFont::CONSOLE));
+	myWaitingForJoinText = Prism::ModelLoader::GetInstance()->LoadText(Prism::Engine::GetInstance()->GetFont(Prism::eFont::CONSOLE));
 	Prism::ModelLoader::GetInstance()->WaitUntilFinished();
 
 
@@ -84,8 +93,14 @@ void LobbyState::InitState(StateStackProxy* aStateStackProxy, GUI::Cursor* aCurs
 	myWaitingForHostText->SetText("Waiting for host...");
 	myWaitingForHostText->SetScale({ 1.f, 1.f });
 
+	
+
 	const CU::Vector2<int>& windowSize = Prism::Engine::GetInstance()->GetWindowSizeInt();
 	OnResize(windowSize.x, windowSize.y);
+
+	myWaitingForJoinText->SetPosition({ windowSize.x / 2.f - 163.f, 0.f + 93.f });
+	myWaitingForJoinText->SetText("Waiting for other player");
+	myWaitingForJoinText->SetScale({ 1.f, 1.f });
 
 	myCursor->SetShouldRender(true);
 	myLevelToStart = -1;
@@ -113,6 +128,7 @@ void LobbyState::EndState()
 void LobbyState::OnResize(int aX, int aY)
 {
 	myGUIManager->OnResize(aX, aY);
+	myWaitingForJoinText->SetPosition({ aX / 2.f - 163.f, 0.f + 93.f });
 }
 
 const eStateStatus LobbyState::Update(const float& aDeltaTime)
@@ -136,6 +152,12 @@ const eStateStatus LobbyState::Update(const float& aDeltaTime)
 			ClientNetworkManager::GetInstance()->AddMessage(NetMessageDisconnect(ClientNetworkManager::GetInstance()->GetGID()));
 			return eStateStatus::ePopMainState;
 		}
+	}
+
+	if (ClientNetworkManager::GetInstance()->GetClients().Size() > 0)
+	{
+		myShowStartButton = true;
+		static_cast<GUI::WidgetContainer*>(myGUIManagerHost->GetWidgetContainer()->At(0))->At(3)->SetVisibility(true);
 	}
 
 	myRefreshPlayerListTimer -= aDeltaTime;
@@ -202,6 +224,11 @@ void LobbyState::Render()
 		myWaitingForHostText->Render();
 		myText->Render();
 		myRotatingThingy->Render({ 800.f + myText->GetWidth() + 35.f, 200.f + 7.f });
+	}
+
+	if (myShowStartButton == false)
+	{
+		myWaitingForJoinText->Render();
 	}
 
 	DEBUG_PRINT(myLevelToStart+1);

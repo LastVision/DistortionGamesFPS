@@ -18,7 +18,7 @@ namespace Prism
 class LobbyState : public GameState, public Subscriber, public NetworkSubscriber
 {
 public:
-	LobbyState();
+	LobbyState(bool aShowStartButton);
 	~LobbyState();
 
 	void InitState(StateStackProxy* aStateStackProxy, GUI::Cursor* aCursor) override;
@@ -39,9 +39,12 @@ private:
 	GUI::GUIManager* myGUIManagerHost;
 	GUI::GUIManager* myGUIManager;
 	Prism::TextProxy* myText;
+	Prism::TextProxy* myWaitingForJoinText;
 	Prism::TextProxy* myPlayerListText;
 	Prism::TextProxy* myWaitingForHostText;
 	Prism::SpriteProxy* myRotatingThingy;
+
+	bool myShowStartButton;
 
 	int myLevelToStart;
 	unsigned int myServerLevelHash;

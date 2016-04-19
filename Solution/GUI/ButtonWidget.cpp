@@ -75,7 +75,7 @@ namespace GUI
 
 			if (myIsTextButton == true)
 			{
-				Prism::Engine::GetInstance()->PrintText(myButtonText, { aParentPosition.x + myPosition.x - mySize.x * 0.5f + 10.f, aParentPosition.y + myPosition.y - 10.f }, Prism::eTextType::RELEASE_TEXT);
+				Prism::Engine::GetInstance()->PrintText(myButtonText, { aParentPosition.x + myPosition.x - mySize.x * 0.5f + 40.f, aParentPosition.y + myPosition.y - 10.f }, Prism::eTextType::RELEASE_TEXT);
 			}
 
 			if (myImageCurrent == myImageHover && myHoverText != "")
