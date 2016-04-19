@@ -72,7 +72,7 @@ FirstPersonRenderComponent::FirstPersonRenderComponent(Entity& aEntity, Prism::S
 	myMarker = Prism::ModelLoader::GetInstance()->LoadSprite("Data/Resource/Texture/UI/T_marker.dds", size, size * 0.5f);
 	myIsDeadScreen = Prism::ModelLoader::GetInstance()->LoadSprite("Data/Resource/Texture/UI/T_dead_indicator.dds", damageSize, damageSize * 0.5f);
 
-	myHitmarker = Prism::ModelLoader::GetInstance()->LoadSprite("Data/Resource/Texture/UI/T_crosshair.dds", size * 0.85f, size * 0.5f * 0.85f);
+	myHitmarker = Prism::ModelLoader::GetInstance()->LoadSprite("Data/Resource/Texture/UI/T_hitmarker.dds", size, size * 0.5f);
 
 
 
