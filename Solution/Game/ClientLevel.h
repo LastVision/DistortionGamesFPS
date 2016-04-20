@@ -5,6 +5,9 @@
 #include <SharedLevel.h>
 #include "StateEnums.h"
 
+struct ID3D11RenderTargetView;
+struct ID3D11DepthStencilView;
+
 namespace Prism
 {
 	class Camera;
@@ -39,6 +42,8 @@ public:
 
 	void Update(const float aDeltaTime, bool aLoadingScreen) override;
 	void Render();
+	void Render(ID3D11RenderTargetView* aRenderTarget, ID3D11DepthStencilView* aDepthStencil);
+	void SetCamera(Prism::Camera* aCamera);
 	
 	Prism::Scene* GetScene();
 

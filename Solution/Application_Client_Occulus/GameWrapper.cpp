@@ -14,6 +14,18 @@
 #include <InputWrapper.h>
 #include <Camera.h>
 
+#include <XMLReader.h>
+#include <MathHelper.h>
+#include <PointLight.h>
+
+#include <ClientLevel.h>
+#include <ClientLevelFactory.h>
+
+#include <Cursor.h>
+#include <PostMaster.h>
+#include <AudioInterface.h>
+#include <ClientNetworkManager.h>
+
 GameWrapper::GameWrapper(float aHeight, float aWidth, ID3D11Device* aDevice, ID3D11DeviceContext* aContext)
 {
 	DL_Debug::Debug::Create();
@@ -23,6 +35,9 @@ GameWrapper::GameWrapper(float aHeight, float aWidth, ID3D11Device* aDevice, ID3
 
 GameWrapper::~GameWrapper()
 {
+	Prism::Audio::AudioInterface::Destroy();
+	PostMaster::Destroy();
+	ClientNetworkManager::Destroy();
 	Prism::Engine::Destroy();
 	DL_Debug::Debug::Destroy();
 }
@@ -47,6 +62,11 @@ void GameWrapper::Init()
 	CU::InputWrapper::Create(GetActiveWindow(), GetModuleHandle(NULL), DISCL_NONEXCLUSIVE
 		| DISCL_FOREGROUND, DISCL_NONEXCLUSIVE | DISCL_FOREGROUND);
 
+	Prism::Audio::AudioInterface::CreateInstance();
+	PostMaster::Create();
+	ClientNetworkManager::Create();
+
+	Prism::ModelLoader::GetInstance()->Pause();
 	myScene = new Prism::Scene();
 	myRenderer = new Prism::DeferredRenderer();
 	myCamera = new Prism::Camera(myPlayerMatrix);
@@ -74,19 +94,29 @@ void GameWrapper::Init()
 	myOrientations[0].SetPos(CU::Vector3<float>(1.5f, 0, 0));
 	myOrientations[1].SetPos(CU::Vector3<float>(0, 1.5f, 0));
 	myOrientations[2].SetPos(CU::Vector3<float>(0, 0, 1.5f));
-	myOrientations[3].SetPos(CU::Vector3<float>(0, 0, -1.5f));
+	myOrientations[3].SetPos(CU::Vector3<float>(0, 0, -1.f));
 
 	Prism::ModelProxy* test = Prism::ModelLoader::GetInstance()->LoadModel("Data/Resource/Model/Pickups/Healthpack/SM_health_pack.fbx", "Data/Resource/Shader/S_effect_pbl_deferred.fx");
 
 	Prism::ModelProxy* test2 = Prism::ModelLoader::GetInstance()->LoadModelAnimated("Data/Resource/Model/Enemy/SK_cyborg_3_idle.fbx", "Data/Resource/Shader/S_effect_pbl_animated.fx");
 	myAnimation = new Prism::Instance(*test2, myOrientations[3]);
 
-	while (test->IsLoaded() == false);
-
 	myScene->AddInstance(new Prism::Instance(*test, myOrientations[0]), eObjectRoomType::ALWAYS_RENDER);
 	myScene->AddInstance(new Prism::Instance(*test, myOrientations[1]), eObjectRoomType::ALWAYS_RENDER);
 	myScene->AddInstance(new Prism::Instance(*test, myOrientations[2]), eObjectRoomType::ALWAYS_RENDER);
 	myScene->AddInstance(myAnimation, eObjectRoomType::ALWAYS_RENDER);
+
+	LoadGym();
+	
+	myRenderer->SetCubeMap("level_01");
+	Prism::ModelLoader::GetInstance()->UnPause();
+	myCursor = new GUI::Cursor(Prism::Engine::GetInstance()->GetWindowSizeInt());;
+
+	myLevelFactory = new ClientLevelFactory("Data/Level/LI_level.xml");
+
+	eStateStatus status = eStateStatus::eKeepState;
+	myLevel = static_cast<ClientLevel*>(myLevelFactory->LoadLevel(0, myCursor, status));
+	myLevel->SetCamera(myCamera);
 }
 
 void GameWrapper::Update(float aDelta, const CU::Matrix44<float>& aView, const CU::Matrix44<float>& aProjection, const CU::Matrix44<float>& aViewProjection)
@@ -108,7 +138,8 @@ void GameWrapper::Render(const DirectX::XMMATRIX& aViewProjection, ID3D11RenderT
 	//	myModels[i]->RenderOcculus(myOrientations[i], ConvertMatrix(aViewProjection));
 	}
 
-	myRenderer->Render(myScene, aRenderTarget, aDepthStencil);
+	//myRenderer->Render(myScene, aRenderTarget, aDepthStencil);
+	myLevel->Render(aRenderTarget, aDepthStencil);
 }
 
 CU::Matrix44<float> GameWrapper::ConvertMatrix(const DirectX::XMMATRIX& aMatrix)
@@ -133,4 +164,124 @@ CU::Matrix44<float> GameWrapper::ConvertMatrix(const DirectX::XMMATRIX& aMatrix)
 	toReturn.myMatrix[15] = aMatrix.r[3].m128_f32[3];
 
 	return toReturn;
+}
+
+void GameWrapper::LoadGym()
+{
+	XMLReader reader;
+	reader.OpenDocument("Data/Level/Level_01/level_01_gymbana.xml");
+
+	tinyxml2::XMLElement* root = reader.ForceFindFirstChild("root");
+	tinyxml2::XMLElement* scene = reader.ForceFindFirstChild(root, "scene");
+
+	tinyxml2::XMLElement* prop = reader.ForceFindFirstChild(scene, "prop");
+	for (; prop != nullptr; prop = reader.FindNextElement(prop, "prop"))
+	{
+		std::string type;
+		reader.ForceReadAttribute(prop, "propType", type);
+
+		CU::Vector3<float> position;
+		CU::Vector3<float> rotation;
+		CU::Matrix44<float> orientation;
+
+		if (type.find("floor") != type.npos || type.find("wall") != type.npos || type.find("ceil") != type.npos)
+		{
+			reader.ForceReadAttribute(reader.ForceFindFirstChild(prop, "position"), "X", "Y", "Z", position);
+			reader.ForceReadAttribute(reader.ForceFindFirstChild(prop, "rotation"), "X", "Y", "Z", rotation);
+
+			rotation.x = CU::Math::DegreeToRad(rotation.x);
+			rotation.y = CU::Math::DegreeToRad(rotation.y);
+			rotation.z = CU::Math::DegreeToRad(rotation.z);
+
+			
+			orientation = orientation * CU::Matrix44f::CreateRotateAroundZ(rotation.z);
+			orientation = orientation * CU::Matrix44f::CreateRotateAroundX(rotation.x);
+			orientation = orientation * CU::Matrix44f::CreateRotateAroundY(rotation.y);
+			orientation.SetPos(position);
+			myOrientations.Add(orientation);
+		}
+
+		if (type.find("floor") != type.npos)
+		{
+			std::string model = "Data/Resource/Model/Modular_set/Dev_set/Floors/SM_dev_floor_200_x_200.fbx";
+			if (type.find("400_400") != type.npos)
+			{
+				model = "Data/Resource/Model/Modular_set/Dev_set/Floors/SM_dev_floor_400_400.fbx";
+			}
+
+			Prism::Instance* floor = new Prism::Instance(*Prism::ModelLoader::GetInstance()->LoadModel(model, "Data/Resource/Shader/S_effect_pbl_deferred.fx"), myOrientations.GetLast());
+			myScene->AddInstance(floor, eObjectRoomType::ALWAYS_RENDER);
+		}
+		else if (type.find("wall") != type.npos)
+		{
+			std::string model = "Data/Resource/Model/Modular_set/Dev_set/Walls/SM_dev_wall_100_x_400_L.fbx";
+			if (type.find("SM_dev_wall_100_x_400_R") != type.npos)
+			{
+				model = "Data/Resource/Model/Modular_set/Dev_set/Walls/SM_dev_wall_100_x_400_R.fbx";
+			}
+			else if (type.find("SM_dev_wall_200_x_300") != type.npos)
+			{
+				model = "Data/Resource/Model/Modular_set/Dev_set/Walls/SM_dev_wall_200_x_300.fbx";
+			}
+			else if (type.find("SM_dev_wall_200_x_400") != type.npos)
+			{
+				model = "Data/Resource/Model/Modular_set/Dev_set/Walls/SM_dev_wall_200_x_400.fbx";
+			}
+			else if (type.find("SM_dev_wall_400_x_400") != type.npos)
+			{
+				model = "Data/Resource/Model/Modular_set/Dev_set/Walls/SM_dev_wall_400_x_400.fbx";
+			}
+
+			Prism::Instance* wall = new Prism::Instance(*Prism::ModelLoader::GetInstance()->LoadModel(model, "Data/Resource/Shader/S_effect_pbl_deferred.fx"), myOrientations.GetLast());
+			myScene->AddInstance(wall, eObjectRoomType::ALWAYS_RENDER);
+		}
+		else if (type.find("ceil") != type.npos)
+		{
+			std::string model = "Data/Resource/Model/Modular_set/Dev_set/Ceilings/SM_dev_ceiling_100_200_b_.fbx";
+			if (type.find("dev_ceiling_100_200_l_") != type.npos)
+			{
+				model = "Data/Resource/Model/Modular_set/Dev_set/Ceilings/SM_dev_ceiling_100_200_l_.fbx";
+			}
+			else if (type.find("dev_ceiling_100_200_r_") != type.npos)
+			{
+				model = "Data/Resource/Model/Modular_set/Dev_set/Ceilings/SM_dev_ceiling_100_200_r_.fbx";
+			}
+			else if (type.find("dev_ceiling_100_200_t_") != type.npos)
+			{
+				model = "Data/Resource/Model/Modular_set/Dev_set/Ceilings/SM_dev_ceiling_100_200_t_.fbx";
+			}
+			else if (type.find("dev_ceiling_200_x_200") != type.npos)
+			{
+				model = "Data/Resource/Model/Modular_set/Dev_set/Ceilings/SM_dev_ceiling_200_x_200.fbx";
+			}
+			else if (type.find("dev_ceiling_400_400") != type.npos)
+			{
+				model = "Data/Resource/Model/Modular_set/Dev_set/Ceilings/SM_dev_ceiling_400_400.fbx";
+			}
+
+			Prism::Instance* ceiling = new Prism::Instance(*Prism::ModelLoader::GetInstance()->LoadModel(model, "Data/Resource/Shader/S_effect_pbl_deferred.fx"), myOrientations.GetLast());
+			myScene->AddInstance(ceiling, eObjectRoomType::ALWAYS_RENDER);
+		}
+	}
+
+	tinyxml2::XMLElement* pointlight = reader.FindFirstChild(scene, "pointlight");
+	for (; pointlight != nullptr; pointlight = reader.FindNextElement(pointlight, "pointlight"))
+	{
+		CU::Vector3<float> position;
+		CU::Vector4<float> color;
+		float range;
+
+		reader.ForceReadAttribute(reader.ForceFindFirstChild(pointlight, "position"), "X", "Y", "Z", position);
+		reader.ForceReadAttribute(reader.ForceFindFirstChild(pointlight, "color"), "R", "G", "B", "A", color);
+		reader.ForceReadAttribute(reader.ForceFindFirstChild(pointlight, "range"), "value", range);
+
+		Prism::PointLight* light = new Prism::PointLight(0, false);
+		light->SetPosition(position);
+		light->SetColor(color);
+		light->SetRange(range);
+		light->Update();
+		myScene->AddLight(light);
+	}
+
+	reader.CloseDocument();
 }

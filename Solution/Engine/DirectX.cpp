@@ -338,11 +338,11 @@ namespace Prism
 	{
 		////BackbuffeTexture
 		//mySwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (LPVOID*)&myBackbufferTexture);
-
+		//
 		////BackbufferRenderTarget
 		//myDevice->CreateRenderTargetView(myBackbufferTexture, NULL, &myBackbufferRenderTarget);
 		//myDevice->CreateShaderResourceView(myBackbufferTexture, NULL, &myBackbufferShaderResource);
-
+		//
 		//myContext->OMSetRenderTargets(1, &myBackbufferRenderTarget, NULL);
 
 

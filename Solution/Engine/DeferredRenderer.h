@@ -50,6 +50,7 @@ namespace Prism
 
 		ID3DX11EffectVectorVariable* mySHGridSizeVariable;
 		ID3DX11EffectVectorVariable* mySHGridOffsetVariable;
+		ID3DX11EffectVectorVariable* myCameraPositionVariable;
 
 		CU::Vector3<float> mySHGridSize;
 		CU::Vector3<float> mySHGridOffset;
@@ -70,6 +71,7 @@ namespace Prism
 		ID3DX11EffectVariable* myPointLightVariable;
 		ID3DX11EffectMatrixVariable* myInvertedProjection;
 		ID3DX11EffectMatrixVariable* myNotInvertedView;
+		ID3DX11EffectVectorVariable* myCameraPositionVariable;
 	};
 
 	struct SpotLightPass : public EffectListener
@@ -86,6 +88,7 @@ namespace Prism
 		ID3DX11EffectVariable* mySpotLightVariable;
 		ID3DX11EffectMatrixVariable* myInvertedProjection;
 		ID3DX11EffectMatrixVariable* myNotInvertedView;
+		ID3DX11EffectVectorVariable* myCameraPositionVariable;
 	};
 
 

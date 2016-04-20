@@ -63,7 +63,7 @@
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <WholeProgramOptimization>true</WholeProgramOptimization>
-    <CharacterSet>Unicode</CharacterSet>
+    <CharacterSet>MultiByte</CharacterSet>
     <PlatformToolset>v120</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
@@ -94,7 +94,8 @@
     <IntDir>$(SolutionDir)..\temp\$(ProjectName)\</IntDir>
     <OutDir>$(SolutionDir)..\Workbed\bin\</OutDir>
     <TargetName>$(ProjectName)_$(Configuration)</TargetName>
-    <IncludePath>$(SolutionDir)Game_Shared\;$(FBX_SDK_ROOT)\include\;$(SolutionDir)..\FBX\;$(SolutionDir)\Memory;$(SolutionDir)\Engine;$(SolutionDir)\DL_Debug;$(SolutionDir)\Game;$(SolutionDir)\CommonUtilities;$(SolutionDir)\Timer;$(SolutionDir)\PostMaster;$(SolutionDir)\Script;$(SolutionDir)\InputWrapper;$(SolutionDir)\..\VisualLeakDetector\;$(SolutionDir)\..\DirectX\Include;$(VTUNE_DIR)\include\;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)\Audio;$(SolutionDir)GUI\;$(SolutionDir)Network\;$(SolutionDir)Game_Shared\;$(FBX_SDK_ROOT)\include\;$(SolutionDir)..\FBX\;$(SolutionDir)\Memory;$(SolutionDir)\Engine;$(SolutionDir)\DL_Debug;$(SolutionDir)\Game;$(SolutionDir)\CommonUtilities;$(SolutionDir)\Timer;$(SolutionDir)\PostMaster;$(SolutionDir)\Script;$(SolutionDir)\InputWrapper;$(SolutionDir)\..\VisualLeakDetector\;$(SolutionDir)\..\DirectX\Include;$(VTUNE_DIR)\include\;$(IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir)..\Libs3rdParty\;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
@@ -106,7 +107,8 @@
     <IntDir>$(SolutionDir)..\temp\$(ProjectName)\</IntDir>
     <OutDir>$(SolutionDir)..\Workbed\bin\</OutDir>
     <TargetName>$(ProjectName)_$(Configuration)</TargetName>
-    <IncludePath>$(SolutionDir)Game_Shared\;$(FBX_SDK_ROOT)\include\;$(SolutionDir)..\FBX\;$(SolutionDir)\Memory;$(SolutionDir)\Engine;$(SolutionDir)\DL_Debug;$(SolutionDir)\Game;$(SolutionDir)\CommonUtilities;$(SolutionDir)\Timer;$(SolutionDir)\PostMaster;$(SolutionDir)\Script;$(SolutionDir)\InputWrapper;$(SolutionDir)\..\VisualLeakDetector\;$(SolutionDir)\..\DirectX\Include;$(VTUNE_DIR)\include\;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)\Audio;$(SolutionDir)GUI\;$(SolutionDir)Network\;$(SolutionDir)Game_Shared\;$(FBX_SDK_ROOT)\include\;$(SolutionDir)..\FBX\;$(SolutionDir)\Memory;$(SolutionDir)\Engine;$(SolutionDir)\DL_Debug;$(SolutionDir)\Game;$(SolutionDir)\CommonUtilities;$(SolutionDir)\Timer;$(SolutionDir)\PostMaster;$(SolutionDir)\Script;$(SolutionDir)\InputWrapper;$(SolutionDir)\..\VisualLeakDetector\;$(SolutionDir)\..\DirectX\Include;$(VTUNE_DIR)\include\;$(IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir)..\Libs3rdParty\;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>

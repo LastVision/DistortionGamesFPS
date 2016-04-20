@@ -12,12 +12,20 @@ struct ID3D11Device;
 struct ID3D11RenderTargetView;
 struct ID3D11DepthStencilView;
 
+class ClientLevel;
+class ClientLevelFactory;
+
 namespace Prism
 {
 	class Camera;
 	class DeferredRenderer;
 	class Scene;
 	class Instance;
+}
+
+namespace GUI
+{
+	class Cursor;
 }
 
 class GameWrapper
@@ -38,6 +46,12 @@ public:
 	CU::Matrix44<float> ConvertMatrix(const DirectX::XMMATRIX& aMatrix);
 
 private:
+	void LoadGym();
+
+	ClientLevel* myLevel;
+	ClientLevelFactory* myLevelFactory;
+	GUI::Cursor* myCursor;
+
 	CU::GrowingArray<CU::Matrix44<float>> myOrientations;
 	CU::GrowingArray<Prism::Model*> myModels;
 
@@ -48,5 +62,6 @@ private:
 	CU::Matrix44<float> myPlayerMatrix;
 
 	Prism::Instance* myAnimation;
+
 };
 

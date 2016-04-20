@@ -121,7 +121,8 @@ namespace Prism
 	void Scene::AddInstance(Instance* aInstance, eObjectRoomType aRoomType)
 	{
 		DL_ASSERT_EXP(myRoomManager != nullptr, "No Room manager");
-		myRoomManager->Add(aInstance, aRoomType);
+		//myRoomManager->Add(aInstance, aRoomType);
+		myRoomManager->Add(aInstance, eObjectRoomType::ALWAYS_RENDER);
 	}
 
 	void Scene::AddLight(DirectionalLight* aLight)
@@ -187,7 +188,7 @@ namespace Prism
 
 	const CU::GrowingArray<PointLight*>& Scene::GetPointLights(bool aUseRoomManager) const
 	{
-		//return myPointLights;
+		return myPointLights;
 		//return myActivePointLights;
 		if (aUseRoomManager == true)
 		{

@@ -177,7 +177,10 @@ static bool MainLoop(bool retryCreate)
 
 	// Create camera
 	//mainCam = new Camera(&XMVectorSet(0.0f, 1.6f, 5.0f, 0), &XMQuaternionIdentity());
-	mainCam = new Camera(&XMVectorSet(0.0f, 0.f, 0.f, 0), &XMQuaternionIdentity());
+	//mainCam = new Camera(&XMVectorSet(86.0f, 2.f, -57.f, 0), &XMQuaternionIdentity());
+	//mainCam = new Camera(&XMVectorSet(-2.f, 2.f, 11.f, 0), &XMQuaternionIdentity());
+	mainCam = new Camera(&XMVectorSet(0.f, 2.f, 0.f, 0), &XMQuaternionIdentity());
+
 
 	// Setup VR components, filling out description
 	ovrEyeRenderDesc eyeRenderDesc[2];
@@ -189,29 +192,45 @@ static bool MainLoop(bool retryCreate)
 	// Main loop
 	while (DIRECTX.HandleMessages())
 	{
-		XMVECTOR forward = XMVector3Rotate(XMVectorSet(0, 0, -0.05f, 0), mainCam->Rot);
-		XMVECTOR right   = XMVector3Rotate(XMVectorSet(0.05f, 0, 0, 0),  mainCam->Rot);
+		// Get both eye poses simultaneously, with IPD offset already included. 
+		ovrPosef         EyeRenderPose[2];
+		ovrVector3f      HmdToEyeViewOffset[2] = { eyeRenderDesc[0].HmdToEyeViewOffset,
+			eyeRenderDesc[1].HmdToEyeViewOffset };
+		double frameTime = ovr_GetPredictedDisplayTime(HMD, 0);
+		// Keeping sensorSampleTime as close to ovr_GetTrackingState as possible - fed into the layer
+		double           sensorSampleTime = ovr_GetTimeInSeconds();
+		ovrTrackingState hmdState = ovr_GetTrackingState(HMD, frameTime, ovrTrue);
+		ovr_CalcEyePoses(hmdState.HeadPose.ThePose, HmdToEyeViewOffset, EyeRenderPose);
+
+
+		float speed = 0.05f;
+		if (DIRECTX.Key[VK_SHIFT])
+		{
+			speed = 0.5f;
+		}
+
+		XMVECTOR headQuat = XMVectorSet(hmdState.HeadPose.ThePose.Orientation.x, hmdState.HeadPose.ThePose.Orientation.y,
+			hmdState.HeadPose.ThePose.Orientation.z, hmdState.HeadPose.ThePose.Orientation.w);
+
+		/*XMVECTOR forward = XMVector3Rotate(XMVectorSet(0, 0, -speed, 0), mainCam->Rot);
+		XMVECTOR right = XMVector3Rotate(XMVectorSet(speed, 0, 0, 0), mainCam->Rot);
+		XMVECTOR up = XMVector3Rotate(XMVectorSet(0, speed, 0, 0), mainCam->Rot);*/
+
+		XMVECTOR forward = XMVector3Rotate(XMVectorSet(0, 0, -speed, 0), headQuat);
+		XMVECTOR right = XMVector3Rotate(XMVectorSet(speed, 0, 0, 0), headQuat);
+		XMVECTOR up = XMVector3Rotate(XMVectorSet(0, speed, 0, 0), headQuat);
 		if (DIRECTX.Key['W'] || DIRECTX.Key[VK_UP])	  mainCam->Pos = XMVectorAdd(mainCam->Pos, forward);
 		if (DIRECTX.Key['S'] || DIRECTX.Key[VK_DOWN]) mainCam->Pos = XMVectorSubtract(mainCam->Pos, forward);
 		if (DIRECTX.Key['D'])                         mainCam->Pos = XMVectorAdd(mainCam->Pos, right);
 		if (DIRECTX.Key['A'])                         mainCam->Pos = XMVectorSubtract(mainCam->Pos, right);
+		if (DIRECTX.Key['Q'])                         mainCam->Pos = XMVectorAdd(mainCam->Pos, up);
+		if (DIRECTX.Key['E'])                         mainCam->Pos = XMVectorSubtract(mainCam->Pos, up);
 		static float Yaw = 0;
 		if (DIRECTX.Key[VK_LEFT])  mainCam->Rot = XMQuaternionRotationRollPitchYaw(0, Yaw += 0.02f, 0);
 		if (DIRECTX.Key[VK_RIGHT]) mainCam->Rot = XMQuaternionRotationRollPitchYaw(0, Yaw -= 0.02f, 0);
 
-		// Animate the cube
-		static float cubeClock = 0;
-		roomScene->Models[0]->Pos = XMFLOAT3(9 * sin(cubeClock), 3, 9 * cos(cubeClock += 0.015f));
 
-		// Get both eye poses simultaneously, with IPD offset already included. 
-		ovrPosef         EyeRenderPose[2];
-		ovrVector3f      HmdToEyeViewOffset[2] = { eyeRenderDesc[0].HmdToEyeViewOffset,
-			                                       eyeRenderDesc[1].HmdToEyeViewOffset };
-        double frameTime = ovr_GetPredictedDisplayTime(HMD, 0);
-        // Keeping sensorSampleTime as close to ovr_GetTrackingState as possible - fed into the layer
-        double           sensorSampleTime = ovr_GetTimeInSeconds();
-		ovrTrackingState hmdState = ovr_GetTrackingState(HMD, frameTime, ovrTrue);
-		ovr_CalcEyePoses(hmdState.HeadPose.ThePose, HmdToEyeViewOffset, EyeRenderPose);
+		
 
 		// Render Scene to Eye Buffers
         if (isVisible)

@@ -38,6 +38,7 @@ namespace Prism
 
 		mySHGridSizeVariable = myEffect->GetEffect()->GetVariableByName("SHGridSize")->AsVector();
 		mySHGridOffsetVariable = myEffect->GetEffect()->GetVariableByName("SHGridOffset")->AsVector();
+		myCameraPositionVariable = myEffect->GetEffect()->GetVariableByName("cameraPosition")->AsVector();
 
 		myInvertedProjection = myEffect->GetEffect()->GetVariableByName("InvertedProjection")->AsMatrix();
 		myNotInvertedView = myEffect->GetEffect()->GetVariableByName("NotInvertedView")->AsMatrix();
@@ -62,6 +63,8 @@ namespace Prism
 
 		myInvertedProjection = myEffect->GetEffect()->GetVariableByName("InvertedProjection")->AsMatrix();
 		myNotInvertedView = myEffect->GetEffect()->GetVariableByName("NotInvertedView")->AsMatrix();
+
+		myCameraPositionVariable = myEffect->GetEffect()->GetVariableByName("cameraPosition")->AsVector();
 	}
 
 	void SpotLightPass::OnEffectLoad()
@@ -76,6 +79,8 @@ namespace Prism
 
 		myInvertedProjection = myEffect->GetEffect()->GetVariableByName("InvertedProjection")->AsMatrix();
 		myNotInvertedView = myEffect->GetEffect()->GetVariableByName("NotInvertedView")->AsMatrix();
+
+		myCameraPositionVariable = myEffect->GetEffect()->GetVariableByName("cameraPosition")->AsVector();
 	}
 
 	DeferredRenderer::DeferredRenderer()
@@ -395,7 +400,7 @@ namespace Prism
 	{
 		const Camera& camera = *aScene->GetCamera();
 
-		Engine::GetInstance()->RestoreViewPort();
+		//Engine::GetInstance()->RestoreViewPort();
 		SetPointLightData(camera);
 
 		const CU::GrowingArray<PointLight*>& lights = aScene->GetPointLights(aUseRoomManager);
@@ -476,10 +481,13 @@ namespace Prism
 		SetAmbientData(false);
 		myAmbientPass.myEffect->SetCameraPosition(aScene->GetCamera()->GetOrientation().GetPos());
 		myAmbientPass.myInvertedProjection->SetMatrix(&CU::InverseReal(aScene->GetCamera()->GetProjection()).myMatrix[0]);
-		myAmbientPass.myNotInvertedView->SetMatrix(&aScene->GetCamera()->GetOrientation().myMatrix[0]);
+		myAmbientPass.myNotInvertedView->SetMatrix(&CU::InverseReal(aScene->GetCamera()->GetOrientation()).myMatrix[0]);
 
 		myAmbientPass.mySHGridSizeVariable->SetFloatVector(&myAmbientPass.mySHGridSize.x);
 		myAmbientPass.mySHGridOffsetVariable->SetFloatVector(&myAmbientPass.mySHGridOffset.x);
+
+		CU::Vector3<float> cameraPos = aScene->GetCamera()->GetOrientation().GetPos();
+		myAmbientPass.myCameraPositionVariable->SetFloatVector(&cameraPos.x);
 		
 		if (GC::EnableCheapAmbient == true)
 		{
@@ -487,7 +495,9 @@ namespace Prism
 		}
 		else
 		{
-			Render(myAmbientPass.myEffect);
+			Render(myAmbientPass.myEffect, "Render_Cheap");
+
+			//Render(myAmbientPass.myEffect);
 		}
 
 		SetAmbientData(true);
@@ -501,7 +511,7 @@ namespace Prism
 			myAmbientPass.myNormal->SetResource(myGBufferData.myNormalTexture->GetShaderView());
 			myAmbientPass.myEmissive->SetResource(myGBufferData.myEmissiveTexture->GetShaderView());
 			myAmbientPass.myDepth->SetResource(myGBufferData.myDepthTexture->GetShaderView());
-			//myAmbientPass.myCubemap->SetResource(myCubemap->GetShaderView());
+			myAmbientPass.myCubemap->SetResource(myCubemap->GetShaderView());
 			myAmbientPass.mySSAORandomTextureVariable->SetResource(myAmbientPass.mySSAORandomTexture->GetShaderView());
 
 			//myAmbientPass.mycAr->SetResource(mySHTextures.cAr->GetShaderView());
@@ -618,9 +628,12 @@ namespace Prism
 		myPointLightPass.myNormal->SetResource(myGBufferData.myNormalTexture->GetShaderView());
 		//myPointLightPass.myEmissive->SetResource(myGBufferData.myEmissiveTexture->GetShaderView());
 		myPointLightPass.myDepth->SetResource(myGBufferData.myDepthTexture->GetShaderView());
-		//myPointLightPass.myCubemap->SetResource(myCubemap->GetShaderView());
+		myPointLightPass.myCubemap->SetResource(myCubemap->GetShaderView());
 		myPointLightPass.myInvertedProjection->SetMatrix(&CU::InverseReal(aCamera.GetProjection()).myMatrix[0]);
-		myPointLightPass.myNotInvertedView->SetMatrix(&aCamera.GetOrientation().myMatrix[0]);
+		myPointLightPass.myNotInvertedView->SetMatrix(&CU::InverseReal(aCamera.GetOrientation()).myMatrix[0]);
+
+		CU::Vector3<float> cameraPos = aCamera.GetOrientation().GetPos();
+		myPointLightPass.myCameraPositionVariable->SetFloatVector(&cameraPos.x);
 	}
 
 	void DeferredRenderer::RemovePointLightData()
@@ -637,9 +650,12 @@ namespace Prism
 		mySpotLightPass.myNormal->SetResource(myGBufferData.myNormalTexture->GetShaderView());
 		//mySpotLightPass.myEmissive->SetResource(myGBufferData.myEmissiveTexture->GetShaderView());
 		mySpotLightPass.myDepth->SetResource(myGBufferData.myDepthTexture->GetShaderView());
-		//mySpotLightPass.myCubemap->SetResource(myCubemap->GetShaderView());
+		mySpotLightPass.myCubemap->SetResource(myCubemap->GetShaderView());
 		mySpotLightPass.myInvertedProjection->SetMatrix(&CU::InverseReal(aCamera.GetProjection()).myMatrix[0]);
 		mySpotLightPass.myNotInvertedView->SetMatrix(&aCamera.GetOrientation().myMatrix[0]);
+
+		CU::Vector3<float> cameraPos = aCamera.GetOrientation().GetPos();
+		mySpotLightPass.myCameraPositionVariable->SetFloatVector(&cameraPos.x);
 	}
 
 	void DeferredRenderer::RemoveSpotLightData()
@@ -656,9 +672,12 @@ namespace Prism
 		mySpotLightTextureProjectionPass.myNormal->SetResource(myGBufferData.myNormalTexture->GetShaderView());
 		//mySpotLightTextureProjectionPass.myEmissive->SetResource(myGBufferData.myEmissiveTexture->GetShaderView());
 		mySpotLightTextureProjectionPass.myDepth->SetResource(myGBufferData.myDepthTexture->GetShaderView());
-		//mySpotLightTextureProjectionPass.myCubemap->SetResource(myCubemap->GetShaderView());
+		mySpotLightTextureProjectionPass.myCubemap->SetResource(myCubemap->GetShaderView());
 		mySpotLightTextureProjectionPass.myInvertedProjection->SetMatrix(&CU::InverseReal(aCamera.GetProjection()).myMatrix[0]);
 		mySpotLightTextureProjectionPass.myNotInvertedView->SetMatrix(&aCamera.GetOrientation().myMatrix[0]);
+
+		CU::Vector3<float> cameraPos = aCamera.GetOrientation().GetPos();
+		mySpotLightTextureProjectionPass.myCameraPositionVariable->SetFloatVector(&cameraPos.x);
 	}
 
 	void DeferredRenderer::RemoveSpotLightTextureProjectionData()

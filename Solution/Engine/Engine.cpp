@@ -378,6 +378,9 @@ namespace Prism
 
 		myModelLoaderThread = new std::thread(&ModelLoader::Run, ModelLoader::GetInstance());
 		myModelLoaderThreadID = myModelLoaderThread->get_id();
+
+		myDialogueFont = ModelLoader::GetInstance()->LoadFont("Data/Resource/Font/debugText.txt", { 256, 256 });
+		myConsoleFont = ModelLoader::GetInstance()->LoadFont("Data/Resource/Font/consolab.ttf_sdf.txt", { 256, 256 });
 		return true;
 	}
 
