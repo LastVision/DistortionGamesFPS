@@ -427,7 +427,7 @@ namespace Prism
 
 
 		desc.FillMode = D3D11_FILL_SOLID;
-		desc.CullMode = D3D11_CULL_BACK;
+		desc.CullMode = D3D11_CULL_NONE;
 		myDevice->CreateRasterizerState(&desc, &myRasterizerStates[static_cast<int>(eRasterizer::CULL_BACK)]);
 
 		desc.FillMode = D3D11_FILL_SOLID;

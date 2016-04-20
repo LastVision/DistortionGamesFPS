@@ -257,7 +257,7 @@ static bool MainLoop(bool retryCreate)
 			    XMVECTOR CombinedPos = XMVectorAdd(mainCam->Pos, XMVector3Rotate(eyePos, mainCam->Rot));
 			    Camera finalCam(&CombinedPos, &(XMQuaternionMultiply(eyeQuat,mainCam->Rot)));
 			    XMMATRIX view = finalCam.GetViewMatrix();
-			    ovrMatrix4f p = ovrMatrix4f_Projection(eyeRenderDesc[eye].Fov, 0.2f, 1000.0f, ovrProjection_RightHanded);
+			    ovrMatrix4f p = ovrMatrix4f_Projection(eyeRenderDesc[eye].Fov, 0.2f, 1000.0f, ovrProjection_RightHanded); //ovrProjection_RightHanded
 			    XMMATRIX proj = XMMatrixSet(p.M[0][0], p.M[1][0], p.M[2][0], p.M[3][0],
 				                            p.M[0][1], p.M[1][1], p.M[2][1], p.M[3][1],
 				                            p.M[0][2], p.M[1][2], p.M[2][2], p.M[3][2],

@@ -146,10 +146,10 @@ CU::Matrix44<float> GameWrapper::ConvertMatrix(const DirectX::XMMATRIX& aMatrix)
 {
 	CU::Matrix44<float> toReturn;
 
-	toReturn.myMatrix[0] = -aMatrix.r[0].m128_f32[0];
-	toReturn.myMatrix[1] = -aMatrix.r[0].m128_f32[1];
-	toReturn.myMatrix[2] = -aMatrix.r[0].m128_f32[2];
-	toReturn.myMatrix[3] = -aMatrix.r[0].m128_f32[3];
+	toReturn.myMatrix[0] = aMatrix.r[0].m128_f32[0];
+	toReturn.myMatrix[1] = aMatrix.r[0].m128_f32[1];
+	toReturn.myMatrix[2] = aMatrix.r[0].m128_f32[2];
+	toReturn.myMatrix[3] = aMatrix.r[0].m128_f32[3];
 	toReturn.myMatrix[4] = aMatrix.r[1].m128_f32[0];
 	toReturn.myMatrix[5] = aMatrix.r[1].m128_f32[1];
 	toReturn.myMatrix[6] = aMatrix.r[1].m128_f32[2];
