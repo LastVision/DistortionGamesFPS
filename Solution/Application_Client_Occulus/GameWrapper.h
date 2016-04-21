@@ -14,6 +14,7 @@ struct ID3D11DepthStencilView;
 
 class ClientLevel;
 class ClientLevelFactory;
+class ClientGame;
 
 namespace Prism
 {
@@ -46,22 +47,13 @@ public:
 	CU::Matrix44<float> ConvertMatrix(const DirectX::XMMATRIX& aMatrix);
 
 private:
-	void LoadGym();
+	ClientGame* myGame;
 
 	ClientLevel* myLevel;
 	ClientLevelFactory* myLevelFactory;
 	GUI::Cursor* myCursor;
 
-	CU::GrowingArray<CU::Matrix44<float>> myOrientations;
-	CU::GrowingArray<Prism::Model*> myModels;
-
-	Prism::Scene* myScene;
-	Prism::DeferredRenderer* myRenderer;
 	Prism::Camera* myCamera;
-	CU::Matrix44<float> myTestOrientation;
 	CU::Matrix44<float> myPlayerMatrix;
-
-	Prism::Instance* myAnimation;
-
 };
 
