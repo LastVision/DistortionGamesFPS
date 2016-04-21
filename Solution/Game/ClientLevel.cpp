@@ -298,6 +298,7 @@ void ClientLevel::Update(const float aDeltaTime, bool aLoadingScreen)
 
 	myVisualExplosion->Update(aDeltaTime);
 	myEmitterManager->UpdateEmitters(aDeltaTime, CU::Matrix44f());
+
 	myTextManager->Update(aDeltaTime);
 
 	int enemiesInPlayerRange = ClientUnitManager::GetInstance()->GetUnitsInPlayerRange(myPlayer->GetOrientation().GetPos());

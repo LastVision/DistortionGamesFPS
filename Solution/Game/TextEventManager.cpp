@@ -10,17 +10,18 @@
 #include "TextEventManager.h"
 #include <TextProxy.h>
 
+#include <InputWrapper.h>
 TextEventManager::TextEventManager(const Prism::Camera* aCamera)
 	: myCamera(aCamera)
 	, myTextStartFadingTime(1.f)
 {
 	myNotifications.Init(8);
-	myStartOffset = { -1.f, 1.f, 2.f };
+	myStartOffset = { -0.596469f, 1.f, -2.f };
 	for (int i = 0; i < myNotifications.GetCapacity(); i++)
 	{
 		NotificationText* notification = new NotificationText;
 		notification->my3dText = Prism::ModelLoader::GetInstance()->LoadText(Prism::Engine::GetInstance()->GetFont(Prism::eFont::DIALOGUE), true, true);
-		notification->my3dText->Rotate3dText(-0.8f);
+		notification->my3dText->Rotate3dText(-2.338453f);
 		notification->my3dText->SetOffset(myStartOffset);
 		notification->myCurrentText = "";
 		notification->myRemainingText = "";
@@ -34,7 +35,7 @@ TextEventManager::TextEventManager(const Prism::Camera* aCamera)
 	myMissionOffset.z += 0.5f;
 	myMissionOffset.y -= 0.1f;
 	myMissionText = Prism::ModelLoader::GetInstance()->LoadText(Prism::Engine::GetInstance()->GetFont(Prism::eFont::DIALOGUE), true, true);
-	myMissionText->Rotate3dText(0.8f);
+	myMissionText->Rotate3dText(-0.8f);
 	myMissionText->SetOffset(myMissionOffset);
 	myMissionText->SetText("");
 
@@ -43,7 +44,7 @@ TextEventManager::TextEventManager(const Prism::Camera* aCamera)
 	myRespawnOffset.z += 0.5f;
 	myRespawnOffset.y -= 0.3f;
 	myRespawnText = Prism::ModelLoader::GetInstance()->LoadText(Prism::Engine::GetInstance()->GetFont(Prism::eFont::DIALOGUE), true, true);
-	myRespawnText->Rotate3dText(0.8f);
+	myRespawnText->Rotate3dText(-0.8f);
 	myRespawnText->SetOffset(myRespawnOffset);
 	myRespawnText->SetText("");
 
@@ -147,7 +148,7 @@ void TextEventManager::Render()
 			myNotifications[i]->my3dText->SetColor(myNotifications[i]->myColor);
 			myNotifications[i]->my3dText->Render(myCamera);
 
-			pos3d.y -= 0.15f * (myNotifications[i]->myTextRows + 1);
+			pos3d.y -= 0.3f * (myNotifications[i]->myTextRows + 1);
 		}
 	}
 

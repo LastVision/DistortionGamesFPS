@@ -102,16 +102,16 @@ void Prism::Text::Render(const Camera* aCamera, const CU::Matrix44<float>& aOrie
 	myEffect->SetBlendState(myBlendState, blendFactor);
 	if (myShouldFollowCamera == true)
 	{
-		myEffect->SetWorldMatrix(aOrientation * aCamera->GetOrientation());
+		myEffect->SetWorldMatrix(aOrientation * CU::InverseSimple(aCamera->GetOrientation()));
 	}
 	else
 	{
 		myEffect->SetWorldMatrix(aOrientation);
 	}
-	myEffect->SetViewMatrix(CU::InverseSimple(aCamera->GetOrientation()));
+	myEffect->SetViewMatrix((aCamera->GetOrientation()));
 	myEffect->SetProjectionMatrix(aCamera->GetProjection());
 	myEffect->SetViewProjectionMatrix(aCamera->GetViewProjection());
-	myEffect->SetPosAndScale({ 0.f, 0.f }, { 200.f, 200.f });
+	myEffect->SetPosAndScale({ 0.f, 0.f }, { 100.f, 100.f });
 	myEffect->SetColor(aColor);
 
 	BaseModel::Render();

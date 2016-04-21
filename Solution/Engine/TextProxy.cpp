@@ -39,6 +39,14 @@ namespace Prism
 		my3DOrientation.SetPos(oldPos);
 	}
 
+
+	void TextProxy::SetRotatation3dText(float aRadians)
+	{
+		CU::Vector3<float> oldPos = my3DOrientation.GetPos();
+		my3DOrientation = CU::Matrix44<float>::CreateRotateAroundY(aRadians);
+		my3DOrientation.SetPos(oldPos);
+	}
+
 	void TextProxy::SetText(const std::string& aText)
 	{
 		myString = aText;

@@ -14,6 +14,7 @@ namespace Prism
 		void SetPosition(const CU::Vector2<float>& aPosition);
 		void SetOffset(const CU::Vector3<float>& aOffset);
 		void Rotate3dText(float aRadians);
+		void SetRotatation3dText(float aRadians);
 		void SetText(const std::string& aText);
 		void SetColor(const CU::Vector4<float>& aColor);
 		void Render();
