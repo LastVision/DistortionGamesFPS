@@ -159,6 +159,8 @@ void InputComponent::Update(float aDelta)
 
 	myCamera->Update(aDelta);
 
+	myEyeOrientation = GC::OcculusOrientation;
+	myEyeOrientation.SetPos(GC::CameraOrientation.GetPos());
 	myMovementOrientation = GC::OcculusOrientation;
 	//GC::CameraOrientation = myOrientation *GC::OcculusOrientation;
 }

@@ -54,6 +54,7 @@ void ShootingComponent::Update(float aDelta)
 	if (myIsInOptionsMenu == false && myEntity.GetState() != eEntityState::DIE)
 	{
 		CU::Matrix44<float> aOrientation = myEntity.GetComponent<InputComponent>()->GetEyeOrientation();
+		
 		if (CU::InputWrapper::GetInstance()->KeyDown(DIK_1) == true)
 		{
 			if (myCurrentWeapon != myPistol)
@@ -144,6 +145,8 @@ void ShootingComponent::Update(float aDelta)
 			}
 		}
 	}
+
+	
 	myPistol->Update(aDelta);
 	myGrenadeLauncher->Update(aDelta);
 	myShotgun->Update(aDelta);

@@ -124,17 +124,18 @@ bool ClientGame::Update()
 
 	if (myLockMouse == true)
 	{
-		//SetCursorPos(Prism::Engine::GetInstance()->GetWindowSize().x / 2, Prism::Engine::GetInstance()->GetWindowSize().y / 2);
-		RECT windowRect;
-		GetWindowRect(*myWindowHandler, &windowRect);
-		if (Prism::Engine::GetInstance()->IsFullscreen() == false)
-		{
-			windowRect.left += 10;
-			windowRect.top += 35;
-			windowRect.right -= 10;
-			windowRect.bottom -= 10;
-		}
-		ClipCursor(&windowRect);
+		SetCursorPos(Prism::Engine::GetInstance()->GetWindowSize().x / 8, Prism::Engine::GetInstance()->GetWindowSize().y / 8);
+		//RECT windowRect;
+		//GetWindowRect(*myWindowHandler, &windowRect);
+		//if (Prism::Engine::GetInstance()->IsFullscreen() == false)
+		//{
+		//	windowRect.left += 10;
+		//	windowRect.top += 35;
+		//	windowRect.right -= 10;
+		//	windowRect.bottom -= 10;
+		//}
+		//
+		//ClipCursor(&windowRect);
 	}
 
 	if (myStateStack.UpdateCurrentState(deltaTime) == false)

@@ -95,9 +95,9 @@ void Pistol::Init(std::string aWeaponSettingsPath, std::string aXMLTagName)
 
 bool Pistol::Shoot(const CU::Matrix44<float>& aOrientation)
 {
-	if (myAmmoInClip > 0 && myShootTimer <= 0.f)
+	//if (myAmmoInClip > 0 && myShootTimer <= 0.f)
 	{
-		CU::Vector3<float> forward = CU::Vector3<float>(0, 0, 1.f)
+		CU::Vector3<float> forward = CU::Vector3<float>(0, 0, -1.f)
 			* (CU::Matrix44<float>::CreateRotateAroundX(CU::Math::RandomRange(myMinSpreadRotation, myMaxSpreadRotation))
 			* aOrientation);
 		forward = forward * CU::Matrix44<float>::CreateRotateAroundY(CU::Math::RandomRange(myMinSpreadRotation, myMaxSpreadRotation));
@@ -114,7 +114,7 @@ bool Pistol::Shoot(const CU::Matrix44<float>& aOrientation)
 			, forward, int(eNetRayCastType::CLIENT_SHOOT_PISTOL), 500.f, myOwnerEntity->GetGID()));
 		return true;
 	}
-	else if (myShootTimer <= 0.f)
+	/*else if (myShootTimer <= 0.f)
 	{
 		Prism::Audio::AudioInterface::GetInstance()->PostEvent("Play_NoAmmo", 0);
 		myShootTimer = myShootTime;
@@ -127,7 +127,7 @@ bool Pistol::Shoot(const CU::Matrix44<float>& aOrientation)
 			PostMaster::GetInstance()->SendMessage(PrintTextMessage("Clip empty", 1.f, { 0.7f, 0.2f, 0.2f, 1.f }));
 		}
 
-	}
+	}*/
 	return false;
 }
 
