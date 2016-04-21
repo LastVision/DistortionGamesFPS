@@ -37,6 +37,8 @@ namespace Prism
 
 		Effect* oldEffect = nullptr;
 
+		//Engine::GetInstance()->SetRasterizeState(eRasterizer::WIRE_FRAME);
+
 		for each (Model* model in myModels)
 		{
 			CU::GrowingArray<CU::Matrix44<float>>& matrices = model->myMatrices;

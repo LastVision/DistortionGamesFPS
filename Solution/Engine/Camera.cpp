@@ -120,7 +120,8 @@ namespace Prism
 			RotateZ(myCurrentShake * aDeltaTime);
 		}
 
-		//myViewProjectionMatrix = CU::InverseSimple(myOrientation) * myProjectionMatrix;
+		myViewProjectionMatrix = (myOrientation) * myProjectionMatrix;
+		GC::ViewProjection = myViewProjectionMatrix;
 		mySpecialFoVOrientation = myOrientation;
 		CU::Vector3<float> specialPos(mySpecialFoVOrientation.GetPos());
 		specialPos -= mySpecialFoVOrientation.GetForward() * 0.375f;

@@ -56,7 +56,7 @@ bool GrenadeLauncher::Shoot(const CU::Matrix44<float>&)
 		//Skicka grenademessage(aOrientation.GetForward());
 		
 		SharedNetworkManager::GetInstance()->AddMessage<NetMessageShootGrenade>(NetMessageShootGrenade(int(myForceStrength)
-			, myOwnerEntity->GetGID(), myOwnerEntity->GetComponent<InputComponent>()->GetEyeOrientation().GetForward()));
+			, myOwnerEntity->GetGID(), -myOwnerEntity->GetComponent<InputComponent>()->GetEyeOrientation().GetForward()));
 
 		Prism::Audio::AudioInterface::GetInstance()->PostEvent("Play_GrenadeLauncher", 0);
 

@@ -95,7 +95,7 @@ void Pistol::Init(std::string aWeaponSettingsPath, std::string aXMLTagName)
 
 bool Pistol::Shoot(const CU::Matrix44<float>& aOrientation)
 {
-	//if (myAmmoInClip > 0 && myShootTimer <= 0.f)
+	if (myAmmoInClip > 0 && myShootTimer <= 0.f)
 	{
 		CU::Vector3<float> forward = CU::Vector3<float>(0, 0, -1.f)
 			* (CU::Matrix44<float>::CreateRotateAroundX(CU::Math::RandomRange(myMinSpreadRotation, myMaxSpreadRotation))

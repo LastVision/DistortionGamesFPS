@@ -98,9 +98,9 @@ bool Shotgun::Shoot(const CU::Matrix44<float>& aOrientation)
 {
 	if (myAmmoInClip > 0 && myShootTimer <= 0.f)
 	{
-		ShootRowAround(aOrientation, CU::Vector3<float>(0, 0, 1.f) * (CU::Matrix44<float>::CreateRotateAroundX(CU::Math::RandomRange(-myMaxSpreadRotation, -myMinSpreadRotation)) * aOrientation));
+		ShootRowAround(aOrientation, CU::Vector3<float>(0, 0, -1.f) * (CU::Matrix44<float>::CreateRotateAroundX(CU::Math::RandomRange(-myMaxSpreadRotation, -myMinSpreadRotation)) * aOrientation));
 		ShootRowAround(aOrientation, aOrientation.GetForward());
-		ShootRowAround(aOrientation, CU::Vector3<float>(0, 0, 1.f) * (CU::Matrix44<float>::CreateRotateAroundX(CU::Math::RandomRange(myMinSpreadRotation, myMaxSpreadRotation)) * aOrientation));
+		ShootRowAround(aOrientation, CU::Vector3<float>(0, 0, -1.f) * (CU::Matrix44<float>::CreateRotateAroundX(CU::Math::RandomRange(myMinSpreadRotation, myMaxSpreadRotation)) * aOrientation));
 		myAmmoInClip -= 1;
 		myShootTimer = myShootTime;
 		myMuzzleflashTimer = 0.2f;

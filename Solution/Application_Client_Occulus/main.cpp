@@ -281,6 +281,9 @@ static bool MainLoop(bool retryCreate)
 				CU::Matrix44<float> cuProj = gameWrapper.ConvertMatrix(proj);
 				CU::Matrix44<float> cuViewProj = gameWrapper.ConvertMatrix(prod);
 
+				CU::Matrix44<float> viewProj = cuView * cuProj;
+				CU::Matrix44<float> projView = cuProj * cuView;
+
 				gameWrapper.SetMatrices(cuView, cuProj, cuViewProj);
 				gameWrapper.Render(prod, pEyeRenderTexture[eye]->TexRtv[texIndex], pEyeDepthBuffer[eye]->TexDsv);
 		    }

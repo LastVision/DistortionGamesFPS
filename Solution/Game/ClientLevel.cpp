@@ -346,11 +346,12 @@ void ClientLevel::Render()
 		myScene->GetCamera()->SetOrientation(GC::View);
 		myScene->GetCamera()->SetProjection(GC::Projection);
 		myScene->GetCamera()->SetViewProjection(GC::ViewProjection);
+		myScene->GetCamera()->Update(1.f/30.f);
 
 		myDeferredRenderer->Render(myScene);
 
 		//myFullscreenRenderer->Render(myDeferredRenderer->GetFinishedTexture(), myDeferredRenderer->GetEmissiveTexture(), myDeferredRenderer->GetDepthStencilTexture(), Prism::ePostProcessing::BLOOM);
-
+		
 		Prism::DebugDrawer::GetInstance()->RenderLinesToScreen(*myPlayer->GetComponent<InputComponent>()->GetCamera());
 
 		//myScene->Render();

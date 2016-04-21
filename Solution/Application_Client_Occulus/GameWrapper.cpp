@@ -100,7 +100,7 @@ void GameWrapper::Render(const DirectX::XMMATRIX& aViewProjection, ID3D11RenderT
 
 void GameWrapper::SetMatrices(const CU::Matrix44<float>& aView, const CU::Matrix44<float>& aProjection, const CU::Matrix44<float>& aViewProjection)
 {
-	GC::View = aViewProjection;
+	GC::View = aView;
 	GC::Projection = aProjection;
 	GC::ViewProjection = aViewProjection;
 }

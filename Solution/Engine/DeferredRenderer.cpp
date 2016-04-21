@@ -171,6 +171,8 @@ namespace Prism
 		RenderDeferred(aScene);
 
 		//Engine::GetInstance()->GetContex()->CopyResource(myTexture, aTexture);
+
+		Engine::GetInstance()->SetDepthStencil(GetDepthStencilTexture()->GetDepthStencilView());
 	}
 
 	void DeferredRenderer::RenderCubeMap(Scene* aScene, ID3D11RenderTargetView* aRenderTarget, ID3D11DepthStencilView* aDepth,
