@@ -2,6 +2,7 @@
 
 #include <AudioInterface.h>
 #include "DamageNote.h"
+#include "SharedUnitManager.h"
 #include "Entity.h"
 #include <EmitterMessage.h>
 #include <ModelLoader.h>
@@ -97,6 +98,18 @@ bool Pistol::Shoot(const CU::Matrix44<float>& aOrientation)
 {
 	if (myAmmoInClip > 0 && myShootTimer <= 0.f)
 	{
+		Entity* toKill = SharedUnitManager::GetInstance()->GetUnitToHit(aOrientation);
+		if (toKill != nullptr)
+		{
+			OutputDebugString(CU::Concatenate("Killing Enemy: %d \n", toKill->GetGID()).c_str());
+			SharedNetworkManager::GetInstance()->AddMessage(NetMessageOnHit(1000000, toKill->GetGID()));
+		}
+		else
+		{
+			OutputDebugString("No enemy found\n");	
+		}
+
+
 		CU::Vector3<float> forward = CU::Vector3<float>(0, 0, -1.f)
 			* (CU::Matrix44<float>::CreateRotateAroundX(CU::Math::RandomRange(myMinSpreadRotation, myMaxSpreadRotation))
 			* aOrientation);

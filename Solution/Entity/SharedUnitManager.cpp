@@ -134,3 +134,21 @@ const CU::GrowingArray<Entity*>& SharedUnitManager::GetUnits()
 {
 	return myUnits;
 }
+
+Entity* SharedUnitManager::GetUnitToHit(const CU::Matrix44<float>& aPlayerOrientation) const
+{
+	float closest2 = FLT_MAX;
+	Entity* toReturn = nullptr;
+
+	for (int i = 0; i < myActiveUnits.Size(); ++i)
+	{
+		float dist2 = CU::Length2(myActiveUnits[i]->GetOrientation().GetPos() - aPlayerOrientation.GetPos());
+		if (myActiveUnits[i]->GetState() != eEntityState::DIE && dist2 < closest2)
+		{
+			closest2 = dist2;
+			toReturn = myActiveUnits[i];
+		}
+	}
+
+	return toReturn;
+}

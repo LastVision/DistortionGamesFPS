@@ -23,6 +23,8 @@ public:
 
 	const CU::GrowingArray<Entity*>& GetUnits();
 
+	Entity* GetUnitToHit(const CU::Matrix44<float>& aPlayerOrientation) const;
+
 
 protected:
 	void AddToMap();
