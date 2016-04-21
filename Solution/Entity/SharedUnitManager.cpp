@@ -142,11 +142,15 @@ Entity* SharedUnitManager::GetUnitToHit(const CU::Matrix44<float>& aPlayerOrient
 
 	for (int i = 0; i < myActiveUnits.Size(); ++i)
 	{
-		float dist2 = CU::Length2(myActiveUnits[i]->GetOrientation().GetPos() - aPlayerOrientation.GetPos());
-		if (myActiveUnits[i]->GetState() != eEntityState::DIE && dist2 < closest2)
+		CU::Vector3<float> toEnemy = myActiveUnits[i]->GetOrientation().GetPos() - aPlayerOrientation.GetPos();
+		float dist2 = CU::Length2(toEnemy);
+		if (myActiveUnits[i]->GetState() != eEntityState::DIE && myActiveUnits[i]->IsAlive() == true && dist2 < closest2)
 		{
-			closest2 = dist2;
-			toReturn = myActiveUnits[i];
+			//if (CU::Dot(aPlayerOrientation.GetForward(), CU::GetNormalized(toEnemy)) > 0.9f)
+			{
+				closest2 = dist2;
+				toReturn = myActiveUnits[i];
+			}
 		}
 	}
 

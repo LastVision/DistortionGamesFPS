@@ -101,12 +101,7 @@ bool Pistol::Shoot(const CU::Matrix44<float>& aOrientation)
 		Entity* toKill = SharedUnitManager::GetInstance()->GetUnitToHit(aOrientation);
 		if (toKill != nullptr)
 		{
-			OutputDebugString(CU::Concatenate("Killing Enemy: %d \n", toKill->GetGID()).c_str());
 			SharedNetworkManager::GetInstance()->AddMessage(NetMessageOnHit(1000000, toKill->GetGID()));
-		}
-		else
-		{
-			OutputDebugString("No enemy found\n");	
 		}
 
 

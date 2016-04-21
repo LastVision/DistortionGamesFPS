@@ -1,8 +1,8 @@
 #pragma once
-#include "NetMessage.h"
+#include "NetImportantMessage.h"
 #include "NetworkMessageTypes.h"
 class NetMessageOnHit :
-	public NetMessage
+	public NetImportantMessage
 {
 public:
 	NetMessageOnHit();
@@ -17,12 +17,12 @@ private:
 };
 
 inline NetMessageOnHit::NetMessageOnHit()
-	: NetMessage(eNetMessageType::ON_HIT)
+	: NetImportantMessage(eNetMessageType::ON_HIT)
 {
 }
 
 inline NetMessageOnHit::NetMessageOnHit(int aDamage, unsigned int aGID)
-	: NetMessage(eNetMessageType::ON_HIT)
+	: NetImportantMessage(eNetMessageType::ON_HIT)
 	, myDamage(aDamage)
 	, myGID(aGID)
 {

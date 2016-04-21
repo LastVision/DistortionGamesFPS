@@ -410,6 +410,7 @@ void SharedNetworkManager::HandleMessage()
 			UnpackAndHandle(NetMessagePosition(), buffer);
 			break;
 		case eNetMessageType::ON_HIT:
+				OutputDebugString("got onhit message\n");
 			UnpackAndHandle(NetMessageOnHit(), buffer);
 			break;
 		case eNetMessageType::ON_DEATH:
