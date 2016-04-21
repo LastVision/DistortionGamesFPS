@@ -159,7 +159,7 @@ void InputComponent::Update(float aDelta)
 
 	myCamera->Update(aDelta);
 
-	myMovementOrientation = myOrientation * GC::OcculusOrientation;
+	myMovementOrientation = GC::OcculusOrientation;
 	//GC::CameraOrientation = myOrientation *GC::OcculusOrientation;
 }
 
@@ -177,6 +177,9 @@ void InputComponent::UpdateMovement(float aDelta)
 
 	myPitch = CU::Quaternion(CU::Vector3<float>(1.f, 0, 0), myCursorPosition.y);
 	myYaw = CU::Quaternion(CU::Vector3<float>(0, 1.f, 0), myCursorPosition.x);
+
+	GC::Pitch = myCursorPosition.y;
+	GC::Yaw = myCursorPosition.x;
 
 	CU::Vector3<float> axisX(1.f, 0, 0);
 	CU::Vector3<float> axisY(0, 1.f, 0);

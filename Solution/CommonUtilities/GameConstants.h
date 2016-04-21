@@ -38,4 +38,6 @@ public:
 	static CU::Matrix44<float> ViewProjection;
 	static CU::Matrix44<float> CameraOrientation;
 	static CU::Matrix44<float> OcculusOrientation;
+	static float Pitch;
+	static float Yaw;
 };

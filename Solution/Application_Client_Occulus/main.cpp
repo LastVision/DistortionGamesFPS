@@ -230,10 +230,16 @@ static bool MainLoop(bool retryCreate)
 		//if (DIRECTX.Key[VK_RIGHT]) mainCam->Rot = XMQuaternionRotationRollPitchYaw(0, Yaw -= 0.02f, 0);
 
 
-		XMMATRIX occulusOrientation = XMMatrixRotationQuaternion(headQuat);
+		mainCam->Rot = XMQuaternionRotationRollPitchYaw(0, -GC::Yaw, 0);
+		XMMATRIX occulusOrientation = XMMatrixRotationQuaternion(XMQuaternionMultiply(headQuat, mainCam->Rot));
+		//XMMATRIX occulusOrientation = XMMatrixRotationQuaternion(headQuat);
+
 		GC::OcculusOrientation = gameWrapper.ConvertMatrix(occulusOrientation);
 
 		gameWrapper.Update(float(frameTime / 1000000.0));
+		//mainCam->Rot = XMQuaternionRotationRollPitchYaw(-GC::Pitch, 0, 0);
+		//mainCam->Rot = XMQuaternionMultiply(mainCam->Rot, XMQuaternionRotationRollPitchYaw(0, -GC::Yaw, 0));
+		
 
 		XMVECTOR cameraPosition = XMVectorSet(GC::CameraOrientation.GetPos4().x, GC::CameraOrientation.GetPos4().y, GC::CameraOrientation.GetPos4().z, GC::CameraOrientation.GetPos4().w);
 		

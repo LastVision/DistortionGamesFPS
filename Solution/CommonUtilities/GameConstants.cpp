@@ -29,3 +29,5 @@ CU::Matrix44<float> GC::Projection = CU::Matrix44<float>();
 CU::Matrix44<float> GC::ViewProjection = CU::Matrix44<float>();
 CU::Matrix44<float> GC::CameraOrientation = CU::Matrix44<float>();
 CU::Matrix44<float> GC::OcculusOrientation = CU::Matrix44<float>();
+float GC::Pitch = 0.f;
+float GC::Yaw = 0.f;
