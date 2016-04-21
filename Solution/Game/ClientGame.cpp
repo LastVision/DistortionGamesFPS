@@ -75,7 +75,7 @@ ClientGame::~ClientGame()
 //	NetworkManager::Destroy();
 }
 
-bool ClientGame::Init(HWND& aHwnd)
+bool ClientGame::Init(const HWND& aHwnd)
 {
 	myWindowHandler = &aHwnd;
 	myIsComplete = false;
@@ -142,15 +142,23 @@ bool ClientGame::Update()
 		return false;
 	}
 
-	myStateStack.RenderCurrentState();
+	
 
 	//myTimerManager->CapFrameRate(60.f);
 	myCursor->Update();
-	myCursor->Render();
 	
-	Prism::DebugDrawer::GetInstance()->RenderTextToScreen(); //Have to be last
+	
 	ClientNetworkManager::GetInstance()->Update(deltaTime);
 	return true;
+}
+
+
+void ClientGame::Render()
+{
+	myStateStack.RenderCurrentState();
+	myCursor->Render();
+
+	Prism::DebugDrawer::GetInstance()->RenderTextToScreen(); //Have to be last
 }
 
 void ClientGame::Pause()

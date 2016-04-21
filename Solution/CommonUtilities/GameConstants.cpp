@@ -23,3 +23,9 @@ volatile bool GC::PlayerShouldPlaySprintSound = false;
 volatile bool GC::PlayerShouldStopSprintSound = false;
 
 bool GC::ShouldRenderGUI = true;
+
+CU::Matrix44<float> GC::View = CU::Matrix44<float>();
+CU::Matrix44<float> GC::Projection = CU::Matrix44<float>();
+CU::Matrix44<float> GC::ViewProjection = CU::Matrix44<float>();
+CU::Matrix44<float> GC::CameraOrientation = CU::Matrix44<float>();
+CU::Matrix44<float> GC::OcculusOrientation = CU::Matrix44<float>();

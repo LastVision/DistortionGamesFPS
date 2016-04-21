@@ -314,13 +314,13 @@ myIsSwapping = false;
 			int count = 0;
 			if (CU::InputWrapper::GetInstance()->KeyIsPressed(DIK_S, CU::InputWrapper::eType::PHYSICS))
 			{
-				movement.z -= 1.f;
+				movement.z += 1.f;
 				magnitude += myPlayerInputData->myBackwardMultiplier;
 				++count;
 			}
 			if (CU::InputWrapper::GetInstance()->KeyIsPressed(DIK_W, CU::InputWrapper::eType::PHYSICS))
 			{
-				movement.z += 1.f;
+				movement.z -= 1.f;
 				magnitude += myPlayerInputData->myForwardMultiplier;
 				++count;
 			}

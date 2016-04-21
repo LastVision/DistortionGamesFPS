@@ -77,9 +77,9 @@ namespace Prism
 		myFrustum->OnResize(myNear, myFar);
 	}
 
-	const CU::Matrix44<float>& Camera::GetOrientation() const
+	CU::Matrix44<float> Camera::GetOrientation() const
 	{
-		return myOrientation;
+		return GC::View;
 	}
 
 	const CU::Matrix44<float>& Camera::GetProjection() const
@@ -87,14 +87,17 @@ namespace Prism
 		return myProjectionMatrix;
 	}
 
-	const CU::Matrix44<float>& Camera::GetViewProjection() const
+	CU::Matrix44<float> Camera::GetViewProjection() const
 	{
+		//return GC::View * myProjectionMatrix;
 		return myViewProjectionMatrix;
 	}
 
 	const CU::Matrix44<float>& Camera::GetSpecialFoVViewProjection() const
 	{
-		return mySpecialFoVViewProjectionMatrix;
+		return myViewProjectionMatrix;
+
+		//return mySpecialFoVViewProjectionMatrix;
 	}
 
 	void Camera::Update(float aDeltaTime)
@@ -125,6 +128,8 @@ namespace Prism
 		mySpecialFoVOrientation.SetPos(specialPos);
 		mySpecialFoVViewProjectionMatrix = CU::InverseSimple(mySpecialFoVOrientation) * mySpecialFoVProjectionMatrix;
 		myFrustum->Update();
+
+		GC::CameraOrientation = myOrientation;
 	}
 
 

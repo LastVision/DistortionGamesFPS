@@ -17,9 +17,9 @@ namespace Prism
 		void OnResize(const int aWidth, const int aHeight);
 		void InitShadowCamera(float aWidth, float aHeight);
 
-		const CU::Matrix44<float>& GetOrientation() const;
+		CU::Matrix44<float> GetOrientation() const;
 		const CU::Matrix44<float>& GetProjection() const;
-		const CU::Matrix44<float>& GetViewProjection() const;
+		CU::Matrix44<float> GetViewProjection() const;
 		const CU::Matrix44<float>& GetSpecialFoVViewProjection() const;
 
 		void Update(float aDeltaTime);

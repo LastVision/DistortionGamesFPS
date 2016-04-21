@@ -37,6 +37,7 @@ InputComponent::InputComponent(Entity& anEntity, const InputComponentData& aData
 	reader.ForceReadAttribute(reader.ForceFindFirstChild(element, "crouchHeight"), "value", myCrouchHeight);
 
 	myOrientation.SetPos(CU::Vector3<float>(0, 1.5f, 0));
+	myMovementOrientation = myOrientation * GC::OcculusOrientation;
 	myCamera = new Prism::Camera(myEyeOrientation);
 	reader.CloseDocument();
 
@@ -48,7 +49,8 @@ InputComponent::InputComponent(Entity& anEntity, const InputComponentData& aData
 	if (myEntity.GetIsClient() == true)
 	{
 		Prism::PhysicsInterface::GetInstance()->SetClientID(myEntity.GetComponent<PhysicsComponent>()->GetCapsuleControllerId());
-		Prism::PhysicsInterface::GetInstance()->SetPlayerOrientation(&myOrientation);
+		//Prism::PhysicsInterface::GetInstance()->SetPlayerOrientation(&myOrientation);
+		Prism::PhysicsInterface::GetInstance()->SetPlayerOrientation(&myMovementOrientation);
 		Prism::PhysicsInterface::GetInstance()->SetPlayerInputData(*myData);
 		Prism::PhysicsInterface::GetInstance()->SetPlayerGID(myEntity.GetGID());
 	}
@@ -156,6 +158,9 @@ void InputComponent::Update(float aDelta)
 	}
 
 	myCamera->Update(aDelta);
+
+	myMovementOrientation = myOrientation * GC::OcculusOrientation;
+	//GC::CameraOrientation = myOrientation *GC::OcculusOrientation;
 }
 
 Prism::Camera* InputComponent::GetCamera() const

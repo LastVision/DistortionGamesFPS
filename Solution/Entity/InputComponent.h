@@ -33,6 +33,7 @@ private:
 
 	Prism::Camera* myCamera;
 	CU::Matrix44<float> myOrientation;
+	CU::Matrix44<float> myMovementOrientation;
 	CU::Matrix44<float> myPrevOrientation;
 	CU::Matrix44<float> myEyeOrientation;
 

@@ -145,10 +145,10 @@ namespace Prism
 		SAFE_DELETE(myGBufferData.myDepthTexture);
 	}
 
-	void DeferredRenderer::Render(Scene* aScene, ID3D11RenderTargetView* aRenderTarget, ID3D11DepthStencilView* aDepthStencil)
+	void DeferredRenderer::Render(Scene* aScene)
 	{
-		myOcculusRenderTarget = aRenderTarget;
-		myOcculusDepthStencil = aDepthStencil;
+		myOcculusRenderTarget = Engine::GetInstance()->GetBackbuffer();
+		myOcculusDepthStencil = Engine::GetInstance()->GetDepthView();
 		//Engine::GetInstance()->RestoreViewPort();
 
 		ClearGBuffer();

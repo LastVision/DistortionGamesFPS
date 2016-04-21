@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Matrix.h"
+
 class GC
 {
 public:
@@ -30,4 +32,10 @@ public:
 	static volatile bool PlayerShouldStopSprintSound;
 
 	static bool ShouldRenderGUI;
+
+	static CU::Matrix44<float> View;
+	static CU::Matrix44<float> Projection;
+	static CU::Matrix44<float> ViewProjection;
+	static CU::Matrix44<float> CameraOrientation;
+	static CU::Matrix44<float> OcculusOrientation;
 };

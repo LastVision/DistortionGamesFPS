@@ -26,6 +26,7 @@
 #include <PostMaster.h>
 #include <AudioInterface.h>
 #include <ClientNetworkManager.h>
+#include <GameConstants.h>
 
 GameWrapper::GameWrapper(float aHeight, float aWidth, ID3D11Device* aDevice, ID3D11DeviceContext* aContext)
 {
@@ -60,36 +61,48 @@ void GameWrapper::SetWindowSize(const CU::Vector2<float>& aWindowSize)
 
 void GameWrapper::Init()
 {
-	CU::InputWrapper::Create(GetActiveWindow(), GetModuleHandle(NULL), DISCL_NONEXCLUSIVE
-		| DISCL_FOREGROUND, DISCL_NONEXCLUSIVE | DISCL_FOREGROUND);
+	//CU::InputWrapper::Create(GetActiveWindow(), GetModuleHandle(NULL), DISCL_NONEXCLUSIVE
+	//	| DISCL_FOREGROUND, DISCL_NONEXCLUSIVE | DISCL_FOREGROUND);
 
-	Prism::Audio::AudioInterface::CreateInstance();
-	PostMaster::Create();
-	ClientNetworkManager::Create();
+	//Prism::Audio::AudioInterface::CreateInstance();
+	//PostMaster::Create();
+	//ClientNetworkManager::Create();
 
-	myCamera = new Prism::Camera(myPlayerMatrix);
+	myGame = new ClientGame();
+	myGame->Init(GetActiveWindow());
+
+	//myCamera = new Prism::Camera(myPlayerMatrix);
 
 
-	myCursor = new GUI::Cursor(Prism::Engine::GetInstance()->GetWindowSizeInt());;
+	//myCursor = new GUI::Cursor(Prism::Engine::GetInstance()->GetWindowSizeInt());;
 
-	myLevelFactory = new ClientLevelFactory("Data/Level/LI_level.xml");
+	//myLevelFactory = new ClientLevelFactory("Data/Level/LI_level.xml");
 
-	eStateStatus status = eStateStatus::eKeepState;
-	myLevel = static_cast<ClientLevel*>(myLevelFactory->LoadLevel(0, myCursor, status));
-	myLevel->SetCamera(myCamera);
+	//eStateStatus status = eStateStatus::eKeepState;
+	//myLevel = static_cast<ClientLevel*>(myLevelFactory->LoadLevel(0, myCursor, status));
+	//myLevel->SetCamera(myCamera);
 }
 
-void GameWrapper::Update(float aDelta, const CU::Matrix44<float>& aView, const CU::Matrix44<float>& aProjection, const CU::Matrix44<float>& aViewProjection)
+void GameWrapper::Update(float aDelta)
 {
-	myCamera->SetOrientation(aView);
-	myCamera->SetProjection(aProjection);
-	myCamera->SetViewProjection(aViewProjection);
-	myCamera->Update(aDelta);
+	myGame->Update();
 }
 
 void GameWrapper::Render(const DirectX::XMMATRIX& aViewProjection, ID3D11RenderTargetView* aRenderTarget, ID3D11DepthStencilView* aDepthStencil)
 {
-	myLevel->Render(aRenderTarget, aDepthStencil);
+	//myLevel->Render(aRenderTarget, aDepthStencil);
+
+	Prism::Engine::GetInstance()->SetBackBuffer(aRenderTarget);
+	Prism::Engine::GetInstance()->SetDepthStencil(aDepthStencil);
+
+	myGame->Render();
+}
+
+void GameWrapper::SetMatrices(const CU::Matrix44<float>& aView, const CU::Matrix44<float>& aProjection, const CU::Matrix44<float>& aViewProjection)
+{
+	GC::View = aViewProjection;
+	GC::Projection = aProjection;
+	GC::ViewProjection = aViewProjection;
 }
 
 CU::Matrix44<float> GameWrapper::ConvertMatrix(const DirectX::XMMATRIX& aMatrix)

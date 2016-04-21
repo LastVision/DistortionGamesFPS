@@ -89,7 +89,7 @@ namespace Prism
 		ID3D11RenderTargetView* view = aShadowSpotLight->GetTexture()->GetRenderTargetView();
 
 		context->OMSetRenderTargets(1, &view, aShadowSpotLight->GetTexture()->GetDepthStencilView());
-		const Camera* oldCamera = aScene->GetCamera();
+		Camera* oldCamera = aScene->GetCamera();
 		//aScene->SetViewCamera(*oldCamera);
 		aScene->SetCamera(*aShadowSpotLight->GetCamera());
 

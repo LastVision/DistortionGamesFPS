@@ -19,9 +19,10 @@ public:
 	ClientGame();
 	~ClientGame();
 
-	bool Init(HWND& aHwnd);
+	bool Init(const HWND& aHwnd);
 	bool Destroy();
 	bool Update() override;
+	void Render();
 
 	void Pause();
 	void UnPause();
@@ -34,7 +35,7 @@ private:
 
 	GUI::Cursor* myCursor;
 
-	HWND* myWindowHandler;
+	const HWND* myWindowHandler;
 
 	StateStack myStateStack;
 

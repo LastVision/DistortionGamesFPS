@@ -175,7 +175,7 @@ const eStateStatus LobbyState::Update(const float& aDeltaTime)
 	}
 
 	ClientNetworkManager::GetInstance()->DebugPrint();
-#ifndef RELEASE_BUILD
+//#ifndef RELEASE_BUILD
 	if (ClientNetworkManager::GetInstance()->GetGID() == 1)
 	{
 		if (CU::InputWrapper::GetInstance()->KeyDown(DIK_SPACE) == true)
@@ -183,7 +183,8 @@ const eStateStatus LobbyState::Update(const float& aDeltaTime)
 			ClientNetworkManager::GetInstance()->AddMessage(NetMessageRequestStartLevel());
 		}
 	}
-#endif
+//#endif
+
 	if (myStartGame == true)
 	{
 		DL_ASSERT_EXP(myLevelToStart != -1, "Can't start level -1.");

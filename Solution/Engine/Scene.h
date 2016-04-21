@@ -39,8 +39,8 @@ namespace Prism
 
 		void RemoveInstance(Instance* aInstance);
 
-		void SetCamera(const Camera& aCamera);
-		const Camera* GetCamera() const;
+		void SetCamera(Camera& aCamera);
+		Camera* GetCamera() const;
 		RoomManager* GetRoomManager() const;
 
 		const CU::GrowingArray<PointLight*>& GetPointLights(bool aUseRoomManager) const;
@@ -60,7 +60,7 @@ namespace Prism
 		CU::GrowingArray<SpotLightTextureProjection*> mySpotLightsTextureProjection;
 		InstancingHelper* myInstancingHelper;
 
-		const Camera* myCamera;
+		Camera* myCamera;
 		RoomManager* myRoomManager;
 		Instance* myArmInstance;
 		Instance* myWeaponInstance;
@@ -68,7 +68,7 @@ namespace Prism
 
 
 
-	inline const Camera* Scene::GetCamera() const
+	inline Camera* Scene::GetCamera() const
 	{
 		return myCamera;
 	}

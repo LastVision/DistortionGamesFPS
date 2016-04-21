@@ -214,7 +214,8 @@ namespace Prism
 	}
 
 	bool Engine::IsFullscreen() const
-	{
+	{ 
+		return false;
 		return myDirectX->IsFullscreen();
 	}
 
@@ -265,6 +266,16 @@ namespace Prism
 	ID3D11RenderTargetView* Engine::GetBackbuffer()
 	{
 		return myDirectX->GetBackbuffer();
+	}
+
+	void Engine::SetDepthView(ID3D11DepthStencilView* aDepthView)
+	{
+		myDirectX->SetDepthView(aDepthView);
+	}
+
+	void Engine::SetBackBuffer(ID3D11RenderTargetView* aBackBuffer)
+	{
+		myDirectX->SetBackBuffer(aBackBuffer);
 	}
 
 	ID3D11ShaderResourceView* Engine::GetBackbufferView()
@@ -379,8 +390,29 @@ namespace Prism
 		myModelLoaderThread = new std::thread(&ModelLoader::Run, ModelLoader::GetInstance());
 		myModelLoaderThreadID = myModelLoaderThread->get_id();
 
+
+		DebugDrawer::GetInstance();
+		//myFadeData.mySprite = new Sprite(myDirectX->GetBackbufferTexture(), { float(myWindowSize.x), float(myWindowSize.y) }, { 0.f, 0.f });
+
+		myOrthogonalMatrix = CU::Matrix44<float>::CreateOrthogonalMatrixLH(static_cast<float>(myWindowSize.x)
+			, static_cast<float>(myWindowSize.y), 0.1f, 1000.f);
+
+
 		myDialogueFont = ModelLoader::GetInstance()->LoadFont("Data/Resource/Font/debugText.txt", { 256, 256 });
 		myConsoleFont = ModelLoader::GetInstance()->LoadFont("Data/Resource/Font/consolab.ttf_sdf.txt", { 256, 256 });
+
+		myText = ModelLoader::GetInstance()->LoadText(myDialogueFont);
+		myText->SetPosition({ 800.f, -300.f });
+		myText->SetText("едц");
+		myText->SetScale({ 1.f, 1.f });
+
+		myDebugText = ModelLoader::GetInstance()->LoadText(myDialogueFont);
+		myDebugText->SetPosition({ 800.f, -300.f });
+		myDebugText->SetText("едц");
+		myDebugText->SetScale({ 1.f, 1.f });
+		myDebugText->SetColor({ 1.f, 0, 0, 0.8f });
+
+		myIsLoading = false;
 		return true;
 	}
 

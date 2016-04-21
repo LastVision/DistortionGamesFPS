@@ -64,6 +64,9 @@ namespace Prism
 		void SetContext(ID3D11DeviceContext* aContext);
 		ID3D11DepthStencilView* GetDepthView();
 		ID3D11RenderTargetView* GetBackbuffer();
+		void SetDepthView(ID3D11DepthStencilView* aDepthView);
+		void SetBackBuffer(ID3D11RenderTargetView* aBackBuffer);
+
 		ID3D11ShaderResourceView* GetBackbufferView();
 		ID3D11Texture2D* GetDepthBufferTexture();
 

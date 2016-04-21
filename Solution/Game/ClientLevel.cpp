@@ -66,6 +66,8 @@
 #include <SoundComponent.h>
 #include <VisualExplosionComponent.h>
 #include <WidgetContainer.h>
+#include <Scene.h>
+#include <Camera.h>
 
 ClientLevel::ClientLevel(GUI::Cursor* aCursor, eStateStatus& aStateStatus, int aLevelID)
 	: myInstanceOrientations(16)
@@ -95,13 +97,13 @@ ClientLevel::ClientLevel(GUI::Cursor* aCursor, eStateStatus& aStateStatus, int a
 {
 	Prism::PhysicsInterface::Create(std::bind(&ClientLevel::CollisionCallback, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3), false);
 
-	//ClientNetworkManager::GetInstance()->Subscribe(eNetMessageType::ON_DEATH, this);
-	//ClientNetworkManager::GetInstance()->Subscribe(eNetMessageType::SET_ACTIVE, this);
-	//ClientNetworkManager::GetInstance()->Subscribe(eNetMessageType::ENTITY_STATE, this);
-	//ClientNetworkManager::GetInstance()->Subscribe(eNetMessageType::ENEMY_SHOOTING, this);
-	//ClientNetworkManager::GetInstance()->Subscribe(eNetMessageType::SHOOT_GRENADE, this);
-	//ClientNetworkManager::GetInstance()->Subscribe(eNetMessageType::EXPLOSION, this);
-	//ClientNetworkManager::GetInstance()->Subscribe(eNetMessageType::RAY_CAST_REQUEST, this);
+	ClientNetworkManager::GetInstance()->Subscribe(eNetMessageType::ON_DEATH, this);
+	ClientNetworkManager::GetInstance()->Subscribe(eNetMessageType::SET_ACTIVE, this);
+	ClientNetworkManager::GetInstance()->Subscribe(eNetMessageType::ENTITY_STATE, this);
+	ClientNetworkManager::GetInstance()->Subscribe(eNetMessageType::ENEMY_SHOOTING, this);
+	ClientNetworkManager::GetInstance()->Subscribe(eNetMessageType::SHOOT_GRENADE, this);
+	ClientNetworkManager::GetInstance()->Subscribe(eNetMessageType::EXPLOSION, this);
+	ClientNetworkManager::GetInstance()->Subscribe(eNetMessageType::RAY_CAST_REQUEST, this);
 
 	PostMaster::GetInstance()->Subscribe(eMessageType::ON_CLICK, this);
 
@@ -159,13 +161,13 @@ ClientLevel::~ClientLevel()
 	SAFE_DELETE(myEmitterManager);
 	ClientProjectileManager::Destroy();
 	ClientUnitManager::Destroy();
-	//ClientNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::ON_DEATH, this);
-	//ClientNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::SET_ACTIVE, this);
-	//ClientNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::ENTITY_STATE, this);
-	//ClientNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::ENEMY_SHOOTING, this);
-	//ClientNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::SHOOT_GRENADE, this);
-	//ClientNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::EXPLOSION, this);
-	//ClientNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::RAY_CAST_REQUEST, this);
+	ClientNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::ON_DEATH, this);
+	ClientNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::SET_ACTIVE, this);
+	ClientNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::ENTITY_STATE, this);
+	ClientNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::ENEMY_SHOOTING, this);
+	ClientNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::SHOOT_GRENADE, this);
+	ClientNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::EXPLOSION, this);
+	ClientNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::RAY_CAST_REQUEST, this);
 
 	PostMaster::GetInstance()->UnSubscribe(eMessageType::ON_CLICK, this);
 
@@ -335,19 +337,19 @@ void ClientLevel::Update(const float aDeltaTime, bool aLoadingScreen)
 
 	}
 	Prism::PhysicsInterface::GetInstance()->EndFrame();
-
-
-
-
 }
 
 void ClientLevel::Render()
 {
 	if (myInitDone == true)
 	{
-		//myDeferredRenderer->Render(myScene);
+		myScene->GetCamera()->SetOrientation(GC::View);
+		myScene->GetCamera()->SetProjection(GC::Projection);
+		myScene->GetCamera()->SetViewProjection(GC::ViewProjection);
 
-		myFullscreenRenderer->Render(myDeferredRenderer->GetFinishedTexture(), myDeferredRenderer->GetEmissiveTexture(), myDeferredRenderer->GetDepthStencilTexture(), Prism::ePostProcessing::BLOOM);
+		myDeferredRenderer->Render(myScene);
+
+		//myFullscreenRenderer->Render(myDeferredRenderer->GetFinishedTexture(), myDeferredRenderer->GetEmissiveTexture(), myDeferredRenderer->GetDepthStencilTexture(), Prism::ePostProcessing::BLOOM);
 
 		Prism::DebugDrawer::GetInstance()->RenderLinesToScreen(*myPlayer->GetComponent<InputComponent>()->GetCamera());
 
@@ -400,7 +402,7 @@ void ClientLevel::Render(ID3D11RenderTargetView* aRenderTarget, ID3D11DepthStenc
 {
 	//if (myInitDone == true)
 	{
-		myDeferredRenderer->Render(myScene, aRenderTarget, aDepthStencil);
+		myDeferredRenderer->Render(myScene);
 
 		//myFullscreenRenderer->Render(myDeferredRenderer->GetFinishedTexture(), myDeferredRenderer->GetEmissiveTexture(), myDeferredRenderer->GetDepthStencilTexture(), Prism::ePostProcessing::BLOOM);
 
@@ -857,23 +859,20 @@ void ClientLevel::HandleTrigger(Entity& aFirstEntity, Entity& aSecondEntity, boo
 
 void ClientLevel::CreatePlayers()
 {
-	/*myPlayer = EntityFactory::GetInstance()->CreateEntity(ClientNetworkManager::GetInstance()->GetGID(), eEntityType::UNIT, "localplayer", myScene, true
-		, myPlayerStartPositions[ClientNetworkManager::GetInstance()->GetGID()]);*/
-
-	myPlayer = EntityFactory::GetInstance()->CreateEntity(0, eEntityType::UNIT, "localplayer", myScene, true
-		, myPlayerStartPositions[0]);
+	myPlayer = EntityFactory::GetInstance()->CreateEntity(ClientNetworkManager::GetInstance()->GetGID(), eEntityType::UNIT, "localplayer", myScene, true
+		, myPlayerStartPositions[ClientNetworkManager::GetInstance()->GetGID()]);
 
 	myScene->SetCamera(*myPlayer->GetComponent<InputComponent>()->GetCamera());
 
-	//for each (const OtherClients& client in ClientNetworkManager::GetInstance()->GetClients())
-	//{
-	//	Entity* newPlayer = EntityFactory::CreateEntity(client.myID, eEntityType::UNIT, "player", myScene, true, myPlayerStartPositions[client.myID]);
-	//	newPlayer->GetComponent<NetworkComponent>()->SetPlayer(true);
-	//	newPlayer->AddToScene();
-	//	newPlayer->Reset();
-	//	myPlayers.Add(newPlayer);
-	//	myActiveUnitsMap[newPlayer->GetGID()] = newPlayer;
-	//}
+	for each (const OtherClients& client in ClientNetworkManager::GetInstance()->GetClients())
+	{
+		Entity* newPlayer = EntityFactory::CreateEntity(client.myID, eEntityType::UNIT, "player", myScene, true, myPlayerStartPositions[client.myID]);
+		newPlayer->GetComponent<NetworkComponent>()->SetPlayer(true);
+		newPlayer->AddToScene();
+		newPlayer->Reset();
+		myPlayers.Add(newPlayer);
+		myActiveUnitsMap[newPlayer->GetGID()] = newPlayer;
+	}
 }
 
 void ClientLevel::HandleOtherClientRayCastPistol(PhysicsComponent* aComponent, const CU::Vector3<float>& aDirection, const CU::Vector3<float>& aHitPosition, const CU::Vector3<float>& aHitNormal)

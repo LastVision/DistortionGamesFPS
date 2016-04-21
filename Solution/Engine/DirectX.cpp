@@ -146,6 +146,17 @@ namespace Prism
 		return myBackbufferRenderTarget;
 	}
 
+	void DirectX::SetDepthView(ID3D11DepthStencilView* aDepthView)
+	{
+		myBackbufferDepthStencil = aDepthView;
+		myOriginalBackbufferDepthStencil = aDepthView;
+	}
+
+	void DirectX::SetBackBuffer(ID3D11RenderTargetView* aBackBuffer)
+	{
+		myBackbufferRenderTarget = aBackBuffer;
+	}
+
 	ID3D11ShaderResourceView* DirectX::GetBackbufferView()
 	{
 		return myBackbufferShaderResource;

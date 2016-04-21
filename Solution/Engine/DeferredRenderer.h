@@ -98,7 +98,7 @@ namespace Prism
 		DeferredRenderer();
 		~DeferredRenderer();
 
-		void Render(Scene* aScene, ID3D11RenderTargetView* aRenderTarget, ID3D11DepthStencilView* aDepthStencil);
+		void Render(Scene* aScene);
 		void RenderCubeMap(Scene* aScene, ID3D11RenderTargetView* aRenderTarget, ID3D11DepthStencilView* aDepth,
 			D3D11_VIEWPORT* aViewPort, bool aUseAmbientPass);
 		void OnResize(float aWidth, float aHeight);

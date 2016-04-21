@@ -96,11 +96,11 @@ const eStateStatus MainMenuState::Update(const float& aDeltaTime)
 	if (myHasRunOnce == false)
 	{
 //#ifdef RELEASE_BUILD
-		PostMaster::GetInstance()->UnSubscribe(eMessageType::ON_CLICK, this);
-		SET_RUNTIME(false); 
-		myStateStack->PushSubGameState(new SplashState("Data/Resource/Texture/Menu/Splash/T_logo_our.dds", false));
-		SET_RUNTIME(false);
-		myStateStack->PushSubGameState(new SplashState("Data/Resource/Texture/Menu/Splash/T_logo_other.dds", true));
+		//PostMaster::GetInstance()->UnSubscribe(eMessageType::ON_CLICK, this);
+		//SET_RUNTIME(false); 
+		//myStateStack->PushSubGameState(new SplashState("Data/Resource/Texture/Menu/Splash/T_logo_our.dds", false));
+		//SET_RUNTIME(false);
+		//myStateStack->PushSubGameState(new SplashState("Data/Resource/Texture/Menu/Splash/T_logo_other.dds", true));
 //#endif
 		myHasRunOnce = true;
 	}
@@ -111,6 +111,14 @@ const eStateStatus MainMenuState::Update(const float& aDeltaTime)
 			myIsActiveState = false;
 			return eStateStatus::ePopMainState;
 		}
+		else if(CU::InputWrapper::GetInstance()->KeyDown(DIK_SPACE) == true)
+		{
+			PostMaster::GetInstance()->UnSubscribe(eMessageType::ON_CLICK, this);
+			SET_RUNTIME(false);
+			myStateStack->PushMainGameState(new ServerSelectState(ServerSelectState::eType::SINGLEPLAYER));
+		}
+
+
 		myLogoAlpha += aDeltaTime;
 		if (myLogoPosition.y - 25.f > myLogoEndPosition.y)
 		{

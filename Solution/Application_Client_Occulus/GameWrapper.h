@@ -41,9 +41,10 @@ public:
 
 	void Init();
 
-	void Update(float aDelta, const CU::Matrix44<float>& aView, const CU::Matrix44<float>& aProjection, const CU::Matrix44<float>& aViewProjection);
-
+	void Update(float aDelta);
 	void Render(const DirectX::XMMATRIX& aViewProjection, ID3D11RenderTargetView* aRenderTarget, ID3D11DepthStencilView* aDepthStencil);
+	void SetMatrices(const CU::Matrix44<float>& aView, const CU::Matrix44<float>& aProjection, const CU::Matrix44<float>& aViewProjection);
+
 	CU::Matrix44<float> ConvertMatrix(const DirectX::XMMATRIX& aMatrix);
 
 private:

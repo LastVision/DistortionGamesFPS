@@ -29,7 +29,7 @@ limitations under the License.
 // Include the Oculus SDK
 #include "OVR_CAPI_D3D.h"
 #include "GameWrapper.h"
-
+#include <GameConstants.h>
 
 //------------------------------------------------------------
 // ovrSwapTextureSet wrapper class that also maintains the render target views
@@ -216,22 +216,27 @@ static bool MainLoop(bool retryCreate)
 		XMVECTOR right = XMVector3Rotate(XMVectorSet(speed, 0, 0, 0), mainCam->Rot);
 		XMVECTOR up = XMVector3Rotate(XMVectorSet(0, speed, 0, 0), mainCam->Rot);*/
 
-		XMVECTOR forward = XMVector3Rotate(XMVectorSet(0, 0, -speed, 0), headQuat);
-		XMVECTOR right = XMVector3Rotate(XMVectorSet(speed, 0, 0, 0), headQuat);
-		XMVECTOR up = XMVector3Rotate(XMVectorSet(0, speed, 0, 0), headQuat);
-		if (DIRECTX.Key['W'] || DIRECTX.Key[VK_UP])	  mainCam->Pos = XMVectorAdd(mainCam->Pos, forward);
-		if (DIRECTX.Key['S'] || DIRECTX.Key[VK_DOWN]) mainCam->Pos = XMVectorSubtract(mainCam->Pos, forward);
-		if (DIRECTX.Key['D'])                         mainCam->Pos = XMVectorAdd(mainCam->Pos, right);
-		if (DIRECTX.Key['A'])                         mainCam->Pos = XMVectorSubtract(mainCam->Pos, right);
-		if (DIRECTX.Key['Q'])                         mainCam->Pos = XMVectorAdd(mainCam->Pos, up);
-		if (DIRECTX.Key['E'])                         mainCam->Pos = XMVectorSubtract(mainCam->Pos, up);
-		static float Yaw = 0;
-		if (DIRECTX.Key[VK_LEFT])  mainCam->Rot = XMQuaternionRotationRollPitchYaw(0, Yaw += 0.02f, 0);
-		if (DIRECTX.Key[VK_RIGHT]) mainCam->Rot = XMQuaternionRotationRollPitchYaw(0, Yaw -= 0.02f, 0);
+		//XMVECTOR forward = XMVector3Rotate(XMVectorSet(0, 0, -speed, 0), headQuat);
+		//XMVECTOR right = XMVector3Rotate(XMVectorSet(speed, 0, 0, 0), headQuat);
+		//XMVECTOR up = XMVector3Rotate(XMVectorSet(0, speed, 0, 0), headQuat);
+		//if (DIRECTX.Key['W'] || DIRECTX.Key[VK_UP])	  mainCam->Pos = XMVectorAdd(mainCam->Pos, forward);
+		//if (DIRECTX.Key['S'] || DIRECTX.Key[VK_DOWN]) mainCam->Pos = XMVectorSubtract(mainCam->Pos, forward);
+		//if (DIRECTX.Key['D'])                         mainCam->Pos = XMVectorAdd(mainCam->Pos, right);
+		//if (DIRECTX.Key['A'])                         mainCam->Pos = XMVectorSubtract(mainCam->Pos, right);
+		//if (DIRECTX.Key['Q'])                         mainCam->Pos = XMVectorAdd(mainCam->Pos, up);
+		//if (DIRECTX.Key['E'])                         mainCam->Pos = XMVectorSubtract(mainCam->Pos, up);
+		//static float Yaw = 0;
+		//if (DIRECTX.Key[VK_LEFT])  mainCam->Rot = XMQuaternionRotationRollPitchYaw(0, Yaw += 0.02f, 0);
+		//if (DIRECTX.Key[VK_RIGHT]) mainCam->Rot = XMQuaternionRotationRollPitchYaw(0, Yaw -= 0.02f, 0);
 
 
+		XMMATRIX occulusOrientation = XMMatrixRotationQuaternion(headQuat);
+		GC::OcculusOrientation = gameWrapper.ConvertMatrix(occulusOrientation);
+
+		gameWrapper.Update(float(frameTime / 1000000.0));
+
+		XMVECTOR cameraPosition = XMVectorSet(GC::CameraOrientation.GetPos4().x, GC::CameraOrientation.GetPos4().y, GC::CameraOrientation.GetPos4().z, GC::CameraOrientation.GetPos4().w);
 		
-
 		// Render Scene to Eye Buffers
         if (isVisible)
         {
@@ -251,10 +256,11 @@ static bool MainLoop(bool retryCreate)
 			    //Get the pose information in XM format
 			    XMVECTOR eyeQuat = XMVectorSet(EyeRenderPose[eye].Orientation.x, EyeRenderPose[eye].Orientation.y,
 				                               EyeRenderPose[eye].Orientation.z, EyeRenderPose[eye].Orientation.w);
-			    XMVECTOR eyePos = XMVectorSet(EyeRenderPose[eye].Position.x, EyeRenderPose[eye].Position.y, EyeRenderPose[eye].Position.z, 0);
+				XMVECTOR eyePos = XMVectorSet(-EyeRenderPose[eye].Position.x, EyeRenderPose[eye].Position.y, EyeRenderPose[eye].Position.z, 0);
+				//XMVECTOR eyePos = XMVectorSet(0, 0, 0, 0);
 
 			    // Get view and projection matrices for the Rift camera
-			    XMVECTOR CombinedPos = XMVectorAdd(mainCam->Pos, XMVector3Rotate(eyePos, mainCam->Rot));
+				XMVECTOR CombinedPos = XMVectorAdd(cameraPosition, XMVector3Rotate(eyePos, mainCam->Rot));
 			    Camera finalCam(&CombinedPos, &(XMQuaternionMultiply(eyeQuat,mainCam->Rot)));
 			    XMMATRIX view = finalCam.GetViewMatrix();
 			    ovrMatrix4f p = ovrMatrix4f_Projection(eyeRenderDesc[eye].Fov, 0.2f, 1000.0f, ovrProjection_RightHanded); //ovrProjection_RightHanded
@@ -269,7 +275,7 @@ static bool MainLoop(bool retryCreate)
 				CU::Matrix44<float> cuProj = gameWrapper.ConvertMatrix(proj);
 				CU::Matrix44<float> cuViewProj = gameWrapper.ConvertMatrix(prod);
 
-				gameWrapper.Update(float(frameTime / 1000000.0), cuView, cuProj, cuViewProj);
+				gameWrapper.SetMatrices(cuView, cuProj, cuViewProj);
 				gameWrapper.Render(prod, pEyeRenderTexture[eye]->TexRtv[texIndex], pEyeDepthBuffer[eye]->TexDsv);
 		    }
         }

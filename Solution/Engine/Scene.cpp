@@ -154,7 +154,7 @@ namespace Prism
 		myRoomManager->Add(aLight);
 	}
 
-	void Scene::SetCamera(const Camera& aCamera)
+	void Scene::SetCamera(Camera& aCamera)
 	{
 		myCamera = &aCamera;
 		myInstancingHelper->SetCamera(myCamera);
