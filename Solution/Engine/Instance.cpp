@@ -94,7 +94,7 @@ namespace Prism
 		{
 			if (myProxy.IsAnimated() == true)
 			{
-				if (aCamera.GetFrustum().Inside(myOrientation.GetPos(), myProxy.myModelAnimated->GetRadius()) == true)
+				//if (aCamera.GetFrustum().Inside(myOrientation.GetPos(), myProxy.myModelAnimated->GetRadius()) == true)
 				{
 					if (myShouldUseSpecialFoV == true)
 					{

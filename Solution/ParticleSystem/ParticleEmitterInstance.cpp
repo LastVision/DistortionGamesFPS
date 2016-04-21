@@ -603,7 +603,7 @@ namespace Prism
 		return myHasRoom;
 	}
 
-	const CU::Vector3<float>& ParticleEmitterInstance::GetPosition() const
+	CU::Vector3<float> ParticleEmitterInstance::GetPosition() const
 	{
 		return myOrientation.GetPos();
 	}

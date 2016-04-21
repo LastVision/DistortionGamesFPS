@@ -40,8 +40,7 @@ namespace Prism
 			UpdateVertexBuffer(someLines);
 
 			myEffect->SetWorldMatrix(CU::Matrix44<float>());
-			myEffect->SetViewMatrix(CU::InverseSimple(aCamera.GetOrientation()));
-			myEffect->SetProjectionMatrix(aCamera.GetProjection());
+			myEffect->SetViewProjectionMatrix(aCamera.GetViewProjection());
 
 			Engine::GetInstance()->GetContex()->IASetInputLayout(myInputLayout);
 			Engine::GetInstance()->GetContex()->IASetPrimitiveTopology(myPrimitiveTopology);

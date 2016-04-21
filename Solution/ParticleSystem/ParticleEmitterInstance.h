@@ -45,7 +45,7 @@ namespace Prism
 		void SetRotation(const CU::Vector3<float>& aRotation);
 		void SetHasRoom(bool aHasRoom);
 		bool GetHasRoom();
-		const CU::Vector3<float>& GetPosition() const;
+		CU::Vector3<float> GetPosition() const;
 	private:
 
 		void Reset();

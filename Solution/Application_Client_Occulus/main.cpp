@@ -262,7 +262,7 @@ static bool MainLoop(bool retryCreate)
 			    //Get the pose information in XM format
 			    XMVECTOR eyeQuat = XMVectorSet(EyeRenderPose[eye].Orientation.x, EyeRenderPose[eye].Orientation.y,
 				                               EyeRenderPose[eye].Orientation.z, EyeRenderPose[eye].Orientation.w);
-				XMVECTOR eyePos = XMVectorSet(-EyeRenderPose[eye].Position.x, EyeRenderPose[eye].Position.y, EyeRenderPose[eye].Position.z, 0);
+				XMVECTOR eyePos = XMVectorSet(EyeRenderPose[eye].Position.x, EyeRenderPose[eye].Position.y, EyeRenderPose[eye].Position.z, 0);
 				//XMVECTOR eyePos = XMVectorSet(0, 0, 0, 0);
 
 			    // Get view and projection matrices for the Rift camera
