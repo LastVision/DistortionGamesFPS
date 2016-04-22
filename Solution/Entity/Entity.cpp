@@ -173,13 +173,13 @@ Entity::Entity(unsigned int aGID, const EntityData& aEntityData, Prism::Scene* a
 	}
 
 	Reset();
-	//SharedNetworkManager::GetInstance()->Subscribe(eNetMessageType::ON_DEATH, this);
+	SharedNetworkManager::GetInstance()->Subscribe(eNetMessageType::ON_DEATH, this);
 
 };
 
 Entity::~Entity()
 {
-	//SharedNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::ON_DEATH, this);
+	SharedNetworkManager::GetInstance()->UnSubscribe(eNetMessageType::ON_DEATH, this);
 	//if (myIsInScene == true)
 	//{
 	//	RemoveFromScene();		

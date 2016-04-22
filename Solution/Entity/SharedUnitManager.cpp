@@ -140,19 +140,42 @@ Entity* SharedUnitManager::GetUnitToHit(const CU::Matrix44<float>& aPlayerOrient
 	float closest2 = FLT_MAX;
 	Entity* toReturn = nullptr;
 
+	float dot = 0.f;
+
+	CU::Vector3<float> playerForward = aPlayerOrientation.GetForward();
+	playerForward.y = 0.f;
+
 	for (int i = 0; i < myActiveUnits.Size(); ++i)
 	{
 		CU::Vector3<float> toEnemy = myActiveUnits[i]->GetOrientation().GetPos() - aPlayerOrientation.GetPos();
 		float dist2 = CU::Length2(toEnemy);
-		if (myActiveUnits[i]->GetState() != eEntityState::DIE && myActiveUnits[i]->IsAlive() == true && dist2 < closest2)
+		toEnemy.y = 0.2f;
+		if (myActiveUnits[i]->GetState() != eEntityState::DIE && myActiveUnits[i]->IsAlive() == true && dist2 < closest2
+			&& dist2 < 30.f*30.f)
 		{
-			//if (CU::Dot(aPlayerOrientation.GetForward(), CU::GetNormalized(toEnemy)) > 0.9f)
+			//Try -GetForward() or -Z in GetForward()
+			
+			float thisDot = -CU::Dot(playerForward, CU::GetNormalized(toEnemy));
+
+			if (thisDot > 0.9f)
 			{
+				dot = thisDot;
 				closest2 = dist2;
 				toReturn = myActiveUnits[i];
 			}
 		}
 	}
 
+	if (toReturn != nullptr)
+	{
+		OutputDebugString(CU::Concatenate("%f - HIT\n", dot).c_str());
+	}
+	else
+	{
+		OutputDebugString(CU::Concatenate("%f - NO HIT\n", dot).c_str());
+
+	}
+
+	//return nullptr;
 	return toReturn;
 }

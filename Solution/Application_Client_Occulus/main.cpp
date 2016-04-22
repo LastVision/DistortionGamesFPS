@@ -255,7 +255,7 @@ static bool MainLoop(bool retryCreate)
 
 			    // Clear and set up rendertarget
 			    int texIndex = pEyeRenderTexture[eye]->TextureSet->CurrentIndex;
-			    DIRECTX.SetAndClearRenderTarget(pEyeRenderTexture[eye]->TexRtv[texIndex], pEyeDepthBuffer[eye], 0.f, 1.f, 0.f, 1.f);
+			    DIRECTX.SetAndClearRenderTarget(pEyeRenderTexture[eye]->TexRtv[texIndex], pEyeDepthBuffer[eye], 0.f, 0.1f, 0.f, 1.f);
 			    DIRECTX.SetViewport((float)eyeRenderViewport[eye].Pos.x, (float)eyeRenderViewport[eye].Pos.y,
 				    (float)eyeRenderViewport[eye].Size.w, (float)eyeRenderViewport[eye].Size.h);
 

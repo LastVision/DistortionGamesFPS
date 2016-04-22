@@ -326,8 +326,8 @@ void ClientLevel::Update(const float aDeltaTime, bool aLoadingScreen)
 	}
 
 
-	unsigned long long ms = 0;// ClientNetworkManager::GetInstance()->GetResponsTime();
-	float kbs = 0.f;// static_cast<float>(ClientNetworkManager::GetInstance()->GetDataSent());
+	unsigned long long ms = ClientNetworkManager::GetInstance()->GetResponsTime();
+	float kbs = static_cast<float>(ClientNetworkManager::GetInstance()->GetDataSent());
 
 	DEBUG_PRINT(int(ms));
 	DEBUG_PRINT(kbs);

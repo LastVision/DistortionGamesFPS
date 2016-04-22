@@ -124,7 +124,7 @@ bool ClientGame::Update()
 
 	if (myLockMouse == true)
 	{
-		//SetCursorPos(Prism::Engine::GetInstance()->GetWindowSize().x / 8, Prism::Engine::GetInstance()->GetWindowSize().y / 8);
+		SetCursorPos(Prism::Engine::GetInstance()->GetWindowSize().x / 8, Prism::Engine::GetInstance()->GetWindowSize().y / 8);
 		//RECT windowRect;
 		//GetWindowRect(*myWindowHandler, &windowRect);
 		//if (Prism::Engine::GetInstance()->IsFullscreen() == false)

@@ -102,6 +102,16 @@ bool Pistol::Shoot(const CU::Matrix44<float>& aOrientation)
 		if (toKill != nullptr)
 		{
 			SharedNetworkManager::GetInstance()->AddMessage(NetMessageOnHit(1000000, toKill->GetGID()));
+
+
+			CU::Vector3<float> toPlayer = myOwnerEntity->GetOrientation().GetPos() - toKill->GetOrientation().GetPos();
+			CU::Normalize(toPlayer);
+
+			CU::Vector3<float> hitPosition = toKill->GetOrientation().GetPos() + toPlayer * 0.5f;
+			
+
+			PostMaster::GetInstance()->SendMessage<HitmarkerMessage>(HitmarkerMessage());
+			PostMaster::GetInstance()->SendMessage(EmitterMessage("OnHit", hitPosition));
 		}
 
 
@@ -118,8 +128,8 @@ bool Pistol::Shoot(const CU::Matrix44<float>& aOrientation)
 		myMuzzleflash[myCurrentMuzzleflash]->SetShouldRender(true);
 		Prism::Audio::AudioInterface::GetInstance()->PostEvent("Play_Pistol", 0);
 		//SendRayCastRequest(aOrientation.GetPos(), forward, 500.f, myOwnerEntity->GetGID());
-		SharedNetworkManager::GetInstance()->AddMessage(NetMessageRayCastRequest(aOrientation.GetPos()
-			, forward, int(eNetRayCastType::CLIENT_SHOOT_PISTOL), 500.f, myOwnerEntity->GetGID()));
+		//SharedNetworkManager::GetInstance()->AddMessage(NetMessageRayCastRequest(aOrientation.GetPos()
+		//	, forward, int(eNetRayCastType::CLIENT_SHOOT_PISTOL), 500.f, myOwnerEntity->GetGID()));
 		return true;
 	}
 	else if (myShootTimer <= 0.f)
@@ -203,8 +213,8 @@ void Pistol::HandleRaycast(PhysicsComponent* aComponent, const CU::Vector3<float
 
 			if (aComponent->GetEntity().GetIsEnemy() == true)
 			{
-				PostMaster::GetInstance()->SendMessage<HitmarkerMessage>(HitmarkerMessage());
-				PostMaster::GetInstance()->SendMessage(EmitterMessage("OnHit", aHitPosition));
+				//PostMaster::GetInstance()->SendMessage<HitmarkerMessage>(HitmarkerMessage());
+				//PostMaster::GetInstance()->SendMessage(EmitterMessage("OnHit", aHitPosition));
 			}
 			else
 			{
@@ -218,7 +228,7 @@ void Pistol::HandleRaycast(PhysicsComponent* aComponent, const CU::Vector3<float
 
 			//SharedNetworkManager::GetInstance()->AddMessage(NetMessageOnHit(float(myDamage), aComponent->GetEntity().GetGID()));
 
-			SharedNetworkManager::GetInstance()->AddMessage(NetMessageOnHit(myDamage, aComponent->GetEntity().GetGID()));
+			//SharedNetworkManager::GetInstance()->AddMessage(NetMessageOnHit(myDamage, aComponent->GetEntity().GetGID()));
 		}
 	}
 }
