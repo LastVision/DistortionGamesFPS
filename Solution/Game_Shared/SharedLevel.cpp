@@ -114,7 +114,7 @@ void SharedLevel::HandleExplosion(Entity& aFirstEntity, Entity& aSecondEntity)
 		memcpy(&firstPos, &aFirstEntity.GetComponent<PhysicsComponent>()->GetPosition()[0], sizeof(float) * 3);
 
 		CU::Vector3<float> direction = CU::GetNormalized(aSecondEntity.GetOrientation().GetPos() - firstPos);
-		physicsComponent->AddForce(direction, 5.f);
+		physicsComponent->AddForce(direction, 25.f);
 	}
 	else if (physicsComponent->GetPhysicsType() == ePhysics::CAPSULE)
 	{

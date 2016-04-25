@@ -39,11 +39,37 @@
 #define GENERATE_COW
 //#endif
 
+physx::PxFilterFlags SampleSubmarineFilterShader(
+	physx::PxFilterObjectAttributes attributes0, physx::PxFilterData filterData0,
+	physx::PxFilterObjectAttributes attributes1, physx::PxFilterData filterData1,
+	physx::PxPairFlags& pairFlags, const void* constantBlock, physx::PxU32 constantBlockSize)
+{
+	// let triggers through
+	if (physx::PxFilterObjectIsTrigger(attributes0) || physx::PxFilterObjectIsTrigger(attributes1))
+	{
+		pairFlags = physx::PxPairFlag::eTRIGGER_DEFAULT;
+		return physx::PxFilterFlag::eDEFAULT;
+	}
+	// generate contacts for all that were not filtered above
+	pairFlags = physx::PxPairFlag::eCONTACT_DEFAULT;
+
+	// trigger the contact callback for pairs (A,B) where
+	// the filtermask of A contains the ID of B and vice versa.
+	if ((filterData0.word0 & filterData1.word1) && (filterData1.word0 & filterData0.word1))
+	{
+		pairFlags |= physx::PxPairFlag::eNOTIFY_TOUCH_FOUND;
+	}
+
+	return physx::PxFilterFlag::eDEFAULT;
+}
+
 namespace Prism
 {
-	PhysicsManager::PhysicsManager(std::function<void(PhysicsComponent*, PhysicsComponent*, bool)> anOnTriggerCallback, bool aIsServer)
+	PhysicsManager::PhysicsManager(std::function<void(PhysicsComponent*, PhysicsComponent*, bool)> anOnTriggerCallback, bool aIsServer
+		, std::function<void(PhysicsComponent*, PhysicsComponent*)> aOnContactCallback)
 		: myPhysicsComponentCallbacks(4096)
 		, myOnTriggerCallback(anOnTriggerCallback)
+		, myOnContactCallback(aOnContactCallback)
 #ifdef THREAD_PHYSICS
 		, myQuit(false)
 		, myLogicDone(false)
@@ -127,7 +153,8 @@ namespace Prism
 
 		if (!sceneDesc.filterShader)
 		{
-			sceneDesc.filterShader = physx::PxDefaultSimulationFilterShader;
+			//sceneDesc.filterShader = physx::PxDefaultSimulationFilterShader;
+			sceneDesc.filterShader = SampleSubmarineFilterShader;
 		}
 
 		myScene = myPhysicsSDK->createScene(sceneDesc);
@@ -184,7 +211,7 @@ namespace Prism
 		myScene->addActor(*plane);
 		myControllerManager = PxCreateControllerManager(*myScene);
 
-		myControllerManager->setOverlapRecoveryModule(true);
+		myControllerManager->setOverlapRecoveryModule(true);		
 	}
 
 	PhysicsManager::~PhysicsManager()
@@ -280,15 +307,15 @@ namespace Prism
 		//std::swap(myMoveJobs[0], myMoveJobs[1]);
 		//std::swap(myForceJobs[0], myForceJobs[1]);
 		//std::swap(myVelocityJobs[0], myVelocityJobs[1]);
-//std::swap(myPositionJobs[0], myPositionJobs[1]);
-//std::swap(myOnTriggerResults[0], myOnTriggerResults[1]);
-//std::swap(myActorsToAdd[0], myActorsToAdd[1]);
-//std::swap(myActorsToRemove[0], myActorsToRemove[1]);
-//std::swap(myActorsToSleep[0], myActorsToSleep[1]);
-//std::swap(myActorsToWakeUp[0], myActorsToWakeUp[1]);
+		//std::swap(myPositionJobs[0], myPositionJobs[1]);
+		//std::swap(myOnTriggerResults[0], myOnTriggerResults[1]);
+		//std::swap(myActorsToAdd[0], myActorsToAdd[1]);
+		//std::swap(myActorsToRemove[0], myActorsToRemove[1]);
+		//std::swap(myActorsToSleep[0], myActorsToSleep[1]);
+		//std::swap(myActorsToWakeUp[0], myActorsToWakeUp[1]);
 
-//myMoveJobs[myCurrentIndex].myId = -1;
-myIsSwapping = false;
+		//myMoveJobs[myCurrentIndex].myId = -1;
+		myIsSwapping = false;
 	}
 
 	void PhysicsManager::Update()
@@ -355,7 +382,7 @@ myIsSwapping = false;
 			{
 				myState = eEntityState::WALK;
 				SharedNetworkManager::GetInstance()->AddMessage<NetMessageEntityState>(NetMessageEntityState(myState, myPlayerGID));
-			}
+			}			
 
 			bool isSprinting = false;
 			bool shouldDecreaseEnergy = true;
@@ -564,6 +591,26 @@ myIsSwapping = false;
 		, const CU::Vector3<float>&, const CU::Vector3<float>&) > aFunctionToCall, const PhysicsComponent* aComponent)
 	{
 		myRaycastJobs[myCurrentIndex].Add(RaycastJob(aOrigin, aNormalizedDirection, aMaxRayDistance, aFunctionToCall, aComponent));
+	}
+
+	void PhysicsManager::onContact(const physx::PxContactPairHeader& aHeader, const physx::PxContactPair* somePairs, physx::PxU32 aCount)
+	{
+		for (physx::PxU32 i = 0; i < aCount; i++)
+		{
+			const physx::PxContactPair& pairs = somePairs[i];
+
+
+			if (pairs.events == physx::PxPairFlag::Enum::eNOTIFY_TOUCH_FOUND)
+			{
+				if (myIsServer == false)
+				{
+					myOnContactCallback(static_cast<PhysicsComponent*>(aHeader.actors[0]->userData)
+						, static_cast<PhysicsComponent*>(aHeader.actors[1]->userData));
+				}
+			}
+
+
+		}
 	}
 
 	void PhysicsManager::onTrigger(physx::PxTriggerPair* somePairs, physx::PxU32 aCount)
@@ -866,6 +913,18 @@ myIsSwapping = false;
 			{
 				GetScene()->addActor(*(*aStaticBodyOut));
 			}
+			
+			physx::PxU32 nShapes = (*aStaticBodyOut)->getNbShapes();
+
+			*someShapesOut = new physx::PxShape*[nShapes];
+
+			physx::PxShape** statShape = new physx::PxShape*;
+			(*aStaticBodyOut)->getShapes(statShape, nShapes);
+
+			physx::PxFilterData fd = (*statShape)->getSimulationFilterData();
+			fd.word0 = physx::PxU32(DETACHABLE_FLAG);
+			fd.word1 = physx::PxU32(SNOWBALL_FLAG);
+			(*statShape)->setSimulationFilterData(fd);
 		}
 		else if (aPhysData.myData->myPhysicsType == ePhysics::DYNAMIC)
 		{
@@ -895,6 +954,18 @@ myIsSwapping = false;
 			physx::PxU32 nShapes = (*aDynamicBodyOut)->getNbShapes();
 
 			*someShapesOut = new physx::PxShape*[nShapes];
+
+
+			
+
+			physx::PxShape** dynShape = new physx::PxShape*;
+			(*aDynamicBodyOut)->getShapes(dynShape, nShapes);
+			
+			physx::PxFilterData fd = (*dynShape)->getSimulationFilterData();
+			fd.word0 = physx::PxU32(SNOWBALL_FLAG);
+			fd.word1 = physx::PxU32(DETACHABLE_FLAG);
+			(*dynShape)->setSimulationFilterData(fd);
+
 		}
 		else if (aPhysData.myData->myPhysicsType == ePhysics::KINEMATIC)
 		{
@@ -959,7 +1030,7 @@ myIsSwapping = false;
 			myPhysicsComponentCallbacks.Add(aPhysData);
 		}
 	}
-
+	
 	void PhysicsManager::Add(physx::PxRigidDynamic* aDynamic)
 	{
 		myActorsToAdd[myCurrentIndex].Add(aDynamic);
