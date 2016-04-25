@@ -245,6 +245,7 @@ void ClientNetworkManager::ReceiveNetworkMessage(const NetMessageDisconnect& aMe
 	myIsOnline = false;
 	myClients.RemoveAll();
 	myHasLeftLobby = false;
+	OutputDebugString("CLIENT DISCONNECTED");
 	//if (aMessage.myClientID == myGID)
 	//{
 	//	//MessageBox(NULL, "You have been disconnected!", "Connection Lost!", MB_ICONERROR | MB_OK);
@@ -284,10 +285,14 @@ void ClientNetworkManager::ReceiveNetworkMessage(const NetMessageConnectReply& a
 {
 	if (aMessage.myType == NetMessageConnectReply::eType::SUCCESS)
 	{
+		OutputDebugString("CLIENT CONNECTED");
+
 		myGID = aMessage.myGID;
 	}
 	else
 	{
+		OutputDebugString("CLIENT FAILED TO CONNECT");
+
 		myIsOnline = false;
 		//DL_ASSERT("Failed to connect");
 		DL_MESSAGE_BOX("Failed to connect", "Failed", MB_ICONERROR);

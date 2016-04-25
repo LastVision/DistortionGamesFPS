@@ -121,7 +121,7 @@ const eStateStatus ServerSelectState::Update(const float& aDeltaTime)
 			myRetryToStartTimer -= aDeltaTime;
 			if (myRetryToStartTimer <= 0.f)
 			{
-				ClientNetworkManager::GetInstance()->AddMessage(NetMessageDisconnect(ClientNetworkManager::GetInstance()->GetGID()));
+				//ClientNetworkManager::GetInstance()->AddMessage(NetMessageDisconnect(ClientNetworkManager::GetInstance()->GetGID()));
 				return eStateStatus::ePopMainState;
 			}
 		}
@@ -297,6 +297,7 @@ void ServerSelectState::ReceiveNetworkMessage(const NetMessageConnectReply& aMes
 		myTriedToConnect = false;
 		myServer = nullptr;
 		myIsRefreshing = true;
-		ClientNetworkManager::GetInstance()->AddMessage(NetMessageRequestServer(), ClientNetworkManager::GetInstance()->GetBroadcastAddress());
+		myStateStatus = eStateStatus::ePopMainState;
+		//ClientNetworkManager::GetInstance()->AddMessage(NetMessageRequestServer(), ClientNetworkManager::GetInstance()->GetBroadcastAddress());
 	}
 }

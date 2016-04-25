@@ -178,7 +178,7 @@ const eStateStatus LobbyState::Update(const float& aDeltaTime)
 //#ifndef RELEASE_BUILD
 	if (ClientNetworkManager::GetInstance()->GetGID() == 1)
 	{
-		if (CU::InputWrapper::GetInstance()->KeyDown(DIK_SPACE) == true)
+		//if (CU::InputWrapper::GetInstance()->KeyDown(DIK_SPACE) == true)
 		{
 			ClientNetworkManager::GetInstance()->AddMessage(NetMessageRequestStartLevel());
 		}

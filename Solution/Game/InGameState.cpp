@@ -127,6 +127,11 @@ const eStateStatus InGameState::Update(const float& aDeltaTime)
 		return eStateStatus::ePopMainState;
 	}
 
+	if (ClientNetworkManager::GetInstance()->GetGID() == 0)
+	{
+		return eStateStatus::ePopMainState;
+	}
+
 	myRotatingThing->Rotate(-aDeltaTime * 8.f);
 
 	switch (myState)
@@ -157,13 +162,13 @@ const eStateStatus InGameState::Update(const float& aDeltaTime)
 		break;
 	case eInGameState::LOADING_CAN_START:
 		myLevel->Update(aDeltaTime, true);
-		if (CU::InputWrapper::GetInstance()->KeyDown(DIK_RETURN) == true
-			|| CU::InputWrapper::GetInstance()->KeyDown(DIK_ESCAPE) == true
-			|| CU::InputWrapper::GetInstance()->KeyDown(DIK_SPACE) == true
-			|| CU::InputWrapper::GetInstance()->MouseDown(0) == true
-			|| CU::InputWrapper::GetInstance()->MouseDown(1) == true
-			|| CU::InputWrapper::GetInstance()->MouseDown(2) == true
-			|| CU::InputWrapper::GetInstance()->AnyKeyDown() == true)
+		//if (CU::InputWrapper::GetInstance()->KeyDown(DIK_RETURN) == true
+		//	|| CU::InputWrapper::GetInstance()->KeyDown(DIK_ESCAPE) == true
+		//	|| CU::InputWrapper::GetInstance()->KeyDown(DIK_SPACE) == true
+		//	|| CU::InputWrapper::GetInstance()->MouseDown(0) == true
+		//	|| CU::InputWrapper::GetInstance()->MouseDown(1) == true
+		//	|| CU::InputWrapper::GetInstance()->MouseDown(2) == true
+		//	|| CU::InputWrapper::GetInstance()->AnyKeyDown() == true)
 		{
 			PostMaster::GetInstance()->SendMessage(FadeMessage(1.f));
 			myState = eInGameState::LEVEL;

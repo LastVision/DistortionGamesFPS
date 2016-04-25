@@ -143,6 +143,7 @@ void ServerInGameState::ReceiveNetworkMessage(const NetMessageLevelLoaded& aMess
 
 void ServerInGameState::ReceiveNetworkMessage(const NetMessageDisconnect& aMessage, const sockaddr_in&)
 {
+	Utility::Printf("Received NetMessageDisconnect: ServerInGameState", eConsoleColor::AQUA_TEXT, true);
 	if (aMessage.mySenderID == 1 || ServerNetworkManager::GetInstance()->GetClients().Size() <= 0)
 	{
 		ServerNetworkManager::GetInstance()->DisconnectAll();

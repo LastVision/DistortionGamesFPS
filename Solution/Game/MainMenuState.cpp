@@ -111,7 +111,7 @@ const eStateStatus MainMenuState::Update(const float& aDeltaTime)
 			myIsActiveState = false;
 			return eStateStatus::ePopMainState;
 		}
-		else if(CU::InputWrapper::GetInstance()->KeyDown(DIK_SPACE) == true)
+		//else if(CU::InputWrapper::GetInstance()->KeyDown(DIK_SPACE) == true)
 		{
 			PostMaster::GetInstance()->UnSubscribe(eMessageType::ON_CLICK, this);
 			SET_RUNTIME(false);

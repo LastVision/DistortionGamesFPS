@@ -56,34 +56,34 @@ namespace Prism
 
 	void Scene::RenderArmAndWeapon()
 	{
-		if (GC::ShouldRenderGUI == true)
-		{
-			if (myArmInstance != nullptr)
-			{
-				myArmInstance->Render(*myCamera);
-			}
-
-			if (myWeaponInstance != nullptr)
-			{
-				myWeaponInstance->Render(*myCamera);
-			}
-		}
+		//if (GC::ShouldRenderGUI == true)
+		//{
+		//	if (myArmInstance != nullptr)
+		//	{
+		//		myArmInstance->Render(*myCamera);
+		//	}
+		//
+		//	if (myWeaponInstance != nullptr)
+		//	{
+		//		myWeaponInstance->Render(*myCamera);
+		//	}
+		//}
 	}
 
 	void Scene::RenderArmAndWeaponOnlyDepth()
 	{
-		if (GC::ShouldRenderGUI == true)
-		{
-			if (myArmInstance != nullptr)
-			{
-				myArmInstance->Render(*myCamera, true);
-			}
-
-			if (myWeaponInstance != nullptr)
-			{
-				myWeaponInstance->Render(*myCamera, true);
-			}
-		}
+		//if (GC::ShouldRenderGUI == true)
+		//{
+		//	if (myArmInstance != nullptr)
+		//	{
+		//		myArmInstance->Render(*myCamera, true);
+		//	}
+		//
+		//	if (myWeaponInstance != nullptr)
+		//	{
+		//		myWeaponInstance->Render(*myCamera, true);
+		//	}
+		//}
 	}
 
 	void Scene::RenderWithoutRoomManager()

@@ -149,6 +149,8 @@ void ServerLobbyState::ReceiveNetworkMessage(const NetMessageRequestServer&, con
 
 void ServerLobbyState::ReceiveNetworkMessage(const NetMessageDisconnect& aMessage, const sockaddr_in&)
 {
+	Utility::Printf("Received NetMessageDisconnect: ServerLobbyState", eConsoleColor::AQUA_TEXT, true);
+
 	if (aMessage.mySenderID == 1 || ServerNetworkManager::GetInstance()->GetClients().Size() <= 0)
 	{
 		ServerNetworkManager::GetInstance()->DisconnectAll();
