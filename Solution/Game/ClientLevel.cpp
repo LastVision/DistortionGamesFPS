@@ -93,7 +93,8 @@ ClientLevel::ClientLevel(GUI::Cursor* aCursor, eStateStatus& aStateStatus, int a
 	, myHasStoppedFirstLayer(true)
 	, myHasStoppedSecondLayer(true)
 {
-	Prism::PhysicsInterface::Create(std::bind(&ClientLevel::CollisionCallback, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3), false);
+	Prism::PhysicsInterface::Create(std::bind(&ClientLevel::CollisionCallback, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3), false
+		, std::bind(&ClientLevel::ContactCallback, this, std::placeholders::_1, std::placeholders::_2));
 
 	ClientNetworkManager::GetInstance()->Subscribe(eNetMessageType::ON_DEATH, this);
 	ClientNetworkManager::GetInstance()->Subscribe(eNetMessageType::SET_ACTIVE, this);
@@ -709,6 +710,39 @@ void ClientLevel::CollisionCallback(PhysicsComponent* aFirst, PhysicsComponent* 
 			HandleExplosion(first, second);
 		}
 		break;
+	}
+}
+
+void ClientLevel::ContactCallback(PhysicsComponent* aFirst, PhysicsComponent* aSecond)
+{
+	Entity& first = aFirst->GetEntity();
+	Entity& second = aSecond->GetEntity();
+	int yDir = 1;
+	if (rand() % 2 == 0)
+	{
+		yDir = -1;
+	}
+	CU::Vector3<float> dir(0, yDir, 0);
+	if (aFirst->GetPhysicsType() == ePhysics::DYNAMIC)
+	{
+		aFirst->AddForce(dir, 0.5f);
+		if (first.GetComponent<SoundComponent>() != nullptr)
+		{
+			Prism::Audio::AudioInterface::GetInstance()->PostEvent("Play_PropBounce", first.GetComponent<SoundComponent>()->GetAudioSFXID());
+		}
+	}
+	else if (aSecond->GetPhysicsType() == ePhysics::DYNAMIC)
+	{
+		aSecond->AddForce(dir, 0.5f);
+		if (second.GetComponent<SoundComponent>() != nullptr)
+		{
+			Prism::Audio::AudioInterface::GetInstance()->PostEvent("Play_PropBounce", second.GetComponent<SoundComponent>()->GetAudioSFXID());
+		}
+	}
+	else
+	{
+		int whatIsCollidingHere = 15;
+		whatIsCollidingHere;
 	}
 }
 

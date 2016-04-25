@@ -56,6 +56,7 @@ public:
 	void AddLight(Prism::SpotLight* aLight);
 	void AddLight(Prism::SpotLightTextureProjection* aLight);
 	void CollisionCallback(PhysicsComponent* aFirst, PhysicsComponent* aSecond, bool aHasEntered) override;
+	void ContactCallback(PhysicsComponent* aFirst, PhysicsComponent* aSecond) override;
 	void AddWorldText(const std::string& aText, const CU::Vector3<float>& aPosition, float aRotationAroundY, const CU::Vector4<float>& aColor);
 
 	void OnResize(float aWidth, float aHeight);

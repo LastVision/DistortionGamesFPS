@@ -6,9 +6,10 @@
 namespace Prism
 {
 	PhysicsInterface* PhysicsInterface::myInstance = nullptr;
-	void PhysicsInterface::Create(std::function<void(PhysicsComponent*, PhysicsComponent*, bool)> anOnTriggerCallback, bool aIsServer)
+	void PhysicsInterface::Create(std::function<void(PhysicsComponent*, PhysicsComponent*, bool)> anOnTriggerCallback, bool aIsServer
+		, std::function<void(PhysicsComponent*, PhysicsComponent*)> aOnContactCallback)
 	{
-		myInstance = new PhysicsInterface(anOnTriggerCallback, aIsServer);
+		myInstance = new PhysicsInterface(anOnTriggerCallback, aIsServer, aOnContactCallback);
 	}
 
 	void PhysicsInterface::Destroy()
@@ -241,9 +242,10 @@ namespace Prism
 		myManager->SetPlayerGID(anID);
 	}
 
-	PhysicsInterface::PhysicsInterface(std::function<void(PhysicsComponent*, PhysicsComponent*, bool)> anOnTriggerCallback, bool aIsServer)
+	PhysicsInterface::PhysicsInterface(std::function<void(PhysicsComponent*, PhysicsComponent*, bool)> anOnTriggerCallback, bool aIsServer
+		, std::function<void(PhysicsComponent*, PhysicsComponent*)> aOnContactCallback)
 	{
-		myManager = new PhysicsManager(anOnTriggerCallback, aIsServer);
+		myManager = new PhysicsManager(anOnTriggerCallback, aIsServer, aOnContactCallback);
 	}
 
 

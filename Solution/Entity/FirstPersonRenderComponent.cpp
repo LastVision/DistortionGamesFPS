@@ -334,20 +334,35 @@ void FirstPersonRenderComponent::Update(float aDelta)
 			}
 		}
 	}
+	float fakeDelta = aDelta;
+	if (myCurrentState == ePlayerState::PISTOL_HOLSTER || myCurrentState == ePlayerState::PISTOL_DRAW
+		|| myCurrentState == ePlayerState::PISTOL_RELOAD)
+	{
+		fakeDelta *= 1.5f;
+	}
+	else if (myCurrentState == ePlayerState::SHOTGUN_HOLSTER ||	myCurrentState == ePlayerState::SHOTGUN_DRAW
+		|| myCurrentState == ePlayerState::SHOTGUN_RELOAD)
+	{
+		fakeDelta *= 1.35f;
+	}
+
 	if (myModel->IsAnimationDone() == false || data.myShouldLoop == true)
 	{
-		myModel->Update(aDelta);
+		
+		myModel->Update(fakeDelta);
 
 	}
-	data.myElapsedTime += aDelta;
+	data.myElapsedTime += fakeDelta;
+
+
 
 	Prism::AnimationData& weaponData = myWeaponAnimations[int(myCurrentState)].myData;
 	if (myCurrentWeaponModel->IsAnimationDone() == false || weaponData.myShouldLoop == true)
 	{
-		myCurrentWeaponModel->Update(aDelta);
+		myCurrentWeaponModel->Update(fakeDelta);
 
 	}
-	weaponData.myElapsedTime += aDelta;
+	weaponData.myElapsedTime += fakeDelta;
 
 	UpdateJoints();
 	if (myDisplayDamageIndicatorTimer >= 0.f)

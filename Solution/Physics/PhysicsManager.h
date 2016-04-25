@@ -34,6 +34,12 @@ namespace physx
 
 class PhysicsComponent;
 
+enum eContact
+{
+	DYNAMIC,
+	OTHER
+};
+
 namespace Prism
 {
 
@@ -41,7 +47,8 @@ namespace Prism
 	{
 	public:
 		int physicsFPS;
-		PhysicsManager(std::function<void(PhysicsComponent*, PhysicsComponent*, bool)> anOnTriggerCallback, bool aIsServer);
+		PhysicsManager(std::function<void(PhysicsComponent*, PhysicsComponent*, bool)> anOnTriggerCallback, bool aIsServer
+			, std::function<void(PhysicsComponent*, PhysicsComponent*)> aOnContactCallback);
 		~PhysicsManager();
 
 		bool myMoveForward;
@@ -78,7 +85,7 @@ namespace Prism
 		void onConstraintBreak(physx::PxConstraintInfo*, physx::PxU32) override {};
 		void onWake(physx::PxActor**, physx::PxU32) override {};
 		void onSleep(physx::PxActor**, physx::PxU32) override {};
-		void onContact(const physx::PxContactPairHeader&, const physx::PxContactPair*, physx::PxU32) override {};
+		void onContact(const physx::PxContactPairHeader&, const physx::PxContactPair*, physx::PxU32) override;
 		void onTrigger(physx::PxTriggerPair*, physx::PxU32) override;
 
 		physx::PxPhysics* GetCore(){ return myPhysicsSDK; }
@@ -114,6 +121,13 @@ namespace Prism
 		void SetInputComponentData(const InputComponentData& aPlayerInputData);
 		void SetPlayerGID(int anID);
 	private:
+		enum
+		{
+			CCD_FLAG = 1 << 29,
+			SNOWBALL_FLAG = 1 << 30,
+			DETACHABLE_FLAG = 1 << 31
+		};
+
 		int myPlayerCapsule;
 		bool myIsClientSide;
 		bool myIsOverheated;
@@ -198,6 +212,7 @@ namespace Prism
 		CU::GrowingArray<OnTriggerResult> myOnTriggerResults[2];
 
 		std::function<void(PhysicsComponent*, PhysicsComponent*, bool)> myOnTriggerCallback;
+		std::function<void(PhysicsComponent*, PhysicsComponent*)> myOnContactCallback;
 
 		struct MoveJob
 		{

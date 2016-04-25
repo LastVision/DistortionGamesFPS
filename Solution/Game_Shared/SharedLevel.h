@@ -22,6 +22,7 @@ public:
 	virtual void Update(const float aDeltaTime, bool aLoadingScreen);
 
 	virtual void CollisionCallback(PhysicsComponent* aFirst, PhysicsComponent* aSecond, bool aHasEntered) = 0;
+	virtual void ContactCallback(PhysicsComponent*, PhysicsComponent*){};
 
 	void CleanUp();
 

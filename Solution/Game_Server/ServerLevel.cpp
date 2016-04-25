@@ -41,7 +41,8 @@ ServerLevel::ServerLevel()
 	, myRespawnTriggers(16)
 	, myPressETriggers(16)
 {
-	Prism::PhysicsInterface::Create(std::bind(&ServerLevel::CollisionCallback, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3), true);
+	Prism::PhysicsInterface::Create(std::bind(&ServerLevel::CollisionCallback, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3), true
+		, std::bind(&SharedLevel::ContactCallback, this, std::placeholders::_1, std::placeholders::_2));
 
 	ServerNetworkManager::GetInstance()->Subscribe(eNetMessageType::ON_CONNECT, this);
 	ServerNetworkManager::GetInstance()->Subscribe(eNetMessageType::LEVEL_LOADED, this);
