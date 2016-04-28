@@ -717,15 +717,9 @@ void ClientLevel::ContactCallback(PhysicsComponent* aFirst, PhysicsComponent* aS
 {
 	Entity& first = aFirst->GetEntity();
 	Entity& second = aSecond->GetEntity();
-	int yDir = 1;
-	if (rand() % 2 == 0)
-	{
-		yDir = -1;
-	}
-	CU::Vector3<float> dir(0, yDir, 0);
+
 	if (aFirst->GetPhysicsType() == ePhysics::DYNAMIC)
 	{
-		aFirst->AddForce(dir, 0.5f);
 		if (first.GetComponent<SoundComponent>() != nullptr)
 		{
 			Prism::Audio::AudioInterface::GetInstance()->PostEvent("Play_PropBounce", first.GetComponent<SoundComponent>()->GetAudioSFXID());
@@ -733,7 +727,6 @@ void ClientLevel::ContactCallback(PhysicsComponent* aFirst, PhysicsComponent* aS
 	}
 	else if (aSecond->GetPhysicsType() == ePhysics::DYNAMIC)
 	{
-		aSecond->AddForce(dir, 0.5f);
 		if (second.GetComponent<SoundComponent>() != nullptr)
 		{
 			Prism::Audio::AudioInterface::GetInstance()->PostEvent("Play_PropBounce", second.GetComponent<SoundComponent>()->GetAudioSFXID());
