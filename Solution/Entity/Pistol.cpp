@@ -108,7 +108,7 @@ bool Pistol::Shoot(const CU::Matrix44<float>& aOrientation)
 			CU::Normalize(toPlayer);
 
 			CU::Vector3<float> hitPosition = toKill->GetOrientation().GetPos() + toPlayer * 0.5f;
-			
+			hitPosition.y += 1.5f;
 
 			PostMaster::GetInstance()->SendMessage<HitmarkerMessage>(HitmarkerMessage());
 			PostMaster::GetInstance()->SendMessage(EmitterMessage("OnHit", hitPosition));
